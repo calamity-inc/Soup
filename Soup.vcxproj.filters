@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="fwddecl.hpp" />
+    <ClInclude Include="macros.hpp" />
+    <ClInclude Include="alloc_raii.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="assembly_builder.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="alloc_raii_remote.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="bytepatch.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="bytepatch_external.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="memory_buffer.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern_compile_time.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern_compile_time_base.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern_compile_time_with_opt_bytes_base.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern_macros.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pattern_compile_time_with_opt_bytes.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pointer.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="pointerlike.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="range.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="region_virtual.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="window.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="thread.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="process.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="net_addr_ip.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net_server.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net_addr_socket.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net_client.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net_socket.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="console.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="vector4.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector_base.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector_maths.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector2.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector3.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="vector3_base.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="box.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="platform.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="module.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="handle_raii.hpp">
+      <Filter>os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="handle_base.hpp">
+      <Filter>os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="handle_plain.hpp">
+      <Filter>os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="unicode.hpp">
+      <Filter>enc</Filter>
+    </ClInclude>
+    <ClInclude Include="box_corners.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="box_axis_aligned.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="poly.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="quaternion.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="ray.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="assembly_builder.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="bytepatch.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="memory_buffer.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="pattern.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="pointer.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="range.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="thread.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="process.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="module.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="unicode.cpp">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="box.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="box_corners.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="box_axis_aligned.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="poly.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="os">
+      <UniqueIdentifier>{f93928c1-dcc7-414f-aa35-092f9c01254c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{a908246f-7651-4858-a665-d6c359ed73d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="os\windows">
+      <UniqueIdentifier>{8662bd3c-4741-400c-8355-6a34ac8e770f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{4bcbb6ff-ce7a-473c-8330-c8f6a9c1e764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem">
+      <UniqueIdentifier>{2a5982c9-2e94-4883-be44-862fd3d7e0b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="enc">
+      <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
