@@ -2,41 +2,20 @@
 
 #include <cstdint>
 #include <cstring> // memcpy
-#include <stdexcept>
 #include <string>
 
 #include "net_client.hpp"
 #include "platform.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
-#pragma comment(lib, "Ws2_32.lib")
-#include <Winsock2.h>
-#include <Ws2tcpip.h>
-#else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#endif
-
 namespace soup
 {
 	struct net_server : public net_socket
 	{
-#if SOUP_PLATFORM_WINDOWS
-		inline static size_t wsa_consumers = 0;
-#endif
-
 		bool init(const uint16_t port)
 		{
-#if SOUP_PLATFORM_WINDOWS
-			if(wsa_consumers++ == 0)
-			{
-				WSADATA wsaData;
-				WORD wVersionRequested = MAKEWORD(2, 2);
-				WSAStartup(wVersionRequested, &wsaData);
-			}
-#endif
+			preinit();
 			fd = socket(AF_INET6, SOCK_STREAM, 0);
-			if(fd == -1)
+			if (fd == -1)
 			{
 				return false;
 			}

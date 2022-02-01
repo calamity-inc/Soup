@@ -17,6 +17,13 @@ namespace soup
 	{
 		in6_addr data;
 
+		net_addr_ip() noexcept = default;
+
+		explicit net_addr_ip(const char* str)
+		{
+			inet_pton(AF_INET6, str, &data);
+		}
+
 		[[nodiscard]] bool isV4() const noexcept
 		{
 			return IN6_IS_ADDR_V4MAPPED(&data);
