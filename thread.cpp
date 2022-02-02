@@ -3,15 +3,16 @@
 namespace soup
 {
 	thread::thread(std::function<void()>&& func) noexcept
+		: handle()
 	{
 		auto* fp = new std::function<void()>(std::move(func));
-		this->handle = CreateThread(nullptr, 0, [](PVOID handover) -> DWORD
+		this->handle.set(CreateThread(nullptr, 0, [](PVOID handover) -> DWORD
 		{
 			auto* fp = (std::function<void()>*)handover;
 			(*fp)();
 			delete fp;
 			return 0;
-		}, fp, 0, nullptr);
+		}, fp, 0, nullptr));
 	}
 
 	bool thread::isRunning() const noexcept
