@@ -37,9 +37,14 @@ namespace soup
 			}
 		}
 
+		net_addr_ip(const net_addr_ip& b) noexcept
+		{
+			memcpy(&data.s6_bytes, b.data.s6_bytes, sizeof(data.s6_bytes));
+		}
+		
 		explicit net_addr_ip(const uint8_t bytes[16]) noexcept
 		{
-			memcpy(&data.s6_bytes, bytes, 16);
+			memcpy(&data.s6_bytes, bytes, sizeof(data.s6_bytes));
 		}
 
 		[[nodiscard]] bool isV4() const noexcept

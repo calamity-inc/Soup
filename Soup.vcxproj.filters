@@ -182,6 +182,9 @@
     <ClCompile Include="poly.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="net_socket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

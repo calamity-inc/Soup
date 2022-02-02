@@ -8,10 +8,15 @@
 #pragma comment(lib, "Ws2_32.lib")
 #include <Winsock2.h>
 #include <Ws2tcpip.h>
+
+#pragma comment(lib, "Secur32.lib")
+#define SECURITY_WIN32
+#include <sspi.h>
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h> // close
+#include <fcntl.h>
 #endif
 
 namespace soup
@@ -20,12 +25,40 @@ namespace soup
 	{
 	public:
 #if SOUP_PLATFORM_WINDOWS
+		using fd_t = SOCKET;
+#else
+		using fd_t = int;
+#endif
+		fd_t fd;
+
+#if SOUP_PLATFORM_WINDOWS
 		inline static size_t wsa_consumers = 0;
+		static PSecurityFunctionTableA sft;
+
+		bool encrypted = false;
+		CtxtHandle ctx_h;
+		CredHandle cred_h;
+		SecPkgContext_StreamSizes Sizes{};
+		static constexpr int MaxMsgSize = 16000;
+		static constexpr int MaxExtraSize = 50;
+		char writeBuffer[MaxMsgSize + MaxExtraSize]{};
+		char readBuffer[(MaxMsgSize + MaxExtraSize) * 2]{};
+		size_t readBufferBytes = 0;
+		char plainText[MaxMsgSize * 2]{};
+		char* plainTextPtr = nullptr;
+		size_t plainTextBytes = 0;
+		void* readPtr = nullptr;
 #endif
 
-		int fd = -1;
 
-		constexpr net_socket() noexcept = default;
+		net_socket() noexcept
+			: fd(-1)
+		{
+#if SOUP_PLATFORM_WINDOWS
+			SecInvalidateHandle(&ctx_h);
+			SecInvalidateHandle(&cred_h);
+#endif
+		}
 
 		net_socket(const net_socket&) = delete;
 
@@ -33,6 +66,16 @@ namespace soup
 			: fd(b.fd)
 		{
 			b.fd = -1;
+
+#if SOUP_PLATFORM_WINDOWS
+			ctx_h.dwLower = b.ctx_h.dwLower;
+			ctx_h.dwUpper = b.ctx_h.dwUpper;
+			SecInvalidateHandle(&b.ctx_h);
+
+			cred_h.dwLower = b.cred_h.dwLower;
+			cred_h.dwUpper = b.cred_h.dwUpper;
+			SecInvalidateHandle(&b.cred_h);
+#endif
 		}
 
 		void operator =(const net_socket&) = delete;
@@ -41,33 +84,73 @@ namespace soup
 		{
 			fd = b.fd;
 			b.fd = -1;
+
+#if SOUP_PLATFORM_WINDOWS
+			ctx_h.dwLower = b.ctx_h.dwLower;
+			ctx_h.dwUpper = b.ctx_h.dwUpper;
+			SecInvalidateHandle(&b.ctx_h);
+
+			cred_h.dwLower = b.cred_h.dwLower;
+			cred_h.dwUpper = b.cred_h.dwUpper;
+			SecInvalidateHandle(&b.cred_h);
+#endif
 		}
 
 		~net_socket() noexcept
 		{
 			release();
+
+#if SOUP_PLATFORM_WINDOWS
+			if (SecIsValidHandle(&cred_h))
+			{
+				sft->FreeCredentialsHandle(&cred_h);
+				SecInvalidateHandle(&cred_h);
+			}
+#endif
 		}
 
-		void release()
+		void release() noexcept
 		{
 			if (fd != -1)
 			{
 #if SOUP_PLATFORM_WINDOWS
+				if (encrypted)
+				{
+					sendCloseNotify();
+				}
+
 				closesocket(fd);
 #else
 				close(fd);
 #endif
 				fd = -1;
 			}
+
+#if SOUP_PLATFORM_WINDOWS
+			releaseContext();
+#endif
 		}
 
+	private:
+#if SOUP_PLATFORM_WINDOWS
+		void releaseContext()
+		{
+			if (SecIsValidHandle(&ctx_h))
+			{
+				sft->DeleteSecurityContext(&ctx_h);
+				SecInvalidateHandle(&ctx_h);
+			}
+		}
+#endif
+
+	public:
 		[[nodiscard]] bool isValid() const noexcept
 		{
 			return fd != -1;
 		}
 
 	protected:
-		void preinit()
+		void preinit() noexcept
 		{
 #if SOUP_PLATFORM_WINDOWS
 			if (wsa_consumers++ == 0)
@@ -81,7 +164,7 @@ namespace soup
 		}
 
 	public:
-		bool init(const net_addr_socket& addr_desc)
+		bool connect(const net_addr_socket& addr_desc) noexcept
 		{
 			preinit();
 			fd = socket(AF_INET6, SOCK_STREAM, 0);
@@ -99,5 +182,87 @@ namespace soup
 			}
 			return true;
 		}
+
+		bool setBlocking(bool blocking) noexcept
+		{
+#if SOUP_PLATFORM_WINDOWS
+			unsigned long mode = blocking ? 0 : 1;
+			return (ioctlsocket(fd, FIONBIO, &mode) == 0) ? true : false;
+#else
+			int flags = fcntl(fd, F_GETFL, 0);
+			if (flags == -1) return false;
+			flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
+			return (fcntl(fd, F_SETFL, flags) == 0) ? true : false;
+#endif
+		}
+
+		bool encrypt(const char* server_name) noexcept;
+
+		bool send(const std::string& data) noexcept
+		{
+			return send(data.data(), (int)data.size());
+		}
+
+		bool send(const void* data, int size) noexcept;
+
+	private:
+		bool sendUnencrypted(const void* data, int size) noexcept
+		{
+			return ::send(fd, (const char*)data, size, 0) == size;
+		}
+
+	public:
+		int recv(void* outData, int size) noexcept;
+
+	private:
+		int recvUnencrypted(void* outData, int size) noexcept
+		{
+			return ::recv(fd, (char*)outData, size, 0);
+		}
+
+	public:
+		bool recvAll(std::string& out) noexcept
+		{
+			char buf[4096];
+			while (true)
+			{
+				auto res = recv(buf, sizeof(buf));
+
+				// data
+				if (res > 0)
+				{
+					out.append(buf, res);
+					continue;
+				}
+
+				// closed
+				if (res == 0)
+				{
+					break;
+				}
+
+				// error
+#if SOUP_PLATFORM_WINDOWS
+				const auto err = WSAGetLastError();
+				if (err == 0)
+				{
+					break;
+				}
+				if (err != WSAEWOULDBLOCK)
+				{
+					return false;
+				}
+#else
+				if (errno != EWOULDBLOCK && errno != EAGAIN)
+				{
+					return false;
+				}
+#endif
+			}
+			return true;
+		}
+
+	private:
+		void sendCloseNotify() noexcept;
 	};
 }

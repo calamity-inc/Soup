@@ -251,6 +251,7 @@
     <ClCompile Include="bytepatch.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />
+    <ClCompile Include="net_socket.cpp" />
     <ClCompile Include="pattern.cpp" />
     <ClCompile Include="pointer.cpp" />
     <ClCompile Include="poly.cpp" />
