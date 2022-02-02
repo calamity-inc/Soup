@@ -4,6 +4,8 @@
 // - Windows: Adapted from https://github.com/david-maw/StreamSSL
 // - Linux: Not yet! Maybe I'll use OpenSSL, but then any .so requiring soup would be stuck loaded, because OpenSSL loves to leak. Maybe LibreSSL?
 
+#include "dns.hpp"
+
 #if SOUP_PLATFORM_WINDOWS
 #include <schannel.h>
 #endif
@@ -13,6 +15,21 @@ namespace soup
 #if SOUP_PLATFORM_WINDOWS
 	PSecurityFunctionTableA socket::sft = nullptr;
 #endif
+
+	bool socket::connectReliable(const char* host, uint16_t port) noexcept
+	{
+		auto res = dns::lookupIPv6(host);
+		if (!res.empty() && connect(res.at(0), port))
+		{
+			return true;
+		}
+		res = dns::lookupIPv4(host);
+		if (!res.empty() && connect(res.at(0), port))
+		{
+			return true;
+		}
+		return false;
+	}
 
 	bool socket::encrypt(const char* server_name) noexcept
 	{

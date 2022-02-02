@@ -164,10 +164,22 @@ namespace soup
 		}
 
 	public:
-		bool connect(const addr_socket& addr_desc) noexcept
+		bool connectSecure(const char* host, uint16_t port) noexcept
+		{
+			return connectReliable(host, port) && encrypt(host);
+		}
+
+		bool connectReliable(const char* host, uint16_t port) noexcept;
+
+		bool connect(const addr_socket& desc) noexcept
+		{
+			return connect(desc.addr, desc.port);
+		}
+
+		bool connect(const addr_ip& ip, uint16_t port) noexcept
 		{
 			preinit();
-			if (addr_desc.addr.isV4())
+			if (ip.isV4())
 			{
 				fd = ::socket(AF_INET, SOCK_STREAM, 0);
 				if (fd == -1)
@@ -176,8 +188,8 @@ namespace soup
 				}
 				sockaddr_in addr{};
 				addr.sin_family = AF_INET;
-				addr.sin_port = htons(addr_desc.port);
-				addr.sin_addr.s_addr = addr_desc.addr.getV4();
+				addr.sin_port = htons(port);
+				addr.sin_addr.s_addr = ip.getV4();
 				if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) == -1)
 				{
 					return false;
@@ -192,8 +204,8 @@ namespace soup
 				}
 				sockaddr_in6 addr{};
 				addr.sin6_family = AF_INET6;
-				memcpy(&addr.sin6_addr, &addr_desc.addr.data, sizeof(in6_addr));
-				addr.sin6_port = htons(addr_desc.port);
+				memcpy(&addr.sin6_addr, &ip.data, sizeof(in6_addr));
+				addr.sin6_port = htons(port);
 				if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) == -1)
 				{
 					return false;

@@ -7,20 +7,9 @@ int main()
 {
 #define HOSTNAME "www.google.com"
 
-	soup::socket sock;
-	std::string data;
-
-	std::cout << "Resolving " HOSTNAME "..." << std::endl;
-	soup::addr_ip ip;
-	if (!soup::dns::lookup(HOSTNAME, ip))
-	{
-		std::cout << "Lookup failed." << std::endl;
-		return 1;
-	}
-	soup::addr_socket addr(ip, 443);
-
-	std::cout << "Connecting to " << addr.toString() << "..." << std::endl;
-	if (!sock.connect(addr))
+	std::cout << "Connecting to " HOSTNAME ":443..." << std::endl;
+	soup::socket sock{};
+	if (!sock.connectReliable(HOSTNAME, 443))
 	{
 		std::cout << "Connect failed." << std::endl;
 		return 1;
@@ -41,12 +30,12 @@ int main()
 	}
 
 	std::cout << "Receiving response..." << std::endl;
+	std::string data;
 	if (!sock.recvAll(data))
 	{
 		std::cout << "Receive failed." << std::endl;
 		return 1;
 	}
-
 	std::cout << data << std::endl;
 
 	return 0;
