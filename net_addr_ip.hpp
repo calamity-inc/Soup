@@ -37,6 +37,11 @@ namespace soup
 			}
 		}
 
+		explicit net_addr_ip(const uint8_t bytes[16]) noexcept
+		{
+			memcpy(&data.s6_bytes, bytes, 16);
+		}
+
 		[[nodiscard]] bool isV4() const noexcept
 		{
 			return IN6_IS_ADDR_V4MAPPED(&data);

@@ -135,6 +135,9 @@
     <ClInclude Include="ray.hpp">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="dns.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
