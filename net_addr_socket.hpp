@@ -11,7 +11,7 @@ namespace soup
 
 		net_addr_socket() noexcept = default;
 
-		explicit net_addr_socket(const char* addr, uint16_t port)
+		explicit net_addr_socket(const std::string& addr, uint16_t port)
 			: addr(addr), port(port)
 		{
 		}

@@ -19,9 +19,22 @@ namespace soup
 
 		net_addr_ip() noexcept = default;
 
-		explicit net_addr_ip(const char* str)
+		explicit net_addr_ip(const std::string& str)
 		{
-			inet_pton(AF_INET6, str, &data);
+			if (str.find('.') == std::string::npos)
+			{
+				inet_pton(AF_INET6, str.data(), &data);
+			}
+			else
+			{
+				data.s6_words[0] = 0;
+				data.s6_words[1] = 0;
+				data.s6_words[2] = 0;
+				data.s6_words[3] = 0;
+				data.s6_words[4] = 0;
+				data.s6_words[5] = 0xffff;
+				inet_pton(AF_INET, str.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
+			}
 		}
 
 		[[nodiscard]] bool isV4() const noexcept
