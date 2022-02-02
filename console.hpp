@@ -34,7 +34,6 @@ namespace soup
 		RMB,
 	};
 
-	// note: character set compiler option must be set to multi-byte on windows
 	class console
 	{
 	private:
@@ -118,7 +117,7 @@ namespace soup
 
 			DWORD cNumRead;
 			INPUT_RECORD irInBuf[128];
-			while (ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), irInBuf, 128, &cNumRead))
+			while (ReadConsoleInputA(GetStdHandle(STD_INPUT_HANDLE), irInBuf, 128, &cNumRead))
 			{
 				for (DWORD i = 0; i < cNumRead; i++)
 				{
