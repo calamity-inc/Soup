@@ -5,6 +5,7 @@
 // - Linux: Not yet! Maybe I'll use OpenSSL, but then any .so requiring soup would be stuck loaded, because OpenSSL loves to leak. Maybe LibreSSL?
 
 #include "dns.hpp"
+#include "rand.hpp"
 
 #if SOUP_PLATFORM_WINDOWS
 #include <schannel.h>
@@ -19,12 +20,12 @@ namespace soup
 	bool socket::connectReliable(const char* host, uint16_t port) noexcept
 	{
 		auto res = dns::lookupIPv6(host);
-		if (!res.empty() && connect(res.at(0), port))
+		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;
 		}
 		res = dns::lookupIPv4(host);
-		if (!res.empty() && connect(res.at(0), port))
+		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;
 		}
