@@ -228,6 +228,7 @@
     <ClInclude Include="process.hpp" />
     <ClInclude Include="handle_raii.hpp" />
     <ClInclude Include="quaternion.hpp" />
+    <ClInclude Include="rand.hpp" />
     <ClInclude Include="range.hpp" />
     <ClInclude Include="server.hpp" />
     <ClInclude Include="socket.hpp" />
