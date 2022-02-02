@@ -167,18 +167,37 @@ namespace soup
 		bool connect(const net_addr_socket& addr_desc) noexcept
 		{
 			preinit();
-			fd = socket(AF_INET6, SOCK_STREAM, 0);
-			if (fd == -1)
+			if (addr_desc.addr.isV4())
 			{
-				return false;
+				fd = socket(AF_INET, SOCK_STREAM, 0);
+				if (fd == -1)
+				{
+					return false;
+				}
+				sockaddr_in addr{};
+				addr.sin_family = AF_INET;
+				addr.sin_port = htons(addr_desc.port);
+				addr.sin_addr.s_addr = addr_desc.addr.getV4();
+				if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) == -1)
+				{
+					return false;
+				}
 			}
-			sockaddr_in6 addr{};
-			addr.sin6_family = AF_INET6;
-			memcpy(&addr.sin6_addr, &addr_desc.addr.data, sizeof(in6_addr));
-			addr.sin6_port = htons(addr_desc.port);
-			if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) == -1)
+			else
 			{
-				return false;
+				fd = socket(AF_INET6, SOCK_STREAM, 0);
+				if (fd == -1)
+				{
+					return false;
+				}
+				sockaddr_in6 addr{};
+				addr.sin6_family = AF_INET6;
+				memcpy(&addr.sin6_addr, &addr_desc.addr.data, sizeof(in6_addr));
+				addr.sin6_port = htons(addr_desc.port);
+				if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) == -1)
+				{
+					return false;
+				}
 			}
 			return true;
 		}

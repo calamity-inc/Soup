@@ -47,9 +47,25 @@ namespace soup
 			memcpy(&data.s6_bytes, bytes, sizeof(data.s6_bytes));
 		}
 
+		explicit net_addr_ip(const uint32_t ipv4) noexcept
+		{
+			data.s6_words[0] = 0;
+			data.s6_words[1] = 0;
+			data.s6_words[2] = 0;
+			data.s6_words[3] = 0;
+			data.s6_words[4] = 0;
+			data.s6_words[5] = 0xffff;
+			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
+		}
+
 		[[nodiscard]] bool isV4() const noexcept
 		{
 			return IN6_IS_ADDR_V4MAPPED(&data);
+		}
+
+		[[nodiscard]] uint32_t getV4() const noexcept
+		{
+			return *reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
 
 		[[nodiscard]] std::string toString() const noexcept

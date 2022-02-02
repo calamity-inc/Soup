@@ -11,8 +11,13 @@ int main()
 	std::string data;
 
 	std::cout << "Resolving " HOSTNAME "..." << std::endl;
-	auto ips = soup::dns::lookupAAAA(HOSTNAME);
-	soup::net_addr_socket addr(ips.at(0), 443);
+	soup::net_addr_ip ip;
+	if (!soup::dns::lookup(HOSTNAME, ip))
+	{
+		std::cout << "Lookup failed." << std::endl;
+		return 1;
+	}
+	soup::net_addr_socket addr(ip, 443);
 
 	std::cout << "Connecting to " << addr.toString() << "..." << std::endl;
 	if (!sock.connect(addr))
