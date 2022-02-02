@@ -65,7 +65,7 @@ namespace soup
 
 		[[nodiscard]] uint32_t getV4() const noexcept
 		{
-			return *reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
+			return *reinterpret_cast<const uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
 
 		[[nodiscard]] std::string toString() const noexcept
