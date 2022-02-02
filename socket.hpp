@@ -2,7 +2,7 @@
 
 #include "platform.hpp"
 
-#include "net_addr_socket.hpp"
+#include "addr_socket.hpp"
 
 #if SOUP_PLATFORM_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
@@ -21,7 +21,7 @@
 
 namespace soup
 {
-	class net_socket
+	class socket
 	{
 	public:
 #if SOUP_PLATFORM_WINDOWS
@@ -51,7 +51,7 @@ namespace soup
 #endif
 
 
-		net_socket() noexcept
+		socket() noexcept
 			: fd(-1)
 		{
 #if SOUP_PLATFORM_WINDOWS
@@ -60,9 +60,9 @@ namespace soup
 #endif
 		}
 
-		net_socket(const net_socket&) = delete;
+		socket(const socket&) = delete;
 
-		net_socket(net_socket&& b) noexcept
+		socket(socket&& b) noexcept
 			: fd(b.fd)
 		{
 			b.fd = -1;
@@ -78,9 +78,9 @@ namespace soup
 #endif
 		}
 
-		void operator =(const net_socket&) = delete;
+		void operator =(const socket&) = delete;
 
-		void operator =(net_socket&& b) noexcept
+		void operator =(socket&& b) noexcept
 		{
 			fd = b.fd;
 			b.fd = -1;
@@ -96,7 +96,7 @@ namespace soup
 #endif
 		}
 
-		~net_socket() noexcept
+		~socket() noexcept
 		{
 			release();
 
@@ -164,12 +164,12 @@ namespace soup
 		}
 
 	public:
-		bool connect(const net_addr_socket& addr_desc) noexcept
+		bool connect(const addr_socket& addr_desc) noexcept
 		{
 			preinit();
 			if (addr_desc.addr.isV4())
 			{
-				fd = socket(AF_INET, SOCK_STREAM, 0);
+				fd = ::socket(AF_INET, SOCK_STREAM, 0);
 				if (fd == -1)
 				{
 					return false;
@@ -185,7 +185,7 @@ namespace soup
 			}
 			else
 			{
-				fd = socket(AF_INET6, SOCK_STREAM, 0);
+				fd = ::socket(AF_INET6, SOCK_STREAM, 0);
 				if (fd == -1)
 				{
 					return false;

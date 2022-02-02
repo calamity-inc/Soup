@@ -1,22 +1,22 @@
 #pragma once
 
-#include "net_addr_ip.hpp"
+#include "addr_ip.hpp"
 
 namespace soup
 {
-	struct net_addr_socket
+	struct addr_socket
 	{
-		net_addr_ip addr;
+		addr_ip addr;
 		uint16_t port;
 
-		net_addr_socket() noexcept = default;
+		addr_socket() noexcept = default;
 
-		explicit net_addr_socket(const net_addr_ip& addr, uint16_t port)
+		explicit addr_socket(const addr_ip& addr, uint16_t port)
 			: addr(addr), port(port)
 		{
 		}
 		
-		explicit net_addr_socket(const std::string& addr, uint16_t port)
+		explicit addr_socket(const std::string& addr, uint16_t port)
 			: addr(addr), port(port)
 		{
 		}

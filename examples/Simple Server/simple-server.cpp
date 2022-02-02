@@ -1,11 +1,11 @@
 #include <iostream>
 #include <thread>
 
-#include <net_server.hpp>
+#include <server.hpp>
 
 int main()
 {
-	soup::net_server srv;
+	soup::server srv;
 	if (!srv.init(1337))
 	{
 		std::cout << "Init failed. Is port 1337 available?" << std::endl;
@@ -13,7 +13,7 @@ int main()
 	std::cout << "Listening on *:1337..." << std::endl;
 	while (true)
 	{
-		soup::net_client client = srv.accept();
+		soup::client client = srv.accept();
 		if (!client.isValid())
 		{
 			continue;

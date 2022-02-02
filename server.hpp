@@ -4,17 +4,17 @@
 #include <cstring> // memcpy
 #include <string>
 
-#include "net_client.hpp"
+#include "client.hpp"
 #include "platform.hpp"
 
 namespace soup
 {
-	struct net_server : public net_socket
+	struct server : public socket
 	{
 		bool init(const uint16_t port)
 		{
 			preinit();
-			fd = socket(AF_INET6, SOCK_STREAM, 0);
+			fd = ::socket(AF_INET6, SOCK_STREAM, 0);
 			if (fd == -1)
 			{
 				return false;
@@ -33,7 +33,7 @@ namespace soup
 			return true;
 		}
 
-		~net_server()
+		~server()
 		{
 #if SOUP_PLATFORM_WINDOWS
 			if(--wsa_consumers == 0)
@@ -43,9 +43,9 @@ namespace soup
 #endif
 		}
 
-		net_client accept()
+		client accept()
 		{
-			net_client res;
+			client res;
 			sockaddr_in6 addr;
 #if SOUP_PLATFORM_WINDOWS
 			using socklen_t = int;

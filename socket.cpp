@@ -1,4 +1,4 @@
-#include "net_socket.hpp"
+#include "socket.hpp"
 
 // TLS Support
 // - Windows: Adapted from https://github.com/david-maw/StreamSSL
@@ -11,10 +11,10 @@
 namespace soup
 {
 #if SOUP_PLATFORM_WINDOWS
-	PSecurityFunctionTableA net_socket::sft = nullptr;
+	PSecurityFunctionTableA socket::sft = nullptr;
 #endif
 
-	bool net_socket::encrypt(const char* server_name) noexcept
+	bool socket::encrypt(const char* server_name) noexcept
 	{
 #if SOUP_PLATFORM_WINDOWS
 		if (sft == nullptr)
@@ -215,7 +215,7 @@ namespace soup
 #endif
 	}
 
-	bool net_socket::send(const void* data, int size) noexcept
+	bool socket::send(const void* data, int size) noexcept
 	{
 #if SOUP_PLATFORM_WINDOWS
 		if (!encrypted)
@@ -263,7 +263,7 @@ namespace soup
 #endif
 	}
 
-	int net_socket::recv(void* outData, int size) noexcept
+	int socket::recv(void* outData, int size) noexcept
 	{
 #if SOUP_PLATFORM_WINDOWS
 		if (!encrypted)
@@ -399,7 +399,7 @@ namespace soup
 #endif
 	}
 
-	void net_socket::sendCloseNotify() noexcept
+	void socket::sendCloseNotify() noexcept
 	{
 #if SOUP_PLATFORM_WINDOWS
 		DWORD           dwType = SCHANNEL_SHUTDOWN;

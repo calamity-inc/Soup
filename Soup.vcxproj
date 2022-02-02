@@ -204,12 +204,12 @@
     <ClInclude Include="bytepatch_external.hpp" />
     <ClInclude Include="dns.hpp" />
     <ClInclude Include="matrix.hpp" />
-    <ClInclude Include="net_client.hpp" />
+    <ClInclude Include="client.hpp" />
     <ClInclude Include="console.hpp" />
     <ClInclude Include="handle_base.hpp" />
     <ClInclude Include="assembly_builder.hpp" />
-    <ClInclude Include="net_addr_ip.hpp" />
-    <ClInclude Include="net_addr_socket.hpp" />
+    <ClInclude Include="addr_ip.hpp" />
+    <ClInclude Include="addr_socket.hpp" />
     <ClInclude Include="memory_buffer.hpp" />
     <ClInclude Include="pattern_compile_time_base.hpp" />
     <ClInclude Include="pattern_compile_time_with_opt_bytes_base.hpp" />
@@ -229,8 +229,8 @@
     <ClInclude Include="handle_raii.hpp" />
     <ClInclude Include="quaternion.hpp" />
     <ClInclude Include="range.hpp" />
-    <ClInclude Include="net_server.hpp" />
-    <ClInclude Include="net_socket.hpp" />
+    <ClInclude Include="server.hpp" />
+    <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
     <ClInclude Include="thread.hpp" />
     <ClInclude Include="region_virtual.hpp" />
@@ -251,7 +251,7 @@
     <ClCompile Include="bytepatch.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />
-    <ClCompile Include="net_socket.cpp" />
+    <ClCompile Include="socket.cpp" />
     <ClCompile Include="pattern.cpp" />
     <ClCompile Include="pointer.cpp" />
     <ClCompile Include="poly.cpp" />

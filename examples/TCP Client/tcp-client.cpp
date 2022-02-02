@@ -1,23 +1,23 @@
 #include <iostream>
 
 #include <dns.hpp>
-#include <net_socket.hpp>
+#include <socket.hpp>
 
 int main()
 {
 #define HOSTNAME "www.google.com"
 
-	soup::net_socket sock;
+	soup::socket sock;
 	std::string data;
 
 	std::cout << "Resolving " HOSTNAME "..." << std::endl;
-	soup::net_addr_ip ip;
+	soup::addr_ip ip;
 	if (!soup::dns::lookup(HOSTNAME, ip))
 	{
 		std::cout << "Lookup failed." << std::endl;
 		return 1;
 	}
-	soup::net_addr_socket addr(ip, 443);
+	soup::addr_socket addr(ip, 443);
 
 	std::cout << "Connecting to " << addr.toString() << "..." << std::endl;
 	if (!sock.connect(addr))

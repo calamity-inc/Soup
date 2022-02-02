@@ -13,13 +13,13 @@
 
 namespace soup
 {
-	struct net_addr_ip
+	struct addr_ip
 	{
 		in6_addr data;
 
-		net_addr_ip() noexcept = default;
+		addr_ip() noexcept = default;
 
-		explicit net_addr_ip(const std::string& str)
+		explicit addr_ip(const std::string& str)
 		{
 			if (str.find('.') == std::string::npos)
 			{
@@ -37,17 +37,17 @@ namespace soup
 			}
 		}
 
-		net_addr_ip(const net_addr_ip& b) noexcept
+		addr_ip(const addr_ip& b) noexcept
 		{
 			memcpy(&data.s6_bytes, b.data.s6_bytes, sizeof(data.s6_bytes));
 		}
 		
-		explicit net_addr_ip(const uint8_t bytes[16]) noexcept
+		explicit addr_ip(const uint8_t bytes[16]) noexcept
 		{
 			memcpy(&data.s6_bytes, bytes, sizeof(data.s6_bytes));
 		}
 
-		explicit net_addr_ip(const uint32_t ipv4) noexcept
+		explicit addr_ip(const uint32_t ipv4) noexcept
 		{
 			data.s6_words[0] = 0;
 			data.s6_words[1] = 0;

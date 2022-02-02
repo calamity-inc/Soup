@@ -60,19 +60,19 @@
     <ClInclude Include="process.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="net_addr_ip.hpp">
+    <ClInclude Include="addr_ip.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="net_server.hpp">
+    <ClInclude Include="server.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="net_addr_socket.hpp">
+    <ClInclude Include="addr_socket.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="net_client.hpp">
+    <ClInclude Include="client.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="net_socket.hpp">
+    <ClInclude Include="socket.hpp">
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="console.hpp">
@@ -182,7 +182,7 @@
     <ClCompile Include="poly.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="net_socket.cpp">
+    <ClCompile Include="socket.cpp">
       <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
