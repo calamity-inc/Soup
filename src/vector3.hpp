@@ -14,7 +14,7 @@ namespace soup
 		float y;
 		float z;
 
-		constexpr vector3() noexcept = default;
+		vector3() noexcept = default;
 
 		constexpr vector3(float x, float y, float z = 0.0f) noexcept
 			: x(x), y(y), z(z)

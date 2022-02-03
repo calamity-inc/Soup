@@ -1,5 +1,8 @@
 #pragma once
 
+#include "platform.hpp"
+#if SOUP_PLATFORM_WINDOWS
+
 #include <memory>
 
 #include "fwddecl.hpp"
@@ -61,3 +64,4 @@ namespace soup
 		void executeSync(void* rip, uintptr_t rcx) const noexcept;
 	};
 }
+#endif

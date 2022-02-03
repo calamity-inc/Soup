@@ -141,6 +141,9 @@
     <ClInclude Include="rand.hpp">
       <Filter>misc</Filter>
     </ClInclude>
+    <ClInclude Include="stdint.hpp">
+      <Filter>misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">

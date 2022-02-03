@@ -1,5 +1,7 @@
 #include "memory_buffer.hpp"
 
+#if SOUP_PLATFORM_WINDOWS
+
 #include <cstdlib>
 
 #include "module.hpp"
@@ -48,3 +50,5 @@ namespace soup
 			;
 	}
 }
+
+#endif

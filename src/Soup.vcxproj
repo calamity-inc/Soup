@@ -233,6 +233,7 @@
     <ClInclude Include="server.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
+    <ClInclude Include="stdint.hpp" />
     <ClInclude Include="thread.hpp" />
     <ClInclude Include="region_virtual.hpp" />
     <ClInclude Include="unicode.hpp" />

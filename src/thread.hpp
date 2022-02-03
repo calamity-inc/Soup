@@ -1,5 +1,8 @@
 #pragma once
 
+#include "platform.hpp"
+#if SOUP_PLATFORM_WINDOWS
+
 #include "handle_raii.hpp"
 
 #include <functional>
@@ -16,3 +19,5 @@ namespace soup
 		[[nodiscard]] bool isRunning() const noexcept;
 	};
 }
+
+#endif

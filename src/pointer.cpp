@@ -9,6 +9,7 @@ namespace soup
 		return ripT<int32_t>();
 	}
 
+#if SOUP_PLATFORM_WINDOWS
 	pointer pointer::externalRip(const module& mod) const noexcept
 	{
 		return add(mod.externalRead<int32_t>(*this)).add(sizeof(int32_t));
@@ -42,4 +43,5 @@ namespace soup
 		auto jumps = getJumps();
 		return jumps.at(jumps.size() - 1);
 	}
+#endif
 }

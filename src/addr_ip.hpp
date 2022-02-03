@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring> // memcpy
 #include <string>
 
 #include "platform.hpp"
@@ -13,8 +14,9 @@
 
 namespace soup
 {
-	struct addr_ip
+	class addr_ip
 	{
+	public:
 		in6_addr data;
 
 		addr_ip() noexcept = default;
@@ -27,34 +29,24 @@ namespace soup
 			}
 			else
 			{
-				data.s6_words[0] = 0;
-				data.s6_words[1] = 0;
-				data.s6_words[2] = 0;
-				data.s6_words[3] = 0;
-				data.s6_words[4] = 0;
-				data.s6_words[5] = 0xffff;
+				setV4();
 				inet_pton(AF_INET, str.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
 			}
 		}
 
 		addr_ip(const addr_ip& b) noexcept
 		{
-			memcpy(&data.s6_bytes, b.data.s6_bytes, sizeof(data.s6_bytes));
+			memcpy(&data, &b.data, sizeof(data));
 		}
 		
 		explicit addr_ip(const uint8_t bytes[16]) noexcept
 		{
-			memcpy(&data.s6_bytes, bytes, sizeof(data.s6_bytes));
+			memcpy(&data, bytes, sizeof(data));
 		}
 
 		explicit addr_ip(const uint32_t ipv4) noexcept
 		{
-			data.s6_words[0] = 0;
-			data.s6_words[1] = 0;
-			data.s6_words[2] = 0;
-			data.s6_words[3] = 0;
-			data.s6_words[4] = 0;
-			data.s6_words[5] = 0xffff;
+			setV4();
 			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
 		}
 
@@ -67,7 +59,28 @@ namespace soup
 		{
 			return *reinterpret_cast<const uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
-
+		
+	private:
+		void setV4()
+		{
+#if SOUP_PLATFORM_WINDOWS
+			data.s6_words[0] = 0;
+			data.s6_words[1] = 0;
+			data.s6_words[2] = 0;
+			data.s6_words[3] = 0;
+			data.s6_words[4] = 0;
+			data.s6_words[5] = 0xffff;
+#else
+			data.s6_addr16[0] = 0;
+			data.s6_addr16[1] = 0;
+			data.s6_addr16[2] = 0;
+			data.s6_addr16[3] = 0;
+			data.s6_addr16[4] = 0;
+			data.s6_addr16[5] = 0xffff;
+#endif
+		}
+		
+	public:
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			if(isV4())

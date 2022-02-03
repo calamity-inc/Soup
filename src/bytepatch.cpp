@@ -1,10 +1,9 @@
 #include "bytepatch.hpp"
 
 #include <cstdlib>
+#include <cstring> // memcpy
 #include <stdexcept>
 #include <string>
-
-#include <Windows.h>
 
 #include "macros.hpp"
 
@@ -108,7 +107,7 @@ namespace soup
 	{
 		restore();
 		store();
-		ZeroMemory(area, size);
+		memset(area, 0, size);
 	}
 
 	void bytepatch::restore()

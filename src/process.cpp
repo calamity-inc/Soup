@@ -1,5 +1,7 @@
 #include "process.hpp"
 
+#if SOUP_PLATFORM_WINDOWS
+
 #include <TlHelp32.h>
 
 #include "module.hpp"
@@ -75,3 +77,5 @@ namespace soup
 		return {};
 	}
 }
+
+#endif

@@ -5,9 +5,11 @@
 #include <string_view>
 #include <vector>
 
-#include <Windows.h>
-
 #include "fwddecl.hpp"
+#include "platform.hpp"
+#if SOUP_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
 
 namespace soup
 {
@@ -22,7 +24,10 @@ namespace soup
 
 		void addBytesFromIdaSig(std::string_view ida_sig);
 
+#if SOUP_PLATFORM_WINDOWS
 		[[nodiscard]] region_virtual virtual_scan(BYTE* startAddress = nullptr);
 		[[nodiscard]] std::vector<region_virtual> virtual_scan_all(unsigned int limit = -1);
+#endif
 	};
 }
+

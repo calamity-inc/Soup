@@ -1,5 +1,8 @@
 #pragma once
 
+#include "platform.hpp"
+#if SOUP_PLATFORM_WINDOWS
+
 #include <Windows.h>
 
 namespace soup
@@ -21,3 +24,4 @@ namespace soup
 		}
 	};
 }
+#endif

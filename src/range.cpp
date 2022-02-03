@@ -1,8 +1,7 @@
 #include "range.hpp"
 
-#include <Windows.h>
-
 #include "pattern.hpp"
+#include "platform.hpp"
 
 namespace soup
 {
@@ -23,9 +22,11 @@ namespace soup
 
 	bool range::pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept
 	{
+#if SOUP_PLATFORM_WINDOWS
 		__try
 		{
-			for (std::size_t i = 0; i < length; ++i)
+#endif
+			for (size_t i = 0; i < length; ++i)
 			{
 				if (sig[i] && *sig[i] != target[i])
 				{
@@ -33,11 +34,13 @@ namespace soup
 				}
 			}
 			return true;
+#if SOUP_PLATFORM_WINDOWS
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER)
 		{
 		}
 		return false;
+#endif
 	}
 
 	pointer range::scan(const pattern& sig) const noexcept

@@ -1,5 +1,7 @@
 #include "thread.hpp"
 
+#if SOUP_PLATFORM_WINDOWS
+
 namespace soup
 {
 	thread::thread(std::function<void()>&& func) noexcept
@@ -21,3 +23,5 @@ namespace soup
 		return GetExitCodeThread(handle, &exit_code) && exit_code == STILL_ACTIVE;
 	}
 }
+
+#endif

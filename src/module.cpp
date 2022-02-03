@@ -1,5 +1,7 @@
 #include "module.hpp"
 
+#if SOUP_PLATFORM_WINDOWS
+
 #include "handle_plain.hpp"
 #include "handle_raii.hpp"
 #include "memory_buffer.hpp"
@@ -125,3 +127,5 @@ namespace soup
 		WaitForSingleObject(*t, INFINITE);
 	}
 }
+
+#endif

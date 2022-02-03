@@ -24,6 +24,26 @@ namespace soup
 		{
 		}
 
+		explicit operator bool() const
+		{
+			return ptr != nullptr;
+		}
+
+		friend bool operator==(pointer a, pointer b) noexcept
+		{
+			return a.ptr == b.ptr;
+		}
+
+		friend bool operator!=(pointer a, pointer b) noexcept
+		{
+			return a.ptr != b.ptr;
+		}
+
+		void operator=(uintptr_t ptr) noexcept
+		{
+			this->ptr = reinterpret_cast<void*>(ptr);
+		}
+
 		void* addr() const noexcept
 		{
 			return ptr;
@@ -42,31 +62,13 @@ namespace soup
 
 		pointer rip() const noexcept;
 
+#if SOUP_PLATFORM_WINDOWS
 		pointer externalRip(const module& mod) const noexcept;
 
 		pointer rva(const module& mod) const noexcept;
 
-		explicit operator bool() const
-		{
-			return ptr != nullptr;
-		}
-
-		friend bool operator==(pointer a, pointer b) noexcept
-		{
-			return a.ptr == b.ptr;
-		}
-
-		friend bool operator!=(pointer a, pointer b) noexcept
-		{
-			return a.ptr != b.ptr;
-		}
-		
-		void operator=(uintptr_t ptr) noexcept
-		{
-			this->ptr = reinterpret_cast<void*>(ptr);
-		}
-
 		[[nodiscard]] std::vector<pointer> getJumps() const noexcept;
 		[[nodiscard]] pointer followJumps() const noexcept;
+#endif
 	};
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "platform.hpp"
+#if SOUP_PLATFORM_WINDOWS
+
 #include <cstdint>
 
 #include <Windows.h>
@@ -30,3 +33,4 @@ namespace soup
 		}
 	};
 }
+#endif
