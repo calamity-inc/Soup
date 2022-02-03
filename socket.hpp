@@ -50,7 +50,6 @@ namespace soup
 		void* readPtr = nullptr;
 #endif
 
-
 		socket() noexcept
 			: fd(-1)
 		{
