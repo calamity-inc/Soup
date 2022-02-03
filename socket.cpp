@@ -19,12 +19,12 @@ namespace soup
 
 	bool socket::connectReliable(const char* host, uint16_t port) noexcept
 	{
-		auto res = dns::lookupIPv6(host);
+		auto res = dns::lookupIPv4(host);
 		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;
 		}
-		res = dns::lookupIPv4(host);
+		res = dns::lookupIPv6(host);
 		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;
