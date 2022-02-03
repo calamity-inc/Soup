@@ -14,20 +14,6 @@ namespace soup
 {
 	struct dns
 	{
-		[[nodiscard]] static bool lookup(const char* name, addr_ip& out) noexcept
-		{
-			std::vector<addr_ip> res = lookupIPv6(name);
-			if (res.empty())
-			{
-				res = lookupIPv4(name);
-				if (res.empty())
-				{
-					return false;
-				}
-			}
-			out = std::move(res.at(0));
-			return true;
-		}
 		
 		[[nodiscard]] static std::vector<addr_ip> lookup(const char* name) noexcept
 		{
