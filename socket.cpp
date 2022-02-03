@@ -289,6 +289,24 @@ namespace soup
 			return recvUnencrypted(outData, size);
 		}
 
+		if (plainTextBytes > 0)
+		{
+			if (size >= plainTextBytes)
+			{
+				auto bytesReturned = plainTextBytes;
+				memcpy_s(outData, size, plainTextPtr, plainTextBytes);
+				plainTextBytes = 0;
+				return static_cast<int>(bytesReturned);
+			}
+			else
+			{
+				memcpy_s(outData, size, plainTextPtr, size);
+				plainTextPtr += size;
+				plainTextBytes -= size;
+				return static_cast<int>(size);
+			}
+		}
+
 		SecBufferDesc   Message;
 		SecBuffer       Buffers[4];
 		SECURITY_STATUS scRet;
