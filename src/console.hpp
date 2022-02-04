@@ -388,15 +388,17 @@ namespace soup
 		}
 
 		template <typename T>
-		void operator << (const T& str) const
+		const console_impl& operator << (const T& str) const
 		{
 			std::cout << str;
+			return *this;
 		}
 
 		template <typename T>
-		void operator << (T&& str) const
+		const console_impl& operator << (T&& str) const
 		{
 			std::cout << std::move(str);
+			return *this;
 		}
 
 		static void setForegroundColour(int r, int g, int b)

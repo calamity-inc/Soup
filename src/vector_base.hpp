@@ -5,6 +5,9 @@
 
 #include "vector_maths.hpp"
 
+#undef min
+#undef max
+
 namespace soup
 {
 	template <typename T>

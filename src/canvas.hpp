@@ -10,25 +10,30 @@ namespace soup
 {
 	class canvas
 	{
-	private:
-		size_t width;
-		size_t height;
+	public:
+		int width;
+		int height;
 		std::vector<rgb> pixels{};
 
-	public:
 		canvas() noexcept = default;
 
-		canvas(size_t width, size_t height)
+		canvas(int width, int height)
 			: width(width), height(height)
 		{
-			pixels.resize(width * height);
+			resize(width, height);
 		}
 
-		void set(size_t x, size_t y, rgb colour);
+		void resize(int width, int height);
 
-		[[nodiscard]] std::u16string toString();
+		void fill(const rgb colour);
+		void set(int x, int y, rgb colour);
+		[[nodiscard]] rgb get(int x, int y) const;
+
+		[[nodiscard]] std::string toStringx1() const;
+		[[nodiscard]] std::u16string toStringx2();
 	private:
-		[[nodiscard]] static char16_t chunkToChar(uint8_t chunkset) noexcept;
+		[[nodiscard]] std::u16string toStringx2_impl() const;
+		[[nodiscard]] static char16_t x2chunkToChar(uint8_t chunkset) noexcept;
 
 		void ensureWidthAndHeightAreEven();
 		void resizeWidth(int new_width);

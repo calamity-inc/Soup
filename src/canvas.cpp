@@ -4,31 +4,58 @@
 
 namespace soup
 {
-	void canvas::set(size_t x, size_t y, rgb colour)
+	void canvas::resize(int width, int height)
 	{
-		pixels.at(x + (y * width)) = colour;
+		pixels.resize((size_t)width * height);
 	}
 
-	std::u16string canvas::toString()
+	void canvas::fill(const rgb colour)
+	{
+		for(auto& p : pixels)
+		{
+			p = colour;
+		}
+	}
+
+	void canvas::set(int x, int y, rgb colour)
+	{
+		pixels.at((size_t)x + (y * width)) = colour;
+	}
+
+	rgb canvas::get(int x, int y) const
+	{
+		return pixels.at((size_t)x + (y * width));
+	}
+
+	std::string canvas::toStringx1() const
+	{
+		std::string str{};
+		str.reserve((size_t)width * height);
+		for (const auto& colour : pixels)
+		{
+			str.append(console.strSetBackgroundColour<std::string>(colour.r, colour.g, colour.b));
+			str.push_back(' ');
+		}
+		return str;
+	}
+
+	std::u16string canvas::toStringx2()
 	{
 		ensureWidthAndHeightAreEven();
+		return toStringx2_impl();
+	}
+
+	std::u16string canvas::toStringx2_impl() const
+	{
 		std::u16string str{};
-		str.reserve(width * height);
-		for (size_t x = 0; x < width; x += 2)
+		str.reserve((size_t)width * height);
+		for (int y = 0; y < height; y += 2)
 		{
-			for (size_t y = 0; y < height; y += 2)
+			for (int x = 0; x < width; x += 2)
 			{
-				uint8_t chunkset = 0;
 				rgb bg = pixels.at(x + (y * width));
 				rgb fg = bg;
-				{
-					const rgb& pxclr = pixels.at(x + (y * width));
-					if (pxclr != bg)
-					{
-						fg = pxclr;
-						chunkset |= 0b1000;
-					}
-				}
+				uint8_t chunkset = 0;
 				{
 					const rgb& pxclr = pixels.at(x + 1 + (y * width));
 					if (pxclr != bg)
@@ -55,13 +82,13 @@ namespace soup
 				}
 				str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
 				str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
-				str.push_back(chunkToChar(chunkset));
+				str.push_back(x2chunkToChar(chunkset));
 			}
 		}
 		return str;
 	}
 
-	char16_t canvas::chunkToChar(uint8_t chunkset) noexcept
+	char16_t canvas::x2chunkToChar(uint8_t chunkset) noexcept
 	{
 		switch (chunkset)
 		{
