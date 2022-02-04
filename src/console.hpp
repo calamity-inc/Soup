@@ -284,8 +284,8 @@ namespace soup
 				if (input_handler != nullptr)
 				{
 					utf8_buf.push_back(c);
-					const char* it = &*utf8_buf.cbegin();
-					const char* const end = &*utf8_buf.cend();
+					auto it = utf8_buf.cbegin();
+					const auto end = utf8_buf.cend();
 					char32_t uni = unicode::utf8_to_utf32_char(it, end);
 					if (uni != 0)
 					{

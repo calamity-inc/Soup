@@ -1,6 +1,5 @@
 <?php
-// Config
-$clang = "clang -Ofast -std=c++17 -flto -fno-rtti -fno-exceptions";
+require "linux_config.php";
 
 // Setup folders
 if(!is_dir("bin"))
