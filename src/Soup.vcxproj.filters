@@ -140,6 +140,12 @@
     </ClInclude>
     <ClInclude Include="rand.hpp" />
     <ClInclude Include="stdint.hpp" />
+    <ClInclude Include="canvas.hpp">
+      <Filter>draw</Filter>
+    </ClInclude>
+    <ClInclude Include="rgb.hpp">
+      <Filter>draw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -187,6 +193,9 @@
     <ClCompile Include="socket.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="canvas.cpp">
+      <Filter>draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -206,6 +215,9 @@
     </Filter>
     <Filter Include="enc">
       <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="draw">
+      <UniqueIdentifier>{05898064-5c55-4356-aa00-29a449c503ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

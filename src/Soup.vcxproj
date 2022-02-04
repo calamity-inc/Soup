@@ -202,6 +202,7 @@
     <ClInclude Include="box_corners.hpp" />
     <ClInclude Include="bytepatch.hpp" />
     <ClInclude Include="bytepatch_external.hpp" />
+    <ClInclude Include="canvas.hpp" />
     <ClInclude Include="dns.hpp" />
     <ClInclude Include="matrix.hpp" />
     <ClInclude Include="client.hpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="quaternion.hpp" />
     <ClInclude Include="rand.hpp" />
     <ClInclude Include="range.hpp" />
+    <ClInclude Include="rgb.hpp" />
     <ClInclude Include="server.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
@@ -251,6 +253,7 @@
     <ClCompile Include="box_axis_aligned.cpp" />
     <ClCompile Include="box_corners.cpp" />
     <ClCompile Include="bytepatch.cpp" />
+    <ClCompile Include="canvas.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="socket.cpp" />
