@@ -146,6 +146,7 @@
     <ClInclude Include="rgb.hpp">
       <Filter>draw</Filter>
     </ClInclude>
+    <ClInclude Include="string.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
