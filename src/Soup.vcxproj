@@ -204,6 +204,10 @@
     <ClInclude Include="bytepatch_external.hpp" />
     <ClInclude Include="canvas.hpp" />
     <ClInclude Include="dns.hpp" />
+    <ClInclude Include="dns_a.hpp" />
+    <ClInclude Include="dns_aaaa.hpp" />
+    <ClInclude Include="dns_srv.hpp" />
+    <ClInclude Include="dns_txt.hpp" />
     <ClInclude Include="matrix.hpp" />
     <ClInclude Include="client.hpp" />
     <ClInclude Include="console.hpp" />
@@ -255,6 +259,7 @@
     <ClCompile Include="box_corners.cpp" />
     <ClCompile Include="bytepatch.cpp" />
     <ClCompile Include="canvas.cpp" />
+    <ClCompile Include="dns.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="socket.cpp" />

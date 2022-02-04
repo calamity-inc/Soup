@@ -15,6 +15,15 @@ namespace soup
 	class range;
 	struct region_virtual;
 
+	// net
+	class addr_ip;
+
+	// net.dns
+	struct dns_a;
+	struct dns_aaaa;
+	struct dns_srv;
+	struct dns_txt;
+
 	// os
 	class module;
 

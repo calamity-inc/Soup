@@ -7,20 +7,27 @@ int main()
 {
 #define HOSTNAME "www.google.com"
 
-	std::cout << "Connecting to " HOSTNAME ":443..." << std::endl;
 	soup::socket sock{};
+#if SOUP_PLATFORM_WINDOWS
+	std::cout << "Connecting to " HOSTNAME ":443..." << std::endl;
 	if (!sock.connectReliable(HOSTNAME, 443))
+#else
+	std::cout << "Connecting to " HOSTNAME ":80..." << std::endl;
+	if (!sock.connectReliable(HOSTNAME, 80))
+#endif
 	{
 		std::cout << "Connect failed." << std::endl;
 		return 1;
 	}
 
+#if SOUP_PLATFORM_WINDOWS
 	std::cout << "Negotiating TLS..." << std::endl;
 	if (!sock.encrypt(HOSTNAME))
 	{
 		std::cout << "Encrypt failed." << std::endl;
 		return 1;
 	}
+#endif
 
 	std::cout << "Sending request..." << std::endl;
 	if (!sock.send("GET / HTTP/1.0\r\nHost: " HOSTNAME "\r\nConnection: close\r\nUser-Agent: I'm testing my socket implementation against you\r\n\r\n"))

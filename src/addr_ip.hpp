@@ -38,8 +38,8 @@ namespace soup
 		{
 			memcpy(&data, &b.data, sizeof(data));
 		}
-		
-		explicit addr_ip(const uint8_t bytes[16]) noexcept
+
+		explicit addr_ip(const uint8_t* bytes) noexcept
 		{
 			memcpy(&data, bytes, sizeof(data));
 		}

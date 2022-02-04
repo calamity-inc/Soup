@@ -135,11 +135,7 @@
     <ClInclude Include="ray.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="dns.hpp">
-      <Filter>net</Filter>
-    </ClInclude>
     <ClInclude Include="rand.hpp" />
-    <ClInclude Include="stdint.hpp" />
     <ClInclude Include="canvas.hpp">
       <Filter>draw</Filter>
     </ClInclude>
@@ -147,6 +143,22 @@
       <Filter>draw</Filter>
     </ClInclude>
     <ClInclude Include="string.hpp" />
+    <ClInclude Include="stdint.hpp" />
+    <ClInclude Include="dns.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dns_a.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dns_aaaa.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dns_txt.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dns_srv.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -197,6 +209,9 @@
     <ClCompile Include="canvas.cpp">
       <Filter>draw</Filter>
     </ClCompile>
+    <ClCompile Include="dns.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -219,6 +234,9 @@
     </Filter>
     <Filter Include="draw">
       <UniqueIdentifier>{05898064-5c55-4356-aa00-29a449c503ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\dns">
+      <UniqueIdentifier>{ec3c2669-f70f-495e-91fb-4ef47a97d5df}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
