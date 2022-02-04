@@ -39,7 +39,7 @@ namespace soup
 		this->edge8.z = this->front_upper_right.z - 2 * extent.z * up.z;
 	}
 
-	std::array<poly, 12> box_corners::asPolys() const noexcept
+	std::array<poly, 12> box_corners::toPolys() const noexcept
 	{
 		return std::array<poly, 12>{
 			// front

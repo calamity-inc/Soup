@@ -26,7 +26,7 @@ namespace soup
 
 		explicit box_corners(const vector3& origin, const vector3& extent, const vector3& right, const vector3& forward, const vector3& up) noexcept;
 
-		[[nodiscard]] std::array<poly, 12> asPolys() const noexcept;
+		[[nodiscard]] std::array<poly, 12> toPolys() const noexcept;
 
 		/**
 		 * draw_line(back_lower_left, edge2);

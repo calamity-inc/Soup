@@ -72,8 +72,8 @@ namespace soup
 		bool IsSphereInBox(const vector3& P, float fRadius);
 		bool BoxOutsidePlane(const vector3& Norm, const vector3& P);
 
-		[[nodiscard]] box_corners asCorners() const noexcept;
-		[[nodiscard]] std::array<poly, 12> asPolys() const noexcept;
+		[[nodiscard]] box_corners toCorners() const noexcept;
+		[[nodiscard]] std::array<poly, 12> toPolys() const noexcept;
 	};
 #pragma warning(pop)
 #pragma pack(pop)

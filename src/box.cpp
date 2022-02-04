@@ -42,7 +42,7 @@ namespace soup
 		{
 			float best_dist = FLT_MAX;
 			vector3 best_point;
-			for (const auto& t : asPolys())
+			for (const auto& t : toPolys())
 			{
 				vector3 p;
 				if (t.checkRayIntersection(r, p))
@@ -179,7 +179,7 @@ namespace soup
 		return true;
 	}
 
-	box_corners box::asCorners() const noexcept
+	box_corners box::toCorners() const noexcept
 	{
 		return box_corners(
 			GetCenterPoint(),
@@ -190,8 +190,8 @@ namespace soup
 		);
 	}
 
-	std::array<poly, 12> box::asPolys() const noexcept
+	std::array<poly, 12> box::toPolys() const noexcept
 	{
-		return asCorners().asPolys();
+		return toCorners().toPolys();
 	}
 }
