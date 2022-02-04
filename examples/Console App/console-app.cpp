@@ -1,22 +1,22 @@
 #include <console.hpp>
 
-static soup::console c{};
-
 int main()
 {
-	c.setTitle("Souplime Text");
+	soup::console.init();
 
-	c.fillScreen(40, 41, 35);
-	c.setCursorPos(1, 1);
+	soup::console.setTitle("Souplime Text");
 
-	c.overrideCtrlC([]
+	soup::console.fillScreen(40, 41, 35);
+	soup::console.setCursorPos(1, 1);
+
+	soup::console.overrideCtrlC([]
 	{
-		c.cleanup();
-		c << "Bye, bye!\n";
+		soup::console.cleanup();
+		soup::console << "Bye, bye!\n";
 		exit(0);
 	});
 
-	c.input_handler = [](char32_t ch)
+	soup::console.input_handler = [](char32_t ch)
 	{
 		if constexpr (true)
 		{
@@ -29,13 +29,13 @@ int main()
 		}
 	};
 
-	c.onMouseClick([](soup::mouse_button b, int x, int y)
+	soup::console.onMouseClick([](soup::mouse_button b, int x, int y)
 	{
 		if (b == soup::LMB)
 		{
-			soup::console::setCursorPos(x, y);
+			soup::console.setCursorPos(x, y);
 		}
 	});
 
-	c.run();
+	soup::console.run();
 }

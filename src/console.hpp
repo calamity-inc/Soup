@@ -34,7 +34,7 @@ namespace soup
 		RMB,
 	};
 
-	class console
+	class console_impl
 	{
 	private:
 #if SOUP_PLATFORM_WINDOWS
@@ -56,7 +56,7 @@ namespace soup
 		mouse_handler_t mouse_handler = nullptr;
 
 	public:
-		console() noexcept
+		void init()
 		{
 #if SOUP_PLATFORM_WINDOWS
 			if (auto hSTDOUT = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -375,7 +375,7 @@ namespace soup
 			std::cout << CSI "u";
 		}
 
-		void fillScreen(int r, int g, int b) const
+		static void fillScreen(int r, int g, int b)
 		{
 			setBackgroundColour(r, g, b);
 			clearScreen();
@@ -464,4 +464,6 @@ namespace soup
 			ctrl_c_handler = handler;
 		}
 	};
+
+	inline console_impl console;
 }
