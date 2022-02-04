@@ -28,5 +28,48 @@ namespace soup
 		[[nodiscard]] static UTF16_STRING_TYPE utf32_to_utf16(const std::u32string& utf32) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(char32_t utf32) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(const std::u32string& utf32) noexcept;
+
+		template <typename Str = std::u16string>
+		[[nodiscard]] static char32_t utf16_to_utf32(typename Str::const_iterator& it, const typename Str::const_iterator end) noexcept
+		{
+			if ((*it & 0b1111110000000000) == 0b1101100000000000)
+			{
+				auto hi = (uint32_t)(*it & 0b0000001111111111);
+				if (++it == end)
+				{
+					return 0;
+				}
+				auto lo = (uint32_t)(*it & 0b0000001111111111);
+				return (char32_t)(((hi - 0xD800) * 0x400) + (lo - 0xDC00));
+			}
+			return (char32_t)*it++;
+		}
+
+		template <typename Str>
+		[[nodiscard]] static std::u32string utf16_to_utf32(const Str& utf16)
+		{
+			std::u32string utf32{};
+			auto it = utf16.cbegin();
+			const auto end = utf16.cend();
+			while (it != end)
+			{
+				auto uni = utf16_to_utf32(it, end);
+				if (uni == 0)
+				{
+					utf32.push_back(unicode_replacement_char);
+				}
+				else
+				{
+					utf32.push_back(uni);
+				}
+			}
+			return utf32;
+		}
+
+		template <typename Str>
+		[[nodiscard]] static std::string utf16_to_utf8(const Str& utf16)
+		{
+			return utf32_to_utf8(utf16_to_utf32(utf16));
+		}
 	};
 }
