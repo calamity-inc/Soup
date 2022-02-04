@@ -138,12 +138,8 @@
     <ClInclude Include="dns.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="rand.hpp">
-      <Filter>misc</Filter>
-    </ClInclude>
-    <ClInclude Include="stdint.hpp">
-      <Filter>misc</Filter>
-    </ClInclude>
+    <ClInclude Include="rand.hpp" />
+    <ClInclude Include="stdint.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -210,9 +206,6 @@
     </Filter>
     <Filter Include="enc">
       <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="misc">
-      <UniqueIdentifier>{bfcfe5b3-3822-4ab9-9a0c-79948788027f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
