@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "platform.hpp"
+#include "string.hpp"
 #include "unicode.hpp"
 
 #if SOUP_PLATFORM_WINDOWS
@@ -403,9 +404,49 @@ namespace soup
 			std::cout << CSI "38;2;" << r << ";" << g << ";" << b << "m";
 		}
 
+		template <typename Str>
+		[[nodiscard]] static Str strSetForegroundColour(int r, int g, int b)
+		{
+			Str str;
+			str.push_back(CSI[0]);
+			str.push_back(CSI[1]);
+			str.push_back('3');
+			str.push_back('8');
+			str.push_back(';');
+			str.push_back('2');
+			str.push_back(';');
+			str.append(string::decimal<Str>(r));
+			str.push_back(';');
+			str.append(string::decimal<Str>(g));
+			str.push_back(';');
+			str.append(string::decimal<Str>(b));
+			str.push_back('m');
+			return str;
+		}
+
 		static void setBackgroundColour(int r, int g, int b)
 		{
 			std::cout << CSI "48;2;" << r << ";" << g << ";" << b << "m";
+		}
+
+		template <typename Str>
+		[[nodiscard]] static Str strSetBackgroundColour(int r, int g, int b)
+		{
+			Str str;
+			str.push_back(CSI[0]);
+			str.push_back(CSI[1]);
+			str.push_back('4');
+			str.push_back('8');
+			str.push_back(';');
+			str.push_back('2');
+			str.push_back(';');
+			str.append(string::decimal<Str>(r));
+			str.push_back(';');
+			str.append(string::decimal<Str>(g));
+			str.push_back(';');
+			str.append(string::decimal<Str>(b));
+			str.push_back('m');
+			return str;
 		}
 
 		static void resetColour()

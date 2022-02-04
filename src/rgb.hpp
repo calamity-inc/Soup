@@ -11,9 +11,14 @@ namespace soup
 		uint8_t g = 0;
 		uint8_t b = 0;
 
-		[[nodiscard]] bool isPureBlack() const noexcept
+		[[nodiscard]] bool operator==(const rgb& c) const noexcept
 		{
-			return r == 0 && g == 0 && b == 0;
+			return r == c.r && g == c.g && b == c.b;
+		}
+
+		[[nodiscard]] bool operator!=(const rgb& c) const noexcept
+		{
+			return !operator==(c);
 		}
 	};
 	static_assert(sizeof(rgb) == 3);

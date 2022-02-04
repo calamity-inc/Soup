@@ -1,5 +1,7 @@
 #include "canvas.hpp"
 
+#include "console.hpp"
+
 namespace soup
 {
 	void canvas::set(size_t x, size_t y, rgb colour)
@@ -17,22 +19,42 @@ namespace soup
 			for (size_t y = 0; y < height; y += 2)
 			{
 				uint8_t chunkset = 0;
-				if (!pixels.at(x + (y * width)).isPureBlack())
+				rgb bg = pixels.at(x + (y * width));
+				rgb fg = bg;
 				{
-					chunkset |= 0b1000;
+					const rgb& pxclr = pixels.at(x + (y * width));
+					if (pxclr != bg)
+					{
+						fg = pxclr;
+						chunkset |= 0b1000;
+					}
 				}
-				if (!pixels.at(x + 1 + (y * width)).isPureBlack())
 				{
-					chunkset |= 0b0100;
+					const rgb& pxclr = pixels.at(x + 1 + (y * width));
+					if (pxclr != bg)
+					{
+						fg = pxclr;
+						chunkset |= 0b0100;
+					}
 				}
-				if (!pixels.at(x + ((y + 1) * width)).isPureBlack())
 				{
-					chunkset |= 0b0010;
+					const rgb& pxclr = pixels.at(x + ((y + 1) * width));
+					if (pxclr != bg)
+					{
+						fg = pxclr;
+						chunkset |= 0b0010;
+					}
 				}
-				if (!pixels.at(x + 1 + ((y + 1) * width)).isPureBlack())
 				{
-					chunkset |= 0b0001;
+					const rgb& pxclr = pixels.at(x + 1 + ((y + 1) * width));
+					if (pxclr != bg)
+					{
+						fg = pxclr;
+						chunkset |= 0b0001;
+					}
 				}
+				str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
+				str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
 				str.push_back(chunkToChar(chunkset));
 			}
 		}
