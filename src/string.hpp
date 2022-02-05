@@ -59,13 +59,13 @@ namespace soup
 		}
 
 	public:
-		template <typename Str, typename Int>
+		template <typename Str = std::string, typename Int>
 		[[nodiscard]] static Str decimal(Int i)
 		{
 			return from_int_impl_ascii<Str, Int, 10>(i);
 		}
 
-		template <typename Str, typename Int>
+		template <typename Str = std::string, typename Int>
 		[[nodiscard]] static Str binary(Int i)
 		{
 			return from_int_impl_ascii<Str, Int, 2>(i);
