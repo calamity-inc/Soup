@@ -27,6 +27,11 @@ namespace soup
 		bigint(bigint&& b);
 		bigint(const bigint& b);
 
+		[[nodiscard]] static bigint fromString(const char* str, size_t len);
+		[[nodiscard]] static bigint fromBinary(const char* str, size_t len);
+		[[nodiscard]] static bigint fromDecimal(const char* str, size_t len);
+		[[nodiscard]] static bigint fromHexadecimal(const char* str, size_t len);
+
 		[[nodiscard]] static uint8_t getBytesPerChunk() noexcept;
 		[[nodiscard]] static uint8_t getNibblesPerChunk() noexcept;
 		[[nodiscard]] static uint8_t getBitsPerChunk() noexcept;
@@ -81,7 +86,8 @@ namespace soup
 		void operator%=(const bigint& b);
 		void operator<<=(size_t b);
 		void operator>>=(size_t b);
-		
+		void operator|=(const bigint& b);
+
 		[[nodiscard]] bigint operator+(const bigint& b) const;
 		void operator++();
 		[[nodiscard]] bigint operator++(int);
@@ -123,6 +129,10 @@ namespace soup
 		[[nodiscard]] Str toStringBinary(bool prefix = false) const noexcept
 		{
 			size_t i = getNumBits();
+			if (i == 0)
+			{
+				return Str(1, '0');
+			}
 			// skip leading zeroes
 			while (i-- != 0 && !getBit(i));
 			Str str{};
@@ -154,6 +164,11 @@ namespace soup
 		inline bigint operator "" _b(unsigned long long v)
 		{
 			return bigint((size_t)v);
+		}
+
+		inline bigint operator "" _b(const char* str, size_t len)
+		{
+			return bigint::fromString(str, len);
 		}
 	}
 }

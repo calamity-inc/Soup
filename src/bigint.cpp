@@ -41,6 +41,68 @@ namespace soup
 	{
 	}
 
+	bigint bigint::fromString(const char* str, size_t len)
+	{
+		if (len > 2 && str[0] == '0')
+		{
+			if (str[1] == 'b')
+			{
+				return fromBinary(str + 2, len - 2);
+			}
+			if (str[1] == 'x')
+			{
+				return fromHexadecimal(str + 2, len - 2);
+			}
+		}
+		return fromDecimal(str, len);
+	}
+
+	bigint bigint::fromBinary(const char* str, size_t len)
+	{
+		bigint res{};
+		for (size_t i = 0; i != len; ++i)
+		{
+			if (str[i] != '0')
+			{
+				res.enableBit(len - 1 - i);
+			}
+		}
+		return res;
+	}
+
+	bigint bigint::fromDecimal(const char* str, size_t len)
+	{
+		bigint res{};
+		for (size_t i = 0; i != len; ++i)
+		{
+			res *= 10u;
+			res += (unsigned int)(str[i] - '0');
+		}
+		return res;
+	}
+
+	bigint bigint::fromHexadecimal(const char* str, size_t len)
+	{
+		bigint res{};
+		for (size_t i = 0; i != len; ++i)
+		{
+			res <<= 4u;
+			if (str[i] >= 'a')
+			{
+				res |= (unsigned int)(str[i] - ('a' - 10u));
+			}
+			else if (str[i] >= 'A')
+			{
+				res |= (unsigned int)(str[i] - ('A' - 10u));
+			}
+			else
+			{
+				res |= (unsigned int)(str[i] - '0');
+			}
+		}
+		return res;
+	}
+
 	uint8_t bigint::getBytesPerChunk() noexcept
 	{
 		return getBitsPerChunk() / 8;
@@ -151,7 +213,7 @@ namespace soup
 		}
 		else
 		{
-			setChunk(chunk_i, (1 << (i % getBitsPerChunk())));
+			addChunk(1 << (i % getBitsPerChunk()));
 		}
 	}
 
@@ -433,13 +495,17 @@ namespace soup
 
 	void bigint::operator<<=(size_t b)
 	{
-		for (size_t i = getNumBits(); i-- != b; )
+		size_t i = getNumBits();
+		if (i != 0)
 		{
-			setBit(i, getBit(i - b));
-		}
-		for (size_t i = 0; i != b; ++i)
-		{
-			disableBit(i);
+			for (i += b; i != 0; --i)
+			{
+				setBit(i, getBit(i - b));
+			}
+			for (size_t i = 0; i != b; ++i)
+			{
+				disableBit(i);
+			}
 		}
 	}
 
@@ -455,6 +521,17 @@ namespace soup
 		for (size_t i = 0; i != bits; ++i)
 		{
 			setBit(i, getBit(i + b));
+		}
+	}
+
+	void bigint::operator|=(const bigint& b)
+	{
+		for (size_t i = 0; i != b.getNumBits(); ++i)
+		{
+			if (b.getBit(i))
+			{
+				enableBit(i);
+			}
 		}
 	}
 
@@ -558,6 +635,10 @@ namespace soup
 	std::string bigint::toStringHexImpl(bool prefix, const char* map) const noexcept
 	{
 		size_t i = getNumNibbles();
+		if (i == 0)
+		{
+			return std::string(1, '0');
+		}
 		// skip leading zeroes
 		while (i-- != 0 && getNibble(i) == 0);
 		std::string str{};
@@ -568,7 +649,7 @@ namespace soup
 		} while (i-- != 0);
 		if (prefix)
 		{
-			str.insert(0, 1, 'b');
+			str.insert(0, 1, 'x');
 			str.insert(0, 1, '0');
 		}
 		if (negative)
