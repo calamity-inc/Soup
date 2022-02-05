@@ -148,4 +148,12 @@ namespace soup
 	private:
 		[[nodiscard]] std::string toStringHexImpl(bool prefix, const char* map) const noexcept;
 	};
+
+	namespace literals
+	{
+		inline bigint operator "" _b(unsigned long long v)
+		{
+			return bigint((size_t)v);
+		}
+	}
 }
