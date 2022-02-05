@@ -201,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="alloc_raii.hpp" />
     <ClInclude Include="alloc_raii_remote.hpp" />
+    <ClInclude Include="bigint.hpp" />
     <ClInclude Include="box.hpp" />
     <ClInclude Include="box_axis_aligned.hpp" />
     <ClInclude Include="box_corners.hpp" />
@@ -258,6 +259,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp" />
+    <ClCompile Include="bigint.cpp" />
     <ClCompile Include="box.cpp" />
     <ClCompile Include="box_axis_aligned.cpp" />
     <ClCompile Include="box_corners.cpp" />

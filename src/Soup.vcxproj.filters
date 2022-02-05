@@ -159,6 +159,9 @@
     <ClInclude Include="dns_srv.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
+    <ClInclude Include="bigint.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -211,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="dns.cpp">
       <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="bigint.cpp">
+      <Filter>math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
