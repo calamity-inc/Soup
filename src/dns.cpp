@@ -15,14 +15,6 @@
 
 namespace soup
 {
-	std::vector<addr_ip> dns::lookup(const char* name) noexcept
-	{
-		std::vector<addr_ip> res = lookupIPv6(name);
-		std::vector<addr_ip> res_v4 = lookupIPv4(name);
-		res.insert(res.end(), std::make_move_iterator(res_v4.begin()), std::make_move_iterator(res_v4.end()));
-		return res;
-	}
-
 	std::vector<addr_ip> dns::lookupIPv4(const char* name) noexcept
 	{
 		std::vector<addr_ip> res{};

@@ -11,7 +11,6 @@ namespace soup
 	{
 		// simple lookups
 
-		[[nodiscard]] static std::vector<addr_ip> lookup(const char* name) noexcept;
 		[[nodiscard]] static std::vector<addr_ip> lookupIPv4(const char* name) noexcept;
 		[[nodiscard]] static std::vector<addr_ip> lookupIPv6(const char* name) noexcept;
 
