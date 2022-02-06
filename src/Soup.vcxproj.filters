@@ -162,6 +162,9 @@
     <ClInclude Include="bigint.hpp">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="rsa.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -218,6 +221,9 @@
     <ClCompile Include="bigint.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="rsa.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -243,6 +249,9 @@
     </Filter>
     <Filter Include="net\dns">
       <UniqueIdentifier>{ec3c2669-f70f-495e-91fb-4ef47a97d5df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto">
+      <UniqueIdentifier>{2977e49c-bf74-490c-a67a-0888e8df098f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -241,6 +241,7 @@
     <ClInclude Include="rand.hpp" />
     <ClInclude Include="range.hpp" />
     <ClInclude Include="rgb.hpp" />
+    <ClInclude Include="rsa.hpp" />
     <ClInclude Include="server.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
@@ -268,6 +269,7 @@
     <ClCompile Include="dns.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />
+    <ClCompile Include="rsa.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="pattern.cpp" />
     <ClCompile Include="pointer.cpp" />
