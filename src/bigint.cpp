@@ -727,14 +727,20 @@ namespace soup
 
 	bigint bigint::pow(bigint e) const
 	{
-		// Could be optimised: https://en.wikipedia.org/wiki/Exponentiation#Efficient_computation_with_integer_exponents
-		bigint res(*this);
-		if (!e.isZero())
+		bigint res = 1u;
+		bigint base(*this);
+		while (true)
 		{
-			while (!(--e).isZero())
+			if (e.getBit(0))
 			{
-				res *= *this;
+				res *= base;
 			}
+			e >>= 1u;
+			if (e.isZero())
+			{
+				break;
+			}
+			base *= base;
 		}
 		return res;
 	}
