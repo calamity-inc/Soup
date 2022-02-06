@@ -16,6 +16,14 @@
 #endif
 #endif
 
+#ifdef _MSC_VER
+#define SOUP_FORCEINLINE __forceinline
+#define SOUP_NOINLINE __declspec(noinline)
+#else
+#define SOUP_FORCEINLINE __attribute__((always_inline))
+#define SOUP_NOINLINE __attribute__((noinline))
+#endif
+
 namespace soup
 {
 	struct platform
