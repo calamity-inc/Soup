@@ -43,64 +43,77 @@ namespace soup
 
 	bigint bigint::fromString(const char* str, size_t len)
 	{
-		if (len > 2 && str[0] == '0')
+		bigint res{};
+		if (len != 0)
 		{
-			if (str[1] == 'b')
+			const bool neg = (str[0] == '-');
+			if (neg)
 			{
-				return fromBinary(str + 2, len - 2);
+				++str;
+				--len;
 			}
-			if (str[1] == 'x')
+			if (len > 2 && str[0] == '0')
 			{
-				return fromHexadecimal(str + 2, len - 2);
+				if (str[1] == 'b' || str[1] == 'B')
+				{
+					res.fromBinary(str + 2, len - 2);
+				}
+				else if (str[1] == 'x' || str[1] == 'X')
+				{
+					res.fromHexadecimal(str + 2, len - 2);
+				}
+				else
+				{
+					res.fromDecimal(str, len);
+				}
 			}
+			else
+			{
+				res.fromDecimal(str, len);
+			}
+			res.negative = neg;
 		}
-		return fromDecimal(str, len);
+		return res;
 	}
 
-	bigint bigint::fromBinary(const char* str, size_t len)
+	void bigint::fromBinary(const char* str, size_t len)
 	{
-		bigint res{};
 		for (size_t i = 0; i != len; ++i)
 		{
 			if (str[i] != '0')
 			{
-				res.enableBit(len - 1 - i);
+				enableBit(len - 1 - i);
 			}
 		}
-		return res;
 	}
 
-	bigint bigint::fromDecimal(const char* str, size_t len)
+	void bigint::fromDecimal(const char* str, size_t len)
 	{
-		bigint res{};
 		for (size_t i = 0; i != len; ++i)
 		{
-			res *= 10u;
-			res += (unsigned int)(str[i] - '0');
+			*this *= 10u;
+			*this += (unsigned int)(str[i] - '0');
 		}
-		return res;
 	}
 
-	bigint bigint::fromHexadecimal(const char* str, size_t len)
+	void bigint::fromHexadecimal(const char* str, size_t len)
 	{
-		bigint res{};
 		for (size_t i = 0; i != len; ++i)
 		{
-			res <<= 4u;
+			*this <<= 4u;
 			if (str[i] >= 'a')
 			{
-				res |= (unsigned int)(str[i] - ('a' - 10u));
+				*this |= (unsigned int)(str[i] - ('a' - 10u));
 			}
 			else if (str[i] >= 'A')
 			{
-				res |= (unsigned int)(str[i] - ('A' - 10u));
+				*this |= (unsigned int)(str[i] - ('A' - 10u));
 			}
 			else
 			{
-				res |= (unsigned int)(str[i] - '0');
+				*this |= (unsigned int)(str[i] - '0');
 			}
 		}
-		return res;
 	}
 
 	uint8_t bigint::getBytesPerChunk() noexcept
@@ -258,6 +271,38 @@ namespace soup
 		{
 			return getNumChunks() > b.getNumChunks() ? +1 : -1;
 		}
+		if (negative)
+		{
+			if (!b.negative)
+			{
+				return -1;
+			}
+		}
+		else
+		{
+			if (b.negative)
+			{
+				return +1;
+			}
+		}
+		size_t i = chunks.size();
+		do
+		{
+			--i;
+			if (getChunk(i) != b.getChunk(i))
+			{
+				return getChunk(i) > b.getChunk(i) ? +1 : -1;
+			}
+		} while (i != 0);
+		return 0;
+	}
+
+	int bigint::cmpUnsigned(const bigint& b) const noexcept
+	{
+		if (getNumChunks() != b.getNumChunks())
+		{
+			return getNumChunks() > b.getNumChunks() ? +1 : -1;
+		}
 		size_t i = chunks.size();
 		do
 		{
@@ -377,9 +422,23 @@ namespace soup
 
 	void bigint::operator+=(const bigint& b)
 	{
-		if (*this < b)
+		if (negative ^ b.negative)
 		{
-			*this = (b + *this);
+			subUnsigned(b);
+		}
+		else
+		{
+			addUnsigned(b);
+		}
+	}
+
+	void bigint::addUnsigned(const bigint& b)
+	{
+		if (cmpUnsigned(b) < 0)
+		{
+			bigint res(b);
+			res.addUnsigned(*this);
+			*this = std::move(res);
 			return;
 		}
 		size_t carry = 0;
@@ -400,10 +459,23 @@ namespace soup
 
 	void bigint::operator-=(const bigint& subtrahend)
 	{
-		if (*this < subtrahend)
+		if (negative ^ subtrahend.negative)
 		{
-			chunks = (subtrahend - *this).chunks;
-			negative = !isZero();
+			addUnsigned(subtrahend);
+		}
+		else
+		{
+			subUnsigned(subtrahend);
+		}
+	}
+
+	void bigint::subUnsigned(const bigint& subtrahend)
+	{
+		if (cmpUnsigned(subtrahend) < 0)
+		{
+			bigint res(subtrahend);
+			res.subUnsigned(*this);
+			*this = std::move(res);
 			return;
 		}
 		size_t carry = 0;
@@ -569,6 +641,7 @@ namespace soup
 			return bigint();
 		}
 		bigint product{};
+		product.negative = (negative ^ b.negative);
 		for (size_t j = 0; j != b.getNumChunks(); ++j)
 		{
 			chunk_t carry = 0;

@@ -28,10 +28,12 @@ namespace soup
 		bigint(const bigint& b);
 
 		[[nodiscard]] static bigint fromString(const char* str, size_t len);
-		[[nodiscard]] static bigint fromBinary(const char* str, size_t len);
-		[[nodiscard]] static bigint fromDecimal(const char* str, size_t len);
-		[[nodiscard]] static bigint fromHexadecimal(const char* str, size_t len);
+	private:
+		void fromBinary(const char* str, size_t len);
+		void fromDecimal(const char* str, size_t len);
+		void fromHexadecimal(const char* str, size_t len);
 
+	public:
 		[[nodiscard]] static uint8_t getBytesPerChunk() noexcept;
 		[[nodiscard]] static uint8_t getNibblesPerChunk() noexcept;
 		[[nodiscard]] static uint8_t getBitsPerChunk() noexcept;
@@ -61,6 +63,7 @@ namespace soup
 		void reset() noexcept;
 
 		[[nodiscard]] int cmp(const bigint& b) const noexcept;
+		[[nodiscard]] int cmpUnsigned(const bigint& b) const noexcept;
 		[[nodiscard]] bool operator == (const bigint& b) const noexcept;
 		[[nodiscard]] bool operator != (const bigint& b) const noexcept;
 		[[nodiscard]] bool operator > (const bigint& b) const noexcept;
@@ -80,7 +83,9 @@ namespace soup
 		void operator=(const bigint& b);
 
 		void operator+=(const bigint& b);
+		void addUnsigned(const bigint& b);
 		void operator-=(const bigint& subtrahend);
+		void subUnsigned(const bigint& subtrahend);
 		void operator*=(const bigint& b);
 		std::pair<bigint, bigint> divide(const bigint& divisor) const; // (Quotient, Remainder)
 		void operator/=(const bigint& b);
