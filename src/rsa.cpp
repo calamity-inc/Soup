@@ -4,16 +4,31 @@ namespace soup
 {
     using key = rsa::key;
 
-	bigint rsa::key::encrypt(const bigint& msg) const
+	bigint rsa::key::pow_mod(const bigint& x) const
 	{
-		bigint res = msg.pow(e);
+		bigint res = x.pow(e);
 		res %= n;
 		return res;
 	}
 
+	bigint rsa::key::encrypt(const bigint& msg) const
+	{
+		return pow_mod(msg);
+	}
+
 	bigint rsa::key::decrypt(const bigint& msg) const
 	{
-		return encrypt(msg);
+		return pow_mod(msg);
+	}
+
+	bigint rsa::key::sign(const bigint& hash) const
+	{
+		return pow_mod(hash);
+	}
+
+	bool rsa::key::verify(const bigint& hash, const bigint& sig) const
+	{
+		return pow_mod(sig) == hash;
 	}
 
     key rsa::keypair::getPublic() const
