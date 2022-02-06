@@ -2,8 +2,9 @@
 
 #include "stdint.hpp"
 
+#include <ostream>
 #include <string>
-#include <utility>
+#include <utility> // pair
 #include <vector>
 
 namespace soup
@@ -172,6 +173,9 @@ namespace soup
 		[[nodiscard]] std::string toStringHexLower(bool prefix = false) const noexcept;
 	private:
 		[[nodiscard]] std::string toStringHexImpl(bool prefix, const char* map) const noexcept;
+
+	public:
+		friend std::ostream& operator<<(std::ostream& os, const bigint& v);
 	};
 
 	namespace literals

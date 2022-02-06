@@ -796,4 +796,10 @@ namespace soup
 		}
 		return str;
 	}
+
+	std::ostream& operator<<(std::ostream& os, const bigint& v)
+	{
+		os << v.toStringDecimal();
+		return os;
+	}
 }
