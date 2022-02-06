@@ -255,15 +255,20 @@ namespace soup
 		}
 	}
 
+	void bigint::reset() noexcept
+	{
+		chunks.clear();
+		negative = false;
+	}
+
 	bool bigint::isZero() const noexcept
 	{
 		return getNumChunks() == 0;
 	}
 
-	void bigint::reset() noexcept
+	bigint::operator bool() const noexcept
 	{
-		chunks.clear();
-		negative = false;
+		return !isZero();
 	}
 
 	int bigint::cmp(const bigint& b) const noexcept

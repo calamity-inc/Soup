@@ -59,8 +59,9 @@ namespace soup
 		void enableBit(size_t i);
 		void disableBit(size_t i);
 
-		[[nodiscard]] bool isZero() const noexcept;
 		void reset() noexcept;
+		[[nodiscard]] bool isZero() const noexcept;
+		[[nodiscard]] operator bool() const noexcept;
 
 		[[nodiscard]] int cmp(const bigint& b) const noexcept;
 		[[nodiscard]] int cmpUnsigned(const bigint& b) const noexcept;
