@@ -745,6 +745,28 @@ namespace soup
 		return res;
 	}
 
+	bigint bigint::pow_mod(bigint e, const bigint& m) const
+	{
+		bigint res = 1u;
+		bigint base(*this);
+		while (true)
+		{
+			if (e.getBit(0))
+			{
+				res *= base;
+			}
+			e >>= 1u;
+			if (e.isZero())
+			{
+				break;
+			}
+			base *= base;
+			base %= m;
+		}
+		res %= m;
+		return res;
+	}
+
 	bool bigint::toPrimitive(size_t& out) const noexcept
 	{
 		switch (getNumChunks())

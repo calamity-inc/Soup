@@ -112,6 +112,7 @@ namespace soup
 		[[nodiscard]] bigint operator&(const bigint& b) const;
 
 		[[nodiscard]] bigint pow(bigint e) const;
+		[[nodiscard]] bigint pow_mod(bigint e, const bigint& m) const;
 
 		bool toPrimitive(size_t& out) const noexcept;
 

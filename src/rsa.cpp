@@ -6,9 +6,7 @@ namespace soup
 
 	bigint rsa::key::pow_mod(const bigint& x) const
 	{
-		bigint res = x.pow(e);
-		res %= n;
-		return res;
+		return x.pow_mod(e, n);
 	}
 
 	bigint rsa::key::encrypt(const bigint& msg) const
