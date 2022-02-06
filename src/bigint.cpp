@@ -139,7 +139,18 @@ namespace soup
 
 	void bigint::setChunk(size_t i, chunk_t v)
 	{
-		chunks[i] = v;
+		if (i < chunks.size())
+		{
+			chunks[i] = v;
+		}
+		else
+		{
+			/*while (i != chunks.size())
+			{
+				addChunk(0);
+			}*/
+			addChunk(v);
+		}
 	}
 
 	void bigint::addChunk(chunk_t v)
@@ -405,46 +416,7 @@ namespace soup
 
 	void bigint::operator*=(const bigint& b)
 	{
-		if (isZero())
-		{
-			return;
-		}
-		if (*this < b)
-		{
-			*this = (b * *this);
-			return;
-		}
-		if (b.isZero())
-		{
-			reset();
-			return;
-		}
-
-		if (b.getNumChunks() == 1)
-		{
-			chunk_t carry = 0;
-			const size_t j = getNumChunks();
-			const size_t y = b.getChunk(0);
-			for (size_t i = 0; i != j; ++i)
-			{
-				const size_t x = getChunk(i);
-				size_t res = ((x * y) + carry);
-				setChunk(i, (chunk_t)res);
-				carry = getCarry(res);
-			}
-			if (carry != 0)
-			{
-				addChunk(carry);
-			}
-		}
-		else
-		{
-			// FIX ME
-			for (bigint i = b; --i, !i.isZero(); )
-			{
-				*this += *this;
-			}
-		}
+		*this = (*this * b);
 	}
 
 	std::pair<bigint, bigint> bigint::divide(const bigint& divisor) const
@@ -575,9 +547,36 @@ namespace soup
 
 	bigint bigint::operator*(const bigint& b) const
 	{
-		bigint res(*this);
-		res *= b;
-		return res;
+		if (isZero())
+		{
+			return bigint();
+		}
+		if (*this < b)
+		{
+			return b * *this;
+		}
+		if (b.isZero())
+		{
+			return bigint();
+		}
+		bigint product{};
+		for (size_t j = 0; j != b.getNumChunks(); ++j)
+		{
+			chunk_t carry = 0;
+			const size_t y = b.getChunk(j);
+			for (size_t i = 0; i != getNumChunks(); ++i)
+			{
+				const size_t x = getChunk(i);
+				size_t res = product.getChunk(i + j) + (x * y) + carry;
+				product.setChunk(i + j, (chunk_t)res);
+				carry = getCarry(res);
+			}
+			if (carry != 0)
+			{
+				product.setChunk(j + getNumChunks(), carry);
+			}
+		}
+		return product;
 	}
 
 	bigint bigint::operator/(const bigint& b) const
