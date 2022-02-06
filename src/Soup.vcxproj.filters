@@ -135,15 +135,12 @@
     <ClInclude Include="ray.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="rand.hpp" />
     <ClInclude Include="canvas.hpp">
       <Filter>draw</Filter>
     </ClInclude>
     <ClInclude Include="rgb.hpp">
       <Filter>draw</Filter>
     </ClInclude>
-    <ClInclude Include="string.hpp" />
-    <ClInclude Include="stdint.hpp" />
     <ClInclude Include="dns.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
@@ -164,6 +161,18 @@
     </ClInclude>
     <ClInclude Include="rsa.hpp">
       <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="stdint.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="rand.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="string.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="obfus_string.hpp">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +261,9 @@
     </Filter>
     <Filter Include="crypto">
       <UniqueIdentifier>{2977e49c-bf74-490c-a67a-0888e8df098f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{1c7b8b47-6f42-4f4b-953a-ae2ebda20781}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

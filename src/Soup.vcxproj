@@ -247,6 +247,7 @@
     <ClInclude Include="ray.hpp" />
     <ClInclude Include="stdint.hpp" />
     <ClInclude Include="string.hpp" />
+    <ClInclude Include="obfus_string.hpp" />
     <ClInclude Include="thread.hpp" />
     <ClInclude Include="region_virtual.hpp" />
     <ClInclude Include="unicode.hpp" />

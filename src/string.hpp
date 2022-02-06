@@ -7,6 +7,8 @@ namespace soup
 {
 	class string
 	{
+		// from int
+
 	private:
 		template <typename Str, typename Int, uint8_t Base>
 		[[nodiscard]] static Str from_int_impl_ascii(Int i)
@@ -84,6 +86,53 @@ namespace soup
 				res.insert(0, 1, '-');
 			}
 			return res;
+		}
+
+		// char attributes
+
+		template <typename T>
+		[[nodiscard]] static constexpr bool isUppercaseLetter(const T c) noexcept
+		{
+			return c >= 'A' && c <= 'Z';
+		}
+
+		template <typename T>
+		[[nodiscard]] static constexpr bool isLowercaseLetter(const T c) noexcept
+		{
+			return c >= 'a' && c <= 'z';
+		}
+
+		template <typename T>
+		[[nodiscard]] static constexpr bool isLetter(const T c) noexcept
+		{
+			return isUppercaseLetter(c) || isLowercaseLetter(c);
+		}
+
+		// char mutation
+
+		[[nodiscard]] static constexpr char rot13(char c) noexcept
+		{
+			if (isUppercaseLetter(c))
+			{
+				char val = (c - 'A');
+				val += 13;
+				if (val >= 26)
+				{
+					val -= 26;
+				}
+				return (val + 'A');
+			}
+			if (isLowercaseLetter(c))
+			{
+				char val = (c - 'a');
+				val += 13;
+				if (val >= 26)
+				{
+					val -= 26;
+				}
+				return (val + 'a');
+			}
+			return c;
 		}
 	};
 }
