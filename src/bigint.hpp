@@ -93,6 +93,7 @@ namespace soup
 		void operator<<=(size_t b);
 		void operator>>=(size_t b);
 		void operator|=(const bigint& b);
+		void operator&=(const bigint & b);
 
 		[[nodiscard]] bigint operator+(const bigint& b) const;
 		void operator++();

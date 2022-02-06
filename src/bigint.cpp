@@ -588,6 +588,17 @@ namespace soup
 		}
 	}
 
+	void bigint::operator&=(const bigint& b)
+	{
+		for (size_t i = 0; i != getNumBits(); ++i)
+		{
+			if (getBit(i) && !b.getBit(i))
+			{
+				disableBit(i);
+			}
+		}
+	}
+
 	bigint bigint::operator+(const bigint& b) const
 	{
 		bigint res(*this);
