@@ -481,7 +481,8 @@ namespace soup
 		{
 			bigint res(subtrahend);
 			res.subUnsigned(*this);
-			*this = std::move(res);
+			chunks = std::move(res.chunks);
+			negative ^= 1;
 			return;
 		}
 		size_t carry = 0;
