@@ -642,19 +642,22 @@ namespace soup
 
 	std::string bigint::toStringHexImpl(bool prefix, const char* map) const noexcept
 	{
+		std::string str{};
 		size_t i = getNumNibbles();
 		if (i == 0)
 		{
-			return std::string(1, '0');
+			str.push_back('0');
 		}
-		// skip leading zeroes
-		while (i-- != 0 && getNibble(i) == 0);
-		std::string str{};
-		str.reserve(i + 1 + (prefix * 2) + negative);
-		do
+		else
 		{
-			str.push_back(map[getNibble(i)]);
-		} while (i-- != 0);
+			// skip leading zeroes
+			while (i-- != 0 && getNibble(i) == 0);
+			str.reserve(i + 1 + (prefix * 2) + negative);
+			do
+			{
+				str.push_back(map[getNibble(i)]);
+			} while (i-- != 0);
+		}
 		if (prefix)
 		{
 			str.insert(0, 1, 'x');

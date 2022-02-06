@@ -129,19 +129,22 @@ namespace soup
 		template <typename Str = std::string>
 		[[nodiscard]] Str toStringBinary(bool prefix = false) const noexcept
 		{
+			Str str{};
 			size_t i = getNumBits();
 			if (i == 0)
 			{
-				return Str(1, '0');
+				str.push_back('0');
 			}
-			// skip leading zeroes
-			while (i-- != 0 && !getBit(i));
-			Str str{};
-			str.reserve(i + 1 + (prefix * 2) + negative);
-			do
+			else
 			{
-				str.push_back('0' + getBit(i));
-			} while (i-- != 0);
+				// skip leading zeroes
+				while (i-- != 0 && !getBit(i));
+				str.reserve(i + 1 + (prefix * 2) + negative);
+				do
+				{
+					str.push_back('0' + getBit(i));
+				} while (i-- != 0);
+			}
 			if (prefix)
 			{
 				str.insert(0, 1, 'b');
