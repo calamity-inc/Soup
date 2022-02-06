@@ -263,6 +263,7 @@ namespace soup
 	void bigint::reset() noexcept
 	{
 		chunks.clear();
+		negative = false;
 	}
 
 	int bigint::cmp(const bigint& b) const noexcept
@@ -471,6 +472,11 @@ namespace soup
 
 	void bigint::subUnsigned(const bigint& subtrahend)
 	{
+		if (cmpUnsigned(subtrahend) == 0)
+		{
+			reset();
+			return;
+		}
 		if (cmpUnsigned(subtrahend) < 0)
 		{
 			bigint res(subtrahend);
