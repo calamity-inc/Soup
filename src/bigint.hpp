@@ -41,6 +41,7 @@ namespace soup
 		[[nodiscard]] size_t getNumChunks() const noexcept;
 		[[nodiscard]] chunk_t getChunk(size_t i) const noexcept;
 		void setChunk(size_t i, chunk_t v);
+		void addChunk(size_t i, chunk_t v);
 		void addChunk(chunk_t v);
 		void shrink() noexcept;
 

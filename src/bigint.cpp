@@ -145,12 +145,17 @@ namespace soup
 		}
 		else
 		{
-			/*while (i != chunks.size())
-			{
-				addChunk(0);
-			}*/
 			addChunk(v);
 		}
+	}
+
+	void bigint::addChunk(size_t i, chunk_t v)
+	{
+		while (i != chunks.size())
+		{
+			addChunk(0);
+		}
+		addChunk(v);
 	}
 
 	void bigint::addChunk(chunk_t v)
@@ -224,7 +229,7 @@ namespace soup
 		}
 		else
 		{
-			addChunk(1 << (i % getBitsPerChunk()));
+			addChunk(chunk_i, 1 << (i % getBitsPerChunk()));
 		}
 	}
 
@@ -442,14 +447,18 @@ namespace soup
 			}
 			return res;
 		}
-		std::pair<bigint, bigint> res{ 0u, *this };
+		std::pair<bigint, bigint> res{};
 		if (!divisor.isZero())
 		{
-			// FIX ME
-			while (res.second >= divisor)
+			for (size_t i = getNumBits(); i-- != 0; )
 			{
-				++res.first;
-				res.second -= divisor;
+				res.second <<= 1u;
+				res.second.setBit(0, getBit(i));
+				if (res.second >= divisor)
+				{
+					res.second -= divisor;
+					res.first.enableBit(i);
+				}
 			}
 		}
 		return res;
