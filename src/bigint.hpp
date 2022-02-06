@@ -96,10 +96,10 @@ namespace soup
 		void operator&=(const bigint & b);
 
 		[[nodiscard]] bigint operator+(const bigint& b) const;
-		void operator++();
+		bigint& operator++();
 		[[nodiscard]] bigint operator++(int);
 		[[nodiscard]] bigint operator-(const bigint& subtrahend) const;
-		void operator--();
+		bigint& operator--();
 		[[nodiscard]] bigint operator--(int);
 		[[nodiscard]] bigint operator*(const bigint& b) const;
 		[[nodiscard]] bigint operator/(const bigint& b) const;
@@ -108,6 +108,8 @@ namespace soup
 		[[nodiscard]] bigint operator>>(size_t b) const;
 		[[nodiscard]] bigint operator|(size_t b) const;
 		[[nodiscard]] bigint operator&(size_t b) const;
+
+		[[nodiscard]] bigint pow(bigint e) const;
 
 		bool toPrimitive(size_t& out) const noexcept;
 

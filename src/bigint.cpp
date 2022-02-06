@@ -606,9 +606,10 @@ namespace soup
 		return res;
 	}
 
-	void bigint::operator++()
+	bigint& bigint::operator++()
 	{
 		*this += 1u;
+		return *this;
 	}
 
 	bigint bigint::operator++(int)
@@ -625,9 +626,10 @@ namespace soup
 		return res;
 	}
 
-	void bigint::operator--()
+	bigint& bigint::operator--()
 	{
 		*this -= 1u;
+		return *this;
 	}
 
 	bigint bigint::operator--(int)
@@ -707,6 +709,20 @@ namespace soup
 	{
 		bigint res(*this);
 		res &= b;
+		return res;
+	}
+
+	bigint bigint::pow(bigint e) const
+	{
+		// Could be optimised: https://en.wikipedia.org/wiki/Exponentiation#Efficient_computation_with_integer_exponents
+		bigint res(*this);
+		if (!e.isZero())
+		{
+			while (!(--e).isZero())
+			{
+				res *= *this;
+			}
+		}
 		return res;
 	}
 
