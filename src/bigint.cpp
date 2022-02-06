@@ -696,6 +696,20 @@ namespace soup
 		return res;
 	}
 
+	bigint bigint::operator|(size_t b) const
+	{
+		bigint res(*this);
+		res |= b;
+		return res;
+	}
+
+	bigint bigint::operator&(size_t b) const
+	{
+		bigint res(*this);
+		res &= b;
+		return res;
+	}
+
 	bool bigint::toPrimitive(size_t& out) const noexcept
 	{
 		switch (getNumChunks())

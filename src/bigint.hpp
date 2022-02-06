@@ -106,6 +106,8 @@ namespace soup
 		[[nodiscard]] bigint operator%(const bigint& b) const;
 		[[nodiscard]] bigint operator<<(size_t b) const;
 		[[nodiscard]] bigint operator>>(size_t b) const;
+		[[nodiscard]] bigint operator|(size_t b) const;
+		[[nodiscard]] bigint operator&(size_t b) const;
 
 		bool toPrimitive(size_t& out) const noexcept;
 
