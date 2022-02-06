@@ -604,6 +604,7 @@ namespace soup
 				disableBit(i);
 			}
 		}
+		shrink();
 	}
 
 	bigint bigint::operator+(const bigint& b) const
@@ -705,14 +706,14 @@ namespace soup
 		return res;
 	}
 
-	bigint bigint::operator|(size_t b) const
+	bigint bigint::operator|(const bigint& b) const
 	{
 		bigint res(*this);
 		res |= b;
 		return res;
 	}
 
-	bigint bigint::operator&(size_t b) const
+	bigint bigint::operator&(const bigint& b) const
 	{
 		bigint res(*this);
 		res &= b;
