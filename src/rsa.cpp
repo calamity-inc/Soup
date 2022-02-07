@@ -6,6 +6,8 @@
 
 namespace soup
 {
+	using namespace literals;
+
 	using key = rsa::key;
 	using key_public = rsa::key_public;
 	using key_private = rsa::key_private;
@@ -51,6 +53,12 @@ namespace soup
 	{
 		return modPow(sig) == hash;
 	}
+
+#if SOUP_PLATFORM_BITS > 32
+	bigint::chunk_t rsa::key_public::e_pref = 65537u;
+#else
+	bigint rsa::key_public::e_pref = 65537_b;
+#endif
 
 	bigint rsa::key_public::encryptPkcs1(std::string msg) const
 	{

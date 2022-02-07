@@ -5,10 +5,10 @@
 
 namespace soup
 {
+	using namespace literals;
+
 	using chunk_t = bigint::chunk_t;
 	using chunk_signed_t = bigint::chunk_signed_t;
-
-	using namespace literals;
 
 	bigint::bigint(chunk_signed_t v)
 		: bigint()

@@ -32,7 +32,11 @@ namespace soup
 
 		struct key_public : public key
 		{
-			static constexpr bigint::chunk_t e_pref = 65537u;
+#if SOUP_PLATFORM_BITS > 32
+			static bigint::chunk_t e_pref;
+#else
+			static bigint e_pref;
+#endif
 
 			using key::key;
 
