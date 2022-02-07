@@ -2,9 +2,23 @@
 
 #include <thread>
 
+#include "pkcs1.hpp"
+
 namespace soup
 {
 	using key = rsa::key;
+	using key_public = rsa::key_public;
+	using key_private = rsa::key_private;
+
+	size_t rsa::key::getMaxUnpaddedMessageBytes() const
+	{
+		return n.getNumBytes();
+	}
+
+	size_t rsa::key::getMaxPkcs1MessageBytes() const
+	{
+		return getMaxUnpaddedMessageBytes() - 11;
+	}
 
 	bigint rsa::key::modPow(const bigint& x) const
 	{
@@ -14,6 +28,13 @@ namespace soup
 	bigint rsa::key::encryptUnpadded(const std::string& msg) const
 	{
 		return modPow(bigint::fromMessage(msg));
+	}
+
+	std::string rsa::key::decryptPkcs1(const bigint& enc) const
+	{
+		auto msg = decryptUnpadded(enc);
+		pkcs1::unpad(msg);
+		return msg;
 	}
 
 	std::string rsa::key::decryptUnpadded(const bigint& enc) const
@@ -29,6 +50,23 @@ namespace soup
 	bool rsa::key::verify(const bigint& hash, const bigint& sig) const
 	{
 		return modPow(sig) == hash;
+	}
+
+	bigint rsa::key_public::encryptPkcs1(std::string msg) const
+	{
+		pkcs1::public_pad(msg, getMaxUnpaddedMessageBytes());
+		return encryptUnpadded(msg);
+	}
+
+	key_public rsa::key_private::derivePublic() const
+	{
+		return key_public(n, key_public::e_pref);
+	}
+
+	bigint rsa::key_private::encryptPkcs1(std::string msg) const
+	{
+		pkcs1::private_pad(msg, getMaxUnpaddedMessageBytes());
+		return encryptUnpadded(msg);
 	}
 
 	void rsa::keypair::random(int bits)
@@ -54,11 +92,7 @@ namespace soup
 
 		n = (p * q);
 		const auto t = (p - 1_b).lcm(q - 1_b); // = n.reducedTotient()
-		if (t < (bigint::chunk_t)65537u)
-		{
-			e = 65537_b;
-		}
-		else
+		if (t < key_public::e_pref)
 		{
 			const auto bl = t.getBitLength();
 			do
@@ -66,16 +100,20 @@ namespace soup
 				e = bigint::randomProbablePrime(bl);
 			} while (e >= t || e.isDivisorOf(t));
 		}
+		else
+		{
+			e = key_public::e_pref;
+		}
 		d = e.modMulInv(t);
 	}
 
-	key rsa::keypair::getPublic() const
+	key_public rsa::keypair::getPublic() const
 	{
-		return key{ n, e };
+		return key_public(n, e);
 	}
 
-	key rsa::keypair::getPrivate() const
+	key_private rsa::keypair::getPrivate() const
 	{
-		return key{ n, d };
+		return key_private(n, d);
 	}
 }

@@ -36,6 +36,11 @@ namespace soup
 			return std::move(vec.at(t<size_t>(0, vec.size() - 1)));
 		}
 
+		[[nodiscard]] static char ch() noexcept
+		{
+			return (char)static_cast<unsigned char>(t<unsigned short>(0u, 0xFFu));
+		}
+
 		[[nodiscard]] static bool coinflip() noexcept
 		{
 			return t(0, 1) != 0;

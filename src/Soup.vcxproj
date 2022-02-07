@@ -231,6 +231,7 @@
     <ClInclude Include="module.hpp" />
     <ClInclude Include="pattern.hpp" />
     <ClInclude Include="handle_plain.hpp" />
+    <ClInclude Include="pkcs1.hpp" />
     <ClInclude Include="platform.hpp" />
     <ClInclude Include="pointer.hpp" />
     <ClInclude Include="pointerlike.hpp" />
