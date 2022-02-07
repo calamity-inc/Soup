@@ -134,39 +134,14 @@ namespace soup
 
 	bigint bigint::randomProbablePrime(const size_t bits)
 	{
-		soup::bigint i = random(bits);
+		bigint i = random(bits);
 		for (; i.enableBit(0), !i.isProbablePrime(); i = random(bits));
 		return i;
 	}
 
-	uint8_t bigint::getBytesPerChunk() noexcept
-	{
-		return getBitsPerChunk() / 8;
-	}
-
-	uint8_t bigint::getNibblesPerChunk() noexcept
-	{
-		return getBytesPerChunk() * 2;
-	}
-
-	uint8_t bigint::getBitsPerChunk() noexcept
-	{
-		return SOUP_PLATFORM_BITS / 2;
-	}
-
-	chunk_t bigint::getCarry(size_t v) noexcept
-	{
-		return (chunk_t)(v >> getBitsPerChunk());
-	}
-
-	size_t bigint::getNumChunks() const noexcept
-	{
-		return chunks.size();
-	}
-
 	chunk_t bigint::getChunk(size_t i) const noexcept
 	{
-		if (i < chunks.size())
+		if (i < getNumChunks())
 		{
 			return getChunkInbounds(i);
 		}
@@ -252,14 +227,6 @@ namespace soup
 		return (getChunk(chunk_i) >> j) & 1;
 	}
 
-	bool bigint::getBitInbounds(const size_t i) const noexcept
-	{
-		auto chunk_i = i / getBitsPerChunk();
-		auto j = i % getBitsPerChunk();
-
-		return (getChunkInbounds(chunk_i) >> j) & 1;
-	}
-
 	void bigint::setBit(const size_t i, const bool v)
 	{
 		if (v)
@@ -317,6 +284,42 @@ namespace soup
 			}
 		}
 		return -1;
+	}
+
+	bool bigint::getBitInbounds(const size_t i) const noexcept
+	{
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		return (getChunkInbounds(chunk_i) >> j) & 1;
+	}
+
+	void bigint::setBitInbounds(const size_t i, const bool v)
+	{
+		if (v)
+		{
+			enableBitInbounds(i);
+		}
+		else
+		{
+			disableBitInbounds(i);
+		}
+	}
+
+	void bigint::enableBitInbounds(const size_t i)
+	{
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		chunks.at(chunk_i) |= (1 << j);
+	}
+
+	void bigint::disableBitInbounds(const size_t i)
+	{
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		chunks.at(chunk_i) &= ~(1 << j);
 	}
 
 	void bigint::reset() noexcept
@@ -592,6 +595,19 @@ namespace soup
 		*this = (*this * b);
 	}
 
+	void bigint::operator/=(const bigint& divisor)
+	{
+		*this = divide(divisor).first;
+	}
+
+	void bigint::operator%=(const bigint& divisor)
+	{
+		if (*this >= divisor)
+		{
+			*this = divide(divisor).second;
+		}
+	}
+
 	std::pair<bigint, bigint> bigint::divide(const bigint& divisor) const
 	{
 		if (divisor.negative)
@@ -615,12 +631,17 @@ namespace soup
 			}
 			return res;
 		}
+		return divideUnsigned(divisor);
+	}
+
+	std::pair<bigint, bigint> bigint::divideUnsigned(const bigint& divisor) const
+	{
 		std::pair<bigint, bigint> res{};
 		if (!divisor.isZero())
 		{
 			for (size_t i = getNumBits(); i-- != 0; )
 			{
-				res.second.leftShiftImpl(1);
+				res.second.leftShiftNodisable(1);
 				res.second.setBit(0, getBitInbounds(i));
 				if (res.second >= divisor)
 				{
@@ -632,14 +653,24 @@ namespace soup
 		return res;
 	}
 
-	void bigint::operator/=(const bigint& b)
+	bigint bigint::modUnsigned(const bigint& divisor) const
 	{
-		*this = divide(b).first;
+		bigint remainder{};
+		for (size_t i = getNumBits(); i-- != 0; )
+		{
+			remainder.leftShiftNodisable(1);
+			remainder.setBit(0, getBitInbounds(i));
+			if (remainder >= divisor)
+			{
+				remainder -= divisor;
+			}
+		}
+		return remainder;
 	}
 
-	void bigint::operator%=(const bigint& b)
+	void bigint::modEqUnsigned(const bigint& divisor)
 	{
-		*this = divide(b).second;
+		*this = modUnsigned(divisor);
 	}
 
 	bool bigint::isDivisorOf(const bigint& dividend) const
@@ -649,37 +680,47 @@ namespace soup
 
 	void bigint::operator<<=(const size_t b)
 	{
-		size_t i = getNumBits();
-		if (i != 0)
+		leftShiftNodisable(b);
+		for (size_t i = 0; i != b; ++i)
 		{
-			leftShiftImpl(b);
-			for (size_t i = 0; i != b; ++i)
-			{
-				disableBit(i);
-			}
+			disableBit(i);
 		}
 	}
 	
-	void bigint::leftShiftImpl(const size_t b)
+	void bigint::leftShiftNodisable(const size_t b)
 	{
-		for (size_t i = getNumBits(); i-- != 0; )
+		const auto nb = getNumBits();
+		if (nb != 0)
 		{
-			setBit(i + b, getBitInbounds(i));
+			for (size_t i = nb, j = 0; --i, j != b; ++j)
+			{
+				setBit(i + b, getBitInbounds(i));
+			}
+			if (nb > b)
+			{
+				for (size_t i = nb - b, j = i + b; i-- != 0; )
+				{
+					setBitInbounds(--j, getBitInbounds(i));
+				}
+			}
 		}
 	}
 
 	void bigint::operator>>=(const size_t b)
 	{
-		size_t bits = getNumBits();
-		for (size_t i = 0; i++ != b; )
+		size_t nb = getNumBits();
+		if (nb != 0)
 		{
-			disableBit(bits - i);
-		}
-		shrink();
-		bits -= b;
-		for (size_t i = 0; i != bits; ++i)
-		{
-			setBit(i, getBit(i + b));
+			for (size_t i = nb, j = 0; --i, j != b; ++j)
+			{
+				disableBitInbounds(i);
+			}
+			shrink();
+			nb = getNumBits();
+			for (size_t i = 0; i != nb; ++i)
+			{
+				setBitInbounds(i, getBit(i + b));
+			}
 		}
 	}
 
@@ -862,9 +903,9 @@ namespace soup
 				break;
 			}
 			base *= base;
-			base %= m;
+			base.modEqUnsigned(m);
 		}
-		res %= m;
+		res.modEqUnsigned(m);
 		return res;
 	}
 
@@ -1002,7 +1043,7 @@ namespace soup
 				}
 				// z = z.pow_mod(2u, *this);
 				z *= z;
-				z %= *this;
+				z.modEqUnsigned(*this);
 			}
 		}
 		return true;

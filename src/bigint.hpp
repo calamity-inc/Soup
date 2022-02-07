@@ -38,13 +38,31 @@ namespace soup
 		[[nodiscard]] static bigint random(const size_t bits);
 		[[nodiscard]] static bigint randomProbablePrime(const size_t bits);
 
-		[[nodiscard]] static uint8_t getBytesPerChunk() noexcept;
-		[[nodiscard]] static uint8_t getNibblesPerChunk() noexcept;
-		[[nodiscard]] static uint8_t getBitsPerChunk() noexcept;
+		[[nodiscard]] static constexpr uint8_t getBitsPerChunk() noexcept
+		{
+			return platform::bits / 2;
+		}
 
-		[[nodiscard]] static chunk_t getCarry(size_t v) noexcept;
+		[[nodiscard]] static constexpr uint8_t getBytesPerChunk() noexcept
+		{
+			return getBitsPerChunk() / 8;
+		}
+
+		[[nodiscard]] static constexpr uint8_t getNibblesPerChunk() noexcept
+		{
+			return getBytesPerChunk() * 2;
+		}
+
+		[[nodiscard]] static constexpr chunk_t getCarry(size_t v) noexcept
+		{
+			return (chunk_t)(v >> getBitsPerChunk());
+		}
 		
-		[[nodiscard]] size_t getNumChunks() const noexcept;
+		[[nodiscard]] constexpr size_t getNumChunks() const noexcept
+		{
+			return chunks.size();
+		}
+
 		[[nodiscard]] chunk_t getChunk(size_t i) const noexcept;
 	private:
 		[[nodiscard]] chunk_t getChunkInbounds(size_t i) const noexcept;
@@ -62,15 +80,18 @@ namespace soup
 
 		[[nodiscard]] size_t getNumBits() const noexcept;
 		[[nodiscard]] bool getBit(const size_t i) const noexcept;
-	private:
-		[[nodiscard]] bool getBitInbounds(const size_t i) const noexcept;
-	public:
 		void setBit(const size_t i, const bool v);
 		void enableBit(const size_t i);
 		void disableBit(const size_t i);
 		[[nodiscard]] size_t getBitLength() const noexcept;
 		[[nodiscard]] size_t getLowestSetBit() const noexcept;
+	private:
+		[[nodiscard]] bool getBitInbounds(const size_t i) const noexcept;
+		void setBitInbounds(const size_t i, const bool v);
+		void enableBitInbounds(const size_t i);
+		void disableBitInbounds(const size_t i);
 
+	public:
 		void reset() noexcept;
 		[[nodiscard]] bool isZero() const noexcept;
 		[[nodiscard]] operator bool() const noexcept;
@@ -105,13 +126,16 @@ namespace soup
 		void operator-=(const bigint& subtrahend);
 		void subUnsigned(const bigint& subtrahend);
 		void operator*=(const bigint& b);
-		std::pair<bigint, bigint> divide(const bigint& divisor) const; // (Quotient, Remainder)
-		void operator/=(const bigint& b);
-		void operator%=(const bigint& b);
+		void operator/=(const bigint& divisor);
+		void operator%=(const bigint& divisor);
+		[[nodiscard]] std::pair<bigint, bigint> divide(const bigint& divisor) const; // (Quotient, Remainder)
+		[[nodiscard]] std::pair<bigint, bigint> divideUnsigned(const bigint& divisor) const; // (Quotient, Remainder)
+		[[nodiscard]] bigint modUnsigned(const bigint& divisor) const;
+		void modEqUnsigned(const bigint& divisor);
 		[[nodiscard]] bool isDivisorOf(const bigint& dividend) const;
 		void operator<<=(const size_t b);
 	private:
-		void leftShiftImpl(const size_t b);
+		void leftShiftNodisable(const size_t b);
 	public:
 		void operator>>=(const size_t b);
 		void operator|=(const bigint& b);
