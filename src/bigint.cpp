@@ -891,21 +891,21 @@ namespace soup
 	{
 		bigint res = 1u;
 		bigint base(*this);
-		while (true)
+		if (base >= m)
+		{
+			base.modEqUnsigned(m);
+		}
+		while (!e.isZero())
 		{
 			if (e.getBit(0))
 			{
 				res *= base;
-			}
-			e >>= 1u;
-			if (e.isZero())
-			{
-				break;
+				res.modEqUnsigned(m);
 			}
 			base *= base;
 			base.modEqUnsigned(m);
+			e >>= 1u;
 		}
-		res.modEqUnsigned(m);
 		return res;
 	}
 
