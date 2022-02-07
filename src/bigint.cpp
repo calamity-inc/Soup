@@ -296,14 +296,14 @@ namespace soup
 
 	void bigint::setBitInbounds(const size_t i, const bool v)
 	{
-		if (v)
-		{
-			enableBitInbounds(i);
-		}
-		else
-		{
-			disableBitInbounds(i);
-		}
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		chunk_t mask = (1 << j);
+
+		chunk_t& chunk = chunks.at(chunk_i);
+		chunk &= ~mask;
+		chunk |= (mask * v);
 	}
 
 	void bigint::enableBitInbounds(const size_t i)
