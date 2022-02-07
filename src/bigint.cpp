@@ -168,9 +168,14 @@ namespace soup
 	{
 		if (i < chunks.size())
 		{
-			return chunks.at(i);
+			return getChunkInbounds(i);
 		}
 		return 0;
+	}
+
+	chunk_t bigint::getChunkInbounds(size_t i) const noexcept
+	{
+		return chunks.at(i);
 	}
 
 	void bigint::setChunk(size_t i, chunk_t v)
@@ -239,12 +244,23 @@ namespace soup
 		return getNumChunks() * getBitsPerChunk();
 	}
 
-	bool bigint::getBit(size_t i) const noexcept
+	bool bigint::getBit(const size_t i) const noexcept
 	{
-		return (getChunk(i / getBitsPerChunk()) & (1 << (i % getBitsPerChunk()))) != 0;
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		return (getChunk(chunk_i) >> j) & 1;
 	}
 
-	void bigint::setBit(size_t i, bool v)
+	bool bigint::getBitInbounds(const size_t i) const noexcept
+	{
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		return (getChunkInbounds(chunk_i) >> j) & 1;
+	}
+
+	void bigint::setBit(const size_t i, const bool v)
 	{
 		if (v)
 		{
@@ -256,25 +272,31 @@ namespace soup
 		}
 	}
 
-	void bigint::enableBit(size_t i)
+	void bigint::enableBit(const size_t i)
 	{
-		const auto chunk_i = (i / getBitsPerChunk());
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		j = (1 << j);
+
 		if (chunk_i < chunks.size())
 		{
-			chunks.at(chunk_i) |= (1 << (i % getBitsPerChunk()));
+			chunks.at(chunk_i) |= j;
 		}
 		else
 		{
-			addChunk(chunk_i, 1 << (i % getBitsPerChunk()));
+			addChunk(chunk_i, j);
 		}
 	}
 
-	void bigint::disableBit(size_t i)
+	void bigint::disableBit(const size_t i)
 	{
-		const auto chunk_i = (i / getBitsPerChunk());
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
 		if (chunk_i < chunks.size())
 		{
-			chunks.at(chunk_i) &= ~(1 << (i % getBitsPerChunk()));
+			chunks.at(chunk_i) &= ~(1 << j);
 		}
 	}
 
@@ -598,8 +620,8 @@ namespace soup
 		{
 			for (size_t i = getNumBits(); i-- != 0; )
 			{
-				res.second <<= 1u;
-				res.second.setBit(0, getBit(i));
+				res.second.leftShiftImpl(1);
+				res.second.setBit(0, getBitInbounds(i));
 				if (res.second >= divisor)
 				{
 					res.second -= divisor;
@@ -625,23 +647,28 @@ namespace soup
 		return (dividend % *this).isZero();
 	}
 
-	void bigint::operator<<=(size_t b)
+	void bigint::operator<<=(const size_t b)
 	{
 		size_t i = getNumBits();
 		if (i != 0)
 		{
-			for (i += b; i != 0; --i)
-			{
-				setBit(i, getBit(i - b));
-			}
+			leftShiftImpl(b);
 			for (size_t i = 0; i != b; ++i)
 			{
 				disableBit(i);
 			}
 		}
 	}
+	
+	void bigint::leftShiftImpl(const size_t b)
+	{
+		for (size_t i = getNumBits(); i-- != 0; )
+		{
+			setBit(i + b, getBitInbounds(i));
+		}
+	}
 
-	void bigint::operator>>=(size_t b)
+	void bigint::operator>>=(const size_t b)
 	{
 		size_t bits = getNumBits();
 		for (size_t i = 0; i++ != b; )
@@ -819,7 +846,7 @@ namespace soup
 		return res;
 	}
 
-	bigint bigint::pow_mod(bigint e, const bigint& m) const
+	bigint bigint::modPow(bigint e, const bigint& m) const
 	{
 		bigint res = 1u;
 		bigint base(*this);
@@ -958,21 +985,24 @@ namespace soup
 
 		for (int i = 0; i < iterations; i++)
 		{
+			const auto bl = getBitLength();
 			bigint b;
 			do
 			{
-				b = random(getBitLength());
+				b = random(bl);
 			} while (b <= (chunk_t)1u || b >= *this);
 
 			int j = 0;
-			bigint z = b.pow_mod(m, *this);
+			bigint z = b.modPow(m, *this);
 			while (!((j == 0 && z == (chunk_t)1u) || z == thisMinusOne))
 			{
 				if ((j > 0 && z == (chunk_t)1u) || ++j == a)
 				{
 					return false;
 				}
-				z = z.pow_mod(2u, *this);
+				// z = z.pow_mod(2u, *this);
+				z *= z;
+				z %= *this;
 			}
 		}
 		return true;
@@ -1015,7 +1045,7 @@ namespace soup
 		{
 			for (auto i = coprimes.begin(); i != coprimes.end(); ++i)
 			{
-				if (i->pow_mod(k, *this) == (chunk_t)1u)
+				if (i->modPow(k, *this) == (chunk_t)1u)
 				{
 					if (timer == 0)
 					{
@@ -1123,5 +1153,33 @@ namespace soup
 	{
 		os << v.toStringDecimal();
 		return os;
+	}
+
+	bigint bigint::fromMessage(const std::string& msg)
+	{
+		bigint res{};
+		for (auto i = msg.begin(); i != msg.end(); ++i)
+		{
+			res <<= 8u;
+			res |= (chunk_t)(unsigned char)*i;
+		}
+		return res;
+	}
+
+	std::string bigint::toMessage() const
+	{
+		std::string str{};
+		size_t i = getNumBytes();
+		if (i != 0)
+		{
+			// skip leading zeroes
+			while (i-- != 0 && getByte(i) == 0);
+			str.reserve(i);
+			do
+			{
+				str.push_back(getByte(i));
+			} while (i-- != 0);
+		}
+		return str;
 	}
 }

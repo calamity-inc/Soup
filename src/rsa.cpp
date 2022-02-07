@@ -6,29 +6,29 @@ namespace soup
 {
 	using key = rsa::key;
 
-	bigint rsa::key::pow_mod(const bigint& x) const
+	bigint rsa::key::modPow(const bigint& x) const
 	{
-		return x.pow_mod(e, n);
+		return x.modPow(e, n);
 	}
 
-	bigint rsa::key::encrypt(const bigint& msg) const
+	bigint rsa::key::encryptUnpadded(const std::string& msg) const
 	{
-		return pow_mod(msg);
+		return modPow(bigint::fromMessage(msg));
 	}
 
-	bigint rsa::key::decrypt(const bigint& msg) const
+	std::string rsa::key::decryptUnpadded(const bigint& enc) const
 	{
-		return pow_mod(msg);
+		return modPow(enc).toMessage();
 	}
 
 	bigint rsa::key::sign(const bigint& hash) const
 	{
-		return pow_mod(hash);
+		return modPow(hash);
 	}
 
 	bool rsa::key::verify(const bigint& hash, const bigint& sig) const
 	{
-		return pow_mod(sig) == hash;
+		return modPow(sig) == hash;
 	}
 
 	void rsa::keypair::random(int bits)
@@ -60,9 +60,10 @@ namespace soup
 		}
 		else
 		{
+			const auto bl = t.getBitLength();
 			do
 			{
-				e = bigint::randomProbablePrime(t.getBitLength());
+				e = bigint::randomProbablePrime(bl);
 			} while (e >= t || e.isDivisorOf(t));
 		}
 		d = e.modMulInv(t);

@@ -46,6 +46,9 @@ namespace soup
 		
 		[[nodiscard]] size_t getNumChunks() const noexcept;
 		[[nodiscard]] chunk_t getChunk(size_t i) const noexcept;
+	private:
+		[[nodiscard]] chunk_t getChunkInbounds(size_t i) const noexcept;
+	public:
 		void setChunk(size_t i, chunk_t v);
 		void addChunk(size_t i, chunk_t v);
 		void addChunk(chunk_t v);
@@ -58,10 +61,13 @@ namespace soup
 		[[nodiscard]] uint8_t getNibble(size_t i) const noexcept;
 
 		[[nodiscard]] size_t getNumBits() const noexcept;
-		[[nodiscard]] bool getBit(size_t i) const noexcept;
-		void setBit(size_t i, bool v);
-		void enableBit(size_t i);
-		void disableBit(size_t i);
+		[[nodiscard]] bool getBit(const size_t i) const noexcept;
+	private:
+		[[nodiscard]] bool getBitInbounds(const size_t i) const noexcept;
+	public:
+		void setBit(const size_t i, const bool v);
+		void enableBit(const size_t i);
+		void disableBit(const size_t i);
 		[[nodiscard]] size_t getBitLength() const noexcept;
 		[[nodiscard]] size_t getLowestSetBit() const noexcept;
 
@@ -103,8 +109,11 @@ namespace soup
 		void operator/=(const bigint& b);
 		void operator%=(const bigint& b);
 		[[nodiscard]] bool isDivisorOf(const bigint& dividend) const;
-		void operator<<=(size_t b);
-		void operator>>=(size_t b);
+		void operator<<=(const size_t b);
+	private:
+		void leftShiftImpl(const size_t b);
+	public:
+		void operator>>=(const size_t b);
 		void operator|=(const bigint& b);
 		void operator&=(const bigint& b);
 
@@ -124,7 +133,7 @@ namespace soup
 
 		[[nodiscard]] bigint abs() const;
 		[[nodiscard]] bigint pow(bigint e) const;
-		[[nodiscard]] bigint pow_mod(bigint e, const bigint& m) const;
+		[[nodiscard]] bigint modPow(bigint e, const bigint& m) const;
 		[[nodiscard]] size_t getTrailingZeroes(const bigint& base) const;
 		[[nodiscard]] bigint gcd(bigint v) const;
 		[[nodiscard]] bigint gcd(bigint b, bigint& x, bigint& y) const;
@@ -202,6 +211,9 @@ namespace soup
 
 	public:
 		friend std::ostream& operator<<(std::ostream& os, const bigint& v);
+
+		[[nodiscard]] static bigint fromMessage(const std::string& msg);
+		[[nodiscard]] std::string toMessage() const;
 	};
 
 	namespace literals

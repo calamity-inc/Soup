@@ -11,10 +11,10 @@ namespace soup
 			bigint n;
 			bigint e;
 
-			[[nodiscard]] bigint pow_mod(const bigint& x) const;
+			[[nodiscard]] bigint modPow(const bigint& x) const;
 
-			[[nodiscard]] bigint encrypt(const bigint& msg) const;
-			[[nodiscard]] bigint decrypt(const bigint& msg) const;
+			[[nodiscard]] bigint encryptUnpadded(const std::string& msg) const;
+			[[nodiscard]] std::string decryptUnpadded(const bigint& enc) const;
 
 			[[nodiscard]] bigint sign(const bigint& hash) const;
 			[[nodiscard]] bool verify(const bigint& hash, const bigint& sig) const;
