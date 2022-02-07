@@ -26,6 +26,9 @@ namespace soup
 			bigint e;
 			bigint d;
 
+			void random(int bits);
+			void fromPrimes(const bigint& p, const bigint& q);
+
 			[[nodiscard]] key getPublic() const;
 			[[nodiscard]] key getPrivate() const;
 		};

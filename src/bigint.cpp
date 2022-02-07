@@ -1,11 +1,14 @@
 #include "bigint.hpp"
 
+#include "rand.hpp"
 #include "string.hpp"
 
 namespace soup
 {
 	using chunk_t = bigint::chunk_t;
 	using chunk_signed_t = bigint::chunk_signed_t;
+
+	using namespace literals;
 
 	bigint::bigint(chunk_signed_t v)
 		: bigint()
@@ -114,6 +117,26 @@ namespace soup
 				*this |= (unsigned int)(str[i] - '0');
 			}
 		}
+	}
+
+	bigint bigint::random(const size_t bits)
+	{
+		bigint res{};
+		for (size_t i = 0; i != bits; ++i)
+		{
+			if (rand.coinflip())
+			{
+				res.enableBit(i);
+			}
+		}
+		return res;
+	}
+
+	bigint bigint::randomProbablePrime(const size_t bits)
+	{
+		soup::bigint i = random(bits);
+		for (; i.enableBit(0), !i.isProbablePrime(); i = random(bits));
+		return i;
 	}
 
 	uint8_t bigint::getBytesPerChunk() noexcept
@@ -255,6 +278,25 @@ namespace soup
 		}
 	}
 
+	size_t bigint::getBitLength() const noexcept
+	{
+		size_t len = getNumBits();
+		while (len-- != 0 && !getBit(len));
+		return len + 1;
+	}
+
+	size_t bigint::getLowestSetBit() const noexcept
+	{
+		for (size_t i = 0; i != getNumBits(); ++i)
+		{
+			if (getBit(i))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	void bigint::reset() noexcept
 	{
 		chunks.clear();
@@ -351,6 +393,26 @@ namespace soup
 		return cmp(b) <= 0;
 	}
 
+	bool bigint::operator==(const chunk_t v) const noexcept
+	{
+		return !negative && getNumChunks() == 1 && getChunk(0) == v;
+	}
+
+	bool bigint::operator!=(const chunk_t v) const noexcept
+	{
+		return !operator==(v);
+	}
+
+	bool bigint::operator<(const chunk_t v) const noexcept
+	{
+		return negative || (getNumChunks() == 0 && v != 0) || (getNumChunks() == 1 && getChunk(0) < v);
+	}
+
+	bool bigint::operator<=(const chunk_t v) const noexcept
+	{
+		return negative || getNumChunks() == 0 || (getNumChunks() == 1 && getChunk(0) <= v);
+	}
+
 	void bigint::operator=(chunk_signed_t v)
 	{
 		negative = (v < 0);
@@ -440,11 +502,11 @@ namespace soup
 
 	void bigint::addUnsigned(const bigint& b)
 	{
-		if (cmpUnsigned(b) < 0)
+		if (cmp(b) < 0)
 		{
 			bigint res(b);
 			res.addUnsigned(*this);
-			*this = std::move(res);
+			chunks = std::move(res.chunks);
 			return;
 		}
 		size_t carry = 0;
@@ -482,7 +544,7 @@ namespace soup
 			reset();
 			return;
 		}
-		if (cmpUnsigned(subtrahend) < 0)
+		if (cmp(subtrahend) < 0)
 		{
 			bigint res(subtrahend);
 			res.subUnsigned(*this);
@@ -556,6 +618,11 @@ namespace soup
 	void bigint::operator%=(const bigint& b)
 	{
 		*this = divide(b).second;
+	}
+
+	bool bigint::isDivisorOf(const bigint& dividend) const
+	{
+		return (dividend % *this).isZero();
 	}
 
 	void bigint::operator<<=(size_t b)
@@ -725,6 +792,13 @@ namespace soup
 		return res;
 	}
 
+	bigint bigint::abs() const
+	{
+		bigint res(*this);
+		res.negative = false;
+		return res;
+	}
+
 	bigint bigint::pow(bigint e) const
 	{
 		bigint res = 1u;
@@ -765,6 +839,213 @@ namespace soup
 		}
 		res %= m;
 		return res;
+	}
+
+	size_t bigint::getTrailingZeroes(const bigint& base) const
+	{
+		size_t res = 0;
+		bigint tmp(*this);
+		while (!tmp.isZero())
+		{
+			auto pair = tmp.divide(base);
+			if (!pair.second.isZero())
+			{
+				break;
+			}
+			++res;
+			tmp = std::move(pair.first);
+		}
+		return res;
+	}
+
+	bigint bigint::gcd(bigint v) const
+	{
+		bigint u(*this);
+
+		auto i = u.getTrailingZeroes(2u); u >>= i;
+		auto j = v.getTrailingZeroes(2u); v >>= j;
+		auto k = std::min(i, j);
+
+		while (true)
+		{
+			if (u > v)
+			{
+				std::swap(u, v);
+			}
+
+			v -= u;
+
+			if (v.isZero())
+			{
+				return u << k;
+			}
+
+			v >>= v.getTrailingZeroes(2u);
+		}
+	}
+
+	bigint bigint::gcd(bigint b, bigint& x, bigint& y) const
+	{
+		if (isZero())
+		{
+			//x.reset();
+			y = 1u;
+			return b;
+		}
+		auto d = b.divide(*this);
+		bigint xr, yr;
+		auto g = d.second.gcd(*this, xr, yr);
+		x = (yr - (d.first * xr));
+		y = std::move(xr);
+		return g;
+	}
+
+	bool bigint::isPrimePrecheck(bool& ret) const
+	{
+		if (isZero() || *this == (chunk_t)1u)
+		{
+			ret = false;
+			return true;
+		}
+		if (*this <= (chunk_t)3u)
+		{
+			ret = true;
+			return true;
+		}
+		if (getBit(0) == 0)
+		{
+			ret = false;
+			return true;
+		}
+		
+		if ((*this % 3_b).isZero())
+		{
+			ret = false;
+			return true;
+		}
+		return false;
+	}
+
+	bool bigint::isPrime() const
+	{
+		bool preret;
+		if (isPrimePrecheck(preret))
+		{
+			return preret;
+		}
+
+		for (bigint i = 5u; i * i <= *this; i += 6_b)
+		{
+			if ((*this % i).isZero() || (*this % (i + 2_b)).isZero())
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool bigint::isProbablePrime(const int iterations) const
+	{
+		bool preret;
+		if (isPrimePrecheck(preret))
+		{
+			return preret;
+		}
+
+		auto thisMinusOne = (*this - 1_b);
+		auto a = thisMinusOne.getLowestSetBit();
+		auto m = (thisMinusOne >> a);
+
+		for (int i = 0; i < iterations; i++)
+		{
+			bigint b;
+			do
+			{
+				b = random(getBitLength());
+			} while (b <= (chunk_t)1u || b >= *this);
+
+			int j = 0;
+			bigint z = b.pow_mod(m, *this);
+			while (!((j == 0 && z == (chunk_t)1u) || z == thisMinusOne))
+			{
+				if ((j > 0 && z == (chunk_t)1u) || ++j == a)
+				{
+					return false;
+				}
+				z = z.pow_mod(2u, *this);
+			}
+		}
+		return true;
+	}
+
+	bool bigint::isCoprime(const bigint& b) const
+	{
+		return gcd(b) == (chunk_t)1u;
+	}
+
+	bigint bigint::reducedTotient() const
+	{
+		if (*this <= (chunk_t)2u)
+		{
+			return 1u;
+		}
+		std::vector<bigint> coprimes{};
+		for (bigint a = 2u; a != *this; ++a)
+		{
+			if (isCoprime(a))
+			{
+				coprimes.emplace_back(a);
+			}
+		}
+		bigint k = 2u;
+		for (auto timer = coprimes.size(); timer != 0; )
+		{
+			for (auto i = coprimes.begin(); i != coprimes.end(); ++i)
+			{
+				if (i->pow_mod(k, *this) == (chunk_t)1u)
+				{
+					if (timer == 0)
+					{
+						break;
+					}
+					--timer;
+				}
+				else
+				{
+					timer = coprimes.size();
+					++k;
+				}
+			}
+		}
+		return k;
+	}
+
+	bigint bigint::modMulInv(const bigint& m) const
+	{
+		bigint x, y;
+		if (gcd(m, x, y) == (chunk_t)1u)
+		{
+			return (x % m + m) % m;
+		}
+
+		for (bigint res = 1u;; ++res)
+		{
+			if (((*this * res) % m) == (chunk_t)1u)
+			{
+				return res;
+			}
+		}
+	}
+
+	bigint bigint::lcm(const bigint& b) const
+	{
+		if (isZero() || b.isZero())
+		{
+			return bigint();
+		}
+		auto a_mag = abs();
+		auto b_mag = b.abs();
+		return ((a_mag * b_mag) / a_mag.gcd(b_mag));
 	}
 
 	bool bigint::toPrimitive(size_t& out) const noexcept

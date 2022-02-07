@@ -35,6 +35,9 @@ namespace soup
 		void fromHexadecimal(const char* str, size_t len);
 
 	public:
+		[[nodiscard]] static bigint random(const size_t bits);
+		[[nodiscard]] static bigint randomProbablePrime(const size_t bits);
+
 		[[nodiscard]] static uint8_t getBytesPerChunk() noexcept;
 		[[nodiscard]] static uint8_t getNibblesPerChunk() noexcept;
 		[[nodiscard]] static uint8_t getBitsPerChunk() noexcept;
@@ -59,6 +62,8 @@ namespace soup
 		void setBit(size_t i, bool v);
 		void enableBit(size_t i);
 		void disableBit(size_t i);
+		[[nodiscard]] size_t getBitLength() const noexcept;
+		[[nodiscard]] size_t getLowestSetBit() const noexcept;
 
 		void reset() noexcept;
 		[[nodiscard]] bool isZero() const noexcept;
@@ -72,6 +77,11 @@ namespace soup
 		[[nodiscard]] bool operator >= (const bigint& b) const noexcept;
 		[[nodiscard]] bool operator < (const bigint& b) const noexcept;
 		[[nodiscard]] bool operator <= (const bigint& b) const noexcept;
+
+		[[nodiscard]] bool operator == (const chunk_t v) const noexcept;
+		[[nodiscard]] bool operator != (const chunk_t v) const noexcept;
+		[[nodiscard]] bool operator < (const chunk_t v) const noexcept;
+		[[nodiscard]] bool operator <= (const chunk_t v) const noexcept;
 
 		void operator=(chunk_signed_t v);
 		void operator=(chunk_t v);
@@ -92,6 +102,7 @@ namespace soup
 		std::pair<bigint, bigint> divide(const bigint& divisor) const; // (Quotient, Remainder)
 		void operator/=(const bigint& b);
 		void operator%=(const bigint& b);
+		[[nodiscard]] bool isDivisorOf(const bigint& dividend) const;
 		void operator<<=(size_t b);
 		void operator>>=(size_t b);
 		void operator|=(const bigint& b);
@@ -111,8 +122,21 @@ namespace soup
 		[[nodiscard]] bigint operator|(const bigint& b) const;
 		[[nodiscard]] bigint operator&(const bigint& b) const;
 
+		[[nodiscard]] bigint abs() const;
 		[[nodiscard]] bigint pow(bigint e) const;
 		[[nodiscard]] bigint pow_mod(bigint e, const bigint& m) const;
+		[[nodiscard]] size_t getTrailingZeroes(const bigint& base) const;
+		[[nodiscard]] bigint gcd(bigint v) const;
+		[[nodiscard]] bigint gcd(bigint b, bigint& x, bigint& y) const;
+	private:
+		[[nodiscard]] bool isPrimePrecheck(bool& ret) const;
+	public:
+		[[nodiscard]] bool isPrime() const;
+		[[nodiscard]] bool isProbablePrime(const int iterations = 1) const;
+		[[nodiscard]] bool isCoprime(const bigint& b) const;
+		[[nodiscard]] bigint reducedTotient() const;
+		[[nodiscard]] bigint modMulInv(const bigint& m) const;
+		[[nodiscard]] bigint lcm(const bigint& b) const;
 
 		bool toPrimitive(size_t& out) const noexcept;
 
