@@ -134,6 +134,7 @@ namespace soup
 		[[nodiscard]] bool isPrime() const;
 		[[nodiscard]] bool isProbablePrime(const int iterations = 1) const;
 		[[nodiscard]] bool isCoprime(const bigint& b) const;
+		[[nodiscard]] bigint eulersTotient() const;
 		[[nodiscard]] bigint reducedTotient() const;
 		[[nodiscard]] bigint modMulInv(const bigint& m) const;
 		[[nodiscard]] bigint lcm(const bigint& b) const;

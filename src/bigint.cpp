@@ -983,6 +983,19 @@ namespace soup
 		return gcd(b) == (chunk_t)1u;
 	}
 
+	bigint bigint::eulersTotient() const
+	{
+		bigint res = 1u;
+		for (bigint i = 2u; i != *this; ++i)
+		{
+			if (isCoprime(i))
+			{
+				++res;
+			}
+		}
+		return res;
+	}
+
 	bigint bigint::reducedTotient() const
 	{
 		if (*this <= (chunk_t)2u)
