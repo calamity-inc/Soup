@@ -1061,7 +1061,7 @@ namespace soup
 		return ((a_mag * b_mag) / a_mag.gcd(b_mag));
 	}
 
-	bool bigint::toPrimitive(size_t& out) const noexcept
+	bool bigint::toPrimitive(size_t& out) const
 	{
 		switch (getNumChunks())
 		{
@@ -1079,17 +1079,17 @@ namespace soup
 		return true;
 	}
 
-	std::string bigint::toStringHexUpper(bool prefix) const noexcept
+	std::string bigint::toStringHexUpper(bool prefix) const
 	{
 		return toStringHexImpl(prefix, string::from_int_map_hex_upper);
 	}
 
-	std::string bigint::toStringHexLower(bool prefix) const noexcept
+	std::string bigint::toStringHexLower(bool prefix) const
 	{
 		return toStringHexImpl(prefix, string::from_int_map_hex_lower);
 	}
 
-	std::string bigint::toStringHexImpl(bool prefix, const char* map) const noexcept
+	std::string bigint::toStringHexImpl(bool prefix, const char* map) const
 	{
 		std::string str{};
 		size_t i = getNumNibbles();

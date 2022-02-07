@@ -139,10 +139,10 @@ namespace soup
 		[[nodiscard]] bigint modMulInv(const bigint& m) const;
 		[[nodiscard]] bigint lcm(const bigint& b) const;
 
-		bool toPrimitive(size_t& out) const noexcept;
+		bool toPrimitive(size_t& out) const;
 
 		template <typename Str = std::string>
-		[[nodiscard]] Str toStringDecimal() const noexcept
+		[[nodiscard]] Str toStringDecimal() const
 		{
 			Str str{};
 			bigint quotient(*this);
@@ -165,7 +165,7 @@ namespace soup
 		}
 
 		template <typename Str = std::string>
-		[[nodiscard]] Str toStringBinary(bool prefix = false) const noexcept
+		[[nodiscard]] Str toStringBinary(bool prefix = false) const
 		{
 			Str str{};
 			size_t i = getNumBits();
@@ -195,10 +195,10 @@ namespace soup
 			return str;
 		}
 
-		[[nodiscard]] std::string toStringHexUpper(bool prefix = false) const noexcept;
-		[[nodiscard]] std::string toStringHexLower(bool prefix = false) const noexcept;
+		[[nodiscard]] std::string toStringHexUpper(bool prefix = false) const;
+		[[nodiscard]] std::string toStringHexLower(bool prefix = false) const;
 	private:
-		[[nodiscard]] std::string toStringHexImpl(bool prefix, const char* map) const noexcept;
+		[[nodiscard]] std::string toStringHexImpl(bool prefix, const char* map) const;
 
 	public:
 		friend std::ostream& operator<<(std::ostream& os, const bigint& v);
