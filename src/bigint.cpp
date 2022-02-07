@@ -135,7 +135,7 @@ namespace soup
 	bigint bigint::randomProbablePrime(const size_t bits)
 	{
 		bigint i = random(bits);
-		for (; i.enableBit(0), !i.isProbablePrime(); i = random(bits));
+		for (; i.enableBit(0), !i.isProbablePrimeMillerRabin(); i = random(bits));
 		return i;
 	}
 
@@ -1012,7 +1012,7 @@ namespace soup
 		return true;
 	}
 
-	bool bigint::isProbablePrime(const int iterations) const
+	bool bigint::isProbablePrimeMillerRabin(const int iterations) const
 	{
 		bool preret;
 		if (isPrimePrecheck(preret))
@@ -1024,9 +1024,9 @@ namespace soup
 		auto a = thisMinusOne.getLowestSetBit();
 		auto m = (thisMinusOne >> a);
 
+		const auto bl = getBitLength();
 		for (int i = 0; i < iterations; i++)
 		{
-			const auto bl = getBitLength();
 			bigint b;
 			do
 			{
@@ -1044,6 +1044,31 @@ namespace soup
 				// z = z.pow_mod(2u, *this);
 				z *= z;
 				z.modEqUnsigned(*this);
+			}
+		}
+		return true;
+	}
+
+	bool bigint::isProbablePrimeFermat(const int iterations) const
+	{
+		bool preret;
+		if (isPrimePrecheck(preret))
+		{
+			return preret;
+		}
+
+		const auto bl = getBitLength();
+		for (int i = 0; i < iterations; i++)
+		{
+			bigint b;
+			do
+			{
+				b = random(bl);
+			} while (b <= (chunk_t)1u || b >= *this);
+
+			if (b.modPow(*this - 1_b, *this) != (chunk_t)1u)
+			{
+				return false;
 			}
 		}
 		return true;

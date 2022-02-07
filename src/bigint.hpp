@@ -165,7 +165,8 @@ namespace soup
 		[[nodiscard]] bool isPrimePrecheck(bool& ret) const;
 	public:
 		[[nodiscard]] bool isPrime() const;
-		[[nodiscard]] bool isProbablePrime(const int iterations = 1) const;
+		[[nodiscard]] bool isProbablePrimeMillerRabin(const int iterations = 1) const;
+		[[nodiscard]] bool isProbablePrimeFermat(const int iterations = 1) const;
 		[[nodiscard]] bool isCoprime(const bigint& b) const;
 		[[nodiscard]] bigint eulersTotient() const;
 		[[nodiscard]] bigint reducedTotient() const;
