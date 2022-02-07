@@ -681,9 +681,12 @@ namespace soup
 	void bigint::operator<<=(const size_t b)
 	{
 		leftShiftNodisable(b);
-		for (size_t i = 0; i != b; ++i)
+		if (b < getNumBits())
 		{
-			disableBit(i);
+			for (size_t i = 0; i != b; ++i)
+			{
+				disableBitInbounds(i);
+			}
 		}
 	}
 	
@@ -692,15 +695,21 @@ namespace soup
 		const auto nb = getNumBits();
 		if (nb != 0)
 		{
-			for (size_t i = nb, j = 0; --i, j != b; ++j)
+			const auto maxbitidx = nb - 1;
+			// extend
 			{
-				setBit(i + b, getBitInbounds(i));
-			}
-			if (nb > b)
-			{
-				for (size_t i = nb - b, j = i + b; i-- != 0; )
+				size_t i = maxbitidx;
+				for (size_t j = 0; j != b && i != 0; ++j, --i)
 				{
-					setBitInbounds(--j, getBitInbounds(i));
+					setBit(i + b, getBitInbounds(i));
+				}
+			}
+			// move
+			if (b < nb)
+			{
+				for (size_t i = nb; i-- != b; )
+				{
+					setBitInbounds(i, getBitInbounds(i - b));
 				}
 			}
 		}
