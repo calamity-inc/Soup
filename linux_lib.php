@@ -13,7 +13,7 @@ if(!is_dir("bin/int"))
 
 // Find work
 $files = [];
-foreach(scandir("src") as $file)
+foreach(scandir("soup") as $file)
 {
 	if(substr($file, -4) == ".cpp")
 	{
@@ -26,7 +26,7 @@ $objects = [];
 foreach($files as $file)
 {
 	echo $file."\n";
-	passthru("$clang -c src/$file.cpp -o bin/int/$file.o");
+	passthru("$clang -c soup/$file.cpp -o bin/int/$file.o");
 	array_push($objects, escapeshellarg("bin/int/$file.o"));
 }
 

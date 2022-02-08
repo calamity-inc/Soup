@@ -8,4 +8,4 @@ if(shell_exec("which lld"))
 }
 $clang .= "ld -lstdc++ -pthread -lresolv";
 
-passthru("$clang \"examples/{$argv[1]}/{$argv[1]}.cpp\" libsoup.a -I src -o \"{$argv[1]}\"");
+passthru("$clang \"examples/{$argv[1]}/{$argv[1]}.cpp\" libsoup.a -I soup -o \"{$argv[1]}\"");

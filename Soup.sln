@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Soup", "src\Soup.vcxproj", "{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Soup", "soup\Soup.vcxproj", "{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Console App", "examples\Console App\Console App.vcxproj", "{6741E999-EF28-41E6-9C32-4C70F3EA97F5}"
 	ProjectSection(ProjectDependencies) = postProject
