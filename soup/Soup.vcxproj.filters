@@ -189,6 +189,9 @@
     <ClInclude Include="base64.hpp">
       <Filter>enc</Filter>
     </ClInclude>
+    <ClInclude Include="rtti.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -250,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="base64.cpp">
       <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="rtti.cpp">
+      <Filter>mem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
