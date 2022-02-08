@@ -201,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="alloc_raii.hpp" />
     <ClInclude Include="alloc_raii_remote.hpp" />
+    <ClInclude Include="base64.hpp" />
     <ClInclude Include="bigint.hpp" />
     <ClInclude Include="bitpointer.hpp" />
     <ClInclude Include="bitset.hpp" />
@@ -265,6 +266,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp" />
+    <ClCompile Include="base64.cpp" />
     <ClCompile Include="bigint.cpp" />
     <ClCompile Include="box.cpp" />
     <ClCompile Include="box_axis_aligned.cpp" />

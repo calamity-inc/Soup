@@ -186,6 +186,9 @@
     <ClInclude Include="bigbitset.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="base64.hpp">
+      <Filter>enc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -244,6 +247,9 @@
     </ClCompile>
     <ClCompile Include="rsa.cpp">
       <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>enc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
