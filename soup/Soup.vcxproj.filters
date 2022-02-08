@@ -183,6 +183,9 @@
     <ClInclude Include="bitpointer.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="bigbitset.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
