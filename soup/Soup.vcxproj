@@ -202,6 +202,8 @@
     <ClInclude Include="alloc_raii.hpp" />
     <ClInclude Include="alloc_raii_remote.hpp" />
     <ClInclude Include="bigint.hpp" />
+    <ClInclude Include="bitpointer.hpp" />
+    <ClInclude Include="bitset.hpp" />
     <ClInclude Include="box.hpp" />
     <ClInclude Include="box_axis_aligned.hpp" />
     <ClInclude Include="box_corners.hpp" />

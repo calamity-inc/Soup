@@ -1,5 +1,6 @@
 #include "bigint.hpp"
 
+#include "bitset.hpp"
 #include "rand.hpp"
 #include "string.hpp"
 
@@ -299,11 +300,7 @@ namespace soup
 		auto chunk_i = i / getBitsPerChunk();
 		auto j = i % getBitsPerChunk();
 
-		chunk_t mask = (1 << j);
-
-		chunk_t& chunk = chunks.at(chunk_i);
-		chunk &= ~mask;
-		chunk |= (mask * v);
+		bitset<chunk_t>::at(chunks.at(chunk_i)).set(j, v);
 	}
 
 	void bigint::enableBitInbounds(const size_t i)
