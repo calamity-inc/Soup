@@ -110,6 +110,16 @@ namespace soup
 			return !operator==(b);
 		}
 
+		[[nodiscard]] bool operator==(const char* b) noexcept
+		{
+			return strcmp(c_str(), b) == 0;
+		}
+
+		[[nodiscard]] bool operator!=(const char* b) noexcept
+		{
+			return !operator==(b);
+		}
+
 		friend std::ostream& operator<<(std::ostream& os, obfus_string& str)
 		{
 			os << str.str();
