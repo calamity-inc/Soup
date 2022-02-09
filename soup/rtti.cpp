@@ -1,5 +1,7 @@
 #include "rtti.hpp"
 
+#include <cstring> // strlen
+
 namespace soup::rtti
 {
 	const char* type_info::getName() const noexcept

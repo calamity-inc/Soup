@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bigint.hpp"
+#include "pkcs1.hpp"
 
 namespace soup
 {
