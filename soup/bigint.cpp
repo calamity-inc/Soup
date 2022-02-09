@@ -356,14 +356,14 @@ namespace soup
 			}
 		}
 		size_t i = chunks.size();
-		do
+		while (i != 0)
 		{
 			--i;
-			if (getChunk(i) != b.getChunk(i))
+			if (getChunkInbounds(i) != b.getChunkInbounds(i))
 			{
-				return getChunk(i) > b.getChunk(i) ? +1 : -1;
+				return getChunkInbounds(i) > b.getChunkInbounds(i) ? +1 : -1;
 			}
-		} while (i != 0);
+		}
 		return 0;
 	}
 
