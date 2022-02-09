@@ -549,7 +549,7 @@ namespace soup
 			const size_t x = getChunkInbounds(i);
 			const size_t y = b.getChunk(i);
 			size_t res = (x + y + carry);
-			setChunk(i, (chunk_t)res);
+			setChunkInbounds(i, (chunk_t)res);
 			carry = getCarry(res);
 		}
 		if (carry != 0)
@@ -592,7 +592,7 @@ namespace soup
 			const size_t x = getChunkInbounds(i);
 			const size_t y = subtrahend.getChunk(i);
 			size_t res = (x - y - carry);
-			setChunk(i, (chunk_t)res);
+			setChunkInbounds(i, (chunk_t)res);
 			carry = (getCarry(res) != 0);
 		}
 		shrink();
