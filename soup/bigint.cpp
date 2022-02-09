@@ -960,7 +960,8 @@ namespace soup
 
 			if (v.isZero())
 			{
-				return u << k;
+				u <<= k;
+				return u;
 			}
 
 			v >>= v.getTrailingZeroesBinary();
