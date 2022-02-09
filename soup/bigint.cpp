@@ -158,12 +158,17 @@ namespace soup
 	{
 		if (i < chunks.size())
 		{
-			chunks[i] = v;
+			setChunkInbounds(i, v);
 		}
 		else
 		{
 			addChunk(v);
 		}
+	}
+
+	void bigint::setChunkInbounds(size_t i, chunk_t v)
+	{
+		chunks[i] = v;
 	}
 
 	void bigint::addChunk(size_t i, chunk_t v)
@@ -643,7 +648,7 @@ namespace soup
 		{
 			for (size_t i = getNumBits(); i-- != 0; )
 			{
-				res.second.leftShiftNodisable(1);
+				res.second.leftShiftSmall(1);
 				res.second.setBit(0, getBitInbounds(i));
 				if (res.second >= divisor)
 				{
@@ -660,7 +665,7 @@ namespace soup
 		bigint remainder{};
 		for (size_t i = getNumBits(); i-- != 0; )
 		{
-			remainder.leftShiftNodisable(1);
+			remainder.leftShiftSmall(1);
 			remainder.setBit(0, getBitInbounds(i));
 			if (remainder >= divisor)
 			{
@@ -682,18 +687,11 @@ namespace soup
 
 	void bigint::operator<<=(const size_t b)
 	{
-		leftShiftNodisable(b);
-		if (b < getNumBits())
+		if (b <= getBitsPerChunk())
 		{
-			for (size_t i = 0; i != b; ++i)
-			{
-				disableBitInbounds(i);
-			}
+			return leftShiftSmall(b);
 		}
-	}
-	
-	void bigint::leftShiftNodisable(const size_t b)
-	{
+
 		const auto nb = getNumBits();
 		if (nb != 0)
 		{
@@ -706,14 +704,38 @@ namespace soup
 					setBit(i + b, getBitInbounds(i));
 				}
 			}
-			// move
+
 			if (b < nb)
 			{
+				// move
 				for (size_t i = nb; i-- != b; )
 				{
 					setBitInbounds(i, getBitInbounds(i - b));
 				}
+
+				// disable
+				for (size_t i = 0; i != b; ++i)
+				{
+					disableBitInbounds(i);
+				}
 			}
+		}
+	}
+
+	void bigint::leftShiftSmall(const size_t b)
+	{
+		size_t carry = 0;
+		const auto nc = getNumChunks();
+		for (size_t i = 0; i != nc; ++i)
+		{
+			size_t c = getChunkInbounds(i);
+			c = ((c << b) | carry);
+			setChunkInbounds(i, c);
+			carry = getCarry(c);
+		}
+		if (carry != 0)
+		{
+			setChunk(nc, carry);
 		}
 	}
 

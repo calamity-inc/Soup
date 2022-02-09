@@ -68,6 +68,9 @@ namespace soup
 		[[nodiscard]] chunk_t getChunkInbounds(size_t i) const noexcept;
 	public:
 		void setChunk(size_t i, chunk_t v);
+	private:
+		void setChunkInbounds(size_t i, chunk_t v);
+	public:
 		void addChunk(size_t i, chunk_t v);
 		void addChunk(chunk_t v);
 		void shrink() noexcept;
@@ -135,7 +138,7 @@ namespace soup
 		[[nodiscard]] bool isDivisorOf(const bigint& dividend) const;
 		void operator<<=(const size_t b);
 	private:
-		void leftShiftNodisable(const size_t b);
+		void leftShiftSmall(const size_t b);
 	public:
 		void operator>>=(const size_t b);
 		void operator|=(const bigint& b);
