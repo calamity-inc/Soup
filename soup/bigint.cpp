@@ -706,15 +706,18 @@ namespace soup
 				}
 			}
 
+			// move
 			if (b < nb)
 			{
-				// move
 				for (size_t i = nb; i-- != b; )
 				{
 					setBitInbounds(i, getBitInbounds(i - b));
 				}
+			}
 
-				// disable
+			// disable
+			if (b < getNumBits())
+			{
 				for (size_t i = 0; i != b; ++i)
 				{
 					disableBitInbounds(i);
