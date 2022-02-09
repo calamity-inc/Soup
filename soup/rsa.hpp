@@ -6,31 +6,55 @@ namespace soup
 {
 	struct rsa
 	{
+		template <typename T>
 		struct key
 		{
 			bigint n;
-			bigint e;
 
-			key(bigint n, bigint e)
-				: n(std::move(n)), e(std::move(e))
+			key(const bigint& n)
+				: n(n)
 			{
 			}
 
-			[[nodiscard]] size_t getMaxUnpaddedMessageBytes() const;
-			[[nodiscard]] size_t getMaxPkcs1MessageBytes() const;
+			[[nodiscard]] size_t getMaxUnpaddedMessageBytes() const
+			{
+				return n.getNumBytes();
+			}
 
-			[[nodiscard]] bigint modPow(const bigint& x) const;
+			[[nodiscard]] size_t getMaxPkcs1MessageBytes() const
+			{
+				return getMaxUnpaddedMessageBytes() - 11;
+			}
 
-			[[nodiscard]] bigint encryptUnpadded(const std::string& msg) const; // not secure if `msg` is not unique
+			[[nodiscard]] bigint encryptUnpadded(const std::string& msg) const // not secure if `msg` is not unique
+			{
+				return reinterpret_cast<const T*>(this)->modPow(bigint::fromMessage(msg));
+			}
 
-			[[nodiscard]] std::string decryptPkcs1(const bigint& enc) const;
-			[[nodiscard]] std::string decryptUnpadded(const bigint& enc) const;
+			[[nodiscard]] std::string decryptUnpadded(const bigint& enc) const
+			{
+				return reinterpret_cast<const T*>(this)->modPow(enc).toMessage();
+			}
 
-			[[nodiscard]] bigint sign(const bigint& hash) const;
-			[[nodiscard]] bool verify(const bigint& hash, const bigint& sig) const;
+			[[nodiscard]] std::string decryptPkcs1(const bigint& enc) const
+			{
+				auto msg = decryptUnpadded(enc);
+				pkcs1::unpad(msg);
+				return msg;
+			}
+
+			[[nodiscard]] bigint sign(const bigint& hash) const
+			{
+				return reinterpret_cast<const T*>(this)->modPow(hash);
+			}
+
+			[[nodiscard]] bool verify(const bigint& hash, const bigint& sig) const
+			{
+				return reinterpret_cast<const T*>(this)->modPow(sig) == hash;
+			}
 		};
 
-		struct key_public : public key
+		struct key_public : public key<key_public>
 		{
 #if SOUP_PLATFORM_BITS > 32
 			static bigint::chunk_t e_pref;
@@ -38,28 +62,51 @@ namespace soup
 			static bigint e_pref;
 #endif
 
-			using key::key;
+			bigint e;
+
+			key_public(const bigint& n, const bigint& e)
+				: key(n), e(e)
+			{
+			}
+
+			[[nodiscard]] bigint modPow(const bigint& x) const;
 
 			[[nodiscard]] bigint encryptPkcs1(std::string msg) const;
 		};
 
-		struct key_private : public key
+		struct key_private : public key<key_private>
 		{
-			using key::key;
+			bigint p;
+			bigint q;
+			bigint dp;
+			bigint dq;
+			bigint qinv;
 
-			[[nodiscard]] key_public derivePublic() const; // this is a minimal representation, so public key derivation assumes that e = e_pref, which is true unless your keypair is 21-bit or less
+			key_private(const bigint& n, const bigint& p, const bigint& q, const bigint& dp, const bigint& dq, const bigint& qinv)
+				: key(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv)
+			{
+			}
+
+			[[nodiscard]] bigint modPow(const bigint& x) const;
 
 			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // not secure if `msg` is not unique
+
+			[[nodiscard]] key_public derivePublic() const; // public key derivation assumes that e = e_pref, which is true unless your keypair is 21-bit or less
 		};
 
 		struct keypair
 		{
+			bigint p;
+			bigint q;
 			bigint n;
 			bigint e;
-			bigint d;
+			bigint dp;
+			bigint dq;
+			bigint qinv;
 
-			void random(int bits);
-			void fromPrimes(const bigint& p, const bigint& q);
+			keypair(bigint&& _p, bigint&& _q);
+
+			[[nodiscard]] static keypair random(unsigned int bits);
 
 			[[nodiscard]] key_public getPublic() const;
 			[[nodiscard]] key_private getPrivate() const;

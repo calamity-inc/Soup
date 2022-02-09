@@ -8,51 +8,11 @@ namespace soup
 {
 	using namespace literals;
 
-	using key = rsa::key;
 	using key_public = rsa::key_public;
 	using key_private = rsa::key_private;
+	using keypair = rsa::keypair;
 
-	size_t rsa::key::getMaxUnpaddedMessageBytes() const
-	{
-		return n.getNumBytes();
-	}
-
-	size_t rsa::key::getMaxPkcs1MessageBytes() const
-	{
-		return getMaxUnpaddedMessageBytes() - 11;
-	}
-
-	bigint rsa::key::modPow(const bigint& x) const
-	{
-		return x.modPow(e, n);
-	}
-
-	bigint rsa::key::encryptUnpadded(const std::string& msg) const
-	{
-		return modPow(bigint::fromMessage(msg));
-	}
-
-	std::string rsa::key::decryptPkcs1(const bigint& enc) const
-	{
-		auto msg = decryptUnpadded(enc);
-		pkcs1::unpad(msg);
-		return msg;
-	}
-
-	std::string rsa::key::decryptUnpadded(const bigint& enc) const
-	{
-		return modPow(enc).toMessage();
-	}
-
-	bigint rsa::key::sign(const bigint& hash) const
-	{
-		return modPow(hash);
-	}
-
-	bool rsa::key::verify(const bigint& hash, const bigint& sig) const
-	{
-		return modPow(sig) == hash;
-	}
+	// rsa::key_public
 
 #if SOUP_PLATFORM_BITS > 32
 	bigint::chunk_t rsa::key_public::e_pref = 65537u;
@@ -60,15 +20,25 @@ namespace soup
 	bigint rsa::key_public::e_pref = 65537_b;
 #endif
 
+	bigint rsa::key_public::modPow(const bigint& x) const
+	{
+		return x.modPow(e, n);
+	}
+
 	bigint rsa::key_public::encryptPkcs1(std::string msg) const
 	{
 		pkcs1::public_pad(msg, getMaxUnpaddedMessageBytes());
 		return encryptUnpadded(msg);
 	}
 
-	key_public rsa::key_private::derivePublic() const
+	// rsa::key_private
+
+	bigint rsa::key_private::modPow(const bigint& x) const
 	{
-		return key_public(n, key_public::e_pref);
+		auto mp = x.modPow(dp, p);
+		auto mq = x.modPow(dq, q);
+		auto h = (qinv * (mp - mq) % p);
+		return ((mq + (h * q)) % n);
 	}
 
 	bigint rsa::key_private::encryptPkcs1(std::string msg) const
@@ -77,7 +47,38 @@ namespace soup
 		return encryptUnpadded(msg);
 	}
 
-	void rsa::keypair::random(int bits)
+	key_public rsa::key_private::derivePublic() const
+	{
+		return key_public(n, key_public::e_pref);
+	}
+
+	// rsa::keypair
+
+	rsa::keypair::keypair(bigint&& _p, bigint&& _q)
+		: p(std::move(_p)), q(std::move(_q)), n(p * q)
+	{
+		const auto pm1 = (p - 1_b);
+		const auto qm1 = (q - 1_b);
+		const auto t = pm1.lcm(qm1);
+		if (t < key_public::e_pref)
+		{
+			const auto bl = t.getBitLength();
+			do
+			{
+				e = bigint::randomProbablePrime(bl);
+			} while (e >= t || e.isDivisorOf(t));
+		}
+		else
+		{
+			e = key_public::e_pref;
+		}
+		const auto d = e.modMulInv(t);
+		dp = d.modUnsigned(pm1);
+		dq = d.modUnsigned(qm1);
+		qinv = q.modMulInv(p);
+	}
+
+	keypair rsa::keypair::random(unsigned int bits)
 	{
 		bits /= 2u;
 		bigint p, q;
@@ -91,28 +92,7 @@ namespace soup
 		});
 		pt.join();
 		qt.join();
-		fromPrimes(p, q);
-	}
-
-	void rsa::keypair::fromPrimes(const bigint& p, const bigint& q)
-	{
-		using namespace soup::literals;
-
-		n = (p * q);
-		const auto t = (p - 1_b).lcm(q - 1_b); // = n.reducedTotient()
-		if (t < key_public::e_pref)
-		{
-			const auto bl = t.getBitLength();
-			do
-			{
-				e = bigint::randomProbablePrime(bl);
-			} while (e >= t || e.isDivisorOf(t));
-		}
-		else
-		{
-			e = key_public::e_pref;
-		}
-		d = e.modMulInv(t);
+		return keypair(std::move(p), std::move(q));
 	}
 
 	key_public rsa::keypair::getPublic() const
@@ -122,6 +102,6 @@ namespace soup
 
 	key_private rsa::keypair::getPrivate() const
 	{
-		return key_private(n, d);
+		return key_private(n, p, q, dp, dq, qinv);
 	}
 }
