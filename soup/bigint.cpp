@@ -722,16 +722,15 @@ namespace soup
 		size_t nb = getNumBits();
 		if (nb != 0)
 		{
+			for (size_t i = 0; i != nb; ++i)
+			{
+				setBitInbounds(i, getBit(i + b));
+			}
 			for (size_t i = nb, j = 0; --i, j != b; ++j)
 			{
 				disableBitInbounds(i);
 			}
 			shrink();
-			nb = getNumBits();
-			for (size_t i = 0; i != nb; ++i)
-			{
-				setBitInbounds(i, getBit(i + b));
-			}
 		}
 	}
 
