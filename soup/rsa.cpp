@@ -53,7 +53,7 @@ namespace soup
 
 	key_public rsa::key_private::derivePublic() const
 	{
-		return key_public(n, key_public::e_pref);
+		return key_public(n);
 	}
 
 	bigint rsa::key_private::modPow(const bigint& x) const

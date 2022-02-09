@@ -52,6 +52,11 @@ namespace soup
 
 			bigint e;
 
+			key_public(const bigint& n)
+				: key(n), e(e_pref)
+			{
+			}
+
 			key_public(const bigint& n, const bigint& e)
 				: key(n), e(e)
 			{
