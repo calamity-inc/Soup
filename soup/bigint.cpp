@@ -287,7 +287,8 @@ namespace soup
 
 	size_t bigint::getLowestSetBit() const noexcept
 	{
-		for (size_t i = 0; i != getNumBits(); ++i)
+		const auto nb = getNumBits();
+		for (size_t i = 0; i != nb; ++i)
 		{
 			if (getBit(i))
 			{
@@ -758,7 +759,8 @@ namespace soup
 
 	void bigint::operator|=(const bigint& b)
 	{
-		for (size_t i = 0; i != b.getNumBits(); ++i)
+		const auto nb = b.getNumBits();
+		for (size_t i = 0; i != nb; ++i)
 		{
 			if (b.getBit(i))
 			{
@@ -769,7 +771,8 @@ namespace soup
 
 	void bigint::operator&=(const bigint& b)
 	{
-		for (size_t i = 0; i != getNumBits(); ++i)
+		const auto nb = getNumBits();
+		for (size_t i = 0; i != nb; ++i)
 		{
 			if (getBit(i) && !b.getBit(i))
 			{
@@ -825,11 +828,13 @@ namespace soup
 		if (!isZero() && !b.isZero())
 		{
 			product.negative = (negative ^ b.negative);
-			for (size_t j = 0; j != b.getNumChunks(); ++j)
+			const auto nc = getNumChunks();
+			const auto b_nc = b.getNumChunks();
+			for (size_t j = 0; j != b_nc; ++j)
 			{
 				chunk_t carry = 0;
 				const size_t y = b.getChunkInbounds(j);
-				for (size_t i = 0; i != getNumChunks(); ++i)
+				for (size_t i = 0; i != nc; ++i)
 				{
 					const size_t x = getChunkInbounds(i);
 					size_t res = product.getChunk(i + j) + (x * y) + carry;
@@ -838,7 +843,7 @@ namespace soup
 				}
 				if (carry != 0)
 				{
-					product.setChunk(j + getNumChunks(), carry);
+					product.setChunk(j + nc, carry);
 				}
 			}
 		}
@@ -956,7 +961,8 @@ namespace soup
 	size_t bigint::getTrailingZeroesBinary() const
 	{
 		size_t res = 0;
-		for (size_t i = 0; i != getNumBits() && !getBit(i); ++i)
+		const auto nb = getNumBits();
+		for (size_t i = 0; i != nb && !getBit(i); ++i)
 		{
 			++res;
 		}
