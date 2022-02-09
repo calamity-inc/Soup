@@ -795,34 +795,25 @@ namespace soup
 
 	bigint bigint::operator*(const bigint& b) const
 	{
-		if (isZero())
-		{
-			return bigint();
-		}
-		if (*this < b)
-		{
-			return b * *this;
-		}
-		if (b.isZero())
-		{
-			return bigint();
-		}
 		bigint product{};
-		product.negative = (negative ^ b.negative);
-		for (size_t j = 0; j != b.getNumChunks(); ++j)
+		if (!isZero() && !b.isZero())
 		{
-			chunk_t carry = 0;
-			const size_t y = b.getChunk(j);
-			for (size_t i = 0; i != getNumChunks(); ++i)
+			product.negative = (negative ^ b.negative);
+			for (size_t j = 0; j != b.getNumChunks(); ++j)
 			{
-				const size_t x = getChunk(i);
-				size_t res = product.getChunk(i + j) + (x * y) + carry;
-				product.setChunk(i + j, (chunk_t)res);
-				carry = getCarry(res);
-			}
-			if (carry != 0)
-			{
-				product.setChunk(j + getNumChunks(), carry);
+				chunk_t carry = 0;
+				const size_t y = b.getChunk(j);
+				for (size_t i = 0; i != getNumChunks(); ++i)
+				{
+					const size_t x = getChunk(i);
+					size_t res = product.getChunk(i + j) + (x * y) + carry;
+					product.setChunk(i + j, (chunk_t)res);
+					carry = getCarry(res);
+				}
+				if (carry != 0)
+				{
+					product.setChunk(j + getNumChunks(), carry);
+				}
 			}
 		}
 		return product;
