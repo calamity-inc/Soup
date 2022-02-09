@@ -192,6 +192,12 @@
     <ClInclude Include="rtti.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="sha1.hpp">
+      <Filter>hash</Filter>
+    </ClInclude>
+    <ClInclude Include="crypto_hash_algo.hpp">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -257,6 +263,9 @@
     <ClCompile Include="rtti.cpp">
       <Filter>mem</Filter>
     </ClCompile>
+    <ClCompile Include="sha1.cpp">
+      <Filter>hash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -288,6 +297,9 @@
     </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{1c7b8b47-6f42-4f4b-953a-ae2ebda20781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hash">
+      <UniqueIdentifier>{31591c67-cd1c-4cc1-82c8-9cbbca1dba34}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

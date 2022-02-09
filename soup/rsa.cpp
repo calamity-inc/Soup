@@ -12,6 +12,18 @@ namespace soup
 	using key_private = rsa::key_private;
 	using keypair = rsa::keypair;
 
+	// rsa::mod
+
+	size_t rsa::mod::getMaxUnpaddedMessageBytes() const
+	{
+		return n.getNumBytes();
+	}
+
+	size_t rsa::mod::getMaxPkcs1MessageBytes() const
+	{
+		return getMaxUnpaddedMessageBytes() - 11;
+	}
+
 	// rsa::key_public
 
 #if SOUP_PLATFORM_BITS > 32
@@ -20,18 +32,29 @@ namespace soup
 	bigint rsa::key_public::e_pref = 65537_b;
 #endif
 
+	bigint rsa::key_public::encryptPkcs1(std::string msg) const
+	{
+		pkcs1::padPublic(msg, getMaxUnpaddedMessageBytes());
+		return encryptUnpadded(msg);
+	}
+
 	bigint rsa::key_public::modPow(const bigint& x) const
 	{
 		return x.modPow(e, n);
 	}
 
-	bigint rsa::key_public::encryptPkcs1(std::string msg) const
+	// rsa::key_private
+
+	bigint rsa::key_private::encryptPkcs1(std::string msg) const
 	{
-		pkcs1::public_pad(msg, getMaxUnpaddedMessageBytes());
+		pkcs1::padPrivate(msg, getMaxUnpaddedMessageBytes());
 		return encryptUnpadded(msg);
 	}
 
-	// rsa::key_private
+	key_public rsa::key_private::derivePublic() const
+	{
+		return key_public(n, key_public::e_pref);
+	}
 
 	bigint rsa::key_private::modPow(const bigint& x) const
 	{
@@ -41,21 +64,10 @@ namespace soup
 		return ((mq + (h * q)) % n);
 	}
 
-	bigint rsa::key_private::encryptPkcs1(std::string msg) const
-	{
-		pkcs1::private_pad(msg, getMaxUnpaddedMessageBytes());
-		return encryptUnpadded(msg);
-	}
-
-	key_public rsa::key_private::derivePublic() const
-	{
-		return key_public(n, key_public::e_pref);
-	}
-
 	// rsa::keypair
 
 	rsa::keypair::keypair(bigint&& _p, bigint&& _q)
-		: p(std::move(_p)), q(std::move(_q)), n(p * q)
+		: mod(_p * _q), p(std::move(_p)), q(std::move(_q))
 	{
 		const auto pm1 = (p - 1_b);
 		const auto qm1 = (q - 1_b);

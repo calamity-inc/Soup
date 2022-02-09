@@ -6,27 +6,25 @@ namespace soup
 {
 	struct rsa
 	{
-		template <typename T>
-		struct key
+		struct mod
 		{
 			bigint n;
 
-			key(const bigint& n)
+			mod(const bigint& n)
 				: n(n)
 			{
 			}
 
-			[[nodiscard]] size_t getMaxUnpaddedMessageBytes() const
-			{
-				return n.getNumBytes();
-			}
+			[[nodiscard]] size_t getMaxUnpaddedMessageBytes() const;
+			[[nodiscard]] size_t getMaxPkcs1MessageBytes() const;
+		};
 
-			[[nodiscard]] size_t getMaxPkcs1MessageBytes() const
-			{
-				return getMaxUnpaddedMessageBytes() - 11;
-			}
+		template <typename T>
+		struct key : public mod
+		{
+			using mod::mod;
 
-			[[nodiscard]] bigint encryptUnpadded(const std::string& msg) const // not secure if `msg` is not unique
+			[[nodiscard]] bigint encryptUnpadded(const std::string& msg) const // deterministic
 			{
 				return reinterpret_cast<const T*>(this)->modPow(bigint::fromMessage(msg));
 			}
@@ -41,16 +39,6 @@ namespace soup
 				auto msg = decryptUnpadded(enc);
 				pkcs1::unpad(msg);
 				return msg;
-			}
-
-			[[nodiscard]] bigint sign(const bigint& hash) const
-			{
-				return reinterpret_cast<const T*>(this)->modPow(hash);
-			}
-
-			[[nodiscard]] bool verify(const bigint& hash, const bigint& sig) const
-			{
-				return reinterpret_cast<const T*>(this)->modPow(sig) == hash;
 			}
 		};
 
@@ -69,9 +57,17 @@ namespace soup
 			{
 			}
 
-			[[nodiscard]] bigint modPow(const bigint& x) const;
+			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // non-deterministic
 
-			[[nodiscard]] bigint encryptPkcs1(std::string msg) const;
+			template <typename CryptoHashAlgo>
+			[[nodiscard]] bool verify(const std::string& msg, const bigint& sig) const
+			{
+				auto hash_bin = CryptoHashAlgo::hash(msg);
+				return pkcs1::padHash<CryptoHashAlgo>(hash_bin, getMaxUnpaddedMessageBytes())
+					&& decryptUnpadded(sig) == hash_bin;
+			}
+
+			[[nodiscard]] bigint modPow(const bigint& x) const;
 		};
 
 		struct key_private : public key<key_private>
@@ -87,18 +83,23 @@ namespace soup
 			{
 			}
 
-			[[nodiscard]] bigint modPow(const bigint& x) const;
+			template <typename CryptoHashAlgo>
+			[[nodiscard]] bigint sign(const std::string& msg) const // deterministic
+			{
+				return encryptPkcs1(CryptoHashAlgo::hashWithId(msg));
+			}
 
-			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // not secure if `msg` is not unique
+			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // deterministic
 
 			[[nodiscard]] key_public derivePublic() const; // public key derivation assumes that e = e_pref, which is true unless your keypair is 21-bit or less
+
+			[[nodiscard]] bigint modPow(const bigint& x) const;
 		};
 
-		struct keypair
+		struct keypair : public mod
 		{
 			bigint p;
 			bigint q;
-			bigint n;
 			bigint e;
 			bigint dp;
 			bigint dq;

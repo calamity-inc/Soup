@@ -8,7 +8,7 @@ namespace soup
 {
 	struct pkcs1
 	{
-		static bool public_pad(std::string& str, const size_t max_unpadded_length)
+		static bool padPublic(std::string& str, const size_t max_unpadded_length) // non-deterministic
 		{
 			const auto len = str.length();
 			if (len + 11 > max_unpadded_length)
@@ -22,13 +22,11 @@ namespace soup
 				str.insert(0, 1, rand.ch());
 			}
 			str.insert(0, 1, '\2');
-			str.insert(0, 1, '\0');
+			//str.insert(0, 1, '\0');
 			return true;
 		}
 
-		// This is not a secure function because the result is deterministic, but it's what the PKCS1 specification says.
-		// At least that's what the people at OpenSSL told me when I reported this security issue.
-		static bool private_pad(std::string& str, const size_t max_unpadded_length)
+		static bool padPrivate(std::string& str, const size_t max_unpadded_length) // deterministic
 		{
 			const auto len = str.length();
 			if (len + 11 > max_unpadded_length)
@@ -37,13 +35,17 @@ namespace soup
 			}
 			str.reserve(max_unpadded_length);
 			str.insert(0, 1, '\0');
-			for (size_t i = max_unpadded_length - len - 3; i != 0; --i)
-			{
-				str.insert(0, 1, '\xff');
-			}
+			str.insert(0, max_unpadded_length - len - 3, '\xff');
 			str.insert(0, 1, '\1');
-			str.insert(0, 1, '\0');
+			//str.insert(0, 1, '\0');
 			return true;
+		}
+
+		template <typename CryptoHashAlgo>
+		static bool padHash(std::string& bin, const size_t max_unpadded_length) // deterministic
+		{
+			return CryptoHashAlgo::prependId(bin)
+				&& padPrivate(bin, max_unpadded_length);
 		}
 
 		static bool unpad(std::string& str)
