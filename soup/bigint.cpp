@@ -198,11 +198,16 @@ namespace soup
 		return getNumChunks() * getBytesPerChunk();
 	}
 
-	uint8_t bigint::getByte(size_t i) const noexcept
+	uint8_t bigint::getByte(const size_t i) const noexcept
 	{
-		const chunk_t chunk = getChunk(i / getBytesPerChunk());
-		const auto chunk_bytes = (const uint8_t*)&chunk;
-		return chunk_bytes[i % getBytesPerChunk()];
+		auto j = i / getBytesPerChunk();
+		auto k = i % getBytesPerChunk();
+
+		if (j < chunks.size())
+		{
+			return (reinterpret_cast<const uint8_t*>(&chunks.at(j)))[k];
+		}
+		return 0;
 	}
 
 	size_t bigint::getNumNibbles() const noexcept

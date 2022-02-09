@@ -73,7 +73,7 @@ namespace soup
 		void shrink() noexcept;
 
 		[[nodiscard]] size_t getNumBytes() const noexcept;
-		[[nodiscard]] uint8_t getByte(size_t i) const noexcept;
+		[[nodiscard]] uint8_t getByte(const size_t i) const noexcept;
 
 		[[nodiscard]] size_t getNumNibbles() const noexcept;
 		[[nodiscard]] uint8_t getNibble(size_t i) const noexcept;
