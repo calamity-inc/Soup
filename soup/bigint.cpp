@@ -535,7 +535,7 @@ namespace soup
 		const size_t j = getNumChunks();
 		for (size_t i = 0; i != j; ++i)
 		{
-			const size_t x = getChunk(i);
+			const size_t x = getChunkInbounds(i);
 			const size_t y = b.getChunk(i);
 			size_t res = (x + y + carry);
 			setChunk(i, (chunk_t)res);
@@ -578,7 +578,7 @@ namespace soup
 		const size_t j = getNumChunks();
 		for (size_t i = 0; i != j; ++i)
 		{
-			const size_t x = getChunk(i);
+			const size_t x = getChunkInbounds(i);
 			const size_t y = subtrahend.getChunk(i);
 			size_t res = (x - y - carry);
 			setChunk(i, (chunk_t)res);
@@ -802,10 +802,10 @@ namespace soup
 			for (size_t j = 0; j != b.getNumChunks(); ++j)
 			{
 				chunk_t carry = 0;
-				const size_t y = b.getChunk(j);
+				const size_t y = b.getChunkInbounds(j);
 				for (size_t i = 0; i != getNumChunks(); ++i)
 				{
-					const size_t x = getChunk(i);
+					const size_t x = getChunkInbounds(i);
 					size_t res = product.getChunk(i + j) + (x * y) + carry;
 					product.setChunk(i + j, (chunk_t)res);
 					carry = getCarry(res);
