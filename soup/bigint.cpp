@@ -917,6 +917,10 @@ namespace soup
 
 	size_t bigint::getTrailingZeroes(const bigint& base) const
 	{
+		if (base == (chunk_t)2u)
+		{
+			return getTrailingZeroesBinary();
+		}
 		size_t res = 0;
 		bigint tmp(*this);
 		while (!tmp.isZero())
@@ -932,12 +936,22 @@ namespace soup
 		return res;
 	}
 
+	size_t bigint::getTrailingZeroesBinary() const
+	{
+		size_t res = 0;
+		for (size_t i = 0; i != getNumBits() && !getBit(i); ++i)
+		{
+			++res;
+		}
+		return res;
+	}
+
 	bigint bigint::gcd(bigint v) const
 	{
 		bigint u(*this);
 
-		auto i = u.getTrailingZeroes(2u); u >>= i;
-		auto j = v.getTrailingZeroes(2u); v >>= j;
+		auto i = u.getTrailingZeroesBinary(); u >>= i;
+		auto j = v.getTrailingZeroesBinary(); v >>= j;
 		auto k = std::min(i, j);
 
 		while (true)
@@ -954,7 +968,7 @@ namespace soup
 				return u << k;
 			}
 
-			v >>= v.getTrailingZeroes(2u);
+			v >>= v.getTrailingZeroesBinary();
 		}
 	}
 

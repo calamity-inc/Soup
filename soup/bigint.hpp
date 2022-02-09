@@ -159,6 +159,7 @@ namespace soup
 		[[nodiscard]] bigint pow(bigint e) const;
 		[[nodiscard]] bigint modPow(bigint e, const bigint& m) const;
 		[[nodiscard]] size_t getTrailingZeroes(const bigint& base) const;
+		[[nodiscard]] size_t getTrailingZeroesBinary() const;
 		[[nodiscard]] bigint gcd(bigint v) const;
 		[[nodiscard]] bigint gcd(bigint b, bigint& x, bigint& y) const;
 	private:
