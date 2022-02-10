@@ -3,6 +3,7 @@
 #include "packet_io_base.hpp"
 
 #include <ostream>
+#include <vector>
 
 namespace soup
 {
@@ -133,6 +134,73 @@ namespace soup
 				return true;
 			}
 			return false;
+		}
+
+		// std::vector<uint8_t> with u8 size prefix.
+		bool vec_u8_u8(std::vector<uint8_t>& v)
+		{
+			if (v.size() > 0xFF)
+			{
+				return false;
+			}
+			auto len = (uint8_t)v.size();
+			if (!u8(len))
+			{
+				return false;
+			}
+			for (auto& entry : v)
+			{
+				if (!u8(entry))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// std::vector<uint16_t> with u16 size prefix.
+		bool vec_u16_u16(std::vector<uint16_t>& v)
+		{
+			if (v.size() > 0xFFFF)
+			{
+				return false;
+			}
+			auto len = (uint16_t)v.size();
+			if (!u16(len))
+			{
+				return false;
+			}
+			for (auto& entry : v)
+			{
+				if (!u16(entry))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// std::vector<uint16_t> with u16 byte length prefix.
+		bool vec_u16_bl_u16(std::vector<uint16_t>& v)
+		{
+			size_t bl = (v.size() * sizeof(uint16_t));
+			if (bl > 0xFFFF)
+			{
+				return false;
+			}
+			auto bl_u16 = (uint16_t)bl;
+			if (!u16(bl_u16))
+			{
+				return false;
+			}
+			for (auto& entry : v)
+			{
+				if (!u16(entry))
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 	};
 }

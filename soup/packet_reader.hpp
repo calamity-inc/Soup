@@ -3,6 +3,7 @@
 #include "packet_io_base.hpp"
 
 #include <istream>
+#include <vector>
 
 namespace soup
 {
@@ -128,6 +129,72 @@ namespace soup
 		{
 			uint64_t len;
 			return u64(len) && str_lp_impl(v, len);
+		}
+
+		// std::vector<uint8_t> with u8 size prefix.
+		bool vec_u8_u8(std::vector<uint8_t>& v)
+		{
+			uint8_t len;
+			if (!u8(len))
+			{
+				return false;
+			}
+			v.clear();
+			v.reserve(len);
+			for (; len; --len)
+			{
+				uint8_t entry;
+				if (!u8(entry))
+				{
+					return false;
+				}
+				v.emplace_back(entry);
+			}
+			return true;
+		}
+
+		// std::vector<uint16_t> with u16 size prefix.
+		bool vec_u16_u16(std::vector<uint16_t>& v)
+		{
+			uint16_t len;
+			if (!u16(len))
+			{
+				return false;
+			}
+			v.clear();
+			v.reserve(len);
+			for (; len; --len)
+			{
+				uint16_t entry;
+				if (!u16(entry))
+				{
+					return false;
+				}
+				v.emplace_back(entry);
+			}
+			return true;
+		}
+
+		// std::vector<uint16_t> with u16 byte length prefix.
+		bool vec_u16_bl_u16(std::vector<uint16_t>& v)
+		{
+			uint16_t len;
+			if (!u16(len))
+			{
+				return false;
+			}
+			v.clear();
+			v.reserve(len);
+			for (; len >= sizeof(uint16_t); len -= sizeof(uint16_t))
+			{
+				uint16_t entry;
+				if (!u16(entry))
+				{
+					return false;
+				}
+				v.emplace_back(entry);
+			}
+			return true;
 		}
 	};
 }
