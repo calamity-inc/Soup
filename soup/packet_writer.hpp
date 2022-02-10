@@ -53,5 +53,71 @@ namespace soup
 			u8(0);
 			return true;
 		}
+
+		// Length-prefixed string, using u64_dyn for the length prefix.
+		bool str_lp_u64_dyn(std::string& v)
+		{
+			u64_dyn(v.size());
+			os->write(v.data(), v.size());
+			return true;
+		}
+
+		// Length-prefixed string, using u8 for the length prefix.
+		bool str_lp_u8(std::string& v)
+		{
+			size_t len = v.size();
+			if (len <= 0xFF)
+			{
+				auto tl = (uint8_t)len;
+				u8(tl);
+				os->write(v.data(), v.size());
+				return true;
+			}
+			return false;
+		}
+
+		// Length-prefixed string, using u16 for the length prefix.
+		bool str_lp_u16(std::string& v)
+		{
+			size_t len = v.size();
+			if (len <= 0xFFFF)
+			{
+				auto tl = (uint16_t)len;
+				if (u16(tl))
+				{
+					os->write(v.data(), v.size());
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// Length-prefixed string, using u32 for the length prefix.
+		bool str_lp_u32(std::string& v)
+		{
+			size_t len = v.size();
+			if (len <= 0xFFFFFFFF)
+			{
+				auto tl = (uint32_t)len;
+				if (u32(tl))
+				{
+					os->write(v.data(), v.size());
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// Length-prefixed string, using u64 for the length prefix.
+		bool str_lp_u64(std::string& v)
+		{
+			size_t len = v.size();
+			if (u64(len))
+			{
+				os->write(v.data(), v.size());
+				return true;
+			}
+			return false;
+		}
 	};
 }

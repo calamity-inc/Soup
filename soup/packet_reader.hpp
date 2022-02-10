@@ -6,8 +6,9 @@
 
 namespace soup
 {
-	struct packet_reader : public packet_io_base<packet_reader>
+	class packet_reader : public packet_io_base<packet_reader>
 	{
+	public:
 		std::basic_istream<char, std::char_traits<char>>* is;
 
 		packet_reader(std::basic_istream<char, std::char_traits<char>>* is)
@@ -66,6 +67,52 @@ namespace soup
 				v.push_back(c);
 			}
 			return true;
+		}
+
+	protected:
+		bool str_lp_impl(std::string& v, size_t len)
+		{
+			auto data = new char[len];
+			is->read(data, len);
+			v.assign(data, len);
+			delete[] data;
+			return !is->fail();
+		}
+
+	public:
+		// Length-prefixed string, using u64_dyn for the length prefix.
+		bool str_lp_u64_dyn(std::string& v)
+		{
+			uint64_t len;
+			return u64_dyn(len) && str_lp_impl(v, len);
+		}
+
+		// Length-prefixed string, using u8 for the length prefix.
+		bool str_lp_u8(std::string& v)
+		{
+			uint8_t len;
+			return u8(len) && str_lp_impl(v, len);
+		}
+
+		// Length-prefixed string, using u16 for the length prefix.
+		bool str_lp_u16(std::string& v)
+		{
+			uint16_t len;
+			return u16(len) && str_lp_impl(v, len);
+		}
+
+		// Length-prefixed string, using u32 for the length prefix.
+		bool str_lp_u32(std::string& v)
+		{
+			uint32_t len;
+			return u32(len) && str_lp_impl(v, len);
+		}
+
+		// Length-prefixed string, using u64 for the length prefix.
+		bool str_lp_u64(std::string& v)
+		{
+			uint64_t len;
+			return u64(len) && str_lp_impl(v, len);
 		}
 	};
 }
