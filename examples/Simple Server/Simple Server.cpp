@@ -9,6 +9,7 @@ int main()
 	if (!srv.init(1337))
 	{
 		std::cout << "Init failed. Is port 1337 available?" << std::endl;
+		return 1;
 	}
 	std::cout << "Listening on *:1337..." << std::endl;
 	while (true)
