@@ -16,6 +16,11 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] bool hasMore()
+		{
+			return is->peek() != EOF;
+		}
+
 		[[nodiscard]] bool u8(uint8_t& p)
 		{
 			return !is->read((char*)&p, sizeof(uint8_t)).fail();

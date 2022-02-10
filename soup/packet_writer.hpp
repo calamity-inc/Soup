@@ -15,6 +15,11 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] static constexpr bool hasMore() noexcept
+		{
+			return true;
+		}
+
 		bool u8(const uint8_t& v)
 		{
 			os->write((const char*)&v, sizeof(uint8_t));
