@@ -13,6 +13,11 @@ namespace soup
 			return reinterpret_cast<T*>(this)->u8(*(uint8_t*)&v);
 		}
 
+		[[nodiscard]] bool c(char& v)
+		{
+			return reinterpret_cast<T*>(this)->u8(*(uint8_t*)&v);
+		}
+
 		[[nodiscard]] bool u16(uint16_t& v)
 		{
 			if constexpr (std::endian::native == std::endian::little)

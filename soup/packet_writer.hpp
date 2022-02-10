@@ -45,5 +45,13 @@ namespace soup
 			}
 			return true;
 		}
+
+		// Null-terminated string.
+		bool str_nt(std::string& v)
+		{
+			os->write(v.data(), v.size());
+			u8(0);
+			return true;
+		}
 	};
 }
