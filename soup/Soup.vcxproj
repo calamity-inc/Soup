@@ -227,6 +227,10 @@
     <ClInclude Include="addr_ip.hpp" />
     <ClInclude Include="addr_socket.hpp" />
     <ClInclude Include="memory_buffer.hpp" />
+    <ClInclude Include="packet.hpp" />
+    <ClInclude Include="packet_io_base.hpp" />
+    <ClInclude Include="packet_reader.hpp" />
+    <ClInclude Include="packet_writer.hpp" />
     <ClInclude Include="pattern_compile_time_base.hpp" />
     <ClInclude Include="pattern_compile_time_with_opt_bytes_base.hpp" />
     <ClInclude Include="pattern_compile_time_with_opt_bytes.hpp" />
@@ -251,8 +255,10 @@
     <ClInclude Include="rtti.hpp" />
     <ClInclude Include="server.hpp" />
     <ClInclude Include="sha1.hpp" />
+    <ClInclude Include="shortint_impl.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
+    <ClInclude Include="shortint.hpp" />
     <ClInclude Include="string.hpp" />
     <ClInclude Include="obfus_string.hpp" />
     <ClInclude Include="string_literal.hpp" />
