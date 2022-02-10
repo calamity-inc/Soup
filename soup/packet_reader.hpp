@@ -19,5 +19,33 @@ namespace soup
 		{
 			return !is->read((char*)&p, sizeof(uint8_t)).fail();
 		}
+
+		// An unsigned 64-bit integer encoded in 1..9 bytes. The most significant bit of bytes 1 to 8 is used to indicate if another byte follows.
+		bool u64_dyn(uint64_t& v)
+		{
+			v = 0;
+			uint8_t bits = 0;
+			while (true)
+			{
+				uint8_t b;
+				if (!u8(b))
+				{
+					return false;
+				}
+				bool has_next = false;
+				if ((bits < (64 - 8)) && (b & 0x80))
+				{
+					has_next = true;
+					b &= 0x7F;
+				}
+				v |= ((uint64_t)b << bits);
+				if (!has_next)
+				{
+					break;
+				}
+				bits += 7;
+			}
+			return true;
+		}
 	};
 }
