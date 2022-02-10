@@ -5,6 +5,7 @@
 
 #include "platform.hpp"
 #include "string.hpp"
+#include "string_literal.hpp"
 
 namespace soup
 {
@@ -126,4 +127,13 @@ namespace soup
 			return os;
 		}
 	};
+
+	namespace literals
+	{
+		template <string_literal Str>
+		consteval auto operator "" _obfus()
+		{
+			return obfus_string<Str.size()>(Str.data);
+		}
+	}
 }

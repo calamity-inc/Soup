@@ -168,12 +168,6 @@
     <ClInclude Include="rand.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="string.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="obfus_string.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="pkcs1.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
@@ -197,6 +191,15 @@
     </ClInclude>
     <ClInclude Include="crypto_hash_algo.hpp">
       <Filter>hash</Filter>
+    </ClInclude>
+    <ClInclude Include="string.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="obfus_string.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
+    <ClInclude Include="string_literal.hpp">
+      <Filter>util\string</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -300,6 +303,9 @@
     </Filter>
     <Filter Include="hash">
       <UniqueIdentifier>{31591c67-cd1c-4cc1-82c8-9cbbca1dba34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\string">
+      <UniqueIdentifier>{db02d3fa-069e-4d94-ac69-1ceda5822d24}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
