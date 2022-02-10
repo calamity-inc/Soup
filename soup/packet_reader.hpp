@@ -93,24 +93,24 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u8 for the length prefix.
-		bool str_lp_u8(std::string& v)
+		bool str_lp_u8(std::string& v, const size_t max_len = 0xFF)
 		{
 			uint8_t len;
-			return u8(len) && str_lp_impl(v, len);
+			return u8(len) && len <= max_len && str_lp_impl(v, len);
 		}
 
 		// Length-prefixed string, using u16 for the length prefix.
-		bool str_lp_u16(std::string& v)
+		bool str_lp_u16(std::string& v, const size_t max_len = 0xFFFF)
 		{
 			uint16_t len;
-			return u16(len) && str_lp_impl(v, len);
+			return u16(len) && len <= max_len && str_lp_impl(v, len);
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
-		bool str_lp_u32(std::string& v)
+		bool str_lp_u32(std::string& v, const size_t max_len = 0xFFFFFFFF)
 		{
 			uint32_t len;
-			return u32(len) && str_lp_impl(v, len);
+			return u32(len) && len <= max_len && str_lp_impl(v, len);
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.

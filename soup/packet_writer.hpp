@@ -68,10 +68,10 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u8 for the length prefix.
-		bool str_lp_u8(std::string& v)
+		bool str_lp_u8(std::string& v, const size_t max_len = 0xFF)
 		{
 			size_t len = v.size();
-			if (len <= 0xFF)
+			if (len <= max_len)
 			{
 				auto tl = (uint8_t)len;
 				u8(tl);
@@ -82,10 +82,10 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u16 for the length prefix.
-		bool str_lp_u16(std::string& v)
+		bool str_lp_u16(std::string& v, const size_t max_len = 0xFFFF)
 		{
 			size_t len = v.size();
-			if (len <= 0xFFFF)
+			if (len <= max_len)
 			{
 				auto tl = (uint16_t)len;
 				if (u16(tl))
@@ -98,10 +98,10 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
-		bool str_lp_u32(std::string& v)
+		bool str_lp_u32(std::string& v, const size_t max_len = 0xFFFFFFFF)
 		{
 			size_t len = v.size();
-			if (len <= 0xFFFFFFFF)
+			if (len <= max_len)
 			{
 				auto tl = (uint32_t)len;
 				if (u32(tl))
