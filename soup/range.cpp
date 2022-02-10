@@ -1,7 +1,7 @@
 #include "range.hpp"
 
+#include "base.hpp"
 #include "pattern.hpp"
-#include "platform.hpp"
 
 namespace soup
 {
@@ -22,7 +22,7 @@ namespace soup
 
 	bool range::pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept
 	{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		__try
 		{
 #endif
@@ -34,7 +34,7 @@ namespace soup
 				}
 			}
 			return true;
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER)
 		{

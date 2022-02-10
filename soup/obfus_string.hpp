@@ -3,7 +3,7 @@
 #include <algorithm> // swap
 #include <string>
 
-#include "platform.hpp"
+#include "base.hpp"
 #include "string.hpp"
 #include "string_literal.hpp"
 

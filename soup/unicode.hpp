@@ -2,12 +2,12 @@
 
 #include <string>
 
-#include "platform.hpp"
+#include "base.hpp"
 
 #define UTF8_CONTINUATION_FLAG 0b10000000
 #define UTF8_IS_CONTINUATION(ch) ((ch & 0b11000000) == UTF8_CONTINUATION_FLAG)
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 static_assert(sizeof(wchar_t) == 2);
 #define UTF16_CHAR_TYPE wchar_t
 #define UTF16_STRING_TYPE std::wstring

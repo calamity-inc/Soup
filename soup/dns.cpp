@@ -5,8 +5,8 @@
 #include "dns_srv.hpp"
 #include "dns_txt.hpp"
 
-#include "platform.hpp"
-#if SOUP_PLATFORM_WINDOWS
+#include "base.hpp"
+#if SOUP_WINDOWS
 #include "WinDNS.h"
 #pragma comment(lib, "Dnsapi.lib")
 #else
@@ -38,7 +38,7 @@ namespace soup
 	std::vector<dns_a> dns::lookupA(const char* name) noexcept
 	{
 		std::vector<dns_a> res{};
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
 		if (DnsQuery_UTF8(name, DNS_TYPE_A, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
@@ -68,7 +68,7 @@ namespace soup
 	std::vector<dns_aaaa> dns::lookupAAAA(const char* name) noexcept
 	{
 		std::vector<dns_aaaa> res{};
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
 		if (DnsQuery_UTF8(name, DNS_TYPE_AAAA, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
@@ -98,7 +98,7 @@ namespace soup
 	std::vector<dns_srv> dns::lookupSRV(const char* name) noexcept
 	{
 		std::vector<dns_srv> res{};
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
 		if (DnsQuery_UTF8(name, DNS_TYPE_SRV, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
@@ -130,7 +130,7 @@ namespace soup
 	std::vector<dns_txt> dns::lookupTXT(const char* name) noexcept
 	{
 		std::vector<dns_txt> res{};
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
 		if (DnsQuery_UTF8(name, DNS_TYPE_TEXT, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{

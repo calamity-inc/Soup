@@ -98,7 +98,7 @@ namespace soup
 		}
 	}
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 	region_virtual pattern::virtual_scan(BYTE* startAddress)
 	{
 		auto compareMemory = [](const std::uint8_t* data, std::optional<std::uint8_t>* elem, std::size_t num) -> bool

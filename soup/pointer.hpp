@@ -62,7 +62,7 @@ namespace soup
 
 		pointer rip() const noexcept;
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		pointer externalRip(const module& mod) const noexcept;
 
 		pointer rva(const module& mod) const noexcept;

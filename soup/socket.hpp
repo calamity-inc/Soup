@@ -1,10 +1,8 @@
 #pragma once
 
-#include "platform.hpp"
+#include "base.hpp"
 
-#include "addr_socket.hpp"
-
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
 #include <Winsock2.h>
 #include <Ws2tcpip.h>
@@ -19,19 +17,21 @@
 #include <fcntl.h>
 #endif
 
+#include "addr_socket.hpp"
+
 namespace soup
 {
 	class socket
 	{
 	public:
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		using fd_t = SOCKET;
 #else
 		using fd_t = int;
 #endif
 		fd_t fd;
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		inline static size_t wsa_consumers = 0;
 		static PSecurityFunctionTableA sft;
 
@@ -53,7 +53,7 @@ namespace soup
 		socket() noexcept
 			: fd(-1)
 		{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			SecInvalidateHandle(&ctx_h);
 			SecInvalidateHandle(&cred_h);
 #endif
@@ -66,7 +66,7 @@ namespace soup
 		{
 			b.fd = -1;
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			ctx_h.dwLower = b.ctx_h.dwLower;
 			ctx_h.dwUpper = b.ctx_h.dwUpper;
 			SecInvalidateHandle(&b.ctx_h);
@@ -84,7 +84,7 @@ namespace soup
 			fd = b.fd;
 			b.fd = -1;
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			ctx_h.dwLower = b.ctx_h.dwLower;
 			ctx_h.dwUpper = b.ctx_h.dwUpper;
 			SecInvalidateHandle(&b.ctx_h);
@@ -99,7 +99,7 @@ namespace soup
 		{
 			release();
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			if (SecIsValidHandle(&cred_h))
 			{
 				sft->FreeCredentialsHandle(&cred_h);
@@ -112,7 +112,7 @@ namespace soup
 		{
 			if (fd != -1)
 			{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 				if (encrypted)
 				{
 					sendCloseNotify();
@@ -125,13 +125,13 @@ namespace soup
 				fd = -1;
 			}
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			releaseContext();
 #endif
 		}
 
 	private:
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		void releaseContext()
 		{
 			if (SecIsValidHandle(&ctx_h))
@@ -151,7 +151,7 @@ namespace soup
 	protected:
 		void preinit() noexcept
 		{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			if (wsa_consumers++ == 0)
 			{
 				WSADATA wsaData;
@@ -215,7 +215,7 @@ namespace soup
 
 		bool setBlocking(bool blocking) noexcept
 		{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			unsigned long mode = blocking ? 0 : 1;
 			return (ioctlsocket(fd, FIONBIO, &mode) == 0) ? true : false;
 #else
@@ -272,7 +272,7 @@ namespace soup
 				}
 
 				// error
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 				const auto err = WSAGetLastError();
 				if (err == 0)
 				{

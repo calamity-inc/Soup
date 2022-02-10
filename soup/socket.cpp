@@ -7,13 +7,13 @@
 #include "dns.hpp"
 #include "rand.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 #include <schannel.h>
 #endif
 
 namespace soup
 {
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 	PSecurityFunctionTableA socket::sft = nullptr;
 #endif
 
@@ -34,7 +34,7 @@ namespace soup
 
 	bool socket::encrypt(const char* server_name) noexcept
 	{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		if (sft == nullptr)
 		{
 			sft = InitSecurityInterface();
@@ -235,7 +235,7 @@ namespace soup
 
 	bool socket::send(const void* data, int size) noexcept
 	{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		if (!encrypted)
 		{
 			return sendUnencrypted(data, size);
@@ -283,7 +283,7 @@ namespace soup
 
 	int socket::recv(void* outData, int size) noexcept
 	{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		if (!encrypted)
 		{
 			return recvUnencrypted(outData, size);
@@ -437,7 +437,7 @@ namespace soup
 
 	void socket::sendCloseNotify() noexcept
 	{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		DWORD           dwType = SCHANNEL_SHUTDOWN;
 		PBYTE           pbMessage;
 		DWORD           cbMessage;

@@ -1,6 +1,6 @@
 #include "memory_buffer.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 
 #include <cstdlib>
 

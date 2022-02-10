@@ -201,6 +201,7 @@
   <ItemGroup>
     <ClInclude Include="alloc_raii.hpp" />
     <ClInclude Include="alloc_raii_remote.hpp" />
+    <ClInclude Include="base.hpp" />
     <ClInclude Include="base64.hpp" />
     <ClInclude Include="bigint.hpp" />
     <ClInclude Include="bitpointer.hpp" />
@@ -237,7 +238,6 @@
     <ClInclude Include="pattern.hpp" />
     <ClInclude Include="handle_plain.hpp" />
     <ClInclude Include="pkcs1.hpp" />
-    <ClInclude Include="platform.hpp" />
     <ClInclude Include="pointer.hpp" />
     <ClInclude Include="pointerlike.hpp" />
     <ClInclude Include="poly.hpp" />
@@ -253,7 +253,6 @@
     <ClInclude Include="sha1.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
-    <ClInclude Include="stdint.hpp" />
     <ClInclude Include="string.hpp" />
     <ClInclude Include="obfus_string.hpp" />
     <ClInclude Include="string_literal.hpp" />

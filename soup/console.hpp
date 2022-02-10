@@ -3,11 +3,11 @@
 #include <iostream>
 #include <thread>
 
-#include "platform.hpp"
+#include "base.hpp"
 #include "string.hpp"
 #include "unicode.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 #pragma comment(lib, "User32.lib") // GetAsyncKeyState
 
 #include <Windows.h>
@@ -38,7 +38,7 @@ namespace soup
 	class console_impl
 	{
 	private:
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		bool owner_of_console = false;
 		bool pressed_lmb = false;
 		bool pressed_rmb = false;
@@ -59,7 +59,7 @@ namespace soup
 	public:
 		void init()
 		{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			if (auto hSTDOUT = GetStdHandle(STD_OUTPUT_HANDLE);
 				hSTDOUT != INVALID_HANDLE_VALUE
 				)
@@ -86,7 +86,7 @@ namespace soup
 		{
 			if (!mouse_handler)
 			{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 				if (auto hSTDIN = GetStdHandle(STD_INPUT_HANDLE);
 					hSTDIN != INVALID_HANDLE_VALUE
 					)
@@ -112,7 +112,7 @@ namespace soup
 		void run()
 		{
 			std::string utf8_buf{};
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			int8_t mingw_pending_mb = -1;
 			int mingw_pending_mb_x;
 
@@ -305,13 +305,13 @@ namespace soup
 			clearScreen();
 			setCursorPos(1, 1);
 
-#if !SOUP_PLATFORM_WINDOWS
+#if !SOUP_WINDOWS
 			tcsetattr(0, TCSANOW, &termattrs_og);
 #endif
 
 			if (mouse_handler)
 			{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 				std::cout << CSI "?9l";
 #else
 				std::cout << CSI "?1000l";
@@ -338,7 +338,7 @@ namespace soup
 
 		void getSize(int& outWidth, int& outHeight) const
 		{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			CONSOLE_SCREEN_BUFFER_INFO csbi;
 			GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 			outWidth = csbi.dwSize.X;
@@ -463,7 +463,7 @@ namespace soup
 
 		inline static ctrl_c_handler_t ctrl_c_handler = nullptr;
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 		static BOOL WINAPI CtrlHandler(DWORD ctrlType)
 		{
 			if (ctrlType == CTRL_C_EVENT)
@@ -494,7 +494,7 @@ namespace soup
 		{
 			if (!ctrl_c_handler)
 			{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 				SetConsoleCtrlHandler(&CtrlHandler, TRUE);
 #else
 				struct sigaction sigint_handler;

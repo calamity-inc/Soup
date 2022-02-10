@@ -1,6 +1,6 @@
 #include "thread.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 
 namespace soup
 {

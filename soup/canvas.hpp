@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "base.hpp"
 #include "rgb.hpp"
-#include "stdint.hpp"
 
 namespace soup
 {

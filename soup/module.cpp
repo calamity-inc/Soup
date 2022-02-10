@@ -1,6 +1,6 @@
 #include "module.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 
 #include "handle_plain.hpp"
 #include "handle_raii.hpp"

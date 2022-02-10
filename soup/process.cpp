@@ -1,6 +1,6 @@
 #include "process.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 
 #include <TlHelp32.h>
 

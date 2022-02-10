@@ -102,9 +102,6 @@
     <ClInclude Include="box.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="platform.hpp">
-      <Filter>os</Filter>
-    </ClInclude>
     <ClInclude Include="module.hpp">
       <Filter>os</Filter>
     </ClInclude>
@@ -162,9 +159,6 @@
     <ClInclude Include="rsa.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
-    <ClInclude Include="stdint.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="rand.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -201,6 +195,7 @@
     <ClInclude Include="string_literal.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="base.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">

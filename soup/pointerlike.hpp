@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-#include "stdint.hpp"
+#include "base.hpp"
 
 namespace soup
 {

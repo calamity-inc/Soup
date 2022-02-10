@@ -9,7 +9,7 @@ namespace soup
 		return ripT<int32_t>();
 	}
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 	pointer pointer::externalRip(const module& mod) const noexcept
 	{
 		return add(mod.externalRead<int32_t>(*this)).add(sizeof(int32_t));

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdint.hpp"
+#include "base.hpp"
 
 #include <ostream>
 #include <string>
@@ -40,7 +40,7 @@ namespace soup
 
 		[[nodiscard]] static constexpr uint8_t getBitsPerChunk() noexcept
 		{
-			return platform::bits / 2;
+			return SOUP_BITS / 2;
 		}
 
 		[[nodiscard]] static constexpr uint8_t getBytesPerChunk() noexcept

@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 
-#include "platform.hpp"
-#if SOUP_PLATFORM_WINDOWS
+#include "base.hpp"
+#if SOUP_WINDOWS
 
 #include <Windows.h>
 

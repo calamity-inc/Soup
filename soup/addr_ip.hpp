@@ -4,9 +4,9 @@
 #include <cstring> // memcpy
 #include <string>
 
-#include "platform.hpp"
+#include "base.hpp"
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 #include <Ws2tcpip.h>
 #else
 #include <arpa/inet.h>
@@ -63,7 +63,7 @@ namespace soup
 	private:
 		void setV4()
 		{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			data.s6_words[0] = 0;
 			data.s6_words[1] = 0;
 			data.s6_words[2] = 0;

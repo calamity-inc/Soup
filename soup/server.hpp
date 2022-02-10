@@ -4,8 +4,8 @@
 #include <cstring> // memcpy
 #include <string>
 
+#include "base.hpp"
 #include "client.hpp"
-#include "platform.hpp"
 
 namespace soup
 {
@@ -35,7 +35,7 @@ namespace soup
 
 		~server()
 		{
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			if(--wsa_consumers == 0)
 			{
 				WSACleanup();
@@ -47,7 +47,7 @@ namespace soup
 		{
 			client res;
 			sockaddr_in6 addr;
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 			using socklen_t = int;
 #endif
 			socklen_t addrlen = sizeof(addr); // Windows takes int* instead of unsigned int*

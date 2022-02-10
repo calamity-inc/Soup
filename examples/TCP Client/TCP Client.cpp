@@ -8,7 +8,7 @@ int main()
 #define HOSTNAME "www.google.com"
 
 	soup::socket sock{};
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 	std::cout << "Connecting to " HOSTNAME ":443..." << std::endl;
 	if (!sock.connectReliable(HOSTNAME, 443))
 #else
@@ -20,7 +20,7 @@ int main()
 		return 1;
 	}
 
-#if SOUP_PLATFORM_WINDOWS
+#if SOUP_WINDOWS
 	std::cout << "Negotiating TLS..." << std::endl;
 	if (!sock.encrypt(HOSTNAME))
 	{
