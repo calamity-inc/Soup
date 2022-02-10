@@ -15,6 +15,16 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] static constexpr bool isRead() noexcept
+		{
+			return false;
+		}
+
+		[[nodiscard]] static constexpr bool isWrite() noexcept
+		{
+			return true;
+		}
+
 		[[nodiscard]] static constexpr bool hasMore() noexcept
 		{
 			return true;

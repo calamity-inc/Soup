@@ -16,6 +16,16 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] static constexpr bool isRead() noexcept
+		{
+			return true;
+		}
+
+		[[nodiscard]] static constexpr bool isWrite() noexcept
+		{
+			return false;
+		}
+
 		[[nodiscard]] bool hasMore()
 		{
 			return is->peek() != EOF;
