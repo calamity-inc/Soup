@@ -16,6 +16,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple Server", "examples\S
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP Client", "examples\TCP Client\TCP Client.vcxproj", "{D8B4FED8-C9FE-4DC4-ADC5-990BC650F657}"
+	ProjectSection(ProjectDependencies) = postProject
+		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA} = {84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConSnake", "examples\ConSnake\ConSnake.vcxproj", "{68B30322-8A7E-4EF3-847F-7CC2CEE81F37}"
 	ProjectSection(ProjectDependencies) = postProject
