@@ -26,7 +26,7 @@ namespace soup
 
 	// rsa::key_public
 
-#if SOUP_PLATFORM_BITS > 32
+#if SOUP_BITS > 32
 	bigint::chunk_t rsa::key_public::e_pref = 65537u;
 #else
 	bigint rsa::key_public::e_pref = 65537_b;
