@@ -29,10 +29,11 @@ namespace soup
 		bigint(const bigint& b);
 
 		[[nodiscard]] static bigint fromString(const char* str, size_t len);
+		[[nodiscard]] static bigint fromStringHex(const char* str, size_t len);
 	private:
-		void fromBinary(const char* str, size_t len);
-		void fromDecimal(const char* str, size_t len);
-		void fromHexadecimal(const char* str, size_t len);
+		void fromStringImplBinary(const char* str, size_t len);
+		void fromStringImplDecimal(const char* str, size_t len);
+		void fromStringImplHex(const char* str, size_t len);
 
 	public:
 		[[nodiscard]] static bigint random(const size_t bits);

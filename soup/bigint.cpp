@@ -60,27 +60,44 @@ namespace soup
 			{
 				if (str[1] == 'b' || str[1] == 'B')
 				{
-					res.fromBinary(str + 2, len - 2);
+					res.fromStringImplBinary(str + 2, len - 2);
 				}
 				else if (str[1] == 'x' || str[1] == 'X')
 				{
-					res.fromHexadecimal(str + 2, len - 2);
+					res.fromStringImplHex(str + 2, len - 2);
 				}
 				else
 				{
-					res.fromDecimal(str, len);
+					res.fromStringImplDecimal(str, len);
 				}
 			}
 			else
 			{
-				res.fromDecimal(str, len);
+				res.fromStringImplDecimal(str, len);
 			}
 			res.negative = neg;
 		}
 		return res;
 	}
 
-	void bigint::fromBinary(const char* str, size_t len)
+	bigint bigint::fromStringHex(const char* str, size_t len)
+	{
+		bigint res{};
+		if (len != 0)
+		{
+			const bool neg = (str[0] == '-');
+			if (neg)
+			{
+				++str;
+				--len;
+			}
+			res.fromStringImplHex(str, len);
+			res.negative = neg;
+		}
+		return res;
+	}
+
+	void bigint::fromStringImplBinary(const char* str, size_t len)
 	{
 		for (size_t i = 0; i != len; ++i)
 		{
@@ -91,7 +108,7 @@ namespace soup
 		}
 	}
 
-	void bigint::fromDecimal(const char* str, size_t len)
+	void bigint::fromStringImplDecimal(const char* str, size_t len)
 	{
 		for (size_t i = 0; i != len; ++i)
 		{
@@ -100,7 +117,7 @@ namespace soup
 		}
 	}
 
-	void bigint::fromHexadecimal(const char* str, size_t len)
+	void bigint::fromStringImplHex(const char* str, size_t len)
 	{
 		for (size_t i = 0; i != len; ++i)
 		{
