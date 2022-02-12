@@ -232,7 +232,7 @@ namespace soup
 			return true;
 		}
 
-		bool setBlocking(bool blocking) noexcept
+		bool setBlocking(bool blocking = true) noexcept
 		{
 #if SOUP_WINDOWS
 			unsigned long mode = blocking ? 0 : 1;
@@ -243,6 +243,11 @@ namespace soup
 			flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
 			return (fcntl(fd, F_SETFL, flags) == 0) ? true : false;
 #endif
+		}
+
+		bool setNonBlocking() noexcept
+		{
+			return setBlocking(false);
 		}
 
 		bool encrypt(const char* server_name) noexcept;
