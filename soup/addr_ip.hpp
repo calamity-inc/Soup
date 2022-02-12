@@ -46,6 +46,11 @@ namespace soup
 
 		explicit addr_ip(const uint32_t ipv4) noexcept
 		{
+			operator =(ipv4);
+		}
+
+		void operator = (const uint32_t ipv4) noexcept
+		{
 			setV4();
 			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
 		}

@@ -19,6 +19,7 @@ int main()
 		{
 			continue;
 		}
+		client.setBlocking();
 		auto t = std::thread([client{std::move(client)}]
 		{
 			auto name = client.peer.toString();

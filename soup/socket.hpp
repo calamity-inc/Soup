@@ -182,6 +182,13 @@ namespace soup
 		}
 
 	public:
+		bool init(int af)
+		{
+			preinit();
+			fd = ::socket(af, SOCK_STREAM, 0);
+			return fd != -1;
+		}
+
 		bool connectSecure(const char* host, uint16_t port) noexcept
 		{
 			return connectReliable(host, port) && encrypt(host);
@@ -196,11 +203,9 @@ namespace soup
 
 		bool connect(const addr_ip& ip, uint16_t port) noexcept
 		{
-			preinit();
 			if (ip.isV4())
 			{
-				fd = ::socket(AF_INET, SOCK_STREAM, 0);
-				if (fd == -1)
+				if (!init(AF_INET))
 				{
 					return false;
 				}
@@ -215,8 +220,7 @@ namespace soup
 			}
 			else
 			{
-				fd = ::socket(AF_INET6, SOCK_STREAM, 0);
-				if (fd == -1)
+				if (!init(AF_INET6))
 				{
 					return false;
 				}
