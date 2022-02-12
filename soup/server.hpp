@@ -56,19 +56,47 @@ namespace soup
 
 		client accept()
 		{
-			client res = accept6();
+			pollfd pollfds[] = {
+				pollfd {
+					sock6.fd,
+					POLLIN,
+				},
+				pollfd {
+					sock4.fd,
+					POLLIN,
+				},
+			};
+#if SOUP_WINDOWS
+			int pollret = WSAPoll(pollfds, 2, -1);
+#else
+			int pollret = poll(pollfds, 2, -1);
+#endif
+			if (pollret <= 0)
+			{
+				return client{};
+			}
+			if (pollfds[0].revents & POLLIN)
+			{
+				return acceptNonBlocking6();
+			}
+			return acceptNonBlocking4();
+		}
+
+		client acceptNonBlocking()
+		{
+			client res = acceptNonBlocking6();
 			if (res.isValid())
 			{
 				return res;
 			}
-			return accept4();
+			return acceptNonBlocking4();
 		}
 
 #if SOUP_WINDOWS
 		using socklen_t = int;
 #endif
 
-		client accept6()
+		client acceptNonBlocking6()
 		{
 			client res;
 			sockaddr_in6 addr;
@@ -82,7 +110,7 @@ namespace soup
 			return res;
 		}
 
-		client accept4()
+		client acceptNonBlocking4()
 		{
 			client res;
 			sockaddr_in addr;
