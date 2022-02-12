@@ -542,7 +542,7 @@ namespace soup
 			chunks = std::move(res.chunks);
 			return;
 		}
-		size_t carry = 0;
+		chunk_t carry = 0;
 		const size_t j = getNumChunks();
 		for (size_t i = 0; i != j; ++i)
 		{
