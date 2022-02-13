@@ -11,6 +11,7 @@
 
 namespace soup
 {
+	template <typename Client = client>
 	class server
 	{
 	protected:
@@ -18,7 +19,7 @@ namespace soup
 		socket sock4;
 
 		std::vector<pollfd> pollfds{};
-		std::vector<client> clients{};
+		std::vector<Client> clients{};
 
 	public:
 		bool init(const uint16_t port)
@@ -68,9 +69,9 @@ namespace soup
 			return true;
 		}
 
-		using on_client_connect_t = void(*)(client& client);
-		using on_client_disconnect_t = void(*)(client& client);
-		using on_client_data_t = void(*)(client& client, std::string& data);
+		using on_client_connect_t = void(*)(Client& client);
+		using on_client_disconnect_t = void(*)(Client& client);
+		using on_client_data_t = void(*)(Client& client, std::string& data);
 
 		on_client_connect_t on_client_connect = nullptr;
 		on_client_disconnect_t on_client_disconnect = nullptr;
@@ -132,7 +133,7 @@ namespace soup
 		}
 
 	protected:
-		void runOnConnect(client&& _client)
+		void runOnConnect(Client&& _client)
 		{
 			pollfds.emplace_back(pollfd{ _client.fd, POLLIN });
 			client& client = clients.emplace_back(std::move(_client));
@@ -142,7 +143,7 @@ namespace soup
 			}
 		}
 
-		void runOnDisconnect(std::vector<pollfd>::iterator& i, std::vector<client>::iterator clients_i)
+		void runOnDisconnect(std::vector<pollfd>::iterator& i, typename std::vector<Client>::iterator clients_i)
 		{
 			if (on_client_disconnect)
 			{
@@ -153,7 +154,7 @@ namespace soup
 		}
 
 	public:
-		client accept()
+		Client accept()
 		{
 #if SOUP_WINDOWS
 			int pollret = WSAPoll(pollfds.data(), 2, -1);
@@ -162,7 +163,7 @@ namespace soup
 #endif
 			if (pollret <= 0)
 			{
-				return client{};
+				return Client{};
 			}
 			if (pollfds[0].revents & POLLIN)
 			{
@@ -171,9 +172,9 @@ namespace soup
 			return acceptNonBlocking4();
 		}
 
-		client acceptNonBlocking()
+		Client acceptNonBlocking()
 		{
-			client res = acceptNonBlocking6();
+			Client res = acceptNonBlocking6();
 			if (res.isValid())
 			{
 				return res;
@@ -185,9 +186,9 @@ namespace soup
 		using socklen_t = int;
 #endif
 
-		client acceptNonBlocking6()
+		Client acceptNonBlocking6()
 		{
-			client res;
+			Client res;
 			sockaddr_in6 addr;
 			socklen_t addrlen = sizeof(addr);
 			res.fd = ::accept(sock6.fd, (sockaddr*)&addr, &addrlen);
@@ -199,9 +200,9 @@ namespace soup
 			return res;
 		}
 
-		client acceptNonBlocking4()
+		Client acceptNonBlocking4()
 		{
-			client res;
+			Client res;
 			sockaddr_in addr;
 			socklen_t addrlen = sizeof(addr);
 			res.fd = ::accept(sock4.fd, (sockaddr*)&addr, &addrlen);
