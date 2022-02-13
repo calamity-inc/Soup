@@ -270,12 +270,41 @@ namespace soup
 		}
 
 	public:
-		int recv(void* outData, int size) noexcept;
+		int recv(void* outData, int max_bytes) noexcept;
 
 	private:
-		int recvUnencrypted(void* outData, int size) noexcept
+		int recvUnencrypted(void* outData, int max_bytes) noexcept
 		{
-			return ::recv(fd, (char*)outData, size, 0);
+			return ::recv(fd, (char*)outData, max_bytes, 0);
+		}
+
+		[[nodiscard]] std::string recv(int max_bytes) noexcept
+		{
+			std::string buf(max_bytes, 0);
+			int read = ::recv(fd, buf.data(), max_bytes, 0);
+			if (read <= 0)
+			{
+				return std::string{};
+			}
+			buf.resize(read);
+			return buf;
+		}
+
+		[[nodiscard]] std::string recvExact(int bytes) noexcept
+		{
+			std::string buf(bytes, 0);
+			char* dp = buf.data();
+			while (bytes != 0)
+			{
+				int read = ::recv(fd, dp, bytes, 0);
+				if (read <= 0)
+				{
+					return std::string{};
+				}
+				bytes -= read;
+				dp += read;
+			}
+			return buf;
 		}
 
 	public:

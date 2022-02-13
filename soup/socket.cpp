@@ -281,29 +281,29 @@ namespace soup
 #endif
 	}
 
-	int socket::recv(void* outData, int size) noexcept
+	int socket::recv(void* outData, int max_bytes) noexcept
 	{
 #if SOUP_WINDOWS
 		if (!encrypted)
 		{
-			return recvUnencrypted(outData, size);
+			return recvUnencrypted(outData, max_bytes);
 		}
 
 		if (plainTextBytes > 0)
 		{
-			if (size >= plainTextBytes)
+			if (max_bytes >= plainTextBytes)
 			{
 				auto bytesReturned = plainTextBytes;
-				memcpy_s(outData, size, plainTextPtr, plainTextBytes);
+				memcpy_s(outData, max_bytes, plainTextPtr, plainTextBytes);
 				plainTextBytes = 0;
 				return static_cast<int>(bytesReturned);
 			}
 			else
 			{
-				memcpy_s(outData, size, plainTextPtr, size);
-				plainTextPtr += size;
-				plainTextBytes -= size;
-				return static_cast<int>(size);
+				memcpy_s(outData, max_bytes, plainTextPtr, max_bytes);
+				plainTextPtr += max_bytes;
+				plainTextBytes -= max_bytes;
+				return static_cast<int>(max_bytes);
 			}
 		}
 
@@ -391,20 +391,20 @@ namespace soup
 			return SOCKET_ERROR;
 		}
 
-		if (size >= int(pDataBuffer->cbBuffer))
+		if (max_bytes >= int(pDataBuffer->cbBuffer))
 		{
-			memcpy_s(outData, size, pDataBuffer->pvBuffer, pDataBuffer->cbBuffer);
+			memcpy_s(outData, max_bytes, pDataBuffer->pvBuffer, pDataBuffer->cbBuffer);
 		}
 		else
 		{
-			memcpy_s(outData, size, pDataBuffer->pvBuffer, size);
-			plainTextBytes = pDataBuffer->cbBuffer - size;
+			memcpy_s(outData, max_bytes, pDataBuffer->pvBuffer, max_bytes);
+			plainTextBytes = pDataBuffer->cbBuffer - max_bytes;
 			plainTextPtr = plainText;
-			if (memcpy_s(plainText, sizeof(plainText), (char*)pDataBuffer->pvBuffer + size, plainTextBytes))
+			if (memcpy_s(plainText, sizeof(plainText), (char*)pDataBuffer->pvBuffer + max_bytes, plainTextBytes))
 			{
 				return SOCKET_ERROR;
 			}
-			pDataBuffer->cbBuffer = static_cast<unsigned long>(size);
+			pDataBuffer->cbBuffer = static_cast<unsigned long>(max_bytes);
 		}
 
 		PSecBuffer pExtraDataBuffer(nullptr);
@@ -431,7 +431,7 @@ namespace soup
 
 		return pDataBuffer->cbBuffer;
 #else
-		return recvUnencrypted(outData, size);
+		return recvUnencrypted(outData, max_bytes);
 #endif
 	}
 

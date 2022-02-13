@@ -71,11 +71,11 @@ namespace soup
 
 		using on_client_connect_t = void(*)(Client& client);
 		using on_client_disconnect_t = void(*)(Client& client);
-		using on_client_data_t = void(*)(Client& client, std::string& data);
+		using on_client_data_available_t = void(*)(Client& client);
 
 		on_client_connect_t on_client_connect = nullptr;
 		on_client_disconnect_t on_client_disconnect = nullptr;
-		on_client_data_t on_client_data = nullptr;
+		on_client_data_available_t on_client_data_available = nullptr;
 
 		void run()
 		{
@@ -116,16 +116,31 @@ namespace soup
 							runOnDisconnect(i, clients_i);
 							continue;
 						}
-						constexpr auto bufsize = 1024;
-						std::string buf(bufsize, 0);
-						int read = recv(i->fd, &buf.at(0), bufsize, 0);
-						if (read <= 0)
+						if (clients_i->recv_exact_remain != 0)
 						{
-							runOnDisconnect(i, clients_i);
-							continue;
+							auto buf = clients_i->recv(clients_i->recv_exact_remain);
+							if (buf.empty())
+							{
+								runOnDisconnect(i, clients_i);
+								continue;
+							}
+							if (buf.size() == clients_i->recv_exact_remain)
+							{
+								clients_i->recv_exact_remain = 0;
+								buf.insert(0, clients_i->recv_exact_buf);
+								clients_i->recv_exact_buf.clear();
+								clients_i->recv_exact_callback(*clients_i, std::move(buf));
+							}
+							else
+							{
+								clients_i->recv_exact_remain -= buf.size();
+								clients_i->recv_exact_buf.append(buf);
+							}
 						}
-						buf.resize(read);
-						on_client_data(*clients_i, buf);
+						else
+						{
+							on_client_data_available(*clients_i);
+						}
 					}
 					++i;
 				}

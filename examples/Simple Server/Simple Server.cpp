@@ -20,9 +20,9 @@ int main()
 	{
 		std::cout << client.peer.toString() << " - disconnected" << std::endl;
 	};
-	srv.on_client_data = [](soup::client& client, std::string& data)
+	srv.on_client_data_available = [](soup::client& client)
 	{
-		std::cout << client.peer.toString() << " > " << data << std::endl;
+		std::cout << client.peer.toString() << " > " << client.recv(1024) << std::endl;
 	};
 	srv.run();
 }
