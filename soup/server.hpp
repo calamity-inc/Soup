@@ -1,11 +1,13 @@
 #pragma once
 
-#include <cstdint>
+#include "base.hpp"
+
 #include <cstring> // memcpy
 #include <string>
+#include <vector>
 
-#include "base.hpp"
 #include "client.hpp"
+#include "socket.hpp"
 
 namespace soup
 {
@@ -14,6 +16,9 @@ namespace soup
 	protected:
 		socket sock6;
 		socket sock4;
+
+		std::vector<pollfd> pollfds{};
+		std::vector<client> clients{};
 
 	public:
 		bool init(const uint16_t port)
@@ -26,7 +31,7 @@ namespace soup
 			}
 
 			const auto port_n = htons(port);
-			
+
 			sockaddr_in6 addr6{};
 			addr6.sin6_family = AF_INET6;
 			addr6.sin6_port = port_n;
@@ -51,25 +56,109 @@ namespace soup
 				return false;
 			}
 
-			return sock6.setNonBlocking() && sock4.setNonBlocking();
+			if (!sock6.setNonBlocking() || !sock4.setNonBlocking())
+			{
+				return false;
+			}
+
+			pollfds.clear();
+			pollfds.reserve(2);
+			pollfds.emplace_back(pollfd{ sock6.fd, POLLIN });
+			pollfds.emplace_back(pollfd{ sock4.fd, POLLIN });
+			return true;
 		}
 
+		using on_client_connect_t = void(*)(client& client);
+		using on_client_disconnect_t = void(*)(client& client);
+		using on_client_data_t = void(*)(client& client, std::string& data);
+
+		on_client_connect_t on_client_connect = nullptr;
+		on_client_disconnect_t on_client_disconnect = nullptr;
+		on_client_data_t on_client_data = nullptr;
+
+		void run()
+		{
+			while (true)
+			{
+#if SOUP_WINDOWS
+				int pollret = WSAPoll(pollfds.data(), pollfds.size(), -1);
+#else
+				int pollret = poll(pollfds.data(), pollfds.size(), -1);
+#endif
+				if (pollret <= 0)
+				{
+					continue;
+				}
+				if (pollfds[0].revents & POLLIN)
+				{
+					auto client = acceptNonBlocking6();
+					if (client.isValid())
+					{
+						runOnConnect(std::move(client));
+					}
+				}
+				if (pollfds[1].revents & POLLIN)
+				{
+					auto client = acceptNonBlocking4();
+					if (client.isValid())
+					{
+						runOnConnect(std::move(client));
+					}
+				}
+				for (auto i = pollfds.begin() + 2; i != pollfds.end(); )
+				{
+					if (i->revents != 0)
+					{
+						auto clients_i = clients.begin() + ((i - pollfds.begin()) - 2);
+						if (!(i->revents & POLLIN))
+						{
+							runOnDisconnect(i, clients_i);
+							continue;
+						}
+						constexpr auto bufsize = 1024;
+						std::string buf(bufsize, 0);
+						int read = recv(i->fd, &buf.at(0), bufsize, 0);
+						if (read <= 0)
+						{
+							runOnDisconnect(i, clients_i);
+							continue;
+						}
+						buf.resize(read);
+						on_client_data(*clients_i, buf);
+					}
+					++i;
+				}
+			}
+		}
+
+	protected:
+		void runOnConnect(client&& _client)
+		{
+			pollfds.emplace_back(pollfd{ _client.fd, POLLIN });
+			client& client = clients.emplace_back(std::move(_client));
+			if (on_client_connect)
+			{
+				on_client_connect(client);
+			}
+		}
+
+		void runOnDisconnect(std::vector<pollfd>::iterator& i, std::vector<client>::iterator clients_i)
+		{
+			if (on_client_disconnect)
+			{
+				on_client_disconnect(*clients_i);
+			}
+			clients.erase(clients_i);
+			i = pollfds.erase(i);
+		}
+
+	public:
 		client accept()
 		{
-			pollfd pollfds[] = {
-				pollfd {
-					sock6.fd,
-					POLLIN,
-				},
-				pollfd {
-					sock4.fd,
-					POLLIN,
-				},
-			};
 #if SOUP_WINDOWS
-			int pollret = WSAPoll(pollfds, 2, -1);
+			int pollret = WSAPoll(pollfds.data(), 2, -1);
 #else
-			int pollret = poll(pollfds, 2, -1);
+			int pollret = poll(pollfds.data(), 2, -1);
 #endif
 			if (pollret <= 0)
 			{

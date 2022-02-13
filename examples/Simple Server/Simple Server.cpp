@@ -12,33 +12,17 @@ int main()
 		return 1;
 	}
 	std::cout << "Listening on *:1337..." << std::endl;
-	while (true)
+	srv.on_client_connect = [](soup::client& client)
 	{
-		soup::client client = srv.accept();
-		if (!client.isValid())
-		{
-			continue;
-		}
-		client.setBlocking();
-		auto t = std::thread([client{std::move(client)}]
-		{
-			auto name = client.peer.toString();
-
-			std::cout << name << " + connected" << std::endl;
-			while (true)
-			{
-				constexpr auto bufsize = 1024;
-				std::string buf(bufsize, 0);
-				int read = recv(client.fd, &buf.at(0), bufsize, 0);
-				if(read <= 0) // -1 = error, 0 = closed
-				{
-					break;
-				}
-				buf.resize(read);
-				std::cout << name << " > " << buf << std::endl;
-			}
-			std::cout << name << " - disconnected" << std::endl;
-		});
-		t.detach();
-	}
+		std::cout << client.peer.toString()  << " + connected" << std::endl;
+	};
+	srv.on_client_disconnect = [](soup::client& client)
+	{
+		std::cout << client.peer.toString() << " - disconnected" << std::endl;
+	};
+	srv.on_client_data = [](soup::client& client, std::string& data)
+	{
+		std::cout << client.peer.toString() << " > " << data << std::endl;
+	};
+	srv.run();
 }
