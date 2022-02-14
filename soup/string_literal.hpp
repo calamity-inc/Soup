@@ -2,14 +2,14 @@
 
 namespace soup
 {
-	template <size_t Len>
+	template <size_t Size>
 	struct string_literal
 	{
-		char data[Len];
+		char data[Size];
 
-		consteval string_literal(const char(&in)[Len])
+		consteval string_literal(const char(&in)[Size])
 		{
-			for (size_t i = 0; i != Len; ++i)
+			for (size_t i = 0; i != Size; ++i)
 			{
 				data[i] = in[i];
 			}
@@ -17,7 +17,7 @@ namespace soup
 
 		[[nodiscard]] consteval size_t size() const noexcept
 		{
-			return Len;
+			return Size;
 		}
 
 		[[nodiscard]] consteval const char* c_str() const noexcept

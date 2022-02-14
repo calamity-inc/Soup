@@ -9,30 +9,33 @@
 
 namespace soup
 {
-	template <size_t Len>
+	template <size_t Size>
 	class obfus_string
 	{
+	public:
+		static constexpr size_t Len = Size - 1;
+
 	private:
-		char data[Len];
+		char data[Size];
 		bool runtime_once = false;
 
 	public:
-		consteval obfus_string(const char(&in)[Len])
+		consteval obfus_string(const char(&in)[Size])
 		{
 			// rot13
-			for (size_t i = 0; i != Len; ++i)
+			for (size_t i = 0; i != Size; ++i)
 			{
 				data[i] = string::rot13(in[i]);
 			}
 
 			// flip bits
-			for (size_t i = 0; i != Len; ++i)
+			for (size_t i = 0; i != Size; ++i)
 			{
 				data[i] ^= 96u;
 			}
 
 			// mirror
-			for (size_t i = 0, j = Len - 1; i != Len; ++i, --j)
+			for (size_t i = 0, j = Len; i != Size; ++i, --j)
 			{
 				std::swap(data[i], data[j]);
 			}
@@ -48,19 +51,19 @@ namespace soup
 			runtime_once = true;
 
 			// mirror
-			for (size_t i = 0, j = Len - 1; i != Len; ++i, --j)
+			for (size_t i = 0, j = Len; i != Size; ++i, --j)
 			{
 				std::swap(data[i], data[j]);
 			}
 
 			// flip bits
-			for (size_t i = 0; i != Len; ++i)
+			for (size_t i = 0; i != Size; ++i)
 			{
 				data[i] ^= 96u;
 			}
 
 			// rot13
-			for (size_t i = 0; i != Len; ++i)
+			for (size_t i = 0; i != Size; ++i)
 			{
 				data[i] = string::rot13(data[i]);
 			}
