@@ -49,7 +49,7 @@ namespace soup
 			SCHANNEL_CRED SchannelCred{};
 			SchannelCred.dwVersion = SCHANNEL_CRED_VERSION;
 			SchannelCred.grbitEnabledProtocols = SP_PROT_TLS1_2_CLIENT | SP_PROT_TLS1_3_CLIENT;
-			SchannelCred.dwFlags = SCH_CRED_MANUAL_CRED_VALIDATION | SCH_CRED_NO_DEFAULT_CREDS | SCH_USE_STRONG_CRYPTO;
+			SchannelCred.dwFlags = SCH_CRED_AUTO_CRED_VALIDATION | SCH_CRED_NO_DEFAULT_CREDS | SCH_USE_STRONG_CRYPTO;
 			TimeStamp ts;
 			if (sft->AcquireCredentialsHandle(nullptr, (SEC_CHAR*)UNISP_NAME, SECPKG_CRED_OUTBOUND, nullptr, &SchannelCred, nullptr, nullptr, &cred_h, &ts) != SEC_E_OK)
 			{
