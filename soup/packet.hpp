@@ -11,14 +11,16 @@
 namespace soup
 {
 	template <typename T>
-	struct packet
+	class packet
 	{
+	protected:
 #include "shortint_impl.hpp"
 		using u24 = u32;
 		using u40 = u64;
 		using u48 = u64;
 		using u56 = u64;
 
+	public:
 		bool fromBinary(const std::string& bin)
 		{
 			std::istringstream iss{ bin };
