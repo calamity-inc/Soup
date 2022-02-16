@@ -29,12 +29,12 @@ namespace soup
 		box() {}
 		box(const matrix& M, const vector3& Extent)
 		{
-			Set(M, Extent);
+			set(M, Extent);
 		}
 		// BL = Low values corner point, BH = High values corner point
 		box(const matrix& M, const vector3& BL, const vector3& BH)
 		{
-			Set(M, BL, BH);
+			set(M, BL, BH);
 		}
 
 		box(const vector3& pos, const vector3& rot, const vector3& dimensions)
@@ -43,34 +43,34 @@ namespace soup
 
 		}
 
-		void Set(const matrix& M, const vector3& Extent)
+		void set(const matrix& M, const vector3& Extent)
 		{
 			m_M = M;
 			m_Extent = Extent;
 		}
-		void Set(const matrix& M, const vector3& BL, const vector3& BH)
+		void set(const matrix& M, const vector3& BL, const vector3& BH)
 		{
 			m_M = M;
-			m_M.Translate((BH + BL) * 0.5f);
+			m_M.translate((BH + BL) * 0.5f);
 			m_Extent = (BH - BL) / 2.0f;
 		}
 
-		[[nodiscard]] vector3 GetSize() const noexcept
+		[[nodiscard]] vector3 getSize() const noexcept
 		{
 			return m_Extent * 2.0f;
 		}
-		[[nodiscard]] vector3 GetCenterPoint() const noexcept
+		[[nodiscard]] vector3 getCentrePoint() const noexcept
 		{
-			return m_M.GetTranslate();
+			return m_M.getTranslate();
 		}
-		void GetInvRot(vector3* pvRot);
+		void getInvRot(vector3* pvRot);
 
 		bool checkRayIntersection(const ray& r, vector3* outHit = nullptr);
 
-		bool IsPointInBox(const vector3& P);
-		bool IsBoxInBox(box& BBox);
-		bool IsSphereInBox(const vector3& P, float fRadius);
-		bool BoxOutsidePlane(const vector3& Norm, const vector3& P);
+		bool isPointInBox(const vector3& P);
+		bool isBoxInBox(box& BBox);
+		bool isSphereInBox(const vector3& P, float fRadius);
+		bool boxOutsidePlane(const vector3& Norm, const vector3& P);
 
 		[[nodiscard]] box_corners toCorners() const noexcept;
 		[[nodiscard]] std::array<poly, 12> toPolys() const noexcept;

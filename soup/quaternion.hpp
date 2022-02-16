@@ -15,10 +15,10 @@ namespace soup
 		// but I decided avoiding confusion with the value setting constructor was more important
 		quaternion(float Angle, const vector3& Axis)
 		{
-			SetAxis(Angle, Axis.x, Axis.y, Axis.z);
+			setAxis(Angle, Axis.x, Axis.y, Axis.z);
 		}
 
-		void Reset()
+		void reset()
 		{
 			x = 0;
 			y = 0;
@@ -27,7 +27,7 @@ namespace soup
 		}
 
 		// Set Quat from axis-angle
-		void SetAxis(float degrees, float fX, float fY, float fZ)
+		void setAxis(float degrees, float fX, float fY, float fZ)
 		{
 			float HalfAngle = DEG_TO_HALF_RAD(degrees); // Get half angle in radians from angle in degrees
 			float sinA = (float)sin(HalfAngle);
@@ -37,7 +37,7 @@ namespace soup
 			z = fZ * sinA;
 		}
 
-		quaternion Invert() const
+		[[nodiscard]] quaternion invert() const
 		{
 			return quaternion{ -x, -y, -z, w };
 		}
@@ -61,15 +61,9 @@ namespace soup
 			return (x == b.x && y == b.y && z == b.z && w == b.w);
 		}
 
-		int IsIdentity() const
+		int isIdentity() const
 		{
 			return (x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f);
-		}
-
-		// Can be used the determine Quaternion neighbourhood
-		float Dot(const quaternion& a) const
-		{
-			return x * a.x + y * a.y + z * a.z + w * a.w;
 		}
 
 		// Scalar multiplication
@@ -87,7 +81,7 @@ namespace soup
 		// ------------------------------------
 		// Simple Euler Angle to Quaternion conversion, this could be made faster
 		// ------------------------------------
-		void FromEuler(float rx, float ry, float rz)
+		void fromEuler(float rx, float ry, float rz)
 		{
 			quaternion qx(-rx, vector3(1, 0, 0));
 			quaternion qy(-ry, vector3(0, 1, 0));
@@ -99,7 +93,7 @@ namespace soup
 		// ------------------------------------
 		// Quaternions store scale as well as rotation, but usually we just want rotation, so we can normalize.
 		// ------------------------------------
-		int normalize()
+		int normalise()
 		{
 			float lengthSq = x * x + y * y + z * z + w * w;
 
@@ -122,12 +116,12 @@ namespace soup
 		// if bReduceTo360 is true, the interpolation will take the shortest path for a 360 deg angle range (max delta rotation = 180 degrees)
 		// if bReduceTo360 is false, the interpolation will take the shortest path for a 720 deg angle range (max delta rotation = 360 degrees)
 		// ------------------------------------
-		void Slerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360)
+		void slerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360)
 		{
 			float w1, w2;
 			int bFlip = 0;
 
-			float cosTheta = a.Dot(b);
+			float cosTheta = a.dot(b);
 			if (bReduceTo360 && cosTheta < 0.0f) { // We need to flip a quaternion for shortest path interpolation
 				cosTheta = -cosTheta;
 				bFlip = 1;
@@ -158,22 +152,22 @@ namespace soup
 		// Unlike spherical interpolation, this does not rotate at a constant velocity,
 		// although that's not necessarily a bad thing
 		// ------------------------------------
-		void Nlerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360)
+		void nlerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360)
 		{
 			float t1 = 1.0f - t;
 
-			if (bReduceTo360 && a.Dot(b) < 0.0f)
+			if (bReduceTo360 && a.dot(b) < 0.0f)
 				*this = a * t1 + b * -t;
 			else
 				*this = a * t1 + b * t;
 
-			normalize();
+			normalise();
 		}
 
 		// ------------------------------------
 		// Set a 4x4 matrix with the rotation of this Quaternion
 		// ------------------------------------
-		void inline ToMatrix(float mf[16]) const
+		void inline toMatrix(float mf[16]) const
 		{
 			float x2 = 2.0f * x, y2 = 2.0f * y, z2 = 2.0f * z;
 
@@ -207,7 +201,7 @@ namespace soup
 		// ------------------------------------
 		// Set this Quat to aim the Z-Axis along the vector from P1 to P2
 		// ------------------------------------
-		void AimZAxis(const vector3& P1, const vector3& P2)
+		void aimZAxis(const vector3& P1, const vector3& P2)
 		{
 			vector3 vAim = P2 - P1;
 			vAim.normalize();
@@ -221,7 +215,7 @@ namespace soup
 				*this = quaternion{ 0, 1, 0, 0 }; // If we can't normalize it, just set it
 			}
 			else {
-				normalize();
+				normalise();
 			}
 		}
 

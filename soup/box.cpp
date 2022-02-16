@@ -9,7 +9,7 @@ namespace soup
 	//
 	// Returns a 3x3 rotation matrix as vectors
 	//
-	void box::GetInvRot(vector3* pvRot)
+	void box::getInvRot(vector3* pvRot)
 	{
 		pvRot[0] = vector3(m_M.mf[0], m_M.mf[1], m_M.mf[2]);
 		pvRot[1] = vector3(m_M.mf[4], m_M.mf[5], m_M.mf[6]);
@@ -19,7 +19,7 @@ namespace soup
 	bool box::checkRayIntersection(const ray& r, vector3* outHit)
 	{
 		// Put line in box space
-		matrix MInv = m_M.InvertSimple();
+		matrix MInv = m_M.invertSimple();
 		vector3 LB1 = MInv * r.start;
 		vector3 LB2 = MInv * r.end;
 
@@ -63,10 +63,10 @@ namespace soup
 	//
 	// Check if a point is in this bounding box
 	//
-	bool box::IsPointInBox(const vector3& InP)
+	bool box::isPointInBox(const vector3& InP)
 	{
 		// Rotate the point into the box's coordinates
-		vector3 P = m_M.InvertSimple() * InP;
+		vector3 P = m_M.invertSimple() * InP;
 
 		// Now just use an axis-aligned check
 		if (fabsf(P.x) < m_Extent.x && fabsf(P.y) < m_Extent.y && fabsf(P.z) < m_Extent.z)
@@ -78,11 +78,11 @@ namespace soup
 	//
 	// Check if a sphere overlaps any part of this bounding box
 	//
-	bool box::IsSphereInBox(const vector3& InP, float fRadius)
+	bool box::isSphereInBox(const vector3& InP, float fRadius)
 	{
 		float fDist;
 		float fDistSq = 0;
-		vector3 P = m_M.InvertSimple() * InP;
+		vector3 P = m_M.invertSimple() * InP;
 
 		// Add distance squared from sphere centerpoint to box for each axis
 		for (int i = 0; i < 3; i++)
@@ -99,14 +99,14 @@ namespace soup
 	//
 	// Check if the bounding box is completely behind a plane( defined by a normal and a point )
 	//
-	bool box::BoxOutsidePlane(const vector3& InNorm, const vector3& InP)
+	bool box::boxOutsidePlane(const vector3& InNorm, const vector3& InP)
 	{
 		// Plane Normal in Box Space
-		vector3 Norm = InNorm.rotate_by_matrix(m_M.InvertSimple().mf); // RotByMatrix only uses rotation portion of matrix
+		vector3 Norm = InNorm.rotateByMatrix(m_M.invertSimple().mf); // RotByMatrix only uses rotation portion of matrix
 		Norm = vector3(fabsf(Norm.x), fabsf(Norm.y), fabsf(Norm.z));
 
 		float Extent = Norm.dot(m_Extent); // Box Extent along the plane normal
-		float Distance = InNorm.dot(GetCenterPoint() - InP); // Distance from Box Center to the Plane
+		float Distance = InNorm.dot(getCentrePoint() - InP); // Distance from Box Center to the Plane
 
 		// If Box Centerpoint is behind the plane further than its extent, the Box is outside the plane
 		if (Distance < -Extent) return true;
@@ -117,13 +117,13 @@ namespace soup
 	// Check if any part of a box is inside any part of another box
 	// Uses the separating axis test.
 	//
-	bool box::IsBoxInBox(box& BBox)
+	bool box::isBoxInBox(box& BBox)
 	{
 		vector3 SizeA = m_Extent;
 		vector3 SizeB = BBox.m_Extent;
 		vector3 RotA[3], RotB[3];
-		GetInvRot(RotA);
-		BBox.GetInvRot(RotB);
+		getInvRot(RotA);
+		BBox.getInvRot(RotB);
 
 		float R[3][3];  // Rotation from B to A
 		float AR[3][3]; // absolute values of R matrix, to use with box extents
@@ -139,7 +139,7 @@ namespace soup
 			}
 
 		// Vector separating the centers of Box B and of Box A	
-		vector3 vSepWS = BBox.GetCenterPoint() - GetCenterPoint();
+		vector3 vSepWS = BBox.getCentrePoint() - getCentrePoint();
 		// Rotated into Box A's coordinates
 		vector3 vSepA(vSepWS.dot(RotA[0]), vSepWS.dot(RotA[1]), vSepWS.dot(RotA[2]));
 
@@ -182,7 +182,7 @@ namespace soup
 	box_corners box::toCorners() const noexcept
 	{
 		return box_corners(
-			GetCenterPoint(),
+			getCentrePoint(),
 			m_Extent,
 			vector3(m_M.mf[0], m_M.mf[1], m_M.mf[2]),
 			vector3(m_M.mf[4], m_M.mf[5], m_M.mf[6]),

@@ -7,7 +7,7 @@ namespace soup
 	bool poly::checkRayIntersection(const ray& r, vector3& outHit) const
 	{
 		// Find Triangle Normal
-		auto Normal = (b - a).CrossProduct(c - a);
+		auto Normal = (b - a).crossProduct(c - a);
 		Normal.normalize(); // not really needed
 
 		// Find distance from LP1 and LP2 to the plane defined by the triangle
@@ -21,11 +21,11 @@ namespace soup
 
 		// Find if the interesection point lies inside the triangle by testing it against all edges
 		vector3 vTest;
-		vTest = Normal.CrossProduct(b - a);
+		vTest = Normal.crossProduct(b - a);
 		if (vTest.dot(outHit - a) < 0.0f) return false;
-		vTest = Normal.CrossProduct(c - b);
+		vTest = Normal.crossProduct(c - b);
 		if (vTest.dot(outHit - b) < 0.0f) return false;
-		vTest = Normal.CrossProduct(a - c);
+		vTest = Normal.crossProduct(a - c);
 		if (vTest.dot(outHit - a) < 0.0f) return false;
 
 		return true;

@@ -216,7 +216,7 @@ namespace soup
 			return !operator==(b);
 		}
 
-		[[nodiscard]] bool is_null() const noexcept
+		[[nodiscard]] bool isNull() const noexcept
 		{
 			for (uint8_t i = 0; i != getAxes(); ++i)
 			{

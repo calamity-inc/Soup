@@ -20,7 +20,7 @@ namespace soup
 		return false;
 	}
 
-	bool box_axis_aligned::CheckLineIntersection(const vector3& L1, const vector3& L2, vector3& Hit) noexcept
+	bool box_axis_aligned::checkLineIntersection(const vector3& L1, const vector3& L2, vector3& Hit) noexcept
 	{
 		if (L2.x < back_lower_left.x && L1.x < back_lower_left.x) return false;
 		if (L2.x > front_upper_right.x && L1.x > front_upper_right.x) return false;

@@ -15,17 +15,17 @@ namespace soup
 
 		matrix(const bool bIdentity = true)
 		{
-			if (bIdentity) Identity();
+			if (bIdentity) setToIdentity();
 		}
 
 		matrix(const vector3& pos, const vector3& rot)
 			: matrix(true)
 		{
-			SetTranslate(pos);
-			SetRotation(rot);
+			setTranslate(pos);
+			setRotation(rot);
 		}
 
-		void Identity()
+		void setToIdentity()
 		{
 			mf[ 0] = 1.0f;	mf[ 1] = 0.0f;	mf[ 2] = 0.0f;	mf[ 3] = 0.0f;
 			mf[ 4] = 0.0f;	mf[ 5] = 1.0f;	mf[ 6] = 0.0f;	mf[ 7] = 0.0f;
@@ -56,7 +56,7 @@ namespace soup
 			return vector3{ x, y, z };
 		}
 
-		void ResetRotation()
+		void resetRotation()
 		{
 			mf[0] = 1.0f;
 			mf[1] = 0.0f;
@@ -69,37 +69,61 @@ namespace soup
 			mf[10] = 1.0f;
 		}
 
-		void SetRotation(const vector3& rot)
+		void setRotation(const vector3& rot)
 		{
-			ResetRotation();
-			Rotate(rot.x, true, false, false);
-			Rotate(rot.y, false, true, false);
-			Rotate(rot.z + 90.0f, false, false, true);
+			resetRotation();
+			rotate(rot.x, true, false, false);
+			rotate(rot.y, false, true, false);
+			rotate(rot.z + 90.0f, false, false, true);
 		}
 
-		void Rotate(const vector3& rot)
+		void rotate(const vector3& rot)
 		{
-			Rotate(rot.x, true, false, false);
-			Rotate(rot.y, false, true, false);
-			Rotate(rot.z, false, false, true);
+			rotate(rot.x, true, false, false);
+			rotate(rot.y, false, true, false);
+			rotate(rot.z, false, false, true);
 		}
 
-		void RotateCCW(const vector3& rot)
+		void rotateCCW(const vector3& rot)
 		{
-			Rotate(rot * -1.0f);
+			rotate(rot * -1.0f);
 		}
 
 		// Rotate the *this matrix fDegrees clockwise around a single axis( either x, y, or z )
-		void Rotate(float fDegrees, bool x, bool y, bool z)
+		void rotate(float fDegrees, bool x, bool y, bool z)
 		{
 			matrix tmp;
-			if (x) tmp.RotX(fDegrees);
-			if (y) tmp.RotY(fDegrees);
-			if (z) tmp.RotZ(fDegrees);
+			if (x) tmp.rotateImplX(fDegrees);
+			if (y) tmp.rotateImplY(fDegrees);
+			if (z) tmp.rotateImplZ(fDegrees);
 			*this = tmp * (*this);
 		}
 
-		void Scale(float sx, float sy, float sz)
+	private:
+		void rotateImplX(float angle)
+		{
+			mf[5] = cosf(DEG_TO_RAD(angle));
+			mf[6] = sinf(DEG_TO_RAD(angle));
+			mf[9] = -sinf(DEG_TO_RAD(angle));
+			mf[10] = cosf(DEG_TO_RAD(angle));
+		}
+		void rotateImplY(float angle)
+		{
+			mf[0] = cosf(DEG_TO_RAD(angle));
+			mf[2] = -sinf(DEG_TO_RAD(angle));
+			mf[8] = sinf(DEG_TO_RAD(angle));
+			mf[10] = cosf(DEG_TO_RAD(angle));
+		}
+		void rotateImplZ(float angle)
+		{
+			mf[0] = cosf(DEG_TO_RAD(angle));
+			mf[1] = sinf(DEG_TO_RAD(angle));
+			mf[4] = -sinf(DEG_TO_RAD(angle));
+			mf[5] = cosf(DEG_TO_RAD(angle));
+		}
+
+	public:
+		void scale(float sx, float sy, float sz)
 		{
 			int x;
 			for (x = 0; x < 4; x++) mf[x] *= sx;
@@ -107,7 +131,7 @@ namespace soup
 			for (x = 8; x < 12; x++) mf[x] *= sz;
 		}
 
-		void Translate(const vector3& test)
+		void translate(const vector3& test)
 		{
 			for (int j = 0; j < 4; j++)
 			{
@@ -115,30 +139,29 @@ namespace soup
 			}
 		}
 
-		void SetTranslate(const vector3& b)
+		[[nodiscard]] vector3 getTranslate() const noexcept
+		{
+			return vector3{ mf[12], mf[13], mf[14] };
+		}
+
+		void setTranslate(const vector3& b)
 		{
 			mf[12] = b.x;
 			mf[13] = b.y;
 			mf[14] = b.z;
 		}
 
-		// Zero out the translation part of the matrix
-		void SetRotationOnly()
+		void resetTranslate()
 		{
 			mf[12] = 0;
 			mf[13] = 0;
 			mf[14] = 0;
 		}
 
-		vector3 GetTranslate() const noexcept
-		{
-			return vector3{ mf[12], mf[13], mf[14] };
-		}
-
 		// Create a rotation matrix for a counter-clockwise rotation of fDegrees around an arbitrary axis(x, y, z)
-		void RotateMatrix(float fDegrees, float x, float y, float z)
+		void rotateMatrix(float fDegrees, float x, float y, float z)
 		{
-			Identity();
+			setToIdentity();
 			float cosA = cosf(DEG_TO_RAD(fDegrees));
 			float sinA = sinf(DEG_TO_RAD(fDegrees));
 			float m = 1.0f - cosA;
@@ -163,7 +186,7 @@ namespace soup
 		}
 
 		// Simple but not robust matrix inversion. (Doesn't work properly if there is a scaling or skewing transformation.)
-		inline matrix InvertSimple()
+		inline matrix invertSimple()
 		{
 			matrix R(0);
 			R.mf[0] = mf[0]; 		R.mf[1] = mf[4];		R.mf[2] = mf[8];	R.mf[3] = 0.0f;
@@ -177,7 +200,7 @@ namespace soup
 		}
 
 		// Invert for only a rotation, any translation is zeroed out
-		matrix InvertRot()
+		matrix invertRot()
 		{
 			matrix R(false);
 			R.mf[0] = mf[0]; 		R.mf[1] = mf[4];		R.mf[2] = mf[8];	R.mf[3] = 0.0f;
@@ -185,31 +208,6 @@ namespace soup
 			R.mf[8] = mf[2];		R.mf[9] = mf[6];		R.mf[10] = mf[10];	R.mf[11] = 0.0f;
 			R.mf[12] = 0;			R.mf[13] = 0;			R.mf[14] = 0;		R.mf[15] = 1.0f;
 			return R;
-		}
-
-
-	private:
-		// helpers for Rotate
-		void RotX(float angle)
-		{
-			mf[5] = cosf(DEG_TO_RAD(angle));
-			mf[6] = sinf(DEG_TO_RAD(angle));
-			mf[9] = -sinf(DEG_TO_RAD(angle));
-			mf[10] = cosf(DEG_TO_RAD(angle));
-		}
-		void RotY(float angle)
-		{
-			mf[0] = cosf(DEG_TO_RAD(angle));
-			mf[2] = -sinf(DEG_TO_RAD(angle));
-			mf[8] = sinf(DEG_TO_RAD(angle));
-			mf[10] = cosf(DEG_TO_RAD(angle));
-		}
-		void RotZ(float angle)
-		{
-			mf[0] = cosf(DEG_TO_RAD(angle));
-			mf[1] = sinf(DEG_TO_RAD(angle));
-			mf[4] = -sinf(DEG_TO_RAD(angle));
-			mf[5] = cosf(DEG_TO_RAD(angle));
 		}
 	};
 #pragma warning(pop)
