@@ -33,16 +33,6 @@ namespace soup
 			return true;
 		}
 
-		~server()
-		{
-#if SOUP_WINDOWS
-			if(--wsa_consumers == 0)
-			{
-				WSACleanup();
-			}
-#endif
-		}
-
 		client accept()
 		{
 			client res;

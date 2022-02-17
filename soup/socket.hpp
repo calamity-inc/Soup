@@ -53,6 +53,7 @@ namespace soup
 		socket() noexcept
 			: fd(-1)
 		{
+			on_construct();
 #if SOUP_WINDOWS
 			SecInvalidateHandle(&ctx_h);
 			SecInvalidateHandle(&cred_h);
@@ -64,8 +65,8 @@ namespace soup
 		socket(socket&& b) noexcept
 			: fd(b.fd)
 		{
+			on_construct();
 			b.fd = -1;
-
 #if SOUP_WINDOWS
 			ctx_h.dwLower = b.ctx_h.dwLower;
 			ctx_h.dwUpper = b.ctx_h.dwUpper;
@@ -77,6 +78,21 @@ namespace soup
 #endif
 		}
 
+	protected:
+		void on_construct()
+		{
+#if SOUP_WINDOWS
+			if (wsa_consumers++ == 0)
+			{
+				WSADATA wsaData;
+				WORD wVersionRequested = MAKEWORD(2, 2);
+				WSAStartup(wVersionRequested, &wsaData);
+			}
+
+#endif
+		}
+
+	public:
 		void operator =(const socket&) = delete;
 
 		void operator =(socket&& b) noexcept
@@ -98,12 +114,15 @@ namespace soup
 		~socket() noexcept
 		{
 			release();
-
 #if SOUP_WINDOWS
 			if (SecIsValidHandle(&cred_h))
 			{
 				sft->FreeCredentialsHandle(&cred_h);
 				SecInvalidateHandle(&cred_h);
+			}
+			if (--wsa_consumers == 0)
+			{
+				WSACleanup();
 			}
 #endif
 		}
