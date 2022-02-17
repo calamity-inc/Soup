@@ -113,7 +113,7 @@ namespace soup
 
 		~socket() noexcept
 		{
-			release();
+			close();
 #if SOUP_WINDOWS
 			if (SecIsValidHandle(&cred_h))
 			{
@@ -127,7 +127,7 @@ namespace soup
 #endif
 		}
 
-		void release() noexcept
+		void close() noexcept
 		{
 			if (fd != -1)
 			{
@@ -143,48 +143,30 @@ namespace soup
 #endif
 				fd = -1;
 			}
-
-#if SOUP_WINDOWS
-			releaseContext();
-#endif
+			deleteSecurityContext();
 		}
 
 	private:
-#if SOUP_WINDOWS
-		void releaseContext()
+		void deleteSecurityContext()
 		{
+#if SOUP_WINDOWS
 			if (SecIsValidHandle(&ctx_h))
 			{
 				sft->DeleteSecurityContext(&ctx_h);
 				SecInvalidateHandle(&ctx_h);
 			}
-		}
 #endif
+		}
 
 	public:
-		[[nodiscard]] bool isValid() const noexcept
+		[[nodiscard]] bool hasConnection() const noexcept
 		{
 			return fd != -1;
 		}
 
-	protected:
-		void preinit() noexcept
-		{
-#if SOUP_WINDOWS
-			if (wsa_consumers++ == 0)
-			{
-				WSADATA wsaData;
-				WORD wVersionRequested = MAKEWORD(2, 2);
-				WSAStartup(wVersionRequested, &wsaData);
-			}
-#endif
-			release();
-		}
-
-	public:
 		bool init(int af)
 		{
-			preinit();
+			close();
 			fd = ::socket(af, SOCK_STREAM, 0);
 			return fd != -1;
 		}

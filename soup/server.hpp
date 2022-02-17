@@ -81,6 +81,21 @@ namespace soup
 		{
 			while (true)
 			{
+				// process clients that we've closed
+				for (auto i = clients.begin(); i != clients.end(); )
+				{
+					if (i->hasConnection())
+					{
+						++i;
+					}
+					else
+					{
+						dispatchDisconnectEvent(i);
+						pollfds.erase(clientToPollfd(i));
+						i = clients.erase(i);
+					}
+				}
+				// await events
 #if SOUP_WINDOWS
 				int pollret = WSAPoll(pollfds.data(), pollfds.size(), -1);
 #else
@@ -90,22 +105,16 @@ namespace soup
 				{
 					continue;
 				}
+				// accept clients
 				if (pollfds[0].revents & POLLIN)
 				{
-					auto client = acceptNonBlocking6();
-					if (client.isValid())
-					{
-						runOnConnect(std::move(client));
-					}
+					runOnConnect(acceptNonBlocking6());
 				}
 				if (pollfds[1].revents & POLLIN)
 				{
-					auto client = acceptNonBlocking4();
-					if (client.isValid())
-					{
-						runOnConnect(std::move(client));
-					}
+					runOnConnect(acceptNonBlocking4());
 				}
+				// process clients
 				for (auto i = pollfds.begin() + 2; i != pollfds.end(); )
 				{
 					if (i->revents != 0)
@@ -150,22 +159,35 @@ namespace soup
 	protected:
 		void runOnConnect(Client&& _client)
 		{
-			pollfds.emplace_back(pollfd{ _client.fd, POLLIN });
-			client& client = clients.emplace_back(std::move(_client));
-			if (on_client_connect)
+			if (_client.hasConnection())
 			{
-				on_client_connect(client);
+				pollfds.emplace_back(pollfd{ _client.fd, POLLIN });
+				client& client = clients.emplace_back(std::move(_client));
+				if (on_client_connect)
+				{
+					on_client_connect(client);
+				}
 			}
 		}
 
 		void runOnDisconnect(std::vector<pollfd>::iterator& i, typename std::vector<Client>::iterator clients_i)
 		{
+			dispatchDisconnectEvent(clients_i);
+			clients.erase(clients_i);
+			i = pollfds.erase(i);
+		}
+
+		void dispatchDisconnectEvent(typename std::vector<Client>::iterator clients_i)
+		{
 			if (on_client_disconnect)
 			{
 				on_client_disconnect(*clients_i);
 			}
-			clients.erase(clients_i);
-			i = pollfds.erase(i);
+		}
+
+		[[nodiscard]] std::vector<pollfd>::iterator clientToPollfd(typename std::vector<Client>::iterator clients_i)
+		{
+			return pollfds.begin() + (clients_i - clients.begin()) + 2;
 		}
 
 	public:

@@ -220,7 +220,7 @@ namespace soup
 			|| FAILED(sft->QueryContextAttributes(&ctx_h, SECPKG_ATTR_STREAM_SIZES, &Sizes))
 			)
 		{
-			releaseContext();
+			deleteSecurityContext();
 			return false;
 		}
 
