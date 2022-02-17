@@ -257,6 +257,7 @@
     <ClInclude Include="rgb.hpp" />
     <ClInclude Include="rsa.hpp" />
     <ClInclude Include="rtti.hpp" />
+    <ClInclude Include="scoped_enum.hpp" />
     <ClInclude Include="server.hpp" />
     <ClInclude Include="sha1.hpp" />
     <ClInclude Include="shortint_impl.hpp" />

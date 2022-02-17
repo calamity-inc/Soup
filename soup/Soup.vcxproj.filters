@@ -214,6 +214,9 @@
     <ClInclude Include="shortint_impl.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="scoped_enum.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
