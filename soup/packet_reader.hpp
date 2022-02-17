@@ -117,6 +117,13 @@ namespace soup
 			return u16(len) && len <= max_len && str_lp_impl(v, len);
 		}
 
+		// Length-prefixed string, using u24 for the length prefix.
+		bool str_lp_u24(std::string& v, const uint32_t max_len = 0xFFFFFF)
+		{
+			uint32_t len;
+			return u24(len) && len <= max_len && str_lp_impl(v, len);
+		}
+
 		// Length-prefixed string, using u32 for the length prefix.
 		bool str_lp_u32(std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
