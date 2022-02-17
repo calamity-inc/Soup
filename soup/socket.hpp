@@ -66,16 +66,7 @@ namespace soup
 			: fd(b.fd)
 		{
 			on_construct();
-			b.fd = -1;
-#if SOUP_WINDOWS
-			ctx_h.dwLower = b.ctx_h.dwLower;
-			ctx_h.dwUpper = b.ctx_h.dwUpper;
-			SecInvalidateHandle(&b.ctx_h);
-
-			cred_h.dwLower = b.cred_h.dwLower;
-			cred_h.dwUpper = b.cred_h.dwUpper;
-			SecInvalidateHandle(&b.cred_h);
-#endif
+			operator =(std::move(b));
 		}
 
 	protected:
@@ -88,7 +79,6 @@ namespace soup
 				WORD wVersionRequested = MAKEWORD(2, 2);
 				WSAStartup(wVersionRequested, &wsaData);
 			}
-
 #endif
 		}
 
