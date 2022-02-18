@@ -24,7 +24,7 @@ namespace soup
 				}
 				hash_bin.insert(0, T::DIGEST_BYTES - hash_bin.length(), '\0');
 			}
-			hash_bin.insert(0, (const char*)T::ID, sizeof(T::ID)); // As per https://datatracker.ietf.org/doc/html/rfc3447#page-43
+			hash_bin.insert(0, (const char*)T::OID, sizeof(T::OID)); // As per https://datatracker.ietf.org/doc/html/rfc3447#page-43
 			return true;
 		}
 
