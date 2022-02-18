@@ -6,8 +6,7 @@ namespace soup
 {
 	// Adapted from https://github.com/vog/sha1
 
-	static const size_t BLOCK_INTS = 16;  /* number of 32bit integers per SHA1 block */
-	static const size_t BLOCK_BYTES = BLOCK_INTS * 4;
+	static constexpr auto BLOCK_INTS = sha1::BLOCK_BYTES / sizeof(int);
 
 	inline static uint32_t rol(const uint32_t value, const size_t bits)
 	{
