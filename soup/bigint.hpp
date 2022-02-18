@@ -234,7 +234,7 @@ namespace soup
 			return str;
 		}
 
-		[[nodiscard]] std::string toStringHexUpper(bool prefix = false) const;
+		[[nodiscard]] std::string toStringHex(bool prefix = false) const;
 		[[nodiscard]] std::string toStringHexLower(bool prefix = false) const;
 	private:
 		[[nodiscard]] std::string toStringHexImpl(bool prefix, const char* map) const;

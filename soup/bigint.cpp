@@ -1239,14 +1239,14 @@ namespace soup
 		return true;
 	}
 
-	std::string bigint::toStringHexUpper(bool prefix) const
+	std::string bigint::toStringHex(bool prefix) const
 	{
-		return toStringHexImpl(prefix, string::from_int_map_hex_upper);
+		return toStringHexImpl(prefix, string::charset_hex);
 	}
 
 	std::string bigint::toStringHexLower(bool prefix) const
 	{
-		return toStringHexImpl(prefix, string::from_int_map_hex_lower);
+		return toStringHexImpl(prefix, string::charset_hex_lower);
 	}
 
 	std::string bigint::toStringHexImpl(bool prefix, const char* map) const

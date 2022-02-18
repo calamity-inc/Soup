@@ -49,19 +49,19 @@ namespace soup
 		}
 
 		template <typename Int>
-		[[nodiscard]] static std::string hex_upper(Int i)
+		[[nodiscard]] static std::string hex(Int i)
 		{
-			return fromIntWithMap<std::string, Int, 16>(i, from_int_map_hex_upper);
+			return fromIntWithMap<std::string, Int, 16>(i, charset_hex);
 		}
 
 		template <typename Int>
 		[[nodiscard]] static std::string hex_lower(Int i)
 		{
-			return fromIntWithMap<std::string, Int, 16>(i, from_int_map_hex_lower);
+			return fromIntWithMap<std::string, Int, 16>(i, charset_hex_lower);
 		}
 
-		static constexpr const char* from_int_map_hex_upper = "0123456789ABCDEF";
-		static constexpr const char* from_int_map_hex_lower = "0123456789abcdef";
+		static constexpr const char* charset_hex = "0123456789ABCDEF";
+		static constexpr const char* charset_hex_lower = "0123456789abcdef";
 
 		template <typename Str, typename Int, uint8_t Base>
 		[[nodiscard]] static Str fromIntWithMap(Int i, const typename Str::value_type* map)
@@ -106,6 +106,30 @@ namespace soup
 		[[nodiscard]] static constexpr bool isLetter(const T c) noexcept
 		{
 			return isUppercaseLetter(c) || isLowercaseLetter(c);
+		}
+
+		// conversions
+
+		[[nodiscard]] static std::string bin2hex(const std::string& str)
+		{
+			return bin2hexImpl(str, charset_hex);
+		}
+
+		[[nodiscard]] static std::string bin2hexLower(const std::string& str)
+		{
+			return bin2hexImpl(str, charset_hex_lower);
+		}
+		
+		[[nodiscard]] static std::string bin2hexImpl(std::string str, const char* map)
+		{
+			std::string res{};
+			res.reserve(str.size() * 2);
+			for (const auto& c : str)
+			{
+				res.push_back(map[(unsigned char)c >> 4]);
+				res.push_back(map[c & 0b1111]);
+			}
+			return res;
 		}
 
 		// char mutation
