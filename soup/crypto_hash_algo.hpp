@@ -28,7 +28,7 @@ namespace soup
 			return true;
 		}
 
-		static std::string hmac(const std::string& msg, std::string key)
+		[[nodiscard]] static std::string hmac(const std::string& msg, std::string key)
 		{
 			if (key.length() > T::DIGEST_BYTES)
 			{
@@ -53,6 +53,30 @@ namespace soup
 			inner.append(msg);
 			outer.append(T::hash(std::move(inner)));
 			return T::hash(std::move(outer));
+		}
+
+		[[nodiscard]] static std::string tls_prf(const size_t bytes, std::string label, const std::string& secret, const std::string& seed)
+		{
+			std::string res{};
+
+			label.append(seed);
+
+			std::string A = label;
+			do
+			{
+				A = hmac(A, secret);
+
+				std::string round_key = A;
+				round_key.append(label);
+
+				res.append(hmac(round_key, secret));
+			} while (res.size() < bytes);
+
+			if (res.size() != bytes)
+			{
+				res.erase(bytes);
+			}
+			return res;
 		}
 	};
 }
