@@ -260,6 +260,7 @@
     <ClInclude Include="scoped_enum.hpp" />
     <ClInclude Include="server.hpp" />
     <ClInclude Include="sha1.hpp" />
+    <ClInclude Include="sha256.hpp" />
     <ClInclude Include="shortint_impl.hpp" />
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
@@ -293,6 +294,7 @@
     <ClCompile Include="rsa.cpp" />
     <ClCompile Include="rtti.cpp" />
     <ClCompile Include="sha1.cpp" />
+    <ClCompile Include="sha256.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="pattern.cpp" />
     <ClCompile Include="pointer.cpp" />

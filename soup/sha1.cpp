@@ -6,7 +6,7 @@ namespace soup
 {
 	// Adapted from https://github.com/vog/sha1
 
-	static constexpr auto BLOCK_INTS = sha1::BLOCK_BYTES / sizeof(int);
+	static constexpr auto BLOCK_INTS = sha1::BLOCK_BYTES / sizeof(uint32_t);
 
 	inline static uint32_t rol(const uint32_t value, const size_t bits)
 	{
@@ -165,7 +165,7 @@ namespace soup
 		digest[4] += e;
 
 		/* Count the number of transformations */
-		transforms++;
+		++transforms;
 	}
 
 	inline static void buffer_to_block(const std::string& buffer, uint32_t block[BLOCK_INTS])
@@ -247,8 +247,8 @@ namespace soup
 		block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
 		transform(digest, block, transforms);
 
-		std::string bin;
-		bin.reserve(20);
+		std::string bin{};
+		bin.reserve(DIGEST_BYTES);
 		for (size_t i = 0; i < sizeof(digest) / sizeof(digest[0]); i++)
 		{
 			bin.push_back(((const char*)&digest[i])[3]);

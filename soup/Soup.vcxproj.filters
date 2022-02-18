@@ -217,6 +217,9 @@
     <ClInclude Include="scoped_enum.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="sha256.hpp">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -283,6 +286,9 @@
       <Filter>mem</Filter>
     </ClCompile>
     <ClCompile Include="sha1.cpp">
+      <Filter>hash</Filter>
+    </ClCompile>
+    <ClCompile Include="sha256.cpp">
       <Filter>hash</Filter>
     </ClCompile>
   </ItemGroup>
