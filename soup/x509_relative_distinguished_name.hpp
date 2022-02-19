@@ -10,7 +10,7 @@ namespace soup
 {
 	struct x509_relative_distinguished_name : public std::vector<std::pair<oid, std::string>>
 	{
-		[[nodiscard]] std::string get(const oid& target)
+		[[nodiscard]] std::string get(const oid& target) const
 		{
 			for (const auto& kv : *this)
 			{
@@ -22,17 +22,17 @@ namespace soup
 			return {};
 		}
 
-		[[nodiscard]] std::string getCommonName()
+		[[nodiscard]] std::string getCommonName() const
 		{
 			return get({ 2, 5, 4, 3 });
 		}
 
-		[[nodiscard]] std::string getCountry()
+		[[nodiscard]] std::string getCountry() const
 		{
 			return get({ 2, 5, 4, 6 });
 		}
 
-		[[nodiscard]] std::string getOrganisationName()
+		[[nodiscard]] std::string getOrganisationName() const
 		{
 			return get({ 2, 5, 4, 10 });
 		}
