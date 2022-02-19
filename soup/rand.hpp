@@ -68,6 +68,15 @@ namespace soup
 			}
 			return str;
 		}
+
+		template <size_t S>
+		static void fill(uint8_t(&arr)[S]) noexcept
+		{
+			for (auto& b : arr)
+			{
+				b = byte();
+			}
+		}
 	};
 
 	inline rand_impl rand;
