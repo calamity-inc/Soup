@@ -63,7 +63,6 @@ namespace soup
 		socket(const socket&) = delete;
 
 		socket(socket&& b) noexcept
-			: fd(b.fd)
 		{
 			on_construct();
 			operator =(std::move(b));
@@ -250,10 +249,11 @@ namespace soup
 			return ::recv(fd, (char*)outData, max_bytes, 0);
 		}
 
+	public:
 		[[nodiscard]] std::string recv(int max_bytes) noexcept
 		{
 			std::string buf(max_bytes, 0);
-			int read = ::recv(fd, buf.data(), max_bytes, 0);
+			int read = recv(buf.data(), max_bytes);
 			if (read <= 0)
 			{
 				return std::string{};
@@ -268,7 +268,7 @@ namespace soup
 			char* dp = buf.data();
 			while (bytes != 0)
 			{
-				int read = ::recv(fd, dp, bytes, 0);
+				int read = recv(dp, bytes);
 				if (read <= 0)
 				{
 					return std::string{};
@@ -279,7 +279,6 @@ namespace soup
 			return buf;
 		}
 
-	public:
 		bool recvAll(std::string& out) noexcept
 		{
 			char buf[4096];
