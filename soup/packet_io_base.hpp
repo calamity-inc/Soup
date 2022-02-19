@@ -34,6 +34,10 @@ namespace soup
 
 		[[nodiscard]] bool u24(uint32_t& v)
 		{
+			if (T::isRead())
+			{
+				v = 0;
+			}
 			if constexpr (std::endian::native == std::endian::little)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
@@ -68,8 +72,12 @@ namespace soup
 
 		[[nodiscard]] bool u40(uint64_t& v)
 		{
+			if (T::isRead())
+			{
+				v = 0;
+			}
 			if constexpr (std::endian::native == std::endian::little)
-				{
+			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
@@ -88,6 +96,10 @@ namespace soup
 		
 		[[nodiscard]] bool u48(uint64_t& v)
 		{
+			if (T::isRead())
+			{
+				v = 0;
+			}
 			if constexpr (std::endian::native == std::endian::little)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
@@ -110,6 +122,10 @@ namespace soup
 
 		[[nodiscard]] bool u56(uint64_t& v)
 		{
+			if (T::isRead())
+			{
+				v = 0;
+			}
 			if constexpr (std::endian::native == std::endian::little)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])
