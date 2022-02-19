@@ -143,7 +143,7 @@ namespace soup
 		// Length-prefixed string, using u64 for the length prefix.
 		bool str_lp_u64(std::string& v)
 		{
-			size_t len = v.size();
+			uint64_t len = v.size();
 			if (u64(len))
 			{
 				os->write(v.data(), v.size());
@@ -212,6 +212,33 @@ namespace soup
 			for (auto& entry : v)
 			{
 				if (!u16(entry))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// vector of str_lp_u24 with u24 byte length prefix.
+		bool vec_str_lp_u24_bl_u24(std::vector<std::string>& v)
+		{
+			size_t bl = (v.size() * 3);
+			for (const auto& entry : v)
+			{
+				bl += entry.size();
+			}
+			if (bl > 0xFFFFFF)
+			{
+				return false;
+			}
+			auto bl_u32 = (uint32_t)bl;
+			if (!u24(bl_u32))
+			{
+				return false;
+			}
+			for (auto& entry : v)
+			{
+				if (!str_lp_u24(entry))
 				{
 					return false;
 				}

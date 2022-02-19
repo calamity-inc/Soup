@@ -155,7 +155,7 @@ namespace soup
 				{
 					return false;
 				}
-				v.emplace_back(entry);
+				v.emplace_back(std::move(entry));
 			}
 			return true;
 		}
@@ -177,7 +177,7 @@ namespace soup
 				{
 					return false;
 				}
-				v.emplace_back(entry);
+				v.emplace_back(std::move(entry));
 			}
 			return true;
 		}
@@ -199,7 +199,30 @@ namespace soup
 				{
 					return false;
 				}
-				v.emplace_back(entry);
+				v.emplace_back(std::move(entry));
+			}
+			return true;
+		}
+
+		// vector of str_lp_u24 with u24 byte length prefix.
+		bool vec_str_lp_u24_bl_u24(std::vector<std::string>& v)
+		{
+			uint32_t len;
+			if (!u24(len))
+			{
+				return false;
+			}
+			v.clear();
+			v.reserve(len);
+			while (len >= 3)
+			{
+				std::string entry;
+				if (!str_lp_u24(entry))
+				{
+					return false;
+				}
+				len -= (entry.size() + 3);
+				v.emplace_back(std::move(entry));
 			}
 			return true;
 		}
