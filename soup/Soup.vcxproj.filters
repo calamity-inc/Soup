@@ -220,6 +220,24 @@
     <ClInclude Include="sha256.hpp">
       <Filter>hash</Filter>
     </ClInclude>
+    <ClInclude Include="asn1_sequence.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="oid.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="stream.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="pkcs1.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="x509_certificate.hpp">
+      <Filter>crypto\x509</Filter>
+    </ClInclude>
+    <ClInclude Include="x509_relative_distinguished_name.hpp">
+      <Filter>crypto\x509</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -291,6 +309,15 @@
     <ClCompile Include="sha256.cpp">
       <Filter>hash</Filter>
     </ClCompile>
+    <ClCompile Include="asn1_sequence.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="oid.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="x509_certificate.cpp">
+      <Filter>crypto\x509</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -331,6 +358,9 @@
     </Filter>
     <Filter Include="io">
       <UniqueIdentifier>{dba0001f-054d-4ddf-ba50-932ef7505446}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto\x509">
+      <UniqueIdentifier>{ac1efe97-34c7-4c84-ae8e-6772370e049c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

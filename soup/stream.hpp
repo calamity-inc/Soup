@@ -1,0 +1,41 @@
+#pragma once
+
+namespace soup
+{
+	struct stream
+	{
+		// OM = One More; my name for the integer encoding scheme where every byte's most significant bit is used to indicate if another byte follows.
+
+		template <typename Int>
+		[[nodiscard]] static Int readOmInt(std::basic_istream<char, std::char_traits<char>>& s)
+		{
+			Int ret{};
+			while (true)
+			{
+				auto b = s.get();
+				if (b == EOF)
+				{
+					break;
+				}
+				ret <<= 7;
+				ret |= (b & 0x7F);
+				if (!(b & 0x80))
+				{
+					break;
+				}
+			}
+			return ret;
+		}
+
+		template <typename Int>
+		static void writeOmInt(std::basic_ostream<char, std::char_traits<char>>& s, Int val)
+		{
+			while (val > 0x7F)
+			{
+				s << ((unsigned char)val | 0x80);
+				val >>= 7;
+			}
+			s << (unsigned char)val;
+		}
+	};
+}

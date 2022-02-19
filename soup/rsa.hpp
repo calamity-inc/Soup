@@ -9,7 +9,9 @@ namespace soup
 	{
 		struct mod
 		{
-			bigint n;
+			bigint n{};
+
+			mod() = default;
 
 			mod(const bigint& n)
 				: n(n)
@@ -27,12 +29,12 @@ namespace soup
 
 			[[nodiscard]] bigint encryptUnpadded(const std::string& msg) const // deterministic
 			{
-				return reinterpret_cast<const T*>(this)->modPow(bigint::fromMessage(msg));
+				return reinterpret_cast<const T*>(this)->modPow(bigint::fromBinary(msg));
 			}
 
 			[[nodiscard]] std::string decryptUnpadded(const bigint& enc) const
 			{
-				return reinterpret_cast<const T*>(this)->modPow(enc).toMessage();
+				return reinterpret_cast<const T*>(this)->modPow(enc).toBinary();
 			}
 
 			[[nodiscard]] std::string decryptPkcs1(const bigint& enc) const
@@ -51,7 +53,9 @@ namespace soup
 			static bigint e_pref;
 #endif
 
-			bigint e;
+			bigint e{};
+
+			key_public() = default;
 
 			key_public(const bigint& n)
 				: key(n), e(e_pref)

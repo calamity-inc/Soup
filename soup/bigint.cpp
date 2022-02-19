@@ -1281,11 +1281,10 @@ namespace soup
 
 	std::ostream& operator<<(std::ostream& os, const bigint& v)
 	{
-		os << v.toStringDecimal();
-		return os;
+		return os << v.toStringDecimal();
 	}
 
-	bigint bigint::fromMessage(const std::string& msg)
+	bigint bigint::fromBinary(const std::string& msg)
 	{
 		bigint res{};
 		for (auto i = msg.begin(); i != msg.end(); ++i)
@@ -1296,7 +1295,7 @@ namespace soup
 		return res;
 	}
 
-	std::string bigint::toMessage() const
+	std::string bigint::toBinary() const
 	{
 		std::string str{};
 		size_t i = getNumBytes();

@@ -242,8 +242,8 @@ namespace soup
 	public:
 		friend std::ostream& operator<<(std::ostream& os, const bigint& v);
 
-		[[nodiscard]] static bigint fromMessage(const std::string& msg);
-		[[nodiscard]] std::string toMessage() const;
+		[[nodiscard]] static bigint fromBinary(const std::string& msg);
+		[[nodiscard]] std::string toBinary() const;
 	};
 
 	namespace literals
