@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "fwddecl.hpp"
+#include "fwd.hpp"
 
 namespace soup
 {

@@ -5,7 +5,7 @@
 #include <string_view>
 #include <vector>
 
-#include "fwddecl.hpp"
+#include "fwd.hpp"
 #include "base.hpp"
 #if SOUP_WINDOWS
 #include <Windows.h>

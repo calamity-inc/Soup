@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include "fwddecl.hpp"
+#include "fwd.hpp"
 
 #include "handle_base.hpp"
 #include "range.hpp"

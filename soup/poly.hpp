@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fwddecl.hpp"
+#include "fwd.hpp"
 
 #include "vector3.hpp"
 

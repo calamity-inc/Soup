@@ -8,7 +8,7 @@
 
 #include <Windows.h>
 
-#include "fwddecl.hpp"
+#include "fwd.hpp"
 
 namespace soup
 {

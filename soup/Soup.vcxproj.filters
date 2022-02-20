@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="fwddecl.hpp" />
+    <ClInclude Include="fwd.hpp" />
     <ClInclude Include="macros.hpp" />
     <ClInclude Include="alloc_raii.hpp">
       <Filter>mem</Filter>
@@ -222,9 +222,6 @@
     </ClInclude>
     <ClInclude Include="stream.hpp">
       <Filter>io</Filter>
-    </ClInclude>
-    <ClInclude Include="pkcs1.hpp">
-      <Filter>crypto</Filter>
     </ClInclude>
     <ClInclude Include="x509_certificate.hpp">
       <Filter>crypto\x509</Filter>

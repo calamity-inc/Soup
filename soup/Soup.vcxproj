@@ -246,7 +246,7 @@
     <ClInclude Include="pattern_compile_time_with_opt_bytes_base.hpp" />
     <ClInclude Include="pattern_compile_time_with_opt_bytes.hpp" />
     <ClInclude Include="pattern_compile_time.hpp" />
-    <ClInclude Include="fwddecl.hpp" />
+    <ClInclude Include="fwd.hpp" />
     <ClInclude Include="macros.hpp" />
     <ClInclude Include="pattern_macros.hpp" />
     <ClInclude Include="module.hpp" />
