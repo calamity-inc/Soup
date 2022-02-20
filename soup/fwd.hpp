@@ -2,7 +2,11 @@
 
 namespace soup
 {
+	// io
+	struct oid;
+
 	// math
+	class bigint;
 	struct box_corners;
 	struct poly;
 	struct ray;

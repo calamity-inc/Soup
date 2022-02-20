@@ -1,10 +1,11 @@
 #pragma once
 
 #include <istream>
+#include <vector>
+
+#include "fwd.hpp"
 
 #include "asn1_element.hpp"
-#include "bigint.hpp"
-#include "oid.hpp"
 
 namespace soup
 {

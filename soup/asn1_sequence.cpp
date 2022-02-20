@@ -3,6 +3,8 @@
 #include <sstream>
 
 #include "asn1_type.hpp"
+#include "bigint.hpp"
+#include "oid.hpp"
 #include "stream.hpp"
 #include "string.hpp"
 
