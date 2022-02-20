@@ -205,7 +205,10 @@
   <ItemGroup>
     <ClInclude Include="alloc_raii.hpp" />
     <ClInclude Include="alloc_raii_remote.hpp" />
+    <ClInclude Include="asn1_element.hpp" />
     <ClInclude Include="asn1_sequence.hpp" />
+    <ClInclude Include="asn1_identifier.hpp" />
+    <ClInclude Include="asn1_type.hpp" />
     <ClInclude Include="base.hpp" />
     <ClInclude Include="base64.hpp" />
     <ClInclude Include="bigint.hpp" />
@@ -224,6 +227,7 @@
     <ClInclude Include="dns_aaaa.hpp" />
     <ClInclude Include="dns_srv.hpp" />
     <ClInclude Include="dns_txt.hpp" />
+    <ClInclude Include="pem.hpp" />
     <ClInclude Include="stream.hpp" />
     <ClInclude Include="matrix.hpp" />
     <ClInclude Include="client.hpp" />
@@ -298,6 +302,7 @@
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="oid.cpp" />
+    <ClCompile Include="pem.cpp" />
     <ClCompile Include="rsa.cpp" />
     <ClCompile Include="rtti.cpp" />
     <ClCompile Include="sha1.cpp" />
@@ -310,6 +315,7 @@
     <ClCompile Include="range.cpp" />
     <ClCompile Include="thread.cpp" />
     <ClCompile Include="unicode.cpp" />
+    <ClCompile Include="wasm.cpp" />
     <ClCompile Include="x509_certificate.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

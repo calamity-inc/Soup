@@ -132,6 +132,17 @@ namespace soup
 			return res;
 		}
 
+		// string mutation
+
+		template <typename T>
+		static void erase(T& str, const T& target)
+		{
+			for (size_t i = 0; i = str.find(target, i), i != T::npos; )
+			{
+				str.erase(i, target.size());
+			}
+		}
+
 		// char mutation
 
 		[[nodiscard]] static constexpr char rot13(char c) noexcept

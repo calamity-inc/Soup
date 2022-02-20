@@ -2,8 +2,26 @@
 
 #include <sstream>
 
+#include "asn1_type.hpp"
+#include "stream.hpp"
+#include "string.hpp"
+
 namespace soup
 {
+	asn1_sequence::asn1_sequence(std::string data)
+		: std::vector<asn1_element>()
+	{
+		std::istringstream s{ std::move(data) };
+		while (s.peek() != EOF)
+		{
+			auto id = readIdentifier(s);
+			auto len = readLength(s);
+			std::string buf(len, '\0');
+			s.read(buf.data(), len);
+			emplace_back(asn1_element{ std::move(id), std::move(buf) });
+		}
+	}
+
 	asn1_sequence asn1_sequence::fromBinary(const std::string& str)
 	{
 		std::istringstream s{ str };
@@ -12,49 +30,26 @@ namespace soup
 
 	asn1_sequence asn1_sequence::fromBinary(std::istream& s)
 	{
-		skipType(s);
+		readIdentifier(s);
 		auto len = readLength(s);
 		std::string buf(len, '\0');
 		s.read(buf.data(), len);
-		return asn1_sequence{ buf };
+		return asn1_sequence{ std::move(buf) };
 	}
 
 	size_t asn1_sequence::countChildren() const
 	{
-		std::istringstream s{ data };
-		size_t c = 0;
-		while (s.peek() != EOF)
-		{
-			skipType(s);
-			s.ignore(readLength(s));
-			++c;
-		}
-		return c;
+		return size();
+	}
+
+	const std::string& asn1_sequence::getString(const size_t child_idx) const
+	{
+		return at(child_idx).data;
 	}
 
 	asn1_sequence asn1_sequence::getSeq(const size_t child_idx) const
 	{
 		return asn1_sequence{ getString(child_idx) };
-	}
-
-	std::string asn1_sequence::getString(const size_t child_idx) const
-	{
-		std::istringstream s{ data };
-		size_t c = 0;
-		while (s.peek() != EOF)
-		{
-			skipType(s);
-			auto len = readLength(s);
-			if (c == child_idx)
-			{
-				std::string buf(len, '\0');
-				s.read(buf.data(), len);
-				return buf;
-			}
-			s.ignore(len);
-			++c;
-		}
-		return {};
 	}
 
 	bigint asn1_sequence::getInt(const size_t child_idx) const
@@ -67,12 +62,149 @@ namespace soup
 		return oid::fromBinary(getString(child_idx));
 	}
 
-	void asn1_sequence::skipType(std::istream& s)
+	std::string asn1_sequence::toString(const std::string& prefix) const
 	{
-		if (auto type = ((uint8_t)s.get()) & 0b11111; type > 30)
+		std::string ret{};
+		size_t i = 0;
+		for (const auto& c : *this)
 		{
-			while ((s.get() >> 7) != 1); // avoids infinite loop if EOF
+			ret.push_back('\n');
+			ret.append(prefix);
+			ret.push_back('[');
+			ret.append(std::to_string(i++));
+			ret.append("] ");
+			ret.append(c.identifier.constructed ? "Constructed " : "Primitive ");
+			if (c.identifier.m_class == 0)
+			{
+				switch (c.identifier.type)
+				{
+				default:
+					ret.append(std::to_string(c.identifier.type));
+					break;
+
+				case asn1_type::_BOOLEAN:
+					ret.append("BOOLEAN");
+					break;
+
+				case asn1_type::INTEGER:
+					ret.append("INTEGER");
+					break;
+
+				case asn1_type::BITSTRING:
+					ret.append("BIT STRING");
+					break;
+
+				case asn1_type::STRING_OCTET:
+					ret.append("OCTET STRING");
+					break;
+
+				case asn1_type::_NULL:
+					ret.append("NULL");
+					break;
+
+				case asn1_type::OID:
+					ret.append("OID");
+					break;
+
+				case asn1_type::SEQUENCE:
+					ret.append("SEQUENCE");
+					break;
+
+				case asn1_type::SET:
+					ret.append("SET");
+					break;
+
+				case asn1_type::STRING_PRINTABLE:
+					ret.append("PrintableString");
+					break;
+
+				case asn1_type::STRING_IA5:
+					ret.append("IA5String");
+					break;
+
+				case asn1_type::UTCTIME:
+					ret.append("UTCTime");
+					break;
+				}
+			}
+			else
+			{
+				switch (c.identifier.m_class)
+				{
+				case 1:
+					ret.append("Application-specific ");
+					break;
+
+				case 2:
+					ret.append("Context-specific ");
+					break;
+
+				case 3:
+					ret.append("Private ");
+					break;
+				}
+				ret.append(std::to_string(c.identifier.type));
+			}
+			if (c.data.empty())
+			{
+				continue;
+			}
+			ret.push_back(':');
+			if (c.identifier.m_class == 0
+				&& c.identifier.type != asn1_type::SEQUENCE
+				&& c.identifier.type != asn1_type::SET
+				)
+			{
+				ret.push_back(' ');
+				switch (c.identifier.type)
+				{
+				default:
+					ret.append(string::bin2hex(c.data));
+					break;
+
+				case asn1_type::INTEGER:
+				case asn1_type::BITSTRING:
+					ret.append(bigint::fromBinary(c.data).toString());
+					break;
+
+				case asn1_type::OID:
+					ret.append(oid::fromBinary(c.data).toString());
+					break;
+
+				case asn1_type::STRING_PRINTABLE:
+				case asn1_type::STRING_IA5:
+				case asn1_type::UTCTIME: // yyMMddHHmmssZ
+					ret.append(c.data);
+					break;
+				}
+			}
+			else
+			{
+				ret.push_back('\n');
+				std::string rp = prefix;
+				rp.push_back('\t');
+				ret.append(asn1_sequence(c.data).toString(rp));
+			}
 		}
+		if (!ret.empty())
+		{
+			ret.erase(0, 1);
+		}
+		return ret;
+	}
+
+	asn1_identifier asn1_sequence::readIdentifier(std::istream& s)
+	{
+		asn1_identifier ret{};
+		auto first = (uint8_t)s.get();
+		ret.m_class = (first >> 6);
+		ret.constructed = (first >> 5) & 1;
+		ret.type = (first & 0b11111);
+		if (ret.type > 30)
+		{
+			ret.type = stream::readOmInt<uint32_t>(s);
+		}
+		return ret;
 	}
 
 	size_t asn1_sequence::readLength(std::istream& s)

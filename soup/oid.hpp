@@ -11,7 +11,7 @@ namespace soup
 
 		constexpr oid() = default;
 
-		constexpr oid(std::initializer_list<uint32_t>&& path)
+		oid(std::initializer_list<uint32_t>&& path)
 			: path(std::move(path))
 		{
 		}

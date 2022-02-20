@@ -1,5 +1,7 @@
 #include "x509_certificate.hpp"
 
+#include <cstring> // memcmp
+
 namespace soup
 {
 	bool x509_certificate::fromBinary(const std::string& str)

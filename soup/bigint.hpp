@@ -181,7 +181,7 @@ namespace soup
 		bool toPrimitive(size_t& out) const;
 
 		template <typename Str = std::string>
-		[[nodiscard]] Str toStringDecimal() const
+		[[nodiscard]] Str toString() const
 		{
 			Str str{};
 			bigint quotient(*this);
@@ -192,7 +192,7 @@ namespace soup
 			}
 			else do
 			{
-				auto res = quotient.divide(10u);
+				auto res = quotient.divide((chunk_t)10u);
 				str.insert(0, 1, '0' + res.second.getChunk(0));
 				quotient = std::move(res.first);
 			} while (!quotient.isZero());

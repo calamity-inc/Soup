@@ -112,8 +112,8 @@ namespace soup
 	{
 		for (size_t i = 0; i != len; ++i)
 		{
-			*this *= 10u;
-			*this += (unsigned int)(str[i] - '0');
+			*this *= (chunk_t)10u;
+			*this += (chunk_t)(str[i] - '0');
 		}
 	}
 
@@ -124,15 +124,15 @@ namespace soup
 			*this <<= 4u;
 			if (str[i] >= 'a')
 			{
-				*this |= (unsigned int)(str[i] - ('a' - 10u));
+				*this |= (chunk_t)(str[i] - ('a' - 10u));
 			}
 			else if (str[i] >= 'A')
 			{
-				*this |= (unsigned int)(str[i] - ('A' - 10u));
+				*this |= (chunk_t)(str[i] - ('A' - 10u));
 			}
 			else
 			{
-				*this |= (unsigned int)(str[i] - '0');
+				*this |= (chunk_t)(str[i] - '0');
 			}
 		}
 	}
@@ -651,7 +651,7 @@ namespace soup
 			res.first.negative ^= 1;
 			if (!res.second.isZero())
 			{
-				res.first -= 1u;
+				res.first -= (chunk_t)1u;
 				res.second = divisor - res.second;
 			}
 			return res;
@@ -811,7 +811,7 @@ namespace soup
 
 	bigint& bigint::operator++()
 	{
-		*this += 1u;
+		*this += (chunk_t)1u;
 		return *this;
 	}
 
@@ -831,7 +831,7 @@ namespace soup
 
 	bigint& bigint::operator--()
 	{
-		*this -= 1u;
+		*this -= (chunk_t)1u;
 		return *this;
 	}
 
@@ -917,7 +917,7 @@ namespace soup
 
 	bigint bigint::pow(bigint e) const
 	{
-		bigint res = 1u;
+		bigint res = (chunk_t)1u;
 		bigint base(*this);
 		while (true)
 		{
@@ -937,7 +937,7 @@ namespace soup
 
 	bigint bigint::modPow(bigint e, const bigint& m) const
 	{
-		bigint res = 1u;
+		bigint res = (chunk_t)1u;
 		bigint base(*this);
 		if (base >= m)
 		{
@@ -1021,7 +1021,7 @@ namespace soup
 		if (isZero())
 		{
 			//x.reset();
-			y = 1u;
+			y = (chunk_t)1u;
 			return b;
 		}
 		auto d = b.divide(*this);
@@ -1066,7 +1066,7 @@ namespace soup
 			return preret;
 		}
 
-		for (bigint i = 5u; i * i <= *this; i += 6_b)
+		for (bigint i = (chunk_t)5u; i * i <= *this; i += 6_b)
 		{
 			if ((*this % i).isZero() || (*this % (i + 2_b)).isZero())
 			{
@@ -1145,8 +1145,8 @@ namespace soup
 
 	bigint bigint::eulersTotient() const
 	{
-		bigint res = 1u;
-		for (bigint i = 2u; i != *this; ++i)
+		bigint res = (chunk_t)1u;
+		for (bigint i = (chunk_t)2u; i != *this; ++i)
 		{
 			if (isCoprime(i))
 			{
@@ -1160,17 +1160,17 @@ namespace soup
 	{
 		if (*this <= (chunk_t)2u)
 		{
-			return 1u;
+			return (chunk_t)1u;
 		}
 		std::vector<bigint> coprimes{};
-		for (bigint a = 2u; a != *this; ++a)
+		for (bigint a = (chunk_t)2u; a != *this; ++a)
 		{
 			if (isCoprime(a))
 			{
 				coprimes.emplace_back(a);
 			}
 		}
-		bigint k = 2u;
+		bigint k = (chunk_t)2u;
 		for (auto timer = coprimes.size(); timer != 0; )
 		{
 			for (auto i = coprimes.begin(); i != coprimes.end(); ++i)
@@ -1201,7 +1201,7 @@ namespace soup
 			return (x % m + m) % m;
 		}
 
-		for (bigint res = 1u;; ++res)
+		for (bigint res = (chunk_t)1u;; ++res)
 		{
 			if (((*this * res) % m) == (chunk_t)1u)
 			{
@@ -1281,7 +1281,7 @@ namespace soup
 
 	std::ostream& operator<<(std::ostream& os, const bigint& v)
 	{
-		return os << v.toStringDecimal();
+		return os << v.toString();
 	}
 
 	bigint bigint::fromBinary(const std::string& msg)

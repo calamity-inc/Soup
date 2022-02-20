@@ -1,5 +1,6 @@
 #include "sha256.hpp"
 
+#include <cstring> // memcpy
 #include <sstream>
 
 namespace soup

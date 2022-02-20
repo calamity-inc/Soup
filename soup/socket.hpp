@@ -128,7 +128,7 @@ namespace soup
 
 				closesocket(fd);
 #else
-				close(fd);
+				::close(fd);
 #endif
 				fd = -1;
 			}
