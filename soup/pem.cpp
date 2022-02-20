@@ -25,10 +25,17 @@ namespace soup
 
 	std::string pem::decode(std::string in)
 	{
-		string::erase<std::string>(in, "-----BEGIN CERTIFICATE-----");
-		string::erase<std::string>(in, "-----END CERTIFICATE-----");
-		string::erase<std::string>(in, "-----BEGIN RSA PRIVATE KEY-----");
-		string::erase<std::string>(in, "-----END RSA PRIVATE KEY-----");
+		for (size_t i = 0; i = in.find("-----", i), i != std::string::npos; )
+		{
+			auto j = i;
+			i = in.find("-----", j + 5);
+			if (i == std::string::npos)
+			{
+				break;
+			}
+			i += 5;
+			in.erase(j, i - j);
+		}
 		string::erase<std::string>(in, "\r");
 		string::erase<std::string>(in, "\n");
 		string::erase<std::string>(in, "\t");
