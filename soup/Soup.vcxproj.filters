@@ -165,9 +165,6 @@
     <ClInclude Include="rand.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="pkcs1.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
     <ClInclude Include="bitset.hpp">
       <Filter>util</Filter>
     </ClInclude>

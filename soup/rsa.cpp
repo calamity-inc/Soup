@@ -2,7 +2,7 @@
 
 #include <thread>
 
-#include "pkcs1.hpp"
+#include "rand.hpp"
 
 namespace soup
 {
@@ -24,6 +24,55 @@ namespace soup
 		return getMaxUnpaddedMessageBytes() - 11;
 	}
 
+	bool rsa::mod::padPublic(std::string& str) const
+	{
+		const auto len = str.length();
+		const auto max_unpadded_len = getMaxUnpaddedMessageBytes();
+		if (len + 11 > max_unpadded_len)
+		{
+			return false;
+		}
+		str.reserve(max_unpadded_len);
+		str.insert(0, 1, '\0');
+		for (size_t i = max_unpadded_len - len - 3; i != 0; --i)
+		{
+			str.insert(0, 1, rand.ch());
+		}
+		str.insert(0, 1, '\2');
+		//str.insert(0, 1, '\0');
+		return true;
+	}
+
+	bool rsa::mod::padPrivate(std::string& str) const
+	{
+		const auto len = str.length();
+		const auto max_unpadded_len = getMaxUnpaddedMessageBytes();
+		if (len + 11 > max_unpadded_len)
+		{
+			return false;
+		}
+		str.reserve(max_unpadded_len);
+		str.insert(0, 1, '\0');
+		str.insert(0, max_unpadded_len - len - 3, '\xff');
+		str.insert(0, 1, '\1');
+		//str.insert(0, 1, '\0');
+		return true;
+	}
+
+	bool rsa::mod::unpad(std::string& str)
+	{
+		size_t len = str.length();
+		for (auto i = str.rbegin(); *i != '\0'; ++i, --len)
+		{
+			if (i == str.rend())
+			{
+				return false;
+			}
+		}
+		str.erase(0, len);
+		return true;
+	}
+
 	// rsa::key_public
 
 #if SOUP_BITS > 32
@@ -34,7 +83,7 @@ namespace soup
 
 	bigint rsa::key_public::encryptPkcs1(std::string msg) const
 	{
-		pkcs1::padPublic(msg, getMaxUnpaddedMessageBytes());
+		padPublic(msg);
 		return encryptUnpadded(msg);
 	}
 
@@ -47,7 +96,7 @@ namespace soup
 
 	bigint rsa::key_private::encryptPkcs1(std::string msg) const
 	{
-		pkcs1::padPrivate(msg, getMaxUnpaddedMessageBytes());
+		padPrivate(msg);
 		return encryptUnpadded(msg);
 	}
 

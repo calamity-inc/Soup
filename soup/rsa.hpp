@@ -1,7 +1,6 @@
 #pragma once
 
 #include "bigint.hpp"
-#include "pkcs1.hpp"
 
 namespace soup
 {
@@ -20,6 +19,19 @@ namespace soup
 
 			[[nodiscard]] size_t getMaxUnpaddedMessageBytes() const;
 			[[nodiscard]] size_t getMaxPkcs1MessageBytes() const;
+
+			bool padPublic(std::string& str) const; // non-deterministic
+			bool padPrivate(std::string& str) const; // deterministic
+
+			template <typename CryptoHashAlgo>
+			bool padHash(std::string& bin) const // deterministic
+			{
+				return CryptoHashAlgo::prependId(bin)
+					&& padPrivate(bin)
+					;
+			}
+
+			static bool unpad(std::string& str);
 		};
 
 		template <typename T>
@@ -40,7 +52,7 @@ namespace soup
 			[[nodiscard]] std::string decryptPkcs1(const bigint& enc) const
 			{
 				auto msg = decryptUnpadded(enc);
-				pkcs1::unpad(msg);
+				unpad(msg);
 				return msg;
 			}
 		};
@@ -73,7 +85,7 @@ namespace soup
 			[[nodiscard]] bool verify(const std::string& msg, const bigint& sig) const
 			{
 				auto hash_bin = CryptoHashAlgo::hash(msg);
-				return pkcs1::padHash<CryptoHashAlgo>(hash_bin, getMaxUnpaddedMessageBytes())
+				return padHash<CryptoHashAlgo>(hash_bin)
 					&& decryptUnpadded(sig) == hash_bin;
 			}
 

@@ -252,7 +252,6 @@
     <ClInclude Include="module.hpp" />
     <ClInclude Include="pattern.hpp" />
     <ClInclude Include="handle_plain.hpp" />
-    <ClInclude Include="pkcs1.hpp" />
     <ClInclude Include="pointer.hpp" />
     <ClInclude Include="pointerlike.hpp" />
     <ClInclude Include="poly.hpp" />
