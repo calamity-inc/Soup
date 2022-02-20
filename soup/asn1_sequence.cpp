@@ -10,8 +10,13 @@
 
 namespace soup
 {
-	asn1_sequence::asn1_sequence(std::string data)
+	asn1_sequence::asn1_sequence()
 		: std::vector<asn1_element>()
+	{
+	}
+
+	asn1_sequence::asn1_sequence(std::string data)
+		: asn1_sequence()
 	{
 		std::istringstream s{ std::move(data) };
 		while (s.peek() != EOF)
@@ -62,6 +67,33 @@ namespace soup
 	oid asn1_sequence::getOid(const size_t child_idx) const
 	{
 		return oid::fromBinary(getString(child_idx));
+	}
+
+	void asn1_sequence::addInt(const bigint& val)
+	{
+		std::string bin = val.toBinary();
+		if (bin.empty())
+		{
+			bin = std::string(1, '\0');
+		}
+		emplace_back(asn1_element{
+			asn1_identifier{ 0, false, asn1_type::INTEGER },
+			std::move(bin)
+		});
+	}
+
+	std::string asn1_sequence::toDer() const
+	{
+		std::string ret{};
+		for (const auto& c : *this)
+		{
+			ret.append(c.identifier.toDer());
+			ret.append(encodeLength(c.data.size()));
+			ret.append(c.data);
+		}
+		ret.insert(0, encodeLength(ret.size()));
+		ret.insert(0, asn1_identifier{ 0, true, asn1_type::SEQUENCE }.toDer());
+		return ret;
 	}
 
 	std::string asn1_sequence::toString(const std::string& prefix) const
@@ -227,5 +259,23 @@ namespace soup
 			}
 		}
 		return length;
+	}
+
+	std::string asn1_sequence::encodeLength(size_t len)
+	{
+		std::string ret{};
+		if (len <= 0x7F)
+		{
+			ret.push_back(len);
+		}
+		else
+		{
+			do
+			{
+				ret.insert(0, 1, (char)(unsigned char)len);
+			} while (len >>= 8, len != 0);
+			ret.insert(0, 1, ret.size() | 0x80);
+		}
+		return ret;
 	}
 }

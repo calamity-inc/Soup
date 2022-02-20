@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fwd.hpp"
+
 #include "bigint.hpp"
 
 namespace soup
@@ -105,6 +107,9 @@ namespace soup
 			{
 			}
 
+			[[nodiscard]] static key_private fromBinary(const std::string bin);
+			[[nodiscard]] static key_private fromAsn1(const asn1_sequence& seq);
+
 			template <typename CryptoHashAlgo>
 			[[nodiscard]] bigint sign(const std::string& msg) const // deterministic
 			{
@@ -113,9 +118,14 @@ namespace soup
 
 			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // deterministic
 
-			[[nodiscard]] key_public derivePublic() const; // public key derivation assumes that e = e_pref, which is true unless your keypair is 21-bit or less
+			[[nodiscard]] key_public derivePublic() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+
+			[[nodiscard]] asn1_sequence toAsn1() const; // as per PKCS#1. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+			[[nodiscard]] std::string toPem() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 
 			[[nodiscard]] bigint modPow(const bigint& x) const;
+			[[nodiscard]] bigint getE() const; // returns public exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+			[[nodiscard]] bigint getD() const; // returns private exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 		};
 
 		struct keypair : public mod

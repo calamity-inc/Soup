@@ -2,6 +2,9 @@
 
 namespace soup
 {
+	// io.asn1
+	struct asn1_sequence;
+
 	// io
 	struct oid;
 

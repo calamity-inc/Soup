@@ -2,6 +2,8 @@
 
 #include <thread>
 
+#include "asn1_sequence.hpp"
+#include "pem.hpp"
 #include "rand.hpp"
 
 namespace soup
@@ -94,6 +96,23 @@ namespace soup
 
 	// rsa::key_private
 
+	key_private rsa::key_private::fromBinary(const std::string bin)
+	{
+		return fromAsn1(asn1_sequence::fromBinary(bin));
+	}
+
+	key_private rsa::key_private::fromAsn1(const asn1_sequence& seq)
+	{
+		return {
+			seq.getInt(1),
+			seq.getInt(4),
+			seq.getInt(5),
+			seq.getInt(6),
+			seq.getInt(7),
+			seq.getInt(8),
+		};
+	}
+
 	bigint rsa::key_private::encryptPkcs1(std::string msg) const
 	{
 		padPrivate(msg);
@@ -105,12 +124,42 @@ namespace soup
 		return key_public(n);
 	}
 
+	asn1_sequence rsa::key_private::toAsn1() const
+	{
+		asn1_sequence seq{};
+		/* 0 */ seq.addInt(0_b); // version
+		/* 1 */ seq.addInt(n);
+		/* 2 */ seq.addInt(getE());
+		/* 3 */ seq.addInt(getD());
+		/* 4 */ seq.addInt(p);
+		/* 5 */ seq.addInt(q);
+		/* 6 */ seq.addInt(dp);
+		/* 7 */ seq.addInt(dq);
+		/* 8 */ seq.addInt(qinv);
+		return seq;
+	}
+
+	std::string rsa::key_private::toPem() const
+	{
+		return pem::encode("RSA PRIVATE KEY", toAsn1().toDer());
+	}
+
 	bigint rsa::key_private::modPow(const bigint& x) const
 	{
 		auto mp = x.modPow(dp, p);
 		auto mq = x.modPow(dq, q);
 		auto h = (qinv * (mp - mq) % p);
 		return ((mq + (h * q)) % n);
+	}
+
+	bigint rsa::key_private::getE() const
+	{
+		return key_public::e_pref;
+	}
+
+	bigint rsa::key_private::getD() const
+	{
+		return getE().modMulInv((p - 1_b).lcm(q - 1_b));
 	}
 
 	// rsa::keypair

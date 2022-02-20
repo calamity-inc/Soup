@@ -37,5 +37,16 @@ namespace soup
 			}
 			s << (unsigned char)val;
 		}
+
+		template <typename Int>
+		static void writeOmInt(std::string& str, Int val)
+		{
+			while (val > 0x7F)
+			{
+				str.push_back((unsigned char)val | 0x80);
+				val >>= 7;
+			}
+			str.push_back((unsigned char)val);
+		}
 	};
 }
