@@ -155,7 +155,7 @@ namespace soup
 					if (i->revents != 0)
 					{
 						auto clients_i = clients.begin() + ((i - pollfds.begin()) - reserved_pollfds);
-						if (!(i->revents & POLLIN))
+						if (i->revents != POLLIN)
 						{
 							runOnDisconnect(i, clients_i);
 							continue;
