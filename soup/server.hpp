@@ -8,6 +8,7 @@
 
 #if SOUP_LINUX
 #include <poll.h>
+#include <signal.h>
 #endif
 
 #include "client.hpp"
@@ -33,6 +34,10 @@ namespace soup
 #else
 		static constexpr auto reserved_pollfds = 1;
 #endif
+
+		static void sigpipe_handler_proc(int)
+		{
+		}
 
 		bool init(const uint16_t port)
 		{
@@ -87,6 +92,12 @@ namespace soup
 			pollfds.emplace_back(pollfd{ sock6.fd, POLLIN });
 #if SOUP_WINDOWS
 			pollfds.emplace_back(pollfd{ sock4.fd, POLLIN });
+#else
+			struct sigaction sigpipe_handler;
+			sigpipe_handler.sa_handler = &sigpipe_handler_proc;
+			sigemptyset(&sigpipe_handler.sa_mask);
+			sigpipe_handler.sa_flags = 0;
+			sigaction(SIGPIPE, &sigpipe_handler, NULL);
 #endif
 			return true;
 		}
