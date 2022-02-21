@@ -186,7 +186,7 @@ namespace soup
 			if (_client.hasConnection())
 			{
 				pollfds.emplace_back(pollfd{ _client.fd, POLLIN });
-				client& client = clients.emplace_back(std::move(_client));
+				Client& client = clients.emplace_back(std::move(_client));
 				if (on_client_connect)
 				{
 					on_client_connect(client);
