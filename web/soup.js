@@ -28,7 +28,7 @@
 			soup.bigint =
 			{
 				newFromString: soup.cwrap("bigint_newFromString", "number", ["string"]),
-				newCopy: soup.cwrap("bigint_newFromString", "number", ["number"]),
+				newCopy: soup.cwrap("bigint_newCopy", "number", ["number"]),
 				free: soup.cwrap("bigint_free", "void", ["number"]),
 				plus: soup.cwrap("bigint_plus", "number", ["number", "number"]),
 				plusEq: soup.cwrap("bigint_plusEq", "void", ["number", "number"]),
