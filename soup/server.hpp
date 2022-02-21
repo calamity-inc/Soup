@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+#if SOUP_LINUX
+#include <poll.h>
+#endif
+
 #include "client.hpp"
 #include "socket.hpp"
 
@@ -16,16 +20,26 @@ namespace soup
 	{
 	protected:
 		socket sock6;
+#if SOUP_WINDOWS
 		socket sock4;
+#endif
 
 		std::vector<pollfd> pollfds{};
 		std::vector<Client> clients{};
 
 	public:
+#if SOUP_WINDOWS
+		static constexpr auto reserved_pollfds = 2;
+#else
+		static constexpr auto reserved_pollfds = 1;
+#endif
+
 		bool init(const uint16_t port)
 		{
 			if (!sock6.init(AF_INET6)
+#if SOUP_WINDOWS
 				|| !sock4.init(AF_INET)
+#endif
 				)
 			{
 				return false;
@@ -45,6 +59,7 @@ namespace soup
 				return false;
 			}
 
+#if SOUP_WINDOWS
 			sockaddr_in addr4{};
 			addr4.sin_family = AF_INET;
 			addr4.sin_port = port_n;
@@ -57,15 +72,22 @@ namespace soup
 				return false;
 			}
 
-			if (!sock6.setNonBlocking() || !sock4.setNonBlocking())
+			if (!sock6.setNonBlocking()
+#if SOUP_WINDOWS
+				|| !sock4.setNonBlocking()
+#endif
+				)
 			{
 				return false;
 			}
+#endif
 
 			pollfds.clear();
-			pollfds.reserve(2);
+			pollfds.reserve(reserved_pollfds);
 			pollfds.emplace_back(pollfd{ sock6.fd, POLLIN });
+#if SOUP_WINDOWS
 			pollfds.emplace_back(pollfd{ sock4.fd, POLLIN });
+#endif
 			return true;
 		}
 
@@ -110,16 +132,18 @@ namespace soup
 				{
 					runOnConnect(acceptNonBlocking6());
 				}
+#if SOUP_WINDOWS
 				if (pollfds[1].revents & POLLIN)
 				{
 					runOnConnect(acceptNonBlocking4());
 				}
+#endif
 				// process clients
-				for (auto i = pollfds.begin() + 2; i != pollfds.end(); )
+				for (auto i = pollfds.begin() + reserved_pollfds; i != pollfds.end(); )
 				{
 					if (i->revents != 0)
 					{
-						auto clients_i = clients.begin() + ((i - pollfds.begin()) - 2);
+						auto clients_i = clients.begin() + ((i - pollfds.begin()) - reserved_pollfds);
 						if (!(i->revents & POLLIN))
 						{
 							runOnDisconnect(i, clients_i);
@@ -187,42 +211,47 @@ namespace soup
 
 		[[nodiscard]] std::vector<pollfd>::iterator clientToPollfd(typename std::vector<Client>::iterator clients_i)
 		{
-			return pollfds.begin() + (clients_i - clients.begin()) + 2;
+			return pollfds.begin() + (clients_i - clients.begin()) + reserved_pollfds;
 		}
 
 	public:
 		Client accept()
 		{
 #if SOUP_WINDOWS
-			int pollret = WSAPoll(pollfds.data(), 2, -1);
+			int pollret = WSAPoll(pollfds.data(), reserved_pollfds, -1);
 #else
-			int pollret = poll(pollfds.data(), 2, -1);
+			int pollret = poll(pollfds.data(), reserved_pollfds, -1);
 #endif
 			if (pollret <= 0)
 			{
 				return Client{};
 			}
-			if (pollfds[0].revents & POLLIN)
+#if SOUP_WINDOWS
+			if (pollfds[1].revents & POLLIN)
 			{
-				return acceptNonBlocking6();
+				return acceptNonBlocking4();
 			}
-			return acceptNonBlocking4();
+#endif
+			return acceptNonBlocking6();
 		}
 
 		Client acceptNonBlocking()
 		{
 			Client res = acceptNonBlocking6();
-			if (res.isValid())
+#if SOUP_WINDOWS
+			if (!res.isValid())
 			{
-				return res;
+				res = acceptNonBlocking4();
 			}
-			return acceptNonBlocking4();
+#endif
+			return res;
 		}
 
 #if SOUP_WINDOWS
 		using socklen_t = int;
 #endif
 
+	protected:
 		Client acceptNonBlocking6()
 		{
 			Client res;
@@ -237,6 +266,7 @@ namespace soup
 			return res;
 		}
 
+#if SOUP_WINDOWS
 		Client acceptNonBlocking4()
 		{
 			Client res;
@@ -250,5 +280,6 @@ namespace soup
 			}
 			return res;
 		}
+#endif
 	};
 }
