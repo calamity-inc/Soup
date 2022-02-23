@@ -29,7 +29,11 @@ int main()
 	soup::server<SimpleClient> srv;
 	if (!srv.init(80))
 	{
+#if SOUP_WINDOWS
 		std::cout << "Init failed. Is port 80 available?" << std::endl;
+#else
+		std::cout << "Init failed. Run { fuser 80/tcp } and try again." << std::endl;
+#endif
 		return 1;
 	}
 	std::cout << "Listening on *:80..." << std::endl;
