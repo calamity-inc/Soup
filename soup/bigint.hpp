@@ -43,7 +43,7 @@ namespace soup
 		void fromStringImplHex(const char* str, size_t len);
 
 	public:
-		[[nodiscard]] static bigint random(const size_t bits);
+		[[nodiscard]] static bigint random(size_t bits);
 		[[nodiscard]] static bigint randomProbablePrime(const size_t bits);
 
 		[[nodiscard]] static constexpr uint8_t getBitsPerChunk() noexcept
@@ -178,6 +178,9 @@ namespace soup
 	public:
 		[[nodiscard]] bool isPrime() const;
 		[[nodiscard]] bool isProbablePrimeMillerRabin(const int iterations = 1) const;
+	protected:
+		[[nodiscard]] bool isProbablePrimeMillerRabinNoprecheck(const int iterations = 1) const;
+	public:
 		[[nodiscard]] bool isProbablePrimeFermat(const int iterations = 1) const;
 		[[nodiscard]] bool isCoprime(const bigint& b) const;
 		[[nodiscard]] bigint eulersTotient() const;

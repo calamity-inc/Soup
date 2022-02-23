@@ -142,14 +142,25 @@ namespace soup
 		}
 	}
 
-	bigint bigint::random(const size_t bits)
+	bigint bigint::random(size_t bits)
 	{
 		bigint res{};
-		for (size_t i = 0; i != bits; ++i)
+		if ((bits % getBitsPerChunk()) == 0)
 		{
-			if (rand.coinflip())
+			bits /= getBitsPerChunk();
+			for (size_t i = 0; i != bits; ++i)
 			{
-				res.enableBit(i);
+				res.chunks.emplace_back(rand.t<chunk_t>(0, -1));
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i != bits; ++i)
+			{
+				if (rand.coinflip())
+				{
+					res.enableBit(i);
+				}
 			}
 		}
 		return res;
@@ -158,7 +169,7 @@ namespace soup
 	bigint bigint::randomProbablePrime(const size_t bits)
 	{
 		bigint i = random(bits);
-		for (; i.enableBit(0), !i.isProbablePrimeMillerRabin(); i = random(bits));
+		for (; i.enableBitInbounds(0), !i.isProbablePrimeFermat() || !i.isProbablePrimeMillerRabinNoprecheck(); i = random(bits));
 		return i;
 	}
 
@@ -692,7 +703,7 @@ namespace soup
 			remainder.setBit(0, getBitInbounds(i));
 			if (remainder >= divisor)
 			{
-				remainder -= divisor;
+				remainder.subUnsigned(divisor);
 			}
 		}
 		return remainder;
@@ -1055,7 +1066,7 @@ namespace soup
 			return true;
 		}
 		
-		if ((*this % THREE).isZero())
+		if (this->modUnsigned(THREE).isZero())
 		{
 			ret = false;
 			return true;
@@ -1088,19 +1099,23 @@ namespace soup
 		{
 			return preret;
 		}
+		return isProbablePrimeMillerRabinNoprecheck(iterations);
+	}
 
+	bool bigint::isProbablePrimeMillerRabinNoprecheck(const int iterations) const
+	{
 		auto thisMinusOne = (*this - ONE);
 		auto a = thisMinusOne.getLowestSetBit();
 		auto m = (thisMinusOne >> a);
 
 		const auto bl = getBitLength();
-		for (int i = 0; i < iterations; i++)
+		for (int i = 0; i != iterations; i++)
 		{
 			bigint b;
 			do
 			{
 				b = random(bl);
-			} while (b <= ONE || b >= *this);
+			} while (b >= *this || b <= ONE);
 
 			int j = 0;
 			bigint z = b.modPow(m, *this);
@@ -1127,13 +1142,13 @@ namespace soup
 		}
 
 		const auto bl = getBitLength();
-		for (int i = 0; i < iterations; i++)
+		for (int i = 0; i != iterations; i++)
 		{
 			bigint b;
 			do
 			{
 				b = random(bl);
-			} while (b <= ONE || b >= *this);
+			} while (b >= *this || b <= ONE);
 
 			if (b.modPow(*this - ONE, *this) != ONE)
 			{
