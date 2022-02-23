@@ -32,6 +32,9 @@ foreach($files as $file)
 
 echo "Linking...\n";
 $clang .= " -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=libsoup -s EXPORTED_RUNTIME_METHODS=[\"cwrap\"]";
+//$clang .= " -s ASSERTIONS=1";
+//$clang .= " -s LINKABLE=1 -s EXPORT_ALL=1";
+//$clang .= " -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=3"; // cursed. for one, only works over HTTPS. I hate modern webdev.
 passthru("$clang -o web/libsoup.js ".join(" ", $objects));
 
 if(is_dir("/var/www/use.soup.do"))

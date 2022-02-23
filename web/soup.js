@@ -17,10 +17,11 @@
 			soup.asn1_sequence = {
 				new: soup.cwrap("asn1_sequence_new", "number", ["number"]),
 				free: soup.cwrap("asn1_sequence_free", "void", ["number"]),
+				toDer: soup.cwrap("asn1_sequence_toDer", "number", ["number"]),
 				toString: soup.cwrap("asn1_sequence_toString", "string", ["number"]),
 			};
 			soup.base64 = {
-				encode: soup.cwrap("base64_encode", "string", ["string"]),
+				encode: soup.cwrap("base64_encode", "string", ["number"]),
 				decode: soup.cwrap("base64_decode", "number", ["string"]),
 			};
 			soup.bigint = {
@@ -33,6 +34,18 @@
 			};
 			soup.pem = {
 				decode: soup.cwrap("pem_decode", "number", ["string"]),
+			};
+			soup.rsa = {
+				keypair: {
+					random: soup.cwrap("rsa_keypair_random", "number", ["number"]),
+					free: soup.cwrap("rsa_keypair_free", "void", ["number"]),
+					getPrivate: soup.cwrap("rsa_keypair_getPrivate", "number", ["number"]),
+				},
+				key_private: {
+					free: soup.cwrap("rsa_key_private_free", "void", ["number"]),
+					toAsn1: soup.cwrap("rsa_key_private_toAsn1", "number", ["number"]),
+					toPem: soup.cwrap("rsa_key_private_toPem", "string", ["number"]),
+				},
 			};
 			soup.string = {
 				val: soup.cwrap("string_val", "string", ["number"]),

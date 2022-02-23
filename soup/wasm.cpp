@@ -2,10 +2,13 @@
 
 #if SOUP_WASM || defined(__INTELLISENSE__)
 
+#include <thread>
+
 #include "asn1_sequence.hpp"
 #include "base64.hpp"
 #include "bigint.hpp"
 #include "pem.hpp"
+#include "rsa.hpp"
 
 using namespace soup;
 
@@ -17,7 +20,7 @@ static std::string ret_str_buf{};
 	return ret_str_buf.c_str();
 }
 
-#define returnString(x) return ret_str(x);
+#define returnString(x) return ret_str(std::move(x));
 
 // asn1_sequence
 
@@ -28,21 +31,28 @@ SOUP_CEXPORT asn1_sequence* asn1_sequence_new(std::string* str)
 	return ret;
 }
 
-SOUP_CEXPORT void asn1_sequence_free(asn1_sequence* x)
+SOUP_CEXPORT void asn1_sequence_free(asn1_sequence* seq)
 {
-	delete x;
+	delete seq;
 }
 
-SOUP_CEXPORT const char* asn1_sequence_toString(asn1_sequence* x)
+SOUP_CEXPORT std::string* asn1_sequence_toDer(asn1_sequence* seq)
 {
-	returnString(x->toString());
+	return new std::string(seq->toDer());
+}
+
+SOUP_CEXPORT const char* asn1_sequence_toString(asn1_sequence* seq)
+{
+	returnString(seq->toString());
 }
 
 // base64
 
-SOUP_CEXPORT const char* base64_encode(const char* x)
+SOUP_CEXPORT const char* base64_encode(std::string* bin)
 {
-	returnString(base64::encode(x));
+	std::string enc = base64::encode(*bin);
+	delete bin;
+	returnString(enc);
 }
 
 SOUP_CEXPORT std::string* base64_decode(const char* x)
@@ -87,6 +97,40 @@ SOUP_CEXPORT const char* bigint_toString(bigint* x)
 SOUP_CEXPORT std::string* pem_decode(const char* x)
 {
 	return new std::string(pem::decode(x));
+}
+
+// rsa::keypair
+
+SOUP_CEXPORT rsa::keypair* rsa_keypair_random(unsigned int bits)
+{
+	return new rsa::keypair(rsa::keypair::random(bits));
+}
+
+SOUP_CEXPORT void rsa_keypair_free(rsa::keypair* kp)
+{
+	delete kp;
+}
+
+SOUP_CEXPORT rsa::key_private* rsa_keypair_getPrivate(rsa::keypair* kp)
+{
+	return new rsa::key_private(kp->getPrivate());
+}
+
+// rsa::key_private
+
+SOUP_CEXPORT void rsa_key_private_free(rsa::key_private* key)
+{
+	delete key;
+}
+
+SOUP_CEXPORT asn1_sequence* rsa_key_private_toAsn1(rsa::key_private* key)
+{
+	return new asn1_sequence(key->toAsn1());
+}
+
+SOUP_CEXPORT const char* rsa_key_private_toPem(rsa::key_private* key)
+{
+	returnString(key->toPem());
 }
 
 // string
