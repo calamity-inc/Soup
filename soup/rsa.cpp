@@ -127,7 +127,7 @@ namespace soup
 	asn1_sequence rsa::key_private::toAsn1() const
 	{
 		asn1_sequence seq{};
-		/* 0 */ seq.addInt(0_b); // version
+		/* 0 */ seq.addInt({}); // version (0)
 		/* 1 */ seq.addInt(n);
 		/* 2 */ seq.addInt(getE());
 		/* 3 */ seq.addInt(getD());
@@ -159,7 +159,7 @@ namespace soup
 
 	bigint rsa::key_private::getD() const
 	{
-		return getE().modMulInv((p - 1_b).lcm(q - 1_b));
+		return getE().modMulInv((p - bigint::ONE).lcm(q - bigint::ONE));
 	}
 
 	// rsa::keypair
@@ -167,8 +167,8 @@ namespace soup
 	rsa::keypair::keypair(bigint&& _p, bigint&& _q)
 		: mod(_p * _q), p(std::move(_p)), q(std::move(_q))
 	{
-		const auto pm1 = (p - 1_b);
-		const auto qm1 = (q - 1_b);
+		const auto pm1 = (p - bigint::ONE);
+		const auto qm1 = (q - bigint::ONE);
 		const auto t = pm1.lcm(qm1);
 		if (t < key_public::e_pref)
 		{

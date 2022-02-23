@@ -28,6 +28,13 @@ namespace soup
 		bigint(bigint&& b);
 		bigint(const bigint& b);
 
+		static const bigint ONE;
+		static const bigint TWO;
+		static const bigint THREE;
+		static const bigint FIVE;
+		static const bigint SIX;
+		static const bigint TEN;
+
 		[[nodiscard]] static bigint fromString(const char* str, size_t len);
 		[[nodiscard]] static bigint fromStringHex(const char* str, size_t len);
 	private:
