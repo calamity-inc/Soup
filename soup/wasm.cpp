@@ -67,6 +67,16 @@ SOUP_CEXPORT bigint* bigint_newFromString(const char* str)
 	return new bigint(bigint::fromString(str, strlen(str)));
 }
 
+SOUP_CEXPORT bigint* bigint_random(const size_t bits)
+{
+	return new bigint(bigint::random(bits));
+}
+
+SOUP_CEXPORT bigint* bigint_randomProbablePrime(const size_t bits)
+{
+	return new bigint(bigint::randomProbablePrime(bits));
+}
+
 SOUP_CEXPORT bigint* bigint_newCopy(void* b)
 {
 	return new bigint(*reinterpret_cast<bigint*>(b));
@@ -101,9 +111,12 @@ SOUP_CEXPORT std::string* pem_decode(const char* x)
 
 // rsa::keypair
 
-SOUP_CEXPORT rsa::keypair* rsa_keypair_random(unsigned int bits)
+SOUP_CEXPORT rsa::keypair* rsa_keypair_new(bigint* p, bigint* q)
 {
-	return new rsa::keypair(rsa::keypair::random(bits));
+	auto res = new rsa::keypair(std::move(*p), std::move(*q));
+	delete p;
+	delete q;
+	return res;
 }
 
 SOUP_CEXPORT void rsa_keypair_free(rsa::keypair* kp)

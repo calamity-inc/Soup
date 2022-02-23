@@ -192,24 +192,16 @@ namespace soup
 	{
 		bits /= 2u;
 		bigint p, q;
-		if (std::thread::hardware_concurrency() == 1)
+		std::thread pt([&p, bits]
 		{
 			p = bigint::randomProbablePrime(bits);
-			q = bigint::randomProbablePrime(bits);
-		}
-		else
+		});
+		std::thread qt([&q, bits]
 		{
-			std::thread pt([&p, bits]
-			{
-				p = bigint::randomProbablePrime(bits);
-			});
-			std::thread qt([&q, bits]
-			{
-				q = bigint::randomProbablePrime(bits);
-			});
-			pt.join();
-			qt.join();
-		}
+			q = bigint::randomProbablePrime(bits);
+		});
+		pt.join();
+		qt.join();
 		return keypair(std::move(p), std::move(q));
 	}
 

@@ -26,6 +26,8 @@
 			};
 			soup.bigint = {
 				newFromString: soup.cwrap("bigint_newFromString", "number", ["string"]),
+				random: soup.cwrap("bigint_random", "number", ["number"]),
+				randomProbablePrime: soup.cwrap("bigint_randomProbablePrime", "number", ["number"]),
 				newCopy: soup.cwrap("bigint_newCopy", "number", ["number"]),
 				free: soup.cwrap("bigint_free", "void", ["number"]),
 				plus: soup.cwrap("bigint_plus", "number", ["number", "number"]),
@@ -37,7 +39,19 @@
 			};
 			soup.rsa = {
 				keypair: {
-					random: soup.cwrap("rsa_keypair_random", "number", ["number"]),
+					random: bits => new Promise(r => {
+						bits /= 2;
+						let pp = new Promise(r => {
+							r(soup.bigint.randomProbablePrime(bits))
+						});
+						let pq = new Promise(r => {
+							r(soup.bigint.randomProbablePrime(bits))
+						});
+						pp.then(p => pq.then(q => {
+							r(soup.rsa.keypair.new(p, q));
+						}));
+					}),
+					new: soup.cwrap("rsa_keypair_new", "number", ["number", "number"]),
 					free: soup.cwrap("rsa_keypair_free", "void", ["number"]),
 					getPrivate: soup.cwrap("rsa_keypair_getPrivate", "number", ["number"]),
 				},
