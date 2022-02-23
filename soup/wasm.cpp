@@ -21,21 +21,21 @@ static std::string ret_str_buf{};
 
 // asn1_sequence
 
-SOUP_CEXPORT void* asn1_sequence_new(void* str)
+SOUP_CEXPORT asn1_sequence* asn1_sequence_new(std::string* str)
 {
-	auto ret = new asn1_sequence(std::move(*reinterpret_cast<std::string*>(str)));
-	delete reinterpret_cast<std::string*>(str);
+	auto ret = new asn1_sequence(std::move(*str));
+	delete str;
 	return ret;
 }
 
-SOUP_CEXPORT void asn1_sequence_free(void* x)
+SOUP_CEXPORT void asn1_sequence_free(asn1_sequence* x)
 {
-	delete reinterpret_cast<asn1_sequence*>(x);
+	delete x;
 }
 
-SOUP_CEXPORT const char* asn1_sequence_toString(void* x)
+SOUP_CEXPORT const char* asn1_sequence_toString(asn1_sequence* x)
 {
-	returnString(reinterpret_cast<asn1_sequence*>(x)->toString());
+	returnString(x->toString());
 }
 
 // base64
@@ -45,60 +45,60 @@ SOUP_CEXPORT const char* base64_encode(const char* x)
 	returnString(base64::encode(x));
 }
 
-SOUP_CEXPORT void* base64_decode(const char* x)
+SOUP_CEXPORT std::string* base64_decode(const char* x)
 {
 	return new std::string(base64::decode(x));
 }
 
 // bigint
 
-SOUP_CEXPORT void* bigint_newFromString(const char* str)
+SOUP_CEXPORT bigint* bigint_newFromString(const char* str)
 {
 	return new bigint(bigint::fromString(str, strlen(str)));
 }
 
-SOUP_CEXPORT void* bigint_newCopy(void* b)
+SOUP_CEXPORT bigint* bigint_newCopy(void* b)
 {
 	return new bigint(*reinterpret_cast<bigint*>(b));
 }
 
-SOUP_CEXPORT void bigint_free(void* x)
+SOUP_CEXPORT void bigint_free(bigint* x)
 {
-	delete reinterpret_cast<bigint*>(x);
+	delete x;
 }
 
-SOUP_CEXPORT void* bigint_plus(void* a, void* b)
+SOUP_CEXPORT bigint* bigint_plus(bigint* a, bigint* b)
 {
-	return new bigint(*reinterpret_cast<bigint*>(a) + *reinterpret_cast<bigint*>(b));
+	return new bigint(*a + *b);
 }
 
-SOUP_CEXPORT void bigint_plusEq(void* a, void* b)
+SOUP_CEXPORT void bigint_plusEq(bigint* a, bigint* b)
 {
-	*reinterpret_cast<bigint*>(a) += *reinterpret_cast<bigint*>(b);
+	*a += *b;
 }
 
-SOUP_CEXPORT const char* bigint_toString(void* x)
+SOUP_CEXPORT const char* bigint_toString(bigint* x)
 {
-	returnString(reinterpret_cast<bigint*>(x)->toString());
+	returnString(x->toString());
 }
 
 // pem
 
-SOUP_CEXPORT void* pem_decode(const char* x)
+SOUP_CEXPORT std::string* pem_decode(const char* x)
 {
 	return new std::string(pem::decode(x));
 }
 
 // string
 
-SOUP_CEXPORT const char* string_val(void* x)
+SOUP_CEXPORT const char* string_val(std::string* x)
 {
-	return reinterpret_cast<std::string*>(x)->c_str();
+	return x->c_str();
 }
 
-SOUP_CEXPORT void string_free(void* x)
+SOUP_CEXPORT void string_free(std::string* x)
 {
-	delete reinterpret_cast<std::string*>(x);
+	delete x;
 }
 
 #endif
