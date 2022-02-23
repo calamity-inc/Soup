@@ -2,11 +2,6 @@
 
 namespace soup
 {
-	std::string base64::encode(const char* data, const bool pad) noexcept
-	{
-		return encode(std::string(data), pad);
-	}
-
 	std::string base64::encode(const std::string& data, const bool pad) noexcept
 	{
 		return encode(data.data(), data.size(), pad);
