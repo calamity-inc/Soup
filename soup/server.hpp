@@ -76,6 +76,7 @@ namespace soup
 			{
 				return false;
 			}
+#endif
 
 			if (!sock6.setNonBlocking()
 #if SOUP_WINDOWS
@@ -85,7 +86,6 @@ namespace soup
 			{
 				return false;
 			}
-#endif
 
 			pollfds.clear();
 			pollfds.reserve(reserved_pollfds);
