@@ -77,6 +77,21 @@ namespace soup
 				b = byte();
 			}
 		}
+
+		static void fill(std::vector<uint8_t>& vec) noexcept
+		{
+			for (auto& b : vec)
+			{
+				b = byte();
+			}
+		}
+
+		[[nodiscard]] static std::vector<uint8_t> vec_u8(size_t len) noexcept
+		{
+			std::vector<uint8_t> vec(len, 0);
+			fill(vec);
+			return vec;
+		}
 	};
 
 	inline rand_impl rand;
