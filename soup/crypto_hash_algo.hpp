@@ -55,7 +55,8 @@ namespace soup
 			return T::hash(std::move(outer));
 		}
 
-		[[nodiscard]] static std::string tls_prf(const size_t bytes, std::string label, const std::string& secret, const std::string& seed)
+		// used as (secret, label, seed) in the RFC
+		[[nodiscard]] static std::string tls_prf(std::string label, const size_t bytes, const std::string& secret, const std::string& seed)
 		{
 			std::string res{};
 
