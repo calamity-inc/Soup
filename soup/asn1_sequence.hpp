@@ -19,6 +19,7 @@ namespace soup
 
 		[[nodiscard]] size_t countChildren() const;
 
+		[[nodiscard]] const asn1_identifier& getChildType(const size_t child_idx) const;
 		[[nodiscard]] const std::string& getString(const size_t child_idx) const;
 		[[nodiscard]] asn1_sequence getSeq(const size_t child_idx) const;
 		[[nodiscard]] bigint getInt(const size_t child_idx) const;

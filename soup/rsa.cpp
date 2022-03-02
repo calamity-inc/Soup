@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "asn1_sequence.hpp"
+#include "asn1_type.hpp"
 #include "pem.hpp"
 #include "rand.hpp"
 
@@ -103,6 +104,11 @@ namespace soup
 
 	key_private rsa::key_private::fromAsn1(const asn1_sequence& seq)
 	{
+		if (seq.getChildType(1).type != asn1_type::INTEGER)
+		{
+			// assuming that seq[1] is sequence containing OID 1.2.840.113549.1.1.1
+			return fromAsn1(soup::asn1_sequence::fromBinary(seq.getString(2)));
+		}
 		return {
 			seq.getInt(1),
 			seq.getInt(4),

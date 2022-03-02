@@ -49,6 +49,11 @@ namespace soup
 		return size();
 	}
 
+	const asn1_identifier& asn1_sequence::getChildType(const size_t child_idx) const
+	{
+		return at(child_idx).identifier;
+	}
+
 	const std::string& asn1_sequence::getString(const size_t child_idx) const
 	{
 		return at(child_idx).data;
