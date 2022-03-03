@@ -36,14 +36,14 @@ namespace soup
 			return std::move(vec.at(t<size_t>(0, vec.size() - 1)));
 		}
 
-		[[nodiscard]] static uint8_t byte() noexcept
+		[[nodiscard]] static uint8_t byte(unsigned short min = 0u) noexcept
 		{
-			return static_cast<uint8_t>(t<unsigned short>(0u, 0xFFu));
+			return static_cast<uint8_t>(t<unsigned short>(min, 0xFFu));
 		}
 
-		[[nodiscard]] static char ch() noexcept
+		[[nodiscard]] static char ch(unsigned short min = 0u) noexcept
 		{
-			return (char)byte();
+			return (char)byte(min);
 		}
 
 		[[nodiscard]] static bool coinflip() noexcept

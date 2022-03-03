@@ -39,7 +39,7 @@ namespace soup
 		str.insert(0, 1, '\0');
 		for (size_t i = max_unpadded_len - len - 3; i != 0; --i)
 		{
-			str.insert(0, 1, rand.ch());
+			str.insert(0, 1, rand.ch(1u));
 		}
 		str.insert(0, 1, '\2');
 		//str.insert(0, 1, '\0');
@@ -65,15 +65,20 @@ namespace soup
 	bool rsa::mod::unpad(std::string& str)
 	{
 		size_t len = str.length();
-		for (auto i = str.rbegin(); *i != '\0'; ++i, --len)
+		if (len > 11)
 		{
-			if (i == str.rend())
+			auto c = str.data();
+			//if (*c++ == 0)
 			{
-				return false;
+				if (auto type = *c++; type == 1 || type == 2)
+				{
+					while (*c++ != '\0');
+					str.erase(0, c - str.data());
+					return true;
+				}
 			}
 		}
-		str.erase(0, len);
-		return true;
+		return false;
 	}
 
 	// rsa::key_public
