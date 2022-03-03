@@ -30,7 +30,7 @@ namespace soup
 
 		[[nodiscard]] static std::string hmac(const std::string& msg, std::string key)
 		{
-			if (key.length() > T::DIGEST_BYTES)
+			if (key.length() > T::BLOCK_BYTES)
 			{
 				key = T::hash(key);
 			}
