@@ -83,11 +83,7 @@ namespace soup
 
 	// rsa::key_public
 
-#if SOUP_BITS > 32
-	bigint::chunk_t rsa::key_public::e_pref = 65537u;
-#else
 	bigint rsa::key_public::e_pref = 65537_b;
-#endif
 
 	bigint rsa::key_public::encryptPkcs1(std::string msg) const
 	{
