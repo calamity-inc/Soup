@@ -320,6 +320,9 @@
     <ClInclude Include="endianness.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="optimised.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
