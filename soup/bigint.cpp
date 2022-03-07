@@ -772,7 +772,7 @@ namespace soup
 		}
 		if (carry != 0)
 		{
-			setChunk(nc, carry);
+			addChunk(carry);
 		}
 	}
 
