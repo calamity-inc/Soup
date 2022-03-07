@@ -951,6 +951,11 @@ namespace soup
 		return res;
 	}
 
+	bigint bigint::pow2() const
+	{
+		return *this * *this;
+	}
+
 	bigint bigint::modPow(bigint e, const bigint& m) const
 	{
 		bigint res = ONE;
