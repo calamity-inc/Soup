@@ -98,6 +98,8 @@ namespace soup
 			bigint dq;
 			bigint qinv;
 
+			key_private() = default;
+
 			key_private(const bigint& n, const bigint& p, const bigint& q, const bigint& dp, const bigint& dq, const bigint& qinv)
 				: key(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv)
 			{

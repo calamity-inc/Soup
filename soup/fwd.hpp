@@ -24,12 +24,18 @@ namespace soup
 
 	// net
 	class addr_ip;
+	class socket;
+	class socket_mgr;
 
 	// net.dns
 	struct dns_a;
 	struct dns_aaaa;
 	struct dns_srv;
 	struct dns_txt;
+
+	// net.tls
+	class socket_tls_handshaker;
+	struct socket_tls_server_rsa_data;
 
 	// os
 	class module;

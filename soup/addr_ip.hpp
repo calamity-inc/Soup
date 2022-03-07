@@ -55,6 +55,11 @@ namespace soup
 			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
 		}
 
+		void reset() noexcept
+		{
+			memset(&data, 0, sizeof(data));
+		}
+
 		[[nodiscard]] bool isV4() const noexcept
 		{
 			return IN6_IS_ADDR_V4MAPPED(&data);

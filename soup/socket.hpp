@@ -1,326 +1,151 @@
 #pragma once
 
 #include "base.hpp"
+#include "fwd.hpp"
 
 #if SOUP_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
 #include <Winsock2.h>
-#include <Ws2tcpip.h>
-
-#pragma comment(lib, "Secur32.lib")
-#define SECURITY_WIN32
-#include <sspi.h>
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <unistd.h> // close
-#include <fcntl.h>
 #endif
 
 #include "addr_socket.hpp"
+#include "capture.hpp"
+#include "socket_tls_encrypter.hpp"
 
 namespace soup
 {
+#pragma pack(push, 1)
 	class socket
 	{
 	public:
+#if SOUP_WINDOWS
+		inline static size_t wsa_consumers = 0;
+#endif
+
 #if SOUP_WINDOWS
 		using fd_t = SOCKET;
 #else
 		using fd_t = int;
 #endif
-		fd_t fd;
+		fd_t fd = -1;
 
-#if SOUP_WINDOWS
-		inline static size_t wsa_consumers = 0;
-		static PSecurityFunctionTableA sft;
+		addr_socket peer;
 
-		bool encrypted = false;
-		CtxtHandle ctx_h;
-		CredHandle cred_h;
-		SecPkgContext_StreamSizes Sizes{};
-		static constexpr int MaxMsgSize = 16000;
-		static constexpr int MaxExtraSize = 50;
-		char writeBuffer[MaxMsgSize + MaxExtraSize]{};
-		char readBuffer[(MaxMsgSize + MaxExtraSize) * 2]{};
-		size_t readBufferBytes = 0;
-		char plainText[MaxMsgSize * 2]{};
-		char* plainTextPtr = nullptr;
-		size_t plainTextBytes = 0;
-		void* readPtr = nullptr;
-#endif
+		using on_data_available_t = bool(*)(socket&);
 
-		socket() noexcept
-			: fd(-1)
-		{
-			on_construct();
-#if SOUP_WINDOWS
-			SecInvalidateHandle(&ctx_h);
-			SecInvalidateHandle(&cred_h);
-#endif
-		}
+		on_data_available_t on_data_available = nullptr;
+		capture on_data_available_capture;
+
+		std::string tls_record_buf_data{};
+		tls_content_type_t tls_record_buf_content_type;
+
+		socket_tls_encrypter tls_encrypter_send;
+		socket_tls_encrypter tls_encrypter_recv;
+
+		socket() noexcept;
 
 		socket(const socket&) = delete;
 
 		socket(socket&& b) noexcept
 		{
-			on_construct();
+			onConstruct();
 			operator =(std::move(b));
 		}
 
 	protected:
-		void on_construct()
-		{
-#if SOUP_WINDOWS
-			if (wsa_consumers++ == 0)
-			{
-				WSADATA wsaData;
-				WORD wVersionRequested = MAKEWORD(2, 2);
-				WSAStartup(wVersionRequested, &wsaData);
-			}
-#endif
-		}
+		void onConstruct() noexcept;
 
 	public:
+		~socket() noexcept;
+
 		void operator =(const socket&) = delete;
 
-		void operator =(socket&& b) noexcept
-		{
-			fd = b.fd;
-			b.fd = -1;
+		void operator =(socket&& b) noexcept;
 
-#if SOUP_WINDOWS
-			ctx_h.dwLower = b.ctx_h.dwLower;
-			ctx_h.dwUpper = b.ctx_h.dwUpper;
-			SecInvalidateHandle(&b.ctx_h);
-
-			cred_h.dwLower = b.cred_h.dwLower;
-			cred_h.dwUpper = b.cred_h.dwUpper;
-			SecInvalidateHandle(&b.cred_h);
-#endif
-		}
-
-		~socket() noexcept
-		{
-			close();
-#if SOUP_WINDOWS
-			if (SecIsValidHandle(&cred_h))
-			{
-				sft->FreeCredentialsHandle(&cred_h);
-				SecInvalidateHandle(&cred_h);
-			}
-			if (--wsa_consumers == 0)
-			{
-				WSACleanup();
-			}
-#endif
-		}
-
-		void close() noexcept
-		{
-			if (fd != -1)
-			{
-#if SOUP_WINDOWS
-				if (encrypted)
-				{
-					sendCloseNotify();
-				}
-
-				closesocket(fd);
-#else
-				::close(fd);
-#endif
-				fd = -1;
-			}
-			deleteSecurityContext();
-		}
-
-	private:
-		void deleteSecurityContext()
-		{
-#if SOUP_WINDOWS
-			if (SecIsValidHandle(&ctx_h))
-			{
-				sft->DeleteSecurityContext(&ctx_h);
-				SecInvalidateHandle(&ctx_h);
-			}
-#endif
-		}
-
-	public:
-		[[nodiscard]] bool hasConnection() const noexcept
+		[[nodiscard]] constexpr bool hasConnection() const noexcept
 		{
 			return fd != -1;
 		}
 
-		bool init(int af)
-		{
-			close();
-			fd = ::socket(af, SOCK_STREAM, 0);
-			return fd != -1;
-		}
+		bool init(int af);
 
-		bool connectSecure(const char* host, uint16_t port) noexcept
-		{
-			return connectReliable(host, port) && encrypt(host);
-		}
+		bool connect(const char* host, uint16_t port) noexcept;
+		bool connect(const addr_socket& addr) noexcept;
+		bool connect(const addr_ip& ip, uint16_t port) noexcept;
 
-		bool connectReliable(const char* host, uint16_t port) noexcept;
+		bool bind6(uint16_t port) noexcept;
+		bool bind4(uint16_t port) noexcept;
 
-		bool connect(const addr_socket& desc) noexcept
-		{
-			return connect(desc.addr, desc.port);
-		}
+		[[nodiscard]] socket accept6() noexcept;
+		[[nodiscard]] socket accept4() noexcept;
 
-		bool connect(const addr_ip& ip, uint16_t port) noexcept
-		{
-			if (ip.isV4())
-			{
-				if (!init(AF_INET))
-				{
-					return false;
-				}
-				sockaddr_in addr{};
-				addr.sin_family = AF_INET;
-				addr.sin_port = htons(port);
-				addr.sin_addr.s_addr = ip.getV4();
-				if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) == -1)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				if (!init(AF_INET6))
-				{
-					return false;
-				}
-				sockaddr_in6 addr{};
-				addr.sin6_family = AF_INET6;
-				memcpy(&addr.sin6_addr, &ip.data, sizeof(in6_addr));
-				addr.sin6_port = htons(port);
-				if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) == -1)
-				{
-					return false;
-				}
-			}
-			return true;
-		}
+		bool setBlocking(bool blocking = true) noexcept;
+		bool setNonBlocking() noexcept;
 
-		bool setBlocking(bool blocking = true) noexcept
-		{
-#if SOUP_WINDOWS
-			unsigned long mode = blocking ? 0 : 1;
-			return (ioctlsocket(fd, FIONBIO, &mode) == 0) ? true : false;
-#else
-			int flags = fcntl(fd, F_GETFL, 0);
-			if (flags == -1) return false;
-			flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
-			return (fcntl(fd, F_SETFL, flags) == 0) ? true : false;
-#endif
-		}
+		bool fireDataAvailable();
 
-		bool setNonBlocking() noexcept
-		{
-			return setBlocking(false);
-		}
-
-		bool encrypt(const char* server_name) noexcept;
-
-		bool send(const std::string& data) noexcept
-		{
-			return send(data.data(), (int)data.size());
-		}
-
-		bool send(const void* data, int size) noexcept;
-
-	private:
-		bool sendUnencrypted(const void* data, int size) noexcept
-		{
-			return ::send(fd, (const char*)data, size, 0) == size;
-		}
+		void enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap = {});
+	protected:
+		void enableCryptoClientRecvServerHelloDone(socket_tls_handshaker&& handshaker);
 
 	public:
-		int recv(void* outData, int max_bytes) noexcept;
+		void enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap = {});
+	
+		// Application Layer
 
-	private:
-		int recvUnencrypted(void* outData, int max_bytes) noexcept
-		{
-			return ::recv(fd, (char*)outData, max_bytes, 0);
-		}
+		bool send(const std::string& data);
 
-	public:
-		[[nodiscard]] std::string recv(int max_bytes) noexcept
-		{
-			std::string buf(max_bytes, 0);
-			int read = recv(buf.data(), max_bytes);
-			if (read <= 0)
-			{
-				return std::string{};
-			}
-			buf.resize(read);
-			return buf;
-		}
+		void recv(void(*callback)(socket&, std::string&&, capture&&), capture&& cap = {});
 
-		[[nodiscard]] std::string recvExact(int bytes) noexcept
+		/*[[nodiscard]] std::string recvExact(int bytes) noexcept
 		{
 			std::string buf(bytes, 0);
 			char* dp = buf.data();
 			while (bytes != 0)
 			{
-				int read = recv(dp, bytes);
-				if (read <= 0)
+				int read = bytes;
+				if (!transport_recv(dp, read))
 				{
-					return std::string{};
+					return {};
 				}
 				bytes -= read;
 				dp += read;
 			}
 			return buf;
-		}
+		}*/
 
-		bool recvAll(std::string& out) noexcept
-		{
-			char buf[4096];
-			while (true)
-			{
-				auto res = recv(buf, sizeof(buf));
+		void close();
 
-				// data
-				if (res > 0)
-				{
-					out.append(buf, res);
-					continue;
-				}
+		// TLS - Crypto Layer
 
-				// closed
-				if (res == 0)
-				{
-					break;
-				}
+		bool tls_sendHandshake(socket_tls_handshaker& handshaker, tls_handshake_type_t handshake_type, const std::string& content);
+		bool tls_sendRecord(tls_content_type_t content_type, std::string content);
 
-				// error
-#if SOUP_WINDOWS
-				const auto err = WSAGetLastError();
-				if (err == 0)
-				{
-					break;
-				}
-				if (err != WSAEWOULDBLOCK)
-				{
-					return false;
-				}
-#else
-				if (errno != EWOULDBLOCK && errno != EAGAIN)
-				{
-					return false;
-				}
-#endif
-			}
-			return true;
-		}
+		void tls_recvHandshake(socket_tls_handshaker&& handshaker, tls_handshake_type_t expected_handshake_type, void(*callback)(socket&, socket_tls_handshaker&&, std::string&&), std::string&& pre = {});
+		void tls_recvRecord(tls_content_type_t expected_content_type, void(*callback)(socket&, std::string&&, capture&&), capture&& cap = {});
+		void tls_recvRecord(void(*callback)(socket&, tls_content_type_t, std::string&&, capture&&), capture&& cap = {});
 
-	private:
-		void sendCloseNotify() noexcept;
+		void tls_unrecv(tls_content_type_t content_type, std::string&& content) noexcept;
+
+		void tls_close(tls_alert_description_t desc);
+
+		// Transport Layer
+
+		bool transport_send(const std::string& data) const noexcept;
+		bool transport_send(const void* data, int size) const noexcept;
+
+		using transport_recv_callback_t = void(*)(socket&, std::string&&, capture&&);
+
+	protected:
+		[[nodiscard]] std::string transport_recvCommon(int max_bytes);
+	public:
+		void transport_recv(int max_bytes, transport_recv_callback_t callback, capture&& cap = {});
+		void transport_recvExact(int bytes, transport_recv_callback_t callback, capture&& cap = {}, std::string&& pre = {});
+
+		void transport_close() noexcept;
 	};
+#pragma pack(pop)
 }

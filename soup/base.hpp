@@ -50,6 +50,13 @@
 	#define SOUP_NOINLINE __attribute__((noinline))
 #endif
 
+#if !defined(_MSC_VER) && (__cplusplus < 202002L)
+#define SOUP_CPP20 false
+#define consteval constexpr
+#else
+#define SOUP_CPP20 true
+#endif
+
 // platform-specific types, this is the only thing soup puts into the global namespace
 
 #if SOUP_BITS == 64

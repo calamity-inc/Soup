@@ -4,6 +4,7 @@
 
 #include "asn1_sequence.hpp"
 #include "asn1_type.hpp"
+#include "obfus_string.hpp"
 #include "pem.hpp"
 #include "rand.hpp"
 
@@ -148,7 +149,7 @@ namespace soup
 
 	std::string rsa::key_private::toPem() const
 	{
-		return pem::encode("RSA PRIVATE KEY", toAsn1().toDer());
+		return pem::encode(obfus_string("RSA PRIVATE KEY"), toAsn1().toDer());
 	}
 
 	bigint rsa::key_private::modPow(const bigint& x) const

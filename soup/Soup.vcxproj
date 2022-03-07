@@ -203,6 +203,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="aes.hpp" />
     <ClInclude Include="alloc_raii.hpp" />
     <ClInclude Include="alloc_raii_remote.hpp" />
     <ClInclude Include="asn1_element.hpp" />
@@ -221,16 +222,21 @@
     <ClInclude Include="bytepatch.hpp" />
     <ClInclude Include="bytepatch_external.hpp" />
     <ClInclude Include="canvas.hpp" />
+    <ClInclude Include="capture.hpp" />
     <ClInclude Include="crypto_hash_algo.hpp" />
     <ClInclude Include="dns.hpp" />
     <ClInclude Include="dns_a.hpp" />
     <ClInclude Include="dns_aaaa.hpp" />
     <ClInclude Include="dns_srv.hpp" />
     <ClInclude Include="dns_txt.hpp" />
+    <ClInclude Include="ec.hpp" />
+    <ClInclude Include="endianness.hpp" />
+    <ClInclude Include="named_curves.hpp" />
     <ClInclude Include="pem.hpp" />
+    <ClInclude Include="socket_mgr.hpp" />
+    <ClInclude Include="socket_tls_server_rsa_data.hpp" />
     <ClInclude Include="stream.hpp" />
     <ClInclude Include="matrix.hpp" />
-    <ClInclude Include="client.hpp" />
     <ClInclude Include="console.hpp" />
     <ClInclude Include="handle_base.hpp" />
     <ClInclude Include="assembly_builder.hpp" />
@@ -264,7 +270,6 @@
     <ClInclude Include="rsa.hpp" />
     <ClInclude Include="rtti.hpp" />
     <ClInclude Include="scoped_enum.hpp" />
-    <ClInclude Include="server.hpp" />
     <ClInclude Include="sha1.hpp" />
     <ClInclude Include="sha256.hpp" />
     <ClInclude Include="shortint_impl.hpp" />
@@ -276,6 +281,27 @@
     <ClInclude Include="string_literal.hpp" />
     <ClInclude Include="thread.hpp" />
     <ClInclude Include="region_virtual.hpp" />
+    <ClInclude Include="time.hpp" />
+    <ClInclude Include="tls_alert_description.hpp" />
+    <ClInclude Include="tls_certificate.hpp" />
+    <ClInclude Include="tls_cipher_suite.hpp" />
+    <ClInclude Include="tls_client_hello.hpp" />
+    <ClInclude Include="tls_client_hello_ext_elliptic_curves.hpp" />
+    <ClInclude Include="tls_client_hello_ext_server_name.hpp" />
+    <ClInclude Include="socket_tls_encrypter.hpp" />
+    <ClInclude Include="tls_content_type.hpp" />
+    <ClInclude Include="tls_encrypted_pre_master_secret.hpp" />
+    <ClInclude Include="tls_extension_type.hpp" />
+    <ClInclude Include="tls_handshake.hpp" />
+    <ClInclude Include="socket_tls_handshaker.hpp" />
+    <ClInclude Include="tls_hello_extensions.hpp" />
+    <ClInclude Include="tls_mac.hpp" />
+    <ClInclude Include="tls_random.hpp" />
+    <ClInclude Include="tls_record.hpp" />
+    <ClInclude Include="tls_protocol_version.hpp" />
+    <ClInclude Include="tls_server_hello.hpp" />
+    <ClInclude Include="tls_server_key_exchange.hpp" />
+    <ClInclude Include="type.hpp" />
     <ClInclude Include="unicode.hpp" />
     <ClInclude Include="vector2.hpp" />
     <ClInclude Include="vector3.hpp" />
@@ -288,6 +314,7 @@
     <ClInclude Include="x509_relative_distinguished_name.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aes.cpp" />
     <ClCompile Include="asn1_sequence.cpp" />
     <ClCompile Include="assembly_builder.cpp" />
     <ClCompile Include="base64.cpp" />
@@ -298,6 +325,7 @@
     <ClCompile Include="bytepatch.cpp" />
     <ClCompile Include="canvas.cpp" />
     <ClCompile Include="dns.cpp" />
+    <ClCompile Include="ec.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="oid.cpp" />
@@ -312,7 +340,10 @@
     <ClCompile Include="poly.cpp" />
     <ClCompile Include="process.cpp" />
     <ClCompile Include="range.cpp" />
+    <ClCompile Include="socket_mgr.cpp" />
+    <ClCompile Include="socket_tls_encrypter.cpp" />
     <ClCompile Include="thread.cpp" />
+    <ClCompile Include="socket_tls_handshaker.cpp" />
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="x509_certificate.cpp" />

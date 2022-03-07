@@ -131,6 +131,7 @@ namespace soup
 		}
 	};
 
+#if SOUP_CPP20
 	namespace literals
 	{
 		template <string_literal Str>
@@ -139,4 +140,5 @@ namespace soup
 			return obfus_string<Str.size()>(Str.data);
 		}
 	}
+#endif
 }

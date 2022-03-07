@@ -1,7 +1,8 @@
 #pragma once
 
-#include <bit>
 #include <cstdint>
+
+#include "endianness.hpp"
 
 namespace soup
 {
@@ -20,7 +21,7 @@ namespace soup
 
 		[[nodiscard]] bool u16(uint16_t& v)
 		{
-			if constexpr (std::endian::native == std::endian::little)
+			if constexpr (SOUP_LITTLE_ENDIAN)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
@@ -38,7 +39,7 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (std::endian::native == std::endian::little)
+			if constexpr (SOUP_LITTLE_ENDIAN)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
@@ -54,7 +55,7 @@ namespace soup
 		
 		[[nodiscard]] bool u32(uint32_t& v)
 		{
-			if constexpr (std::endian::native == std::endian::little)
+			if constexpr (SOUP_LITTLE_ENDIAN)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
@@ -76,7 +77,7 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (std::endian::native == std::endian::little)
+			if constexpr (SOUP_LITTLE_ENDIAN)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
@@ -100,7 +101,7 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (std::endian::native == std::endian::little)
+			if constexpr (SOUP_LITTLE_ENDIAN)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
@@ -126,7 +127,7 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (std::endian::native == std::endian::little)
+			if constexpr (SOUP_LITTLE_ENDIAN)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
@@ -150,7 +151,7 @@ namespace soup
 
 		[[nodiscard]] bool u64(uint64_t& v)
 		{
-			if constexpr (std::endian::native == std::endian::little)
+			if constexpr (SOUP_LITTLE_ENDIAN)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[7])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])

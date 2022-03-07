@@ -63,13 +63,7 @@
     <ClInclude Include="addr_ip.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="server.hpp">
-      <Filter>net</Filter>
-    </ClInclude>
     <ClInclude Include="addr_socket.hpp">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="client.hpp">
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="socket.hpp">
@@ -244,6 +238,88 @@
     <ClInclude Include="pem.hpp">
       <Filter>enc</Filter>
     </ClInclude>
+    <ClInclude Include="aes.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_certificate.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_client_hello.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_client_hello_ext_server_name.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_content_type.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_encrypted_pre_master_secret.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_handshake.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_protocol_version.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_random.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_record.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_server_hello.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_mac.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="type.hpp" />
+    <ClInclude Include="tls_alert_description.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="socket_tls_encrypter.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="socket_tls_handshaker.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="time.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="socket_mgr.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="capture.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ec.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_cipher_suite.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_server_key_exchange.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_extension_type.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_client_hello_ext_elliptic_curves.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="named_curves.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="tls_hello_extensions.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="socket_tls_server_rsa_data.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="endianness.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -328,6 +404,21 @@
     <ClCompile Include="pem.cpp">
       <Filter>enc</Filter>
     </ClCompile>
+    <ClCompile Include="aes.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="socket_tls_encrypter.cpp">
+      <Filter>net\tls</Filter>
+    </ClCompile>
+    <ClCompile Include="socket_tls_handshaker.cpp">
+      <Filter>net\tls</Filter>
+    </ClCompile>
+    <ClCompile Include="socket_mgr.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="ec.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -374,6 +465,9 @@
     </Filter>
     <Filter Include="io\asn1">
       <UniqueIdentifier>{226c8613-6f40-4b31-98c9-5b22b100c1ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\tls">
+      <UniqueIdentifier>{ad3f66ba-4aaa-4648-8066-12c3d553bfb6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
