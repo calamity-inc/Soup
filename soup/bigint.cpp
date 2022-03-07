@@ -1,6 +1,7 @@
 #include "bigint.hpp"
 
 #include "bitset.hpp"
+#include "endianness.hpp"
 #include "optimised.hpp"
 #include "rand.hpp"
 #include "string.hpp"
@@ -766,10 +767,22 @@ namespace soup
 		const auto nc = getNumChunks();
 		for (size_t i = 0; i != nc; ++i)
 		{
-			size_t c = getChunkInbounds(i);
-			c = ((c << b) | carry);
-			setChunkInbounds(i, c);
-			carry = getCarry(c);
+			if constexpr (SOUP_LITTLE_ENDIAN)
+			{
+				chunk_t c[2];
+				c[0] = getChunkInbounds(i);
+				c[1] = 0;
+				*reinterpret_cast<size_t*>(&c[0]) = ((*reinterpret_cast<size_t*>(&c[0]) << b) | carry);
+				setChunkInbounds(i, c[0]);
+				carry = c[1];
+			}
+			else
+			{
+				size_t c = getChunkInbounds(i);
+				c = ((c << b) | carry);
+				setChunkInbounds(i, c);
+				carry = getCarry(c);
+			}
 		}
 		if (carry != 0)
 		{
