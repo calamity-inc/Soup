@@ -5,7 +5,8 @@
 #include <ostream>
 #include <string>
 #include <utility> // pair
-#include <vector>
+
+#include "int_vector.hpp"
 
 namespace soup
 {
@@ -16,7 +17,7 @@ namespace soup
 		using chunk_signed_t = halfintmax_t;
 
 	private:
-		std::vector<chunk_t> chunks{};
+		int_vector<chunk_t> chunks{};
 		bool negative = false;
 
 	public:

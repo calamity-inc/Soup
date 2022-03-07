@@ -323,6 +323,9 @@
     <ClInclude Include="optimised.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="int_vector.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">

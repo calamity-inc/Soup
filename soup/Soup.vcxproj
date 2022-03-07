@@ -231,6 +231,7 @@
     <ClInclude Include="dns_txt.hpp" />
     <ClInclude Include="ec.hpp" />
     <ClInclude Include="endianness.hpp" />
+    <ClInclude Include="int_vector.hpp" />
     <ClInclude Include="named_curves.hpp" />
     <ClInclude Include="optimised.hpp" />
     <ClInclude Include="pem.hpp" />

@@ -224,12 +224,11 @@ namespace soup
 	{
 		for (size_t i = chunks.size(); i-- != 0; )
 		{
-			auto it = chunks.begin() + i;
-			if (*it != 0)
+			if (chunks[i] != 0)
 			{
 				break;
 			}
-			chunks.erase(it);
+			chunks.erase(i);
 		}
 	}
 
@@ -521,13 +520,10 @@ namespace soup
 
 	void bigint::setChunks(chunk_t v)
 	{
-		if (v == 0)
+		chunks.clear();
+		if (v != 0)
 		{
-			chunks.clear();
-		}
-		else
-		{
-			chunks = std::vector<chunk_t>(1, v);
+			chunks.emplace_back(v);
 		}
 	}
 
@@ -540,7 +536,9 @@ namespace soup
 		}
 		else
 		{
-			chunks = std::vector<chunk_t>{ (chunk_t)v, carry };
+			chunks.clear();
+			chunks.emplace_back((chunk_t)v);
+			chunks.emplace_back(carry);
 		}
 	}
 
