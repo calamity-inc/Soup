@@ -1,6 +1,7 @@
 #include "bigint.hpp"
 
 #include "bitset.hpp"
+#include "optimised.hpp"
 #include "rand.hpp"
 #include "string.hpp"
 
@@ -383,7 +384,7 @@ namespace soup
 	{
 		if (getNumChunks() != b.getNumChunks())
 		{
-			return getNumChunks() > b.getNumChunks() ? +1 : -1;
+			return optimised::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
 		}
 		if (negative)
 		{
@@ -405,7 +406,7 @@ namespace soup
 			--i;
 			if (getChunkInbounds(i) != b.getChunkInbounds(i))
 			{
-				return getChunkInbounds(i) > b.getChunkInbounds(i) ? +1 : -1;
+				return optimised::trinary(getChunkInbounds(i) > b.getChunkInbounds(i), +1, -1);
 			}
 		}
 		return 0;
@@ -415,7 +416,7 @@ namespace soup
 	{
 		if (getNumChunks() != b.getNumChunks())
 		{
-			return getNumChunks() > b.getNumChunks() ? +1 : -1;
+			return optimised::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
 		}
 		size_t i = chunks.size();
 		do
@@ -423,7 +424,7 @@ namespace soup
 			--i;
 			if (getChunk(i) != b.getChunk(i))
 			{
-				return getChunk(i) > b.getChunk(i) ? +1 : -1;
+				return optimised::trinary(getChunk(i) > b.getChunk(i), +1, -1);
 			}
 		} while (i != 0);
 		return 0;
