@@ -235,6 +235,7 @@
     <ClInclude Include="named_curves.hpp" />
     <ClInclude Include="optimised.hpp" />
     <ClInclude Include="pem.hpp" />
+    <ClInclude Include="promise.hpp" />
     <ClInclude Include="socket_mgr.hpp" />
     <ClInclude Include="socket_tls_server_rsa_data.hpp" />
     <ClInclude Include="stream.hpp" />
