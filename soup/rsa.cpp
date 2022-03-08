@@ -1,11 +1,10 @@
 #include "rsa.hpp"
 
-#include <thread>
-
 #include "asn1_sequence.hpp"
 #include "asn1_type.hpp"
 #include "obfus_string.hpp"
 #include "pem.hpp"
+#include "promise.hpp"
 #include "rand.hpp"
 
 namespace soup
@@ -199,18 +198,15 @@ namespace soup
 	keypair rsa::keypair::random(unsigned int bits)
 	{
 		bits /= 2u;
-		bigint p, q;
-		std::thread pt([&p, bits]
+		auto g = [](capture&& cap) -> bigint
 		{
-			p = bigint::randomProbablePrime(bits);
-		});
-		std::thread qt([&q, bits]
-		{
-			q = bigint::randomProbablePrime(bits);
-		});
-		pt.join();
-		qt.join();
-		return keypair(std::move(p), std::move(q));
+			return bigint::randomProbablePrime(cap.get<unsigned int>());
+		};
+		promise<bigint> p{ g, bits };
+		promise<bigint> q{ g, bits };
+		p.awaitCompletion();
+		q.awaitCompletion();
+		return keypair(std::move(p.res), std::move(q.res));
 	}
 
 	key_public rsa::keypair::getPublic() const
