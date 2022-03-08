@@ -428,6 +428,12 @@ namespace soup
 		return false;
 	}
 
+	struct capture_decrypt_pre_master_secret
+	{
+		socket_tls_handshaker* handshaker;
+		bigint data;
+	};
+
 	void socket::enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap)
 	{
 		auto handshaker = std::make_unique<socket_tls_handshaker>(
@@ -512,8 +518,15 @@ namespace soup
 				}
 				data.erase(0, 2); // length prefix
 
-				// BUG: This crypto operation is slow as fuck
-				handshaker->master_secret = handshaker->rsa_data.private_key.decryptPkcs1(bigint::fromBinary(data));
+				handshaker->pre_master_secret = std::make_unique<promise<std::string>>([](capture&& _cap)
+				{
+					auto& cap = _cap.get<capture_decrypt_pre_master_secret>();
+					// BUG: This crypto operation is slow as fuck
+					return cap.handshaker->rsa_data.private_key.decryptPkcs1(cap.data);
+				}, capture_decrypt_pre_master_secret{
+					handshaker.get(),
+					bigint::fromBinary(data)
+				});
 
 				s.tls_recvRecord(tls_content_type::change_cipher_spec, [](socket& s, std::string&& data, capture&& cap)
 				{

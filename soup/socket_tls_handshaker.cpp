@@ -39,15 +39,16 @@ namespace soup
 
 	std::string socket_tls_handshaker::getMasterSecret()
 	{
-		if (!has_master_secret)
+		if (pre_master_secret)
 		{
+			pre_master_secret->awaitCompletion();
 			master_secret = sha256::tls_prf(
 				obfus_string("master secret"),
 				48,
-				master_secret,
+				std::move(pre_master_secret->res),
 				std::string(client_random).append(server_random)
 			);
-			has_master_secret = true;
+			pre_master_secret.reset();
 		}
 		return master_secret;
 	}

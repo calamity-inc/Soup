@@ -3,6 +3,7 @@
 #include "fwd.hpp"
 
 #include "capture.hpp"
+#include "promise.hpp"
 #include "socket_tls_encrypter.hpp"
 #include "socket_tls_server_rsa_data.hpp"
 #include "tls_cipher_suite.hpp"
@@ -20,8 +21,8 @@ namespace soup
 		std::string layer_bytes{};
 		std::string client_random{};
 		std::string server_random{};
+		std::unique_ptr<promise<std::string>> pre_master_secret{};
 		std::string master_secret{};
-		bool has_master_secret = false;
 		std::string expected_finished_verify_data{};
 
 		// client
