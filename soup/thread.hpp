@@ -32,7 +32,6 @@ namespace soup
 		explicit thread(thread&& b) = delete;
 	private:
 		void create(void(*f)(capture&&), capture&& cap) noexcept;
-		void osCreate(void(*f)(void*), void* a = nullptr) noexcept;
 
 	public:
 		~thread() noexcept;

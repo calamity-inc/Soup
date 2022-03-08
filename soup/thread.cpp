@@ -35,33 +35,34 @@ namespace soup
 		capture cap;
 	};
 
+	static void
+#if SOUP_WINDOWS
+	__stdcall
+#endif
+	threadCreateCallback(void* handover)
+	{
+		auto t = reinterpret_cast<thread*>(handover);
+		auto& cap = t->create_capture.get<capture_thread_create>();
+		cap.f(std::move(cap.cap));
+#if !SOUP_WINDOWS
+		t->running = false;
+#endif
+		t->create_capture.reset();
+	}
+
 	void thread::create(void(*f)(capture&&), capture&& cap) noexcept
 	{
 		create_capture = capture_thread_create{
 			f,
 			std::move(cap)
 		};
-		osCreate([](void* handover)
-		{
-			auto t = reinterpret_cast<thread*>(handover);
-			auto& cap = t->create_capture.get<capture_thread_create>();
-			cap.f(std::move(cap.cap));
-#if !SOUP_WINDOWS
-			t->running = false;
-#endif
-			t->create_capture.reset();
-		}, this);
-	}
-
-	void thread::osCreate(void(*f)(void*), void* a) noexcept
-	{
 #if SOUP_WINDOWS
-		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(*)(void*)>(f), a, 0, nullptr);
+		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(__stdcall*)(LPVOID)>(&threadCreateCallback), this, 0, nullptr);
 #else
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
 		//pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-		pthread_create(&handle, &attr, reinterpret_cast<void*(*)(void*)>(f), a);
+		pthread_create(&handle, &attr, reinterpret_cast<void*(*)(void*)>(&threadCreateCallback), this);
 #endif
 	}
 
