@@ -6,6 +6,11 @@
 
 namespace soup
 {
+	socket_tls_handshaker::socket_tls_handshaker(void(*callback)(socket&, capture&&), capture&& callback_capture)
+		: callback(callback), callback_capture(std::move(callback_capture))
+	{
+	}
+
 	std::string socket_tls_handshaker::pack(tls_handshake_type_t handshake_type, const std::string& content)
 	{
 		tls_handshake hs{};

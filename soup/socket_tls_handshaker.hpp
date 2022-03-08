@@ -33,6 +33,8 @@ namespace soup
 		void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name);
 		socket_tls_server_rsa_data rsa_data{};
 
+		explicit socket_tls_handshaker(void(*callback)(socket&, capture&&), capture&& callback_capture);
+
 		[[nodiscard]] std::string pack(tls_handshake_type_t handshake_type, const std::string& content);
 		[[nodiscard]] int unpack(tls_handshake_type_t expected_handshake_type, std::string& content);
 

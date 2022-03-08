@@ -3,6 +3,8 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
+#include <memory>
+
 #if SOUP_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
 #include <Winsock2.h>
@@ -89,7 +91,7 @@ namespace soup
 
 		void enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap = {});
 	protected:
-		void enableCryptoClientRecvServerHelloDone(socket_tls_handshaker&& handshaker);
+		void enableCryptoClientRecvServerHelloDone(std::unique_ptr<socket_tls_handshaker>&& handshaker);
 
 	public:
 		void enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap = {});
@@ -121,10 +123,10 @@ namespace soup
 
 		// TLS - Crypto Layer
 
-		bool tls_sendHandshake(socket_tls_handshaker& handshaker, tls_handshake_type_t handshake_type, const std::string& content);
+		bool tls_sendHandshake(const std::unique_ptr<socket_tls_handshaker>& handshaker, tls_handshake_type_t handshake_type, const std::string& content);
 		bool tls_sendRecord(tls_content_type_t content_type, std::string content);
 
-		void tls_recvHandshake(socket_tls_handshaker&& handshaker, tls_handshake_type_t expected_handshake_type, void(*callback)(socket&, socket_tls_handshaker&&, std::string&&), std::string&& pre = {});
+		void tls_recvHandshake(std::unique_ptr<socket_tls_handshaker>&& handshaker, tls_handshake_type_t expected_handshake_type, void(*callback)(socket&, std::unique_ptr<socket_tls_handshaker>&&, std::string&&), std::string&& pre = {});
 		void tls_recvRecord(tls_content_type_t expected_content_type, void(*callback)(socket&, std::string&&, capture&&), capture&& cap = {});
 		void tls_recvRecord(void(*callback)(socket&, tls_content_type_t, std::string&&, capture&&), capture&& cap = {});
 
