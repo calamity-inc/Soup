@@ -56,11 +56,10 @@ namespace soup
 
 		~capture()
 		{
-			free();
+			reset();
 		}
 
-	private:
-		void free() noexcept
+		void reset() noexcept
 		{
 			if (data != nullptr)
 			{
@@ -69,7 +68,6 @@ namespace soup
 			}
 		}
 
-	public:
 		void operator =(const capture&) = delete;
 
 		void operator =(capture&& b) noexcept
@@ -82,7 +80,7 @@ namespace soup
 		template <typename T>
 		void operator =(const T& v)
 		{
-			free();
+			reset();
 			data = new T(v);
 			deleter = &deleter_impl<T>;
 		}
@@ -90,7 +88,7 @@ namespace soup
 		template <typename T>
 		void operator =(T&& v)
 		{
-			free();
+			reset();
 			data = new T(std::move(v));
 			deleter = &deleter_impl<T>;
 		}
@@ -98,7 +96,7 @@ namespace soup
 		template <typename T>
 		void operator =(T* ptr)
 		{
-			free();
+			reset();
 			data = new T*(ptr);
 			deleter = &deleter_impl<T*>;
 		}
@@ -106,7 +104,7 @@ namespace soup
 		template <typename Ret, typename...Args>
 		void operator =(Ret(*f)(Args...))
 		{
-			free();
+			reset();
 			data = new void*(reinterpret_cast<void*>(f));
 			deleter = &deleter_impl<void*>;
 		}
