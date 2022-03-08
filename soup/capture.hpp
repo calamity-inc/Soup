@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 namespace soup
 {
 	class capture
@@ -32,25 +34,13 @@ namespace soup
 
 		template <typename T>
 		capture(const T& v)
-			: data(new T(v)), deleter(&deleter_impl<T>)
+			: data(new std::remove_reference_t<T>(v)), deleter(&deleter_impl<std::remove_reference_t<T>>)
 		{
 		}
 
 		template <typename T>
 		capture(T&& v)
-			: data(new T(std::move(v))), deleter(&deleter_impl<T>)
-		{
-		}
-
-		template <typename T>
-		capture(T* ptr)
-			: data(new T*(ptr)), deleter(&deleter_impl<T*>)
-		{
-		}
-
-		template <typename Ret, typename...Args>
-		capture(Ret(*f)(Args...))
-			: data(new void*(reinterpret_cast<void*>(f))), deleter(&deleter_impl<void*>)
+			: data(new std::remove_reference_t<T>(std::move(v))), deleter(&deleter_impl<std::remove_reference_t<T>>)
 		{
 		}
 
@@ -81,32 +71,16 @@ namespace soup
 		void operator =(const T& v)
 		{
 			reset();
-			data = new T(v);
-			deleter = &deleter_impl<T>;
+			data = new std::remove_reference_t<T>(v);
+			deleter = &deleter_impl<std::remove_reference_t<T>>;
 		}
 
 		template <typename T>
 		void operator =(T&& v)
 		{
 			reset();
-			data = new T(std::move(v));
-			deleter = &deleter_impl<T>;
-		}
-
-		template <typename T>
-		void operator =(T* ptr)
-		{
-			reset();
-			data = new T*(ptr);
-			deleter = &deleter_impl<T*>;
-		}
-
-		template <typename Ret, typename...Args>
-		void operator =(Ret(*f)(Args...))
-		{
-			reset();
-			data = new void*(reinterpret_cast<void*>(f));
-			deleter = &deleter_impl<void*>;
+			data = new std::remove_reference_t<T>(std::move(v));
+			deleter = &deleter_impl<std::remove_reference_t<T>>;
 		}
 
 		template <typename T>
