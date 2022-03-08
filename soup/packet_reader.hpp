@@ -221,7 +221,7 @@ namespace soup
 				{
 					return false;
 				}
-				len -= (entry.size() + 3);
+				len -= ((uint32_t)entry.size() + 3);
 				v.emplace_back(std::move(entry));
 			}
 			return true;
