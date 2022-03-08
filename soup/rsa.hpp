@@ -135,6 +135,7 @@ namespace soup
 			bigint dq;
 			bigint qinv;
 
+			keypair() = default;
 			keypair(bigint&& _p, bigint&& _q);
 
 			[[nodiscard]] static keypair random(unsigned int bits);
