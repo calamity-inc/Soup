@@ -2,6 +2,8 @@
 
 #include <type_traits>
 
+#include <utility> // move
+
 namespace soup
 {
 	class capture

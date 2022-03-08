@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring> // memcpy
+
 namespace soup
 {
 	template <typename T>
