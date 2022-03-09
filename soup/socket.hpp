@@ -1,5 +1,7 @@
 #pragma once
 
+#include "worker.hpp"
+
 #include "base.hpp"
 #include "fwd.hpp"
 
@@ -20,7 +22,7 @@
 namespace soup
 {
 #pragma pack(push, 1)
-	class socket
+	class socket : public worker
 	{
 	public:
 #if SOUP_WINDOWS
@@ -28,18 +30,13 @@ namespace soup
 #endif
 
 #if SOUP_WINDOWS
-		using fd_t = SOCKET;
+		using fd_t = ::SOCKET;
 #else
 		using fd_t = int;
 #endif
 		fd_t fd = -1;
 
 		addr_socket peer;
-
-		using on_data_available_t = bool(*)(socket&);
-
-		on_data_available_t on_data_available = nullptr;
-		capture on_data_available_capture;
 
 		std::string tls_record_buf_data{};
 		tls_content_type_t tls_record_buf_content_type;
@@ -86,8 +83,6 @@ namespace soup
 
 		bool setBlocking(bool blocking = true) noexcept;
 		bool setNonBlocking() noexcept;
-
-		bool fireDataAvailable();
 
 		void enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap = {});
 	protected:

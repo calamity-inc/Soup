@@ -71,10 +71,10 @@ namespace soup
 
 	void socket::operator=(socket&& b) noexcept
 	{
+		worker::operator=(std::move(b));
+
 		fd = b.fd;
 		peer = std::move(b.peer);
-		on_data_available = b.on_data_available;
-		on_data_available_capture = std::move(b.on_data_available_capture);
 		tls_record_buf_data = std::move(b.tls_record_buf_data);
 		tls_record_buf_content_type = b.tls_record_buf_content_type;
 		tls_encrypter_send = std::move(b.tls_encrypter_send);
@@ -226,15 +226,6 @@ namespace soup
 	bool socket::setNonBlocking() noexcept
 	{
 		return setBlocking(false);
-	}
-
-	bool socket::fireDataAvailable()
-	{
-		if (on_data_available)
-		{
-			return on_data_available(*this);
-		}
-		return true;
 	}
 
 	void socket::enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap)
@@ -541,23 +532,31 @@ namespace soup
 
 					std::unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<std::unique_ptr<socket_tls_handshaker>>());
 
-					handshaker->getKeys(s.tls_encrypter_recv.mac_key, s.tls_encrypter_send.mac_key, s.tls_encrypter_recv.cipher_key, s.tls_encrypter_send.cipher_key);
+					promise_base* p = handshaker->pre_master_secret.get();
 
-					handshaker->expected_finished_verify_data = handshaker->getClientFinishVerifyData();
-
-					s.tls_recvHandshake(std::move(handshaker), tls_handshake::finished, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+					s.awaitPromiseCompletion(p, [](worker& w, capture&& cap)
 					{
-						if (data != handshaker->expected_finished_verify_data)
-						{
-							s.tls_close(tls_alert_description::decrypt_error);
-							return;
-						}
+						auto& s = reinterpret_cast<socket&>(w);
+						std::unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<std::unique_ptr<socket_tls_handshaker>>());
 
-						if (s.tls_sendHandshake(handshaker, tls_handshake::finished, handshaker->getServerFinishVerifyData()))
+						handshaker->getKeys(s.tls_encrypter_recv.mac_key, s.tls_encrypter_send.mac_key, s.tls_encrypter_recv.cipher_key, s.tls_encrypter_send.cipher_key);
+
+						handshaker->expected_finished_verify_data = handshaker->getClientFinishVerifyData();
+
+						s.tls_recvHandshake(std::move(handshaker), tls_handshake::finished, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 						{
-							handshaker->callback(s, std::move(handshaker->callback_capture));
-						}
-					});
+							if (data != handshaker->expected_finished_verify_data)
+							{
+								s.tls_close(tls_alert_description::decrypt_error);
+								return;
+							}
+
+							if (s.tls_sendHandshake(handshaker, tls_handshake::finished, handshaker->getServerFinishVerifyData()))
+							{
+								handshaker->callback(s, std::move(handshaker->callback_capture));
+							}
+						});
+					}, std::move(handshaker));
 				}, std::move(handshaker));
 			});
 		});
@@ -896,13 +895,13 @@ namespace soup
 			callback(*this, std::move(buf), std::move(cap));
 			return;
 		}
-		on_data_available = [](socket& s)
+		holdup_type = SOCKET;
+		holdup_callback = [](worker& w, capture&& _cap)
 		{
-			auto& c = s.on_data_available_capture.get<capture_socket_transport_recv>();
-			s.transport_recv(c.bytes, c.callback, std::move(c.cap));
-			return true;
+			auto& cap = _cap.get<capture_socket_transport_recv>();
+			reinterpret_cast<socket&>(w).transport_recv(cap.bytes, cap.callback, std::move(cap.cap));
 		};
-		on_data_available_capture = capture_socket_transport_recv{ max_bytes, callback, std::move(cap) };
+		holdup_capture = capture_socket_transport_recv{ max_bytes, callback, std::move(cap) };
 	}
 
 	struct capture_socket_transport_recv_exact : public capture_socket_transport_recv
@@ -927,13 +926,13 @@ namespace soup
 			callback(*this, std::move(pre), std::move(cap));
 			return;
 		}
-		on_data_available = [](socket& s)
+		holdup_type = SOCKET;
+		holdup_callback = [](worker& w, capture&& _cap)
 		{
-			auto& c = s.on_data_available_capture.get<capture_socket_transport_recv_exact>();
-			s.transport_recvExact(c.bytes, c.callback, std::move(c.cap), std::move(c.buf));
-			return true;
+			auto& cap = _cap.get<capture_socket_transport_recv_exact>();
+			reinterpret_cast<socket&>(w).transport_recvExact(cap.bytes, cap.callback, std::move(cap.cap), std::move(cap.buf));
 		};
-		on_data_available_capture = capture_socket_transport_recv_exact(bytes, callback, std::move(cap), std::move(pre));
+		holdup_capture = capture_socket_transport_recv_exact(bytes, callback, std::move(cap), std::move(pre));
 	}
 
 	void socket::transport_close() noexcept

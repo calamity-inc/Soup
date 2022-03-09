@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <socket.hpp>
-#include <socket_mgr.hpp>
+#include <scheduler.hpp>
 
 static void recvLoop(soup::socket& s)
 {
@@ -23,10 +23,10 @@ int main()
 		std::cout << "Connect failed." << std::endl;
 		return 1;
 	}
-	soup::socket_mgr mgr{};
+	soup::scheduler sched{};
 
 	std::cout << "Negotiating TLS..." << std::endl;
-	mgr.addSocket(std::move(sock)).enableCryptoClient(HOSTNAME, [](soup::socket& s, soup::capture&&)
+	sched.addSocket(std::move(sock)).enableCryptoClient(HOSTNAME, [](soup::socket& s, soup::capture&&)
 	{
 		std::cout << "Sending request..." << std::endl;
 		if (!s.send("GET / HTTP/1.0\r\nHost: " HOSTNAME "\r\nConnection: close\r\nUser-Agent: I'm testing my socket implementation against you\r\n\r\n"))
@@ -38,7 +38,7 @@ int main()
 		std::cout << "Receiving response..." << std::endl;
 		recvLoop(s);
 	});
-	mgr.run();
+	sched.run();
 
 	return 0;
 }

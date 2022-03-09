@@ -25,7 +25,6 @@ namespace soup
 	// net
 	class addr_ip;
 	class socket;
-	class socket_mgr;
 
 	// net.dns
 	struct dns_a;
@@ -42,4 +41,8 @@ namespace soup
 
 	// os.windows
 	struct handle_raii;
+
+	// task
+	class promise_base;
+	class scheduler;
 }

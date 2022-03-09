@@ -1,13 +1,12 @@
 #include <iostream>
 #include <thread>
 
-// for async socket io:
-#include <socket_mgr.hpp>
-
-// for tls:
 #include <asn1_sequence.hpp>
 #include <pem.hpp>
 #include <rsa.hpp>
+#include <scheduler.hpp>
+#include <server.hpp>
+#include <socket.hpp>
 #include <socket_tls_server_rsa_data.hpp>
 
 static void sendHtml(soup::socket& s, std::string body)
@@ -99,8 +98,8 @@ static void httpRecv(soup::socket& s, soup::capture&&)
 
 int main()
 {
-	soup::socket_mgr mgr{};
-	if (!mgr.bind(80))
+	soup::server srv{};
+	if (!srv.bind(80))
 	{
 		std::cout << "Failed to bind to port 80." << std::endl;
 #if SOUP_LINUX
@@ -108,7 +107,7 @@ int main()
 #endif
 		return 1;
 	}
-	if (!mgr.bind(443))
+	if (!srv.bind(443))
 	{
 		std::cout << "Failed to bind to port 443." << std::endl;
 #if SOUP_LINUX
@@ -117,7 +116,7 @@ int main()
 		return 2;
 	}
 	std::cout << "Listening on ports 80 and 443." << std::endl;
-	mgr.on_accept = [](soup::socket& s, uint16_t port)
+	srv.on_accept = [](soup::socket& s, uint16_t port)
 	{
 		std::cout << s.peer.toString()  << " + connected at port " << port << std::endl;
 		if (port != 80)
@@ -193,9 +192,13 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 		}
 		httpRecv(s);
 	};
-	mgr.on_disconnect = [](soup::socket& s)
+	srv.on_work_done = [](soup::worker& w)
 	{
-		std::cout << s.peer.toString() << " - disconnected" << std::endl;
+		std::cout << reinterpret_cast<soup::socket&>(w).peer.toString() << " - work done" << std::endl;
 	};
-	mgr.run();
+	srv.on_connection_lost = [](soup::socket& s)
+	{
+		std::cout << s.peer.toString() << " - connection lost" << std::endl;
+	};
+	srv.run();
 }

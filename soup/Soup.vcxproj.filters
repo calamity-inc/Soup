@@ -287,9 +287,6 @@
     <ClInclude Include="time.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="socket_mgr.hpp">
-      <Filter>net</Filter>
-    </ClInclude>
     <ClInclude Include="capture.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -326,8 +323,17 @@
     <ClInclude Include="int_vector.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="worker.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="scheduler.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="server.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
     <ClInclude Include="promise.hpp">
-      <Filter>util</Filter>
+      <Filter>task</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,11 +428,17 @@
     <ClCompile Include="socket_tls_handshaker.cpp">
       <Filter>net\tls</Filter>
     </ClCompile>
-    <ClCompile Include="socket_mgr.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
     <ClCompile Include="ec.cpp">
       <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="scheduler.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="worker.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="server.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -477,6 +489,9 @@
     </Filter>
     <Filter Include="net\tls">
       <UniqueIdentifier>{ad3f66ba-4aaa-4648-8066-12c3d553bfb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="task">
+      <UniqueIdentifier>{b14f98a7-4337-4266-8f79-7c3942c95cbb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

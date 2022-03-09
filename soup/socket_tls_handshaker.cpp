@@ -41,11 +41,10 @@ namespace soup
 	{
 		if (pre_master_secret)
 		{
-			pre_master_secret->awaitCompletion();
 			master_secret = sha256::tls_prf(
 				obfus_string("master secret"),
 				48,
-				std::move(pre_master_secret->res),
+				std::move(pre_master_secret->getResult()),
 				std::string(client_random).append(server_random)
 			);
 			pre_master_secret.reset();

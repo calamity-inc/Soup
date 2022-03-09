@@ -206,7 +206,7 @@ namespace soup
 		promise<bigint> q{ g, bits };
 		p.awaitCompletion();
 		q.awaitCompletion();
-		return keypair(std::move(p.res), std::move(q.res));
+		return keypair(std::move(p.getResult()), std::move(q.getResult()));
 	}
 
 	key_public rsa::keypair::getPublic() const
