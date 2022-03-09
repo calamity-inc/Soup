@@ -24,7 +24,6 @@ int main()
 		return 1;
 	}
 	soup::socket_mgr mgr{};
-	sock.setNonBlocking();
 
 	std::cout << "Negotiating TLS..." << std::endl;
 	mgr.addSocket(std::move(sock)).enableCryptoClient(HOSTNAME, [](soup::socket& s, soup::capture&&)
