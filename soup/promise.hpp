@@ -8,8 +8,11 @@ namespace soup
 	class promise
 	{
 	private:
-		thread thrd;
-
+		std::unique_ptr<thread> thrd{};
+	public:
+		T res{};
+		
+	private:
 		struct capture_ctor
 		{
 			promise* _this;
@@ -24,20 +27,27 @@ namespace soup
 		}
 
 	public:
-		T res{};
+		promise(T&& res)
+			: res(std::move(res))
+		{
+		}
 
 		promise(T(*f)(capture&&), capture&& cap = {})
-			: thrd(&thrdFunc, capture_ctor{
+			: thrd(std::make_unique<thread>(&thrdFunc, capture_ctor{
 				this,
 				f,
 				std::move(cap)
-			})
+			}))
 		{
 		}
 
 		void awaitCompletion()
 		{
-			thrd.awaitCompletion();
+			if (thrd)
+			{
+				thrd->awaitCompletion();
+				thrd.reset();
+			}
 		}
 	};
 }

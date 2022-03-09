@@ -356,16 +356,20 @@ namespace soup
 			std::string cke{};
 			if (handshaker->server_x25519_public_key.empty())
 			{
-				handshaker->master_secret.reserve(48);
-				handshaker->master_secret.push_back('\3');
-				handshaker->master_secret.push_back('\3');
+				std::string pms{};
+				pms.reserve(48);
+				pms.push_back('\3');
+				pms.push_back('\3');
 				for (auto i = 0; i != 46; ++i)
 				{
-					handshaker->master_secret.push_back(rand.ch());
+					pms.push_back(rand.ch());
 				}
+
 				tls_encrypted_pre_master_secret epms{};
-				epms.data = handshaker->certchain.at(0).key.encryptPkcs1(handshaker->master_secret).toBinary();
+				epms.data = handshaker->certchain.at(0).key.encryptPkcs1(pms).toBinary();
 				cke = epms.toBinary();
+
+				handshaker->pre_master_secret = std::make_unique<promise<std::string>>(std::move(pms));
 			}
 			else
 			{
@@ -377,7 +381,7 @@ namespace soup
 
 				uint8_t shared_secret[ec::X25519_SHARED_SIZE];
 				ec::x25519(shared_secret, my_priv, their_pub);
-				handshaker->master_secret = std::string((const char*)shared_secret, sizeof(shared_secret));
+				handshaker->pre_master_secret = std::make_unique<promise<std::string>>(std::string((const char*)shared_secret, sizeof(shared_secret)));
 
 				uint8_t my_pub[ec::X25519_KEY_SIZE];
 				ec::curve25519_derivePublic(my_pub, my_priv);
