@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "capture.hpp"
 #include "thread.hpp"
 
