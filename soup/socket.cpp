@@ -896,12 +896,11 @@ namespace soup
 			return;
 		}
 		holdup_type = SOCKET;
-		holdup_callback = [](worker& w, capture&& _cap)
+		holdup_callback.set([](worker& w, capture&& _cap)
 		{
 			auto& cap = _cap.get<capture_socket_transport_recv>();
 			reinterpret_cast<socket&>(w).transport_recv(cap.bytes, cap.callback, std::move(cap.cap));
-		};
-		holdup_capture = capture_socket_transport_recv{ max_bytes, callback, std::move(cap) };
+		}, capture_socket_transport_recv{ max_bytes, callback, std::move(cap) });
 	}
 
 	struct capture_socket_transport_recv_exact : public capture_socket_transport_recv
@@ -927,12 +926,11 @@ namespace soup
 			return;
 		}
 		holdup_type = SOCKET;
-		holdup_callback = [](worker& w, capture&& _cap)
+		holdup_callback.set([](worker& w, capture&& _cap)
 		{
 			auto& cap = _cap.get<capture_socket_transport_recv_exact>();
 			reinterpret_cast<socket&>(w).transport_recvExact(cap.bytes, cap.callback, std::move(cap.cap), std::move(cap.buf));
-		};
-		holdup_capture = capture_socket_transport_recv_exact(bytes, callback, std::move(cap), std::move(pre));
+		}, capture_socket_transport_recv_exact(bytes, callback, std::move(cap), std::move(pre)));
 	}
 
 	void socket::transport_close() noexcept

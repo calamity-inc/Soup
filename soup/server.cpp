@@ -12,7 +12,7 @@ namespace soup
 			return false;
 		}
 		setDataAvailableHandler6(sock6);
-		sock6.holdup_capture = this;
+		sock6.holdup_callback.cap = this;
 		addSocket(std::move(sock6));
 
 #if SOUP_WINDOWS
@@ -22,7 +22,7 @@ namespace soup
 			return false;
 		}
 		setDataAvailableHandler4(sock4);
-		sock4.holdup_capture = this;
+		sock4.holdup_callback.cap = this;
 		addSocket(std::move(sock4));
 #endif
 
@@ -32,7 +32,7 @@ namespace soup
 	void server::setDataAvailableHandler6(socket& s)
 	{
 		s.holdup_type = worker::SOCKET;
-		s.holdup_callback = [](worker& w, capture&& cap)
+		s.holdup_callback.fp = [](worker& w, capture&& cap)
 		{
 			auto& s = reinterpret_cast<socket&>(w);
 			setDataAvailableHandler6(s);
@@ -43,7 +43,7 @@ namespace soup
 	void server::setDataAvailableHandler4(socket& s)
 	{
 		s.holdup_type = worker::SOCKET;
-		s.holdup_callback = [](worker& w, capture&& cap)
+		s.holdup_callback.fp = [](worker& w, capture&& cap)
 		{
 			auto& s = reinterpret_cast<socket&>(w);
 			setDataAvailableHandler4(s);

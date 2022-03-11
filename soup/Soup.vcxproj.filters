@@ -335,6 +335,9 @@
     <ClInclude Include="promise.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="callback.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">

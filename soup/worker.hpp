@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 
+#include "callback.hpp"
 #include "capture.hpp"
 
 namespace soup
@@ -21,8 +22,7 @@ namespace soup
 		};
 
 		holdup_type_t holdup_type = NONE;
-		void(*holdup_callback)(worker&, capture&&);
-		capture holdup_capture;
+		callback<void(worker&)> holdup_callback;
 		void* holdup_data;
 
 		virtual ~worker() = default;

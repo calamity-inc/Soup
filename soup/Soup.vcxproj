@@ -221,6 +221,7 @@
     <ClInclude Include="box_corners.hpp" />
     <ClInclude Include="bytepatch.hpp" />
     <ClInclude Include="bytepatch_external.hpp" />
+    <ClInclude Include="callback.hpp" />
     <ClInclude Include="canvas.hpp" />
     <ClInclude Include="capture.hpp" />
     <ClInclude Include="crypto_hash_algo.hpp" />
