@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm> // std::transform
+#include <cctype> // std::tolower
 #include <cstdint>
 #include <string>
 
@@ -144,6 +146,15 @@ namespace soup
 		}
 
 		// char mutation
+
+		template <typename Str>
+		static void toLower(Str& str)
+		{
+			std::transform(str.begin(), str.end(), str.begin(), [](auto c)
+			{
+				return std::tolower(c);
+			});
+		}
 
 		[[nodiscard]] static constexpr char rot13(char c) noexcept
 		{
