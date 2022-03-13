@@ -331,6 +331,7 @@
     <ClCompile Include="box_corners.cpp" />
     <ClCompile Include="bytepatch.cpp" />
     <ClCompile Include="canvas.cpp" />
+    <ClCompile Include="console.cpp" />
     <ClCompile Include="dns.cpp" />
     <ClCompile Include="ec.cpp" />
     <ClCompile Include="memory_buffer.cpp" />

@@ -446,6 +446,9 @@
     <ClCompile Include="server.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="console.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
