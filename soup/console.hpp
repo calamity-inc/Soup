@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "base.hpp"
+#include "mouse_button.hpp"
 #include "string.hpp"
 #include "unicode.hpp"
 
@@ -28,13 +29,6 @@
 
 namespace soup
 {
-	enum mouse_button : int8_t
-	{
-		LMB = 0,
-		MMB,
-		RMB,
-	};
-
 	class console_impl
 	{
 	private:

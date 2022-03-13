@@ -233,6 +233,7 @@
     <ClInclude Include="ec.hpp" />
     <ClInclude Include="endianness.hpp" />
     <ClInclude Include="int_vector.hpp" />
+    <ClInclude Include="mouse_button.hpp" />
     <ClInclude Include="named_curves.hpp" />
     <ClInclude Include="optimised.hpp" />
     <ClInclude Include="pem.hpp" />

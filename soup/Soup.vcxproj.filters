@@ -338,6 +338,9 @@
     <ClInclude Include="callback.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="mouse_button.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
