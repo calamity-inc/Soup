@@ -5,6 +5,7 @@
 
 #include "base.hpp"
 #include "mouse_button.hpp"
+#include "rgb.hpp"
 #include "string.hpp"
 #include "unicode.hpp"
 
@@ -395,6 +396,11 @@ namespace soup
 			return *this;
 		}
 
+		static void setForegroundColour(rgb c)
+		{
+			return setForegroundColour(c.r, c.g, c.b);
+		}
+
 		static void setForegroundColour(int r, int g, int b)
 		{
 			std::cout << CSI "38;2;" << r << ";" << g << ";" << b << "m";
@@ -418,6 +424,11 @@ namespace soup
 			str.append(string::decimal<Str>(b));
 			str.push_back('m');
 			return str;
+		}
+
+		static void setBackgroundColour(rgb c)
+		{
+			return setBackgroundColour(c.r, c.g, c.b);
 		}
 
 		static void setBackgroundColour(int r, int g, int b)
