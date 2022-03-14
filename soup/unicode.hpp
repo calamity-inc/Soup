@@ -71,5 +71,7 @@ namespace soup
 		{
 			return utf32_to_utf8(utf16_to_utf32(utf16));
 		}
+
+		[[nodiscard]] static size_t utf8_char_len(const std::string& str) noexcept;
 	};
 }

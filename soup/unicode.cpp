@@ -139,4 +139,17 @@ namespace soup
 		}
 		return utf8;
 	}
+
+	size_t unicode::utf8_char_len(const std::string& str) noexcept
+	{
+		size_t char_len = 0;
+		for (const auto& c : str)
+		{
+			if (!UTF8_IS_CONTINUATION(c))
+			{
+				++char_len;
+			}
+		}
+		return char_len;
+	}
 }
