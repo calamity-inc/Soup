@@ -1028,7 +1028,7 @@ namespace soup
 
 		auto i = u.getTrailingZeroesBinary(); u >>= i;
 		auto j = v.getTrailingZeroesBinary(); v >>= j;
-		auto k = std::min(i, j);
+		auto k = optimised::min(i, j);
 
 		while (true)
 		{
