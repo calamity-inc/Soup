@@ -25,11 +25,9 @@ namespace soup
 			)
 		{
 			DWORD mode;
-			if (GetConsoleMode(hSTDOUT, &mode)
-				&& SetConsoleMode(hSTDOUT, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING)
-				)
+			if (GetConsoleMode(hSTDOUT, &mode))
 			{
-				owner_of_console = true;
+				SetConsoleMode(hSTDOUT, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 			}
 		}
 

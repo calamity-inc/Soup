@@ -25,7 +25,6 @@ namespace soup
 	{
 	private:
 #if SOUP_WINDOWS
-		bool owner_of_console = false;
 		bool pressed_lmb = false;
 		bool pressed_rmb = false;
 		bool pressed_mmb = false;
