@@ -8,12 +8,12 @@ namespace soup
 	{
 		HWND h;
 
-		[[nodiscard]] static window get_focused() noexcept
+		[[nodiscard]] static window getFocused() noexcept
 		{
-			return window(GetForegroundWindow());
+			return window{ GetForegroundWindow() };
 		}
 
-		[[nodiscard]] DWORD get_owner_pid()
+		[[nodiscard]] DWORD getOwnerPid()
 		{
 			DWORD pid;
 			GetWindowThreadProcessId(h, &pid);

@@ -2,7 +2,7 @@
 
 namespace soup
 {
-	void assembly_builder::func_begin()
+	void assembly_builder::funcBegin()
 	{
 		uint8_t bytes[] = {
 			0x55, // push rbp
@@ -12,7 +12,7 @@ namespace soup
 		addBytes(bytes);
 	}
 
-	void assembly_builder::func_end()
+	void assembly_builder::funcEnd()
 	{
 		uint8_t bytes[] = {
 			0x48, 0x83, 0xC4, 0x20, // add rsp, 20h

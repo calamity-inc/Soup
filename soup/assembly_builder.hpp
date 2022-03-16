@@ -21,8 +21,8 @@ namespace soup
 		}
 
 	public:
-		void func_begin();
-		void func_end();
+		void funcBegin();
+		void funcEnd();
 		void retn();
 		void nop();
 
