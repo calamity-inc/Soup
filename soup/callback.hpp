@@ -10,7 +10,7 @@ namespace soup
 	template <typename Ret, typename...Args>
 	struct callback<Ret(Args...)>
 	{
-		using FuncWithCapture = Ret(Args..., capture&&);
+		using FuncWithCapture = Ret(Args..., const capture&);
 
 		FuncWithCapture* fp;
 		capture cap;
@@ -49,7 +49,18 @@ namespace soup
 
 		Ret operator() (Args&&...args)
 		{
-			return fp(std::forward<Args>(args)..., std::move(cap));
+			return fp(std::forward<Args>(args)..., cap);
+		}
+
+		[[nodiscard]] constexpr operator bool() const noexcept
+		{
+			return fp != nullptr;
+		}
+
+		void reset()
+		{
+			fp = nullptr;
+			cap.reset();
 		}
 	};
 }

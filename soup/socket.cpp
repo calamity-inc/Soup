@@ -534,7 +534,7 @@ namespace soup
 
 					promise_base* p = handshaker->pre_master_secret.get();
 
-					s.awaitPromiseCompletion(p, [](worker& w, capture&& cap)
+					s.awaitPromiseCompletion(p, [](worker& w, const capture& cap)
 					{
 						auto& s = reinterpret_cast<socket&>(w);
 						std::unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<std::unique_ptr<socket_tls_handshaker>>());
@@ -896,7 +896,7 @@ namespace soup
 			return;
 		}
 		holdup_type = SOCKET;
-		holdup_callback.set([](worker& w, capture&& _cap)
+		holdup_callback.set([](worker& w, const capture& _cap)
 		{
 			auto& cap = _cap.get<capture_socket_transport_recv>();
 			reinterpret_cast<socket&>(w).transport_recv(cap.bytes, cap.callback, std::move(cap.cap));
@@ -926,7 +926,7 @@ namespace soup
 			return;
 		}
 		holdup_type = SOCKET;
-		holdup_callback.set([](worker& w, capture&& _cap)
+		holdup_callback.set([](worker& w, const capture& _cap)
 		{
 			auto& cap = _cap.get<capture_socket_transport_recv_exact>();
 			reinterpret_cast<socket&>(w).transport_recvExact(cap.bytes, cap.callback, std::move(cap.cap), std::move(cap.buf));

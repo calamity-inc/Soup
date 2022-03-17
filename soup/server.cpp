@@ -32,7 +32,7 @@ namespace soup
 	void server::setDataAvailableHandler6(socket& s)
 	{
 		s.holdup_type = worker::SOCKET;
-		s.holdup_callback.fp = [](worker& w, capture&& cap)
+		s.holdup_callback.fp = [](worker& w, const capture& cap)
 		{
 			auto& s = reinterpret_cast<socket&>(w);
 			setDataAvailableHandler6(s);
@@ -43,7 +43,7 @@ namespace soup
 	void server::setDataAvailableHandler4(socket& s)
 	{
 		s.holdup_type = worker::SOCKET;
-		s.holdup_callback.fp = [](worker& w, capture&& cap)
+		s.holdup_callback.fp = [](worker& w, const capture& cap)
 		{
 			auto& s = reinterpret_cast<socket&>(w);
 			setDataAvailableHandler4(s);

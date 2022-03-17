@@ -31,6 +31,6 @@ namespace soup
 
 		void fireHoldupCallback();
 	protected:
-		void awaitPromiseCompletion(promise_base* p, void(*f)(worker&, capture&&), capture&& cap);
+		void awaitPromiseCompletion(promise_base* p, void(*f)(worker&, const capture&), capture&& cap);
 	};
 }
