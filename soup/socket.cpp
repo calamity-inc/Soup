@@ -2,8 +2,9 @@
 
 #if SOUP_LINUX
 #include <fcntl.h>
-#include <signal.h>
 #include <unistd.h> // close
+
+#include "signal.hpp"
 #endif
 
 #include "aes.hpp"
@@ -38,11 +39,7 @@ namespace soup
 	{
 		onConstruct();
 #if SOUP_LINUX
-		struct sigaction sigpipe_handler;
-		sigpipe_handler.sa_handler = &sigpipe_handler_proc;
-		sigemptyset(&sigpipe_handler.sa_mask);
-		sigpipe_handler.sa_flags = 0;
-		sigaction(SIGPIPE, &sigpipe_handler, NULL);
+		signal::handle(SIGPIPE, &sigpipe_handler_proc);
 #endif
 	}
 

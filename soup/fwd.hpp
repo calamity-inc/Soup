@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace soup
 {
 	// io.asn1
@@ -37,7 +39,9 @@ namespace soup
 	struct socket_tls_server_rsa_data;
 
 	// os
+	enum control_input : uint8_t;
 	class module;
+	enum mouse_button : uint8_t;
 
 	// os.windows
 	struct handle_raii;
@@ -45,4 +49,12 @@ namespace soup
 	// task
 	class promise_base;
 	class scheduler;
+
+	// ui.conui
+	struct conui_app;
+	struct conui_div;
+
+	// ui.editor
+	struct editor;
+	struct editor_text;
 }

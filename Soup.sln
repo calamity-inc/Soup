@@ -5,11 +5,6 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Soup", "soup\Soup.vcxproj", "{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Console App", "examples\Console App\Console App.vcxproj", "{6741E999-EF28-41E6-9C32-4C70F3EA97F5}"
-	ProjectSection(ProjectDependencies) = postProject
-		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA} = {84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple Server", "examples\Simple Server\Simple Server.vcxproj", "{A645BD73-2DE4-4EED-914A-4575EFC2164B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA} = {84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}
@@ -21,6 +16,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TCP Client", "examples\TCP 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConSnake", "examples\ConSnake\ConSnake.vcxproj", "{68B30322-8A7E-4EF3-847F-7CC2CEE81F37}"
+	ProjectSection(ProjectDependencies) = postProject
+		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA} = {84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLI", "CLI\CLI.vcxproj", "{D46C3146-541A-4879-837E-A1596BB99185}"
 	ProjectSection(ProjectDependencies) = postProject
 		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA} = {84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}
 	EndProjectSection
@@ -41,14 +41,6 @@ Global
 		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}.Release|x64.Build.0 = Release|x64
 		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}.Release|x86.ActiveCfg = Release|Win32
 		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}.Release|x86.Build.0 = Release|Win32
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Debug|x64.ActiveCfg = Debug|x64
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Debug|x64.Build.0 = Debug|x64
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Debug|x86.ActiveCfg = Debug|Win32
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Debug|x86.Build.0 = Debug|Win32
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Release|x64.ActiveCfg = Release|x64
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Release|x64.Build.0 = Release|x64
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Release|x86.ActiveCfg = Release|Win32
-		{6741E999-EF28-41E6-9C32-4C70F3EA97F5}.Release|x86.Build.0 = Release|Win32
 		{A645BD73-2DE4-4EED-914A-4575EFC2164B}.Debug|x64.ActiveCfg = Debug|x64
 		{A645BD73-2DE4-4EED-914A-4575EFC2164B}.Debug|x64.Build.0 = Debug|x64
 		{A645BD73-2DE4-4EED-914A-4575EFC2164B}.Debug|x86.ActiveCfg = Debug|Win32
@@ -73,6 +65,14 @@ Global
 		{68B30322-8A7E-4EF3-847F-7CC2CEE81F37}.Release|x64.Build.0 = Release|x64
 		{68B30322-8A7E-4EF3-847F-7CC2CEE81F37}.Release|x86.ActiveCfg = Release|Win32
 		{68B30322-8A7E-4EF3-847F-7CC2CEE81F37}.Release|x86.Build.0 = Release|Win32
+		{D46C3146-541A-4879-837E-A1596BB99185}.Debug|x64.ActiveCfg = Debug|x64
+		{D46C3146-541A-4879-837E-A1596BB99185}.Debug|x64.Build.0 = Debug|x64
+		{D46C3146-541A-4879-837E-A1596BB99185}.Debug|x86.ActiveCfg = Debug|Win32
+		{D46C3146-541A-4879-837E-A1596BB99185}.Debug|x86.Build.0 = Debug|Win32
+		{D46C3146-541A-4879-837E-A1596BB99185}.Release|x64.ActiveCfg = Release|x64
+		{D46C3146-541A-4879-837E-A1596BB99185}.Release|x64.Build.0 = Release|x64
+		{D46C3146-541A-4879-837E-A1596BB99185}.Release|x86.ActiveCfg = Release|Win32
+		{D46C3146-541A-4879-837E-A1596BB99185}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

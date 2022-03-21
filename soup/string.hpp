@@ -180,5 +180,9 @@ namespace soup
 			}
 			return c;
 		}
+
+		// file
+
+		[[nodiscard]] static std::string fromFile(const std::string& file);
 	};
 }

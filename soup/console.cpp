@@ -2,6 +2,8 @@
 
 #include <thread>
 
+#include "control_input.hpp"
+#include "mouse_button.hpp"
 #include "unicode.hpp"
 
 #if SOUP_WINDOWS
@@ -10,9 +12,10 @@
 #include <conio.h>
 #else
 #include <fcntl.h> // open
-#include <signal.h>
 #include <termios.h>
 #include <unistd.h> // read, close
+
+#include "signal.hpp"
 #endif
 
 namespace soup
@@ -27,7 +30,7 @@ namespace soup
 			DWORD mode;
 			if (GetConsoleMode(hSTDOUT, &mode))
 			{
-				SetConsoleMode(hSTDOUT, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+				SetConsoleMode(hSTDOUT, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | ENABLE_WINDOW_INPUT);
 			}
 		}
 
@@ -38,6 +41,9 @@ namespace soup
 		tcgetattr(0, &termattrs_og);
 		termattrs_cur = termattrs_og;
 #endif
+
+		// Enable alternative screen buffer
+		std::cout << CSI "?1049h";
 	}
 
 	void console_impl::run()
@@ -60,54 +66,51 @@ namespace soup
 					{
 						if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar != 0)
 						{
-							if (mouse_handler)
+							if (mingw_pending_mb != -1)
 							{
-								if (mingw_pending_mb != -1)
+								int val = irInBuf[i].Event.KeyEvent.uChar.UnicodeChar - 33;
+								if (mingw_pending_mb_x != -1)
 								{
-									int val = irInBuf[i].Event.KeyEvent.uChar.UnicodeChar - 32;
-									if (mingw_pending_mb_x != -1)
+									if (mouse_click_handler)
 									{
-										if (mouse_handler != nullptr)
-										{
-											mouse_handler((mouse_button)mingw_pending_mb, mingw_pending_mb_x, val);
-										}
-										mingw_pending_mb = -1;
+										mouse_click_handler((mouse_button)mingw_pending_mb, mingw_pending_mb_x, val);
 									}
-									else
-									{
-										mingw_pending_mb_x = val;
-									}
-									continue;
+									mingw_pending_mb = -1;
 								}
-								if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 32)
+								else
 								{
-									if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
-									{
-										mingw_pending_mb = LMB;
-										mingw_pending_mb_x = -1;
-									}
-									continue;
+									mingw_pending_mb_x = val;
 								}
-								if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 33)
-								{
-									if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
-									{
-										mingw_pending_mb = MMB;
-										mingw_pending_mb_x = -1;
-									}
-									continue;
-								}
-								if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 34)
-								{
-									if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
-									{
-										mingw_pending_mb = RMB;
-										mingw_pending_mb_x = -1;
-									}
-									continue;
-								}
+								continue;
 							}
-							if (input_handler != nullptr)
+							if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 32)
+							{
+								if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+								{
+									mingw_pending_mb = LMB;
+									mingw_pending_mb_x = -1;
+								}
+								continue;
+							}
+							if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 33)
+							{
+								if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
+								{
+									mingw_pending_mb = MMB;
+									mingw_pending_mb_x = -1;
+								}
+								continue;
+							}
+							if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 34)
+							{
+								if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
+								{
+									mingw_pending_mb = RMB;
+									mingw_pending_mb_x = -1;
+								}
+								continue;
+							}
+							if (char_handler)
 							{
 								utf8_buf.push_back((char)irInBuf[i].Event.KeyEvent.uChar.UnicodeChar);
 								auto it = utf8_buf.cbegin();
@@ -116,40 +119,100 @@ namespace soup
 								if (uni != 0)
 								{
 									utf8_buf.clear();
-									input_handler(uni);
+									switch (uni)
+									{
+									default:
+										char_handler(std::move(uni));
+										break;
+
+									case 8: // cmd
+									case 127: // putty
+										if (control_handler)
+										{
+											control_handler(BACKSPACE);
+										}
+										break;
+
+									case 10: // putty
+									case 13: // cmd
+										if (control_handler)
+										{
+											control_handler(NEW_LINE);
+										}
+										break;
+									}
 								}
 							}
 							continue;
 						}
-						// Handle non-char keys here, e.g. arrow keys
-						/*if (input_handler != nullptr)
+						switch (irInBuf[i].Event.KeyEvent.wVirtualKeyCode)
 						{
-							input_handler(irInBuf[i].Event.KeyEvent.wVirtualKeyCode * -1);
-						}*/
+						case VK_UP:
+							if (control_handler)
+							{
+								control_handler(UP);
+							}
+							break;
+
+						case VK_DOWN:
+							if (control_handler)
+							{
+								control_handler(DOWN);
+							}
+							break;
+
+						case VK_LEFT:
+							if (control_handler)
+							{
+								control_handler(LEFT);
+							}
+							break;
+
+						case VK_RIGHT:
+							if (control_handler)
+							{
+								control_handler(RIGHT);
+							}
+							break;
+
+						/*default:
+							if (char_handler)
+							{
+								char_handler(irInBuf[i].Event.KeyEvent.wVirtualKeyCode * -1);
+							}
+							break;*/
+						}
 					}
 					break;
 
 				case MOUSE_EVENT:
-					if (irInBuf[i].Event.MouseEvent.dwEventFlags == 0)
+					if ((irInBuf[i].Event.MouseEvent.dwEventFlags & ~DOUBLE_CLICK) == 0)
 					{
-						if (mouse_handler != nullptr)
+						if (mouse_click_handler)
 						{
 							bool lmb = (irInBuf[i].Event.MouseEvent.dwButtonState & 0x1);
 							bool rmb = (irInBuf[i].Event.MouseEvent.dwButtonState & 0x2);
 							bool mmb = (irInBuf[i].Event.MouseEvent.dwButtonState & 0x4);
 							if ((pressed_lmb ^ lmb) && (pressed_lmb = lmb))
 							{
-								mouse_handler(LMB, irInBuf[i].Event.MouseEvent.dwMousePosition.X + 1, irInBuf[i].Event.MouseEvent.dwMousePosition.Y);
+								mouse_click_handler(LMB, irInBuf[i].Event.MouseEvent.dwMousePosition.X, irInBuf[i].Event.MouseEvent.dwMousePosition.Y);
 							}
 							if ((pressed_rmb ^ rmb) && (pressed_rmb = rmb))
 							{
-								mouse_handler(RMB, irInBuf[i].Event.MouseEvent.dwMousePosition.X + 1, irInBuf[i].Event.MouseEvent.dwMousePosition.Y);
+								mouse_click_handler(RMB, irInBuf[i].Event.MouseEvent.dwMousePosition.X, irInBuf[i].Event.MouseEvent.dwMousePosition.Y);
 							}
 							if ((pressed_mmb ^ mmb) && (pressed_mmb = mmb))
 							{
-								mouse_handler(MMB, irInBuf[i].Event.MouseEvent.dwMousePosition.X + 1, irInBuf[i].Event.MouseEvent.dwMousePosition.Y);
+								mouse_click_handler(MMB, irInBuf[i].Event.MouseEvent.dwMousePosition.X, irInBuf[i].Event.MouseEvent.dwMousePosition.Y);
 							}
 						}
+					}
+					break;
+
+				case WINDOW_BUFFER_SIZE_EVENT:
+					if (size_handler)
+					{
+						size_handler(irInBuf[i].Event.WindowBufferSizeEvent.dwSize.X, irInBuf[i].Event.WindowBufferSizeEvent.dwSize.Y);
 					}
 					break;
 				}
@@ -181,27 +244,91 @@ namespace soup
 					{
 						if (read(in, &_, 1) == 1)
 						{
-							if (_ == 'M')
+							if (_ == 'A') // cursor up
+							{
+								if (control_handler)
+								{
+									control_handler(UP);
+								}
+							}
+							else if (_ == 'B') // cursor down
+							{
+								if (control_handler)
+								{
+									control_handler(DOWN);
+								}
+							}
+							else if (_ == 'C') // cursor right
+							{
+								if (control_handler)
+								{
+									control_handler(RIGHT);
+								}
+							}
+							else if (_ == 'D') // cursor left
+							{
+								if (control_handler)
+								{
+									control_handler(LEFT);
+								}
+							}
+							else if (_ == 'M') // mouse event
 							{
 								char mouse_event_args[3];
 								if (read(in, mouse_event_args, 3) == 3)
 								{
-									if (mouse_handler)
+									if (mouse_click_handler)
 									{
 										auto button_info = (mouse_event_args[0] & 0b11);
 										if (button_info == 0)
 										{
-											mouse_handler(LMB, mouse_event_args[1] - 32, mouse_event_args[2] - 32);
+											mouse_click_handler(LMB, mouse_event_args[1] - 33, mouse_event_args[2] - 33);
 											std::cout << std::flush;
 										}
 										else if (button_info == 1)
 										{
-											mouse_handler(MMB, mouse_event_args[1] - 32, mouse_event_args[2] - 32);
+											mouse_click_handler(MMB, mouse_event_args[1] - 33, mouse_event_args[2] - 33);
 											std::cout << std::flush;
 										}
 										else if (button_info == 2)
 										{
-											mouse_handler(RMB, mouse_event_args[1] - 32, mouse_event_args[2] - 32);
+											mouse_click_handler(RMB, mouse_event_args[1] - 33, mouse_event_args[2] - 33);
+											std::cout << std::flush;
+										}
+									}
+								}
+							}
+							else if (_ == '8') // size
+							{
+								if (read(in, &_, 1) == 1)
+								{
+									if (_ == ';')
+									{
+										unsigned int height = 0;
+										while (read(in, &_, 1) == 1)
+										{
+											unsigned int digit = (_ - '0');
+											if (digit >= 10) // terminates at ';'
+											{
+												break;
+											}
+											height *= 10;
+											height += digit;
+										}
+										unsigned int width = 0;
+										while (read(in, &_, 1) == 1)
+										{
+											unsigned int digit = (_ - '0');
+											if (digit >= 10) // terminates at 't'
+											{
+												break;
+											}
+											width *= 10;
+											width += digit;
+										}
+										if (size_handler)
+										{
+											size_handler(std::move(width), std::move(height));
 											std::cout << std::flush;
 										}
 									}
@@ -212,18 +339,39 @@ namespace soup
 					continue;
 				}
 			}
-			if (input_handler != nullptr)
+			utf8_buf.push_back(c);
+			auto it = utf8_buf.cbegin();
+			const auto end = utf8_buf.cend();
+			char32_t uni = unicode::utf8_to_utf32_char(it, end);
+			if (uni != 0)
 			{
-				utf8_buf.push_back(c);
-				auto it = utf8_buf.cbegin();
-				const auto end = utf8_buf.cend();
-				char32_t uni = unicode::utf8_to_utf32_char(it, end);
-				if (uni != 0)
+				utf8_buf.clear();
+				switch (uni)
 				{
-					utf8_buf.clear();
-					input_handler(uni);
-					std::cout << std::flush;
+				default:
+					if (char_handler)
+					{
+						char_handler(std::move(uni));
+					}
+					break;
+
+				case 8: // cmd
+				case 127: // putty
+					if (control_handler)
+					{
+						control_handler(BACKSPACE);
+					}
+					break;
+
+				case 10: // putty
+				case 13: // cmd
+					if (control_handler)
+					{
+						control_handler(NEW_LINE);
+					}
+					break;
 				}
+				std::cout << std::flush;
 			}
 		}
 		close(in);
@@ -234,26 +382,29 @@ namespace soup
 	{
 		resetColour();
 		clearScreen();
-		setCursorPos(1, 1);
+		setCursorPos(0, 0);
 
 #if !SOUP_WINDOWS
 		tcsetattr(0, TCSANOW, &termattrs_og);
 #endif
 
-		if (mouse_handler)
+		if (mouse_click_handler)
 		{
 #if SOUP_WINDOWS
 			std::cout << CSI "?9l";
 #else
 			std::cout << CSI "?1000l";
 #endif
-			mouse_handler = nullptr;
+			mouse_click_handler.reset();
 		}
+
+		// Disable alternative screen buffer
+		std::cout << CSI "?1049l";
 	}
 
-	void console_impl::onMouseClick(mouse_handler_t handler)
+	void console_impl::onMouseClick(void(*fp)(mouse_button, unsigned int, unsigned int, const capture&), capture&& cap)
 	{
-		if (!mouse_handler)
+		if (!mouse_click_handler)
 		{
 #if SOUP_WINDOWS
 			if (auto hSTDIN = GetStdHandle(STD_INPUT_HANDLE);
@@ -275,25 +426,34 @@ namespace soup
 			std::cout << CSI "?1000h";
 #endif
 		}
-		mouse_handler = handler;
-	}
-
-	void console_impl::getSize(int& outWidth, int& outHeight) const
-	{
-#if SOUP_WINDOWS
-		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-		outWidth = csbi.dwSize.X;
-		outHeight = csbi.dwSize.Y;
-#else
-		// TODO
-		//std::cout << CSI "18t";
-#endif
+		mouse_click_handler.set(fp, std::move(cap));
 	}
 
 	void console_impl::setTitle(const std::string& title)
 	{
+		// BUG: PuTTY's title will never be restored7
 		std::cout << OSC "2;" << title << ST;
+	}
+
+#if SOUP_LINUX
+	void console_impl::sigwinch_handler_proc(int)
+	{
+		std::cout << CSI "18t";
+		std::cout << std::flush;
+	}
+#endif
+
+	void console_impl::enableSizeTracking(void(*fp)(unsigned int, unsigned int, const capture&), capture&& cap)
+	{
+		size_handler.set(fp, std::move(cap));
+#if SOUP_WINDOWS
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+		size_handler(csbi.dwSize.X, csbi.dwSize.Y);
+#else
+		std::cout << CSI "18t";
+		signal::handle(SIGWINCH, &sigwinch_handler_proc);
+#endif
 	}
 
 	void console_impl::bell()
@@ -306,6 +466,16 @@ namespace soup
 		std::cout << CSI "2J";
 	}
 
+	void console_impl::hideCursor()
+	{
+		std::cout << CSI "?25l";
+	}
+
+	void console_impl::showCursor()
+	{
+		std::cout << CSI "?25h";
+	}
+
 	void console_impl::saveCursorPos()
 	{
 		std::cout << CSI "s";
@@ -316,15 +486,20 @@ namespace soup
 		std::cout << CSI "u";
 	}
 
-	void console_impl::fillScreen(int r, int g, int b)
+	void console_impl::fillScreen(rgb c)
+	{
+		return fillScreen(c.r, c.g, c.b);
+	}
+
+	void console_impl::fillScreen(unsigned int r, unsigned int g, unsigned int b)
 	{
 		setBackgroundColour(r, g, b);
 		clearScreen();
 	}
 
-	void console_impl::setCursorPos(int x, int y)
+	void console_impl::setCursorPos(unsigned int x, unsigned int y)
 	{
-		std::cout << CSI << y << ";" << x << "H";
+		std::cout << CSI << (y + 1) << ";" << (x + 1) << "H";
 	}
 
 	void console_impl::setForegroundColour(rgb c)
@@ -363,7 +538,7 @@ namespace soup
 		return FALSE;
 	}
 #else
-	void console_impl::sigint_handler_proc(int s)
+	void console_impl::sigint_handler_proc(int)
 	{
 		if (!ctrl_c_handler)
 		{
@@ -380,11 +555,7 @@ namespace soup
 #if SOUP_WINDOWS
 			SetConsoleCtrlHandler(&CtrlHandler, TRUE);
 #else
-			struct sigaction sigint_handler;
-			sigint_handler.sa_handler = &sigint_handler_proc;
-			sigemptyset(&sigint_handler.sa_mask);
-			sigint_handler.sa_flags = 0;
-			sigaction(SIGINT, &sigint_handler, NULL);
+			signal::handle(SIGINT, &sigint_handler_proc);
 #endif
 		}
 		ctrl_c_handler = handler;

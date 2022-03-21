@@ -1,7 +1,9 @@
 #pragma once
 
 #include "base.hpp"
-#include "mouse_button.hpp"
+#include "fwd.hpp"
+
+#include "callback.hpp"
 #include "rgb.hpp"
 #include "string.hpp"
 
@@ -34,19 +36,17 @@ namespace soup
 #endif
 
 	public:
-		using input_handler_t = void(*)(char32_t);
-		using mouse_handler_t = void(*)(mouse_button, int x, int y);
-
-		input_handler_t input_handler = nullptr;
+		callback<void(char32_t)> char_handler;
+		callback<void(control_input)> control_handler;
 	private:
-		mouse_handler_t mouse_handler = nullptr;
+		callback<void(mouse_button, unsigned int, unsigned int)> mouse_click_handler;
 
 	public:
 		void init();
 		void run();
 		void cleanup();
 
-		void onMouseClick(mouse_handler_t handler);
+		void onMouseClick(void(*fp)(mouse_button, unsigned int, unsigned int, const capture&), capture&& cap = {});
 
 		/* This shit is only supported by MingW, like, why bother when you don't support anything else?!
 
@@ -64,17 +64,25 @@ namespace soup
 
 		// Window
 
-		void getSize(int& outWidth, int& outHeight) const;
 		static void setTitle(const std::string& title);
+
+		inline static callback<void(unsigned int, unsigned int)> size_handler;
+#if SOUP_LINUX
+		static void sigwinch_handler_proc(int);
+#endif
+		static void enableSizeTracking(void(*fp)(unsigned int, unsigned int, const capture&), capture&& cap = {});
 
 		// Output
 
 		static void bell();
 		static void clearScreen();
+		static void hideCursor();
+		static void showCursor();
 		static void saveCursorPos();
 		static void restoreCursorPos();
-		static void fillScreen(int r, int g, int b);
-		static void setCursorPos(int x, int y);
+		static void fillScreen(rgb c);
+		static void fillScreen(unsigned int r, unsigned int g, unsigned int b);
+		static void setCursorPos(unsigned int x, unsigned int y);
 
 		template <typename T>
 		const console_impl& operator << (const T& str) const
@@ -150,7 +158,7 @@ namespace soup
 #if SOUP_WINDOWS
 		static BOOL WINAPI CtrlHandler(DWORD ctrlType);
 #else
-		static void sigint_handler_proc(int s);
+		static void sigint_handler_proc(int);
 #endif
 
 	public:

@@ -11,6 +11,9 @@ namespace soup
 		uint8_t g = 0;
 		uint8_t b = 0;
 
+		static rgb BLACK;
+		static rgb WHITE;
+
 		[[nodiscard]] bool operator==(const rgb& c) const noexcept
 		{
 			return r == c.r && g == c.g && b == c.b;

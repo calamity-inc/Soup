@@ -29,7 +29,7 @@ namespace soup
 		{
 		}
 
-		void set(FuncWithCapture* fp, capture&& cap) noexcept
+		void set(FuncWithCapture* fp, capture&& cap = {}) noexcept
 		{
 			this->fp = fp;
 			this->cap = std::move(cap);

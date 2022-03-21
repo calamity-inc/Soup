@@ -126,12 +126,6 @@
     <ClInclude Include="ray.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="canvas.hpp">
-      <Filter>draw</Filter>
-    </ClInclude>
-    <ClInclude Include="rgb.hpp">
-      <Filter>draw</Filter>
-    </ClInclude>
     <ClInclude Include="dns.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
@@ -287,9 +281,6 @@
     <ClInclude Include="time.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="capture.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="ec.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
@@ -335,11 +326,50 @@
     <ClInclude Include="promise.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="callback.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="mouse_button.hpp">
       <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="conui_app.hpp">
+      <Filter>ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="canvas.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="rgb.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="conui_span.hpp">
+      <Filter>ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="conui_base.hpp">
+      <Filter>ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="conui_div.hpp">
+      <Filter>ui\conui</Filter>
+    </ClInclude>
+    <ClInclude Include="editor.hpp">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="editor_tab.hpp">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="callback.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="capture.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="editor_text.hpp">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="signal.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="control_input.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="editor_file.hpp">
+      <Filter>ui\editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -387,9 +417,6 @@
     </ClCompile>
     <ClCompile Include="socket.cpp">
       <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="canvas.cpp">
-      <Filter>draw</Filter>
     </ClCompile>
     <ClCompile Include="dns.cpp">
       <Filter>net\dns</Filter>
@@ -449,6 +476,33 @@
     <ClCompile Include="console.cpp">
       <Filter>os</Filter>
     </ClCompile>
+    <ClCompile Include="canvas.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="conui_span.cpp">
+      <Filter>ui\conui</Filter>
+    </ClCompile>
+    <ClCompile Include="conui_app.cpp">
+      <Filter>ui\conui</Filter>
+    </ClCompile>
+    <ClCompile Include="conui_base.cpp">
+      <Filter>ui\conui</Filter>
+    </ClCompile>
+    <ClCompile Include="rgb.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="editor.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="editor_tab.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="editor_text.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="string.cpp">
+      <Filter>util\string</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -469,23 +523,14 @@
     <Filter Include="enc">
       <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>
     </Filter>
-    <Filter Include="draw">
-      <UniqueIdentifier>{05898064-5c55-4356-aa00-29a449c503ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net\dns">
       <UniqueIdentifier>{ec3c2669-f70f-495e-91fb-4ef47a97d5df}</UniqueIdentifier>
     </Filter>
     <Filter Include="crypto">
       <UniqueIdentifier>{2977e49c-bf74-490c-a67a-0888e8df098f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="util">
-      <UniqueIdentifier>{1c7b8b47-6f42-4f4b-953a-ae2ebda20781}</UniqueIdentifier>
-    </Filter>
     <Filter Include="hash">
       <UniqueIdentifier>{31591c67-cd1c-4cc1-82c8-9cbbca1dba34}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="util\string">
-      <UniqueIdentifier>{db02d3fa-069e-4d94-ac69-1ceda5822d24}</UniqueIdentifier>
     </Filter>
     <Filter Include="io">
       <UniqueIdentifier>{dba0001f-054d-4ddf-ba50-932ef7505446}</UniqueIdentifier>
@@ -501,6 +546,21 @@
     </Filter>
     <Filter Include="task">
       <UniqueIdentifier>{b14f98a7-4337-4266-8f79-7c3942c95cbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{8ae8a474-8788-479f-91a0-1146f0b02f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\conui">
+      <UniqueIdentifier>{05898064-5c55-4356-aa00-29a449c503ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\editor">
+      <UniqueIdentifier>{7dd9aa6c-701c-402c-9c96-dc2194ba2344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{1c7b8b47-6f42-4f4b-953a-ae2ebda20781}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\string">
+      <UniqueIdentifier>{db02d3fa-069e-4d94-ac69-1ceda5822d24}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
