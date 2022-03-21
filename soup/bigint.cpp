@@ -961,6 +961,19 @@ namespace soup
 
 	bigint bigint::pow(bigint e) const
 	{
+		if (*this == TWO)
+		{
+			size_t e_primitive;
+			if (e.toPrimitive(e_primitive))
+			{
+				return _2pow(e_primitive);
+			}
+		}
+		return powNot2(e);
+	}
+
+	bigint bigint::powNot2(bigint e) const
+	{
 		bigint res = ONE;
 		bigint base(*this);
 		while (true)
@@ -982,6 +995,11 @@ namespace soup
 	bigint bigint::pow2() const
 	{
 		return *this * *this;
+	}
+
+	bigint bigint::_2pow(size_t e)
+	{
+		return ONE << e;
 	}
 
 	size_t bigint::getTrailingZeroes(const bigint& base) const
@@ -1316,7 +1334,7 @@ namespace soup
 
 	bigint bigint::montgomeryRFromRE(size_t re)
 	{
-		return TWO.pow(re);;
+		return _2pow(re);
 	}
 
 	bigint bigint::montgomeryRFromM() const

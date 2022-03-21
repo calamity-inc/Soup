@@ -172,7 +172,9 @@ namespace soup
 
 		[[nodiscard]] bigint abs() const;
 		[[nodiscard]] bigint pow(bigint e) const;
-		[[nodiscard]] bigint pow2() const;
+		[[nodiscard]] bigint powNot2(bigint e) const;
+		[[nodiscard]] bigint pow2() const; // *this to the power of 2
+		[[nodiscard]] static bigint _2pow(size_t e); // 2 to the power of e
 		[[nodiscard]] size_t getTrailingZeroes(const bigint& base) const;
 		[[nodiscard]] size_t getTrailingZeroesBinary() const;
 		[[nodiscard]] bigint gcd(bigint v) const;
