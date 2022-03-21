@@ -178,7 +178,7 @@ namespace soup
 		[[nodiscard]] size_t getTrailingZeroes(const bigint& base) const;
 		[[nodiscard]] size_t getTrailingZeroesBinary() const;
 		[[nodiscard]] bigint gcd(bigint v) const;
-		[[nodiscard]] bigint gcd(bigint b, bigint& x, bigint& y) const;
+		bigint gcd(bigint b, bigint& x, bigint& y) const;
 	private:
 		[[nodiscard]] bool isPrimePrecheck(bool& ret) const;
 	public:
@@ -196,6 +196,7 @@ namespace soup
 
 		// Operations under a modulus
 		[[nodiscard]] bigint modMulInv(const bigint& m) const; // *this ^ -1 mod m
+		static void modMulInv2Coprimes(const bigint& a, const bigint& m, bigint& x, bigint& y);
 		[[nodiscard]] bigint modMulUnsigned(const bigint& b, const bigint& m) const;
 		[[nodiscard]] bigint modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const;
 		[[nodiscard]] bigint modPow(bigint e, const bigint& m) const;

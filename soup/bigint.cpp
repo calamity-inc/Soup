@@ -1274,6 +1274,13 @@ namespace soup
 		}
 	}
 
+	void bigint::modMulInv2Coprimes(const bigint& a, const bigint& m, bigint& x, bigint& y)
+	{
+		a.gcd(m, x, y);
+		x = ((x % m + m) % m);
+		y = ((y % a + a) % a);
+	}
+
 	bigint bigint::modMulUnsigned(const bigint& b, const bigint& m) const
 	{
 		return (*this * b).modUnsigned(m);
@@ -1298,7 +1305,8 @@ namespace soup
 			auto r = m.montgomeryRFromRE(re);
 			bigint res = ONE.enterMontgomerySpace(r, m);
 			base = base.enterMontgomerySpace(r, m);
-			auto m_mod_mul_inv = m.modMulInv(r);
+			bigint m_mod_mul_inv, r_mod_mul_inv;
+			modMulInv2Coprimes(m, r, m_mod_mul_inv, r_mod_mul_inv);
 			while (!e.isZero())
 			{
 				if (e.getBit(0))
@@ -1308,7 +1316,7 @@ namespace soup
 				base = base.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
 				e >>= 1u;
 			}
-			return res.leaveMontgomerySpace(r, m);
+			return res.leaveMontgomerySpaceEfficient(r_mod_mul_inv, m);
 		}
 
 		bigint res = ONE;
