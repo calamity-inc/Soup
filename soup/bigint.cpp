@@ -1265,6 +1265,10 @@ namespace soup
 		default:
 			return false;
 
+		case 0:
+			out = 0;
+			break;
+
 		case 1:
 			out = getChunk(0);
 			break;
