@@ -107,6 +107,7 @@ namespace soup
 		void reset() noexcept;
 		[[nodiscard]] bool isZero() const noexcept;
 		[[nodiscard]] operator bool() const noexcept;
+		operator int() const noexcept = delete;
 
 		[[nodiscard]] int cmp(const bigint& b) const noexcept;
 		[[nodiscard]] int cmpUnsigned(const bigint& b) const noexcept;
