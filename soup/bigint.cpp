@@ -748,9 +748,13 @@ namespace soup
 			// extend
 			{
 				size_t i = maxbitidx;
-				for (size_t j = 0; j != b && i != 0; ++j, --i)
+				for (size_t j = 0; j != b; ++j)
 				{
 					setBit(i + b, getBitInbounds(i));
+					if (i-- == 0)
+					{
+						break;
+					}
 				}
 			}
 
