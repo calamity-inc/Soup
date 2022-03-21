@@ -143,6 +143,7 @@ namespace soup
 		[[nodiscard]] std::pair<bigint, bigint> divide(const bigint& divisor) const; // (Quotient, Remainder)
 		[[nodiscard]] std::pair<bigint, bigint> divideUnsigned(const bigint& divisor) const; // (Quotient, Remainder)
 		[[nodiscard]] bigint modUnsigned(const bigint& divisor) const;
+		[[nodiscard]] bigint modUnsignedNotpowerof2(const bigint& divisor) const;
 		[[nodiscard]] bool isDivisorOf(const bigint& dividend) const;
 		void operator<<=(const size_t b);
 	private:
@@ -159,7 +160,8 @@ namespace soup
 		bigint& operator--();
 		[[nodiscard]] bigint operator--(int);
 		[[nodiscard]] bigint operator*(const bigint& b) const;
-		[[nodiscard]] bigint modMul(const bigint& b, const bigint& m) const;
+		[[nodiscard]] bigint modMulUnsigned(const bigint& b, const bigint& m) const;
+		[[nodiscard]] bigint modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const;
 		[[nodiscard]] bigint operator/(const bigint& b) const;
 		[[nodiscard]] bigint operator%(const bigint& b) const;
 		[[nodiscard]] bigint operator<<(size_t b) const;
@@ -189,6 +191,7 @@ namespace soup
 		[[nodiscard]] bigint reducedTotient() const;
 		[[nodiscard]] bigint modMulInv(const bigint& m) const;
 		[[nodiscard]] bigint lcm(const bigint& b) const;
+		[[nodiscard]] bool isPowerOf2() const;
 
 		bool toPrimitive(size_t& out) const;
 

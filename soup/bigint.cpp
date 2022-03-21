@@ -696,6 +696,16 @@ namespace soup
 
 	bigint bigint::modUnsigned(const bigint& divisor) const
 	{
+		auto divisor_minus_1 = (divisor - ONE);
+		if ((divisor & divisor_minus_1).isZero())
+		{
+			return (*this & divisor_minus_1);
+		}
+		return modUnsignedNotpowerof2(divisor);
+	}
+
+	bigint bigint::modUnsignedNotpowerof2(const bigint& divisor) const
+	{
 		bigint remainder{};
 		for (size_t i = getNumBits(); i-- != 0; )
 		{
@@ -893,9 +903,14 @@ namespace soup
 		return product;
 	}
 
-	bigint bigint::modMul(const bigint& b, const bigint& m) const
+	bigint bigint::modMulUnsigned(const bigint& b, const bigint& m) const
 	{
 		return ((*this) * b).modUnsigned(m);
+	}
+
+	bigint bigint::modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const
+	{
+		return ((*this) * b).modUnsignedNotpowerof2(m);
 	}
 
 	bigint bigint::operator/(const bigint& b) const
@@ -980,9 +995,9 @@ namespace soup
 		{
 			if (e.getBit(0))
 			{
-				res = res.modMul(base, m);
+				res = res.modMulUnsignedNotpowerof2(base, m);
 			}
-			base = base.modMul(base, m);
+			base = base.modMulUnsignedNotpowerof2(base, m);
 			e >>= 1u;
 		}
 		return res;
@@ -1141,7 +1156,7 @@ namespace soup
 					return false;
 				}
 				// z = z.modPow(2u, *this);
-				z = z.modMul(z, *this);
+				z = z.modMulUnsignedNotpowerof2(z, *this);
 			}
 		}
 		return true;
@@ -1253,6 +1268,11 @@ namespace soup
 		auto a_mag = abs();
 		auto b_mag = b.abs();
 		return ((a_mag * b_mag) / a_mag.gcd(b_mag));
+	}
+
+	bool bigint::isPowerOf2() const
+	{
+		return (*this & (*this - ONE)).isZero();
 	}
 
 	bool bigint::toPrimitive(size_t& out) const
