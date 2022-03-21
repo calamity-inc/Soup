@@ -694,14 +694,24 @@ namespace soup
 		return res;
 	}
 
-	bigint bigint::modUnsigned(const bigint& divisor) const
+	bigint bigint::mod(const bigint& m) const
 	{
-		auto divisor_minus_1 = (divisor - ONE);
-		if ((divisor & divisor_minus_1).isZero())
+		return divide(m).second;
+	}
+
+	bigint bigint::modUnsigned(const bigint& m) const
+	{
+		auto m_minus_1 = (m - ONE);
+		if ((m & m_minus_1).isZero())
 		{
-			return (*this & divisor_minus_1);
+			return (*this & m_minus_1);
 		}
-		return modUnsignedNotpowerof2(divisor);
+		return modUnsignedNotpowerof2(m);
+	}
+
+	bigint bigint::modUnsignedPowerof2(const bigint& m) const
+	{
+		return (*this & (m - ONE));
 	}
 
 	bigint bigint::modUnsignedNotpowerof2(const bigint& divisor) const
@@ -903,16 +913,6 @@ namespace soup
 		return product;
 	}
 
-	bigint bigint::modMulUnsigned(const bigint& b, const bigint& m) const
-	{
-		return ((*this) * b).modUnsigned(m);
-	}
-
-	bigint bigint::modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const
-	{
-		return ((*this) * b).modUnsignedNotpowerof2(m);
-	}
-
 	bigint bigint::operator/(const bigint& b) const
 	{
 		return divide(b).first;
@@ -981,26 +981,6 @@ namespace soup
 	bigint bigint::pow2() const
 	{
 		return *this * *this;
-	}
-
-	bigint bigint::modPow(bigint e, const bigint& m) const
-	{
-		bigint res = ONE;
-		bigint base(*this);
-		if (base >= m)
-		{
-			base = base.modUnsigned(m);
-		}
-		while (!e.isZero())
-		{
-			if (e.getBit(0))
-			{
-				res = res.modMulUnsignedNotpowerof2(base, m);
-			}
-			base = base.modMulUnsignedNotpowerof2(base, m);
-			e >>= 1u;
-		}
-		return res;
 	}
 
 	size_t bigint::getTrailingZeroes(const bigint& base) const
@@ -1242,6 +1222,22 @@ namespace soup
 		return k;
 	}
 
+	bigint bigint::lcm(const bigint& b) const
+	{
+		if (isZero() || b.isZero())
+		{
+			return bigint();
+		}
+		auto a_mag = abs();
+		auto b_mag = b.abs();
+		return ((a_mag * b_mag) / a_mag.gcd(b_mag));
+	}
+
+	bool bigint::isPowerOf2() const
+	{
+		return (*this & (*this - ONE)).isZero();
+	}
+
 	bigint bigint::modMulInv(const bigint& m) const
 	{
 		bigint x, y;
@@ -1259,20 +1255,125 @@ namespace soup
 		}
 	}
 
-	bigint bigint::lcm(const bigint& b) const
+	bigint bigint::modMulUnsigned(const bigint& b, const bigint& m) const
 	{
-		if (isZero() || b.isZero())
-		{
-			return bigint();
-		}
-		auto a_mag = abs();
-		auto b_mag = b.abs();
-		return ((a_mag * b_mag) / a_mag.gcd(b_mag));
+		return (*this * b).modUnsigned(m);
 	}
 
-	bool bigint::isPowerOf2() const
+	bigint bigint::modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const
 	{
-		return (*this & (*this - ONE)).isZero();
+		return (*this * b).modUnsignedNotpowerof2(m);
+	}
+
+	bigint bigint::modPow(bigint e, const bigint& m) const
+	{
+		bigint base(*this);
+		if (base >= m)
+		{
+			base = base.modUnsigned(m);
+		}
+
+		if (!m.modUnsigned(TWO).isZero())
+		{
+			auto re = m.montgomeryREFromM();
+			auto r = m.montgomeryRFromRE(re);
+			bigint res = ONE.enterMontgomerySpace(r, m);
+			base = base.enterMontgomerySpace(r, m);
+			auto m_mod_mul_inv = m.modMulInv(r);
+			while (!e.isZero())
+			{
+				if (e.getBit(0))
+				{
+					res = res.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
+				}
+				base = base.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
+				e >>= 1u;
+			}
+			return res.leaveMontgomerySpace(r, m);
+		}
+
+		bigint res = ONE;
+		while (!e.isZero())
+		{
+			if (e.getBit(0))
+			{
+				res = res.modMulUnsignedNotpowerof2(base, m);
+			}
+			base = base.modMulUnsignedNotpowerof2(base, m);
+			e >>= 1u;
+		}
+		return res;
+	}
+
+	// We need a positive integer r such that r >= m && r.isCoprime(m)
+	// We assume an odd modulus, so any power of 2 will be coprime to it.
+
+	size_t bigint::montgomeryREFromM() const
+	{
+		return getBitLength();
+	}
+
+	bigint bigint::montgomeryRFromRE(size_t re)
+	{
+		return TWO.pow(re);;
+	}
+
+	bigint bigint::montgomeryRFromM() const
+	{
+		return montgomeryRFromRE(montgomeryREFromM());
+	}
+
+	bigint bigint::enterMontgomerySpace(const bigint& r, const bigint& m) const
+	{
+		return modMulUnsignedNotpowerof2(r, m);
+	}
+
+	bigint bigint::leaveMontgomerySpace(const bigint& r, const bigint& m) const
+	{
+		return leaveMontgomerySpaceEfficient(r.modMulInv(m), m);
+	}
+
+	bigint bigint::leaveMontgomerySpaceEfficient(const bigint& r_mod_mul_inv, const bigint& m) const
+	{
+		return modMulUnsignedNotpowerof2(r_mod_mul_inv, m);
+	}
+
+	bigint bigint::montgomeryMultiply(const bigint& b, const bigint& r, const bigint& m) const
+	{
+		return (*this * b).montgomeryReduce(r, m);
+	}
+
+	bigint bigint::montgomeryMultiplyEfficient(const bigint& b, const bigint& r, size_t re, const bigint& m, const bigint& m_mod_mul_inv) const
+	{
+		return (*this * b).montgomeryReduce(r, re, m, m_mod_mul_inv);
+	}
+
+	bigint bigint::montgomeryReduce(const bigint& r, const bigint& m) const
+	{
+		return montgomeryReduce(r, m, m.modMulInv(r));
+	}
+
+	bigint bigint::montgomeryReduce(const bigint& r, const bigint& m, const bigint& m_mod_mul_inv) const
+	{
+		auto q = (modUnsignedPowerof2(r) * m_mod_mul_inv).modUnsignedPowerof2(r);
+		auto a = (*this - q * m) / r;
+		if (a.negative)
+		{
+			a += m;
+		}
+		return a;
+	}
+
+	bigint bigint::montgomeryReduce(const bigint& r, size_t re, const bigint& m, const bigint& m_mod_mul_inv) const
+	{
+		auto q = (modUnsignedPowerof2(r) * m_mod_mul_inv).modUnsignedPowerof2(r);
+		auto a = (*this - q * m);
+		a >>= re;
+		if (a.negative)
+		{
+			a += m;
+		}
+		return a;
 	}
 
 	bool bigint::toPrimitive(size_t& out) const

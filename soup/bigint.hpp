@@ -143,8 +143,10 @@ namespace soup
 		void operator%=(const bigint& divisor);
 		[[nodiscard]] std::pair<bigint, bigint> divide(const bigint& divisor) const; // (Quotient, Remainder)
 		[[nodiscard]] std::pair<bigint, bigint> divideUnsigned(const bigint& divisor) const; // (Quotient, Remainder)
-		[[nodiscard]] bigint modUnsigned(const bigint& divisor) const;
-		[[nodiscard]] bigint modUnsignedNotpowerof2(const bigint& divisor) const;
+		[[nodiscard]] bigint mod(const bigint& m) const;
+		[[nodiscard]] bigint modUnsigned(const bigint& m) const;
+		[[nodiscard]] bigint modUnsignedPowerof2(const bigint& m) const;
+		[[nodiscard]] bigint modUnsignedNotpowerof2(const bigint& m) const;
 		[[nodiscard]] bool isDivisorOf(const bigint& dividend) const;
 		void operator<<=(const size_t b);
 	private:
@@ -161,8 +163,6 @@ namespace soup
 		bigint& operator--();
 		[[nodiscard]] bigint operator--(int);
 		[[nodiscard]] bigint operator*(const bigint& b) const;
-		[[nodiscard]] bigint modMulUnsigned(const bigint& b, const bigint& m) const;
-		[[nodiscard]] bigint modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const;
 		[[nodiscard]] bigint operator/(const bigint& b) const;
 		[[nodiscard]] bigint operator%(const bigint& b) const;
 		[[nodiscard]] bigint operator<<(size_t b) const;
@@ -173,7 +173,6 @@ namespace soup
 		[[nodiscard]] bigint abs() const;
 		[[nodiscard]] bigint pow(bigint e) const;
 		[[nodiscard]] bigint pow2() const;
-		[[nodiscard]] bigint modPow(bigint e, const bigint& m) const;
 		[[nodiscard]] size_t getTrailingZeroes(const bigint& base) const;
 		[[nodiscard]] size_t getTrailingZeroesBinary() const;
 		[[nodiscard]] bigint gcd(bigint v) const;
@@ -190,9 +189,27 @@ namespace soup
 		[[nodiscard]] bool isCoprime(const bigint& b) const;
 		[[nodiscard]] bigint eulersTotient() const;
 		[[nodiscard]] bigint reducedTotient() const;
-		[[nodiscard]] bigint modMulInv(const bigint& m) const;
 		[[nodiscard]] bigint lcm(const bigint& b) const;
 		[[nodiscard]] bool isPowerOf2() const;
+
+		// Operations under a modulus
+		[[nodiscard]] bigint modMulInv(const bigint& m) const; // *this ^ -1 mod m
+		[[nodiscard]] bigint modMulUnsigned(const bigint& b, const bigint& m) const;
+		[[nodiscard]] bigint modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const;
+		[[nodiscard]] bigint modPow(bigint e, const bigint& m) const;
+
+		// Montgomery operations, assuming an odd modulus
+		[[nodiscard]] size_t montgomeryREFromM() const;
+		[[nodiscard]] static bigint montgomeryRFromRE(size_t re);
+		[[nodiscard]] bigint montgomeryRFromM() const;
+		[[nodiscard]] bigint enterMontgomerySpace(const bigint& r, const bigint& m) const;
+		[[nodiscard]] bigint leaveMontgomerySpace(const bigint& r, const bigint& m) const;
+		[[nodiscard]] bigint leaveMontgomerySpaceEfficient(const bigint& r_mod_mul_inv, const bigint& m) const;
+		[[nodiscard]] bigint montgomeryMultiply(const bigint& b, const bigint& r, const bigint& m) const;
+		[[nodiscard]] bigint montgomeryMultiplyEfficient(const bigint& b, const bigint& r, size_t re, const bigint& m, const bigint& m_mod_mul_inv) const;
+		[[nodiscard]] bigint montgomeryReduce(const bigint& r, const bigint& m) const;
+		[[nodiscard]] bigint montgomeryReduce(const bigint& r, const bigint& m, const bigint& m_mod_mul_inv) const;
+		[[nodiscard]] bigint montgomeryReduce(const bigint& r, size_t re, const bigint& m, const bigint& m_mod_mul_inv) const;
 
 		bool toPrimitive(size_t& out) const;
 
