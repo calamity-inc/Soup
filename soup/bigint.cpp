@@ -809,6 +809,29 @@ namespace soup
 
 	void bigint::operator>>=(const size_t b)
 	{
+		if constexpr (SOUP_LITTLE_ENDIAN)
+		{
+			if (b <= getBitsPerChunk())
+			{
+				const auto nc = getNumChunks();
+				if (nc != 0)
+				{
+					chunk_t carry = 0;
+					for (size_t i = nc; i-- != 0; )
+					{
+						chunk_t c[2];
+						c[0] = 0;
+						c[1] = getChunkInbounds(i);
+						*reinterpret_cast<size_t*>(&c[0]) = (*reinterpret_cast<size_t*>(&c[0]) >> b);
+						setChunkInbounds(i, c[1] | carry);
+						carry = c[0];
+					}
+					shrink();
+				}
+				return;
+			}
+		}
+
 		size_t nb = getNumBits();
 		if (nb != 0)
 		{
