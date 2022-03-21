@@ -709,11 +709,6 @@ namespace soup
 		return remainder;
 	}
 
-	void bigint::modEqUnsigned(const bigint& divisor)
-	{
-		*this = modUnsigned(divisor);
-	}
-
 	bool bigint::isDivisorOf(const bigint& dividend) const
 	{
 		return (dividend % *this).isZero();
@@ -898,6 +893,11 @@ namespace soup
 		return product;
 	}
 
+	bigint bigint::modMul(const bigint& b, const bigint& m) const
+	{
+		return ((*this) * b).modUnsigned(m);
+	}
+
 	bigint bigint::operator/(const bigint& b) const
 	{
 		return divide(b).first;
@@ -974,17 +974,15 @@ namespace soup
 		bigint base(*this);
 		if (base >= m)
 		{
-			base.modEqUnsigned(m);
+			base = base.modUnsigned(m);
 		}
 		while (!e.isZero())
 		{
 			if (e.getBit(0))
 			{
-				res *= base;
-				res.modEqUnsigned(m);
+				res = res.modMul(base, m);
 			}
-			base *= base;
-			base.modEqUnsigned(m);
+			base = base.modMul(base, m);
 			e >>= 1u;
 		}
 		return res;
@@ -1142,9 +1140,8 @@ namespace soup
 				{
 					return false;
 				}
-				// z = z.pow_mod(2u, *this);
-				z *= z;
-				z.modEqUnsigned(*this);
+				// z = z.modPow(2u, *this);
+				z = z.modMul(z, *this);
 			}
 		}
 		return true;

@@ -143,7 +143,6 @@ namespace soup
 		[[nodiscard]] std::pair<bigint, bigint> divide(const bigint& divisor) const; // (Quotient, Remainder)
 		[[nodiscard]] std::pair<bigint, bigint> divideUnsigned(const bigint& divisor) const; // (Quotient, Remainder)
 		[[nodiscard]] bigint modUnsigned(const bigint& divisor) const;
-		void modEqUnsigned(const bigint& divisor);
 		[[nodiscard]] bool isDivisorOf(const bigint& dividend) const;
 		void operator<<=(const size_t b);
 	private:
@@ -160,6 +159,7 @@ namespace soup
 		bigint& operator--();
 		[[nodiscard]] bigint operator--(int);
 		[[nodiscard]] bigint operator*(const bigint& b) const;
+		[[nodiscard]] bigint modMul(const bigint& b, const bigint& m) const;
 		[[nodiscard]] bigint operator/(const bigint& b) const;
 		[[nodiscard]] bigint operator%(const bigint& b) const;
 		[[nodiscard]] bigint operator<<(size_t b) const;
