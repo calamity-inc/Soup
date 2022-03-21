@@ -834,13 +834,10 @@ namespace soup
 
 	void bigint::operator&=(const bigint& b)
 	{
-		const auto nb = getNumBits();
-		for (size_t i = 0; i != nb; ++i)
+		const auto nc = getNumChunks();
+		for (size_t i = 0; i != nc; ++i)
 		{
-			if (getBit(i) && !b.getBit(i))
-			{
-				disableBit(i);
-			}
+			setChunkInbounds(i, getChunkInbounds(i) & b.getChunk(i));
 		}
 		shrink();
 	}
