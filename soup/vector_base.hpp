@@ -307,7 +307,7 @@ namespace soup
 			return (*this * b).sum();
 		}
 
-		void normalize() noexcept
+		void normalise() noexcept
 		{
 			operator *= (1.0f / magnitude());
 		}

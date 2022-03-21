@@ -8,7 +8,7 @@ namespace soup
 	{
 		// Find Triangle Normal
 		auto Normal = (b - a).crossProduct(c - a);
-		Normal.normalize(); // not really needed
+		Normal.normalise(); // not really needed
 
 		// Find distance from LP1 and LP2 to the plane defined by the triangle
 		float Dist1 = (r.start - a).dot(Normal);

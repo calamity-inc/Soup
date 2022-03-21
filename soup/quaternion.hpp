@@ -204,7 +204,7 @@ namespace soup
 		void aimZAxis(const vector3& P1, const vector3& P2)
 		{
 			vector3 vAim = P2 - P1;
-			vAim.normalize();
+			vAim.normalise();
 
 			x = vAim.y;
 			y = -vAim.x;
