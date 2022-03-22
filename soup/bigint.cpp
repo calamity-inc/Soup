@@ -680,14 +680,23 @@ namespace soup
 		std::pair<bigint, bigint> res{};
 		if (!divisor.isZero())
 		{
-			for (size_t i = getNumBits(); i-- != 0; )
+			if (divisor == TWO)
 			{
-				res.second.leftShiftSmall(1);
-				res.second.setBit(0, getBitInbounds(i));
-				if (res.second >= divisor)
+				res.first = *this;
+				res.first >>= 1u;
+				res.second = (chunk_t)getBit(0);
+			}
+			else
+			{
+				for (size_t i = getNumBits(); i-- != 0; )
 				{
-					res.second -= divisor;
-					res.first.enableBit(i);
+					res.second.leftShiftSmall(1);
+					res.second.setBit(0, getBitInbounds(i));
+					if (res.second >= divisor)
+					{
+						res.second -= divisor;
+						res.first.enableBit(i);
+					}
 				}
 			}
 		}
