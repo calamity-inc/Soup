@@ -975,6 +975,16 @@ namespace soup
 		return res;
 	}
 
+	bool bigint::isEven() const noexcept
+	{
+		return !isOdd();
+	}
+
+	bool bigint::isOdd() const noexcept
+	{
+		return getBit(0);
+	}
+
 	bigint bigint::abs() const
 	{
 		bigint res(*this);
@@ -1316,7 +1326,7 @@ namespace soup
 
 	bigint bigint::modPow(bigint e, const bigint& m) const
 	{
-		if (!m.modUnsigned(TWO).isZero())
+		if (m.isOdd())
 		{
 			return modPowOdd(e, m);
 		}

@@ -170,6 +170,8 @@ namespace soup
 		[[nodiscard]] bigint operator|(const bigint& b) const;
 		[[nodiscard]] bigint operator&(const bigint& b) const;
 
+		[[nodiscard]] bool isEven() const noexcept;
+		[[nodiscard]] bool isOdd() const noexcept;
 		[[nodiscard]] bigint abs() const;
 		[[nodiscard]] bigint pow(bigint e) const;
 		[[nodiscard]] bigint powNot2(bigint e) const;
