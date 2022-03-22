@@ -59,25 +59,70 @@ namespace soup
 			}
 		};
 
-		struct key_public : public key<key_public>
+		template <typename T>
+		struct key_public_base : public key<T>
 		{
-			static bigint e_pref;
-
 			bigint e{};
 
-			key_public() = default;
-			key_public(const bigint& n);
-			key_public(const bigint& n, const bigint& e);
+			key_public_base() = default;
 
-			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // non-deterministic
+			key_public_base(const bigint& n, const bigint& e)
+				: key<T>(n), e(e)
+			{
+			}
+
+			[[nodiscard]] bigint encryptPkcs1(std::string msg) const // non-deterministic
+			{
+				key<T>::padPublic(msg);
+				return key<T>::encryptUnpadded(msg);
+			}
 
 			template <typename CryptoHashAlgo>
 			[[nodiscard]] bool verify(const std::string& msg, const bigint& sig) const
 			{
 				auto hash_bin = CryptoHashAlgo::hash(msg);
-				return padHash<CryptoHashAlgo>(hash_bin)
-					&& decryptUnpadded(sig) == hash_bin;
+				return key<T>::template padHash<CryptoHashAlgo>(hash_bin)
+					&& key<T>::decryptUnpadded(sig) == hash_bin;
 			}
+		};
+
+		struct key_public : public key_public_base<key_public>
+		{
+			static bigint e_pref;
+
+			key_public() = default;
+			key_public(const bigint& n);
+			key_public(const bigint& n, const bigint& e);
+
+			[[nodiscard]] bigint modPow(const bigint& x) const;
+		};
+
+		struct key_montgomery_data
+		{
+			size_t re{};
+			bigint r{};
+			bigint n_mod_mul_inv{};
+			bigint r_mod_mul_inv{};
+			bigint one_mont{};
+
+			key_montgomery_data() = default;
+			key_montgomery_data(const bigint& n, const bigint& e);
+
+			[[nodiscard]] bigint modPow(const bigint& n, const bigint& e, const bigint& x) const;
+		};
+
+		/*
+		* In the case of an 1024-bit rsa public key, using a long-lived instance takes ~134ms, but performs operations in ~2ms, compared to
+		* ~12ms using a short-lived instance. From these numbers, we can estimate that a long-lived instance is the right choice for rsa public
+		* keys that are (expected to be) used more than 13 times.
+		*/
+		struct key_public_longlived : public key_public_base<key_public_longlived>
+		{
+			key_montgomery_data mont_data;
+
+			key_public_longlived() = default;
+			key_public_longlived(const bigint& n);
+			key_public_longlived(const bigint& n, const bigint& e);
 
 			[[nodiscard]] bigint modPow(const bigint& x) const;
 		};
@@ -90,12 +135,11 @@ namespace soup
 			bigint dq;
 			bigint qinv;
 
-			key_private() = default;
+			key_montgomery_data p_mont_data;
+			key_montgomery_data q_mont_data;
 
-			key_private(const bigint& n, const bigint& p, const bigint& q, const bigint& dp, const bigint& dq, const bigint& qinv)
-				: key(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv)
-			{
-			}
+			key_private() = default;
+			key_private(const bigint& n, const bigint& p, const bigint& q, const bigint& dp, const bigint& dq, const bigint& qinv);
 
 			[[nodiscard]] static key_private fromBinary(const std::string bin);
 			[[nodiscard]] static key_private fromAsn1(const asn1_sequence& seq);

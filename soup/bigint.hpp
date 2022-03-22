@@ -196,6 +196,7 @@ namespace soup
 		[[nodiscard]] bigint modMulUnsignedNotpowerof2(const bigint& b, const bigint& m) const;
 		[[nodiscard]] bigint modPow(bigint e, const bigint& m) const;
 		[[nodiscard]] bigint modPowMontgomery(bigint e, const bigint& m) const;
+		[[nodiscard]] bigint modPowMontgomery(bigint e, size_t re, const bigint& r, const bigint& m, const bigint& r_mod_mul_inv, const bigint& m_mod_mul_inv, const bigint& one_mont) const;
 		[[nodiscard]] bigint modPowBasic(bigint e, const bigint& m) const;
 
 		// Montgomery operations, assuming an odd modulus

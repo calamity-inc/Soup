@@ -12,6 +12,7 @@ namespace soup
 	using namespace literals;
 
 	using key_public = rsa::key_public;
+	using key_public_longlived = rsa::key_public_longlived;
 	using key_private = rsa::key_private;
 	using keypair = rsa::keypair;
 
@@ -81,6 +82,21 @@ namespace soup
 		return false;
 	}
 
+	// rsa::key_montgomery_data
+
+	rsa::key_montgomery_data::key_montgomery_data(const bigint& n, const bigint& e)
+		: re(n.montgomeryREFromM()),
+		r(bigint::montgomeryRFromRE(re)),
+		one_mont(r.modUnsignedNotpowerof2(n))
+	{
+		bigint::modMulInv2Coprimes(n, r, n_mod_mul_inv, r_mod_mul_inv);
+	}
+
+	bigint rsa::key_montgomery_data::modPow(const bigint& n, const bigint& e, const bigint& x) const
+	{
+		return x.modPowMontgomery(e, re, r, n, r_mod_mul_inv, n_mod_mul_inv, one_mont);
+	}
+
 	// rsa::key_public
 
 #define E_PREF 65537_b
@@ -88,19 +104,13 @@ namespace soup
 	bigint rsa::key_public::e_pref = E_PREF;
 
 	rsa::key_public::key_public(const bigint& n)
-		: key(n), e(E_PREF)
+		: key_public(n, E_PREF)
 	{
 	}
 
 	rsa::key_public::key_public(const bigint& n, const bigint& e)
-		: key(n), e(e)
+		: key_public_base(n, e)
 	{
-	}
-
-	bigint rsa::key_public::encryptPkcs1(std::string msg) const
-	{
-		padPublic(msg);
-		return encryptUnpadded(msg);
 	}
 
 	bigint rsa::key_public::modPow(const bigint& x) const
@@ -108,7 +118,31 @@ namespace soup
 		return x.modPowBasic(e, n);
 	}
 
+	// rsa::key_public_longlived
+
+	rsa::key_public_longlived::key_public_longlived(const bigint& n)
+		: key_public_longlived(n, E_PREF)
+	{
+	}
+
+	rsa::key_public_longlived::key_public_longlived(const bigint& n, const bigint& e)
+		: key_public_base(n, e), mont_data(n, e)
+	{
+	}
+
+	bigint rsa::key_public_longlived::modPow(const bigint& x) const
+	{
+		return mont_data.modPow(n, e, x);
+	}
+
 	// rsa::key_private
+
+	rsa::key_private::key_private(const bigint& n, const bigint& p, const bigint& q, const bigint& dp, const bigint& dq, const bigint& qinv)
+		: key(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv),
+		p_mont_data(p, dp),
+		q_mont_data(q, dq)
+	{
+	}
 
 	key_private rsa::key_private::fromBinary(const std::string bin)
 	{
@@ -165,8 +199,8 @@ namespace soup
 
 	bigint rsa::key_private::modPow(const bigint& x) const
 	{
-		auto mp = x.modPowMontgomery(dp, p);
-		auto mq = x.modPowMontgomery(dq, q);
+		auto mp = p_mont_data.modPow(p, dp, x);
+		auto mq = q_mont_data.modPow(q, dq, x);
 		auto h = (qinv * (mp - mq) % p);
 		return ((mq + (h * q)) % n);
 	}

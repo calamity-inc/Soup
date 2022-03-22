@@ -1339,17 +1339,23 @@ namespace soup
 
 	bigint bigint::modPowMontgomery(bigint e, const bigint& m) const
 	{
-		bigint base(*this);
+		auto re = m.montgomeryREFromM();
+		auto r = montgomeryRFromRE(re);
+		bigint m_mod_mul_inv, r_mod_mul_inv;
+		modMulInv2Coprimes(m, r, m_mod_mul_inv, r_mod_mul_inv);
+		return modPowMontgomery(std::move(e), re, r, m, r_mod_mul_inv, m_mod_mul_inv, r.modUnsignedNotpowerof2(m));
+	}
+
+	bigint bigint::modPowMontgomery(bigint e, size_t re, const bigint& r, const bigint& m, const bigint& r_mod_mul_inv, const bigint& m_mod_mul_inv, const bigint& one_mont) const
+	{
+		bigint res = one_mont;
+		bigint base = enterMontgomerySpace(r, m);
+		/*bigint base(*this);
 		if (base >= m)
 		{
 			base = base.modUnsigned(m);
 		}
-		auto re = m.montgomeryREFromM();
-		auto r = montgomeryRFromRE(re);
-		bigint res = r.modUnsignedNotpowerof2(m); // ONE.enterMontgomerySpace(r, m);
-		base = base.enterMontgomerySpace(r, m);
-		bigint m_mod_mul_inv, r_mod_mul_inv;
-		modMulInv2Coprimes(m, r, m_mod_mul_inv, r_mod_mul_inv);
+		base = base.enterMontgomerySpace(r, m);*/
 		while (!e.isZero())
 		{
 			if (e.getBit(0))

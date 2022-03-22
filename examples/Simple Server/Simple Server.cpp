@@ -96,6 +96,8 @@ static void httpRecv(soup::socket& s, soup::capture&&)
 	return httpRecv(s);
 }
 
+static soup::socket_tls_server_rsa_data server_rsa_data;
+
 int main()
 {
 	soup::server srv{};
@@ -115,16 +117,8 @@ int main()
 #endif
 		return 2;
 	}
-	std::cout << "Listening on ports 80 and 443." << std::endl;
-	srv.on_accept = [](soup::socket& s, uint16_t port)
-	{
-		std::cout << s.peer.toString()  << " + connected at port " << port << std::endl;
-		if (port != 80)
-		{
-			s.enableCryptoServer([](soup::socket_tls_server_rsa_data& out, const std::string& server_name)
-			{
-				out.der_encoded_certchain = {
-					soup::pem::decode(R"EOC(
+	server_rsa_data.der_encoded_certchain = {
+		soup::pem::decode(R"EOC(
 -----BEGIN CERTIFICATE-----
 MIIFEjCCA/qgAwIBAgISAzO1ak1tzkSo99OqAn2x+OfMMA0GCSqGSIb3DQEBCwUA
 MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
@@ -156,8 +150,8 @@ fSAiz4aov7Yb7NyFQqfMAhjYQIxkoJSHwhTWRTlccEiwtPvOU+e3lYQVemWlHw7W
 eG23qKPg
 -----END CERTIFICATE-----
 )EOC")
-				};
-				out.private_key = soup::rsa::key_private::fromAsn1(soup::asn1_sequence::fromBinary(soup::pem::decode(R"EOC(
+	};
+	server_rsa_data.private_key = soup::rsa::key_private::fromAsn1(soup::asn1_sequence::fromBinary(soup::pem::decode(R"EOC(
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYbeJly69Nd+bP
 EnzCEAJZzqp/xsGr2YTgisYGyBKqp0ubWfl4ItRx7a50siEVy57oNBc4AGhQ6/A1
@@ -187,10 +181,21 @@ IWTRPUZRNojVvK1dQ+xPN/9HsFVUb6JWyU4e3gocnYoe2zGdyT9p9u0Pr3JikgAC
 QJg24g1I/Zb4EUJmo2WNBzGS
 -----END PRIVATE KEY-----
 )EOC")));
-			}, &httpRecv);
-			return;
+	std::cout << "Listening on ports 80 and 443." << std::endl;
+	srv.on_accept = [](soup::socket& s, uint16_t port)
+	{
+		std::cout << s.peer.toString()  << " + connected at port " << port << std::endl;
+		if (port == 80)
+		{
+			httpRecv(s);
 		}
-		httpRecv(s);
+		else
+		{
+			s.enableCryptoServer([](soup::socket_tls_server_rsa_data& out, const std::string& server_name)
+			{
+				out = server_rsa_data;
+			}, &httpRecv);
+		}
 	};
 	srv.on_work_done = [](soup::worker& w)
 	{
