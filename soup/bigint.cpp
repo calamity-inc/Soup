@@ -419,14 +419,14 @@ namespace soup
 			return optimised::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
 		}
 		size_t i = chunks.size();
-		do
+		while (i != 0)
 		{
 			--i;
 			if (getChunk(i) != b.getChunk(i))
 			{
 				return optimised::trinary(getChunk(i) > b.getChunk(i), +1, -1);
 			}
-		} while (i != 0);
+		}
 		return 0;
 	}
 
