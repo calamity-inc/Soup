@@ -45,13 +45,6 @@ namespace soup
 	{
 	}
 
-	const bigint bigint::ONE = (chunk_t)1u;
-	const bigint bigint::TWO = (chunk_t)2u;
-	const bigint bigint::THREE = (chunk_t)3u;
-	const bigint bigint::FIVE = (chunk_t)5u;
-	const bigint bigint::SIX = (chunk_t)6u;
-	const bigint bigint::TEN = (chunk_t)10u;
-
 	bigint bigint::fromString(const char* str, size_t len)
 	{
 		bigint res{};
@@ -119,7 +112,7 @@ namespace soup
 	{
 		for (size_t i = 0; i != len; ++i)
 		{
-			*this *= TEN;
+			*this *= bigint((chunk_t)10u);
 			*this += (chunk_t)(str[i] - '0');
 		}
 	}
@@ -667,7 +660,7 @@ namespace soup
 			res.first.negative ^= 1;
 			if (!res.second.isZero())
 			{
-				res.first -= ONE;
+				res.first -= bigint((chunk_t)1u);
 				res.second = divisor - res.second;
 			}
 			return res;
@@ -680,7 +673,7 @@ namespace soup
 		std::pair<bigint, bigint> res{};
 		if (!divisor.isZero())
 		{
-			if (divisor == TWO)
+			if (divisor == bigint((chunk_t)2u))
 			{
 				res.first = *this;
 				res.first >>= 1u;
@@ -710,7 +703,7 @@ namespace soup
 
 	bigint bigint::modUnsigned(const bigint& m) const
 	{
-		auto m_minus_1 = (m - ONE);
+		auto m_minus_1 = (m - bigint((chunk_t)1u));
 		if ((m & m_minus_1).isZero())
 		{
 			return (*this & m_minus_1);
@@ -720,7 +713,7 @@ namespace soup
 
 	bigint bigint::modUnsignedPowerof2(const bigint& m) const
 	{
-		return (*this & (m - ONE));
+		return (*this & (m - bigint((chunk_t)1u)));
 	}
 
 	bigint bigint::modUnsignedNotpowerof2(const bigint& divisor) const
@@ -887,7 +880,7 @@ namespace soup
 
 	bigint& bigint::operator++()
 	{
-		*this += ONE;
+		*this += bigint((chunk_t)1u);
 		return *this;
 	}
 
@@ -907,7 +900,7 @@ namespace soup
 
 	bigint& bigint::operator--()
 	{
-		*this -= ONE;
+		*this -= bigint((chunk_t)1u);
 		return *this;
 	}
 
@@ -1003,7 +996,7 @@ namespace soup
 
 	bigint bigint::pow(bigint e) const
 	{
-		if (*this == TWO)
+		if (*this == bigint((chunk_t)2u))
 		{
 			size_t e_primitive;
 			if (e.toPrimitive(e_primitive))
@@ -1016,7 +1009,7 @@ namespace soup
 
 	bigint bigint::powNot2(bigint e) const
 	{
-		bigint res = ONE;
+		bigint res = bigint((chunk_t)1u);
 		bigint base(*this);
 		while (true)
 		{
@@ -1041,12 +1034,12 @@ namespace soup
 
 	bigint bigint::_2pow(size_t e)
 	{
-		return ONE << e;
+		return bigint((chunk_t)1u) << e;
 	}
 
 	size_t bigint::getTrailingZeroes(const bigint& base) const
 	{
-		if (base == TWO)
+		if (base == bigint((chunk_t)2u))
 		{
 			return getTrailingZeroesBinary();
 		}
@@ -1108,7 +1101,7 @@ namespace soup
 		if (isZero())
 		{
 			//x.reset();
-			y = ONE;
+			y = bigint((chunk_t)1u);
 			return b;
 		}
 		auto d = b.divide(*this);
@@ -1121,12 +1114,12 @@ namespace soup
 
 	bool bigint::isPrimePrecheck(bool& ret) const
 	{
-		if (isZero() || *this == ONE)
+		if (isZero() || *this == bigint((chunk_t)1u))
 		{
 			ret = false;
 			return true;
 		}
-		if (*this <= THREE)
+		if (*this <= bigint((chunk_t)3u))
 		{
 			ret = true;
 			return true;
@@ -1137,7 +1130,7 @@ namespace soup
 			return true;
 		}
 		
-		if (this->modUnsigned(THREE).isZero())
+		if (this->modUnsigned(bigint((chunk_t)3u)).isZero())
 		{
 			ret = false;
 			return true;
@@ -1153,9 +1146,9 @@ namespace soup
 			return preret;
 		}
 
-		for (bigint i = FIVE; i * i <= *this; i += SIX)
+		for (bigint i = bigint((chunk_t)5u); i * i <= *this; i += bigint((chunk_t)6u))
 		{
-			if ((*this % i).isZero() || (*this % (i + TWO)).isZero())
+			if ((*this % i).isZero() || (*this % (i + bigint((chunk_t)2u))).isZero())
 			{
 				return false;
 			}
@@ -1175,7 +1168,7 @@ namespace soup
 
 	bool bigint::isProbablePrimeMillerRabinNoprecheck(const int iterations) const
 	{
-		auto thisMinusOne = (*this - ONE);
+		auto thisMinusOne = (*this - bigint((chunk_t)1u));
 		auto a = thisMinusOne.getLowestSetBit();
 		auto m = (thisMinusOne >> a);
 
@@ -1186,13 +1179,13 @@ namespace soup
 			do
 			{
 				b = random(bl);
-			} while (b >= *this || b <= ONE);
+			} while (b >= *this || b <= bigint((chunk_t)1u));
 
 			int j = 0;
 			bigint z = b.modPow(m, *this);
-			while (!((j == 0 && z == ONE) || z == thisMinusOne))
+			while (!((j == 0 && z == bigint((chunk_t)1u)) || z == thisMinusOne))
 			{
-				if ((j > 0 && z == ONE) || ++j == a)
+				if ((j > 0 && z == bigint((chunk_t)1u)) || ++j == a)
 				{
 					return false;
 				}
@@ -1218,9 +1211,9 @@ namespace soup
 			do
 			{
 				b = random(bl);
-			} while (b >= *this || b <= ONE);
+			} while (b >= *this || b <= bigint((chunk_t)1u));
 
-			if (b.modPow(*this - ONE, *this) != ONE)
+			if (b.modPow(*this - bigint((chunk_t)1u), *this) != bigint((chunk_t)1u))
 			{
 				return false;
 			}
@@ -1230,13 +1223,13 @@ namespace soup
 
 	bool bigint::isCoprime(const bigint& b) const
 	{
-		return gcd(b) == ONE;
+		return gcd(b) == bigint((chunk_t)1u);
 	}
 
 	bigint bigint::eulersTotient() const
 	{
-		bigint res = ONE;
-		for (bigint i = TWO; i != *this; ++i)
+		bigint res = bigint((chunk_t)1u);
+		for (bigint i = bigint((chunk_t)2u); i != *this; ++i)
 		{
 			if (isCoprime(i))
 			{
@@ -1248,24 +1241,24 @@ namespace soup
 
 	bigint bigint::reducedTotient() const
 	{
-		if (*this <= TWO)
+		if (*this <= bigint((chunk_t)2u))
 		{
-			return ONE;
+			return bigint((chunk_t)1u);
 		}
 		std::vector<bigint> coprimes{};
-		for (bigint a = TWO; a != *this; ++a)
+		for (bigint a = bigint((chunk_t)2u); a != *this; ++a)
 		{
 			if (isCoprime(a))
 			{
 				coprimes.emplace_back(a);
 			}
 		}
-		bigint k = TWO;
+		bigint k = bigint((chunk_t)2u);
 		for (auto timer = coprimes.size(); timer != 0; )
 		{
 			for (auto i = coprimes.begin(); i != coprimes.end(); ++i)
 			{
-				if (i->modPow(k, *this) == ONE)
+				if (i->modPow(k, *this) == bigint((chunk_t)1u))
 				{
 					if (timer == 0)
 					{
@@ -1296,20 +1289,20 @@ namespace soup
 
 	bool bigint::isPowerOf2() const
 	{
-		return (*this & (*this - ONE)).isZero();
+		return (*this & (*this - bigint((chunk_t)1u))).isZero();
 	}
 
 	bigint bigint::modMulInv(const bigint& m) const
 	{
 		bigint x, y;
-		if (gcd(m, x, y) == ONE)
+		if (gcd(m, x, y) == bigint((chunk_t)1u))
 		{
 			return (x % m + m) % m;
 		}
 
-		for (bigint res = ONE;; ++res)
+		for (bigint res = bigint((chunk_t)1u);; ++res)
 		{
-			if (((*this * res) % m) == ONE)
+			if (((*this * res) % m) == bigint((chunk_t)1u))
 			{
 				return res;
 			}
@@ -1376,7 +1369,7 @@ namespace soup
 		{
 			base = base.modUnsigned(m);
 		}
-		bigint res = ONE;
+		bigint res = bigint((chunk_t)1u);
 		while (!e.isZero())
 		{
 			if (e.getBit(0))

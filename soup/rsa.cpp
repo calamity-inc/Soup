@@ -83,7 +83,19 @@ namespace soup
 
 	// rsa::key_public
 
-	bigint rsa::key_public::e_pref = 65537_b;
+#define E_PREF 65537_b
+
+	bigint rsa::key_public::e_pref = E_PREF;
+
+	rsa::key_public::key_public(const bigint& n)
+		: key(n), e(E_PREF)
+	{
+	}
+
+	rsa::key_public::key_public(const bigint& n, const bigint& e)
+		: key(n), e(e)
+	{
+	}
 
 	bigint rsa::key_public::encryptPkcs1(std::string msg) const
 	{
@@ -166,7 +178,7 @@ namespace soup
 
 	bigint rsa::key_private::getD() const
 	{
-		return getE().modMulInv((p - bigint::ONE).lcm(q - bigint::ONE));
+		return getE().modMulInv((p - 1_b).lcm(q - 1_b));
 	}
 
 	// rsa::keypair
@@ -174,8 +186,8 @@ namespace soup
 	rsa::keypair::keypair(bigint&& _p, bigint&& _q)
 		: mod(_p * _q), p(std::move(_p)), q(std::move(_q))
 	{
-		const auto pm1 = (p - bigint::ONE);
-		const auto qm1 = (q - bigint::ONE);
+		const auto pm1 = (p - 1_b);
+		const auto qm1 = (q - 1_b);
 		const auto t = pm1.lcm(qm1);
 		if (t < key_public::e_pref)
 		{

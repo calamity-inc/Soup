@@ -66,16 +66,8 @@ namespace soup
 			bigint e{};
 
 			key_public() = default;
-
-			key_public(const bigint& n)
-				: key(n), e(e_pref)
-			{
-			}
-
-			key_public(const bigint& n, const bigint& e)
-				: key(n), e(e)
-			{
-			}
+			key_public(const bigint& n);
+			key_public(const bigint& n, const bigint& e);
 
 			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // non-deterministic
 
