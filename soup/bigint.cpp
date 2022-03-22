@@ -1316,32 +1316,45 @@ namespace soup
 
 	bigint bigint::modPow(bigint e, const bigint& m) const
 	{
+		if (!m.modUnsigned(TWO).isZero())
+		{
+			return modPowOdd(e, m);
+		}
+		return modPowEven(e, m);
+	}
+
+	bigint bigint::modPowOdd(bigint e, const bigint& m) const
+	{
 		bigint base(*this);
 		if (base >= m)
 		{
 			base = base.modUnsigned(m);
 		}
-
-		if (!m.modUnsigned(TWO).isZero())
+		auto re = m.montgomeryREFromM();
+		auto r = m.montgomeryRFromRE(re);
+		bigint res = r.modUnsignedNotpowerof2(m); // ONE.enterMontgomerySpace(r, m);
+		base = base.enterMontgomerySpace(r, m);
+		bigint m_mod_mul_inv, r_mod_mul_inv;
+		modMulInv2Coprimes(m, r, m_mod_mul_inv, r_mod_mul_inv);
+		while (!e.isZero())
 		{
-			auto re = m.montgomeryREFromM();
-			auto r = m.montgomeryRFromRE(re);
-			bigint res = r.modUnsignedNotpowerof2(m); // ONE.enterMontgomerySpace(r, m);
-			base = base.enterMontgomerySpace(r, m);
-			bigint m_mod_mul_inv, r_mod_mul_inv;
-			modMulInv2Coprimes(m, r, m_mod_mul_inv, r_mod_mul_inv);
-			while (!e.isZero())
+			if (e.getBit(0))
 			{
-				if (e.getBit(0))
-				{
-					res = res.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
-				}
-				base = base.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
-				e >>= 1u;
+				res = res.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
 			}
-			return res.leaveMontgomerySpaceEfficient(r_mod_mul_inv, m);
+			base = base.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
+			e >>= 1u;
 		}
+		return res.leaveMontgomerySpaceEfficient(r_mod_mul_inv, m);
+	}
 
+	bigint bigint::modPowEven(bigint e, const bigint& m) const
+	{
+		bigint base(*this);
+		if (base >= m)
+		{
+			base = base.modUnsigned(m);
+		}
 		bigint res = ONE;
 		while (!e.isZero())
 		{

@@ -93,7 +93,7 @@ namespace soup
 
 	bigint rsa::key_public::modPow(const bigint& x) const
 	{
-		return x.modPow(e, n);
+		return x.modPowOdd(e, n);
 	}
 
 	// rsa::key_private
@@ -153,8 +153,8 @@ namespace soup
 
 	bigint rsa::key_private::modPow(const bigint& x) const
 	{
-		auto mp = x.modPow(dp, p);
-		auto mq = x.modPow(dq, q);
+		auto mp = x.modPowOdd(dp, p);
+		auto mq = x.modPowOdd(dq, q);
 		auto h = (qinv * (mp - mq) % p);
 		return ((mq + (h * q)) % n);
 	}
