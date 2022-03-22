@@ -1326,14 +1326,16 @@ namespace soup
 
 	bigint bigint::modPow(bigint e, const bigint& m) const
 	{
-		if (m.isOdd())
+		if (m.isOdd()
+			&& e.getNumBits() > 32 // arbitrary choice
+			)
 		{
-			return modPowOdd(e, m);
+			return modPowMontgomery(e, m);
 		}
-		return modPowEven(e, m);
+		return modPowBasic(e, m);
 	}
 
-	bigint bigint::modPowOdd(bigint e, const bigint& m) const
+	bigint bigint::modPowMontgomery(bigint e, const bigint& m) const
 	{
 		bigint base(*this);
 		if (base >= m)
@@ -1358,7 +1360,7 @@ namespace soup
 		return res.leaveMontgomerySpaceEfficient(r_mod_mul_inv, m);
 	}
 
-	bigint bigint::modPowEven(bigint e, const bigint& m) const
+	bigint bigint::modPowBasic(bigint e, const bigint& m) const
 	{
 		bigint base(*this);
 		if (base >= m)
