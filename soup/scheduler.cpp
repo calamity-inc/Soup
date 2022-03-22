@@ -48,7 +48,7 @@ namespace soup
 					{
 						if (!reinterpret_cast<promise_base*>((*i)->holdup_data)->isPending())
 						{
-							(*i)->fireHoldupCallback();
+							fireHoldupCallback(**i);
 						}
 					}
 				}
@@ -100,9 +100,24 @@ namespace soup
 					i = pollfds.erase(i);
 					continue;
 				}
-				(*workers_i)->fireHoldupCallback();
+				fireHoldupCallback(**workers_i);
 			}
 			++i;
+		}
+	}
+
+	void scheduler::fireHoldupCallback(worker& w)
+	{
+		try
+		{
+			w.fireHoldupCallback();
+		}
+		catch (const std::exception& e)
+		{
+			if (on_exception)
+			{
+				on_exception(w, e);
+			}
 		}
 	}
 }

@@ -200,5 +200,9 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 	{
 		std::cout << s.peer.toString() << " - connection lost" << std::endl;
 	};
+	srv.on_exception = [](soup::worker& w, const std::exception& e)
+	{
+		std::cout << reinterpret_cast<soup::socket&>(w).peer.toString() << " - exception: " << e.what() << std::endl;
+	};
 	srv.run();
 }

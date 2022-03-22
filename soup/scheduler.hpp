@@ -22,9 +22,11 @@ namespace soup
 
 		using on_work_done_t = void(*)(worker&);
 		using on_connection_lost_t = void(*)(socket&);
+		using on_exception_t = void(*)(worker&, const std::exception&);
 
 		on_work_done_t on_work_done = nullptr;
 		on_connection_lost_t on_connection_lost = nullptr;
+		on_exception_t on_exception = nullptr;
 
 		socket& addSocket(socket&& sock) noexcept;
 
@@ -32,5 +34,6 @@ namespace soup
 	protected:
 		int poll(std::vector<pollfd>& pollfds, int timeout = -1);
 		void processPollResults(std::vector<pollfd>& pollfds);
+		void fireHoldupCallback(worker& w);
 	};
 }
