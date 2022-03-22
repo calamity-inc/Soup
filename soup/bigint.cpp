@@ -1352,7 +1352,7 @@ namespace soup
 			base = base.modUnsigned(m);
 		}
 		auto re = m.montgomeryREFromM();
-		auto r = m.montgomeryRFromRE(re);
+		auto r = montgomeryRFromRE(re);
 		bigint res = r.modUnsignedNotpowerof2(m); // ONE.enterMontgomerySpace(r, m);
 		base = base.enterMontgomerySpace(r, m);
 		bigint m_mod_mul_inv, r_mod_mul_inv;
