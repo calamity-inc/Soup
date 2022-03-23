@@ -75,6 +75,16 @@ namespace soup
 		bool connect(const addr_socket& addr) noexcept;
 		bool connect(const addr_ip& ip, uint16_t port) noexcept;
 
+		template <typename T = int>
+		bool setOpt(int name, T&& val) noexcept
+		{
+#if SOUP_WINDOWS
+			return setsockopt(fd, SOL_SOCKET, name, (const char*)&val, sizeof(T)) != -1;
+#else
+			return setsockopt(fd, SOL_SOCKET, name, &val, sizeof(T)) != -1;
+#endif
+		}
+
 		bool bind6(uint16_t port) noexcept;
 		bool bind4(uint16_t port) noexcept;
 

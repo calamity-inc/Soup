@@ -104,17 +104,11 @@ int main()
 	if (!srv.bind(80))
 	{
 		std::cout << "Failed to bind to port 80." << std::endl;
-#if SOUP_LINUX
-		std::cout << "Run { fuser 80/tcp } and try again." << std::endl;
-#endif
 		return 1;
 	}
 	if (!srv.bind(443))
 	{
 		std::cout << "Failed to bind to port 443." << std::endl;
-#if SOUP_LINUX
-		std::cout << "Run { fuser 443/tcp } and try again." << std::endl;
-#endif
 		return 2;
 	}
 	server_rsa_data.der_encoded_certchain = {

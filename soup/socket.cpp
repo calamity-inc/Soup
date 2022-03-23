@@ -154,7 +154,8 @@ namespace soup
 		sockaddr_in6 addr{};
 		addr.sin6_family = AF_INET6;
 		addr.sin6_port = htons(port);
-		return bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
+		return setOpt<int>(SO_REUSEADDR, 1)
+			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
 			&& listen(fd, 100) != -1
 			&& setNonBlocking();
 	}
@@ -170,7 +171,8 @@ namespace soup
 		sockaddr_in addr{};
 		addr.sin_family = AF_INET;
 		addr.sin_port = htons(port);
-		return bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
+		return setOpt<int>(SO_REUSEADDR, 1)
+			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
 			&& listen(fd, 100) != -1
 			&& setNonBlocking();
 	}
