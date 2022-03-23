@@ -14,6 +14,8 @@ namespace soup
 		vector3 c;
 
 		bool checkRayIntersection(const ray& r, vector3& outHit) const;
+
+		[[nodiscard]] vector3 getSurfaceNormal() const;
 	};
 #pragma pack(pop)
 }

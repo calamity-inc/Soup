@@ -30,4 +30,13 @@ namespace soup
 
 		return true;
 	}
+
+	vector3 poly::getSurfaceNormal() const
+	{
+		auto u = (a - b);
+		auto v = (a - c);
+		auto res = u.crossProduct(v);
+		res.normalise();
+		return res;
+	}
 }
