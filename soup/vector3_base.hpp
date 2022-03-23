@@ -56,13 +56,9 @@ namespace soup
 		// position vectors
 
 		template <typename T2>
-		[[nodiscard]] T lookAt(const T2& b) const noexcept
+		[[nodiscard]] T2 lookAt(const T2& b) const noexcept
 		{
-			return T{
-				b.x - ((const T*)this)->x,
-				b.y - ((const T*)this)->y,
-				b.z - ((const T*)this)->z
-			}.toRot();
+			return (b - *(const T*)this).toRot();
 		}
 
 		// rotation vectors
