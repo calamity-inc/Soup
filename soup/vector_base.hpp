@@ -254,13 +254,10 @@ namespace soup
 
 		[[nodiscard]] T abs() const noexcept
 		{
-			T res(*((const T*)this));
+			T res;
 			for (uint8_t i = 0; i != getAxes(); ++i)
 			{
-				if (res.axis(i) < 0.0f)
-				{
-					res.axis(i) *= -1.0;
-				}
+				res[i] = fabsf(axis(i));
 			}
 			return res;
 		}
