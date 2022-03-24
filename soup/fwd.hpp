@@ -13,8 +13,10 @@ namespace soup
 	// math
 	class bigint;
 	struct box_corners;
+	class matrix;
 	struct poly;
 	struct ray;
+	struct vector3;
 
 	// mem
 	struct alloc_raii_remote;

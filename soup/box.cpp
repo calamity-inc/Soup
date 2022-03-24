@@ -11,15 +11,15 @@ namespace soup
 	//
 	void box::getInvRot(vector3* pvRot)
 	{
-		pvRot[0] = vector3(m_M.mf[0], m_M.mf[1], m_M.mf[2]);
-		pvRot[1] = vector3(m_M.mf[4], m_M.mf[5], m_M.mf[6]);
-		pvRot[2] = vector3(m_M.mf[8], m_M.mf[9], m_M.mf[10]);
+		pvRot[0] = vector3(m.mf[0], m.mf[1], m.mf[2]);
+		pvRot[1] = vector3(m.mf[4], m.mf[5], m.mf[6]);
+		pvRot[2] = vector3(m.mf[8], m.mf[9], m.mf[10]);
 	}
 
 	bool box::checkRayIntersection(const ray& r, vector3* outHit)
 	{
 		// Put line in box space
-		matrix MInv = m_M.invertSimple();
+		matrix MInv = m.invertSimple();
 		vector3 LB1 = MInv * r.start;
 		vector3 LB2 = MInv * r.end;
 
@@ -30,13 +30,13 @@ namespace soup
 
 		// Use Separating Axis Test
 		// Separation vector from box center to line center is LMid, since the line is in box space
-		if (fabsf(LMid.x) > m_Extent.x + LExt.x) return false;
-		if (fabsf(LMid.y) > m_Extent.y + LExt.y) return false;
-		if (fabsf(LMid.z) > m_Extent.z + LExt.z) return false;
+		if (fabsf(LMid.x) > extent.x + LExt.x) return false;
+		if (fabsf(LMid.y) > extent.y + LExt.y) return false;
+		if (fabsf(LMid.z) > extent.z + LExt.z) return false;
 		// Crossproducts of line and each axis
-		if (fabsf(LMid.y * L.z - LMid.z * L.y) > (m_Extent.y * LExt.z + m_Extent.z * LExt.y)) return false;
-		if (fabsf(LMid.x * L.z - LMid.z * L.x) > (m_Extent.x * LExt.z + m_Extent.z * LExt.x)) return false;
-		if (fabsf(LMid.x * L.y - LMid.y * L.x) > (m_Extent.x * LExt.y + m_Extent.y * LExt.x)) return false;
+		if (fabsf(LMid.y * L.z - LMid.z * L.y) > (extent.y * LExt.z + extent.z * LExt.y)) return false;
+		if (fabsf(LMid.x * L.z - LMid.z * L.x) > (extent.x * LExt.z + extent.z * LExt.x)) return false;
+		if (fabsf(LMid.x * L.y - LMid.y * L.x) > (extent.x * LExt.y + extent.y * LExt.x)) return false;
 		// No separating axis, the line intersects
 		if (outHit != nullptr)
 		{
@@ -66,10 +66,10 @@ namespace soup
 	bool box::isPointInBox(const vector3& InP)
 	{
 		// Rotate the point into the box's coordinates
-		vector3 P = m_M.invertSimple() * InP;
+		vector3 P = m.invertSimple() * InP;
 
 		// Now just use an axis-aligned check
-		if (fabsf(P.x) < m_Extent.x && fabsf(P.y) < m_Extent.y && fabsf(P.z) < m_Extent.z)
+		if (fabsf(P.x) < extent.x && fabsf(P.y) < extent.y && fabsf(P.z) < extent.z)
 			return true;
 
 		return false;
@@ -82,14 +82,14 @@ namespace soup
 	{
 		float fDist;
 		float fDistSq = 0;
-		vector3 P = m_M.invertSimple() * InP;
+		vector3 P = m.invertSimple() * InP;
 
 		// Add distance squared from sphere centerpoint to box for each axis
 		for (int i = 0; i < 3; i++)
 		{
-			if (fabsf(P[i]) > m_Extent[i])
+			if (fabsf(P[i]) > extent[i])
 			{
-				fDist = fabsf(P[i]) - m_Extent[i];
+				fDist = fabsf(P[i]) - extent[i];
 				fDistSq += fDist * fDist;
 			}
 		}
@@ -102,10 +102,10 @@ namespace soup
 	bool box::boxOutsidePlane(const vector3& InNorm, const vector3& InP)
 	{
 		// Plane Normal in Box Space
-		vector3 Norm = InNorm.rotateByMatrix(m_M.invertSimple().mf); // RotByMatrix only uses rotation portion of matrix
+		vector3 Norm = InNorm.rotateByMatrix(m.invertSimple().mf); // RotByMatrix only uses rotation portion of matrix
 		Norm = vector3(fabsf(Norm.x), fabsf(Norm.y), fabsf(Norm.z));
 
-		float Extent = Norm.dot(m_Extent); // Box Extent along the plane normal
+		float Extent = Norm.dot(extent); // Box Extent along the plane normal
 		float Distance = InNorm.dot(getCentrePoint() - InP); // Distance from Box Center to the Plane
 
 		// If Box Centerpoint is behind the plane further than its extent, the Box is outside the plane
@@ -119,8 +119,8 @@ namespace soup
 	//
 	bool box::isBoxInBox(box& BBox)
 	{
-		vector3 SizeA = m_Extent;
-		vector3 SizeB = BBox.m_Extent;
+		vector3 SizeA = extent;
+		vector3 SizeB = BBox.extent;
 		vector3 RotA[3], RotB[3];
 		getInvRot(RotA);
 		BBox.getInvRot(RotB);
@@ -183,10 +183,10 @@ namespace soup
 	{
 		return box_corners(
 			getCentrePoint(),
-			m_Extent,
-			vector3(m_M.mf[0], m_M.mf[1], m_M.mf[2]),
-			vector3(m_M.mf[4], m_M.mf[5], m_M.mf[6]),
-			vector3(m_M.mf[8], m_M.mf[9], m_M.mf[10])
+			extent,
+			vector3(m.mf[0], m.mf[1], m.mf[2]),
+			vector3(m.mf[4], m.mf[5], m.mf[6]),
+			vector3(m.mf[8], m.mf[9], m.mf[10])
 		);
 	}
 

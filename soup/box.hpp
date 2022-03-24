@@ -23,14 +23,16 @@ namespace soup
 #pragma warning(disable: 26495) // uninitialised member variable
 	struct box
 	{
-		matrix m_M;
-		vector3 m_Extent;
+		matrix m;
+		vector3 extent;
 
-		box() {}
+		box() = default;
+
 		box(const matrix& M, const vector3& Extent)
 		{
 			set(M, Extent);
 		}
+
 		// BL = Low values corner point, BH = High values corner point
 		box(const matrix& M, const vector3& BL, const vector3& BH)
 		{
@@ -38,30 +40,30 @@ namespace soup
 		}
 
 		box(const vector3& pos, const vector3& rot, const vector3& dimensions)
-			: m_M(pos, rot), m_Extent(dimensions * 0.5f)
+			: m(pos, rot), extent(dimensions * 0.5f)
 		{
 
 		}
 
-		void set(const matrix& M, const vector3& Extent)
+		void set(const matrix& m, const vector3& Extent)
 		{
-			m_M = M;
-			m_Extent = Extent;
+			this->m = m;
+			extent = Extent;
 		}
-		void set(const matrix& M, const vector3& BL, const vector3& BH)
+		void set(const matrix& m, const vector3& BL, const vector3& BH)
 		{
-			m_M = M;
-			m_M.translate((BH + BL) * 0.5f);
-			m_Extent = (BH - BL) / 2.0f;
+			this->m = m;
+			this->m.translate((BH + BL) * 0.5f);
+			extent = (BH - BL) / 2.0f;
 		}
 
 		[[nodiscard]] vector3 getSize() const noexcept
 		{
-			return m_Extent * 2.0f;
+			return extent * 2.0f;
 		}
 		[[nodiscard]] vector3 getCentrePoint() const noexcept
 		{
-			return m_M.getTranslate();
+			return m.getTranslate();
 		}
 		void getInvRot(vector3* pvRot);
 
