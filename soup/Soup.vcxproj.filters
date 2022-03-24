@@ -506,10 +506,14 @@
     <ClCompile Include="string.cpp">
       <Filter>util\string</Filter>
     </ClCompile>
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="crc32.cpp">
       <Filter>hash</Filter>
+    </ClCompile>
+    <ClCompile Include="quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
