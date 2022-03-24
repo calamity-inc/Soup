@@ -229,6 +229,7 @@
     <ClInclude Include="conui_base.hpp" />
     <ClInclude Include="conui_div.hpp" />
     <ClInclude Include="conui_span.hpp" />
+    <ClInclude Include="crc32.hpp" />
     <ClInclude Include="crypto_hash_algo.hpp" />
     <ClInclude Include="dns.hpp" />
     <ClInclude Include="dns_a.hpp" />
@@ -345,6 +346,7 @@
     <ClCompile Include="conui_app.cpp" />
     <ClCompile Include="conui_base.cpp" />
     <ClCompile Include="conui_span.cpp" />
+    <ClCompile Include="crc32.cpp" />
     <ClCompile Include="dns.cpp" />
     <ClCompile Include="ec.cpp" />
     <ClCompile Include="editor.cpp" />

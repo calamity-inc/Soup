@@ -371,6 +371,9 @@
     <ClInclude Include="editor_file.hpp">
       <Filter>ui\editor</Filter>
     </ClInclude>
+    <ClInclude Include="crc32.hpp">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -505,6 +508,9 @@
     </ClCompile>
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="quaternion.cpp" />
+    <ClCompile Include="crc32.cpp">
+      <Filter>hash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
