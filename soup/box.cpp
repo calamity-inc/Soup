@@ -18,43 +18,69 @@ namespace soup
 
 	bool box::checkRayIntersection(const ray& r, vector3* outHit)
 	{
-		// Put line in box space
-		matrix MInv = m.invertSimple();
-		vector3 LB1 = MInv * r.start;
-		vector3 LB2 = MInv * r.end;
+		//// Put line in box space
+		//matrix MInv = m.invertSimple();
+		//vector3 LB1 = MInv * r.start;
+		//vector3 LB2 = MInv * r.end;
+		//
+		//// Get line midpoint and extent
+		//vector3 LMid = (LB1 + LB2) * 0.5f;
+		//vector3 L = (LB1 - LMid);
+		//vector3 LExt = vector3(fabsf(L.x), fabsf(L.y), fabsf(L.z));
+		//
+		//// Use Separating Axis Test
+		//// Separation vector from box center to line center is LMid, since the line is in box space
+		//if (fabsf(LMid.x) > extent.x + LExt.x) return false;
+		//if (fabsf(LMid.y) > extent.y + LExt.y) return false;
+		//if (fabsf(LMid.z) > extent.z + LExt.z) return false;
+		//// Crossproducts of line and each axis
+		//if (fabsf(LMid.y * L.z - LMid.z * L.y) > (extent.y * LExt.z + extent.z * LExt.y)) return false;
+		//if (fabsf(LMid.x * L.z - LMid.z * L.x) > (extent.x * LExt.z + extent.z * LExt.x)) return false;
+		//if (fabsf(LMid.x * L.y - LMid.y * L.x) > (extent.x * LExt.y + extent.y * LExt.x)) return false;
+		//// No separating axis, the line intersects
+		//if (outHit != nullptr)
+		//{
+		//	float best_dist = FLT_MAX;
+		//	vector3 best_point;
+		//	for (const auto& t : toPolys())
+		//	{
+		//		vector3 p;
+		//		if (t.checkRayIntersection(r, p))
+		//		{
+		//			float dist = p.distance(r.start);
+		//			if (dist < best_dist)
+		//			{
+		//				best_dist = dist;
+		//				best_point = p;
+		//			}
+		//		}
+		//	}
+		//	*outHit = best_point;
+		//}
+		//return true;
 
-		// Get line midpoint and extent
-		vector3 LMid = (LB1 + LB2) * 0.5f;
-		vector3 L = (LB1 - LMid);
-		vector3 LExt = vector3(fabsf(L.x), fabsf(L.y), fabsf(L.z));
-
-		// Use Separating Axis Test
-		// Separation vector from box center to line center is LMid, since the line is in box space
-		if (fabsf(LMid.x) > extent.x + LExt.x) return false;
-		if (fabsf(LMid.y) > extent.y + LExt.y) return false;
-		if (fabsf(LMid.z) > extent.z + LExt.z) return false;
-		// Crossproducts of line and each axis
-		if (fabsf(LMid.y * L.z - LMid.z * L.y) > (extent.y * LExt.z + extent.z * LExt.y)) return false;
-		if (fabsf(LMid.x * L.z - LMid.z * L.x) > (extent.x * LExt.z + extent.z * LExt.x)) return false;
-		if (fabsf(LMid.x * L.y - LMid.y * L.x) > (extent.x * LExt.y + extent.y * LExt.x)) return false;
-		// No separating axis, the line intersects
-		if (outHit != nullptr)
+		// The other implementation has precision issues, even with trivial rotations. Might be worth revisiting it, if performance was critical.
+		float best_dist = FLT_MAX;
+		vector3 best_point;
+		for (const auto& t : toPolys())
 		{
-			float best_dist = FLT_MAX;
-			vector3 best_point;
-			for (const auto& t : toPolys())
+			vector3 p;
+			if (t.checkRayIntersection(r, p))
 			{
-				vector3 p;
-				if (t.checkRayIntersection(r, p))
+				float dist = p.distance(r.start);
+				if (dist < best_dist)
 				{
-					float dist = p.distance(r.start);
-					if (dist < best_dist)
-					{
-						best_dist = dist;
-						best_point = p;
-					}
+					best_dist = dist;
+					best_point = p;
 				}
 			}
+		}
+		if (best_dist == FLT_MAX)
+		{
+			return false;
+		}
+		if (outHit != nullptr)
+		{
 			*outHit = best_point;
 		}
 		return true;
