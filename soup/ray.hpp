@@ -16,7 +16,7 @@ namespace soup
 		}
 
 		ray(const vector3& start, const vector3& rotation, float length) noexcept
-			: start(start), end(start + (rotation.getUnitVector() * length))
+			: start(start), end(start + (rotation.toDir() * length))
 		{
 		}
 	};

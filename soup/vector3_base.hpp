@@ -39,7 +39,7 @@ namespace soup
 		{
 			auto as_rot = toRot();
 			as_rot += rot_vec;
-			auto rotated_unit_vec = as_rot.getUnitVector();
+			auto rotated_unit_vec = as_rot.toDir();
 			return (rotated_unit_vec * Base::magnitude());
 		}
 
@@ -63,7 +63,7 @@ namespace soup
 
 		// rotation vectors
 
-		[[nodiscard]] T getUnitVector() const noexcept
+		[[nodiscard]] T toDir() const noexcept
 		{
 			const float yaw_radians = DEG_TO_RAD(((const T*)this)->z);
 			const float pitch_radians = DEG_TO_RAD(((const T*)this)->x) * -1.0f;
@@ -74,13 +74,13 @@ namespace soup
 			};
 		}
 
-		[[nodiscard]] float getUnitVectorZ() const noexcept
+		[[nodiscard]] float toDirZ() const noexcept
 		{
 			const float pitch_radians = DEG_TO_RAD(((const T*)this)->x) * -1.0f;
 			return sinf(pitch_radians) * -1.0f;
 		}
 
-		[[nodiscard]] T getUnitVectorNoZ() const noexcept
+		[[nodiscard]] T toDirNoZ() const noexcept
 		{
 			const float yaw_radians = DEG_TO_RAD(((const T*)this)->z);
 			const float pitch_radians = DEG_TO_RAD(((const T*)this)->x) * -1.0f;
