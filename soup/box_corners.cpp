@@ -43,20 +43,20 @@ namespace soup
 	{
 		return std::array<poly, 12>{
 			// front
-			poly{ edge2, edge3, front_upper_right },
-			poly{ edge2, front_upper_right, edge8 },
+			poly{ edge2, front_upper_right, edge3 },
+			poly{ front_upper_right, edge2, edge8 },
 			// top
-			poly{ edge4, edge6, front_upper_right },
-			poly{ front_upper_right, edge3, edge4 },
-			// right
-			poly{ front_upper_right, edge6, edge7 },
-			poly{ front_upper_right, edge7, edge8 },
-			// left
+			poly{ front_upper_right, edge6, edge4 },
+			poly{ edge3, front_upper_right, edge4 },
+			// right (from front view)
+			poly{ edge6, front_upper_right, edge7 },
+			poly{ edge7, front_upper_right, edge8 },
+			// left (from front view)
 			poly{ back_lower_left, edge2, edge4 },
 			poly{ edge2, edge3, edge4 },
 			// bottom
 			poly{ back_lower_left, edge7, edge8 },
-			poly{ back_lower_left, edge2, edge8 },
+			poly{ edge2, back_lower_left, edge8 },
 			// back
 			poly{ back_lower_left, edge4, edge6 },
 			poly{ back_lower_left, edge6, edge7 }
