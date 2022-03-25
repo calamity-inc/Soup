@@ -86,7 +86,7 @@ namespace soup
 		}
 
 	protected:
-		bool str_lp_impl(std::string& v, size_t len)
+		bool str_impl(std::string& v, size_t len)
 		{
 			auto data = new char[len];
 			is->read(data, len);
@@ -100,42 +100,48 @@ namespace soup
 		bool str_lp_u64_dyn(std::string& v)
 		{
 			uint64_t len;
-			return u64_dyn(len) && str_lp_impl(v, len);
+			return u64_dyn(len) && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u8 for the length prefix.
 		bool str_lp_u8(std::string& v, const uint8_t max_len = 0xFF)
 		{
 			uint8_t len;
-			return u8(len) && len <= max_len && str_lp_impl(v, len);
+			return u8(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u16 for the length prefix.
 		bool str_lp_u16(std::string& v, const uint16_t max_len = 0xFFFF)
 		{
 			uint16_t len;
-			return u16(len) && len <= max_len && str_lp_impl(v, len);
+			return u16(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u24 for the length prefix.
 		bool str_lp_u24(std::string& v, const uint32_t max_len = 0xFFFFFF)
 		{
 			uint32_t len;
-			return u24(len) && len <= max_len && str_lp_impl(v, len);
+			return u24(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
 		bool str_lp_u32(std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
 			uint32_t len;
-			return u32(len) && len <= max_len && str_lp_impl(v, len);
+			return u32(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.
 		bool str_lp_u64(std::string& v)
 		{
 			uint64_t len;
-			return u64(len) && str_lp_impl(v, len);
+			return u64(len) && str_impl(v, len);
+		}
+
+		// String with known length.
+		bool str(size_t len, std::string& v)
+		{
+			return str_impl(v, len);
 		}
 
 		// std::vector<uint8_t> with u8 size prefix.
