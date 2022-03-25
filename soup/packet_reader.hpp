@@ -92,10 +92,8 @@ namespace soup
 	protected:
 		bool str_impl(std::string& v, size_t len)
 		{
-			auto data = new char[len];
-			is->read(data, len);
-			v.assign(data, len);
-			delete[] data;
+			v = std::string(len, 0);
+			is->read(v.data(), len);
 			return !is->fail();
 		}
 
