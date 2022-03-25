@@ -27,6 +27,12 @@ namespace soup
 			return read(iss);
 		}
 
+		bool fromBinaryLE(const std::string& bin)
+		{
+			std::istringstream iss{ bin };
+			return readLE(iss);
+		}
+
 		[[nodiscard]] std::string toBinary()
 		{
 			std::ostringstream oss{};
@@ -34,16 +40,35 @@ namespace soup
 			return oss.str();
 		}
 
+		[[nodiscard]] std::string toBinaryLE()
+		{
+			std::ostringstream oss{};
+			writeLE(oss);
+			return oss.str();
+		}
+
 		bool read(std::basic_istream<char, std::char_traits<char>>& is)
 		{
-			packet_reader r{ &is };
-			return reinterpret_cast<T*>(this)->template io<packet_reader>(r);
+			packet_reader<false> r(&is);
+			return reinterpret_cast<T*>(this)->template io<packet_reader<false>>(r);
+		}
+
+		bool readLE(std::basic_istream<char, std::char_traits<char>>& is)
+		{
+			packet_reader<true> r(&is);
+			return reinterpret_cast<T*>(this)->template io<packet_reader<true>>(r);
 		}
 
 		bool write(std::basic_ostream<char, std::char_traits<char>>& os)
 		{
-			packet_writer w{ &os };
-			return reinterpret_cast<T*>(this)->template io<packet_writer>(w);
+			packet_writer<false> w(&os);
+			return reinterpret_cast<T*>(this)->template io<packet_writer<false>>(w);
+		}
+
+		bool writeLE(std::basic_ostream<char, std::char_traits<char>>& os)
+		{
+			packet_writer<true> w(&os);
+			return reinterpret_cast<T*>(this)->template io<packet_writer<true>>(w);
 		}
 	};
 }

@@ -7,8 +7,13 @@
 
 namespace soup
 {
-	struct packet_writer : public packet_io_base<packet_writer>
+	template <bool little_endian>
+	class packet_writer : public packet_io_base<packet_writer<little_endian>, little_endian>
 	{
+	protected:
+		using Base = packet_io_base<packet_writer, little_endian>;
+
+	public:
 		std::basic_ostream<char, std::char_traits<char>>* os;
 
 		packet_writer(std::basic_ostream<char, std::char_traits<char>>* os)
@@ -99,7 +104,7 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint16_t)len;
-				if (u16(tl))
+				if (Base::u16(tl))
 				{
 					os->write(v.data(), v.size());
 					return true;
@@ -115,7 +120,7 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint32_t)len;
-				if (u24(tl))
+				if (Base::u24(tl))
 				{
 					os->write(v.data(), v.size());
 					return true;
@@ -131,7 +136,7 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint32_t)len;
-				if (u32(tl))
+				if (Base::u32(tl))
 				{
 					os->write(v.data(), v.size());
 					return true;
@@ -144,7 +149,7 @@ namespace soup
 		bool str_lp_u64(std::string& v)
 		{
 			uint64_t len = v.size();
-			if (u64(len))
+			if (Base::u64(len))
 			{
 				os->write(v.data(), v.size());
 				return true;
@@ -189,13 +194,13 @@ namespace soup
 				return false;
 			}
 			auto len = (uint16_t)v.size();
-			if (!u16(len))
+			if (!Base::u16(len))
 			{
 				return false;
 			}
 			for (auto& entry : v)
 			{
-				if (!u16(entry))
+				if (!Base::u16(entry))
 				{
 					return false;
 				}
@@ -212,13 +217,13 @@ namespace soup
 				return false;
 			}
 			auto bl_u16 = (uint16_t)bl;
-			if (!u16(bl_u16))
+			if (!Base::u16(bl_u16))
 			{
 				return false;
 			}
 			for (auto& entry : v)
 			{
-				if (!u16(entry))
+				if (!Base::u16(entry))
 				{
 					return false;
 				}
@@ -239,7 +244,7 @@ namespace soup
 				return false;
 			}
 			auto bl_u32 = (uint32_t)bl;
-			if (!u24(bl_u32))
+			if (!Base::u24(bl_u32))
 			{
 				return false;
 			}

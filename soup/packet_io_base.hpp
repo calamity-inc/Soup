@@ -6,9 +6,11 @@
 
 namespace soup
 {
-	template <typename T>
+	template <typename T, bool little_endian>
 	struct packet_io_base
 	{
+		static constexpr bool native_endianness = (SOUP_LITTLE_ENDIAN == little_endian);
+
 		[[nodiscard]] bool b(bool& v)
 		{
 			return reinterpret_cast<T*>(this)->u8(*(uint8_t*)&v);
@@ -21,15 +23,15 @@ namespace soup
 
 		[[nodiscard]] bool u16(uint16_t& v)
 		{
-			if constexpr (SOUP_LITTLE_ENDIAN)
-			{
-				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
-			}
-			else
+			if constexpr (native_endianness)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1]);
+			}
+			else
+			{
+				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
 			}
 		}
 
@@ -39,35 +41,35 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (SOUP_LITTLE_ENDIAN)
-			{
-				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
-			}
-			else
+			if constexpr (native_endianness)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2]);
 			}
+			else
+			{
+				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
+			}
 		}
 		
 		[[nodiscard]] bool u32(uint32_t& v)
 		{
-			if constexpr (SOUP_LITTLE_ENDIAN)
-			{
-				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
-			}
-			else
+			if constexpr (native_endianness)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3]);
+			}
+			else
+			{
+				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
 			}
 		}
 
@@ -77,21 +79,21 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (SOUP_LITTLE_ENDIAN)
-			{
-				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
-			}
-			else
+			if constexpr (native_endianness)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4]);
+			}
+			else
+			{
+				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
 			}
 		}
 		
@@ -101,16 +103,7 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (SOUP_LITTLE_ENDIAN)
-			{
-				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
-			}
-			else
+			if constexpr (native_endianness)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
@@ -118,6 +111,15 @@ namespace soup
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5]);
+			}
+			else
+			{
+				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
 			}
 		}
 
@@ -127,17 +129,7 @@ namespace soup
 			{
 				v = 0;
 			}
-			if constexpr (SOUP_LITTLE_ENDIAN)
-			{
-				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
-			}
-			else
+			if constexpr (native_endianness)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
@@ -147,14 +139,9 @@ namespace soup
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6]);
 			}
-		}
-
-		[[nodiscard]] bool u64(uint64_t& v)
-		{
-			if constexpr (SOUP_LITTLE_ENDIAN)
+			else
 			{
-				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[7])
-					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])
+				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
@@ -162,7 +149,11 @@ namespace soup
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
 			}
-			else
+		}
+
+		[[nodiscard]] bool u64(uint64_t& v)
+		{
+			if constexpr (native_endianness)
 			{
 				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
@@ -172,6 +163,17 @@ namespace soup
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])
 					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[7]);
+			}
+			else
+			{
+				return reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[7])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[6])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[5])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[4])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[3])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[2])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[1])
+					&& reinterpret_cast<T*>(this)->u8(((uint8_t*)&v)[0]);
 			}
 		}
 
