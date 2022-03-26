@@ -371,8 +371,29 @@
     <ClInclude Include="editor_file.hpp">
       <Filter>ui\editor</Filter>
     </ClInclude>
+    <ClInclude Include="zip_reader.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
     <ClInclude Include="crc32.hpp">
       <Filter>hash</Filter>
+    </ClInclude>
+    <ClInclude Include="zip_central_directory_file.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="zip_end_of_central_directory.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="zip_file_common.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="zip_local_file_header.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="zip_writer.hpp">
+      <Filter>io\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="zip_indexed_file.hpp">
+      <Filter>io\zip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -515,6 +536,8 @@
     <ClCompile Include="matrix.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="zip_reader.cpp" />
+    <ClCompile Include="zip_writer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -573,6 +596,9 @@
     </Filter>
     <Filter Include="util\string">
       <UniqueIdentifier>{db02d3fa-069e-4d94-ac69-1ceda5822d24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\zip">
+      <UniqueIdentifier>{5e908491-421e-426f-ad6f-f870c4b0a291}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

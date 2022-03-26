@@ -330,6 +330,13 @@
     <ClInclude Include="worker.hpp" />
     <ClInclude Include="x509_certificate.hpp" />
     <ClInclude Include="x509_relative_distinguished_name.hpp" />
+    <ClInclude Include="zip_indexed_file.hpp" />
+    <ClInclude Include="zip_file_common.hpp" />
+    <ClInclude Include="zip_reader.hpp" />
+    <ClInclude Include="zip_central_directory_file.hpp" />
+    <ClInclude Include="zip_end_of_central_directory.hpp" />
+    <ClInclude Include="zip_local_file_header.hpp" />
+    <ClInclude Include="zip_writer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aes.cpp" />
@@ -379,6 +386,8 @@
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="worker.cpp" />
     <ClCompile Include="x509_certificate.cpp" />
+    <ClCompile Include="zip_reader.cpp" />
+    <ClCompile Include="zip_writer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
