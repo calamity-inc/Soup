@@ -38,7 +38,7 @@ namespace soup
 
 		[[nodiscard]] bool u8(uint8_t& p)
 		{
-			return !is->read((char*)&p, sizeof(uint8_t)).fail();
+			return !is->read((char*)&p, sizeof(uint8_t)).bad();
 		}
 
 		// An unsigned 64-bit integer encoded in 1..9 bytes. The most significant bit of bytes 1 to 8 is used to indicate if another byte follows.
@@ -94,7 +94,7 @@ namespace soup
 		{
 			v = std::string(len, 0);
 			is->read(v.data(), len);
-			return !is->fail();
+			return !is->bad();
 		}
 
 	public:
