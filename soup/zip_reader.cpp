@@ -41,7 +41,7 @@ namespace soup
 	}
 
 	std::vector<zip_indexed_file> zip_reader::getFileList() const
-    {
+	{
 		std::vector<zip_indexed_file> ret{};
 
 		if (auto eocd_offset = seekCentralDirectory())
@@ -99,7 +99,7 @@ namespace soup
 		}
 
 		return ret;
-    }
+	}
 
 	std::string zip_reader::getFileContents(const zip_indexed_file& file) const
 	{
