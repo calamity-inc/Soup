@@ -105,6 +105,7 @@ namespace soup
 	{
 		std::string ret{};
 
+		is->clear();
 		is->seekg(file.disk_offset);
 		char bytes[4];
 		is->read(bytes, 4);
@@ -113,8 +114,8 @@ namespace soup
 			zip_local_file_header lfh;
 			if (lfh.readLE(*is))
 			{
-				ret = std::string(lfh.common.uncompressed_size, 0);
-				is->read(ret.data(), lfh.common.uncompressed_size);
+				ret = std::string(lfh.common.compressed_size, 0);
+				is->read(ret.data(), lfh.common.compressed_size);
 			}
 		}
 
