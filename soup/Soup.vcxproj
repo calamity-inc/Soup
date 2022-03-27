@@ -216,6 +216,7 @@
     <ClInclude Include="bitpointer.hpp" />
     <ClInclude Include="bitset.hpp" />
     <ClInclude Include="bigbitset.hpp" />
+    <ClInclude Include="bit_in_stream.hpp" />
     <ClInclude Include="box.hpp" />
     <ClInclude Include="box_axis_aligned.hpp" />
     <ClInclude Include="box_corners.hpp" />

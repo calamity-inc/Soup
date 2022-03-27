@@ -395,6 +395,9 @@
     <ClInclude Include="zip_indexed_file.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
+    <ClInclude Include="bit_in_stream.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
