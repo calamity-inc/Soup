@@ -1,5 +1,7 @@
 #include "zip_reader.hpp"
 
+#include <cstring> // memcmp
+
 #include "zip_central_directory_file.hpp"
 #include "zip_end_of_central_directory.hpp"
 #include "zip_local_file_header.hpp"
