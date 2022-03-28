@@ -64,6 +64,7 @@ namespace soup
 
 		void operator =(capture&& b) noexcept
 		{
+			reset();
 			data = b.data;
 			deleter = b.deleter;
 			b.data = nullptr;
