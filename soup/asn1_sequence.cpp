@@ -259,8 +259,13 @@ namespace soup
 			length = 0;
 			for (auto i = 0; i != length_bytes; ++i)
 			{
+				auto r = s.get();
+				if (r == EOF)
+				{
+					break;
+				}
 				length <<= 8;
-				length |= (uint8_t)s.get();
+				length |= (uint8_t)r;
 			}
 		}
 		return length;
