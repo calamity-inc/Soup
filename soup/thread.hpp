@@ -23,6 +23,7 @@ namespace soup
 #else
 		pthread_t handle;
 		bool running = true;
+		bool joined = false;
 #endif
 		capture create_capture;
 

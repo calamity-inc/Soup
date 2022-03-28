@@ -72,7 +72,7 @@ namespace soup
 		TerminateThread(handle, 0);
 		CloseHandle(handle);
 #else
-		if (running)
+		if (!joined)
 		{
 			pthread_cancel(handle);
 			pthread_join(handle, nullptr);
@@ -97,11 +97,11 @@ namespace soup
 #if SOUP_WINDOWS
 		TerminateThread(handle, 0);
 #else
-		if (running)
+		if (!joined)
 		{
 			pthread_cancel(handle);
 			pthread_join(handle, nullptr);
-			running = false;
+			joined = true;
 		}
 #endif
 	}
@@ -111,9 +111,10 @@ namespace soup
 #if SOUP_WINDOWS
 		WaitForSingleObject(handle, INFINITE);
 #else
-		if (running)
+		if (!joined)
 		{
 			pthread_join(handle, nullptr);
+			joined = true;
 		}
 #endif
 	}
