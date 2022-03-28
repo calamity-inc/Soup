@@ -94,6 +94,7 @@ namespace soup
 		bool setBlocking(bool blocking = true) noexcept;
 		bool setNonBlocking() noexcept;
 
+		// Note that the server's certificate chain is not validated nor checked against any trust anchors.
 		void enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap = {});
 	protected:
 		void enableCryptoClientRecvServerHelloDone(std::unique_ptr<socket_tls_handshaker>&& handshaker);

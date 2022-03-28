@@ -16,6 +16,7 @@ namespace soup
 		{
 		}
 
+		// Note that no compression will be performed.
 		zip_indexed_file addFile(std::string name, const std::string& contents) const;
 
 		void finalise(const std::vector<zip_indexed_file>& files) const;
