@@ -36,6 +36,11 @@ namespace soup
 			i += 5;
 			in.erase(j, i - j);
 		}
+		return decodeUnpacked(std::move(in));
+	}
+
+	std::string pem::decodeUnpacked(std::string in)
+	{
 		string::erase<std::string>(in, "\r");
 		string::erase<std::string>(in, "\n");
 		string::erase<std::string>(in, "\t");

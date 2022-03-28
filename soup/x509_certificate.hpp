@@ -8,6 +8,10 @@ namespace soup
 {
 	class x509_certificate
 	{
+	protected:
+		std::string tbsCertDer;
+		bigint sig;
+
 	public:
 		x509_relative_distinguished_name issuer;
 		x509_relative_distinguished_name subject;
@@ -18,5 +22,9 @@ namespace soup
 		bool load(const asn1_sequence& cert);
 	protected:
 		[[nodiscard]] static x509_relative_distinguished_name readRelativeDistinguishedName(const asn1_sequence& seq);
+
+	public:
+		[[nodiscard]] bool verify(const x509_certificate& issuer) const;
+		[[nodiscard]] bool verify(const rsa::key_public& issuer) const;
 	};
 }

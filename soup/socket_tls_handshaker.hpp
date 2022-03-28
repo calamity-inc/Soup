@@ -3,6 +3,7 @@
 #include "fwd.hpp"
 
 #include "capture.hpp"
+#include "certchain.hpp"
 #include "promise.hpp"
 #include "socket_tls_encrypter.hpp"
 #include "socket_tls_server_rsa_data.hpp"
@@ -26,7 +27,8 @@ namespace soup
 		std::string expected_finished_verify_data{};
 
 		// client
-		std::vector<x509_certificate> certchain{};
+		bool(*certchain_validator)(const certchain&);
+		certchain m_certchain{};
 		std::string server_x25519_public_key{};
 		socket_tls_encrypter pending_recv_encrypter;
 

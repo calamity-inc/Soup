@@ -398,6 +398,12 @@
     <ClInclude Include="bit_in_stream.hpp">
       <Filter>io</Filter>
     </ClInclude>
+    <ClInclude Include="keystore.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="certchain.hpp">
+      <Filter>crypto\x509</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -544,6 +550,12 @@
     </ClCompile>
     <ClCompile Include="zip_writer.cpp">
       <Filter>io\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="keystore.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="certchain.cpp">
+      <Filter>crypto\x509</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

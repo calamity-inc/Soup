@@ -4,6 +4,12 @@
 
 namespace soup
 {
+	// crypto
+	struct keystore;
+
+	// crypto.x509
+	struct certchain;
+
 	// io.asn1
 	struct asn1_sequence;
 

@@ -225,6 +225,7 @@
     <ClInclude Include="callback.hpp" />
     <ClInclude Include="canvas.hpp" />
     <ClInclude Include="capture.hpp" />
+    <ClInclude Include="certchain.hpp" />
     <ClInclude Include="control_input.hpp" />
     <ClInclude Include="conui_app.hpp" />
     <ClInclude Include="conui_base.hpp" />
@@ -244,6 +245,7 @@
     <ClInclude Include="editor_text.hpp" />
     <ClInclude Include="endianness.hpp" />
     <ClInclude Include="int_vector.hpp" />
+    <ClInclude Include="keystore.hpp" />
     <ClInclude Include="mouse_button.hpp" />
     <ClInclude Include="named_curves.hpp" />
     <ClInclude Include="optimised.hpp" />
@@ -350,6 +352,7 @@
     <ClCompile Include="box_corners.cpp" />
     <ClCompile Include="bytepatch.cpp" />
     <ClCompile Include="canvas.cpp" />
+    <ClCompile Include="certchain.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="conui_app.cpp" />
     <ClCompile Include="conui_base.cpp" />
@@ -360,6 +363,7 @@
     <ClCompile Include="editor.cpp" />
     <ClCompile Include="editor_tab.cpp" />
     <ClCompile Include="editor_text.cpp" />
+    <ClCompile Include="keystore.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
     <ClCompile Include="module.cpp" />

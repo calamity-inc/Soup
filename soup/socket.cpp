@@ -229,12 +229,21 @@ namespace soup
 		return setBlocking(false);
 	}
 
-	void socket::enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap)
+	bool socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const certchain&)
+	{
+		// certchain is already decently implemented, but there's a few flaws:
+		// - no ECC support (big deal since cloudflare is basically ecc only now)
+		// - no built-in trust stores (and what would be a good default? not all machines running this code can be trusted, to be quite honest.)
+		return true;
+	}
+
+	void socket::enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap, bool(*certchain_validator)(const certchain&))
 	{
 		auto handshaker = std::make_unique<socket_tls_handshaker>(
 			callback,
 			std::move(cap)
 		);
+		handshaker->certchain_validator = certchain_validator;
 
 		tls_client_hello hello;
 		hello.random.time = time::unixSeconds();
@@ -288,22 +297,13 @@ namespace soup
 						s.tls_close(tls_alert_description::decode_error);
 						return;
 					}
-					for (const auto& asn1_cert : cert.asn1_certs)
-					{
-						x509_certificate xcert{};
-						if (!xcert.fromBinary(asn1_cert))
-						{
-							s.tls_close(tls_alert_description::bad_certificate);
-							return;
-						}
-						handshaker->certchain.emplace_back(std::move(xcert));
-					}
-					if (handshaker->certchain.empty())
+					if (!handshaker->m_certchain.fromDer(cert.asn1_certs)
+						|| !handshaker->certchain_validator(handshaker->m_certchain)
+						)
 					{
 						s.tls_close(tls_alert_description::bad_certificate);
 						return;
 					}
-					// TODO: Validate certchain
 
 					switch (handshaker->cipher_suite)
 					{
@@ -358,7 +358,7 @@ namespace soup
 				}
 
 				tls_encrypted_pre_master_secret epms{};
-				epms.data = handshaker->certchain.at(0).key.encryptPkcs1(pms).toBinary();
+				epms.data = handshaker->m_certchain.certs.at(0).key.encryptPkcs1(pms).toBinary();
 				cke = epms.toBinary();
 
 				handshaker->pre_master_secret = std::make_unique<promise<std::string>>(std::move(pms));

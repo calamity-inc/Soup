@@ -4,6 +4,7 @@
 #include <cctype> // std::tolower
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace soup
 {
@@ -135,6 +136,59 @@ namespace soup
 		}
 
 		// string mutation
+
+		template <class S>
+		static void replace_all(S& str, const S& from, const S& to) noexcept
+		{
+			size_t start_pos = 0;
+			while ((start_pos = str.find(from, start_pos)) != S::npos)
+			{
+				str.replace(start_pos, from.length(), to);
+				start_pos += to.length();
+			}
+		}
+
+		static void replace_all(std::string& str, const std::string& from, const std::string& to) noexcept
+		{
+			return replace_all<std::string>(str, from, to);
+		}
+
+		static void replace_all(std::wstring& str, const std::wstring& from, const std::wstring& to) noexcept
+		{
+			return replace_all<std::wstring>(str, from, to);
+		}
+
+		template <typename S, typename D>
+		[[nodiscard]] static std::vector<S> explode(const S& str, D delim)
+		{
+			std::vector<S> res{};
+			if (!str.empty())
+			{
+				size_t prev = 0;
+				size_t del_pos;
+				while ((del_pos = str.find(delim, prev)) != std::string::npos)
+				{
+					res.emplace_back(str.substr(prev, del_pos - prev));
+					prev = del_pos + 1;
+				}
+				auto remain_len = (str.length() - prev);
+				if (remain_len != 0)
+				{
+					res.emplace_back(str.substr(prev, remain_len));
+				}
+				else
+				{
+					if constexpr (std::is_same_v<D, char> || std::is_same_v<D, wchar_t>)
+					{
+						if (str.at(str.length() - 1) == delim)
+						{
+							res.emplace_back(S{});
+						}
+					}
+				}
+			}
+			return res;
+		}
 
 		template <typename T>
 		static void erase(T& str, const T& target)
