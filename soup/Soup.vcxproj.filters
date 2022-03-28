@@ -539,8 +539,12 @@
     <ClCompile Include="matrix.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="zip_reader.cpp" />
-    <ClCompile Include="zip_writer.cpp" />
+    <ClCompile Include="zip_reader.cpp">
+      <Filter>io\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="zip_writer.cpp">
+      <Filter>io\zip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
