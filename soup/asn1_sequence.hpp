@@ -28,7 +28,7 @@ namespace soup
 		void addInt(const bigint& val);
 
 		[[nodiscard]] std::string toDer() const;
-		[[nodiscard]] std::string toString(const std::string& prefix = "") const;
+		[[nodiscard]] std::string toString(const std::string& prefix = {}) const;
 
 		static asn1_identifier readIdentifier(std::istream& s);
 		[[nodiscard]] static size_t readLength(std::istream& s);
