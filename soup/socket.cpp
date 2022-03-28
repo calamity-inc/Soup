@@ -517,7 +517,6 @@ namespace soup
 				handshaker->pre_master_secret = std::make_unique<promise<std::string>>([](capture&& _cap)
 				{
 					auto& cap = _cap.get<capture_decrypt_pre_master_secret>();
-					// BUG: This crypto operation is slow as fuck
 					return cap.handshaker->rsa_data.private_key.decryptPkcs1(cap.data);
 				}, capture_decrypt_pre_master_secret{
 					handshaker.get(),
