@@ -35,8 +35,8 @@ namespace soup
 		using fd_t = int;
 #endif
 		fd_t fd = -1;
-
 		addr_socket peer;
+		bool remote_closed = false;
 
 		std::string tls_record_buf_data{};
 		tls_content_type_t tls_record_buf_content_type;
@@ -146,6 +146,8 @@ namespace soup
 		bool transport_send(const void* data, int size) const noexcept;
 
 		using transport_recv_callback_t = void(*)(socket&, std::string&&, capture&&);
+
+		[[nodiscard]] bool transport_hasData() const;
 
 	protected:
 		[[nodiscard]] std::string transport_recvCommon(int max_bytes);

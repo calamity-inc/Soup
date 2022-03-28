@@ -92,13 +92,17 @@ namespace soup
 				auto workers_i = workers.begin() + (i - pollfds.begin());
 				if (i->revents & ~POLLIN)
 				{
-					if (on_connection_lost)
+					reinterpret_cast<socket*>(workers_i->get())->remote_closed = true;
+					if (!reinterpret_cast<socket*>(workers_i->get())->transport_hasData())
 					{
-						on_connection_lost(*reinterpret_cast<socket*>(workers_i->get()));
+						if (on_connection_lost)
+						{
+							on_connection_lost(*reinterpret_cast<socket*>(workers_i->get()));
+						}
+						workers.erase(workers_i);
+						i = pollfds.erase(i);
+						continue;
 					}
-					workers.erase(workers_i);
-					i = pollfds.erase(i);
-					continue;
 				}
 				fireHoldupCallback(**workers_i);
 			}

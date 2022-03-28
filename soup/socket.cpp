@@ -72,6 +72,8 @@ namespace soup
 
 		fd = b.fd;
 		peer = std::move(b.peer);
+		remote_closed = b.remote_closed;
+
 		tls_record_buf_data = std::move(b.tls_record_buf_data);
 		tls_record_buf_content_type = b.tls_record_buf_content_type;
 		tls_encrypter_send = std::move(b.tls_encrypter_send);
@@ -846,6 +848,12 @@ namespace soup
 		}
 	}
 
+	bool socket::transport_hasData() const
+	{
+		char buf;
+		return ::recv(fd, &buf, 1, MSG_PEEK) == 1;
+	}
+
 	bool socket::transport_send(const std::string& data) const noexcept
 	{
 		return transport_send(data.data(), data.size());
@@ -922,6 +930,10 @@ namespace soup
 		if (pre.size() == bytes)
 		{
 			callback(*this, std::move(pre), std::move(cap));
+			return;
+		}
+		if (remote_closed)
+		{
 			return;
 		}
 		holdup_type = SOCKET;
