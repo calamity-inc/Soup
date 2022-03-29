@@ -106,7 +106,7 @@ namespace soup
 #endif
 	}
 
-	void thread::awaitCompletion() const noexcept
+	void thread::awaitCompletion() noexcept
 	{
 #if SOUP_WINDOWS
 		WaitForSingleObject(handle, INFINITE);
@@ -119,17 +119,17 @@ namespace soup
 #endif
 	}
 
-	void thread::awaitCompletion(const std::vector<thread>& threads) noexcept
+	void thread::awaitCompletion(std::vector<thread>& threads) noexcept
 	{
 #if SOUP_WINDOWS
 		std::vector<HANDLE> handles{};
-		for (const auto& t : threads)
+		for (auto& t : threads)
 		{
 			handles.emplace_back(t.handle);
 		}
 		WaitForMultipleObjects((DWORD)handles.size(), handles.data(), TRUE, INFINITE);
 #else
-		for (const auto& t : threads)
+		for (auto& t : threads)
 		{
 			t.awaitCompletion();
 		}

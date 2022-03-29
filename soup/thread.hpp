@@ -40,7 +40,7 @@ namespace soup
 		[[nodiscard]] bool isRunning() const noexcept;
 		void stop() noexcept;
 
-		void awaitCompletion() const noexcept;
-		static void awaitCompletion(const std::vector<thread>& threads) noexcept;
+		void awaitCompletion() noexcept;
+		static void awaitCompletion(std::vector<thread>& threads) noexcept;
 	};
 }
