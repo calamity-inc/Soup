@@ -34,6 +34,7 @@ namespace soup
 
 		// server
 		void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name);
+		void(*on_client_hello)(socket&, tls_client_hello&&);
 		socket_tls_server_rsa_data rsa_data{};
 
 		explicit socket_tls_handshaker(void(*callback)(socket&, capture&&), capture&& callback_capture);

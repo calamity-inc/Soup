@@ -2,19 +2,29 @@
 #include <thread>
 
 #include <asn1_sequence.hpp>
+#include <crc32.hpp>
 #include <pem.hpp>
 #include <rsa.hpp>
 #include <scheduler.hpp>
 #include <server.hpp>
 #include <socket.hpp>
 #include <socket_tls_server_rsa_data.hpp>
+#include <string.hpp>
+#include <tls_client_hello.hpp>
+
+struct SimpleServerClientData
+{
+	std::vector<uint16_t> cipher_suites{};
+	std::vector<uint8_t> compression_methods{};
+	std::vector<uint16_t> extensions{};
+};
 
 static void sendHtml(soup::socket& s, std::string body)
 {
 	auto len = body.size();
 	body.insert(0, "\r\n\r\n");
 	body.insert(0, std::to_string(len));
-	body.insert(0, "HTTP/1.0 200\r\nContent-Length: ");
+	body.insert(0, "HTTP/1.0 200\r\nServer: soup\r\nCache-Control: private\r\nContent-Type: text/html\r\nContent-Length: ");
 	s.send(body);
 	s.close();
 }
@@ -82,6 +92,46 @@ static void httpRecv(soup::socket& s)
 </body>
 </html>
 )EOC");
+		}
+		else if (data == "/tlsid")
+		{
+			if (!s.isEncrypted())
+			{
+				sendHtml(s, "For security reasons, we can only send you your TLS ID over a secure connection. :^)");
+			}
+			else
+			{
+				auto& data = s.getUserData<SimpleServerClientData>();
+				
+				std::string cipher_suites_str{};
+				for (const auto& cs : data.cipher_suites)
+				{
+					soup::string::listAppend(cipher_suites_str, soup::string::hex(cs));
+				}
+
+				std::string compression_methods_str{};
+				for (const auto& cm : data.compression_methods)
+				{
+					soup::string::listAppend(compression_methods_str, soup::string::hex(cm));
+				}
+
+				std::string extensions_str{};
+				for (const auto& ext : data.extensions)
+				{
+					soup::string::listAppend(extensions_str, soup::string::hex(ext));
+				}
+
+				std::string str = "<p>Your user agent offered the following for the TLS handshake:</p><ul><li>Cipher suites: ";
+				str.append(cipher_suites_str);
+				str.append("</li><li>Compression methods: ");
+				str.append(compression_methods_str);
+				str.append("</li><li>Extensions: ");
+				str.append(extensions_str);
+				str.append("</li></ul><p>\"Hashing\" this together gives us the following: ");
+				str.append(soup::string::hex(soup::crc32::hash(str)));
+				str.append("</p>");
+				sendHtml(s, std::move(str));
+			}
 		}
 		else
 		{
@@ -188,7 +238,17 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 			s.enableCryptoServer([](soup::socket_tls_server_rsa_data& out, const std::string& server_name)
 			{
 				out = server_rsa_data;
-			}, &httpRecv);
+			}, &httpRecv, {}, [](soup::socket& s, soup::tls_client_hello&& hello)
+			{
+				auto& data = s.getUserData<SimpleServerClientData>();
+				data.cipher_suites = std::move(hello.cipher_suites);
+				data.compression_methods = std::move(hello.compression_methods);
+				data.extensions.reserve(hello.extensions.extensions.size());
+				for (const auto& ext : hello.extensions.extensions)
+				{
+					data.extensions.emplace_back(ext.id);
+				}
+			});
 		}
 	};
 	srv.on_work_done = [](soup::worker& w)

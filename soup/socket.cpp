@@ -72,6 +72,7 @@ namespace soup
 
 		fd = b.fd;
 		peer = std::move(b.peer);
+		user_data = std::move(b.user_data);
 		remote_closed = b.remote_closed;
 
 		tls_record_buf_data = std::move(b.tls_record_buf_data);
@@ -430,13 +431,14 @@ namespace soup
 		bigint data;
 	};
 
-	void socket::enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap)
+	void socket::enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap, void(*on_client_hello)(socket&, tls_client_hello&&))
 	{
 		auto handshaker = std::make_unique<socket_tls_handshaker>(
 			callback,
 			std::move(cap)
 		);
 		handshaker->cert_selector = cert_selector;
+		handshaker->on_client_hello = on_client_hello;
 		tls_recvHandshake(std::move(handshaker), tls_handshake::client_hello, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 		{
 			{
@@ -476,6 +478,11 @@ namespace soup
 				}
 
 				handshaker->client_random = hello.random.toBinary();
+				
+				if (handshaker->on_client_hello)
+				{
+					handshaker->on_client_hello(s, std::move(hello));
+				}
 			}
 
 			{
@@ -560,6 +567,11 @@ namespace soup
 				}, std::move(handshaker));
 			});
 		});
+	}
+
+	bool socket::isEncrypted() const noexcept
+	{
+		return tls_encrypter_send.isActive();
 	}
 
 	bool socket::send(const std::string& data)

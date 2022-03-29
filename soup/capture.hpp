@@ -86,6 +86,11 @@ namespace soup
 			deleter = &deleter_impl<std::remove_reference_t<T>>;
 		}
 
+		[[nodiscard]] operator bool() const noexcept
+		{
+			return data != nullptr;
+		}
+
 		template <typename T>
 		[[nodiscard]] T& get() const noexcept
 		{

@@ -45,6 +45,7 @@ namespace soup
 	// net.tls
 	class socket_tls_handshaker;
 	struct socket_tls_server_rsa_data;
+	struct tls_client_hello;
 
 	// os
 	enum control_input : uint8_t;

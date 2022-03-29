@@ -199,6 +199,8 @@ namespace soup
 			}
 		}
 
+		static void listAppend(std::string& str, std::string&& add);
+
 		// char mutation
 
 		template <typename Str>

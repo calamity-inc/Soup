@@ -36,6 +36,7 @@ namespace soup
 #endif
 		fd_t fd = -1;
 		addr_socket peer;
+		capture user_data;
 		bool remote_closed = false;
 
 		std::string tls_record_buf_data{};
@@ -101,9 +102,21 @@ namespace soup
 		void enableCryptoClientRecvServerHelloDone(std::unique_ptr<socket_tls_handshaker>&& handshaker);
 
 	public:
-		void enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap = {});
+		void enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap = {}, void(*on_client_hello)(socket&, tls_client_hello&&) = nullptr);
 	
 		// Application Layer
+
+		[[nodiscard]] bool isEncrypted() const noexcept;
+
+		template <typename T>
+		[[nodiscard]] T& getUserData() // Allows you to associate custom data with a socket. Note that all calls to getUserData on the same socket must use the same T.
+		{
+			if (!user_data)
+			{
+				user_data = T{};
+			}
+			return user_data.get<T>();
+		}
 
 		bool send(const std::string& data);
 

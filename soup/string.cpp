@@ -6,6 +6,18 @@
 
 namespace soup
 {
+	void string::listAppend(std::string& str, std::string&& add)
+	{
+		if (str.empty())
+		{
+			str = std::move(add);
+		}
+		else
+		{
+			str.append(", ").append(add);
+		}
+	}
+
 	std::string string::fromFile(const std::string& file)
 	{
 		std::string ret{};
