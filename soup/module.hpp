@@ -3,24 +3,23 @@
 #include "base.hpp"
 #if SOUP_WINDOWS
 
-#include <memory>
-
 #include "fwd.hpp"
 
 #include "handle_base.hpp"
 #include "range.hpp"
+#include "unique_ptr.hpp"
 
 namespace soup
 {
 	class module
 	{
 	public:
-		std::unique_ptr<handle_base> h;
+		unique_ptr<handle_base> h;
 		range m_range;
 
 		module() noexcept = default;
-		module(std::unique_ptr<handle_base>&& h, range&& range);
-		module(std::unique_ptr<handle_base>&& h);
+		module(unique_ptr<handle_base>&& h, range&& range);
+		module(unique_ptr<handle_base>&& h);
 		module(HANDLE h);
 		module(std::nullptr_t);
 		module(const char* name);
@@ -44,8 +43,8 @@ namespace soup
 
 		[[nodiscard]] pointer externalScan(const pattern& sig) const;
 
-		[[nodiscard]] std::unique_ptr<alloc_raii_remote> allocate(size_t size, DWORD type = MEM_COMMIT | MEM_RESERVE, DWORD protect = PAGE_EXECUTE_READWRITE) const;
-		[[nodiscard]] std::unique_ptr<alloc_raii_remote> copyInto(const void* data, size_t size) const;
+		[[nodiscard]] unique_ptr<alloc_raii_remote> allocate(size_t size, DWORD type = MEM_COMMIT | MEM_RESERVE, DWORD protect = PAGE_EXECUTE_READWRITE) const;
+		[[nodiscard]] unique_ptr<alloc_raii_remote> copyInto(const void* data, size_t size) const;
 		size_t externalWrite(pointer p, const void* data, size_t size) const noexcept;
 		
 		template <typename T>
@@ -60,7 +59,7 @@ namespace soup
 			return externalWrite(p, &data, S);
 		}
 
-		std::unique_ptr<handle_raii> executeAsync(void* rip, uintptr_t rcx) const noexcept;
+		unique_ptr<handle_raii> executeAsync(void* rip, uintptr_t rcx) const noexcept;
 		void executeSync(void* rip, uintptr_t rcx) const noexcept;
 	};
 }

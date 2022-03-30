@@ -5,8 +5,6 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
-#include <memory>
-
 #if SOUP_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
 #include <Winsock2.h>
@@ -18,6 +16,7 @@
 #include "addr_socket.hpp"
 #include "capture.hpp"
 #include "socket_tls_encrypter.hpp"
+#include "unique_ptr.hpp"
 
 namespace soup
 {
@@ -99,7 +98,7 @@ namespace soup
 
 		void enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap = {}, bool(*certchain_validator)(const certchain&) = &trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
 	protected:
-		void enableCryptoClientRecvServerHelloDone(std::unique_ptr<socket_tls_handshaker>&& handshaker);
+		void enableCryptoClientRecvServerHelloDone(unique_ptr<socket_tls_handshaker>&& handshaker);
 
 	public:
 		void enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap = {}, void(*on_client_hello)(socket&, tls_client_hello&&) = nullptr);
@@ -143,10 +142,10 @@ namespace soup
 
 		// TLS - Crypto Layer
 
-		bool tls_sendHandshake(const std::unique_ptr<socket_tls_handshaker>& handshaker, tls_handshake_type_t handshake_type, const std::string& content);
+		bool tls_sendHandshake(const unique_ptr<socket_tls_handshaker>& handshaker, tls_handshake_type_t handshake_type, const std::string& content);
 		bool tls_sendRecord(tls_content_type_t content_type, std::string content);
 
-		void tls_recvHandshake(std::unique_ptr<socket_tls_handshaker>&& handshaker, tls_handshake_type_t expected_handshake_type, void(*callback)(socket&, std::unique_ptr<socket_tls_handshaker>&&, std::string&&), std::string&& pre = {});
+		void tls_recvHandshake(unique_ptr<socket_tls_handshaker>&& handshaker, tls_handshake_type_t expected_handshake_type, void(*callback)(socket&, unique_ptr<socket_tls_handshaker>&&, std::string&&), std::string&& pre = {});
 		void tls_recvRecord(tls_content_type_t expected_content_type, void(*callback)(socket&, std::string&&, capture&&), capture&& cap = {});
 		void tls_recvRecord(void(*callback)(socket&, tls_content_type_t, std::string&&, capture&&), capture&& cap = {});
 

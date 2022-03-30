@@ -1,19 +1,18 @@
 #pragma once
 
-#include <memory>
-
 #include "capture.hpp"
 #include "thread.hpp"
+#include "unique_ptr.hpp"
 
 namespace soup
 {
 	class promise_base
 	{
 	protected:
-		std::unique_ptr<thread> thrd{};
+		unique_ptr<thread> thrd{};
 		capture res{};
 
-		promise_base(std::unique_ptr<thread>&& thrd)
+		promise_base(unique_ptr<thread>&& thrd)
 			: thrd(std::move(thrd))
 		{
 		}
@@ -58,7 +57,7 @@ namespace soup
 
 	public:
 		promise(T(*f)(capture&&), capture&& cap = {})
-			: promise_base(std::make_unique<thread>(&thrdFunc, capture_ctor{
+			: promise_base(make_unique<thread>(&thrdFunc, capture_ctor{
 				this,
 				f,
 				std::move(cap)

@@ -14,7 +14,7 @@ namespace soup
 	{
 	}
 
-	std::unique_ptr<process> process::get(const char* name)
+	unique_ptr<process> process::get(const char* name)
 	{
 		handle_raii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 		if (hSnap)
@@ -27,7 +27,7 @@ namespace soup
 				{
 					if (strcmp(entry.szExeFile, name) == 0)
 					{
-						return std::make_unique<process>(entry.th32ProcessID, entry.szExeFile);
+						return make_unique<process>(entry.th32ProcessID, entry.szExeFile);
 					}
 				} while (Process32Next(hSnap, &entry));
 			}
@@ -35,7 +35,7 @@ namespace soup
 		return {};
 	}
 
-	std::unique_ptr<process> process::get(DWORD id)
+	unique_ptr<process> process::get(DWORD id)
 	{
 		handle_raii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 		if (hSnap)
@@ -48,7 +48,7 @@ namespace soup
 				{
 					if (entry.th32ProcessID == id)
 					{
-						return std::make_unique<process>(entry.th32ProcessID, entry.szExeFile);
+						return make_unique<process>(entry.th32ProcessID, entry.szExeFile);
 					}
 				} while (Process32Next(hSnap, &entry));
 			}
@@ -69,7 +69,7 @@ namespace soup
 				{
 					if (this->name == entry.szModule)
 					{
-						return std::make_unique<module>(std::make_unique<handle_raii>(OpenProcess(desired_access, FALSE, id)), range(entry.modBaseAddr, entry.modBaseSize));
+						return std::make_shared<module>(make_unique<handle_raii>(OpenProcess(desired_access, FALSE, id)), range(entry.modBaseAddr, entry.modBaseSize));
 					}
 				} while (Module32Next(hSnap, &entry));
 			}

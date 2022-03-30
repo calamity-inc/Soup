@@ -240,7 +240,7 @@ namespace soup
 
 	void socket::enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap, bool(*certchain_validator)(const certchain&))
 	{
-		auto handshaker = std::make_unique<socket_tls_handshaker>(
+		auto handshaker = make_unique<socket_tls_handshaker>(
 			callback,
 			std::move(cap)
 		);
@@ -279,7 +279,7 @@ namespace soup
 
 		if (tls_sendHandshake(handshaker, tls_handshake::client_hello, hello.toBinary()))
 		{
-			tls_recvHandshake(std::move(handshaker), tls_handshake::server_hello, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+			tls_recvHandshake(std::move(handshaker), tls_handshake::server_hello, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 			{
 				tls_server_hello shello;
 				if (!shello.fromBinary(data))
@@ -290,7 +290,7 @@ namespace soup
 				handshaker->cipher_suite = shello.cipher_suite;
 				handshaker->server_random = shello.random.toBinary();
 
-				s.tls_recvHandshake(std::move(handshaker), tls_handshake::certificate, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+				s.tls_recvHandshake(std::move(handshaker), tls_handshake::certificate, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 				{
 					tls_certificate cert;
 					if (!cert.fromBinary(data))
@@ -315,7 +315,7 @@ namespace soup
 					case TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
 					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
 					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
-						s.tls_recvHandshake(std::move(handshaker), tls_handshake::server_key_exchange, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+						s.tls_recvHandshake(std::move(handshaker), tls_handshake::server_key_exchange, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 						{
 							tls_server_key_exchange ske;
 							if (!ske.fromBinary(data))
@@ -342,9 +342,9 @@ namespace soup
 		}
 	}
 
-	void socket::enableCryptoClientRecvServerHelloDone(std::unique_ptr<socket_tls_handshaker>&& handshaker)
+	void socket::enableCryptoClientRecvServerHelloDone(unique_ptr<socket_tls_handshaker>&& handshaker)
 	{
-		tls_recvHandshake(std::move(handshaker), tls_handshake::server_hello_done, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+		tls_recvHandshake(std::move(handshaker), tls_handshake::server_hello_done, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 		{
 			std::string cke{};
 			if (handshaker->server_x25519_public_key.empty())
@@ -362,7 +362,7 @@ namespace soup
 				epms.data = handshaker->m_certchain.certs.at(0).key.encryptPkcs1(pms).toBinary();
 				cke = epms.toBinary();
 
-				handshaker->pre_master_secret = std::make_unique<promise<std::string>>(std::move(pms));
+				handshaker->pre_master_secret = soup::make_unique<promise<std::string>>(std::move(pms));
 			}
 			else
 			{
@@ -374,7 +374,7 @@ namespace soup
 
 				uint8_t shared_secret[ec::X25519_SHARED_SIZE];
 				ec::x25519(shared_secret, my_priv, their_pub);
-				handshaker->pre_master_secret = std::make_unique<promise<std::string>>(std::string((const char*)shared_secret, sizeof(shared_secret)));
+				handshaker->pre_master_secret = soup::make_unique<promise<std::string>>(std::string((const char*)shared_secret, sizeof(shared_secret)));
 
 				uint8_t my_pub[ec::X25519_KEY_SIZE];
 				ec::curve25519_derivePublic(my_pub, my_priv);
@@ -391,13 +391,13 @@ namespace soup
 				{
 					s.tls_recvRecord(tls_content_type::change_cipher_spec, [](socket& s, std::string&& data, capture&& cap)
 					{
-						std::unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<std::unique_ptr<socket_tls_handshaker>>());
+						unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<unique_ptr<socket_tls_handshaker>>());
 
 						s.tls_encrypter_recv = std::move(handshaker->pending_recv_encrypter);
 
 						handshaker->expected_finished_verify_data = handshaker->getServerFinishVerifyData();
 
-						s.tls_recvHandshake(std::move(handshaker), tls_handshake::finished, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+						s.tls_recvHandshake(std::move(handshaker), tls_handshake::finished, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 						{
 							if (data != handshaker->expected_finished_verify_data)
 							{
@@ -433,13 +433,13 @@ namespace soup
 
 	void socket::enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap, void(*on_client_hello)(socket&, tls_client_hello&&))
 	{
-		auto handshaker = std::make_unique<socket_tls_handshaker>(
+		auto handshaker = make_unique<socket_tls_handshaker>(
 			callback,
 			std::move(cap)
 		);
 		handshaker->cert_selector = cert_selector;
 		handshaker->on_client_hello = on_client_hello;
-		tls_recvHandshake(std::move(handshaker), tls_handshake::client_hello, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+		tls_recvHandshake(std::move(handshaker), tls_handshake::client_hello, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 		{
 			{
 				tls_client_hello hello;
@@ -512,7 +512,7 @@ namespace soup
 				return;
 			}
 
-			s.tls_recvHandshake(std::move(handshaker), tls_handshake::client_key_exchange, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+			s.tls_recvHandshake(std::move(handshaker), tls_handshake::client_key_exchange, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 			{
 				if (data.size() <= 2)
 				{
@@ -521,7 +521,7 @@ namespace soup
 				}
 				data.erase(0, 2); // length prefix
 
-				handshaker->pre_master_secret = std::make_unique<promise<std::string>>([](capture&& _cap)
+				handshaker->pre_master_secret = make_unique<promise<std::string>>([](capture&& _cap)
 				{
 					auto& cap = _cap.get<capture_decrypt_pre_master_secret>();
 					return cap.handshaker->rsa_data.private_key.decryptPkcs1(cap.data);
@@ -537,20 +537,20 @@ namespace soup
 						return;
 					}
 
-					std::unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<std::unique_ptr<socket_tls_handshaker>>());
+					unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<unique_ptr<socket_tls_handshaker>>());
 
 					promise_base* p = handshaker->pre_master_secret.get();
 
 					s.awaitPromiseCompletion(p, [](worker& w, const capture& cap)
 					{
 						auto& s = reinterpret_cast<socket&>(w);
-						std::unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<std::unique_ptr<socket_tls_handshaker>>());
+						unique_ptr<socket_tls_handshaker> handshaker = std::move(cap.get<unique_ptr<socket_tls_handshaker>>());
 
 						handshaker->getKeys(s.tls_encrypter_recv.mac_key, s.tls_encrypter_send.mac_key, s.tls_encrypter_recv.cipher_key, s.tls_encrypter_send.cipher_key);
 
 						handshaker->expected_finished_verify_data = handshaker->getClientFinishVerifyData();
 
-						s.tls_recvHandshake(std::move(handshaker), tls_handshake::finished, [](socket& s, std::unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
+						s.tls_recvHandshake(std::move(handshaker), tls_handshake::finished, [](socket& s, unique_ptr<socket_tls_handshaker>&& handshaker, std::string&& data)
 						{
 							if (data != handshaker->expected_finished_verify_data)
 							{
@@ -622,7 +622,7 @@ namespace soup
 		}
 	}
 
-	bool socket::tls_sendHandshake(const std::unique_ptr<socket_tls_handshaker>& handshaker, tls_handshake_type_t handshake_type, const std::string& content)
+	bool socket::tls_sendHandshake(const unique_ptr<socket_tls_handshaker>& handshaker, tls_handshake_type_t handshake_type, const std::string& content)
 	{
 		return tls_sendRecord(tls_content_type::handshake, handshaker->pack(handshake_type, content));
 	}
@@ -643,14 +643,14 @@ namespace soup
 
 	struct capture_socket_tls_recv_handshake
 	{
-		std::unique_ptr<socket_tls_handshaker> handshaker;
+		unique_ptr<socket_tls_handshaker> handshaker;
 		tls_handshake_type_t expected_handshake_type;
-		void(*callback)(socket&, std::unique_ptr<socket_tls_handshaker>&&, std::string&&);
+		void(*callback)(socket&, unique_ptr<socket_tls_handshaker>&&, std::string&&);
 		std::string pre;
 		bool is_new_bytes = false;
 	};
 
-	void socket::tls_recvHandshake(std::unique_ptr<socket_tls_handshaker>&& handshaker, tls_handshake_type_t expected_handshake_type, void(*callback)(socket&, std::unique_ptr<socket_tls_handshaker>&&, std::string&&), std::string&& pre)
+	void socket::tls_recvHandshake(unique_ptr<socket_tls_handshaker>&& handshaker, tls_handshake_type_t expected_handshake_type, void(*callback)(socket&, unique_ptr<socket_tls_handshaker>&&, std::string&&), std::string&& pre)
 	{
 		capture_socket_tls_recv_handshake cap{
 			std::move(handshaker),

@@ -22,7 +22,7 @@ namespace soup
 		std::string layer_bytes{};
 		std::string client_random{};
 		std::string server_random{};
-		std::unique_ptr<promise<std::string>> pre_master_secret{};
+		unique_ptr<promise<std::string>> pre_master_secret{};
 		std::string master_secret{};
 		std::string expected_finished_verify_data{};
 

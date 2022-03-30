@@ -1,9 +1,8 @@
 #pragma once
 
-#include "base.hpp"
-
-#include <memory>
 #include <vector>
+
+#include "base.hpp"
 
 #if SOUP_WINDOWS
 #include <WinSock2.h>
@@ -11,6 +10,7 @@
 #include <poll.h>
 #endif
 
+#include "unique_ptr.hpp"
 #include "worker.hpp"
 
 namespace soup
@@ -18,7 +18,7 @@ namespace soup
 	class scheduler
 	{
 	public:
-		std::vector<std::unique_ptr<worker>> workers{};
+		std::vector<unique_ptr<worker>> workers{};
 
 		using on_work_done_t = void(*)(worker&);
 		using on_connection_lost_t = void(*)(socket&);

@@ -323,6 +323,7 @@
     <ClInclude Include="tls_server_key_exchange.hpp" />
     <ClInclude Include="type.hpp" />
     <ClInclude Include="unicode.hpp" />
+    <ClInclude Include="unique_ptr.hpp" />
     <ClInclude Include="vector2.hpp" />
     <ClInclude Include="vector3.hpp" />
     <ClInclude Include="vector3_base.hpp" />

@@ -9,7 +9,7 @@ namespace soup
 {
 	socket& scheduler::addSocket(socket&& sock) noexcept
 	{
-		return *reinterpret_cast<socket*>(workers.emplace_back(std::make_unique<socket>(std::move(sock))).get());
+		return *reinterpret_cast<socket*>(workers.emplace_back(make_unique<socket>(std::move(sock))).get());
 	}
 
 	void scheduler::run()

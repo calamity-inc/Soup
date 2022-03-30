@@ -11,12 +11,12 @@
 
 namespace soup
 {
-	module::module(std::unique_ptr<handle_base>&& h, range&& range)
+	module::module(unique_ptr<handle_base>&& h, range&& range)
 		: h(std::move(h)), m_range(std::move(range))
 	{
 	}
 
-	module::module(std::unique_ptr<handle_base>&& h)
+	module::module(unique_ptr<handle_base>&& h)
 		: h(std::move(h)), m_range(*this->h, 0)
 	{
 		auto dosHeader = m_range.base.as<IMAGE_DOS_HEADER*>();
@@ -25,7 +25,7 @@ namespace soup
 	}
 
 	module::module(HANDLE h)
-		: module(std::make_unique<handle_plain>(h))
+		: module((unique_ptr<handle_base>)make_unique<handle_plain>(h))
 	{
 	}
 
@@ -93,16 +93,16 @@ namespace soup
 		return nullptr;
 	}
 
-	std::unique_ptr<alloc_raii_remote> module::allocate(size_t size, DWORD type, DWORD protect) const
+	unique_ptr<alloc_raii_remote> module::allocate(size_t size, DWORD type, DWORD protect) const
 	{
-		auto res = std::make_unique<alloc_raii_remote>();
+		auto res = make_unique<alloc_raii_remote>();
 		res->h = *h;
 		res->size = size;
 		res->p = VirtualAllocEx(*h, nullptr, size, type, protect);
 		return res;
 	}
 
-	std::unique_ptr<alloc_raii_remote> module::copyInto(const void* data, size_t size) const
+	unique_ptr<alloc_raii_remote> module::copyInto(const void* data, size_t size) const
 	{
 		auto res = allocate(size);
 		externalWrite(res->p, data, size);
@@ -116,9 +116,9 @@ namespace soup
 		return written;
 	}
 
-	std::unique_ptr<handle_raii> module::executeAsync(void* rip, uintptr_t rcx) const noexcept
+	unique_ptr<handle_raii> module::executeAsync(void* rip, uintptr_t rcx) const noexcept
 	{
-		return std::make_unique<handle_raii>(CreateRemoteThread(*h, nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(rip), reinterpret_cast<LPVOID>(rcx), 0, nullptr));
+		return make_unique<handle_raii>(CreateRemoteThread(*h, nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(rip), reinterpret_cast<LPVOID>(rcx), 0, nullptr));
 	}
 
 	void module::executeSync(void* rip, uintptr_t rcx) const noexcept

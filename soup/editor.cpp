@@ -16,7 +16,7 @@ namespace soup
 	{
 		inst = this;
 
-		children.emplace_back(std::make_unique<editor_text>(this, 0, 1, 0, 0));
+		children.emplace_back(make_unique<editor_text>(this, 0, 1, 0, 0));
 
 		console.char_handler.set([](char32_t c, const capture&)
 		{
@@ -160,12 +160,12 @@ namespace soup
 		console.setCursorPos(text.x + text.file.x, text.y + text.file.y);
 	}
 
-	std::vector<std::unique_ptr<conui_base>>::iterator editor::tabsBegin()
+	std::vector<unique_ptr<conui_base>>::iterator editor::tabsBegin()
 	{
 		return children.begin() + 1;
 	}
 
-	std::vector<std::unique_ptr<conui_base>>::iterator editor::tabsEnd()
+	std::vector<unique_ptr<conui_base>>::iterator editor::tabsEnd()
 	{
 		return children.end();
 	}
@@ -177,7 +177,7 @@ namespace soup
 		{
 			x += (*i)->width;
 		}
-		return *reinterpret_cast<editor_tab*>(children.emplace_back(std::make_unique<editor_tab>(this, x, 0, std::move(name), std::move(text))).get());
+		return *reinterpret_cast<editor_tab*>(children.emplace_back(soup::make_unique<editor_tab>(this, x, 0, std::move(name), std::move(text))).get());
 	}
 
 	editor_text& editor::getTextChild() const noexcept

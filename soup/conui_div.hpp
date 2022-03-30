@@ -1,15 +1,15 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "conui_base.hpp"
+#include "unique_ptr.hpp"
 
 namespace soup
 {
 	struct conui_div : public conui_base
 	{
-		std::vector<std::unique_ptr<conui_base>> children{};
+		std::vector<unique_ptr<conui_base>> children{};
 
 		using conui_base::conui_base;
 

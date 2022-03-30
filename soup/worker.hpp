@@ -3,7 +3,6 @@
 #include "fwd.hpp"
 
 #include <cstdint>
-#include <memory>
 #include <utility>
 
 #include "callback.hpp"
