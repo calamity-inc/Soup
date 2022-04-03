@@ -407,6 +407,21 @@
     <ClInclude Include="unique_ptr.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="chessboard.hpp">
+      <Filter>chess</Filter>
+    </ClInclude>
+    <ClInclude Include="chess_square.hpp">
+      <Filter>chess</Filter>
+    </ClInclude>
+    <ClInclude Include="chess_piece.hpp">
+      <Filter>chess</Filter>
+    </ClInclude>
+    <ClInclude Include="chess_coordinate.hpp">
+      <Filter>chess</Filter>
+    </ClInclude>
+    <ClInclude Include="chess_cli.hpp">
+      <Filter>chess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -560,6 +575,15 @@
     <ClCompile Include="certchain.cpp">
       <Filter>crypto\x509</Filter>
     </ClCompile>
+    <ClCompile Include="chess_cli.cpp">
+      <Filter>chess</Filter>
+    </ClCompile>
+    <ClCompile Include="chess_square.cpp">
+      <Filter>chess</Filter>
+    </ClCompile>
+    <ClCompile Include="chessboard.cpp">
+      <Filter>chess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -621,6 +645,9 @@
     </Filter>
     <Filter Include="io\zip">
       <UniqueIdentifier>{5e908491-421e-426f-ad6f-f870c4b0a291}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="chess">
+      <UniqueIdentifier>{4a2a3fea-b914-4a9e-b7c3-c051aa854664}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

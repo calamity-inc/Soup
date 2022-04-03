@@ -190,12 +190,29 @@ namespace soup
 			return res;
 		}
 
+		// example:
+		// in str = "a b c"
+		// target = " "
+		// out str = "abc"
 		template <typename T>
 		static void erase(T& str, const T& target)
 		{
 			for (size_t i = 0; i = str.find(target, i), i != T::npos; )
 			{
 				str.erase(i, target.size());
+			}
+		}
+
+		// example:
+		// in str = "a b c"
+		// target = " "
+		// out str = "a"
+		template <typename T>
+		static void limit(T& str, const T& target)
+		{
+			for (size_t i = 0; i = str.find(target, i), i != T::npos; )
+			{
+				str.erase(i);
 			}
 		}
 

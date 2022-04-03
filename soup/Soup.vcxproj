@@ -226,6 +226,11 @@
     <ClInclude Include="canvas.hpp" />
     <ClInclude Include="capture.hpp" />
     <ClInclude Include="certchain.hpp" />
+    <ClInclude Include="chessboard.hpp" />
+    <ClInclude Include="chess_cli.hpp" />
+    <ClInclude Include="chess_coordinate.hpp" />
+    <ClInclude Include="chess_piece.hpp" />
+    <ClInclude Include="chess_square.hpp" />
     <ClInclude Include="control_input.hpp" />
     <ClInclude Include="conui_app.hpp" />
     <ClInclude Include="conui_base.hpp" />
@@ -354,6 +359,9 @@
     <ClCompile Include="bytepatch.cpp" />
     <ClCompile Include="canvas.cpp" />
     <ClCompile Include="certchain.cpp" />
+    <ClCompile Include="chessboard.cpp" />
+    <ClCompile Include="chess_cli.cpp" />
+    <ClCompile Include="chess_square.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="conui_app.cpp" />
     <ClCompile Include="conui_base.cpp" />

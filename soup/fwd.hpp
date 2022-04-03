@@ -4,6 +4,9 @@
 
 namespace soup
 {
+	// chess
+	struct chess_coordinate;
+
 	// crypto
 	struct keystore;
 
