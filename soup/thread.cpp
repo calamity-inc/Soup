@@ -2,33 +2,6 @@
 
 namespace soup
 {
-	struct capture_thread_ctor_capture
-	{
-		void(*f)(capture&&);
-		capture cap;
-	};
-
-	thread::thread(void(*f)(capture&&), capture&& cap) noexcept
-	{
-		create([](capture&& _cap)
-		{
-			auto& cap = _cap.get<capture_thread_ctor_capture>();
-			cap.f(std::move(cap.cap));
-		}, capture_thread_ctor_capture{
-			f,
-			std::move(cap)
-		});
-	}
-
-	thread::thread(std::function<void()>&& func) noexcept
-		: handle()
-	{
-		create([](capture&& cap)
-		{
-			cap.get<std::function<void()>>()();
-		}, std::move(func));
-	}
-
 	struct capture_thread_create
 	{
 		void(*f)(capture&&);
@@ -37,9 +10,9 @@ namespace soup
 
 	static void
 #if SOUP_WINDOWS
-	__stdcall
+		__stdcall
 #endif
-	threadCreateCallback(void* handover)
+		threadCreateCallback(void* handover)
 	{
 		auto t = reinterpret_cast<thread*>(handover);
 		auto& cap = t->create_capture.get<capture_thread_create>();
@@ -50,7 +23,7 @@ namespace soup
 		t->create_capture.reset();
 	}
 
-	void thread::create(void(*f)(capture&&), capture&& cap) noexcept
+	thread::thread(void(*f)(capture&&), capture&& cap) noexcept
 	{
 		create_capture = capture_thread_create{
 			f,
@@ -62,8 +35,16 @@ namespace soup
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
 		//pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-		pthread_create(&handle, &attr, reinterpret_cast<void*(*)(void*)>(&threadCreateCallback), this);
+		pthread_create(&handle, &attr, reinterpret_cast<void* (*)(void*)>(&threadCreateCallback), this);
 #endif
+	}
+
+	thread::thread(std::function<void()>&& func) noexcept
+		: thread([](capture&& cap)
+		{
+			cap.get<std::function<void()>>()();
+		}, std::move(func))
+	{
 	}
 
 	thread::~thread() noexcept
