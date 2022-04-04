@@ -238,6 +238,7 @@
     <ClInclude Include="conui_span.hpp" />
     <ClInclude Include="crc32.hpp" />
     <ClInclude Include="crypto_hash_algo.hpp" />
+    <ClInclude Include="deleter.hpp" />
     <ClInclude Include="dns.hpp" />
     <ClInclude Include="dns_a.hpp" />
     <ClInclude Include="dns_aaaa.hpp" />

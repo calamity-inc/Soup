@@ -422,6 +422,9 @@
     <ClInclude Include="chess_cli.hpp">
       <Filter>chess</Filter>
     </ClInclude>
+    <ClInclude Include="deleter.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">

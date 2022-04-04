@@ -1,24 +1,17 @@
 #pragma once
 
 #include <type_traits>
-
 #include <utility> // move
+
+#include "deleter.hpp"
 
 namespace soup
 {
 	class capture
 	{
 	private:
-		using deleter_t = void(*)(void*);
-
 		void* data;
-		deleter_t deleter;
-
-		template <typename T>
-		static void deleter_impl(void* ptr)
-		{
-			delete reinterpret_cast<T*>(ptr);
-		}
+		deleter_t m_deleter;
 
 	public:
 		capture() noexcept
@@ -29,20 +22,20 @@ namespace soup
 		capture(const capture&) = delete;
 
 		capture(capture&& b) noexcept
-			: data(b.data), deleter(b.deleter)
+			: data(b.data), m_deleter(b.m_deleter)
 		{
 			b.data = nullptr;
 		}
 
 		template <typename T>
 		capture(const T& v)
-			: data(new std::remove_reference_t<T>(v)), deleter(&deleter_impl<std::remove_reference_t<T>>)
+			: data(new std::remove_reference_t<T>(v)), m_deleter(&deleter<std::remove_reference_t<T>>)
 		{
 		}
 
 		template <typename T>
 		capture(T&& v)
-			: data(new std::remove_reference_t<T>(std::move(v))), deleter(&deleter_impl<std::remove_reference_t<T>>)
+			: data(new std::remove_reference_t<T>(std::move(v))), m_deleter(&deleter<std::remove_reference_t<T>>)
 		{
 		}
 
@@ -55,7 +48,7 @@ namespace soup
 		{
 			if (data != nullptr)
 			{
-				deleter(data);
+				m_deleter(data);
 				data = nullptr;
 			}
 		}
@@ -66,7 +59,7 @@ namespace soup
 		{
 			reset();
 			data = b.data;
-			deleter = b.deleter;
+			m_deleter = b.m_deleter;
 			b.data = nullptr;
 		}
 
@@ -75,7 +68,7 @@ namespace soup
 		{
 			reset();
 			data = new std::remove_reference_t<T>(v);
-			deleter = &deleter_impl<std::remove_reference_t<T>>;
+			m_deleter = &deleter<std::remove_reference_t<T>>;
 		}
 
 		template <typename T>
@@ -83,7 +76,7 @@ namespace soup
 		{
 			reset();
 			data = new std::remove_reference_t<T>(std::move(v));
-			deleter = &deleter_impl<std::remove_reference_t<T>>;
+			m_deleter = &deleter<std::remove_reference_t<T>>;
 		}
 
 		[[nodiscard]] operator bool() const noexcept
