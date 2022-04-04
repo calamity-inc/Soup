@@ -158,6 +158,23 @@ namespace soup
 			return replace_all<std::wstring>(str, from, to);
 		}
 
+		template <typename S>
+		static size_t len(S str)
+		{
+			if constexpr (std::is_same_v<S, char> || std::is_same_v<S, wchar_t>)
+			{
+				return 1;
+			}
+			else if constexpr (std::is_pointer_v<S>)
+			{
+				return strlen(str);
+			}
+			else
+			{
+				return str.size();
+			}
+		}
+
 		template <typename S, typename D>
 		[[nodiscard]] static std::vector<S> explode(const S& str, D delim)
 		{
@@ -169,7 +186,7 @@ namespace soup
 				while ((del_pos = str.find(delim, prev)) != std::string::npos)
 				{
 					res.emplace_back(str.substr(prev, del_pos - prev));
-					prev = del_pos + 1;
+					prev = del_pos + len(delim);
 				}
 				auto remain_len = (str.length() - prev);
 				if (remain_len != 0)
