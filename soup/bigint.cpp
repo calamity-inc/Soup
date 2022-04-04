@@ -529,9 +529,13 @@ namespace soup
 		}
 		else
 		{
+#if SOUP_WINDOWS
 			chunks.clear();
 			chunks.emplace_back((chunk_t)v);
 			chunks.emplace_back(carry);
+#else
+			chunks = std::vector<chunk_t>{ (chunk_t)v, carry };
+#endif
 		}
 	}
 

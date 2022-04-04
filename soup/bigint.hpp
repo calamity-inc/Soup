@@ -5,8 +5,13 @@
 #include <ostream>
 #include <string>
 #include <utility> // pair
+#if !SOUP_WINDOWS
+#include <vector>
+#endif
 
+#if SOUP_WINDOWS
 #include "int_vector.hpp"
+#endif
 
 namespace soup
 {
@@ -17,7 +22,11 @@ namespace soup
 		using chunk_signed_t = halfintmax_t;
 
 	private:
+#if SOUP_WINDOWS
 		int_vector<chunk_t> chunks{};
+#else
+		std::vector<chunk_t> chunks{};
+#endif
 		bool negative = false;
 
 	public:
