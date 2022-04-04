@@ -1,6 +1,9 @@
+#include <thread>
+
 #include <canvas.hpp>
 #include <console.hpp>
 #include <rand.hpp>
+#include <unicode.hpp>
 #include <vector2.hpp>
 
 constexpr auto res_scale = 1;
@@ -99,7 +102,7 @@ int main()
 		gameover("Bye, bye!");
 	});
 
-	soup::console.input_handler = [](char32_t c)
+	soup::console.char_handler = [](char32_t c, const soup::capture&)
 	{
 		if (c == 'w')
 		{
