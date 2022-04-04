@@ -1,5 +1,7 @@
 #include "certchain.hpp"
 
+#include <cstring> // strlen
+
 #include "keystore.hpp"
 #include "pem.hpp"
 #include "string.hpp"

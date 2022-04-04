@@ -1,5 +1,7 @@
 ﻿#include "chessboard.hpp"
 
+#include <cstring> // memset
+
 #include "chess_coordinate.hpp"
 #include "string.hpp"
 
