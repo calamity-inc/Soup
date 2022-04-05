@@ -24,7 +24,7 @@ static void sendHtml(soup::socket& s, std::string body)
 	auto len = body.size();
 	body.insert(0, "\r\n\r\n");
 	body.insert(0, std::to_string(len));
-	body.insert(0, "HTTP/1.0 200\r\nServer: soup\r\nCache-Control: private\r\nContent-Type: text/html\r\nContent-Length: ");
+	body.insert(0, "HTTP/1.0 200\r\nServer: Soup\r\nCache-Control: private\r\nContent-Type: text/html\r\nContent-Length: ");
 	s.send(body);
 	s.close();
 }

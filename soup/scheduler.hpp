@@ -28,6 +28,7 @@ namespace soup
 		on_connection_lost_t on_connection_lost = nullptr;
 		on_exception_t on_exception = nullptr;
 
+		socket& addSocket(unique_ptr<socket>&& sock) noexcept;
 		socket& addSocket(socket&& sock) noexcept;
 
 		void run();

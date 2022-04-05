@@ -250,8 +250,11 @@
     <ClInclude Include="editor_tab.hpp" />
     <ClInclude Include="editor_text.hpp" />
     <ClInclude Include="endianness.hpp" />
+    <ClInclude Include="http_request.hpp" />
+    <ClInclude Include="http_response.hpp" />
     <ClInclude Include="int_vector.hpp" />
     <ClInclude Include="keystore.hpp" />
+    <ClInclude Include="mime_message.hpp" />
     <ClInclude Include="mouse_button.hpp" />
     <ClInclude Include="named_curves.hpp" />
     <ClInclude Include="optimised.hpp" />
@@ -330,6 +333,7 @@
     <ClInclude Include="type.hpp" />
     <ClInclude Include="unicode.hpp" />
     <ClInclude Include="unique_ptr.hpp" />
+    <ClInclude Include="urlenc.hpp" />
     <ClInclude Include="vector2.hpp" />
     <ClInclude Include="vector3.hpp" />
     <ClInclude Include="vector3_base.hpp" />
@@ -373,9 +377,11 @@
     <ClCompile Include="editor.cpp" />
     <ClCompile Include="editor_tab.cpp" />
     <ClCompile Include="editor_text.cpp" />
+    <ClCompile Include="http_request.cpp" />
     <ClCompile Include="keystore.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
+    <ClCompile Include="mime_message.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="oid.cpp" />
     <ClCompile Include="pem.cpp" />
@@ -398,6 +404,7 @@
     <ClCompile Include="thread.cpp" />
     <ClCompile Include="socket_tls_handshaker.cpp" />
     <ClCompile Include="unicode.cpp" />
+    <ClCompile Include="urlenc.cpp" />
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="worker.cpp" />
     <ClCompile Include="x509_certificate.cpp" />

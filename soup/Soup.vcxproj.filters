@@ -425,6 +425,18 @@
     <ClInclude Include="deleter.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="http_request.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="mime_message.hpp">
+      <Filter>enc\mime</Filter>
+    </ClInclude>
+    <ClInclude Include="urlenc.hpp">
+      <Filter>enc</Filter>
+    </ClInclude>
+    <ClInclude Include="http_response.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -587,6 +599,15 @@
     <ClCompile Include="chessboard.cpp">
       <Filter>chess</Filter>
     </ClCompile>
+    <ClCompile Include="mime_message.cpp">
+      <Filter>enc\mime</Filter>
+    </ClCompile>
+    <ClCompile Include="urlenc.cpp">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="http_request.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -651,6 +672,12 @@
     </Filter>
     <Filter Include="chess">
       <UniqueIdentifier>{4a2a3fea-b914-4a9e-b7c3-c051aa854664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\web">
+      <UniqueIdentifier>{107b4f0f-f5db-4e5f-9a6a-8893289fac04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="enc\mime">
+      <UniqueIdentifier>{0f633a4f-04c0-44e0-b0e4-8bd4e5a65e67}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -90,6 +90,11 @@ namespace soup
 		return fd != -1;
 	}
 
+	bool socket::connect(const std::string& host, uint16_t port) noexcept
+	{
+		return connect(host.c_str(), port);
+	}
+
 	bool socket::connect(const char* host, uint16_t port) noexcept
 	{
 		auto res = dns::lookupIPv4(host);
