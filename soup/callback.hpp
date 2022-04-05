@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "capture.hpp"
 
 namespace soup
@@ -29,6 +31,16 @@ namespace soup
 		{
 		}
 
+		static void redirect_to_std_function(Args... args, const capture& cap)
+		{
+			return cap.get<std::function<Ret(Args...)>>()(std::forward<Args>(args)...);
+		}
+
+		callback(std::function<Ret(Args...)>&& func) noexcept
+			: callback(&redirect_to_std_function, std::move(func))
+		{
+		}
+
 		void set(FuncWithCapture* fp, capture&& cap = {}) noexcept
 		{
 			this->fp = fp;
@@ -45,6 +57,12 @@ namespace soup
 		{
 			fp = b.fp;
 			cap = std::move(b.cap);
+		}
+
+		void operator=(std::function<Ret(Args...)>&& func) noexcept
+		{
+			fp = &redirect_to_std_function;
+			cap = std::move(func);
 		}
 
 		Ret operator() (Args&&...args)
