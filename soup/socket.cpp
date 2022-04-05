@@ -798,7 +798,7 @@ namespace soup
 					std::string mac{};
 
 					bool pad_mismatch = false;
-					uint8_t pad_len = data.at(data.size() - 1);
+					uint8_t pad_len = data.back();
 					for (auto it = (data.end() - (pad_len + 1)); it != (data.end() - 1); ++it)
 					{
 						if (*it != pad_len)

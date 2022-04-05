@@ -77,7 +77,7 @@ namespace soup
 				return true;
 			}
 
-			const auto& root = certs.at(certs.size() - 1);
+			const auto& root = certs.back();
 			if (auto entry = ks.findCommonName(root.issuer.getCommonName()))
 			{
 				if (root.verify(*entry))

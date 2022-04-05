@@ -41,7 +41,7 @@ namespace soup
 	pointer pointer::followJumps() const noexcept
 	{
 		auto jumps = getJumps();
-		return jumps.at(jumps.size() - 1);
+		return jumps.back();
 	}
 #endif
 }
