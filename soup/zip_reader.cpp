@@ -62,6 +62,7 @@ namespace soup
 					break;
 				}
 				ret.emplace_back(zip_indexed_file{
+					cdf.common.compression_method,
 					cdf.common.uncompressed_data_crc32,
 					cdf.common.compressed_size,
 					cdf.common.uncompressed_size,
@@ -91,6 +92,7 @@ namespace soup
 					break;
 				}
 
+				zif.compression_method = lfh.common.compression_method;
 				zif.uncompressed_data_crc32 = lfh.common.uncompressed_data_crc32;
 				zif.compressed_size = lfh.common.compressed_size;
 				zif.uncompressed_size = lfh.common.uncompressed_size;
