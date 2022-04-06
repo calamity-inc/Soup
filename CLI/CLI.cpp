@@ -5,12 +5,14 @@
 #include <string.hpp>
 #include <unicode.hpp>
 
+using namespace soup;
+
 int main(int argc, const char** argv)
 {
 	if (argc > 1)
 	{
 		std::string subcommand = argv[1];
-		soup::string::toLower(subcommand);
+		string::toLower(subcommand);
 
 		if (subcommand == "edit")
 		{
@@ -19,10 +21,10 @@ int main(int argc, const char** argv)
 				std::cout << "Syntax: soup edit [files...]" << std::endl;
 				return 0;
 			}
-			soup::editor edit{};
+			editor edit{};
 			for (int i = 2; i != argc; ++i)
 			{
-				auto& tab = edit.addTab(argv[i], soup::unicode::utf8_to_utf32(soup::string::fromFile(argv[i])));
+				auto& tab = edit.addTab(argv[i], unicode::utf8_to_utf32(string::fromFile(argv[i])));
 				if (i == 2)
 				{
 					tab.setActive(edit);
@@ -34,7 +36,7 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "chess")
 		{
-			soup::chess_cli cc{};
+			chess_cli cc{};
 			if (argc > 2)
 			{
 				cc.board.loadFen(argv[2]);
