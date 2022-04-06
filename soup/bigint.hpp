@@ -47,7 +47,7 @@ namespace soup
 
 	public:
 		[[nodiscard]] static bigint random(size_t bits);
-		[[nodiscard]] static bigint randomProbablePrime(const size_t bits);
+		[[nodiscard]] static bigint randomProbablePrime(const size_t bits, const int miller_rabin_iterations = 1);
 
 		[[nodiscard]] static constexpr uint8_t getBitsPerChunk() noexcept
 		{
@@ -183,15 +183,16 @@ namespace soup
 		[[nodiscard]] size_t getTrailingZeroesBinary() const;
 		[[nodiscard]] bigint gcd(bigint v) const;
 		bigint gcd(bigint b, bigint& x, bigint& y) const;
-	private:
 		[[nodiscard]] bool isPrimePrecheck(bool& ret) const;
-	public:
 		[[nodiscard]] bool isPrime() const;
-		[[nodiscard]] bool isProbablePrimeMillerRabin(const int iterations = 1) const;
+		[[nodiscard]] bool isPrimeAccurate() const;
 	protected:
-		[[nodiscard]] bool isProbablePrimeMillerRabinNoprecheck(const int iterations = 1) const;
+		[[nodiscard]] bool isPrimeAccurateNoprecheck() const;
 	public:
-		[[nodiscard]] bool isProbablePrimeFermat(const int iterations = 1) const;
+		[[nodiscard]] bool isProbablePrime(const int miller_rabin_iterations = 1) const;
+	protected:
+		[[nodiscard]] bool isProbablePrimeNoprecheck(const int miller_rabin_iterations = 1) const;
+	public:
 		[[nodiscard]] bool isCoprime(const bigint& b) const;
 		[[nodiscard]] bigint eulersTotient() const;
 		[[nodiscard]] bigint reducedTotient() const;

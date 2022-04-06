@@ -246,7 +246,7 @@ namespace soup
 		bits /= 2u;
 		auto g = [](capture&& cap) -> bigint
 		{
-			return bigint::randomProbablePrime(cap.get<unsigned int>());
+			return bigint::randomProbablePrime(cap.get<unsigned int>(), 3);
 		};
 		promise<bigint> p{ g, bits };
 		promise<bigint> q{ g, bits };

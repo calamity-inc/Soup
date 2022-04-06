@@ -161,10 +161,10 @@ namespace soup
 		return res;
 	}
 
-	bigint bigint::randomProbablePrime(const size_t bits)
+	bigint bigint::randomProbablePrime(const size_t bits, const int miller_rabin_iterations)
 	{
 		bigint i = random(bits);
-		for (; i.enableBitInbounds(0), !i.isProbablePrimeFermat() || !i.isProbablePrimeMillerRabinNoprecheck(); i = random(bits));
+		for (; i.enableBitInbounds(0), !i.isProbablePrime(miller_rabin_iterations); i = random(bits));
 		return i;
 	}
 
@@ -1150,6 +1150,27 @@ namespace soup
 			return preret;
 		}
 
+		if (getNumBits() < 128)
+		{
+			return isPrimeAccurateNoprecheck();
+		}
+
+		return isProbablePrimeNoprecheck(10);
+	}
+
+	bool bigint::isPrimeAccurate() const
+	{
+		bool preret;
+		if (isPrimePrecheck(preret))
+		{
+			return preret;
+		}
+
+		return isPrimeAccurateNoprecheck();
+	}
+
+	bool bigint::isPrimeAccurateNoprecheck() const
+	{
 		for (bigint i = bigint((chunk_t)5u); i * i <= *this; i += bigint((chunk_t)6u))
 		{
 			if ((*this % i).isZero() || (*this % (i + bigint((chunk_t)2u))).isZero())
@@ -1160,24 +1181,25 @@ namespace soup
 		return true;
 	}
 
-	bool bigint::isProbablePrimeMillerRabin(const int iterations) const
+	bool bigint::isProbablePrime(const int miller_rabin_iterations) const
 	{
 		bool preret;
 		if (isPrimePrecheck(preret))
 		{
 			return preret;
 		}
-		return isProbablePrimeMillerRabinNoprecheck(iterations);
+
+		return isProbablePrimeNoprecheck(miller_rabin_iterations);
 	}
 
-	bool bigint::isProbablePrimeMillerRabinNoprecheck(const int iterations) const
+	bool bigint::isProbablePrimeNoprecheck(const int miller_rabin_iterations) const
 	{
 		auto thisMinusOne = (*this - bigint((chunk_t)1u));
 		auto a = thisMinusOne.getLowestSetBit();
 		auto m = (thisMinusOne >> a);
 
 		const auto bl = getBitLength();
-		for (int i = 0; i != iterations; i++)
+		for (int i = 0; i != miller_rabin_iterations; i++)
 		{
 			bigint b;
 			do
@@ -1195,31 +1217,6 @@ namespace soup
 				}
 				// z = z.modPow(2u, *this);
 				z = z.modMulUnsignedNotpowerof2(z, *this);
-			}
-		}
-		return true;
-	}
-
-	bool bigint::isProbablePrimeFermat(const int iterations) const
-	{
-		bool preret;
-		if (isPrimePrecheck(preret))
-		{
-			return preret;
-		}
-
-		const auto bl = getBitLength();
-		for (int i = 0; i != iterations; i++)
-		{
-			bigint b;
-			do
-			{
-				b = random(bl);
-			} while (b >= *this || b <= bigint((chunk_t)1u));
-
-			if (b.modPow(*this - bigint((chunk_t)1u), *this) != bigint((chunk_t)1u))
-			{
-				return false;
 			}
 		}
 		return true;
