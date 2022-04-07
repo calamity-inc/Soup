@@ -47,25 +47,25 @@ namespace soup
 			return oss.str();
 		}
 
-		bool read(std::basic_istream<char, std::char_traits<char>>& is)
+		bool read(std::istream& is)
 		{
 			packet_reader<false> r(&is);
 			return reinterpret_cast<T*>(this)->template io<packet_reader<false>>(r);
 		}
 
-		bool readLE(std::basic_istream<char, std::char_traits<char>>& is)
+		bool readLE(std::istream& is)
 		{
 			packet_reader<true> r(&is);
 			return reinterpret_cast<T*>(this)->template io<packet_reader<true>>(r);
 		}
 
-		bool write(std::basic_ostream<char, std::char_traits<char>>& os)
+		bool write(std::ostream& os)
 		{
 			packet_writer<false> w(&os);
 			return reinterpret_cast<T*>(this)->template io<packet_writer<false>>(w);
 		}
 
-		bool writeLE(std::basic_ostream<char, std::char_traits<char>>& os)
+		bool writeLE(std::ostream& os)
 		{
 			packet_writer<true> w(&os);
 			return reinterpret_cast<T*>(this)->template io<packet_writer<true>>(w);

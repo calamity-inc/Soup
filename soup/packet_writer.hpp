@@ -14,9 +14,9 @@ namespace soup
 		using Base = packet_io_base<packet_writer, little_endian>;
 
 	public:
-		std::basic_ostream<char, std::char_traits<char>>* os;
+		std::ostream* os;
 
-		packet_writer(std::basic_ostream<char, std::char_traits<char>>* os)
+		packet_writer(std::ostream* os)
 			: os(os)
 		{
 		}

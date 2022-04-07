@@ -14,9 +14,9 @@ namespace soup
 		using Base = packet_io_base<packet_reader, little_endian>;
 
 	public:
-		std::basic_istream<char, std::char_traits<char>>* is;
+		std::istream* is;
 
-		packet_reader(std::basic_istream<char, std::char_traits<char>>* is)
+		packet_reader(std::istream* is)
 			: is(is)
 		{
 		}

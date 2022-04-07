@@ -7,7 +7,7 @@ namespace soup
 		// OM = One More; my name for the integer encoding scheme where every byte's most significant bit is used to indicate if another byte follows.
 
 		template <typename Int>
-		[[nodiscard]] static Int readOmInt(std::basic_istream<char, std::char_traits<char>>& s)
+		[[nodiscard]] static Int readOmInt(std::istream& s)
 		{
 			Int ret{};
 			while (true)
@@ -28,7 +28,7 @@ namespace soup
 		}
 
 		template <typename Int>
-		static void writeOmInt(std::basic_ostream<char, std::char_traits<char>>& s, Int val)
+		static void writeOmInt(std::ostream& s, Int val)
 		{
 			while (val > 0x7F)
 			{

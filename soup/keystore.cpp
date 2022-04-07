@@ -5,7 +5,7 @@
 
 namespace soup
 {
-	void keystore::loadCaCerts(std::basic_istream<char, std::char_traits<char>>& is)
+	void keystore::loadCaCerts(std::istream& is)
 	{
 		std::string ca_common_name{};
 		std::string ca_pem{};

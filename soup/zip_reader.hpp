@@ -9,9 +9,9 @@ namespace soup
 {
 	struct zip_reader
 	{
-		std::basic_istream<char, std::char_traits<char>>* is;
+		std::istream* is;
 
-		zip_reader(std::basic_istream<char, std::char_traits<char>>* is)
+		zip_reader(std::istream* is)
 			: is(is)
 		{
 		}

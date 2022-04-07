@@ -8,12 +8,12 @@ namespace soup
 	class bit_in_stream
 	{
 	protected:
-		std::basic_istream<char, std::char_traits<char>>* is;
+		std::istream* is;
 		uint8_t bit_idx;
 		uint8_t byte;
 
 	public:
-		bit_in_stream(std::basic_istream<char, std::char_traits<char>>* is)
+		bit_in_stream(std::istream* is)
 			: is(is)
 		{
 		}

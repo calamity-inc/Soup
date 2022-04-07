@@ -10,9 +10,9 @@ namespace soup
 	class zip_writer
 	{
 	public:
-		std::basic_ostream<char, std::char_traits<char>>* os;
+		std::ostream* os;
 
-		zip_writer(std::basic_ostream<char, std::char_traits<char>>* os)
+		zip_writer(std::ostream* os)
 			: os(os)
 		{
 		}
