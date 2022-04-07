@@ -238,11 +238,26 @@ namespace soup
 		// char mutation
 
 		template <typename Str>
-		static void toLower(Str& str)
+		static void lower(Str& str)
 		{
-			std::transform(str.begin(), str.end(), str.begin(), [](auto c)
+			std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
 			{
 				return std::tolower(c);
+			});
+		}
+
+		template <typename Str>
+		[[deprecated]] static void toLower(Str& str)
+		{
+			return lower(str);
+		}
+
+		template <typename Str>
+		static void upper(Str& str)
+		{
+			std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
+			{
+				return std::toupper(c);
 			});
 		}
 
