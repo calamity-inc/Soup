@@ -205,9 +205,6 @@
     <ClInclude Include="sha256.hpp">
       <Filter>hash</Filter>
     </ClInclude>
-    <ClInclude Include="oid.hpp">
-      <Filter>io</Filter>
-    </ClInclude>
     <ClInclude Include="stream.hpp">
       <Filter>io</Filter>
     </ClInclude>
@@ -218,16 +215,16 @@
       <Filter>crypto\x509</Filter>
     </ClInclude>
     <ClInclude Include="asn1_sequence.hpp">
-      <Filter>io\asn1</Filter>
+      <Filter>data\asn1</Filter>
     </ClInclude>
     <ClInclude Include="asn1_identifier.hpp">
-      <Filter>io\asn1</Filter>
+      <Filter>data\asn1</Filter>
     </ClInclude>
     <ClInclude Include="asn1_element.hpp">
-      <Filter>io\asn1</Filter>
+      <Filter>data\asn1</Filter>
     </ClInclude>
     <ClInclude Include="asn1_type.hpp">
-      <Filter>io\asn1</Filter>
+      <Filter>data\asn1</Filter>
     </ClInclude>
     <ClInclude Include="pem.hpp">
       <Filter>enc</Filter>
@@ -429,13 +426,16 @@
       <Filter>net\web</Filter>
     </ClInclude>
     <ClInclude Include="mime_message.hpp">
-      <Filter>enc\mime</Filter>
+      <Filter>data\mime</Filter>
     </ClInclude>
     <ClInclude Include="urlenc.hpp">
       <Filter>enc</Filter>
     </ClInclude>
     <ClInclude Include="http_response.hpp">
       <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="oid.hpp">
+      <Filter>data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -505,15 +505,12 @@
     <ClCompile Include="sha256.cpp">
       <Filter>hash</Filter>
     </ClCompile>
-    <ClCompile Include="oid.cpp">
-      <Filter>io</Filter>
-    </ClCompile>
     <ClCompile Include="x509_certificate.cpp">
       <Filter>crypto\x509</Filter>
     </ClCompile>
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="asn1_sequence.cpp">
-      <Filter>io\asn1</Filter>
+      <Filter>data\asn1</Filter>
     </ClCompile>
     <ClCompile Include="pem.cpp">
       <Filter>enc</Filter>
@@ -600,13 +597,16 @@
       <Filter>chess</Filter>
     </ClCompile>
     <ClCompile Include="mime_message.cpp">
-      <Filter>enc\mime</Filter>
+      <Filter>data\mime</Filter>
     </ClCompile>
     <ClCompile Include="urlenc.cpp">
       <Filter>enc</Filter>
     </ClCompile>
     <ClCompile Include="http_request.cpp">
       <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="oid.cpp">
+      <Filter>data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -625,9 +625,6 @@
     <Filter Include="mem">
       <UniqueIdentifier>{2a5982c9-2e94-4883-be44-862fd3d7e0b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="enc">
-      <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net\dns">
       <UniqueIdentifier>{ec3c2669-f70f-495e-91fb-4ef47a97d5df}</UniqueIdentifier>
     </Filter>
@@ -642,9 +639,6 @@
     </Filter>
     <Filter Include="crypto\x509">
       <UniqueIdentifier>{ac1efe97-34c7-4c84-ae8e-6772370e049c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="io\asn1">
-      <UniqueIdentifier>{226c8613-6f40-4b31-98c9-5b22b100c1ca}</UniqueIdentifier>
     </Filter>
     <Filter Include="net\tls">
       <UniqueIdentifier>{ad3f66ba-4aaa-4648-8066-12c3d553bfb6}</UniqueIdentifier>
@@ -676,7 +670,16 @@
     <Filter Include="net\web">
       <UniqueIdentifier>{107b4f0f-f5db-4e5f-9a6a-8893289fac04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="enc\mime">
+    <Filter Include="enc">
+      <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{fddd6fad-45ea-4b2b-9b3c-f9bf40ce10a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\asn1">
+      <UniqueIdentifier>{226c8613-6f40-4b31-98c9-5b22b100c1ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\mime">
       <UniqueIdentifier>{0f633a4f-04c0-44e0-b0e4-8bd4e5a65e67}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

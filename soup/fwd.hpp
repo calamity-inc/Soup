@@ -13,11 +13,11 @@ namespace soup
 	// crypto.x509
 	struct certchain;
 
-	// io.asn1
-	struct asn1_sequence;
-
-	// io
+	// data
 	struct oid;
+
+	// data.asn1
+	struct asn1_sequence;
 
 	// math
 	class bigint;
