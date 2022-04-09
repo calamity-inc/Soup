@@ -1,44 +1,26 @@
 #pragma once
 
-#include "packet_io_base.hpp"
-
-#include <ostream>
-#include <vector>
+#include "io_base.hpp"
 
 namespace soup
 {
-	template <bool little_endian>
-	class packet_writer : public packet_io_base<packet_writer<little_endian>, little_endian>
+	class writer : public io_base
 	{
+	public:
+		using io_base::io_base;
+
 	protected:
-		using Base = packet_io_base<packet_writer, little_endian>;
+		virtual void write(const char* data, size_t size) = 0;
 
 	public:
-		std::ostream* os;
-
-		packet_writer(std::ostream* os)
-			: os(os)
-		{
-		}
-
-		[[nodiscard]] static constexpr bool isRead() noexcept
+		[[nodiscard]] bool isRead() const final
 		{
 			return false;
 		}
 
-		[[nodiscard]] static constexpr bool isWrite() noexcept
+		bool u8(uint8_t& v) final
 		{
-			return true;
-		}
-
-		[[nodiscard]] static constexpr bool hasMore() noexcept
-		{
-			return true;
-		}
-
-		bool u8(const uint8_t& v)
-		{
-			os->write((const char*)&v, sizeof(uint8_t));
+			write((const char*)&v, sizeof(uint8_t));
 			return true;
 		}
 
@@ -62,16 +44,34 @@ namespace soup
 			}
 			if (in != 0)
 			{
-				u8((uint8_t)in);
+				auto byte = (uint8_t)in;
+				u8(byte);
 			}
+			return true;
+		}
+
+		// An integer where every byte's most significant bit is used to indicate if another byte follows.
+		template <typename Int>
+		bool om(const Int& v)
+		{
+			Int val = v;
+			while (val > 0x7F)
+			{
+				uint8_t byte = ((unsigned char)val | 0x80);
+				u8(byte);
+				val >>= 7;
+			}
+			uint8_t byte = (unsigned char)val;
+			u8(byte);
 			return true;
 		}
 
 		// Null-terminated string.
 		bool str_nt(std::string& v)
 		{
-			os->write(v.data(), v.size());
-			u8(0);
+			write(v.data(), v.size());
+			uint8_t term = 0;
+			u8(term);
 			return true;
 		}
 
@@ -79,7 +79,7 @@ namespace soup
 		bool str_lp_u64_dyn(std::string& v)
 		{
 			u64_dyn(v.size());
-			os->write(v.data(), v.size());
+			write(v.data(), v.size());
 			return true;
 		}
 
@@ -91,7 +91,7 @@ namespace soup
 			{
 				auto tl = (uint8_t)len;
 				u8(tl);
-				os->write(v.data(), v.size());
+				write(v.data(), v.size());
 				return true;
 			}
 			return false;
@@ -104,9 +104,9 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint16_t)len;
-				if (Base::u16(tl))
+				if (io_base::u16(tl))
 				{
-					os->write(v.data(), v.size());
+					write(v.data(), v.size());
 					return true;
 				}
 			}
@@ -120,9 +120,9 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint32_t)len;
-				if (Base::u24(tl))
+				if (io_base::u24(tl))
 				{
-					os->write(v.data(), v.size());
+					write(v.data(), v.size());
 					return true;
 				}
 			}
@@ -136,9 +136,9 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint32_t)len;
-				if (Base::u32(tl))
+				if (io_base::u32(tl))
 				{
-					os->write(v.data(), v.size());
+					write(v.data(), v.size());
 					return true;
 				}
 			}
@@ -149,9 +149,9 @@ namespace soup
 		bool str_lp_u64(std::string& v)
 		{
 			uint64_t len = v.size();
-			if (Base::u64(len))
+			if (io_base::u64(len))
 			{
-				os->write(v.data(), v.size());
+				write(v.data(), v.size());
 				return true;
 			}
 			return false;
@@ -160,7 +160,7 @@ namespace soup
 		// String with known length.
 		bool str(size_t len, std::string& v)
 		{
-			os->write(v.data(), v.size());
+			write(v.data(), v.size());
 			return true;
 		}
 
@@ -194,13 +194,13 @@ namespace soup
 				return false;
 			}
 			auto len = (uint16_t)v.size();
-			if (!Base::u16(len))
+			if (!io_base::u16(len))
 			{
 				return false;
 			}
 			for (auto& entry : v)
 			{
-				if (!Base::u16(entry))
+				if (!io_base::u16(entry))
 				{
 					return false;
 				}
@@ -217,13 +217,13 @@ namespace soup
 				return false;
 			}
 			auto bl_u16 = (uint16_t)bl;
-			if (!Base::u16(bl_u16))
+			if (!io_base::u16(bl_u16))
 			{
 				return false;
 			}
 			for (auto& entry : v)
 			{
-				if (!Base::u16(entry))
+				if (!io_base::u16(entry))
 				{
 					return false;
 				}
@@ -244,7 +244,7 @@ namespace soup
 				return false;
 			}
 			auto bl_u32 = (uint32_t)bl;
-			if (!Base::u24(bl_u32))
+			if (!io_base::u24(bl_u32))
 			{
 				return false;
 			}

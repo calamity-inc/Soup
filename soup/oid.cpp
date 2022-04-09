@@ -3,7 +3,7 @@
 #include <istream>
 #include <sstream>
 
-#include "stream.hpp"
+#include "istream_reader.hpp"
 
 namespace soup
 {
@@ -21,9 +21,12 @@ namespace soup
 			ret.path.reserve(2);
 			ret.path.push_back(first / 40);
 			ret.path.push_back(first % 40);
-			while (s.peek() != EOF)
+			istream_reader r(&s);
+			while (r.hasMore())
 			{
-				ret.path.emplace_back(stream::readOmInt<uint32_t>(s));
+				uint32_t comp;
+				r.om<uint32_t>(comp);
+				ret.path.emplace_back(comp);
 			}
 		}
 		return ret;

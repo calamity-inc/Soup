@@ -3,8 +3,10 @@
 #define SOUP_PACKET(name) struct name : public ::soup::packet<name>
 #define SOUP_PACKET_IO(s) template <typename T> bool io(T& s)
 
-#include "packet_reader.hpp"
-#include "packet_writer.hpp"
+#include "istream_reader.hpp"
+#include "ostream_writer.hpp"
+#include "string_reader.hpp"
+#include "string_writer.hpp"
 
 #include <sstream>
 
@@ -21,54 +23,64 @@ namespace soup
 		using u56 = u64;
 
 	public:
-		bool fromBinary(const std::string& bin)
+		bool fromBinary(std::string bin)
 		{
-			std::istringstream iss{ bin };
-			return read(iss);
+			string_reader r(std::move(bin), false);
+			return read(r);
 		}
 
-		bool fromBinaryLE(const std::string& bin)
+		bool fromBinaryLE(std::string bin)
 		{
-			std::istringstream iss{ bin };
-			return readLE(iss);
-		}
-
-		[[nodiscard]] std::string toBinary()
-		{
-			std::ostringstream oss{};
-			write(oss);
-			return oss.str();
-		}
-
-		[[nodiscard]] std::string toBinaryLE()
-		{
-			std::ostringstream oss{};
-			writeLE(oss);
-			return oss.str();
+			string_reader r(std::move(bin), true);
+			return read(r);
 		}
 
 		bool read(std::istream& is)
 		{
-			packet_reader<false> r(&is);
-			return reinterpret_cast<T*>(this)->template io<packet_reader<false>>(r);
+			istream_reader r(&is, false);
+			return read(r);
 		}
 
 		bool readLE(std::istream& is)
 		{
-			packet_reader<true> r(&is);
-			return reinterpret_cast<T*>(this)->template io<packet_reader<true>>(r);
+			istream_reader r(&is, true);
+			return read(r);
+		}
+
+		bool read(reader& r)
+		{
+			return reinterpret_cast<T*>(this)->template io<reader>(r);
+		}
+
+		[[nodiscard]] std::string toBinary()
+		{
+			string_writer w(false);
+			write(w);
+			return w.str;
+		}
+
+		[[nodiscard]] std::string toBinaryLE()
+		{
+			string_writer w(true);
+			write(w);
+			return w.str;
 		}
 
 		bool write(std::ostream& os)
 		{
-			packet_writer<false> w(&os);
-			return reinterpret_cast<T*>(this)->template io<packet_writer<false>>(w);
+			ostream_writer w(&os, false);
+			return write(w);
 		}
 
 		bool writeLE(std::ostream& os)
 		{
-			packet_writer<true> w(&os);
-			return reinterpret_cast<T*>(this)->template io<packet_writer<true>>(w);
+			ostream_writer w(&os, true);
+			return write(w);
+		}
+
+		bool write(writer& w)
+		{
+			return reinterpret_cast<T*>(this)->template io<writer>(w);
 		}
 	};
 }

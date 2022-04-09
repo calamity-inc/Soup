@@ -187,15 +187,6 @@
     <ClInclude Include="packet.hpp">
       <Filter>io</Filter>
     </ClInclude>
-    <ClInclude Include="packet_writer.hpp">
-      <Filter>io</Filter>
-    </ClInclude>
-    <ClInclude Include="packet_io_base.hpp">
-      <Filter>io</Filter>
-    </ClInclude>
-    <ClInclude Include="packet_reader.hpp">
-      <Filter>io</Filter>
-    </ClInclude>
     <ClInclude Include="shortint_impl.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -204,9 +195,6 @@
     </ClInclude>
     <ClInclude Include="sha256.hpp">
       <Filter>hash</Filter>
-    </ClInclude>
-    <ClInclude Include="stream.hpp">
-      <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="x509_certificate.hpp">
       <Filter>crypto\x509</Filter>
@@ -437,6 +425,30 @@
     <ClInclude Include="oid.hpp">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="reader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="file_reader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="string_reader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="io_base.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="istream_reader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="writer.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="ostream_writer.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="string_writer.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -608,6 +620,9 @@
     <ClCompile Include="oid.cpp">
       <Filter>data</Filter>
     </ClCompile>
+    <ClCompile Include="asn1_identifier.cpp">
+      <Filter>data\asn1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -681,6 +696,9 @@
     </Filter>
     <Filter Include="data\mime">
       <UniqueIdentifier>{0f633a4f-04c0-44e0-b0e4-8bd4e5a65e67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\stream">
+      <UniqueIdentifier>{a9d0d460-1d1e-45e7-b1a1-61141c904c4d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

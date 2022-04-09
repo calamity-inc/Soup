@@ -1,48 +1,27 @@
 #pragma once
 
-#include "packet_io_base.hpp"
-
-#include <istream>
-#include <vector>
+#include "io_base.hpp"
 
 namespace soup
 {
-	template <bool little_endian>
-	class packet_reader : public packet_io_base<packet_reader<little_endian>, little_endian>
+	class reader : public io_base
 	{
+	public:
+		using io_base::io_base;
+
 	protected:
-		using Base = packet_io_base<packet_reader, little_endian>;
+		virtual bool str_impl(std::string& v, size_t len) = 0;
 
 	public:
-		std::istream* is;
-
-		packet_reader(std::istream* is)
-			: is(is)
-		{
-		}
-
-		[[nodiscard]] static constexpr bool isRead() noexcept
+		[[nodiscard]] bool isRead() const final
 		{
 			return true;
 		}
 
-		[[nodiscard]] static constexpr bool isWrite() noexcept
-		{
-			return false;
-		}
-
-		[[nodiscard]] bool hasMore()
-		{
-			return is->peek() != EOF;
-		}
-
-		[[nodiscard]] bool u8(uint8_t& p)
-		{
-			return !is->read((char*)&p, sizeof(uint8_t)).bad();
-		}
+		[[nodiscard]] bool hasMore() override = 0;
 
 		// An unsigned 64-bit integer encoded in 1..9 bytes. The most significant bit of bytes 1 to 8 is used to indicate if another byte follows.
-		[[nodiscard]] bool u64_dyn(uint64_t& v)
+		bool u64_dyn(uint64_t& v)
 		{
 			v = 0;
 			uint8_t bits = 0;
@@ -68,15 +47,35 @@ namespace soup
 			}
 			return true;
 		}
-		
+
+		// An integer where every byte's most significant bit is used to indicate if another byte follows.
+		template <typename Int>
+		bool om(Int& v)
+		{
+			Int val{};
+			while (hasMore())
+			{
+				uint8_t byte;
+				u8(byte);
+				val <<= 7;
+				val |= (byte & 0x7F);
+				if (!(byte & 0x80))
+				{
+					break;
+				}
+			}
+			v = val;
+			return true;
+		}
+
 		// Null-terminated string.
-		[[nodiscard]] bool str_nt(std::string& v)
+		bool str_nt(std::string& v)
 		{
 			v.clear();
 			while (true)
 			{
 				char c;
-				if (!Base::c(c))
+				if (!io_base::c(c))
 				{
 					return false;
 				}
@@ -89,15 +88,6 @@ namespace soup
 			return true;
 		}
 
-	protected:
-		bool str_impl(std::string& v, size_t len)
-		{
-			v = std::string(len, 0);
-			is->read(v.data(), len);
-			return !is->bad();
-		}
-
-	public:
 		// Length-prefixed string, using u64_dyn for the length prefix.
 		bool str_lp_u64_dyn(std::string& v)
 		{
@@ -116,28 +106,28 @@ namespace soup
 		bool str_lp_u16(std::string& v, const uint16_t max_len = 0xFFFF)
 		{
 			uint16_t len;
-			return Base::u16(len) && len <= max_len && str_impl(v, len);
+			return io_base::u16(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u24 for the length prefix.
 		bool str_lp_u24(std::string& v, const uint32_t max_len = 0xFFFFFF)
 		{
 			uint32_t len;
-			return Base::u24(len) && len <= max_len && str_impl(v, len);
+			return io_base::u24(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
 		bool str_lp_u32(std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
 			uint32_t len;
-			return Base::u32(len) && len <= max_len && str_impl(v, len);
+			return io_base::u32(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.
 		bool str_lp_u64(std::string& v)
 		{
 			uint64_t len;
-			return Base::u64(len) && str_impl(v, len);
+			return io_base::u64(len) && str_impl(v, len);
 		}
 
 		// String with known length.
@@ -172,7 +162,7 @@ namespace soup
 		bool vec_u16_u16(std::vector<uint16_t>& v)
 		{
 			uint16_t len;
-			if (!Base::u16(len))
+			if (!io_base::u16(len))
 			{
 				return false;
 			}
@@ -181,7 +171,7 @@ namespace soup
 			for (; len; --len)
 			{
 				uint16_t entry;
-				if (!Base::u16(entry))
+				if (!io_base::u16(entry))
 				{
 					return false;
 				}
@@ -194,7 +184,7 @@ namespace soup
 		bool vec_u16_bl_u16(std::vector<uint16_t>& v)
 		{
 			uint16_t len;
-			if (!Base::u16(len))
+			if (!io_base::u16(len))
 			{
 				return false;
 			}
@@ -203,7 +193,7 @@ namespace soup
 			for (; len >= sizeof(uint16_t); len -= sizeof(uint16_t))
 			{
 				uint16_t entry;
-				if (!Base::u16(entry))
+				if (!io_base::u16(entry))
 				{
 					return false;
 				}
@@ -216,7 +206,7 @@ namespace soup
 		bool vec_str_lp_u24_bl_u24(std::vector<std::string>& v)
 		{
 			uint32_t len;
-			if (!Base::u24(len))
+			if (!io_base::u24(len))
 			{
 				return false;
 			}

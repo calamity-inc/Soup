@@ -4,8 +4,8 @@
 
 #include "asn1_type.hpp"
 #include "bigint.hpp"
+#include "istream_reader.hpp"
 #include "oid.hpp"
-#include "stream.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -241,7 +241,8 @@ namespace soup
 		ret.type = (first & 0b11111);
 		if (ret.type > 30)
 		{
-			ret.type = stream::readOmInt<uint32_t>(s);
+			istream_reader r(&s);
+			r.om<uint32_t>(ret.type);
 		}
 		return ret;
 	}

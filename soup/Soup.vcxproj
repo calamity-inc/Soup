@@ -253,6 +253,10 @@
     <ClInclude Include="http_request.hpp" />
     <ClInclude Include="http_response.hpp" />
     <ClInclude Include="int_vector.hpp" />
+    <ClInclude Include="io_base.hpp" />
+    <ClInclude Include="istream_reader.hpp" />
+    <ClInclude Include="ostream_writer.hpp" />
+    <ClInclude Include="reader.hpp" />
     <ClInclude Include="keystore.hpp" />
     <ClInclude Include="mime_message.hpp" />
     <ClInclude Include="mouse_button.hpp" />
@@ -264,7 +268,6 @@
     <ClInclude Include="server.hpp" />
     <ClInclude Include="signal.hpp" />
     <ClInclude Include="socket_tls_server_rsa_data.hpp" />
-    <ClInclude Include="stream.hpp" />
     <ClInclude Include="matrix.hpp" />
     <ClInclude Include="console.hpp" />
     <ClInclude Include="handle_base.hpp" />
@@ -274,9 +277,6 @@
     <ClInclude Include="memory_buffer.hpp" />
     <ClInclude Include="oid.hpp" />
     <ClInclude Include="packet.hpp" />
-    <ClInclude Include="packet_io_base.hpp" />
-    <ClInclude Include="packet_reader.hpp" />
-    <ClInclude Include="packet_writer.hpp" />
     <ClInclude Include="pattern_compile_time_base.hpp" />
     <ClInclude Include="pattern_compile_time_with_opt_bytes_base.hpp" />
     <ClInclude Include="pattern_compile_time_with_opt_bytes.hpp" />
@@ -305,9 +305,12 @@
     <ClInclude Include="socket.hpp" />
     <ClInclude Include="ray.hpp" />
     <ClInclude Include="shortint.hpp" />
+    <ClInclude Include="file_reader.hpp" />
     <ClInclude Include="string.hpp" />
     <ClInclude Include="obfus_string.hpp" />
     <ClInclude Include="string_literal.hpp" />
+    <ClInclude Include="string_reader.hpp" />
+    <ClInclude Include="string_writer.hpp" />
     <ClInclude Include="thread.hpp" />
     <ClInclude Include="region_virtual.hpp" />
     <ClInclude Include="time.hpp" />
@@ -342,6 +345,7 @@
     <ClInclude Include="vector_maths.hpp" />
     <ClInclude Include="window.hpp" />
     <ClInclude Include="worker.hpp" />
+    <ClInclude Include="writer.hpp" />
     <ClInclude Include="x509_certificate.hpp" />
     <ClInclude Include="x509_relative_distinguished_name.hpp" />
     <ClInclude Include="zip_indexed_file.hpp" />
@@ -354,6 +358,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aes.cpp" />
+    <ClCompile Include="asn1_identifier.cpp" />
     <ClCompile Include="asn1_sequence.cpp" />
     <ClCompile Include="assembly_builder.cpp" />
     <ClCompile Include="base64.cpp" />
