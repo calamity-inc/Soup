@@ -422,8 +422,26 @@
     <ClInclude Include="http_response.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
+    <ClInclude Include="json_node.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json_string.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json_int.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json_array.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
     <ClInclude Include="oid.hpp">
       <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="json_node_type.hpp">
+      <Filter>data\json</Filter>
     </ClInclude>
     <ClInclude Include="reader.hpp">
       <Filter>io\stream</Filter>
@@ -448,6 +466,21 @@
     </ClInclude>
     <ClInclude Include="string_writer.hpp">
       <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="json_object.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="derivable_map.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="json_null.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json_bool.hpp">
+      <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json_float.hpp">
+      <Filter>data\json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -617,11 +650,32 @@
     <ClCompile Include="http_request.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
+    <ClCompile Include="json_string.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
     <ClCompile Include="oid.cpp">
       <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="asn1_identifier.cpp">
       <Filter>data\asn1</Filter>
+    </ClCompile>
+    <ClCompile Include="json_array.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json_node.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json_object.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json_int.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json_float.cpp">
+      <Filter>data\json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -690,6 +744,9 @@
     </Filter>
     <Filter Include="data">
       <UniqueIdentifier>{fddd6fad-45ea-4b2b-9b3c-f9bf40ce10a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\json">
+      <UniqueIdentifier>{c9cb16ff-3edf-4e1e-8120-52b82b69b75c}</UniqueIdentifier>
     </Filter>
     <Filter Include="data\asn1">
       <UniqueIdentifier>{226c8613-6f40-4b31-98c9-5b22b100c1ca}</UniqueIdentifier>

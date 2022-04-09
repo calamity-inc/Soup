@@ -3,6 +3,7 @@
 #include <algorithm> // std::transform
 #include <cctype> // std::tolower
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -111,6 +112,18 @@ namespace soup
 			return isUppercaseLetter(c) || isLowercaseLetter(c);
 		}
 
+		template <typename T>
+		[[nodiscard]] static constexpr bool isNumberChar(const T c) noexcept
+		{
+			return c >= '0' && c <= '9';
+		}
+
+		template <typename T>
+		[[nodiscard]] static constexpr bool isSpace(const T c) noexcept
+		{
+			return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+		}
+
 		// conversions
 
 		[[nodiscard]] static std::string bin2hex(const std::string& str)
@@ -133,6 +146,101 @@ namespace soup
 				res.push_back(map[c & 0b1111]);
 			}
 			return res;
+		}
+
+		template <typename IntT, typename CharT>
+		[[nodiscard]] static IntT toInt(const CharT*& it) noexcept
+		{
+			IntT val = 0;
+			IntT max = 0;
+			IntT prev_max = 0;
+			while (true)
+			{
+				const CharT c = *it++;
+				if (!isNumberChar(c))
+				{
+					break;
+				}
+				val *= 10;
+				val += (c - '0');
+				max *= 10;
+				max += 9;
+				if (max < prev_max)
+				{
+					break;
+				}
+				prev_max = max;
+			}
+			return val;
+		}
+
+		template <typename IntT, typename StringView>
+		[[nodiscard]] static std::optional<IntT> toInt(const StringView& str) noexcept
+		{
+			using CharT = typename StringView::value_type;
+
+			bool neg = false;
+			auto it = str.cbegin();
+			if (it == str.cend())
+			{
+				return std::nullopt;
+			}
+			switch (*it)
+			{
+			case '-':
+				neg = true;
+				[[fallthrough]];
+			case '+':
+				if (++it == str.cend())
+				{
+					return std::nullopt;
+				}
+			}
+			if (!isNumberChar(*it))
+			{
+				return std::nullopt;
+			}
+			const CharT* it_ = &*it;
+			IntT val = toInt<IntT, CharT>(it_);
+			if (neg)
+			{
+				val *= -1;
+			}
+			return std::optional<IntT>(std::move(val));
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static std::optional<IntT> toInt(const std::string_view& str) noexcept
+		{
+			return toInt<IntT, std::string_view>(str);
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static std::optional<IntT> toInt(const std::wstring_view& str) noexcept
+		{
+			return toInt<IntT, std::wstring_view>(str);
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static IntT toInt(const std::string_view& str, IntT default_value) noexcept
+		{
+			auto res = toInt<IntT>(str);
+			if (res.has_value())
+			{
+				return res.value();
+			}
+			return default_value;
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static IntT toInt(const std::wstring_view& str, IntT default_value) noexcept
+		{
+			auto res = toInt<IntT>(str);
+			if (res.has_value())
+			{
+				return res.value();
+			}
+			return default_value;
 		}
 
 		// string mutation

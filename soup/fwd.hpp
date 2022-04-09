@@ -19,6 +19,14 @@ namespace soup
 	// data.asn1
 	struct asn1_sequence;
 
+	// data.json
+	struct json_array;
+	struct json_bool;
+	struct json_float;
+	struct json_int;
+	struct json_object;
+	struct json_string;
+
 	// math
 	class bigint;
 	struct box_corners;
