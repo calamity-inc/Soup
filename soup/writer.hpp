@@ -231,6 +231,24 @@ namespace soup
 			return true;
 		}
 
+		// vector of str_nt with u64_dyn length prefix.
+		bool vec_str_nt_u64_dyn(std::vector<std::string>& v)
+		{
+			uint64_t len = v.size();
+			if (!u64_dyn(len))
+			{
+				return false;
+			}
+			for (auto& entry : v)
+			{
+				if (!str_nt(entry))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		// vector of str_lp_u24 with u24 byte length prefix.
 		bool vec_str_lp_u24_bl_u24(std::vector<std::string>& v)
 		{
