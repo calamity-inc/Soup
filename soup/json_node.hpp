@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
-
+#include "base.hpp"
 #include "fwd.hpp"
+
 #include "json_node_type.hpp"
+#include <string>
 
 namespace soup
 {
@@ -18,7 +19,9 @@ namespace soup
 
 		virtual ~json_node() = default;
 
+#if SOUP_SPACESHIP
 		std::strong_ordering operator <=>(const json_node& b) const;
+#endif
 		bool operator ==(const json_node& b) const;
 		bool operator !=(const json_node& b) const;
 		bool operator <(const json_node& b) const;

@@ -1,5 +1,7 @@
 #include "console.hpp"
 
+#if !SOUP_WASM
+
 #include <thread>
 
 #include "control_input.hpp"
@@ -561,3 +563,5 @@ namespace soup
 		ctrl_c_handler = handler;
 	}
 }
+
+#endif

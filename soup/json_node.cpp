@@ -6,6 +6,7 @@
 
 namespace soup
 {
+#if SOUP_SPACESHIP
 	std::strong_ordering json_node::operator<=>(const json_node& b) const
 	{
 		if (type != b.type)
@@ -14,6 +15,7 @@ namespace soup
 		}
 		return encode() <=> b.encode();
 	}
+#endif
 
 	bool json_node::operator==(const json_node& b) const
 	{

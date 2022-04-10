@@ -1,5 +1,7 @@
 #include "socket.hpp"
 
+#if !SOUP_WASM
+
 #if SOUP_LINUX
 #include <fcntl.h>
 #include <unistd.h> // close
@@ -973,3 +975,5 @@ namespace soup
 		}
 	}
 }
+
+#endif

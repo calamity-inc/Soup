@@ -57,6 +57,9 @@
 #define SOUP_CPP20 true
 #endif
 
+// emscripten seems to be missing std::string::operator<=>
+#define SOUP_SPACESHIP (SOUP_CPP20 && !SOUP_WASM)
+
 // platform-specific types, this is the only thing soup puts into the global namespace
 
 #if SOUP_BITS == 64

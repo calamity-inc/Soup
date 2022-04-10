@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 
+#include "base.hpp"
 #include "unique_ptr.hpp"
 
 namespace soup
@@ -50,8 +51,12 @@ namespace soup
 			{
 				auto size = std::distance(first, last);
 				DataIt pivot = first + (size / 2);
+#if SOUP_SPACESHIP
 				auto cmp = (k <=> *pivot->first);
 				if (cmp == 0)
+#else
+				if (k == *pivot->first)
+#endif
 				{
 					return &*pivot;
 				}
@@ -59,7 +64,11 @@ namespace soup
 				{
 					return nullptr;
 				}
+#if SOUP_SPACESHIP
 				if (cmp < 0)
+#else
+				if (k < *pivot->first)
+#endif
 				{
 					last = pivot;
 				}

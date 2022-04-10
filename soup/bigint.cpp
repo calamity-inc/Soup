@@ -221,7 +221,11 @@ namespace soup
 			{
 				break;
 			}
+#if SOUP_WINDOWS
 			chunks.erase(i);
+#else
+			chunks.erase(chunks.cbegin() + i);
+#endif
 		}
 	}
 

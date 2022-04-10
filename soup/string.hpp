@@ -3,6 +3,7 @@
 #include <algorithm> // std::transform
 #include <cctype> // std::tolower
 #include <cstdint>
+#include <cstring> // strlen
 #include <optional>
 #include <string>
 #include <vector>
