@@ -1,6 +1,7 @@
 #include "canvas.hpp"
 
 #include "console.hpp"
+#include "string.hpp"
 
 namespace soup
 {
@@ -146,5 +147,21 @@ namespace soup
 		}
 		width = new_width;
 		pixels = std::move(new_pixels);
+	}
+
+	std::string canvas::toPPM() const
+	{
+		std::string res = "P3\n";
+		res.append(string::decimal(width));
+		res.push_back(' ');
+		res.append(string::decimal(height));
+		res.append("\n255\n");
+		for (const auto& p : pixels)
+		{
+			res.append(string::decimal(p.r)).push_back(' ');
+			res.append(string::decimal(p.g)).push_back(' ');
+			res.append(string::decimal(p.b)).push_back('\n');
+		}
+		return res;
 	}
 }

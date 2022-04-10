@@ -37,5 +37,8 @@ namespace soup
 
 		void ensureWidthAndHeightAreEven();
 		void resizeWidth(int new_width);
+
+	public:
+		[[nodiscard]] std::string toPPM() const; // Bit of a niche format, but dead simple to write. You can load images of this type with GIMP.
 	};
 }
