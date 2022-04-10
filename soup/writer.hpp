@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	class writer : public io_base
+	class writer : public io_base<false>
 	{
 	public:
 		using io_base::io_base;
@@ -13,11 +13,6 @@ namespace soup
 		virtual void write(const char* data, size_t size) = 0;
 
 	public:
-		[[nodiscard]] bool isRead() const final
-		{
-			return false;
-		}
-
 		bool u8(uint8_t& v) final
 		{
 			write((const char*)&v, sizeof(uint8_t));

@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	class reader : public io_base
+	class reader : public io_base<true>
 	{
 	public:
 		using io_base::io_base;
@@ -13,12 +13,7 @@ namespace soup
 		virtual bool str_impl(std::string& v, size_t len) = 0;
 
 	public:
-		[[nodiscard]] bool isRead() const final
-		{
-			return true;
-		}
-
-		[[nodiscard]] bool hasMore() override = 0;
+		[[nodiscard]] virtual bool hasMore() = 0;
 
 		// An unsigned 64-bit integer encoded in 1..9 bytes. The most significant bit of bytes 1 to 8 is used to indicate if another byte follows.
 		bool u64_dyn(uint64_t& v)
