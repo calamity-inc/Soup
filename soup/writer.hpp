@@ -67,7 +67,7 @@ namespace soup
 		}
 
 		// Null-terminated string.
-		bool str_nt(std::string& v)
+		bool str_nt(const std::string& v)
 		{
 			write(v.data(), v.size());
 			uint8_t term = 0;
@@ -76,7 +76,7 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u64_dyn for the length prefix.
-		bool str_lp_u64_dyn(std::string& v)
+		bool str_lp_u64_dyn(const std::string& v)
 		{
 			u64_dyn(v.size());
 			write(v.data(), v.size());
@@ -84,7 +84,7 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u8 for the length prefix.
-		bool str_lp_u8(std::string& v, const uint8_t max_len = 0xFF)
+		bool str_lp_u8(const std::string& v, const uint8_t max_len = 0xFF)
 		{
 			size_t len = v.size();
 			if (len <= max_len)
@@ -98,7 +98,7 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u16 for the length prefix.
-		bool str_lp_u16(std::string& v, const uint16_t max_len = 0xFFFF)
+		bool str_lp_u16(const std::string& v, const uint16_t max_len = 0xFFFF)
 		{
 			size_t len = v.size();
 			if (len <= max_len)
@@ -114,7 +114,7 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u24 for the length prefix.
-		bool str_lp_u24(std::string& v, const uint32_t max_len = 0xFFFFFF)
+		bool str_lp_u24(const std::string& v, const uint32_t max_len = 0xFFFFFF)
 		{
 			size_t len = v.size();
 			if (len <= max_len)
@@ -130,7 +130,7 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
-		bool str_lp_u32(std::string& v, const uint32_t max_len = 0xFFFFFFFF)
+		bool str_lp_u32(const std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
 			size_t len = v.size();
 			if (len <= max_len)
@@ -146,7 +146,7 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.
-		bool str_lp_u64(std::string& v)
+		bool str_lp_u64(const std::string& v)
 		{
 			uint64_t len = v.size();
 			if (io_base::u64(len))
@@ -158,7 +158,7 @@ namespace soup
 		}
 
 		// String with known length.
-		bool str(size_t len, std::string& v)
+		bool str(size_t len, const std::string& v)
 		{
 			write(v.data(), v.size());
 			return true;
