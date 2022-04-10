@@ -422,6 +422,15 @@
     <ClInclude Include="http_response.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
+    <ClInclude Include="word_type.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="word_meaning.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
+    <ClInclude Include="dictionary_word.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
     <ClInclude Include="json_node.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
@@ -481,6 +490,9 @@
     </ClInclude>
     <ClInclude Include="json_float.hpp">
       <Filter>data\json</Filter>
+    </ClInclude>
+    <ClInclude Include="dictionary.hpp">
+      <Filter>ling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -677,6 +689,9 @@
     <ClCompile Include="json_float.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
+    <ClCompile Include="dictionary.cpp">
+      <Filter>ling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -738,6 +753,9 @@
     </Filter>
     <Filter Include="net\web">
       <UniqueIdentifier>{107b4f0f-f5db-4e5f-9a6a-8893289fac04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ling">
+      <UniqueIdentifier>{ded31275-73f9-4bb2-b6d4-095d5f6e7eec}</UniqueIdentifier>
     </Filter>
     <Filter Include="enc">
       <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>

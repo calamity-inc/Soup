@@ -240,6 +240,8 @@
     <ClInclude Include="crypto_hash_algo.hpp" />
     <ClInclude Include="deleter.hpp" />
     <ClInclude Include="derivable_map.hpp" />
+    <ClInclude Include="dictionary.hpp" />
+    <ClInclude Include="dictionary_word.hpp" />
     <ClInclude Include="dns.hpp" />
     <ClInclude Include="dns_a.hpp" />
     <ClInclude Include="dns_aaaa.hpp" />
@@ -355,6 +357,8 @@
     <ClInclude Include="vector_base.hpp" />
     <ClInclude Include="vector_maths.hpp" />
     <ClInclude Include="window.hpp" />
+    <ClInclude Include="word_meaning.hpp" />
+    <ClInclude Include="word_type.hpp" />
     <ClInclude Include="worker.hpp" />
     <ClInclude Include="writer.hpp" />
     <ClInclude Include="x509_certificate.hpp" />
@@ -388,6 +392,7 @@
     <ClCompile Include="conui_base.cpp" />
     <ClCompile Include="conui_span.cpp" />
     <ClCompile Include="crc32.cpp" />
+    <ClCompile Include="dictionary.cpp" />
     <ClCompile Include="dns.cpp" />
     <ClCompile Include="ec.cpp" />
     <ClCompile Include="editor.cpp" />
