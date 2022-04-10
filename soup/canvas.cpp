@@ -30,11 +30,12 @@ namespace soup
 	std::string canvas::toStringx1() const
 	{
 		std::string str{};
-		str.reserve((size_t)width * height);
+		//str.reserve((size_t)width * height);
 		for (const auto& colour : pixels)
 		{
+			str.append(console.strSetForegroundColour<std::string>(colour.r, colour.g, colour.b));
 			str.append(console.strSetBackgroundColour<std::string>(colour.r, colour.g, colour.b));
-			str.push_back(' ');
+			str.push_back('-');
 		}
 		return str;
 	}
@@ -114,7 +115,7 @@ namespace soup
 		case 0b1111: return u'\u2588';
 		}
 		// 0 px
-		return ' ';
+		return '-';
 	}
 
 	void canvas::ensureWidthAndHeightAreEven()
