@@ -167,7 +167,7 @@ namespace soup
 				return false;
 			}
 			v.clear();
-			v.reserve(len);
+			v.reserve(len / 2);
 			for (; len; --len)
 			{
 				uint16_t entry;
@@ -189,7 +189,7 @@ namespace soup
 				return false;
 			}
 			v.clear();
-			v.reserve(len);
+			v.reserve(len / 2);
 			for (; len >= sizeof(uint16_t); len -= sizeof(uint16_t))
 			{
 				uint16_t entry;
@@ -211,7 +211,7 @@ namespace soup
 				return false;
 			}
 			v.clear();
-			v.reserve(len);
+			v.reserve(len / 3);
 			while (len >= 3)
 			{
 				std::string entry;
