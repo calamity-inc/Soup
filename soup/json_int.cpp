@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	json_int::json_int(uint64_t value) noexcept
+	json_int::json_int(int64_t value) noexcept
 		: json_node(JSON_INT), value(value)
 	{
 	}

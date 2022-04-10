@@ -6,9 +6,9 @@ namespace soup
 {
 	struct json_int : public json_node
 	{
-		uint64_t value;
+		int64_t value;
 
-		explicit json_int(uint64_t value = 0) noexcept;
+		explicit json_int(int64_t value = 0) noexcept;
 
 		[[nodiscard]] std::string encode() const final;
 	};

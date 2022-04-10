@@ -54,7 +54,7 @@ namespace soup
 		{
 			if (is_int)
 			{
-				auto opt = string::toInt<uint64_t>(buf);
+				auto opt = string::toInt<int64_t>(buf);
 				if (opt.has_value())
 				{
 					return soup::make_unique<json_int>(opt.value());
