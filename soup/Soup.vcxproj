@@ -356,6 +356,7 @@
     <ClInclude Include="vector4.hpp" />
     <ClInclude Include="vector_base.hpp" />
     <ClInclude Include="vector_maths.hpp" />
+    <ClInclude Include="web_resource.hpp" />
     <ClInclude Include="window.hpp" />
     <ClInclude Include="word_meaning.hpp" />
     <ClInclude Include="word_type.hpp" />
@@ -434,6 +435,7 @@
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="urlenc.cpp" />
     <ClCompile Include="wasm.cpp" />
+    <ClCompile Include="web_resource.cpp" />
     <ClCompile Include="worker.cpp" />
     <ClCompile Include="x509_certificate.cpp" />
     <ClCompile Include="zip_reader.cpp" />

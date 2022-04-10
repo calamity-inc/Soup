@@ -494,6 +494,9 @@
     <ClInclude Include="dictionary.hpp">
       <Filter>ling</Filter>
     </ClInclude>
+    <ClInclude Include="web_resource.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -691,6 +694,9 @@
     </ClCompile>
     <ClCompile Include="dictionary.cpp">
       <Filter>ling</Filter>
+    </ClCompile>
+    <ClCompile Include="web_resource.cpp">
+      <Filter>net\web</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
