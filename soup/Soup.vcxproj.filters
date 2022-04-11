@@ -90,12 +90,6 @@
     <ClInclude Include="vector3_base.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="matrix.hpp">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="box.hpp">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="module.hpp">
       <Filter>os</Filter>
     </ClInclude>
@@ -110,21 +104,6 @@
     </ClInclude>
     <ClInclude Include="unicode.hpp">
       <Filter>enc</Filter>
-    </ClInclude>
-    <ClInclude Include="box_corners.hpp">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="box_axis_aligned.hpp">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="poly.hpp">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="quaternion.hpp">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="ray.hpp">
-      <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="dns.hpp">
       <Filter>net\dns</Filter>
@@ -497,6 +476,48 @@
     <ClInclude Include="web_resource.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
+    <ClInclude Include="matrix.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="poly.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="quaternion.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="ray.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="plane.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="poly_vector.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="box.hpp">
+      <Filter>math\3d\box</Filter>
+    </ClInclude>
+    <ClInclude Include="box_axis_aligned.hpp">
+      <Filter>math\3d\box</Filter>
+    </ClInclude>
+    <ClInclude Include="box_corners.hpp">
+      <Filter>math\3d\box</Filter>
+    </ClInclude>
+    <ClInclude Include="point_light.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.hpp">
+      <Filter>math\3d\sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="uv_sphere.hpp">
+      <Filter>math\3d\sphere</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -528,18 +549,6 @@
     </ClCompile>
     <ClCompile Include="unicode.cpp">
       <Filter>enc</Filter>
-    </ClCompile>
-    <ClCompile Include="box.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="box_corners.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="box_axis_aligned.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="poly.cpp">
-      <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="socket.cpp">
       <Filter>net</Filter>
@@ -629,12 +638,6 @@
     <ClCompile Include="crc32.cpp">
       <Filter>hash</Filter>
     </ClCompile>
-    <ClCompile Include="quaternion.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="matrix.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="zip_reader.cpp">
       <Filter>io\zip</Filter>
     </ClCompile>
@@ -697,6 +700,36 @@
     </ClCompile>
     <ClCompile Include="web_resource.cpp">
       <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="poly.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="quaternion.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="box.cpp">
+      <Filter>math\3d\box</Filter>
+    </ClCompile>
+    <ClCompile Include="box_axis_aligned.cpp">
+      <Filter>math\3d\box</Filter>
+    </ClCompile>
+    <ClCompile Include="box_corners.cpp">
+      <Filter>math\3d\box</Filter>
+    </ClCompile>
+    <ClCompile Include="uv_sphere.cpp">
+      <Filter>math\3d\sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="point_light.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>math\3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -780,6 +813,15 @@
     </Filter>
     <Filter Include="io\stream">
       <UniqueIdentifier>{a9d0d460-1d1e-45e7-b1a1-61141c904c4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d">
+      <UniqueIdentifier>{420a3716-0d15-4a0e-94bf-cdbceb5e361b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d\box">
+      <UniqueIdentifier>{469d822a-942d-4d0d-9d44-f391c9d6fd0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d\sphere">
+      <UniqueIdentifier>{5aab1dce-54fa-45bc-be6f-04c692f2834b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

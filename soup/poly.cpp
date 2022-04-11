@@ -1,9 +1,24 @@
 #include "poly.hpp"
 
+#include <algorithm> // max
+
 #include "ray.hpp"
 
 namespace soup
 {
+	bool poly::operator==(const poly& b) const
+	{
+		return this->a.eq(b.a)
+			&& this->b.eq(b.b)
+			&& this->c.eq(b.c)
+			;
+	}
+
+	bool poly::operator!=(const poly& b) const
+	{
+		return !operator==(b);
+	}
+
 	bool poly::checkRayIntersection(const ray& r, vector3& outHit) const
 	{
 		// Find Triangle Normal
@@ -38,5 +53,35 @@ namespace soup
 		auto res = u.crossProduct(v);
 		res.normalise();
 		return res;
+	}
+
+	vector3 poly::getCentrePoint() const
+	{
+		return (a + b + c) / 3.0f;
+	}
+
+	const vector3& poly::getClosestPoint(const vector3& pos) const
+	{
+		float a_dist = a.distance(pos);
+		float b_dist = b.distance(pos);
+		float c_dist = c.distance(pos);
+		if (a_dist < b_dist
+			&& a_dist < c_dist
+			)
+		{
+			return a;
+		}
+		if (b_dist < a_dist
+			&& b_dist < c_dist
+			)
+		{
+			return b;
+		}
+		return c;
+	}
+
+	float poly::distance(const vector3& pos) const
+	{
+		return std::max(a.distance(pos), std::max(b.distance(pos), c.distance(pos)));
 	}
 }

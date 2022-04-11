@@ -1,3 +1,5 @@
+#include "cli.hpp"
+
 #include <iostream>
 
 #include <chess_cli.hpp>
@@ -12,7 +14,7 @@ int main(int argc, const char** argv)
 	if (argc > 1)
 	{
 		std::string subcommand = argv[1];
-		string::toLower(subcommand);
+		string::lower(subcommand);
 
 		if (subcommand == "edit")
 		{
@@ -44,6 +46,12 @@ int main(int argc, const char** argv)
 			cc.run();
 			return 0;
 		}
+
+		if (subcommand == "3d")
+		{
+			cli_3d();
+			return 0;
+		}
 	}
 
 	std::cout << R"EOC(Syntax: soup [tool]
@@ -51,6 +59,7 @@ int main(int argc, const char** argv)
 Available tools:
 - edit [files ...]
 - chess <FEN>
+- 3d
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;

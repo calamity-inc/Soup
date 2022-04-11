@@ -19,7 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CLI.cpp" />
+    <ClCompile Include="cli.cpp" />
+    <ClCompile Include="cli_3d.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cli.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -262,7 +262,11 @@
     <ClInclude Include="json_float.hpp" />
     <ClInclude Include="json_null.hpp" />
     <ClInclude Include="json_object.hpp" />
+    <ClInclude Include="mesh.hpp" />
     <ClInclude Include="ostream_writer.hpp" />
+    <ClInclude Include="plane.hpp" />
+    <ClInclude Include="point_light.hpp" />
+    <ClInclude Include="poly_vector.hpp" />
     <ClInclude Include="reader.hpp" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="json_array.hpp" />
@@ -277,6 +281,7 @@
     <ClInclude Include="optimised.hpp" />
     <ClInclude Include="pem.hpp" />
     <ClInclude Include="promise.hpp" />
+    <ClInclude Include="scene.hpp" />
     <ClInclude Include="scheduler.hpp" />
     <ClInclude Include="server.hpp" />
     <ClInclude Include="signal.hpp" />
@@ -319,6 +324,7 @@
     <ClInclude Include="ray.hpp" />
     <ClInclude Include="shortint.hpp" />
     <ClInclude Include="file_reader.hpp" />
+    <ClInclude Include="sphere.hpp" />
     <ClInclude Include="string.hpp" />
     <ClInclude Include="obfus_string.hpp" />
     <ClInclude Include="string_literal.hpp" />
@@ -350,6 +356,7 @@
     <ClInclude Include="unicode.hpp" />
     <ClInclude Include="unique_ptr.hpp" />
     <ClInclude Include="urlenc.hpp" />
+    <ClInclude Include="uv_sphere.hpp" />
     <ClInclude Include="vector2.hpp" />
     <ClInclude Include="vector3.hpp" />
     <ClInclude Include="vector3_base.hpp" />
@@ -410,14 +417,17 @@
     <ClCompile Include="keystore.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="memory_buffer.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="mime_message.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="oid.cpp" />
     <ClCompile Include="pem.cpp" />
+    <ClCompile Include="point_light.cpp" />
     <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="rgb.cpp" />
     <ClCompile Include="rsa.cpp" />
     <ClCompile Include="rtti.cpp" />
+    <ClCompile Include="scene.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
@@ -434,6 +444,7 @@
     <ClCompile Include="socket_tls_handshaker.cpp" />
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="urlenc.cpp" />
+    <ClCompile Include="uv_sphere.cpp" />
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="web_resource.cpp" />
     <ClCompile Include="worker.cpp" />

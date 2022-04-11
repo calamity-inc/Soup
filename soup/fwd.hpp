@@ -29,11 +29,14 @@ namespace soup
 
 	// math
 	class bigint;
+	struct vector3;
+
+	// math.3d
 	struct box_corners;
 	class matrix;
+	struct mesh;
 	struct poly;
 	struct ray;
-	struct vector3;
 
 	// mem
 	struct alloc_raii_remote;
@@ -69,6 +72,9 @@ namespace soup
 	// task
 	class promise_base;
 	class scheduler;
+
+	// ui
+	class canvas;
 
 	// ui.conui
 	struct conui_app;
