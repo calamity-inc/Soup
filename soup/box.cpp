@@ -210,9 +210,9 @@ namespace soup
 		return box_corners(
 			getCentrePoint(),
 			extent,
-			vector3(m.mf[0], m.mf[1], m.mf[2]),
-			vector3(m.mf[4], m.mf[5], m.mf[6]),
-			vector3(m.mf[8], m.mf[9], m.mf[10])
+			m.getRightVector(),
+			m.getForwardVector(),
+			m.getUpVector()
 		);
 	}
 

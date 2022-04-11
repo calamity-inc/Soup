@@ -217,4 +217,19 @@ namespace soup
 		R.mf[8] = mf[2];		R.mf[9] = mf[6];		R.mf[10] = mf[10];	R.mf[11] = 0.0f;
 		return R;
 	}
+
+	vector3 matrix::getRightVector() const noexcept
+	{
+		return vector3(mf[0], mf[1], mf[2]);
+	}
+
+	vector3 matrix::getForwardVector() const noexcept
+	{
+		return vector3(mf[4], mf[5], mf[6]);
+	}
+
+	vector3 matrix::getUpVector() const noexcept
+	{
+		return vector3(mf[8], mf[9], mf[10]);
+	}
 }
