@@ -11,7 +11,7 @@ namespace soup
 {
 	/**
 	 * From https://www.3dkingdoms.com/weekly/weekly.php?a=21
-	 * 
+	 *
 	 * To store the box, we need to store a centerpoint, a rotation, and how far the box extends from the centerpoint in the x,y,z directions.
 	 * I use a 4x4 matrix to store the rotation and centerpoint translation, and a vector for the Extents.
 	 * I just chose to use a 4x4 matrix for simplicity so I could use the matrix class.
@@ -42,7 +42,6 @@ namespace soup
 		box(const vector3& pos, const vector3& rot, const vector3& dimensions)
 			: m(pos, rot), extent(dimensions * 0.5f)
 		{
-
 		}
 
 		void set(const matrix& m, const vector3& Extent)

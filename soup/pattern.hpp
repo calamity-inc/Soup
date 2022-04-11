@@ -30,4 +30,3 @@ namespace soup
 #endif
 	};
 }
-

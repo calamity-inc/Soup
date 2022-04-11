@@ -21,7 +21,7 @@ namespace soup
 			data = (T*)malloc(max_elms * sizeof(T));
 			memcpy(data, b.data, num_elms * sizeof(T));
 		}
-		
+
 		explicit int_vector(int_vector<T>&& b) noexcept
 			: num_elms(b.num_elms), max_elms(b.max_elms), data(b.data)
 		{
@@ -44,7 +44,7 @@ namespace soup
 			data = (T*)malloc(max_elms * sizeof(T));
 			memcpy(data, b.data, num_elms * sizeof(T));
 		}
-		
+
 		void operator=(int_vector<T>&& b) noexcept
 		{
 			free();
@@ -61,7 +61,7 @@ namespace soup
 		{
 			return num_elms;
 		}
-		
+
 		[[nodiscard]] T& operator[](size_t idx) noexcept
 		{
 			return data[idx];

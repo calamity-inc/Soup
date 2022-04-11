@@ -13,7 +13,6 @@ namespace soup
 		return (value << bits) | (value >> (32 - bits));
 	}
 
-
 	inline static uint32_t blk(const uint32_t block[BLOCK_INTS], const size_t i)
 	{
 		return rol(block[(i + 13) & 15] ^ block[(i + 8) & 15] ^ block[(i + 2) & 15] ^ block[i], 1);
@@ -29,14 +28,12 @@ namespace soup
 		w = rol(w, 30);
 	}
 
-
 	inline static void R1(uint32_t block[BLOCK_INTS], const uint32_t v, uint32_t& w, const uint32_t x, const uint32_t y, uint32_t& z, const size_t i)
 	{
 		block[i] = blk(block, i);
 		z += ((w & (x ^ y)) ^ y) + block[i] + 0x5a827999 + rol(v, 5);
 		w = rol(w, 30);
 	}
-
 
 	inline static void R2(uint32_t block[BLOCK_INTS], const uint32_t v, uint32_t& w, const uint32_t x, const uint32_t y, uint32_t& z, const size_t i)
 	{
@@ -45,7 +42,6 @@ namespace soup
 		w = rol(w, 30);
 	}
 
-
 	inline static void R3(uint32_t block[BLOCK_INTS], const uint32_t v, uint32_t& w, const uint32_t x, const uint32_t y, uint32_t& z, const size_t i)
 	{
 		block[i] = blk(block, i);
@@ -53,14 +49,12 @@ namespace soup
 		w = rol(w, 30);
 	}
 
-
 	inline static void R4(uint32_t block[BLOCK_INTS], const uint32_t v, uint32_t& w, const uint32_t x, const uint32_t y, uint32_t& z, const size_t i)
 	{
 		block[i] = blk(block, i);
 		z += (w ^ x ^ y) + block[i] + 0xca62c1d6 + rol(v, 5);
 		w = rol(w, 30);
 	}
-
 
 	/*
 	 * Hash a single 512-bit block. This is the core of the algorithm.

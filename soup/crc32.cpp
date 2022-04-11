@@ -9,7 +9,7 @@ namespace soup
 		constexpr uint32_t reversed_polynomial = 0xEDB88320ul;
 
 		auto table = std::array<uint32_t, 256>{};
-		for(uint32_t i = 0; i != table.size(); ++i)
+		for (uint32_t i = 0; i != table.size(); ++i)
 		{
 			uint32_t checksum = i;
 			for (auto j = 0; j != 8; ++j)

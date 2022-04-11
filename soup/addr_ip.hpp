@@ -69,7 +69,7 @@ namespace soup
 		{
 			return *reinterpret_cast<const uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
-		
+
 	private:
 		void setV4()
 		{
@@ -89,11 +89,11 @@ namespace soup
 			data.s6_addr16[5] = 0xffff;
 #endif
 		}
-		
+
 	public:
 		[[nodiscard]] std::string toString() const noexcept
 		{
-			if(isV4())
+			if (isV4())
 			{
 				return toString4();
 			}
@@ -103,7 +103,7 @@ namespace soup
 		[[nodiscard]] std::string toString4() const noexcept
 		{
 			char buf[INET_ADDRSTRLEN] = { '\0' };
-			inet_ntop(AF_INET, reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&data)+12), buf, INET_ADDRSTRLEN);
+			inet_ntop(AF_INET, reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&data) + 12), buf, INET_ADDRSTRLEN);
 			return buf;
 		}
 

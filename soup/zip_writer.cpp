@@ -78,7 +78,7 @@ namespace soup
 			os->write("\x50\x4b\x01\x02", 4);
 			cdf.writeLE(*os);
 		}
-	
+
 		eocd.central_directory_size = ((uint32_t)os->tellp() - eocd.central_directory_offset);
 		os->write("\x50\x4b\x05\x06", 4);
 		eocd.writeLE(*os);

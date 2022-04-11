@@ -164,7 +164,7 @@ namespace soup
 				AR[i][k] = fabsf(R[i][k]);
 			}
 
-		// Vector separating the centers of Box B and of Box A	
+		// Vector separating the centers of Box B and of Box A
 		vector3 vSepWS = BBox.getCentrePoint() - getCentrePoint();
 		// Rotated into Box A's coordinates
 		vector3 vSepA(vSepWS.dot(RotA[0]), vSepWS.dot(RotA[1]), vSepWS.dot(RotA[2]));
@@ -201,7 +201,7 @@ namespace soup
 				if (Separation > ExtentA + ExtentB) return false;
 			}
 
-		// No separating axis found, the boxes overlap	
+		// No separating axis found, the boxes overlap
 		return true;
 	}
 

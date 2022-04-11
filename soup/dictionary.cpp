@@ -10,7 +10,7 @@ namespace soup
 	[[nodiscard]] static std::vector<std::string> processRelatedWords(const std::string& word, const json_array& arr)
 	{
 		std::vector<std::string> res{};
-		for(const auto& e : arr.children)
+		for (const auto& e : arr.children)
 		{
 			auto rel_word = e->asStr()->value;
 			if (rel_word.empty())

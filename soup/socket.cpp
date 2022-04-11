@@ -485,7 +485,7 @@ namespace soup
 				}
 
 				handshaker->client_random = hello.random.toBinary();
-				
+
 				if (handshaker->on_client_hello)
 				{
 					handshaker->on_client_hello(s, std::move(hello));

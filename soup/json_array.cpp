@@ -40,7 +40,7 @@ namespace soup
 	std::string json_array::encode() const
 	{
 		std::string res(1, '[');
-		for(auto i = children.begin(); i != children.end(); ++i)
+		for (auto i = children.begin(); i != children.end(); ++i)
 		{
 			res.append((*i)->encode());
 			if (i != children.end() - 1)

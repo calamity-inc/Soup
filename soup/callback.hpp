@@ -52,7 +52,7 @@ namespace soup
 			this->fp = fp;
 			this->cap.reset();
 		}
-		
+
 		void operator=(callback&& b) noexcept
 		{
 			fp = b.fp;

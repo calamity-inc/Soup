@@ -26,7 +26,7 @@ namespace soup
 		void fixPath();
 	public:
 		void setPayload(std::string payload);
-		
+
 		void execute(callback<void(http_response&&)>&& on_success, callback<void()>&& on_fail) const; // blocking
 	private:
 		static void execute_tick(socket& s, std::string* resp);

@@ -13,7 +13,7 @@ namespace soup
 		static constexpr rgb unfocused_bg = { 30, 30, 30 };
 
 		editor_tab(conui_div* parent, unsigned int x, unsigned int y, std::string&& name, std::u32string&& contents)
-			: conui_span(parent, x, y, std::move(std::string(1, ' ').append(name).append(1, ' ')), rgb::WHITE, unfocused_bg), file{{ std::move(contents) }}
+			: conui_span(parent, x, y, std::move(std::string(1, ' ').append(name).append(1, ' ')), rgb::WHITE, unfocused_bg), file{ { std::move(contents) } }
 		{
 			// close x = U+D7
 			// unsaved dot = U+2022

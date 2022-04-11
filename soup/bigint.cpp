@@ -1137,7 +1137,7 @@ namespace soup
 			ret = false;
 			return true;
 		}
-		
+
 		if (this->modUnsigned(bigint((chunk_t)3u)).isZero())
 		{
 			ret = false;

@@ -68,7 +68,7 @@ namespace soup
 		{
 			return (chunk_t)(v >> getBitsPerChunk());
 		}
-		
+
 		[[nodiscard]] constexpr size_t getNumChunks() const noexcept
 		{
 			return chunks.size();

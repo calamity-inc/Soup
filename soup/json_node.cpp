@@ -143,7 +143,7 @@ namespace soup
 	{
 		return *reinterpret_cast<json_string*>(this);
 	}
-	
+
 	const json_array& json_node::reinterpretAsArr() const noexcept
 	{
 		return *reinterpret_cast<const json_array*>(this);

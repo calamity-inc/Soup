@@ -12,7 +12,7 @@ namespace soup
 
 	void canvas::fill(const rgb colour)
 	{
-		for(auto& p : pixels)
+		for (auto& p : pixels)
 		{
 			p = colour;
 		}

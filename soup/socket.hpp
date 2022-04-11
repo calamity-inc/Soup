@@ -103,7 +103,7 @@ namespace soup
 
 	public:
 		void enableCryptoServer(void(*cert_selector)(socket_tls_server_rsa_data& out, const std::string& server_name), void(*callback)(socket&, capture&&), capture&& cap = {}, void(*on_client_hello)(socket&, tls_client_hello&&) = nullptr);
-	
+
 		// Application Layer
 
 		[[nodiscard]] bool isEncrypted() const noexcept;

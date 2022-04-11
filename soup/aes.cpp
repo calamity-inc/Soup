@@ -332,7 +332,6 @@ namespace soup
 			state[i] = state[0] + Nb * i;
 		}
 
-
 		for (i = 0; i < 4; i++)
 		{
 			for (j = 0; j < Nb; j++)
@@ -376,7 +375,6 @@ namespace soup
 		{
 			state[i] = state[0] + Nb * i;
 		}
-
 
 		for (i = 0; i < 4; i++)
 		{
@@ -487,7 +485,6 @@ namespace soup
 				state[i][j] = sbox[t / 16][t % 16];
 			}
 		}
-
 	}
 
 	void aes::ShiftRow(unsigned char** state, int i, int n)    // shift row i on n positions
@@ -512,8 +509,6 @@ namespace soup
 	{
 		return (b << 1) ^ (((b >> 7) & 1) * 0x1b);
 	}
-
-
 
 	void aes::MixColumns(unsigned char** state)
 	{

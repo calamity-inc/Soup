@@ -102,7 +102,7 @@ static void httpRecv(soup::socket& s)
 			else
 			{
 				auto& data = s.getUserData<SimpleServerClientData>();
-				
+
 				std::string cipher_suites_str{};
 				for (const auto& cs : data.cipher_suites)
 				{
@@ -228,7 +228,7 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 	std::cout << "Listening on ports 80 and 443." << std::endl;
 	srv.on_accept = [](soup::socket& s, uint16_t port)
 	{
-		std::cout << s.peer.toString()  << " + connected at port " << port << std::endl;
+		std::cout << s.peer.toString() << " + connected at port " << port << std::endl;
 		if (port == 80)
 		{
 			httpRecv(s);

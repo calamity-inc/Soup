@@ -15,7 +15,7 @@ namespace soup
 			: ip(ip), port(port)
 		{
 		}
-		
+
 		explicit addr_socket(const std::string& ip, uint16_t port)
 			: ip(ip), port(port)
 		{

@@ -46,13 +46,13 @@ namespace soup
 		[[nodiscard]] unique_ptr<alloc_raii_remote> allocate(size_t size, DWORD type = MEM_COMMIT | MEM_RESERVE, DWORD protect = PAGE_EXECUTE_READWRITE) const;
 		[[nodiscard]] unique_ptr<alloc_raii_remote> copyInto(const void* data, size_t size) const;
 		size_t externalWrite(pointer p, const void* data, size_t size) const noexcept;
-		
+
 		template <typename T>
 		size_t externalWrite(pointer p, const T val)
 		{
 			return externalWrite(p, &val, sizeof(T));
 		}
-		
+
 		template <typename T, size_t S>
 		size_t externalWrite(pointer p, const T(&data)[S])
 		{

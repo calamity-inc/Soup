@@ -9,7 +9,7 @@ namespace soup
 		std::vector<word_meaning> meanings{};
 		std::vector<std::string> antonyms{};
 		std::vector<std::string> synonyms{};
-		
+
 		SOUP_PACKET_IO(s)
 		{
 			if (s.isRead())
