@@ -12,6 +12,8 @@
 #include <poly_vector.hpp>
 #include <ray.hpp>
 #include <scene.hpp>
+#include <time.hpp>
+#include <unicode.hpp>
 #include <uv_sphere.hpp>
 
 using namespace soup;
@@ -112,13 +114,23 @@ static void updateScene()
 
 static void render()
 {
+	auto render_time = time::millis();
 	s.renderOnto(c, fov);
+	render_time = time::millis() - render_time;
+	
 	console.setCursorPos(0, 0);
+	
+	auto print_time = time::millis();
 	console << c.toStringx1();
+	print_time = time::millis() - print_time;
+
 	console.setCursorPos(0, 0);
 	console.setBackgroundColour(rgb::BLACK);
 	console.setForegroundColour(255, 0, 255);
-	console << "[WASDRF] Position  [↑←↓→] Rotation  [QE] FOV  [H] Save hi res image";
+	std::string info = "[WASDRF] Position  [↑←↓→] Rotation  [QE] FOV  [H] Save hi res image";
+	console << info;
+	console.setCursorPos(0, 1 + (unicode::utf8_char_len(info) / c.width));
+	console << "frame time: " << (render_time + print_time) << "ms (" << render_time << "ms render, " << print_time << "ms print)";
 }
 
 void cli_3d()
