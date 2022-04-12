@@ -13,6 +13,7 @@ namespace soup
 
 		void addWords(const json_object& obj); // Made for data from https://stackoverflow.com/a/54982015
 
+		[[nodiscard]] const dictionary_word* find(std::string word) const;
 		[[nodiscard]] const dictionary_word& at(std::string word) const;
 
 		SOUP_PACKET_IO(s)

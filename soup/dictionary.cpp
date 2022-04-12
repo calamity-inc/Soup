@@ -75,6 +75,17 @@ namespace soup
 		}
 	}
 
+	const dictionary_word* dictionary::find(std::string word) const
+	{
+		string::lower(word);
+		auto e = words.find(word);
+		if (e == words.end())
+		{
+			return nullptr;
+		}
+		return &e->second;
+	}
+
 	const dictionary_word& dictionary::at(std::string word) const
 	{
 		string::lower(word);
