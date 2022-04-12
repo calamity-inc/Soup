@@ -23,7 +23,7 @@ namespace soup
 		std::string ret{};
 		if (std::filesystem::exists(file))
 		{
-			std::ifstream t(file);
+			std::ifstream t(file, std::ios::binary);
 
 			t.seekg(0, std::ios::end);
 			ret.reserve(t.tellg());

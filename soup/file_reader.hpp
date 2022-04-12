@@ -13,13 +13,13 @@ namespace soup
 		std::ifstream s;
 
 		file_reader(const std::string& path, bool little_endian = true)
-			: reader(little_endian), s(path)
+			: reader(little_endian), s(path, std::ios::binary)
 		{
 		}
 
 		template <class T, std::enable_if_t<std::is_same_v<T, std::filesystem::path>, int> = 0>
 		file_reader(const T& path, bool little_endian = true)
-			: reader(little_endian), s(path)
+			: reader(little_endian), s(path, std::ios::binary)
 		{
 		}
 
