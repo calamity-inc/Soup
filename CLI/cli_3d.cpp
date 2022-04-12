@@ -20,9 +20,82 @@ static canvas c;
 static scene s;
 static float fov = 80.0f;
 
+static void amogus()
+{
+	for (const auto& p : box{ vector3{ -0.5f, 2.0f, -0.5f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ 0.5f, 2.0f, -0.5f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ -0.5f, 2.0f, 0.0f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ -0.0f, 2.0f, 0.0f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ 0.5f, 2.0f, 0.0f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ 1.0f, 2.0f, 0.0f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ -0.5f, 2.0f, 0.5f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 255, 255 } });
+	}
+
+	for (const auto& p : box{ vector3{ 0.0f, 2.0f, 0.5f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 255, 255 } });
+	}
+
+	for (const auto& p : box{ vector3{ 0.5f, 2.0f, 0.5f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ 1.0f, 2.0f, 0.5f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ -0.5f, 2.0f, 1.0f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ 0.0f, 2.0f, 1.0f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+
+	for (const auto& p : box{ vector3{ 0.5f, 2.0f, 1.0f }, vector3{ 0.0f, 0.0f, 0.0f }, vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
+	}
+}
+
 static void updateScene()
 {
 	s.tris.clear();
+
+	for (const auto& p : plane{ vector3{ 5.0f, 5.0f, -1.0f }, vector3{ -5.0f, -5.0f, -1.0f } }.toPolys())
+	{
+		s.tris.emplace_back(scene::tri{ p, rgb { 0, 255, 0 }, true });
+	}
 
 	for (const auto& p : box{ vector3{ 0.5f, 1.0f, 0.0f }, vector3{ 10.0f, 10.0f, 10.0f }, vector3{ 0.6f, 0.6f, 0.6f } }.toPolys())
 	{
@@ -34,10 +107,7 @@ static void updateScene()
 		s.tris.emplace_back(scene::tri{ p, rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : plane{ vector3{ 5.0f, 5.0f, -1.0f }, vector3{ -5.0f, -5.0f, -1.0f } }.toPolys())
-	{
-		s.tris.emplace_back(scene::tri{ p, rgb { 0, 255, 0 }, true });
-	}
+	amogus();
 }
 
 static void render()

@@ -78,7 +78,7 @@ namespace soup
 			}
 
 			if (!hitTri->not_reflective
-				&& depth != 3
+				&& depth != max_ray_bounces
 				)
 			{
 				auto res = raytrace(getFollowupRay(hitPos, normal), ++depth);
