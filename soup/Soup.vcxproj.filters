@@ -518,6 +518,9 @@
     <ClInclude Include="uv_sphere.hpp">
       <Filter>math\3d\sphere</Filter>
     </ClInclude>
+    <ClInclude Include="bitmask.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">

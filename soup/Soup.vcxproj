@@ -213,6 +213,7 @@
     <ClInclude Include="base.hpp" />
     <ClInclude Include="base64.hpp" />
     <ClInclude Include="bigint.hpp" />
+    <ClInclude Include="bitmask.hpp" />
     <ClInclude Include="bitpointer.hpp" />
     <ClInclude Include="bitset.hpp" />
     <ClInclude Include="bigbitset.hpp" />
