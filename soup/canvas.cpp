@@ -28,15 +28,29 @@ namespace soup
 		return pixels.at((size_t)x + (y * width));
 	}
 
+	const rgb& canvas::ref(size_t x, size_t y) const
+	{
+		return pixels.at(x + (y * width));
+	}
+
 	std::string canvas::toStringx1() const
 	{
 		std::string str{};
-		//str.reserve((size_t)width * height);
-		for (const auto& colour : pixels)
+		rgb prev = pixels.front();
+		++prev.r;
+		for (size_t y = 0; y != height; ++y)
 		{
-			str.append(console.strSetForegroundColour<std::string>(colour.r, colour.g, colour.b));
-			str.append(console.strSetBackgroundColour<std::string>(colour.r, colour.g, colour.b));
-			str.push_back('-');
+			for (size_t x = 0; x != width; ++x)
+			{
+				const rgb& colour = ref(x, y);
+				if (colour != prev)
+				{
+					prev = colour;
+					str.append(console.strSetForegroundColour<std::string>(colour.r, colour.g, colour.b));
+					str.append(console.strSetBackgroundColour<std::string>(colour.r, colour.g, colour.b));
+				}
+				str.push_back('-');
+			}
 		}
 		return str;
 	}
@@ -51,9 +65,9 @@ namespace soup
 	{
 		std::u16string str{};
 		str.reserve((size_t)width * height);
-		for (int y = 0; y < height; y += 2)
+		for (int y = 0; y != height; y += 2)
 		{
-			for (int x = 0; x < width; x += 2)
+			for (int x = 0; x != width; x += 2)
 			{
 				rgb bg = pixels.at(x + (y * width));
 				rgb fg = bg;
@@ -138,9 +152,9 @@ namespace soup
 	{
 		std::vector<rgb> new_pixels{};
 		new_pixels.resize(new_width * height);
-		for (size_t y = 0; y < height; ++y)
+		for (size_t y = 0; y != height; ++y)
 		{
-			for (size_t x = 0; x < width; ++x)
+			for (size_t x = 0; x != width; ++x)
 			{
 				new_pixels.at(x + (y * new_width)) = pixels.at(x + (y * width));
 			}

@@ -28,6 +28,7 @@ namespace soup
 		void fill(const rgb colour);
 		void set(int x, int y, rgb colour);
 		[[nodiscard]] rgb get(int x, int y) const;
+		[[nodiscard]] const rgb& ref(size_t x, size_t y) const;
 
 		[[nodiscard]] std::string toStringx1() const;
 		[[nodiscard]] std::u16string toStringx2();
