@@ -1,6 +1,7 @@
 #include "json_object.hpp"
 
 #include "json.hpp"
+#include "json_int.hpp"
 #include "json_string.hpp"
 #include "string.hpp"
 
@@ -101,5 +102,20 @@ namespace soup
 	json_node& json_object::at(std::string k)
 	{
 		return at(json_string(std::move(k)));
+	}
+
+	void json_object::add(unique_ptr<json_node>&& k, unique_ptr<json_node>&& v)
+	{
+		children.emplace(std::move(k), std::move(v));
+	}
+
+	void json_object::add(std::string k, std::string v)
+	{
+		add(make_unique<json_string>(std::move(k)), make_unique<json_string>(std::move(v)));
+	}
+
+	void json_object::add(std::string k, int64_t v)
+	{
+		add(make_unique<json_string>(std::move(k)), make_unique<json_int>(std::move(v)));
 	}
 }

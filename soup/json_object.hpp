@@ -20,5 +20,9 @@ namespace soup
 		[[nodiscard]] bool contains(std::string k);
 		[[nodiscard]] json_node& at(const json_node& k);
 		[[nodiscard]] json_node& at(std::string k);
+
+		void add(unique_ptr<json_node>&& k, unique_ptr<json_node>&& v);
+		void add(std::string k, std::string v);
+		void add(std::string k, int64_t v);
 	};
 }
