@@ -85,6 +85,11 @@ namespace soup
 			return data.empty();
 		}
 
+		[[nodiscard]] size_t size() const noexcept
+		{
+			return data.size();
+		}
+
 		[[nodiscard]] bool contains(const Key& k)
 		{
 			return find(k) != nullptr;
