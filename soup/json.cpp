@@ -10,17 +10,27 @@
 
 namespace soup
 {
-	unique_ptr<json_node> json::decode(const std::string& data)
+	void json::decode(unique_ptr<json_node>& out, const std::string& data)
+	{
+		out = decodeForDedicatedVariable(data);
+	}
+
+	void json::decode(unique_ptr<json_node>& out, const char*& c)
+	{
+		out = decodeForDedicatedVariable(c);
+	}
+
+	unique_ptr<json_node> json::decodeForDedicatedVariable(const std::string& data)
 	{
 		if (data.empty())
 		{
 			return {};
 		}
 		const char* c = &data.at(0);
-		return decode(c);
+		return decodeForDedicatedVariable(c);
 	}
 
-	unique_ptr<json_node> json::decode(const char*& c)
+	unique_ptr<json_node> json::decodeForDedicatedVariable(const char*& c)
 	{
 		switch (*c)
 		{

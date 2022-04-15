@@ -19,7 +19,7 @@ namespace soup
 			{
 				++c;
 			}
-			auto val = json::decode(c);
+			auto val = json::decodeForDedicatedVariable(c);
 			if (!val)
 			{
 				break;

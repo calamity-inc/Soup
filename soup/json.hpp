@@ -7,7 +7,10 @@ namespace soup
 {
 	struct json
 	{
-		[[nodiscard]] static unique_ptr<json_node> decode(const std::string& data);
-		[[nodiscard]] static unique_ptr<json_node> decode(const char*& c);
+		static void decode(unique_ptr<json_node>& out, const std::string& data);
+		static void decode(unique_ptr<json_node>& out, const char*& c);
+
+		[[nodiscard]] static unique_ptr<json_node> decodeForDedicatedVariable(const std::string& data);
+		[[nodiscard]] static unique_ptr<json_node> decodeForDedicatedVariable(const char*& c);
 	};
 }

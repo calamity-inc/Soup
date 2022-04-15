@@ -21,9 +21,9 @@ namespace soup
 			{
 				++c;
 			}
-			auto key = json::decode(c);
+			auto key = json::decodeForDedicatedVariable(c);
 			while (string::isSpace(*++c));
-			auto val = json::decode(c);
+			auto val = json::decodeForDedicatedVariable(c);
 			if (!key || !val)
 			{
 				break;
