@@ -264,6 +264,7 @@
     <ClInclude Include="json_null.hpp" />
     <ClInclude Include="json_object.hpp" />
     <ClInclude Include="mesh.hpp" />
+    <ClInclude Include="os.hpp" />
     <ClInclude Include="ostream_writer.hpp" />
     <ClInclude Include="plane.hpp" />
     <ClInclude Include="point_light.hpp" />
@@ -422,6 +423,7 @@
     <ClCompile Include="mime_message.cpp" />
     <ClCompile Include="module.cpp" />
     <ClCompile Include="oid.cpp" />
+    <ClCompile Include="os.cpp" />
     <ClCompile Include="pem.cpp" />
     <ClCompile Include="point_light.cpp" />
     <ClCompile Include="quaternion.cpp" />

@@ -521,6 +521,9 @@
     <ClInclude Include="bitmask.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="os.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -733,6 +736,9 @@
     </ClCompile>
     <ClCompile Include="scene.cpp">
       <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="os.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
