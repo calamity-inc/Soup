@@ -5,14 +5,9 @@
 
 namespace soup
 {
-	quaternion::quaternion(float Angle, const vector3& Axis) noexcept
+	quaternion::quaternion(float angle, const vector3& axis) noexcept
 	{
-		setAxisAngle(Angle, Axis.x, Axis.y, Axis.z);
-	}
-
-	quaternion::quaternion(const vector3& rot) noexcept
-	{
-		fromEuler(rot);
+		setAxisAngle(angle, axis.x, axis.y, axis.z);
 	}
 
 	void quaternion::setAxisAngle(float degrees, float fX, float fY, float fZ) noexcept
@@ -25,18 +20,23 @@ namespace soup
 		z = fZ * sinA;
 	}
 
-	void quaternion::fromEuler(const vector3& rot) noexcept
+	quaternion quaternion::fromEuler(const vector3& rot) noexcept
 	{
-		fromEuler(rot.y, -rot.x, rot.z + 90.0f);
+		return fromEuler(rot.y, -rot.x, rot.z + 90.0f);
 	}
 
-	void quaternion::fromEuler(float rx, float ry, float rz) noexcept
+	quaternion quaternion::fromEulerZYX(const vector3& rot) noexcept
+	{
+		return fromEuler(-rot.x, rot.y, -rot.z);
+	}
+
+	quaternion quaternion::fromEuler(float rx, float ry, float rz) noexcept
 	{
 		quaternion qx(-rx, vector3(1, 0, 0));
 		quaternion qy(-ry, vector3(0, 1, 0));
 		quaternion qz(-rz, vector3(0, 0, 1));
 		qz = qy * qz;
-		*this = qx * qz;
+		return qx * qz;
 	}
 
 	quaternion quaternion::invert() const noexcept
@@ -99,15 +99,17 @@ namespace soup
 		return 0;
 	}
 
-	void quaternion::slerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept
+	quaternion quaternion::slerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept
 	{
 		float w1, w2;
-		int bFlip = 0;
+		bool bFlip = false;
 
 		float cosTheta = a.dot(b);
-		if (bReduceTo360 && cosTheta < 0.0f) { // We need to flip a quaternion for shortest path interpolation
+		if (bReduceTo360 && cosTheta < 0.0f)
+		{
+			// We need to flip a quaternion for shortest path interpolation
 			cosTheta = -cosTheta;
-			bFlip = 1;
+			bFlip = true;
 		}
 		float theta = acos(cosTheta);
 		float sinTheta = sin(theta);
@@ -125,21 +127,27 @@ namespace soup
 		}
 
 		if (bFlip)
+		{
 			w2 = -w2;
+		}
 
-		*this = a * w1 + b * w2;
+		return a * w1 + b * w2;
 	}
 
-	void quaternion::nlerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept
+	quaternion quaternion::nlerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept
 	{
+		quaternion res{};
 		float t1 = 1.0f - t;
-
 		if (bReduceTo360 && a.dot(b) < 0.0f)
-			*this = a * t1 + b * -t;
+		{
+			res = a * t1 + b * -t;
+		}
 		else
-			*this = a * t1 + b * t;
-
-		normalise();
+		{
+			res = a * t1 + b * t;
+		}
+		res.normalise();
+		return res;
 	}
 
 	void quaternion::toMatrix(matrix& m) const noexcept

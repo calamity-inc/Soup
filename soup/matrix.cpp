@@ -66,7 +66,7 @@ namespace soup
 
 	void matrix::setRotation(const vector3& rot) noexcept
 	{
-		quaternion(rot).toMatrix(*this);
+		quaternion::fromEuler(rot).toMatrix(*this);
 	}
 
 	void matrix::rotate(const vector3& rot) noexcept

@@ -11,14 +11,14 @@ namespace soup
 	public:
 		using vector4::vector4;
 
-		quaternion(float Angle, const vector3& Axis) noexcept;
-		quaternion(const vector3& rot) noexcept;
+		quaternion(float angle, const vector3& axis) noexcept;
 
 		void setAxisAngle(float degrees, float fX, float fY, float fZ) noexcept;
 
-		void fromEuler(const vector3& rot) noexcept;
+		[[nodiscard]] static quaternion fromEuler(const vector3& rot) noexcept; // ZXY
+		[[nodiscard]] static quaternion fromEulerZYX(const vector3& rot) noexcept;
 	private:
-		void fromEuler(float rx, float ry, float rz) noexcept;
+		[[nodiscard]] static quaternion fromEuler(float rx, float ry, float rz) noexcept;
 
 		[[nodiscard]] quaternion invert() const noexcept;
 
@@ -38,12 +38,12 @@ namespace soup
 		// t is the interpolation value from 0 to 1
 		// if bReduceTo360 is true, the interpolation will take the shortest path for a 360 deg angle range (max delta rotation = 180 degrees)
 		// if bReduceTo360 is false, the interpolation will take the shortest path for a 720 deg angle range (max delta rotation = 360 degrees)
-		void slerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept;
+		[[nodiscard]] static quaternion slerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept;
 
 		// linearly interpolate each component, then normalize the Quaternion
 		// Unlike spherical interpolation, this does not rotate at a constant velocity,
 		// although that's not necessarily a bad thing
-		void nlerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept;
+		[[nodiscard]] static quaternion nlerp(const quaternion& a, const quaternion& b, float t, const bool bReduceTo360) noexcept;
 
 		void toMatrix(matrix& m) const noexcept;
 	private:
