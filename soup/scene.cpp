@@ -46,18 +46,19 @@ namespace soup
 
 	void scene::renderOnto(canvas& c, float fov)
 	{
+		const float ratio = ((float)c.width / c.height) * 0.5f;
 		for (unsigned int x = 0; x != c.width; ++x)
 		{
 			for (unsigned int y = 0; y != c.height; ++y)
 			{
-				c.set(x, y, raytrace((float)x / c.width, (float)y / c.height, fov));
+				c.set(x, y, raytrace((float)x / c.width, (float)y / c.height, fov, ratio));
 			}
 		}
 	}
 
-	rgb scene::raytrace(float x, float y, float fov) const
+	rgb scene::raytrace(float x, float y, float fov, float ratio) const
 	{
-		return raytrace(ray::withRot(cam_pos, cam_rot + vector3{ (y - 0.5f) * -1.0f * fov, 0.0f, (x - 0.5f) * fov }, render_distance));
+		return raytrace(ray::withRot(cam_pos, cam_rot + vector3{ (y - 0.5f) * -1.0f * fov, 0.0f, (x - 0.5f) * ratio * fov }, render_distance));
 	}
 
 	rgb scene::raytrace(const ray& r, uint8_t depth) const

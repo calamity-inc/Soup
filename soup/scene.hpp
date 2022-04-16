@@ -33,7 +33,7 @@ namespace soup
 
 		void renderOnto(canvas& c, float fov);
 	protected:
-		[[nodiscard]] rgb raytrace(float x, float y, float fov) const;
+		[[nodiscard]] rgb raytrace(float x, float y, float fov, float ratio) const;
 		[[nodiscard]] rgb raytrace(const ray& r, uint8_t depth = 0) const;
 
 	public:
