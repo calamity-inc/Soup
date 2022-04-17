@@ -17,6 +17,11 @@ namespace soup
 
 		canvas() noexcept = default;
 
+		canvas(int size)
+			: canvas(size, size)
+		{
+		}
+
 		canvas(int width, int height)
 			: width(width), height(height)
 		{

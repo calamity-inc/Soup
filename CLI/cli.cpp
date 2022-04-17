@@ -2,8 +2,11 @@
 
 #include <iostream>
 
+#include <canvas.hpp>
 #include <chess_cli.hpp>
+#include <console.hpp>
 #include <editor.hpp>
+#include <qr_code.hpp>
 #include <string.hpp>
 #include <unicode.hpp>
 
@@ -15,6 +18,20 @@ int main(int argc, const char** argv)
 	{
 		std::string subcommand = argv[1];
 		string::lower(subcommand);
+
+		if (subcommand == "qr")
+		{
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup qr [contents]" << std::endl;
+				return 0;
+			}
+			auto qrcode = qr_code::encodeText(argv[2]);
+			console.init(false);
+			console << qrcode.toCanvas(4, true).toStringDownsampledDoublewidth(true);
+			console.resetColour();
+			return 0;
+		}
 
 		if (subcommand == "edit")
 		{
@@ -57,6 +74,7 @@ int main(int argc, const char** argv)
 	std::cout << R"EOC(Syntax: soup [tool]
 
 Available tools:
+- qr [contents]
 - edit [files ...]
 - chess <FEN>
 - 3d

@@ -22,7 +22,7 @@
 
 namespace soup
 {
-	void console_impl::init()
+	void console_impl::init(bool fullscreen)
 	{
 #if SOUP_WINDOWS
 		if (auto hSTDOUT = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -44,8 +44,10 @@ namespace soup
 		termattrs_cur = termattrs_og;
 #endif
 
-		// Enable alternative screen buffer
-		std::cout << CSI "?1049h";
+		if (fullscreen)
+		{
+			std::cout << CSI "?1049h";
+		}
 	}
 
 	void console_impl::run()

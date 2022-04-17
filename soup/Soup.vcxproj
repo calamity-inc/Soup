@@ -269,6 +269,7 @@
     <ClInclude Include="plane.hpp" />
     <ClInclude Include="point_light.hpp" />
     <ClInclude Include="poly_vector.hpp" />
+    <ClInclude Include="qr_code.hpp" />
     <ClInclude Include="reader.hpp" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="json_array.hpp" />
@@ -426,6 +427,7 @@
     <ClCompile Include="os.cpp" />
     <ClCompile Include="pem.cpp" />
     <ClCompile Include="point_light.cpp" />
+    <ClCompile Include="qr_code.cpp" />
     <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="rgb.cpp" />
     <ClCompile Include="rsa.cpp" />

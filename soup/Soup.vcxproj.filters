@@ -524,6 +524,9 @@
     <ClInclude Include="os.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="qr_code.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -740,6 +743,9 @@
     <ClCompile Include="os.cpp">
       <Filter>os</Filter>
     </ClCompile>
+    <ClCompile Include="qr_code.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -831,6 +837,9 @@
     </Filter>
     <Filter Include="math\3d\sphere">
       <UniqueIdentifier>{5aab1dce-54fa-45bc-be6f-04c692f2834b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis">
+      <UniqueIdentifier>{80b6270e-7c01-41fb-8800-755a35c9202b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
