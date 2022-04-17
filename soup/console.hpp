@@ -91,12 +91,7 @@ namespace soup
 			return *this;
 		}
 
-		template <typename T>
-		const console_impl& operator << (T&& str) const
-		{
-			std::cout << std::move(str);
-			return *this;
-		}
+		const console_impl& operator << (const std::u16string& str) const;
 
 		static void setForegroundColour(rgb c);
 

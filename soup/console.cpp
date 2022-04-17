@@ -504,6 +504,11 @@ namespace soup
 		std::cout << CSI << (y + 1) << ";" << (x + 1) << "H";
 	}
 
+	const console_impl& console_impl::operator<<(const std::u16string& str) const
+	{
+		return *this << unicode::utf16_to_utf8(str);
+	}
+
 	void console_impl::setForegroundColour(rgb c)
 	{
 		return setForegroundColour(c.r, c.g, c.b);
