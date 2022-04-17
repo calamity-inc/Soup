@@ -248,6 +248,30 @@ namespace soup
 		pixels = std::move(new_pixels);
 	}
 
+	std::string canvas::toSVG() const
+	{
+		std::string str = R"(<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width=")";
+		str.append(std::to_string(width));
+		str.append(R"(" height=")");
+		str.append(std::to_string(width));
+		str.append(R"(">)");
+		for (size_t y = 0; y != height; ++y)
+		{
+			for (size_t x = 0; x != width; ++x)
+			{
+				str.append(R"(<rect x=")");
+				str.append(std::to_string(x));
+				str.append(R"(" y=")");
+				str.append(std::to_string(y));
+				str.append(R"(" fill="#)");
+				str.append(get(x, y).toHex());
+				str.append(R"(" width="1" height="1"/>)");
+			}
+		}
+		str.append("</svg>");
+		return str;
+	}
+
 	std::string canvas::toPPM() const
 	{
 		std::string res = "P3\n";

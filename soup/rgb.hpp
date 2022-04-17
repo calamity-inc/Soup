@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace soup
 {
@@ -14,15 +15,10 @@ namespace soup
 		static rgb BLACK;
 		static rgb WHITE;
 
-		[[nodiscard]] bool operator==(const rgb& c) const noexcept
-		{
-			return r == c.r && g == c.g && b == c.b;
-		}
+		[[nodiscard]] bool operator==(const rgb& c) const noexcept;
+		[[nodiscard]] bool operator!=(const rgb& c) const noexcept;
 
-		[[nodiscard]] bool operator!=(const rgb& c) const noexcept
-		{
-			return !operator==(c);
-		}
+		[[nodiscard]] std::string toHex() const;
 	};
 	static_assert(sizeof(rgb) == 3);
 #pragma pack(pop)

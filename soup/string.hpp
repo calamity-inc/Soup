@@ -316,6 +316,38 @@ namespace soup
 			return res;
 		}
 
+		template <typename S, typename C>
+		static S lpad(S&& str, size_t desired_len, C pad_char)
+		{
+			lpad(str, desired_len, std::move(pad_char));
+			return str;
+		}
+
+		template <typename S, typename C>
+		static void lpad(S& str, size_t desired_len, C pad_char)
+		{
+			if (auto diff = desired_len - str.length(); diff > 0)
+			{
+				str.insert(0, diff, pad_char);
+			}
+		}
+
+		template <typename S, typename C>
+		static S rpad(S&& str, size_t desired_len, C pad_char)
+		{
+			rpad(str, desired_len, std::move(pad_char));
+			return str;
+		}
+
+		template <typename S, typename C>
+		static void rpad(S& str, size_t desired_len, C pad_char)
+		{
+			if (auto diff = desired_len - str.length(); diff > 0)
+			{
+				str.append(diff, pad_char);
+			}
+		}
+
 		// example:
 		// in str = "a b c"
 		// target = " "
