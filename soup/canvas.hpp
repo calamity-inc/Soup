@@ -30,13 +30,15 @@ namespace soup
 		[[nodiscard]] rgb get(int x, int y) const;
 		[[nodiscard]] const rgb& ref(size_t x, size_t y) const;
 
-		[[nodiscard]] std::string toStringx1() const;
-		[[nodiscard]] std::u16string toStringx2();
+		[[nodiscard]] std::string toString(bool explicit_nl = false) const;
+		[[nodiscard]] std::string toStringDoublewidth(bool explicit_nl = false) const;
+		[[nodiscard]] std::u16string toStringDownsampled(bool explicit_nl = false);
+		[[nodiscard]] std::u16string toStringDownsampledDoublewidth(bool explicit_nl = false);
 	private:
-		[[nodiscard]] std::u16string toStringx2_impl() const;
-		[[nodiscard]] static char16_t x2chunkToChar(uint8_t chunkset) noexcept;
+		[[nodiscard]] static char16_t downsampleChunkToChar(uint8_t chunkset) noexcept;
 
 		void ensureWidthAndHeightAreEven();
+		void ensureHeightIsEven();
 		void resizeWidth(int new_width);
 
 	public:

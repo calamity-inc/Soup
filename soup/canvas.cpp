@@ -33,7 +33,7 @@ namespace soup
 		return pixels.at(x + (y * width));
 	}
 
-	std::string canvas::toStringx1() const
+	std::string canvas::toString(bool explicit_nl) const
 	{
 		std::string str{};
 		rgb prev = pixels.front();
@@ -51,18 +51,44 @@ namespace soup
 				}
 				str.push_back('-');
 			}
+			if (explicit_nl)
+			{
+				str.push_back('\n');
+			}
 		}
 		return str;
 	}
 
-	std::u16string canvas::toStringx2()
+	std::string canvas::toStringDoublewidth(bool explicit_nl) const
 	{
-		ensureWidthAndHeightAreEven();
-		return toStringx2_impl();
+		std::string str{};
+		rgb prev = pixels.front();
+		++prev.r;
+		for (size_t y = 0; y != height; ++y)
+		{
+			for (size_t x = 0; x != width; ++x)
+			{
+				const rgb& colour = ref(x, y);
+				if (colour != prev)
+				{
+					prev = colour;
+					str.append(console.strSetForegroundColour<std::string>(colour.r, colour.g, colour.b));
+					str.append(console.strSetBackgroundColour<std::string>(colour.r, colour.g, colour.b));
+				}
+				str.append("--");
+			}
+			if (explicit_nl)
+			{
+				str.push_back('\n');
+			}
+		}
+		return str;
 	}
 
-	std::u16string canvas::toStringx2_impl() const
+	std::u16string canvas::toStringDownsampled(bool explicit_nl)
 	{
+		ensureWidthAndHeightAreEven();
+
 		std::u16string str{};
 		str.reserve((size_t)width * height);
 		for (int y = 0; y != height; y += 2)
@@ -98,13 +124,66 @@ namespace soup
 				}
 				str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
 				str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
-				str.push_back(x2chunkToChar(chunkset));
+				str.push_back(downsampleChunkToChar(chunkset));
+			}
+			if (explicit_nl)
+			{
+				str.push_back(u'\n');
 			}
 		}
 		return str;
 	}
 
-	char16_t canvas::x2chunkToChar(uint8_t chunkset) noexcept
+	std::u16string canvas::toStringDownsampledDoublewidth(bool explicit_nl)
+	{
+		ensureHeightIsEven();
+
+		std::u16string str{};
+		str.reserve((size_t)width * height);
+		for (int y = 0; y != height; y += 2)
+		{
+			for (int x = 0; x != width; ++x)
+			{
+				rgb bg = pixels.at(x + (y * width));
+				rgb fg = bg;
+				uint8_t chunkset = 0;
+				{
+					const rgb& pxclr = pixels.at(x + (y * width));
+					if (pxclr != bg)
+					{
+						fg = pxclr;
+						chunkset |= 0b0100;
+					}
+				}
+				{
+					const rgb& pxclr = pixels.at(x + ((y + 1) * width));
+					if (pxclr != bg)
+					{
+						fg = pxclr;
+						chunkset |= 0b0010;
+					}
+				}
+				{
+					const rgb& pxclr = pixels.at(x + ((y + 1) * width));
+					if (pxclr != bg)
+					{
+						fg = pxclr;
+						chunkset |= 0b0001;
+					}
+				}
+				str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
+				str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
+				str.push_back(downsampleChunkToChar(chunkset));
+			}
+			if (explicit_nl)
+			{
+				str.push_back(u'\n');
+			}
+		}
+		return str;
+	}
+
+	char16_t canvas::downsampleChunkToChar(uint8_t chunkset) noexcept
 	{
 		switch (chunkset)
 		{
@@ -136,14 +215,20 @@ namespace soup
 	void canvas::ensureWidthAndHeightAreEven()
 	{
 		auto even_width = ((width & 1) ? (width + 1) : width);
-		auto even_height = ((height & 1) ? (height + 1) : height);
 		if (width != even_width)
 		{
 			resizeWidth(even_width);
 		}
+
+		ensureHeightIsEven();
+	}
+
+	void canvas::ensureHeightIsEven()
+	{
+		auto even_height = ((height & 1) ? (height + 1) : height);
 		if (height != even_height)
 		{
-			pixels.resize(even_width * even_height);
+			pixels.resize(width * even_height);
 			height = even_height;
 		}
 	}

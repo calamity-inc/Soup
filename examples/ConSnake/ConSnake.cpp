@@ -65,11 +65,11 @@ static void render()
 	soup::console.setCursorPos(1, 1);
 	if constexpr (res_scale == 2)
 	{
-		soup::console << soup::unicode::utf16_to_utf8(c.toStringx2());
+		soup::console << soup::unicode::utf16_to_utf8(c.toStringDownsampled());
 	}
 	else
 	{
-		soup::console << c.toStringx1();
+		soup::console << c.toString();
 	}
 	soup::console.setCursorPos(1, 1);
 }
