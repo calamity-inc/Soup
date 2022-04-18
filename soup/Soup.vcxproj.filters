@@ -530,6 +530,12 @@
     <ClInclude Include="notifyable.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="url.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="mime_type.hpp">
+      <Filter>data\mime</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -748,6 +754,9 @@
     </ClCompile>
     <ClCompile Include="qr_code.cpp">
       <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="url.cpp">
+      <Filter>net\web</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

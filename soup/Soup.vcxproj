@@ -264,6 +264,7 @@
     <ClInclude Include="json_null.hpp" />
     <ClInclude Include="json_object.hpp" />
     <ClInclude Include="mesh.hpp" />
+    <ClInclude Include="mime_type.hpp" />
     <ClInclude Include="notifyable.hpp" />
     <ClInclude Include="os.hpp" />
     <ClInclude Include="ostream_writer.hpp" />
@@ -359,6 +360,7 @@
     <ClInclude Include="type.hpp" />
     <ClInclude Include="unicode.hpp" />
     <ClInclude Include="unique_ptr.hpp" />
+    <ClInclude Include="url.hpp" />
     <ClInclude Include="urlenc.hpp" />
     <ClInclude Include="uv_sphere.hpp" />
     <ClInclude Include="vector2.hpp" />
@@ -449,6 +451,7 @@
     <ClCompile Include="thread.cpp" />
     <ClCompile Include="socket_tls_handshaker.cpp" />
     <ClCompile Include="unicode.cpp" />
+    <ClCompile Include="url.cpp" />
     <ClCompile Include="urlenc.cpp" />
     <ClCompile Include="uv_sphere.cpp" />
     <ClCompile Include="wasm.cpp" />
