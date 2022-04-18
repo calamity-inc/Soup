@@ -264,6 +264,7 @@
     <ClInclude Include="json_null.hpp" />
     <ClInclude Include="json_object.hpp" />
     <ClInclude Include="mesh.hpp" />
+    <ClInclude Include="notifyable.hpp" />
     <ClInclude Include="os.hpp" />
     <ClInclude Include="ostream_writer.hpp" />
     <ClInclude Include="plane.hpp" />

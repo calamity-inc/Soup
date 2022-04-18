@@ -527,6 +527,9 @@
     <ClInclude Include="qr_code.hpp">
       <Filter>vis</Filter>
     </ClInclude>
+    <ClInclude Include="notifyable.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
