@@ -30,7 +30,7 @@
 		#define SOUP_WASM false
 		#define SOUP_LINUX true
 
-		#if defined(__x86_64__) || defined(__ppc64__)
+		#if defined(__x86_64__) || defined(__ppc64__) || defined(_M_X64) || defined(__aarch64__)
 			#define SOUP_BITS 64
 		#else
 			#define SOUP_BITS 32
