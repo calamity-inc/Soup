@@ -102,9 +102,6 @@
     <ClInclude Include="handle_plain.hpp">
       <Filter>os\windows</Filter>
     </ClInclude>
-    <ClInclude Include="unicode.hpp">
-      <Filter>enc</Filter>
-    </ClInclude>
     <ClInclude Include="dns.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
@@ -140,9 +137,6 @@
     </ClInclude>
     <ClInclude Include="bigbitset.hpp">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="base64.hpp">
-      <Filter>enc</Filter>
     </ClInclude>
     <ClInclude Include="rtti.hpp">
       <Filter>mem</Filter>
@@ -192,9 +186,6 @@
     </ClInclude>
     <ClInclude Include="asn1_type.hpp">
       <Filter>data\asn1</Filter>
-    </ClInclude>
-    <ClInclude Include="pem.hpp">
-      <Filter>enc</Filter>
     </ClInclude>
     <ClInclude Include="aes.hpp">
       <Filter>crypto</Filter>
@@ -395,9 +386,6 @@
     <ClInclude Include="mime_message.hpp">
       <Filter>data\mime</Filter>
     </ClInclude>
-    <ClInclude Include="urlenc.hpp">
-      <Filter>enc</Filter>
-    </ClInclude>
     <ClInclude Include="http_response.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
@@ -536,6 +524,18 @@
     <ClInclude Include="mime_type.hpp">
       <Filter>data\mime</Filter>
     </ClInclude>
+    <ClInclude Include="base64.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="pem.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="unicode.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="urlenc.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -565,9 +565,6 @@
     <ClCompile Include="module.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="unicode.cpp">
-      <Filter>enc</Filter>
-    </ClCompile>
     <ClCompile Include="socket.cpp">
       <Filter>net</Filter>
     </ClCompile>
@@ -579,9 +576,6 @@
     </ClCompile>
     <ClCompile Include="rsa.cpp">
       <Filter>crypto</Filter>
-    </ClCompile>
-    <ClCompile Include="base64.cpp">
-      <Filter>enc</Filter>
     </ClCompile>
     <ClCompile Include="rtti.cpp">
       <Filter>mem</Filter>
@@ -598,9 +592,6 @@
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="asn1_sequence.cpp">
       <Filter>data\asn1</Filter>
-    </ClCompile>
-    <ClCompile Include="pem.cpp">
-      <Filter>enc</Filter>
     </ClCompile>
     <ClCompile Include="aes.cpp">
       <Filter>crypto</Filter>
@@ -680,9 +671,6 @@
     <ClCompile Include="mime_message.cpp">
       <Filter>data\mime</Filter>
     </ClCompile>
-    <ClCompile Include="urlenc.cpp">
-      <Filter>enc</Filter>
-    </ClCompile>
     <ClCompile Include="http_request.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
@@ -758,6 +746,18 @@
     <ClCompile Include="url.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="pem.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="unicode.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="urlenc.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -822,9 +822,6 @@
     </Filter>
     <Filter Include="ling">
       <UniqueIdentifier>{ded31275-73f9-4bb2-b6d4-095d5f6e7eec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="enc">
-      <UniqueIdentifier>{3b89e66c-36d7-41ec-91a7-466f49a78190}</UniqueIdentifier>
     </Filter>
     <Filter Include="data">
       <UniqueIdentifier>{fddd6fad-45ea-4b2b-9b3c-f9bf40ce10a5}</UniqueIdentifier>
