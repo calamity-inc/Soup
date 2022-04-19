@@ -237,7 +237,7 @@ namespace soup
 		return setBlocking(false);
 	}
 
-	bool socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const certchain&)
+	bool socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const certchain&, const std::string&)
 	{
 		// certchain is already decently implemented, but there's a few flaws:
 		// - no ECC support (big deal since cloudflare is basically ecc only now)
@@ -245,12 +245,13 @@ namespace soup
 		return true;
 	}
 
-	void socket::enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap, bool(*certchain_validator)(const certchain&))
+	void socket::enableCryptoClient(std::string server_name, void(*callback)(socket&, capture&&), capture&& cap, bool(*certchain_validator)(const certchain&, const std::string& server_name))
 	{
 		auto handshaker = make_unique<socket_tls_handshaker>(
 			callback,
 			std::move(cap)
 		);
+		handshaker->server_name = std::move(server_name);
 		handshaker->certchain_validator = certchain_validator;
 
 		tls_client_hello hello;
@@ -270,7 +271,7 @@ namespace soup
 
 		{
 			tls_client_hello_ext_server_name ext_server_name{};
-			ext_server_name.host_name = std::move(server_name);
+			ext_server_name.host_name = handshaker->server_name;
 
 			hello.extensions.add(tls_extension_type::server_name, ext_server_name);
 		}
@@ -306,7 +307,7 @@ namespace soup
 						return;
 					}
 					if (!handshaker->m_certchain.fromDer(cert.asn1_certs)
-						|| !handshaker->certchain_validator(handshaker->m_certchain)
+						|| !handshaker->certchain_validator(handshaker->m_certchain, handshaker->server_name)
 						)
 					{
 						s.tls_close(tls_alert_description::bad_certificate);

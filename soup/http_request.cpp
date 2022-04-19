@@ -56,6 +56,11 @@ namespace soup
 
 	void http_request::execute(callback<void(http_response&&)>&& on_success, callback<void()>&& on_fail) const
 	{
+		return execute(std::move(on_success), std::move(on_fail), &socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
+	}
+
+	void http_request::execute(callback<void(http_response&&)>&& on_success, callback<void()>&& on_fail, bool(*certchain_validator)(const certchain&, const std::string& server_name)) const
+	{
 		auto sock = make_unique<socket>();
 		auto resp = make_unique<std::string>();
 		const auto& host = getHost();
@@ -77,7 +82,7 @@ namespace soup
 				s.send(data);
 
 				execute_tick(s, cap.resp);
-			}, capture_http_request_execute{ this, resp.get() });
+			}, capture_http_request_execute{ this, resp.get() }, certchain_validator);
 			sched.run();
 		}
 		if (!resp->empty())

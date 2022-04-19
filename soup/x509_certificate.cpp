@@ -62,6 +62,16 @@ namespace soup
 		return ret;
 	}
 
+	bool x509_certificate::isRsa() const noexcept
+	{
+		return !key.n.isZero();
+	}
+
+	bool x509_certificate::isEc() const noexcept
+	{
+		return !isRsa();
+	}
+
 	bool x509_certificate::verify(const x509_certificate& issuer) const
 	{
 		return verify(issuer.key);

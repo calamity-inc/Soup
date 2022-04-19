@@ -27,8 +27,9 @@ namespace soup
 		std::string expected_finished_verify_data{};
 
 		// client
-		bool(*certchain_validator)(const certchain&);
+		bool(*certchain_validator)(const certchain&, const std::string& server_name);
 		certchain m_certchain{};
+		std::string server_name{};
 		std::string server_x25519_public_key{};
 		socket_tls_encrypter pending_recv_encrypter;
 

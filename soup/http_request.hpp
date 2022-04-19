@@ -28,6 +28,7 @@ namespace soup
 		void setPayload(std::string payload);
 
 		void execute(callback<void(http_response&&)>&& on_success, callback<void()>&& on_fail) const; // blocking
+		void execute(callback<void(http_response&&)>&& on_success, callback<void()>&& on_fail, bool(*certchain_validator)(const certchain&, const std::string& server_name)) const; // blocking
 	private:
 		static void execute_tick(socket& s, std::string* resp);
 	};
