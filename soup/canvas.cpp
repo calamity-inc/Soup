@@ -248,7 +248,7 @@ namespace soup
 		pixels = std::move(new_pixels);
 	}
 
-	std::string canvas::toSVG() const
+	std::string canvas::toSvg() const
 	{
 		std::string str = R"(<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width=")";
 		str.append(std::to_string(width));
@@ -272,7 +272,7 @@ namespace soup
 		return str;
 	}
 
-	std::string canvas::toPPM() const
+	std::string canvas::toPpm() const
 	{
 		std::string res = "P3\n";
 		res.append(string::decimal(width));

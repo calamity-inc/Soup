@@ -193,7 +193,7 @@ void cli_3d()
 			s.renderOnto(hires, fov);
 			{
 				std::ofstream of("hires.ppm");
-				of << hires.toPPM();
+				of << hires.toPpm();
 			}
 			console.setBackgroundColour(rgb::BLACK);
 			console.setForegroundColour(rgb::WHITE);
