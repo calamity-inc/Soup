@@ -18,7 +18,7 @@ static std::string ret_str_buf{};
 	return ret_str_buf.c_str();
 }
 
-#define returnString(x) return ret_str(std::move(x));
+#define returnString(x) return ret_str(x);
 
 // asn1_sequence
 
@@ -50,7 +50,7 @@ SOUP_CEXPORT const char* base64_encode(std::string* bin)
 {
 	std::string enc = base64::encode(*bin);
 	delete bin;
-	returnString(enc);
+	returnString(std::move(enc));
 }
 
 SOUP_CEXPORT std::string* base64_decode(const char* x)
