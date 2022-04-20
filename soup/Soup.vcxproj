@@ -393,6 +393,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="adler32.hpp" />
     <ClInclude Include="aes.hpp" />
     <ClInclude Include="alloc_raii.hpp" />
     <ClInclude Include="alloc_raii_remote.hpp" />
@@ -429,6 +430,7 @@
     <ClInclude Include="conui_span.hpp" />
     <ClInclude Include="crc32.hpp" />
     <ClInclude Include="crypto_hash_algo.hpp" />
+    <ClInclude Include="deflate.hpp" />
     <ClInclude Include="deleter.hpp" />
     <ClInclude Include="derivable_map.hpp" />
     <ClInclude Include="dictionary.hpp" />
@@ -576,6 +578,7 @@
     <ClInclude Include="zip_writer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="adler32.cpp" />
     <ClCompile Include="aes.cpp" />
     <ClCompile Include="asn1_identifier.cpp" />
     <ClCompile Include="asn1_sequence.cpp" />
@@ -596,6 +599,7 @@
     <ClCompile Include="conui_base.cpp" />
     <ClCompile Include="conui_span.cpp" />
     <ClCompile Include="crc32.cpp" />
+    <ClCompile Include="deflate.cpp" />
     <ClCompile Include="dictionary.cpp" />
     <ClCompile Include="dns.cpp" />
     <ClCompile Include="ec.cpp" />

@@ -536,6 +536,12 @@
     <ClInclude Include="urlenc.hpp">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="deflate.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="adler32.hpp">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
@@ -756,6 +762,12 @@
       <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="urlenc.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="adler32.cpp">
+      <Filter>hash</Filter>
+    </ClCompile>
+    <ClCompile Include="deflate.cpp">
       <Filter>data</Filter>
     </ClCompile>
   </ItemGroup>
