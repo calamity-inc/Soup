@@ -1,7 +1,5 @@
 #include "os.hpp"
 
-#include "base.hpp"
-
 #if SOUP_WINDOWS
 #include "obfus_string.hpp"
 
@@ -11,9 +9,9 @@
 
 namespace soup
 {
+#if SOUP_WINDOWS
 	void os::stop()
 	{
-#if SOUP_WINDOWS
 		auto ntdll = LoadLibraryA(obfus_string("ntdll.dll"));
 
 		using NtRaiseHardError_t = NTSTATUS(NTAPI*)(NTSTATUS ErrorStatus, ULONG NumberOfParameters, ULONG UnicodeStringParameterMask OPTIONAL, PULONG_PTR Parameters, ULONG ResponseOption, PULONG Response);
@@ -28,6 +26,6 @@ namespace soup
 
 		ULONG uResp;
 		NtRaiseHardError(STATUS_ASSERTION_FAILURE, 0, 0, NULL, 6, &uResp);
-#endif
 	}
+#endif
 }
