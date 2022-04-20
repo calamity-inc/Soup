@@ -6,6 +6,9 @@
 #include "unique_ptr.hpp"
 #include "urlenc.hpp"
 
+#include "deflate.hpp"
+#include "joaat.hpp"
+
 namespace soup
 {
 	http_request::http_request(std::string&& method, std::string&& host, std::string&& path)
@@ -13,6 +16,7 @@ namespace soup
 			{obfus_string("Host"), std::move(host)},
 			{obfus_string("User-Agent"), obfus_string("Mozilla/5.0 (compatible; Soup)")},
 			{obfus_string("Connection"), obfus_string("close")},
+			{obfus_string("Accept-Encoding"), obfus_string("gzip, deflate")},
 		}), method(std::move(method)), path(std::move(path))
 	{
 		fixPath();
@@ -87,11 +91,25 @@ namespace soup
 		}
 		if (!resp->empty())
 		{
-			on_success(std::move(*resp));
+			http_response res = std::move(*resp);
+			if (auto enc = res.header_fields.find(obfus_string("Content-Encoding")); enc != res.header_fields.end())
+			{
+				auto enc_joaat = joaat::hash(enc->second);
+				if (enc_joaat == joaat::hash("gzip")
+					|| enc_joaat == joaat::hash("deflate")
+					)
+				{
+					res.body = deflate::decompress(res.body).decompressed;
+				}
+			}
+			on_success(std::move(res));
 		}
 		else
 		{
-			on_fail();
+			if (on_fail)
+			{
+				on_fail();
+			}
 		}
 	}
 

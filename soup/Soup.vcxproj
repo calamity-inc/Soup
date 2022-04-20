@@ -451,6 +451,7 @@
     <ClInclude Include="int_vector.hpp" />
     <ClInclude Include="io_base.hpp" />
     <ClInclude Include="istream_reader.hpp" />
+    <ClInclude Include="joaat.hpp" />
     <ClInclude Include="json_bool.hpp" />
     <ClInclude Include="json_float.hpp" />
     <ClInclude Include="json_null.hpp" />

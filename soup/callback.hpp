@@ -18,6 +18,7 @@ namespace soup
 		capture cap;
 
 		callback() noexcept
+			: fp(nullptr)
 		{
 		}
 

@@ -542,6 +542,9 @@
     <ClInclude Include="adler32.hpp">
       <Filter>hash</Filter>
     </ClInclude>
+    <ClInclude Include="joaat.hpp">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="assembly_builder.cpp">
