@@ -2,8 +2,6 @@
 
 #if SOUP_WASM || defined(__INTELLISENSE__)
 
-#include <thread>
-
 #include "asn1_sequence.hpp"
 #include "base64.hpp"
 #include "bigint.hpp"
