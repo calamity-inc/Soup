@@ -73,14 +73,14 @@ namespace soup
 	class promise_base;
 	class scheduler;
 
-	// ui
+	// vis
 	class canvas;
 
-	// ui.conui
+	// vis.ui.conui
 	struct conui_app;
 	struct conui_div;
 
-	// ui.editor
+	// vis.ui.editor
 	struct editor;
 	struct editor_text;
 }
