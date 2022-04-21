@@ -388,12 +388,6 @@ namespace soup
 		}
 
 		template <typename Str>
-		[[deprecated]] static void toLower(Str& str)
-		{
-			return lower(str);
-		}
-
-		template <typename Str>
 		static void upper(Str& str)
 		{
 			std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
