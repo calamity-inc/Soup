@@ -4,28 +4,117 @@
 
 namespace soup::rtti
 {
-	const char* type_info::getName() const noexcept
+	const char* type_info::getMangledName() const noexcept
 	{
 		return &name[0];
 	}
 
-	size_t type_info::getNameLength() const noexcept
+	size_t type_info::getMangledNameLength() const noexcept
 	{
-		return strlen(getName());
+		return strlen(getMangledName());
 	}
 
-	std::string type_info::getClassName() const noexcept
+	std::string type_info::getName() const noexcept
 	{
-		std::string name = getName();
-		if (name.substr(0, 4) == ".?AV")
+		return demangle(getMangledName());
+	}
+
+	std::string type_info::demangle(const std::string& str) noexcept
+	{
+		return demangle(str.c_str());
+	}
+
+	std::string type_info::demangle(const char* c) noexcept
+	{
+		if (*c == '\0')
 		{
-			name.erase(0, 4);
+			return {};
 		}
-		while (*(name.end() - 1) == '@')
+
+		// in-memory prefices
+		if (*c == '.')
 		{
-			name.erase(name.end() - 1);
+			++c;
 		}
-		return name;
+		if (memcmp(c, "?A", 2) == 0)
+		{
+			c += 2;
+		}
+
+		return demangleNamespace(c);
+	}
+
+#define DEMANGLE_LOOP_CHECK_BREAK \
+if (*c == '@') \
+{ \
+	++c; \
+	break; \
+} \
+if (*c == '\0') \
+{ \
+	break; \
+}
+
+	std::string type_info::demangleNamespace(const char*& c) noexcept
+	{
+		std::string res{};
+		while (true)
+		{
+			auto name = demangleType(c);
+			if (res.empty())
+			{
+				res = name;
+			}
+			else
+			{
+				name.append("::");
+				res.insert(0, name);
+			}
+			DEMANGLE_LOOP_CHECK_BREAK;
+		}
+		return res;
+	}
+
+	std::string type_info::demangleType(const char*& c) noexcept
+	{
+		if (*c == 'V') // class prefix
+		{
+			++c;
+		}
+		bool is_template = (memcmp(c, "?$", 2) == 0);
+		if (is_template)
+		{
+			c += 2;
+		}
+		std::string res = demangleName(c);
+		if (is_template)
+		{
+			res.push_back('<');
+			bool more = false;
+			while (true)
+			{
+				if (more)
+				{
+					res.append(", ");
+				}
+				res.append(demangleNamespace(c));
+				DEMANGLE_LOOP_CHECK_BREAK;
+				more = true;
+			}
+			res.push_back('>');
+		}
+		return res;
+	}
+
+	std::string type_info::demangleName(const char*& c) noexcept
+	{
+		const char* start = c;
+		while (true)
+		{
+			DEMANGLE_LOOP_CHECK_BREAK;
+			++c;
+		}
+		return std::string(start, c - start - 1);
 	}
 
 	object* object::fromVftable(void** vftable) noexcept

@@ -14,9 +14,17 @@ namespace soup::rtti
 		size_t runtime_reference;
 		const char name[1]; // this is as long as it needs to be
 
-		[[nodiscard]] const char* getName() const noexcept;
-		[[nodiscard]] size_t getNameLength() const noexcept;
-		[[nodiscard]] std::string getClassName() const noexcept;
+		[[nodiscard]] const char* getMangledName() const noexcept;
+		[[nodiscard]] size_t getMangledNameLength() const noexcept;
+
+		[[nodiscard]] std::string getName() const noexcept;
+
+		[[nodiscard]] static std::string demangle(const std::string& str) noexcept;
+		[[nodiscard]] static std::string demangle(const char* c) noexcept;
+	private:
+		[[nodiscard]] static std::string demangleNamespace(const char*& c) noexcept;
+		[[nodiscard]] static std::string demangleType(const char*& c) noexcept;
+		[[nodiscard]] static std::string demangleName(const char*& c) noexcept;
 	};
 
 	struct hierarchy_info
