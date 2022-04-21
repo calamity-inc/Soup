@@ -115,7 +115,7 @@ namespace soup
 		*/
 		qr_code(uint8_t ver, ecc ecl, const std::vector<std::uint8_t>& dataCodewords, int8_t msk);
 
-		/*---- Public instance methods ----*/
+		qr_code(qr_code&&) = default;
 
 		/*
 		* Returns this QR Code's version, in the range [1, 40].

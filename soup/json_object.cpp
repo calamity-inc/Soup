@@ -111,11 +111,11 @@ namespace soup
 
 	void json_object::add(std::string k, std::string v)
 	{
-		add(make_unique<json_string>(std::move(k)), make_unique<json_string>(std::move(v)));
+		add(soup::make_unique<json_string>(std::move(k)), soup::make_unique<json_string>(std::move(v)));
 	}
 
 	void json_object::add(std::string k, int64_t v)
 	{
-		add(make_unique<json_string>(std::move(k)), make_unique<json_int>(std::move(v)));
+		add(soup::make_unique<json_string>(std::move(k)), soup::make_unique<json_int>(std::move(v)));
 	}
 }

@@ -5,9 +5,9 @@
 
 namespace soup
 {
-	void canvas::resize(int width, int height)
+	void canvas::resize(size_t width, size_t height)
 	{
-		pixels.resize((size_t)width * height);
+		pixels.resize(width * height);
 	}
 
 	void canvas::fill(const rgb colour)
@@ -18,19 +18,71 @@ namespace soup
 		}
 	}
 
-	void canvas::set(int x, int y, rgb colour)
+	void canvas::set(size_t x, size_t y, rgb colour)
 	{
-		pixels.at((size_t)x + (y * width)) = colour;
+		pixels.at(x + (y * width)) = colour;
 	}
 
-	rgb canvas::get(int x, int y) const
+	rgb canvas::get(size_t x, size_t y) const
 	{
-		return pixels.at((size_t)x + (y * width));
+		return pixels.at(x + (y * width));
 	}
 
 	const rgb& canvas::ref(size_t x, size_t y) const
 	{
 		return pixels.at(x + (y * width));
+	}
+
+	void canvas::resizeWidth(size_t new_width)
+	{
+		std::vector<rgb> new_pixels{};
+		new_pixels.resize(new_width * height);
+		for (size_t y = 0; y != height; ++y)
+		{
+			for (size_t x = 0; x != width; ++x)
+			{
+				new_pixels.at(x + (y * new_width)) = pixels.at(x + (y * width));
+			}
+		}
+		width = new_width;
+		pixels = std::move(new_pixels);
+	}
+
+	void canvas::ensureWidthAndHeightAreEven()
+	{
+		auto even_width = ((width & 1) ? (width + 1) : width);
+		if (width != even_width)
+		{
+			resizeWidth(even_width);
+		}
+
+		ensureHeightIsEven();
+	}
+
+	void canvas::ensureHeightIsEven()
+	{
+		auto even_height = ((height & 1) ? (height + 1) : height);
+		if (height != even_height)
+		{
+			pixels.resize(width * even_height);
+			height = even_height;
+		}
+	}
+
+	void canvas::resizeNearestNeighbour(size_t desired_width, size_t desired_height)
+	{
+		canvas c{ desired_width, desired_height };
+		for (size_t y = 0; y != c.height; ++y)
+		{
+			for (size_t x = 0; x != c.width; ++x)
+			{
+				c.set(x, y, get(
+					(size_t)(((double)x / c.width) * width),
+					(size_t)(((double)y / c.height) * height)
+				));
+			}
+		}
+		*this = std::move(c);
 	}
 
 	std::string canvas::toString(bool explicit_nl) const
@@ -212,60 +264,31 @@ namespace soup
 		return '-';
 	}
 
-	void canvas::ensureWidthAndHeightAreEven()
-	{
-		auto even_width = ((width & 1) ? (width + 1) : width);
-		if (width != even_width)
-		{
-			resizeWidth(even_width);
-		}
 
-		ensureHeightIsEven();
-	}
-
-	void canvas::ensureHeightIsEven()
-	{
-		auto even_height = ((height & 1) ? (height + 1) : height);
-		if (height != even_height)
-		{
-			pixels.resize(width * even_height);
-			height = even_height;
-		}
-	}
-
-	void canvas::resizeWidth(int new_width)
-	{
-		std::vector<rgb> new_pixels{};
-		new_pixels.resize(new_width * height);
-		for (size_t y = 0; y != height; ++y)
-		{
-			for (size_t x = 0; x != width; ++x)
-			{
-				new_pixels.at(x + (y * new_width)) = pixels.at(x + (y * width));
-			}
-		}
-		width = new_width;
-		pixels = std::move(new_pixels);
-	}
-
-	std::string canvas::toSvg() const
+	std::string canvas::toSvg(size_t scale) const
 	{
 		std::string str = R"(<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width=")";
-		str.append(std::to_string(width));
+		str.append(std::to_string(width * scale));
 		str.append(R"(" height=")");
-		str.append(std::to_string(width));
+		str.append(std::to_string(width * scale));
 		str.append(R"(">)");
+
+		std::string rect_suffix = R"(" width=")";
+		rect_suffix.append(std::to_string(scale));
+		rect_suffix.append(R"(" height=")");
+		rect_suffix.append(std::to_string(scale));
+		rect_suffix.append("\"/>");
 		for (size_t y = 0; y != height; ++y)
 		{
 			for (size_t x = 0; x != width; ++x)
 			{
 				str.append(R"(<rect x=")");
-				str.append(std::to_string(x));
+				str.append(std::to_string(x * scale));
 				str.append(R"(" y=")");
-				str.append(std::to_string(y));
+				str.append(std::to_string(y * scale));
 				str.append(R"(" fill="#)");
 				str.append(get(x, y).toHex());
-				str.append(R"(" width="1" height="1"/>)");
+				str.append(rect_suffix);
 			}
 		}
 		str.append("</svg>");

@@ -11,29 +11,34 @@ namespace soup
 	class canvas
 	{
 	public:
-		int width;
-		int height;
+		size_t width;
+		size_t height;
 		std::vector<rgb> pixels{};
 
 		canvas() noexcept = default;
 
-		canvas(int size)
+		canvas(size_t size)
 			: canvas(size, size)
 		{
 		}
 
-		canvas(int width, int height)
+		canvas(size_t width, size_t height)
 			: width(width), height(height)
 		{
 			resize(width, height);
 		}
 
-		void resize(int width, int height);
-
 		void fill(const rgb colour);
-		void set(int x, int y, rgb colour);
-		[[nodiscard]] rgb get(int x, int y) const;
+		void set(size_t x, size_t y, rgb colour);
+		[[nodiscard]] rgb get(size_t x, size_t y) const;
 		[[nodiscard]] const rgb& ref(size_t x, size_t y) const;
+
+		void resize(size_t width, size_t height); // Fine for change in height; either trims excess or inserts black pixels below.
+		void resizeWidth(size_t new_width); // Resize algorithm for width; either trims excess or inserts black pixels to the right.
+		void ensureWidthAndHeightAreEven();
+		void ensureHeightIsEven();
+
+		void resizeNearestNeighbour(size_t desired_width, size_t desired_height); // Resizes the canvas and its contents, works for all changes.
 
 		[[nodiscard]] std::string toString(bool explicit_nl = false) const;
 		[[nodiscard]] std::string toStringDoublewidth(bool explicit_nl = false) const;
@@ -42,12 +47,8 @@ namespace soup
 	private:
 		[[nodiscard]] static char16_t downsampleChunkToChar(uint8_t chunkset) noexcept;
 
-		void ensureWidthAndHeightAreEven();
-		void ensureHeightIsEven();
-		void resizeWidth(int new_width);
-
 	public:
-		[[nodiscard]] std::string toSvg() const;
+		[[nodiscard]] std::string toSvg(size_t scale = 1) const;
 		[[nodiscard]] std::string toPpm() const; // Bit of a niche format, but dead simple to write. You can load images of this type with GIMP.
 	};
 }

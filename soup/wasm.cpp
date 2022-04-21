@@ -5,7 +5,9 @@
 #include "asn1_sequence.hpp"
 #include "base64.hpp"
 #include "bigint.hpp"
+#include "canvas.hpp"
 #include "pem.hpp"
+#include "qr_code.hpp"
 #include "rsa.hpp"
 
 using namespace soup;
@@ -105,6 +107,23 @@ SOUP_CEXPORT const char* bigint_toString(bigint* x)
 SOUP_CEXPORT std::string* pem_decode(const char* x)
 {
 	return new std::string(pem::decode(x));
+}
+
+// qr_code
+
+SOUP_CEXPORT qr_code* qr_code_encodeText(const char* x)
+{
+	return new qr_code(qr_code::encodeText(x));
+}
+
+SOUP_CEXPORT void qr_code_free(qr_code* x)
+{
+	delete x;
+}
+
+SOUP_CEXPORT const char* qr_code_toSvg(qr_code* x, unsigned int border, bool black_bg, size_t scale)
+{
+	returnString(x->toCanvas(border, black_bg).toSvg(scale));
 }
 
 // rsa::keypair
