@@ -651,6 +651,7 @@
     <ClCompile Include="uv_sphere.cpp" />
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="web_resource.cpp" />
+    <ClCompile Include="window.cpp" />
     <ClCompile Include="worker.cpp" />
     <ClCompile Include="x509_certificate.cpp" />
     <ClCompile Include="zip_reader.cpp" />

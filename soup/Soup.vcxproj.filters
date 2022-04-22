@@ -773,6 +773,9 @@
     <ClCompile Include="rgb.cpp">
       <Filter>vis</Filter>
     </ClCompile>
+    <ClCompile Include="window.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

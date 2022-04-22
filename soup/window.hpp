@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+
+#if SOUP_WINDOWS
 #include <Windows.h>
 
 namespace soup
@@ -8,16 +11,9 @@ namespace soup
 	{
 		HWND h;
 
-		[[nodiscard]] static window getFocused() noexcept
-		{
-			return window{ GetForegroundWindow() };
-		}
+		[[nodiscard]] static window getFocused() noexcept;
 
-		[[nodiscard]] DWORD getOwnerPid()
-		{
-			DWORD pid;
-			GetWindowThreadProcessId(h, &pid);
-			return pid;
-		}
+		[[nodiscard]] DWORD getOwnerPid() const noexcept;
 	};
 }
+#endif
