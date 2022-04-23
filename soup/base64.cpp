@@ -83,33 +83,34 @@ namespace soup
 	std::string base64::decode(std::string enc)
 	{
 		std::string out{};
-
-		size_t in_len;
-		while (in_len = enc.size(), in_len % 4 != 0)
+		if (!enc.empty())
 		{
-			enc.push_back('=');
+			size_t in_len;
+			while (in_len = enc.size(), in_len % 4 != 0)
+			{
+				enc.push_back('=');
+			}
+
+			size_t out_len = in_len / 4 * 3;
+			if (enc[in_len - 1] == '=') out_len--;
+			if (enc[in_len - 2] == '=') out_len--;
+
+			out.resize(out_len);
+
+			for (size_t i = 0, j = 0; i < in_len; )
+			{
+				uint32_t a = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
+				uint32_t b = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
+				uint32_t c = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
+				uint32_t d = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
+
+				uint32_t triple = (a << 3 * 6) + (b << 2 * 6) + (c << 1 * 6) + (d << 0 * 6);
+
+				if (j < out_len) out[j++] = (triple >> 2 * 8) & 0xFF;
+				if (j < out_len) out[j++] = (triple >> 1 * 8) & 0xFF;
+				if (j < out_len) out[j++] = (triple >> 0 * 8) & 0xFF;
+			}
 		}
-
-		size_t out_len = in_len / 4 * 3;
-		if (enc[in_len - 1] == '=') out_len--;
-		if (enc[in_len - 2] == '=') out_len--;
-
-		out.resize(out_len);
-
-		for (size_t i = 0, j = 0; i < in_len; )
-		{
-			uint32_t a = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
-			uint32_t b = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
-			uint32_t c = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
-			uint32_t d = enc[i] == '=' ? 0 & i++ : kDecodingTable[static_cast<uint8_t>(enc[i++])];
-
-			uint32_t triple = (a << 3 * 6) + (b << 2 * 6) + (c << 1 * 6) + (d << 0 * 6);
-
-			if (j < out_len) out[j++] = (triple >> 2 * 8) & 0xFF;
-			if (j < out_len) out[j++] = (triple >> 1 * 8) & 0xFF;
-			if (j < out_len) out[j++] = (triple >> 0 * 8) & 0xFF;
-		}
-
 		return out;
 	}
 }
