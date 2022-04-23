@@ -12,9 +12,10 @@ namespace soup
 	template <typename Ret, typename...Args>
 	struct callback<Ret(Args...)>
 	{
-		using FuncWithCapture = Ret(Args..., const capture&);
+		using FuncT = Ret(Args...);
+		using FuncWithCaptureT = Ret(Args..., const capture&);
 
-		FuncWithCapture* fp;
+		FuncWithCaptureT* fp;
 		capture cap;
 
 		callback() noexcept
@@ -22,12 +23,17 @@ namespace soup
 		{
 		}
 
-		callback(FuncWithCapture* fp) noexcept
+		callback(FuncT* fp) noexcept
+			: fp(reinterpret_cast<FuncWithCaptureT*>(fp))
+		{
+		}
+		
+		callback(FuncWithCaptureT* fp) noexcept
 			: fp(fp)
 		{
 		}
 
-		callback(FuncWithCapture* fp, capture&& cap) noexcept
+		callback(FuncWithCaptureT* fp, capture&& cap) noexcept
 			: fp(fp), cap(std::move(cap))
 		{
 		}
@@ -37,18 +43,19 @@ namespace soup
 			return cap.get<std::function<Ret(Args...)>>()(std::forward<Args>(args)...);
 		}
 
-		callback(std::function<Ret(Args...)>&& func) noexcept
+		template <typename T, std::enable_if_t<std::is_same_v<std::function<Ret(Args...)>, T>, int> = 0>
+		callback(T&& func) noexcept
 			: callback(&redirect_to_std_function, std::move(func))
 		{
 		}
 
-		void set(FuncWithCapture* fp, capture&& cap = {}) noexcept
+		void set(FuncWithCaptureT* fp, capture&& cap = {}) noexcept
 		{
 			this->fp = fp;
 			this->cap = std::move(cap);
 		}
 
-		void operator=(FuncWithCapture* fp) noexcept
+		void operator=(FuncWithCaptureT* fp) noexcept
 		{
 			this->fp = fp;
 			this->cap.reset();
