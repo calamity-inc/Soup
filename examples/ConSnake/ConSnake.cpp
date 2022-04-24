@@ -1,10 +1,10 @@
 #include <thread>
 
-#include <canvas.hpp>
+#include <Canvas.hpp>
 #include <console.hpp>
 #include <rand.hpp>
 #include <unicode.hpp>
-#include <vector2.hpp>
+#include <Vector2.hpp>
 
 constexpr auto res_scale = 1;
 constexpr auto tickrate = 50;

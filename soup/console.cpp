@@ -4,7 +4,7 @@
 
 #include <thread>
 
-#include "control_input.hpp"
+#include "ControlInput.hpp"
 #include "mouse_button.hpp"
 #include "unicode.hpp"
 
@@ -77,7 +77,7 @@ namespace soup
 								{
 									if (mouse_click_handler)
 									{
-										mouse_click_handler((mouse_button)mingw_pending_mb, mingw_pending_mb_x, val);
+										mouse_click_handler((MouseButton)mingw_pending_mb, mingw_pending_mb_x, val);
 									}
 									mingw_pending_mb = -1;
 								}
@@ -406,7 +406,7 @@ namespace soup
 		std::cout << CSI "?1049l";
 	}
 
-	void console_impl::onMouseClick(void(*fp)(mouse_button, unsigned int, unsigned int, const capture&), capture&& cap)
+	void console_impl::onMouseClick(void(*fp)(MouseButton, unsigned int, unsigned int, const Capture&), Capture&& cap)
 	{
 		if (!mouse_click_handler)
 		{
@@ -447,7 +447,7 @@ namespace soup
 	}
 #endif
 
-	void console_impl::enableSizeTracking(void(*fp)(unsigned int, unsigned int, const capture&), capture&& cap)
+	void console_impl::enableSizeTracking(void(*fp)(unsigned int, unsigned int, const Capture&), Capture&& cap)
 	{
 		size_handler.set(fp, std::move(cap));
 #if SOUP_WINDOWS
@@ -490,7 +490,7 @@ namespace soup
 		std::cout << CSI "u";
 	}
 
-	void console_impl::fillScreen(rgb c)
+	void console_impl::fillScreen(Rgb c)
 	{
 		return fillScreen(c.r, c.g, c.b);
 	}
@@ -511,7 +511,7 @@ namespace soup
 		return *this << unicode::utf16_to_utf8(str);
 	}
 
-	void console_impl::setForegroundColour(rgb c)
+	void console_impl::setForegroundColour(Rgb c)
 	{
 		return setForegroundColour(c.r, c.g, c.b);
 	}
@@ -521,7 +521,7 @@ namespace soup
 		std::cout << CSI "38;2;" << r << ";" << g << ";" << b << "m";
 	}
 
-	void console_impl::setBackgroundColour(rgb c)
+	void console_impl::setBackgroundColour(Rgb c)
 	{
 		return setBackgroundColour(c.r, c.g, c.b);
 	}

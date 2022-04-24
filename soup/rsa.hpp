@@ -2,182 +2,179 @@
 
 #include "fwd.hpp"
 
-#include "bigint.hpp"
+#include "Bigint.hpp"
 
-namespace soup
+namespace soup::rsa
 {
-	struct rsa
+	struct Mod
 	{
-		struct mod
+		Bigint n{};
+
+		Mod() = default;
+
+		Mod(const Bigint& n)
+			: n(n)
 		{
-			bigint n{};
+		}
 
-			mod() = default;
+		[[nodiscard]] size_t getMaxUnpaddedMessageBytes() const;
+		[[nodiscard]] size_t getMaxPkcs1MessageBytes() const;
 
-			mod(const bigint& n)
-				: n(n)
-			{
-			}
+		bool padPublic(std::string& str) const; // non-deterministic
+		bool padPrivate(std::string& str) const; // deterministic
 
-			[[nodiscard]] size_t getMaxUnpaddedMessageBytes() const;
-			[[nodiscard]] size_t getMaxPkcs1MessageBytes() const;
-
-			bool padPublic(std::string& str) const; // non-deterministic
-			bool padPrivate(std::string& str) const; // deterministic
-
-			template <typename CryptoHashAlgo>
-			bool padHash(std::string& bin) const // deterministic
-			{
-				return CryptoHashAlgo::prependId(bin)
-					&& padPrivate(bin)
-					;
-			}
-
-			static bool unpad(std::string& str);
-		};
-
-		template <typename T>
-		struct key : public mod
+		template <typename CryptoHashAlgo>
+		bool padHash(std::string& bin) const // deterministic
 		{
-			using mod::mod;
+			return CryptoHashAlgo::prependId(bin)
+				&& padPrivate(bin)
+				;
+		}
 
-			[[nodiscard]] bigint encryptUnpadded(const std::string& msg) const // deterministic
-			{
-				return reinterpret_cast<const T*>(this)->modPow(bigint::fromBinary(msg));
-			}
+		static bool unpad(std::string& str);
+	};
 
-			[[nodiscard]] std::string decryptUnpadded(const bigint& enc) const
-			{
-				return reinterpret_cast<const T*>(this)->modPow(enc).toBinary();
-			}
+	template <typename T>
+	struct Key : public Mod
+	{
+		using Mod::Mod;
 
-			[[nodiscard]] std::string decryptPkcs1(const bigint& enc) const
-			{
-				auto msg = decryptUnpadded(enc);
-				unpad(msg);
-				return msg;
-			}
-		};
-
-		template <typename T>
-		struct key_public_base : public key<T>
+		[[nodiscard]] Bigint encryptUnpadded(const std::string& msg) const // deterministic
 		{
-			bigint e{};
+			return reinterpret_cast<const T*>(this)->modPow(Bigint::fromBinary(msg));
+		}
 
-			key_public_base() = default;
-
-			key_public_base(const bigint& n, const bigint& e)
-				: key<T>(n), e(e)
-			{
-			}
-
-			[[nodiscard]] bigint encryptPkcs1(std::string msg) const // non-deterministic
-			{
-				key<T>::padPublic(msg);
-				return key<T>::encryptUnpadded(msg);
-			}
-
-			template <typename CryptoHashAlgo>
-			[[nodiscard]] bool verify(const std::string& msg, const bigint& sig) const
-			{
-				auto hash_bin = CryptoHashAlgo::hash(msg);
-				return key<T>::template padHash<CryptoHashAlgo>(hash_bin)
-					&& key<T>::decryptUnpadded(sig) == hash_bin;
-			}
-		};
-
-		struct key_public : public key_public_base<key_public>
+		[[nodiscard]] std::string decryptUnpadded(const Bigint& enc) const
 		{
-			static bigint e_pref;
+			return reinterpret_cast<const T*>(this)->modPow(enc).toBinary();
+		}
 
-			key_public() = default;
-			key_public(const bigint& n);
-			key_public(const bigint& n, const bigint& e);
-
-			[[nodiscard]] bigint modPow(const bigint& x) const;
-		};
-
-		struct key_montgomery_data
+		[[nodiscard]] std::string decryptPkcs1(const Bigint& enc) const
 		{
-			size_t re{};
-			bigint r{};
-			bigint n_mod_mul_inv{};
-			bigint r_mod_mul_inv{};
-			bigint one_mont{};
+			auto msg = decryptUnpadded(enc);
+			unpad(msg);
+			return msg;
+		}
+	};
 
-			key_montgomery_data() = default;
-			key_montgomery_data(const bigint& n, const bigint& e);
+	template <typename T>
+	struct PublicKeyBase : public Key<T>
+	{
+		Bigint e{};
 
-			[[nodiscard]] bigint modPow(const bigint& n, const bigint& e, const bigint& x) const;
-		};
+		PublicKeyBase() = default;
 
-		/*
-		* In the case of an 1024-bit rsa public key, using a long-lived instance takes ~134ms, but performs operations in ~2ms, compared to
-		* ~12ms using a short-lived instance. From these numbers, we can estimate that a long-lived instance is the right choice for rsa public
-		* keys that are (expected to be) used more than 13 times.
-		*/
-		struct key_public_longlived : public key_public_base<key_public_longlived>
+		PublicKeyBase(const Bigint& n, const Bigint& e)
+			: Key<T>(n), e(e)
 		{
-			key_montgomery_data mont_data;
+		}
 
-			key_public_longlived() = default;
-			key_public_longlived(const bigint& n);
-			key_public_longlived(const bigint& n, const bigint& e);
-
-			[[nodiscard]] bigint modPow(const bigint& x) const;
-		};
-
-		struct key_private : public key<key_private>
+		[[nodiscard]] Bigint encryptPkcs1(std::string msg) const // non-deterministic
 		{
-			bigint p;
-			bigint q;
-			bigint dp;
-			bigint dq;
-			bigint qinv;
+			Key<T>::padPublic(msg);
+			return Key<T>::encryptUnpadded(msg);
+		}
 
-			key_montgomery_data p_mont_data;
-			key_montgomery_data q_mont_data;
-
-			key_private() = default;
-			key_private(const bigint& n, const bigint& p, const bigint& q, const bigint& dp, const bigint& dq, const bigint& qinv);
-
-			[[nodiscard]] static key_private fromBinary(const std::string bin);
-			[[nodiscard]] static key_private fromAsn1(const asn1_sequence& seq);
-
-			template <typename CryptoHashAlgo>
-			[[nodiscard]] bigint sign(const std::string& msg) const // deterministic
-			{
-				return encryptPkcs1(CryptoHashAlgo::hashWithId(msg));
-			}
-
-			[[nodiscard]] bigint encryptPkcs1(std::string msg) const; // deterministic
-
-			[[nodiscard]] key_public derivePublic() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
-
-			[[nodiscard]] asn1_sequence toAsn1() const; // as per PKCS#1. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
-			[[nodiscard]] std::string toPem() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
-
-			[[nodiscard]] bigint modPow(const bigint& x) const;
-			[[nodiscard]] bigint getE() const; // returns public exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
-			[[nodiscard]] bigint getD() const; // returns private exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
-		};
-
-		struct keypair : public mod
+		template <typename CryptoHashAlgo>
+		[[nodiscard]] bool verify(const std::string& msg, const Bigint& sig) const
 		{
-			bigint p;
-			bigint q;
-			bigint e;
-			bigint dp;
-			bigint dq;
-			bigint qinv;
+			auto hash_bin = CryptoHashAlgo::hash(msg);
+			return Key<T>::template padHash<CryptoHashAlgo>(hash_bin)
+				&& Key<T>::decryptUnpadded(sig) == hash_bin;
+		}
+	};
 
-			keypair() = default;
-			keypair(bigint&& _p, bigint&& _q);
+	struct PublicKey : public PublicKeyBase<PublicKey>
+	{
+		static Bigint E_PREF;
 
-			[[nodiscard]] static keypair random(unsigned int bits);
+		PublicKey() = default;
+		PublicKey(const Bigint& n);
+		PublicKey(const Bigint& n, const Bigint& e);
 
-			[[nodiscard]] key_public getPublic() const;
-			[[nodiscard]] key_private getPrivate() const;
-		};
+		[[nodiscard]] Bigint modPow(const Bigint& x) const;
+	};
+
+	struct KeyMontgomeryData
+	{
+		size_t re{};
+		Bigint r{};
+		Bigint n_mod_mul_inv{};
+		Bigint r_mod_mul_inv{};
+		Bigint one_mont{};
+
+		KeyMontgomeryData() = default;
+		KeyMontgomeryData(const Bigint& n, const Bigint& e);
+
+		[[nodiscard]] Bigint modPow(const Bigint& n, const Bigint& e, const Bigint& x) const;
+	};
+
+	/*
+	* In the case of an 1024-bit rsa public key, using a long-lived instance takes ~134ms, but performs operations in ~2ms, compared to
+	* ~12ms using a short-lived instance. From these numbers, we can estimate that a long-lived instance is the right choice for rsa public
+	* keys that are (expected to be) used more than 13 times.
+	*/
+	struct LonglivedPublicKey : public PublicKeyBase<LonglivedPublicKey>
+	{
+		KeyMontgomeryData mont_data;
+
+		LonglivedPublicKey() = default;
+		LonglivedPublicKey(const Bigint& n);
+		LonglivedPublicKey(const Bigint& n, const Bigint& e);
+
+		[[nodiscard]] Bigint modPow(const Bigint& x) const;
+	};
+
+	struct PrivateKey : public Key<PrivateKey>
+	{
+		Bigint p;
+		Bigint q;
+		Bigint dp;
+		Bigint dq;
+		Bigint qinv;
+
+		KeyMontgomeryData p_mont_data;
+		KeyMontgomeryData q_mont_data;
+
+		PrivateKey() = default;
+		PrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv);
+
+		[[nodiscard]] static PrivateKey fromBinary(const std::string bin);
+		[[nodiscard]] static PrivateKey fromAsn1(const Asn1Sequence& seq);
+
+		template <typename CryptoHashAlgo>
+		[[nodiscard]] Bigint sign(const std::string& msg) const // deterministic
+		{
+			return encryptPkcs1(CryptoHashAlgo::hashWithId(msg));
+		}
+
+		[[nodiscard]] Bigint encryptPkcs1(std::string msg) const; // deterministic
+
+		[[nodiscard]] PublicKey derivePublic() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+
+		[[nodiscard]] Asn1Sequence toAsn1() const; // as per PKCS#1. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+		[[nodiscard]] std::string toPem() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+
+		[[nodiscard]] Bigint modPow(const Bigint& x) const;
+		[[nodiscard]] Bigint getE() const; // returns public exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+		[[nodiscard]] Bigint getD() const; // returns private exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+	};
+
+	struct Keypair : public Mod
+	{
+		Bigint p;
+		Bigint q;
+		Bigint e;
+		Bigint dp;
+		Bigint dq;
+		Bigint qinv;
+
+		Keypair() = default;
+		Keypair(Bigint&& _p, Bigint&& _q);
+
+		[[nodiscard]] static Keypair random(unsigned int bits);
+
+		[[nodiscard]] PublicKey getPublic() const;
+		[[nodiscard]] PrivateKey getPrivate() const;
 	};
 }

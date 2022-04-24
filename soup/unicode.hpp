@@ -20,7 +20,7 @@ namespace soup
 {
 	struct unicode
 	{
-		static constexpr uint32_t unicode_replacement_char = 0xFFFD;
+		static constexpr uint32_t REPLACEMENT_CHAR = 0xFFFD;
 
 		[[nodiscard]] static char32_t utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept;
 		[[nodiscard]] static std::u32string utf8_to_utf32(const std::string& utf8) noexcept;
@@ -56,7 +56,7 @@ namespace soup
 				auto uni = utf16_to_utf32(it, end);
 				if (uni == 0)
 				{
-					utf32.push_back(unicode_replacement_char);
+					utf32.push_back(REPLACEMENT_CHAR);
 				}
 				else
 				{

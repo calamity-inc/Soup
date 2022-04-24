@@ -3,8 +3,8 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
-#include "callback.hpp"
-#include "rgb.hpp"
+#include "Callback.hpp"
+#include "Rgb.hpp"
 #include "string.hpp"
 
 #include <iostream>
@@ -36,17 +36,17 @@ namespace soup
 #endif
 
 	public:
-		callback<void(char32_t)> char_handler;
-		callback<void(control_input)> control_handler;
+		Callback<void(char32_t)> char_handler;
+		Callback<void(ControlInput)> control_handler;
 	private:
-		callback<void(mouse_button, unsigned int, unsigned int)> mouse_click_handler;
+		Callback<void(MouseButton, unsigned int, unsigned int)> mouse_click_handler;
 
 	public:
 		void init(bool fullscreen = true);
 		void run();
 		void cleanup();
 
-		void onMouseClick(void(*fp)(mouse_button, unsigned int, unsigned int, const capture&), capture&& cap = {});
+		void onMouseClick(void(*fp)(MouseButton, unsigned int, unsigned int, const Capture&), Capture&& cap = {});
 
 		/* This shit is only supported by MingW, like, why bother when you don't support anything else?!
 
@@ -66,11 +66,11 @@ namespace soup
 
 		static void setTitle(const std::string& title);
 
-		inline static callback<void(unsigned int, unsigned int)> size_handler;
+		inline static Callback<void(unsigned int, unsigned int)> size_handler;
 #if SOUP_LINUX
 		static void sigwinch_handler_proc(int);
 #endif
-		static void enableSizeTracking(void(*fp)(unsigned int, unsigned int, const capture&), capture&& cap = {});
+		static void enableSizeTracking(void(*fp)(unsigned int, unsigned int, const Capture&), Capture&& cap = {});
 
 		// Output
 
@@ -80,7 +80,7 @@ namespace soup
 		static void showCursor();
 		static void saveCursorPos();
 		static void restoreCursorPos();
-		static void fillScreen(rgb c);
+		static void fillScreen(Rgb c);
 		static void fillScreen(unsigned int r, unsigned int g, unsigned int b);
 		static void setCursorPos(unsigned int x, unsigned int y);
 
@@ -93,7 +93,7 @@ namespace soup
 
 		const console_impl& operator << (const std::u16string& str) const;
 
-		static void setForegroundColour(rgb c);
+		static void setForegroundColour(Rgb c);
 
 		static void setForegroundColour(int r, int g, int b);
 
@@ -117,7 +117,7 @@ namespace soup
 			return str;
 		}
 
-		static void setBackgroundColour(rgb c);
+		static void setBackgroundColour(Rgb c);
 
 		static void setBackgroundColour(int r, int g, int b);
 

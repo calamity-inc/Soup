@@ -2,7 +2,7 @@
 
 namespace soup
 {
-	char32_t soup::unicode::utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept
+	char32_t unicode::utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept
 	{
 		uint32_t uni;
 		uint8_t todo = 0;
@@ -66,7 +66,7 @@ namespace soup
 			auto uni = utf8_to_utf32_char(it, end);
 			if (uni == 0)
 			{
-				utf32.push_back(unicode_replacement_char);
+				utf32.push_back(REPLACEMENT_CHAR);
 			}
 			else
 			{

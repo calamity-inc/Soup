@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	enum mouse_button : uint8_t
+	enum MouseButton : uint8_t
 	{
 		LMB = 0,
 		MMB,

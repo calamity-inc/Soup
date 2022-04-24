@@ -1,0 +1,42 @@
+#pragma once
+
+#include "IpAddr.hpp"
+
+namespace soup
+{
+	struct SocketAddr
+	{
+		IpAddr ip;
+		uint16_t port;
+
+		SocketAddr() noexcept = default;
+
+		explicit SocketAddr(const IpAddr& ip, uint16_t port)
+			: ip(ip), port(port)
+		{
+		}
+
+		explicit SocketAddr(const std::string& ip, uint16_t port)
+			: ip(ip), port(port)
+		{
+		}
+
+		[[nodiscard]] std::string toString() const noexcept
+		{
+			std::string str;
+			if (ip.isV4())
+			{
+				str.append(ip.toString4());
+			}
+			else
+			{
+				str.push_back('[');
+				str.append(ip.toString6());
+				str.push_back(']');
+			}
+			str.push_back(':');
+			str.append(std::to_string(port));
+			return str;
+		}
+	};
+}

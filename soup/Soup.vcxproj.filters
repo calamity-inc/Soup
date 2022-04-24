@@ -3,121 +3,106 @@
   <ItemGroup>
     <ClInclude Include="fwd.hpp" />
     <ClInclude Include="macros.hpp" />
-    <ClInclude Include="alloc_raii.hpp">
+    <ClInclude Include="AllocRaii.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="assembly_builder.hpp">
+    <ClInclude Include="AssemblyBuilder.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="alloc_raii_remote.hpp">
+    <ClInclude Include="AllocRaiiRemote.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="bytepatch.hpp">
+    <ClInclude Include="Bytepatch.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="bytepatch_external.hpp">
+    <ClInclude Include="BytepatchExternal.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="memory_buffer.hpp">
+    <ClInclude Include="MemoryBuffer.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="pattern.hpp">
+    <ClInclude Include="Pattern.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="pattern_compile_time.hpp">
+    <ClInclude Include="CompiletimePattern.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="pattern_compile_time_base.hpp">
+    <ClInclude Include="CompiletimePatternBase.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="pattern_compile_time_with_opt_bytes_base.hpp">
+    <ClInclude Include="CompiletimePatternWithOptBytesBase.hpp">
       <Filter>mem</Filter>
     </ClInclude>
     <ClInclude Include="pattern_macros.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="pattern_compile_time_with_opt_bytes.hpp">
+    <ClInclude Include="CompiletimePatternWithOptBytes.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="pointer.hpp">
+    <ClInclude Include="Pointer.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="pointerlike.hpp">
+    <ClInclude Include="Pointerlike.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="range.hpp">
+    <ClInclude Include="Range.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="region_virtual.hpp">
+    <ClInclude Include="VirtualRegion.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="window.hpp">
+    <ClInclude Include="Window.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="thread.hpp">
+    <ClInclude Include="Thread.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="process.hpp">
+    <ClInclude Include="Process.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="addr_ip.hpp">
+    <ClInclude Include="IpAddr.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="addr_socket.hpp">
+    <ClInclude Include="SocketAddr.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="socket.hpp">
+    <ClInclude Include="Socket.hpp">
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="console.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="vector4.hpp">
+    <ClInclude Include="Vector4.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="vector_base.hpp">
+    <ClInclude Include="VectorBase.hpp">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="vector_maths.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="vector2.hpp">
+    <ClInclude Include="Vector2.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="vector3.hpp">
+    <ClInclude Include="Vector3.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="vector3_base.hpp">
+    <ClInclude Include="Vector3Base.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="module.hpp">
+    <ClInclude Include="Module.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="handle_raii.hpp">
+    <ClInclude Include="HandleRaii.hpp">
       <Filter>os\windows</Filter>
     </ClInclude>
-    <ClInclude Include="handle_base.hpp">
+    <ClInclude Include="HandleBase.hpp">
       <Filter>os\windows</Filter>
     </ClInclude>
-    <ClInclude Include="handle_plain.hpp">
+    <ClInclude Include="HandlePlain.hpp">
       <Filter>os\windows</Filter>
     </ClInclude>
-    <ClInclude Include="dns.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
-    <ClInclude Include="dns_a.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
-    <ClInclude Include="dns_aaaa.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
-    <ClInclude Include="dns_txt.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
-    <ClInclude Include="dns_srv.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
-    <ClInclude Include="bigint.hpp">
+    <ClInclude Include="Bigint.hpp">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="rsa.hpp">
@@ -129,13 +114,13 @@
     <ClInclude Include="rand.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="bitset.hpp">
+    <ClInclude Include="Bitset.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="bitpointer.hpp">
+    <ClInclude Include="BitPointer.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="bigbitset.hpp">
+    <ClInclude Include="BigBitset.hpp">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="rtti.hpp">
@@ -144,20 +129,20 @@
     <ClInclude Include="sha1.hpp">
       <Filter>hash</Filter>
     </ClInclude>
-    <ClInclude Include="crypto_hash_algo.hpp">
+    <ClInclude Include="CryptoHashAlgo.hpp">
       <Filter>hash</Filter>
     </ClInclude>
     <ClInclude Include="string.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
-    <ClInclude Include="obfus_string.hpp">
+    <ClInclude Include="ObfusString.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
-    <ClInclude Include="string_literal.hpp">
+    <ClInclude Include="StringLiteral.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
     <ClInclude Include="base.hpp" />
-    <ClInclude Include="packet.hpp">
+    <ClInclude Include="Packet.hpp">
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="shortint_impl.hpp">
@@ -169,68 +154,68 @@
     <ClInclude Include="sha256.hpp">
       <Filter>hash</Filter>
     </ClInclude>
-    <ClInclude Include="x509_certificate.hpp">
+    <ClInclude Include="X509Certificate.hpp">
       <Filter>crypto\x509</Filter>
     </ClInclude>
-    <ClInclude Include="x509_relative_distinguished_name.hpp">
+    <ClInclude Include="X509RelativeDistinguishedName.hpp">
       <Filter>crypto\x509</Filter>
     </ClInclude>
-    <ClInclude Include="asn1_sequence.hpp">
+    <ClInclude Include="Asn1Sequence.hpp">
       <Filter>data\asn1</Filter>
     </ClInclude>
-    <ClInclude Include="asn1_identifier.hpp">
+    <ClInclude Include="Asn1Identifier.hpp">
       <Filter>data\asn1</Filter>
     </ClInclude>
-    <ClInclude Include="asn1_element.hpp">
+    <ClInclude Include="Asn1Element.hpp">
       <Filter>data\asn1</Filter>
     </ClInclude>
-    <ClInclude Include="asn1_type.hpp">
+    <ClInclude Include="Asn1Type.hpp">
       <Filter>data\asn1</Filter>
     </ClInclude>
     <ClInclude Include="aes.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
-    <ClInclude Include="tls_certificate.hpp">
+    <ClInclude Include="TlsCertificate.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_client_hello.hpp">
+    <ClInclude Include="TlsClientHello.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_client_hello_ext_server_name.hpp">
+    <ClInclude Include="TlsClientHelloExtServerName.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_content_type.hpp">
+    <ClInclude Include="TlsContentType.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_encrypted_pre_master_secret.hpp">
+    <ClInclude Include="TlsEncryptedPreMasterSecret.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_handshake.hpp">
+    <ClInclude Include="TlsHandshake.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_protocol_version.hpp">
+    <ClInclude Include="TlsProtocolVersion.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_random.hpp">
+    <ClInclude Include="TlsRandom.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_record.hpp">
+    <ClInclude Include="TlsRecord.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_server_hello.hpp">
+    <ClInclude Include="TlsServerHello.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_mac.hpp">
+    <ClInclude Include="TlsMac.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
     <ClInclude Include="type.hpp" />
-    <ClInclude Include="tls_alert_description.hpp">
+    <ClInclude Include="TlsAlertDescription.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="socket_tls_encrypter.hpp">
+    <ClInclude Include="SocketTlsEncrypter.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="socket_tls_handshaker.hpp">
+    <ClInclude Include="SocketTlsHandshaker.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
     <ClInclude Include="time.hpp">
@@ -239,25 +224,25 @@
     <ClInclude Include="ec.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
-    <ClInclude Include="tls_cipher_suite.hpp">
+    <ClInclude Include="TlsCipherSuite.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_server_key_exchange.hpp">
+    <ClInclude Include="TlsServerKeyExchange.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_extension_type.hpp">
+    <ClInclude Include="TlsExtensionType.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_client_hello_ext_elliptic_curves.hpp">
+    <ClInclude Include="TlsClientHelloExtEllipticCurves.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="named_curves.hpp">
+    <ClInclude Include="NamedCurves.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="tls_hello_extensions.hpp">
+    <ClInclude Include="TlsHelloExtensions.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="socket_tls_server_rsa_data.hpp">
+    <ClInclude Include="TlsServerRsaData.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
     <ClInclude Include="endianness.hpp">
@@ -266,238 +251,232 @@
     <ClInclude Include="optimised.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="int_vector.hpp">
+    <ClInclude Include="IntVector.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="worker.hpp">
+    <ClInclude Include="Worker.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="scheduler.hpp">
+    <ClInclude Include="Scheduler.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="server.hpp">
+    <ClInclude Include="Server.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="promise.hpp">
+    <ClInclude Include="Promise.hpp">
       <Filter>task</Filter>
     </ClInclude>
     <ClInclude Include="mouse_button.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="conui_app.hpp">
+    <ClInclude Include="ConuiApp.hpp">
       <Filter>vis\ui\conui</Filter>
     </ClInclude>
-    <ClInclude Include="conui_span.hpp">
+    <ClInclude Include="ConuiSpan.hpp">
       <Filter>vis\ui\conui</Filter>
     </ClInclude>
-    <ClInclude Include="conui_base.hpp">
+    <ClInclude Include="ConuiBase.hpp">
       <Filter>vis\ui\conui</Filter>
     </ClInclude>
-    <ClInclude Include="conui_div.hpp">
+    <ClInclude Include="ConuiDiv.hpp">
       <Filter>vis\ui\conui</Filter>
     </ClInclude>
-    <ClInclude Include="editor.hpp">
+    <ClInclude Include="Editor.hpp">
       <Filter>vis\ui\editor</Filter>
     </ClInclude>
-    <ClInclude Include="editor_tab.hpp">
+    <ClInclude Include="EditorTab.hpp">
       <Filter>vis\ui\editor</Filter>
     </ClInclude>
-    <ClInclude Include="callback.hpp">
+    <ClInclude Include="Callback.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="capture.hpp">
+    <ClInclude Include="Capture.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="editor_text.hpp">
+    <ClInclude Include="EditorText.hpp">
       <Filter>vis\ui\editor</Filter>
     </ClInclude>
     <ClInclude Include="signal.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="control_input.hpp">
+    <ClInclude Include="ControlInput.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="editor_file.hpp">
+    <ClInclude Include="EditorFile.hpp">
       <Filter>vis\ui\editor</Filter>
     </ClInclude>
-    <ClInclude Include="zip_reader.hpp">
+    <ClInclude Include="ZipReader.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
     <ClInclude Include="crc32.hpp">
       <Filter>hash</Filter>
     </ClInclude>
-    <ClInclude Include="zip_central_directory_file.hpp">
+    <ClInclude Include="ZipCentralDirectoryFile.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="zip_end_of_central_directory.hpp">
+    <ClInclude Include="ZipEndOfCentralDirectory.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="zip_file_common.hpp">
+    <ClInclude Include="ZipFileCommon.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="zip_local_file_header.hpp">
+    <ClInclude Include="ZipLocalFileHeader.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="zip_writer.hpp">
+    <ClInclude Include="ZipWriter.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="zip_indexed_file.hpp">
+    <ClInclude Include="ZipIndexedFile.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="bit_in_stream.hpp">
+    <ClInclude Include="BitInStream.hpp">
       <Filter>io</Filter>
     </ClInclude>
-    <ClInclude Include="keystore.hpp">
+    <ClInclude Include="Keystore.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
-    <ClInclude Include="certchain.hpp">
+    <ClInclude Include="Certchain.hpp">
       <Filter>crypto\x509</Filter>
     </ClInclude>
-    <ClInclude Include="unique_ptr.hpp">
+    <ClInclude Include="UniquePtr.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="chessboard.hpp">
+    <ClInclude Include="Chessboard.hpp">
       <Filter>chess</Filter>
     </ClInclude>
-    <ClInclude Include="chess_square.hpp">
+    <ClInclude Include="ChessSquare.hpp">
       <Filter>chess</Filter>
     </ClInclude>
-    <ClInclude Include="chess_piece.hpp">
+    <ClInclude Include="ChessPiece.hpp">
       <Filter>chess</Filter>
     </ClInclude>
-    <ClInclude Include="chess_coordinate.hpp">
+    <ClInclude Include="ChessCoordinate.hpp">
       <Filter>chess</Filter>
     </ClInclude>
-    <ClInclude Include="chess_cli.hpp">
+    <ClInclude Include="ChessCli.hpp">
       <Filter>chess</Filter>
     </ClInclude>
-    <ClInclude Include="deleter.hpp">
+    <ClInclude Include="deleter_impl.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="http_request.hpp">
+    <ClInclude Include="HttpRequest.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
-    <ClInclude Include="mime_message.hpp">
+    <ClInclude Include="MimeMessage.hpp">
       <Filter>data\mime</Filter>
     </ClInclude>
-    <ClInclude Include="http_response.hpp">
+    <ClInclude Include="HttpResponse.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
-    <ClInclude Include="word_type.hpp">
+    <ClInclude Include="WordType.hpp">
       <Filter>ling</Filter>
     </ClInclude>
-    <ClInclude Include="word_meaning.hpp">
+    <ClInclude Include="WordMeaning.hpp">
       <Filter>ling</Filter>
     </ClInclude>
-    <ClInclude Include="dictionary_word.hpp">
+    <ClInclude Include="DictionaryWord.hpp">
       <Filter>ling</Filter>
     </ClInclude>
-    <ClInclude Include="json_node.hpp">
+    <ClInclude Include="JsonNode.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="json_string.hpp">
+    <ClInclude Include="JsonString.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="json_int.hpp">
+    <ClInclude Include="JsonInt.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="json_array.hpp">
+    <ClInclude Include="JsonArray.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="json.hpp">
+    <ClInclude Include="Json.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="oid.hpp">
+    <ClInclude Include="Oid.hpp">
       <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="json_node_type.hpp">
+    <ClInclude Include="JsonNodeType.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="reader.hpp">
+    <ClInclude Include="Reader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="file_reader.hpp">
+    <ClInclude Include="FileReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="string_reader.hpp">
+    <ClInclude Include="StringReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="io_base.hpp">
+    <ClInclude Include="IoBase.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="istream_reader.hpp">
+    <ClInclude Include="IstreamReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="writer.hpp">
+    <ClInclude Include="Writer.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="ostream_writer.hpp">
+    <ClInclude Include="OstreamWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="string_writer.hpp">
+    <ClInclude Include="StringWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="json_object.hpp">
+    <ClInclude Include="JsonObject.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="derivable_map.hpp">
+    <ClInclude Include="DerivableMap.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="json_null.hpp">
+    <ClInclude Include="JsonNull.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="json_bool.hpp">
+    <ClInclude Include="JsonBool.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="json_float.hpp">
+    <ClInclude Include="JsonFloat.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="dictionary.hpp">
+    <ClInclude Include="Dictionary.hpp">
       <Filter>ling</Filter>
     </ClInclude>
-    <ClInclude Include="web_resource.hpp">
+    <ClInclude Include="WebResource.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
-    <ClInclude Include="matrix.hpp">
+    <ClInclude Include="Matrix.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="mesh.hpp">
+    <ClInclude Include="Mesh.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="poly.hpp">
+    <ClInclude Include="Poly.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="quaternion.hpp">
+    <ClInclude Include="Quaternion.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="ray.hpp">
+    <ClInclude Include="Ray.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="plane.hpp">
+    <ClInclude Include="PolyVector.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="poly_vector.hpp">
+    <ClInclude Include="Scene.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="scene.hpp">
-      <Filter>math\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="box.hpp">
+    <ClInclude Include="Box.hpp">
       <Filter>math\3d\box</Filter>
     </ClInclude>
-    <ClInclude Include="box_axis_aligned.hpp">
+    <ClInclude Include="BoxAxisAligned.hpp">
       <Filter>math\3d\box</Filter>
     </ClInclude>
-    <ClInclude Include="box_corners.hpp">
+    <ClInclude Include="BoxCorners.hpp">
       <Filter>math\3d\box</Filter>
     </ClInclude>
-    <ClInclude Include="point_light.hpp">
-      <Filter>math\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="sphere.hpp">
+    <ClInclude Include="Sphere.hpp">
       <Filter>math\3d\sphere</Filter>
     </ClInclude>
-    <ClInclude Include="uv_sphere.hpp">
+    <ClInclude Include="UvSphere.hpp">
       <Filter>math\3d\sphere</Filter>
     </ClInclude>
     <ClInclude Include="bitmask.hpp">
@@ -506,16 +485,16 @@
     <ClInclude Include="os.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="qr_code.hpp">
+    <ClInclude Include="QrCode.hpp">
       <Filter>vis</Filter>
     </ClInclude>
-    <ClInclude Include="notifyable.hpp">
+    <ClInclude Include="Notifyable.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="url.hpp">
+    <ClInclude Include="Url.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
-    <ClInclude Include="mime_type.hpp">
+    <ClInclude Include="MimeType.hpp">
       <Filter>data\mime</Filter>
     </ClInclude>
     <ClInclude Include="base64.hpp">
@@ -539,48 +518,54 @@
     <ClInclude Include="joaat.hpp">
       <Filter>hash</Filter>
     </ClInclude>
-    <ClInclude Include="canvas.hpp">
+    <ClInclude Include="Canvas.hpp">
       <Filter>vis</Filter>
     </ClInclude>
-    <ClInclude Include="rgb.hpp">
+    <ClInclude Include="Rgb.hpp">
       <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="dns.hpp">
+      <Filter>net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="assembly_builder.cpp">
+    <ClCompile Include="AssemblyBuilder.cpp">
       <Filter>mem</Filter>
     </ClCompile>
-    <ClCompile Include="bytepatch.cpp">
+    <ClCompile Include="Bytepatch.cpp">
       <Filter>mem</Filter>
     </ClCompile>
-    <ClCompile Include="memory_buffer.cpp">
+    <ClCompile Include="MemoryBuffer.cpp">
       <Filter>mem</Filter>
     </ClCompile>
-    <ClCompile Include="pattern.cpp">
+    <ClCompile Include="Pattern.cpp">
       <Filter>mem</Filter>
     </ClCompile>
-    <ClCompile Include="pointer.cpp">
+    <ClCompile Include="Pointer.cpp">
       <Filter>mem</Filter>
     </ClCompile>
-    <ClCompile Include="range.cpp">
+    <ClCompile Include="Range.cpp">
       <Filter>mem</Filter>
     </ClCompile>
-    <ClCompile Include="thread.cpp">
+    <ClCompile Include="Thread.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="process.cpp">
+    <ClCompile Include="Process.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="module.cpp">
+    <ClCompile Include="Module.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="socket.cpp">
+    <ClCompile Include="Socket.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="dns.cpp">
-      <Filter>net\dns</Filter>
-    </ClCompile>
-    <ClCompile Include="bigint.cpp">
+    <ClCompile Include="Bigint.cpp">
       <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="rsa.cpp">
@@ -595,53 +580,53 @@
     <ClCompile Include="sha256.cpp">
       <Filter>hash</Filter>
     </ClCompile>
-    <ClCompile Include="x509_certificate.cpp">
+    <ClCompile Include="X509Certificate.cpp">
       <Filter>crypto\x509</Filter>
     </ClCompile>
     <ClCompile Include="wasm.cpp" />
-    <ClCompile Include="asn1_sequence.cpp">
+    <ClCompile Include="Asn1Sequence.cpp">
       <Filter>data\asn1</Filter>
     </ClCompile>
     <ClCompile Include="aes.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
-    <ClCompile Include="socket_tls_encrypter.cpp">
+    <ClCompile Include="SocketTlsEncrypter.cpp">
       <Filter>net\tls</Filter>
     </ClCompile>
-    <ClCompile Include="socket_tls_handshaker.cpp">
+    <ClCompile Include="SocketTlsHandshaker.cpp">
       <Filter>net\tls</Filter>
     </ClCompile>
     <ClCompile Include="ec.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
-    <ClCompile Include="scheduler.cpp">
+    <ClCompile Include="Scheduler.cpp">
       <Filter>task</Filter>
     </ClCompile>
-    <ClCompile Include="worker.cpp">
+    <ClCompile Include="Worker.cpp">
       <Filter>task</Filter>
     </ClCompile>
-    <ClCompile Include="server.cpp">
+    <ClCompile Include="Server.cpp">
       <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="console.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="conui_span.cpp">
+    <ClCompile Include="ConuiSpan.cpp">
       <Filter>vis\ui\conui</Filter>
     </ClCompile>
-    <ClCompile Include="conui_app.cpp">
+    <ClCompile Include="ConuiApp.cpp">
       <Filter>vis\ui\conui</Filter>
     </ClCompile>
-    <ClCompile Include="conui_base.cpp">
+    <ClCompile Include="ConuiBase.cpp">
       <Filter>vis\ui\conui</Filter>
     </ClCompile>
-    <ClCompile Include="editor.cpp">
+    <ClCompile Include="Editor.cpp">
       <Filter>vis\ui\editor</Filter>
     </ClCompile>
-    <ClCompile Include="editor_tab.cpp">
+    <ClCompile Include="EditorTab.cpp">
       <Filter>vis\ui\editor</Filter>
     </ClCompile>
-    <ClCompile Include="editor_text.cpp">
+    <ClCompile Include="EditorText.cpp">
       <Filter>vis\ui\editor</Filter>
     </ClCompile>
     <ClCompile Include="string.cpp">
@@ -650,103 +635,100 @@
     <ClCompile Include="crc32.cpp">
       <Filter>hash</Filter>
     </ClCompile>
-    <ClCompile Include="zip_reader.cpp">
+    <ClCompile Include="ZipReader.cpp">
       <Filter>io\zip</Filter>
     </ClCompile>
-    <ClCompile Include="zip_writer.cpp">
+    <ClCompile Include="ZipWriter.cpp">
       <Filter>io\zip</Filter>
     </ClCompile>
-    <ClCompile Include="keystore.cpp">
+    <ClCompile Include="Keystore.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
-    <ClCompile Include="certchain.cpp">
+    <ClCompile Include="Certchain.cpp">
       <Filter>crypto\x509</Filter>
     </ClCompile>
-    <ClCompile Include="chess_cli.cpp">
+    <ClCompile Include="ChessCli.cpp">
       <Filter>chess</Filter>
     </ClCompile>
-    <ClCompile Include="chess_square.cpp">
+    <ClCompile Include="ChessSquare.cpp">
       <Filter>chess</Filter>
     </ClCompile>
-    <ClCompile Include="chessboard.cpp">
+    <ClCompile Include="Chessboard.cpp">
       <Filter>chess</Filter>
     </ClCompile>
-    <ClCompile Include="mime_message.cpp">
+    <ClCompile Include="MimeMessage.cpp">
       <Filter>data\mime</Filter>
     </ClCompile>
-    <ClCompile Include="http_request.cpp">
+    <ClCompile Include="HttpRequest.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
-    <ClCompile Include="json_string.cpp">
+    <ClCompile Include="JsonString.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="json.cpp">
+    <ClCompile Include="Json.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="oid.cpp">
+    <ClCompile Include="Oid.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="asn1_identifier.cpp">
+    <ClCompile Include="Asn1Identifier.cpp">
       <Filter>data\asn1</Filter>
     </ClCompile>
-    <ClCompile Include="json_array.cpp">
+    <ClCompile Include="JsonArray.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="json_node.cpp">
+    <ClCompile Include="JsonNode.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="json_object.cpp">
+    <ClCompile Include="JsonObject.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="json_int.cpp">
+    <ClCompile Include="JsonInt.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="json_float.cpp">
+    <ClCompile Include="JsonFloat.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="dictionary.cpp">
+    <ClCompile Include="Dictionary.cpp">
       <Filter>ling</Filter>
     </ClCompile>
-    <ClCompile Include="web_resource.cpp">
+    <ClCompile Include="WebResource.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
-    <ClCompile Include="matrix.cpp">
+    <ClCompile Include="Matrix.cpp">
       <Filter>math\3d</Filter>
     </ClCompile>
-    <ClCompile Include="poly.cpp">
+    <ClCompile Include="Poly.cpp">
       <Filter>math\3d</Filter>
     </ClCompile>
-    <ClCompile Include="quaternion.cpp">
+    <ClCompile Include="Quaternion.cpp">
       <Filter>math\3d</Filter>
     </ClCompile>
-    <ClCompile Include="mesh.cpp">
+    <ClCompile Include="Mesh.cpp">
       <Filter>math\3d</Filter>
     </ClCompile>
-    <ClCompile Include="box.cpp">
+    <ClCompile Include="Box.cpp">
       <Filter>math\3d\box</Filter>
     </ClCompile>
-    <ClCompile Include="box_axis_aligned.cpp">
+    <ClCompile Include="BoxAxisAligned.cpp">
       <Filter>math\3d\box</Filter>
     </ClCompile>
-    <ClCompile Include="box_corners.cpp">
+    <ClCompile Include="BoxCorners.cpp">
       <Filter>math\3d\box</Filter>
     </ClCompile>
-    <ClCompile Include="uv_sphere.cpp">
+    <ClCompile Include="UvSphere.cpp">
       <Filter>math\3d\sphere</Filter>
     </ClCompile>
-    <ClCompile Include="point_light.cpp">
-      <Filter>math\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="scene.cpp">
+    <ClCompile Include="Scene.cpp">
       <Filter>math\3d</Filter>
     </ClCompile>
     <ClCompile Include="os.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="qr_code.cpp">
+    <ClCompile Include="QrCode.cpp">
       <Filter>vis</Filter>
     </ClCompile>
-    <ClCompile Include="url.cpp">
+    <ClCompile Include="Url.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
     <ClCompile Include="base64.cpp">
@@ -767,14 +749,20 @@
     <ClCompile Include="deflate.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="canvas.cpp">
+    <ClCompile Include="Canvas.cpp">
       <Filter>vis</Filter>
     </ClCompile>
-    <ClCompile Include="rgb.cpp">
+    <ClCompile Include="Rgb.cpp">
       <Filter>vis</Filter>
     </ClCompile>
-    <ClCompile Include="window.cpp">
+    <ClCompile Include="Window.cpp">
       <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="dns.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -792,9 +780,6 @@
     </Filter>
     <Filter Include="mem">
       <UniqueIdentifier>{2a5982c9-2e94-4883-be44-862fd3d7e0b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="net\dns">
-      <UniqueIdentifier>{ec3c2669-f70f-495e-91fb-4ef47a97d5df}</UniqueIdentifier>
     </Filter>
     <Filter Include="crypto">
       <UniqueIdentifier>{2977e49c-bf74-490c-a67a-0888e8df098f}</UniqueIdentifier>

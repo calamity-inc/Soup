@@ -1,16 +1,16 @@
 #include <iostream>
 #include <thread>
 
-#include <asn1_sequence.hpp>
+#include <Asn1Sequence.hpp>
 #include <crc32.hpp>
 #include <pem.hpp>
 #include <rsa.hpp>
-#include <scheduler.hpp>
-#include <server.hpp>
-#include <socket.hpp>
-#include <socket_tls_server_rsa_data.hpp>
+#include <Scheduler.hpp>
+#include <Server.hpp>
+#include <Socket.hpp>
+#include <TlsServerRsaData.hpp>
 #include <string.hpp>
-#include <tls_client_hello.hpp>
+#include <TlsClientHello.hpp>
 
 struct SimpleServerClientData
 {
@@ -19,7 +19,7 @@ struct SimpleServerClientData
 	std::vector<uint16_t> extensions{};
 };
 
-static void sendRedirect(soup::socket& s, const std::string& location)
+static void sendRedirect(soup::Socket& s, const std::string& location)
 {
 	std::string cont = "HTTP/1.0 302\r\nServer: Soup\r\nLocation: ";
 	cont.append(location);
@@ -28,7 +28,7 @@ static void sendRedirect(soup::socket& s, const std::string& location)
 	s.close();
 }
 
-static void sendHtml(soup::socket& s, std::string body)
+static void sendHtml(soup::Socket& s, std::string body)
 {
 	auto len = body.size();
 	body.insert(0, "\r\n\r\n");
@@ -38,9 +38,9 @@ static void sendHtml(soup::socket& s, std::string body)
 	s.close();
 }
 
-static void httpRecv(soup::socket& s)
+static void httpRecv(soup::Socket& s)
 {
-	s.recv([](soup::socket& s, std::string&& data, soup::capture&&)
+	s.recv([](soup::Socket& s, std::string&& data, soup::Capture&&)
 	{
 		auto i = data.find(' ');
 		if (i == std::string::npos)
@@ -150,16 +150,16 @@ static void httpRecv(soup::socket& s)
 	});
 }
 
-static void httpRecv(soup::socket& s, soup::capture&&)
+static void httpRecv(soup::Socket& s, soup::Capture&&)
 {
 	return httpRecv(s);
 }
 
-static soup::socket_tls_server_rsa_data server_rsa_data;
+static soup::TlsServerRsaData server_rsa_data;
 
 int main()
 {
-	soup::server srv{};
+	soup::Server srv{};
 	if (!srv.bind(80))
 	{
 		std::cout << "Failed to bind to port 80." << std::endl;
@@ -236,7 +236,7 @@ nLRbwHOoq7hHwg==
 -----END CERTIFICATE-----
 )EOC"),
 	};
-	server_rsa_data.private_key = soup::rsa::key_private::fromAsn1(soup::asn1_sequence::fromBinary(soup::pem::decode(R"EOC(
+	server_rsa_data.private_key = soup::rsa::PrivateKey::fromAsn1(soup::Asn1Sequence::fromBinary(soup::pem::decode(R"EOC(
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYbeJly69Nd+bP
 EnzCEAJZzqp/xsGr2YTgisYGyBKqp0ubWfl4ItRx7a50siEVy57oNBc4AGhQ6/A1
@@ -267,7 +267,7 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 -----END PRIVATE KEY-----
 )EOC")));
 	std::cout << "Listening on ports 80 and 443." << std::endl;
-	srv.on_accept = [](soup::socket& s, uint16_t port)
+	srv.on_accept = [](soup::Socket& s, uint16_t port)
 	{
 		std::cout << s.peer.toString() << " + connected at port " << port << std::endl;
 		if (port == 80)
@@ -276,10 +276,10 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 		}
 		else
 		{
-			s.enableCryptoServer([](soup::socket_tls_server_rsa_data& out, const std::string& server_name)
+			s.enableCryptoServer([](soup::TlsServerRsaData& out, const std::string& server_name)
 			{
 				out = server_rsa_data;
-			}, &httpRecv, {}, [](soup::socket& s, soup::tls_client_hello&& hello)
+			}, &httpRecv, {}, [](soup::Socket& s, soup::TlsClientHello&& hello)
 			{
 				auto& data = s.getUserData<SimpleServerClientData>();
 				data.cipher_suites = std::move(hello.cipher_suites);
@@ -292,17 +292,17 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 			});
 		}
 	};
-	srv.on_work_done = [](soup::worker& w)
+	srv.on_work_done = [](soup::Worker& w)
 	{
-		std::cout << reinterpret_cast<soup::socket&>(w).peer.toString() << " - work done" << std::endl;
+		std::cout << reinterpret_cast<soup::Socket&>(w).peer.toString() << " - work done" << std::endl;
 	};
-	srv.on_connection_lost = [](soup::socket& s)
+	srv.on_connection_lost = [](soup::Socket& s)
 	{
 		std::cout << s.peer.toString() << " - connection lost" << std::endl;
 	};
-	srv.on_exception = [](soup::worker& w, const std::exception& e)
+	srv.on_exception = [](soup::Worker& w, const std::exception& e)
 	{
-		std::cout << reinterpret_cast<soup::socket&>(w).peer.toString() << " - exception: " << e.what() << std::endl;
+		std::cout << reinterpret_cast<soup::Socket&>(w).peer.toString() << " - exception: " << e.what() << std::endl;
 	};
 	srv.run();
 }

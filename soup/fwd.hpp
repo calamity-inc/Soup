@@ -5,82 +5,76 @@
 namespace soup
 {
 	// chess
-	struct chess_coordinate;
+	struct ChessCoordinate;
 
 	// crypto
-	struct keystore;
+	struct Keystore;
 
 	// crypto.x509
-	struct certchain;
+	struct Certchain;
 
 	// data
-	struct oid;
+	struct Oid;
 
 	// data.asn1
-	struct asn1_sequence;
+	struct Asn1Sequence;
 
 	// data.json
-	struct json_array;
-	struct json_bool;
-	struct json_float;
-	struct json_int;
-	struct json_object;
-	struct json_string;
+	struct JsonArray;
+	struct JsonBool;
+	struct JsonFloat;
+	struct JsonInt;
+	struct JsonObject;
+	struct JsonString;
 
 	// math
-	class bigint;
-	struct vector3;
+	class Bigint;
+	struct Vector3;
 
 	// math.3d
-	struct box_corners;
-	class matrix;
-	struct mesh;
-	struct poly;
-	struct ray;
+	struct BoxCorners;
+	class Matrix;
+	struct Mesh;
+	struct Poly;
+	struct Ray;
 
 	// mem
-	struct alloc_raii_remote;
-	struct pattern;
-	struct pattern_compile_time_with_opt_bytes_base;
-	class pointer;
-	class range;
-	struct region_virtual;
+	struct AllocRaiiRemote;
+	struct Pattern;
+	struct CompiletimePatternWithOptBytesBase;
+	class Pointer;
+	class Range;
+	struct VirtualRegion;
 
 	// net
-	class addr_ip;
-	class socket;
-
-	// net.dns
-	struct dns_a;
-	struct dns_aaaa;
-	struct dns_srv;
-	struct dns_txt;
+	class IpAddr;
+	class Socket;
 
 	// net.tls
-	class socket_tls_handshaker;
-	struct socket_tls_server_rsa_data;
-	struct tls_client_hello;
+	class SocketTlsHandshaker;
+	struct TlsServerRsaData;
+	struct TlsClientHello;
 
 	// os
-	enum control_input : uint8_t;
-	class module;
-	enum mouse_button : uint8_t;
+	enum ControlInput : uint8_t;
+	class Module;
+	enum MouseButton : uint8_t;
 
 	// os.windows
-	struct handle_raii;
+	struct HandleRaii;
 
 	// task
-	class promise_base;
-	class scheduler;
+	class PromiseBase;
+	class Scheduler;
 
 	// vis
-	class canvas;
+	class Canvas;
 
 	// vis.ui.conui
-	struct conui_app;
-	struct conui_div;
+	struct ConuiApp;
+	struct ConuiDiv;
 
 	// vis.ui.editor
-	struct editor;
-	struct editor_text;
+	struct Editor;
+	struct EditorText;
 }

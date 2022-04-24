@@ -28,7 +28,7 @@ If you wish to use the public key with Soup, you only need to know the modulus (
 ```CPP
 using namespace soup::literals;
 
-soup::rsa::key_public pub{
+soup::rsa::PublicKey pub{
 	"8446817108090355031541999500037472701172098105390664609736912338763723234754560584168907115333937153377507172109710102394091436024688692795634373262383717"_b
 };
 ```
@@ -42,7 +42,7 @@ You really only need to know the 2 prime numbers (`p` and `q`) to use an RSA pri
 ```CPP
 using namespace soup::literals;
 
-auto priv = soup::rsa::keypair(
+auto priv = soup::rsa::Keypair(
 	"96529209707922958264660626622151327182265565708623147261613126577409795199887"_b,
 	"87505296413890087200392682183900465764322220376584167643884573751015402662091"_b
 ).getPrivate();
@@ -69,7 +69,7 @@ std::string signature_base64 = soup::base64::encode(signature_bigint.toMessage()
 Finally, to decode and verify the signature:
 
 ```CPP
-auto signature_bigint = soup::bigint::fromMessage(soup::base64::decode(signature_base64));
+auto signature_bigint = soup::Bigint::fromMessage(soup::base64::decode(signature_base64));
 
 if (pub.verify<soup::sha1>("It's me, I promise!", signature_bigint))
 {

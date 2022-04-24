@@ -7,7 +7,7 @@ namespace soup
 {
 	struct deflate
 	{
-		struct decompress_result
+		struct DecompressResult
 		{
 			std::string decompressed{};
 			bool checksum_present = false;
@@ -15,9 +15,9 @@ namespace soup
 		};
 
 		// accepts DEFLATE, gzip & zlib formats
-		static decompress_result decompress(const std::string& compressed_data);
-		static decompress_result decompress(const std::string& compressed_data, size_t max_decompressed_size);
-		static decompress_result decompress(const void* compressed_data, size_t compressed_data_size);
-		static decompress_result decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size);
+		static DecompressResult decompress(const std::string& compressed_data);
+		static DecompressResult decompress(const std::string& compressed_data, size_t max_decompressed_size);
+		static DecompressResult decompress(const void* compressed_data, size_t compressed_data_size);
+		static DecompressResult decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size);
 	};
 }

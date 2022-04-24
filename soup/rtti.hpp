@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include "bitset.hpp"
+#include "Bitset.hpp"
 
 namespace soup::rtti
 {
@@ -42,7 +42,7 @@ namespace soup::rtti
 		int32_t member_displacement;
 		int32_t vftable_displacement;
 		int32_t displacement_within_vftable;
-		bitset<uint32_t> base_class_attributes;
+		Bitset<uint32_t> base_class_attributes;
 		uint32_t hierarchy_info_rva;
 	};
 

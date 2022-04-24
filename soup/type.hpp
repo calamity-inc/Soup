@@ -5,8 +5,8 @@
 namespace soup
 {
 	// net.tls
-	using tls_alert_description_t = uint8_t;
-	using tls_cipher_suite_t = uint16_t;
-	using tls_content_type_t = uint8_t;
-	using tls_handshake_type_t = uint8_t;
+	using TlsAlertDescription_t = uint8_t;
+	using TlsCipherSuite_t = uint16_t;
+	using TlsContentType_t = uint8_t;
+	using TlsHandshakeType_t = uint8_t;
 }
