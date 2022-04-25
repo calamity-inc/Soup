@@ -42,8 +42,10 @@ namespace soup
 		void resetTranslate() noexcept;
 
 		void toCCWRotationMatrix(float fDegrees, float x, float y, float z);
-		[[nodiscard]] Matrix invertSimple(); // Simple but not robust matrix inversion. (Doesn't work properly if there is a scaling or skewing transformation.)
-		[[nodiscard]] Matrix invertRot(); // Invert for only a rotation, any translation is zeroed out
+
+		[[nodiscard]] Matrix invert() const noexcept;
+		[[nodiscard]] Matrix invertSimple() const noexcept; // Simple but not robust matrix inversion. (Doesn't work properly if there is a scaling or skewing transformation.)
+		[[nodiscard]] Matrix invertRot() const noexcept; // Invert for only a rotation, any translation is zeroed out
 
 		[[nodiscard]] Vector3 getRightVector() const noexcept;
 		[[nodiscard]] Vector3 getForwardVector() const noexcept;

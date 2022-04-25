@@ -196,7 +196,138 @@ namespace soup
 		mf[6] = tmp1 - tmp2;
 	}
 
-	Matrix Matrix::invertSimple()
+	Matrix Matrix::invert() const noexcept
+	{
+		Matrix inv;
+
+		inv.mf[0] = mf[5] * mf[10] * mf[15] -
+			mf[5] * mf[11] * mf[14] -
+			mf[9] * mf[6] * mf[15] +
+			mf[9] * mf[7] * mf[14] +
+			mf[13] * mf[6] * mf[11] -
+			mf[13] * mf[7] * mf[10];
+
+		inv.mf[4] = -mf[4] * mf[10] * mf[15] +
+			mf[4] * mf[11] * mf[14] +
+			mf[8] * mf[6] * mf[15] -
+			mf[8] * mf[7] * mf[14] -
+			mf[12] * mf[6] * mf[11] +
+			mf[12] * mf[7] * mf[10];
+
+		inv.mf[8] = mf[4] * mf[9] * mf[15] -
+			mf[4] * mf[11] * mf[13] -
+			mf[8] * mf[5] * mf[15] +
+			mf[8] * mf[7] * mf[13] +
+			mf[12] * mf[5] * mf[11] -
+			mf[12] * mf[7] * mf[9];
+
+		inv.mf[12] = -mf[4] * mf[9] * mf[14] +
+			mf[4] * mf[10] * mf[13] +
+			mf[8] * mf[5] * mf[14] -
+			mf[8] * mf[6] * mf[13] -
+			mf[12] * mf[5] * mf[10] +
+			mf[12] * mf[6] * mf[9];
+
+		inv.mf[1] = -mf[1] * mf[10] * mf[15] +
+			mf[1] * mf[11] * mf[14] +
+			mf[9] * mf[2] * mf[15] -
+			mf[9] * mf[3] * mf[14] -
+			mf[13] * mf[2] * mf[11] +
+			mf[13] * mf[3] * mf[10];
+
+		inv.mf[5] = mf[0] * mf[10] * mf[15] -
+			mf[0] * mf[11] * mf[14] -
+			mf[8] * mf[2] * mf[15] +
+			mf[8] * mf[3] * mf[14] +
+			mf[12] * mf[2] * mf[11] -
+			mf[12] * mf[3] * mf[10];
+
+		inv.mf[9] = -mf[0] * mf[9] * mf[15] +
+			mf[0] * mf[11] * mf[13] +
+			mf[8] * mf[1] * mf[15] -
+			mf[8] * mf[3] * mf[13] -
+			mf[12] * mf[1] * mf[11] +
+			mf[12] * mf[3] * mf[9];
+
+		inv.mf[13] = mf[0] * mf[9] * mf[14] -
+			mf[0] * mf[10] * mf[13] -
+			mf[8] * mf[1] * mf[14] +
+			mf[8] * mf[2] * mf[13] +
+			mf[12] * mf[1] * mf[10] -
+			mf[12] * mf[2] * mf[9];
+
+		inv.mf[2] = mf[1] * mf[6] * mf[15] -
+			mf[1] * mf[7] * mf[14] -
+			mf[5] * mf[2] * mf[15] +
+			mf[5] * mf[3] * mf[14] +
+			mf[13] * mf[2] * mf[7] -
+			mf[13] * mf[3] * mf[6];
+
+		inv.mf[6] = -mf[0] * mf[6] * mf[15] +
+			mf[0] * mf[7] * mf[14] +
+			mf[4] * mf[2] * mf[15] -
+			mf[4] * mf[3] * mf[14] -
+			mf[12] * mf[2] * mf[7] +
+			mf[12] * mf[3] * mf[6];
+
+		inv.mf[10] = mf[0] * mf[5] * mf[15] -
+			mf[0] * mf[7] * mf[13] -
+			mf[4] * mf[1] * mf[15] +
+			mf[4] * mf[3] * mf[13] +
+			mf[12] * mf[1] * mf[7] -
+			mf[12] * mf[3] * mf[5];
+
+		inv.mf[14] = -mf[0] * mf[5] * mf[14] +
+			mf[0] * mf[6] * mf[13] +
+			mf[4] * mf[1] * mf[14] -
+			mf[4] * mf[2] * mf[13] -
+			mf[12] * mf[1] * mf[6] +
+			mf[12] * mf[2] * mf[5];
+
+		inv.mf[3] = -mf[1] * mf[6] * mf[11] +
+			mf[1] * mf[7] * mf[10] +
+			mf[5] * mf[2] * mf[11] -
+			mf[5] * mf[3] * mf[10] -
+			mf[9] * mf[2] * mf[7] +
+			mf[9] * mf[3] * mf[6];
+
+		inv.mf[7] = mf[0] * mf[6] * mf[11] -
+			mf[0] * mf[7] * mf[10] -
+			mf[4] * mf[2] * mf[11] +
+			mf[4] * mf[3] * mf[10] +
+			mf[8] * mf[2] * mf[7] -
+			mf[8] * mf[3] * mf[6];
+
+		inv.mf[11] = -mf[0] * mf[5] * mf[11] +
+			mf[0] * mf[7] * mf[9] +
+			mf[4] * mf[1] * mf[11] -
+			mf[4] * mf[3] * mf[9] -
+			mf[8] * mf[1] * mf[7] +
+			mf[8] * mf[3] * mf[5];
+
+		inv.mf[15] = mf[0] * mf[5] * mf[10] -
+			mf[0] * mf[6] * mf[9] -
+			mf[4] * mf[1] * mf[10] +
+			mf[4] * mf[2] * mf[9] +
+			mf[8] * mf[1] * mf[6] -
+			mf[8] * mf[2] * mf[5];
+
+		float det = mf[0] * inv.mf[0] + mf[1] * inv.mf[4] + mf[2] * inv.mf[8] + mf[3] * inv.mf[12];
+
+		if (det != 0.0f)
+		{
+			det = 1.0f / det;
+
+			for (int i = 0; i != 16; ++i)
+			{
+				inv.mf[i] *= det;
+			}
+		}
+
+		return inv;
+	}
+
+	Matrix Matrix::invertSimple() const noexcept
 	{
 		Matrix R;
 		R.mf[0] = mf[0]; 		R.mf[1] = mf[4];		R.mf[2] = mf[8];	R.mf[3] = 0.0f;
@@ -209,7 +340,7 @@ namespace soup
 		return R;
 	}
 
-	Matrix Matrix::invertRot()
+	Matrix Matrix::invertRot() const noexcept
 	{
 		Matrix R;
 		R.mf[0] = mf[0]; 		R.mf[1] = mf[4];		R.mf[2] = mf[8];	R.mf[3] = 0.0f;
