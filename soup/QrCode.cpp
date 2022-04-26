@@ -1,6 +1,6 @@
 #include "QrCode.hpp"
 
-#include <array>
+#include <climits>
 #include <stdexcept>
 
 #include "Canvas.hpp"

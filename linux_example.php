@@ -1,11 +1,4 @@
 <?php
 require "linux_config.php";
 
-$clang .= " -fuse-ld=";
-if(shell_exec("which lld"))
-{
-	$clang .= "l";
-}
-$clang .= "ld -lstdc++ -lstdc++fs -pthread -lresolv -lm";
-
-passthru("$clang \"examples/{$argv[1]}/{$argv[1]}.cpp\" libsoup.a -I soup -o \"{$argv[1]}\"");
+passthru("$clang -fuse-ld=lld -lstdc++ -lstdc++fs -pthread -lresolv -lm \"examples/{$argv[1]}/{$argv[1]}.cpp\" libsoup.a -I soup -o \"{$argv[1]}\"");

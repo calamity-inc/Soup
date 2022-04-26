@@ -1,5 +1,7 @@
 #include "Window.hpp"
 
+#if SOUP_WINDOWS
+
 namespace soup
 {
     Window Window::getFocused() noexcept
@@ -14,3 +16,4 @@ namespace soup
 		return pid;
     }
 }
+#endif

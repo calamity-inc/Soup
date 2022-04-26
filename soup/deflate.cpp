@@ -1,5 +1,7 @@
 #include "deflate.hpp"
 
+#include <cstring> // memcpy
+
 #include "base.hpp"
 
 #include "adler32.hpp"

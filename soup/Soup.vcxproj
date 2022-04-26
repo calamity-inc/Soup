@@ -604,6 +604,7 @@
     <ClCompile Include="EditorTab.cpp" />
     <ClCompile Include="EditorText.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
+    <ClCompile Include="joaat.cpp" />
     <ClCompile Include="Json.cpp" />
     <ClCompile Include="JsonArray.cpp" />
     <ClCompile Include="JsonFloat.cpp" />
