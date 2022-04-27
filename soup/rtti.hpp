@@ -68,15 +68,16 @@ namespace soup::rtti
 
 		[[nodiscard]] type_info* getTypeInfo() const noexcept;
 		[[nodiscard]] hierarchy_info* getHierarchyInfo() const noexcept;
+		[[nodiscard]] std::string toHierarchyString() const noexcept;
 
 		[[nodiscard]] uint32_t getNumBaseClasses() const noexcept;
-		[[nodiscard]] base_class** getBaseClassArray() const noexcept;
+		[[nodiscard]] uint32_t* getBaseClassArray() const noexcept;
 		[[nodiscard]] base_class* getBaseClassInfo(uint32_t index) const noexcept;
 		[[nodiscard]] type_info* getBaseClassTypeInfo(uint32_t index) const noexcept;
 
 		[[nodiscard]] uint32_t getNumParentClasses() const noexcept;
 		[[nodiscard]] bool hasParentClass() const noexcept;
-		[[nodiscard]] type_info* getParentClassTypeInfo() const noexcept;
+		[[nodiscard]] type_info* getParentClassTypeInfo(uint32_t index = 0) const noexcept;
 	};
 #pragma pack(pop)
 }

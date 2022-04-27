@@ -142,21 +142,32 @@ if (*c == '\0') \
 		return followRVA<hierarchy_info>(hierarchy_info_rva);
 	}
 
+	std::string object::toHierarchyString() const noexcept
+	{
+		std::string res = getTypeInfo()->getName();
+		for (auto i = 0; i != getNumParentClasses(); ++i)
+		{
+			res.append(" : ");
+			res.append(getParentClassTypeInfo(i)->getName());
+		}
+		return res;
+	}
+
 	uint32_t object::getNumBaseClasses() const noexcept
 	{
 		return getHierarchyInfo()->base_classes_size;
 	}
 
-	base_class** object::getBaseClassArray() const noexcept
+	uint32_t* object::getBaseClassArray() const noexcept
 	{
-		return followRVA<base_class*>(getHierarchyInfo()->base_classes_rva);
+		return followRVA<uint32_t>(getHierarchyInfo()->base_classes_rva);
 	}
 
 	base_class* object::getBaseClassInfo(uint32_t index) const noexcept
 	{
 		if (index < getNumBaseClasses())
 		{
-			return getBaseClassArray()[index];
+			return followRVA<base_class>(getBaseClassArray()[index]);
 		}
 		return nullptr;
 	}
@@ -176,8 +187,8 @@ if (*c == '\0') \
 		return getNumParentClasses() > 0;
 	}
 
-	type_info* object::getParentClassTypeInfo() const noexcept
+	type_info* object::getParentClassTypeInfo(uint32_t index) const noexcept
 	{
-		return getBaseClassTypeInfo(1);
+		return getBaseClassTypeInfo(index + 1);
 	}
 }
