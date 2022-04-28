@@ -4,9 +4,10 @@
 
 namespace soup
 {
-	struct Server : public Scheduler
+	class Server : public Scheduler
 	{
-		using on_accept_t = void(*)(Socket&, uint16_t port);
+	public:
+		using on_accept_t = void(*)(Socket&, uint16_t port, Server&);
 
 		on_accept_t on_accept = nullptr;
 

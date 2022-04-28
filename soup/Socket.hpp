@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Worker.hpp"
-
 #include "base.hpp"
 #include "fwd.hpp"
+#include "type.hpp"
+
+#include "Worker.hpp"
 
 #if SOUP_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
@@ -102,7 +103,7 @@ namespace soup
 		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 
 	public:
-		void enableCryptoServer(void(*cert_selector)(TlsServerRsaData& out, const std::string& server_name), void(*callback)(Socket&, Capture&&), Capture&& cap = {}, void(*on_client_hello)(Socket&, TlsClientHello&&) = nullptr);
+		void enableCryptoServer(tls_server_cert_selector_t cert_selector, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_on_client_hello_t on_client_hello = nullptr);
 
 		// Application Layer
 

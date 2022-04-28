@@ -439,7 +439,7 @@ namespace soup
 		Bigint data;
 	};
 
-	void Socket::enableCryptoServer(void(*cert_selector)(TlsServerRsaData& out, const std::string& server_name), void(*callback)(Socket&, Capture&&), Capture&& cap, void(*on_client_hello)(Socket&, TlsClientHello&&))
+	void Socket::enableCryptoServer(tls_server_cert_selector_t cert_selector, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_on_client_hello_t on_client_hello)
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
 			callback,

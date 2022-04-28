@@ -58,7 +58,7 @@ namespace soup
 			Socket& ref = addSocket(std::move(sock));
 			if (on_accept)
 			{
-				on_accept(ref, port);
+				on_accept(ref, port, *this);
 			}
 		}
 	}

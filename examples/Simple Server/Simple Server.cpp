@@ -6,11 +6,11 @@
 #include <pem.hpp>
 #include <rsa.hpp>
 #include <Scheduler.hpp>
-#include <Server.hpp>
 #include <Socket.hpp>
 #include <TlsServerRsaData.hpp>
 #include <string.hpp>
 #include <TlsClientHello.hpp>
+#include <WebServer.hpp>
 
 struct SimpleServerClientData
 {
@@ -19,49 +19,11 @@ struct SimpleServerClientData
 	std::vector<uint16_t> extensions{};
 };
 
-static void sendRedirect(soup::Socket& s, const std::string& location)
+static void handleRequest(soup::Socket& s, std::string&& data)
 {
-	std::string cont = "HTTP/1.0 302\r\nServer: Soup\r\nLocation: ";
-	cont.append(location);
-	cont.append("\r\nContent-Length: 0\r\n\r\n");
-	s.send(std::move(cont));
-	s.close();
-}
-
-static void sendHtml(soup::Socket& s, std::string body)
-{
-	auto len = body.size();
-	body.insert(0, "\r\n\r\n");
-	body.insert(0, std::to_string(len));
-	body.insert(0, "HTTP/1.0 200\r\nServer: Soup\r\nCache-Control: private\r\nContent-Type: text/html\r\nContent-Length: ");
-	s.send(body);
-	s.close();
-}
-
-static void httpRecv(soup::Socket& s)
-{
-	s.recv([](soup::Socket& s, std::string&& data, soup::Capture&&)
+	if (data == "/")
 	{
-		auto i = data.find(' ');
-		if (i == std::string::npos)
-		{
-			s.send("HTTP/1.0 400\r\n\r\n");
-			s.close();
-			return;
-		}
-		data.erase(0, i + 1);
-		i = data.find(' ');
-		if (i == std::string::npos)
-		{
-			s.send("HTTP/1.0 400\r\n\r\n");
-			s.close();
-			return;
-		}
-		data.erase(i);
-		std::cout << s.peer.toString() << " > " << data << std::endl;
-		if (data == "/")
-		{
-			sendHtml(s, R"EOC(<html>
+		soup::WebServer::sendHtml(s, R"EOC(<html>
 <head>
 	<title>Soup</title>
 </head>
@@ -75,10 +37,10 @@ static void httpRecv(soup::Socket& s)
 </body>
 </html>
 )EOC");
-		}
-		else if (data == "/pem-decoder")
-		{
-			sendHtml(s, R"EOC(<html>
+	}
+	else if (data == "/pem-decoder")
+	{
+		soup::WebServer::sendHtml(s, R"EOC(<html>
 <head>
 	<title>PEM Decoder | Soup</title>
 </head>
@@ -101,71 +63,65 @@ static void httpRecv(soup::Socket& s)
 </body>
 </html>
 )EOC");
-		}
-		else if (data == "/tlsid")
+	}
+	else if (data == "/tlsid")
+	{
+		if (!s.isEncrypted())
 		{
-			if (!s.isEncrypted())
-			{
-				sendHtml(s, "For security reasons, we can only send you your TLS ID over a secure connection. :^)");
-			}
-			else
-			{
-				auto& data = s.getUserData<SimpleServerClientData>();
-
-				std::string cipher_suites_str{};
-				for (const auto& cs : data.cipher_suites)
-				{
-					soup::string::listAppend(cipher_suites_str, soup::string::hex(cs));
-				}
-
-				std::string compression_methods_str{};
-				for (const auto& cm : data.compression_methods)
-				{
-					soup::string::listAppend(compression_methods_str, soup::string::hex(cm));
-				}
-
-				std::string extensions_str{};
-				for (const auto& ext : data.extensions)
-				{
-					soup::string::listAppend(extensions_str, soup::string::hex(ext));
-				}
-
-				std::string str = "<p>Your user agent offered the following for the TLS handshake:</p><ul><li>Cipher suites: ";
-				str.append(cipher_suites_str);
-				str.append("</li><li>Compression methods: ");
-				str.append(compression_methods_str);
-				str.append("</li><li>Extensions: ");
-				str.append(extensions_str);
-				str.append("</li></ul><p>\"Hashing\" this together gives us the following: ");
-				str.append(soup::string::hex(soup::crc32::hash(str)));
-				str.append("</p>");
-				sendHtml(s, std::move(str));
-			}
+			soup::WebServer::sendHtml(s, "For security reasons, we can only send you your TLS ID over a secure connection. :^)");
 		}
 		else
 		{
-			s.send("HTTP/1.0 404\r\n\r\n");
-			s.close();
-		}
-	});
-}
+			auto& data = s.getUserData<SimpleServerClientData>();
 
-static void httpRecv(soup::Socket& s, soup::Capture&&)
-{
-	return httpRecv(s);
+			std::string cipher_suites_str{};
+			for (const auto& cs : data.cipher_suites)
+			{
+				soup::string::listAppend(cipher_suites_str, soup::string::hex(cs));
+			}
+
+			std::string compression_methods_str{};
+			for (const auto& cm : data.compression_methods)
+			{
+				soup::string::listAppend(compression_methods_str, soup::string::hex(cm));
+			}
+
+			std::string extensions_str{};
+			for (const auto& ext : data.extensions)
+			{
+				soup::string::listAppend(extensions_str, soup::string::hex(ext));
+			}
+
+			std::string str = "<p>Your user agent offered the following for the TLS handshake:</p><ul><li>Cipher suites: ";
+			str.append(cipher_suites_str);
+			str.append("</li><li>Compression methods: ");
+			str.append(compression_methods_str);
+			str.append("</li><li>Extensions: ");
+			str.append(extensions_str);
+			str.append("</li></ul><p>\"Hashing\" this together gives us the following: ");
+			str.append(soup::string::hex(soup::crc32::hash(str)));
+			str.append("</p>");
+			soup::WebServer::sendHtml(s, std::move(str));
+		}
+	}
+	else
+	{
+		s.send("HTTP/1.0 404\r\n\r\n");
+		s.close();
+	}
 }
 
 static soup::TlsServerRsaData server_rsa_data;
 
 int main()
 {
-	soup::Server srv{};
+	soup::WebServer srv(&handleRequest);
 	if (!srv.bind(80))
 	{
 		std::cout << "Failed to bind to port 80." << std::endl;
 		return 1;
 	}
-	if (!srv.bind(443))
+	if (!srv.bindSecure(443))
 	{
 		std::cout << "Failed to bind to port 443." << std::endl;
 		return 2;
@@ -267,42 +223,24 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 -----END PRIVATE KEY-----
 )EOC")));
 	std::cout << "Listening on ports 80 and 443." << std::endl;
-	srv.on_accept = [](soup::Socket& s, uint16_t port)
+	srv.log_func = [](std::string&& msg, soup::WebServer&)
 	{
-		std::cout << s.peer.toString() << " + connected at port " << port << std::endl;
-		if (port == 80)
+		std::cout << std::move(msg) << std::endl;
+	};
+	srv.cert_selector = [](soup::TlsServerRsaData& out, const std::string& server_name)
+	{
+		out = server_rsa_data;
+	};
+	srv.on_client_hello = [](soup::Socket& s, soup::TlsClientHello&& hello)
+	{
+		auto& data = s.getUserData<SimpleServerClientData>();
+		data.cipher_suites = std::move(hello.cipher_suites);
+		data.compression_methods = std::move(hello.compression_methods);
+		data.extensions.reserve(hello.extensions.extensions.size());
+		for (const auto& ext : hello.extensions.extensions)
 		{
-			httpRecv(s);
+			data.extensions.emplace_back(ext.id);
 		}
-		else
-		{
-			s.enableCryptoServer([](soup::TlsServerRsaData& out, const std::string& server_name)
-			{
-				out = server_rsa_data;
-			}, &httpRecv, {}, [](soup::Socket& s, soup::TlsClientHello&& hello)
-			{
-				auto& data = s.getUserData<SimpleServerClientData>();
-				data.cipher_suites = std::move(hello.cipher_suites);
-				data.compression_methods = std::move(hello.compression_methods);
-				data.extensions.reserve(hello.extensions.extensions.size());
-				for (const auto& ext : hello.extensions.extensions)
-				{
-					data.extensions.emplace_back(ext.id);
-				}
-			});
-		}
-	};
-	srv.on_work_done = [](soup::Worker& w)
-	{
-		std::cout << reinterpret_cast<soup::Socket&>(w).peer.toString() << " - work done" << std::endl;
-	};
-	srv.on_connection_lost = [](soup::Socket& s)
-	{
-		std::cout << s.peer.toString() << " - connection lost" << std::endl;
-	};
-	srv.on_exception = [](soup::Worker& w, const std::exception& e)
-	{
-		std::cout << reinterpret_cast<soup::Socket&>(w).peer.toString() << " - exception: " << e.what() << std::endl;
 	};
 	srv.run();
 }

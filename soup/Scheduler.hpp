@@ -20,9 +20,9 @@ namespace soup
 	public:
 		std::vector<UniquePtr<Worker>> workers{};
 
-		using on_work_done_t = void(*)(Worker&);
-		using on_connection_lost_t = void(*)(Socket&);
-		using on_exception_t = void(*)(Worker&, const std::exception&);
+		using on_work_done_t = void(*)(Worker&, Scheduler&);
+		using on_connection_lost_t = void(*)(Socket&, Scheduler&);
+		using on_exception_t = void(*)(Worker&, const std::exception&, Scheduler&);
 
 		on_work_done_t on_work_done = nullptr;
 		on_connection_lost_t on_connection_lost = nullptr;

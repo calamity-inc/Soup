@@ -29,7 +29,7 @@ namespace soup
 				{
 					if (on_work_done)
 					{
-						on_work_done(*i->get());
+						on_work_done(*i->get(), *this);
 					}
 					i = workers.erase(i);
 					continue;
@@ -102,7 +102,7 @@ namespace soup
 					{
 						if (on_connection_lost)
 						{
-							on_connection_lost(*reinterpret_cast<Socket*>(workers_i->get()));
+							on_connection_lost(*reinterpret_cast<Socket*>(workers_i->get()), *this);
 						}
 						workers.erase(workers_i);
 						i = pollfds.erase(i);
@@ -125,7 +125,7 @@ namespace soup
 		{
 			if (on_exception)
 			{
-				on_exception(w, e);
+				on_exception(w, e, *this);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fwd.hpp"
+#include "type.hpp"
 
 #include "Capture.hpp"
 #include "Certchain.hpp"
@@ -34,7 +35,7 @@ namespace soup
 		SocketTlsEncrypter pending_recv_encrypter;
 
 		// server
-		void(*cert_selector)(TlsServerRsaData& out, const std::string& server_name);
+		tls_server_cert_selector_t cert_selector;
 		void(*on_client_hello)(Socket&, TlsClientHello&&);
 		TlsServerRsaData rsa_data{};
 

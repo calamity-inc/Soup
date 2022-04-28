@@ -533,6 +533,9 @@
     <ClInclude Include="dns.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="WebServer.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -766,6 +769,9 @@
     </ClCompile>
     <ClCompile Include="joaat.cpp">
       <Filter>hash</Filter>
+    </ClCompile>
+    <ClCompile Include="WebServer.cpp">
+      <Filter>net\web</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
