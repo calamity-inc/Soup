@@ -53,7 +53,7 @@ namespace soup
 			const auto end = utf16.cend();
 			while (it != end)
 			{
-				auto uni = utf16_to_utf32(it, end);
+				auto uni = utf16_to_utf32<Str>(it, end);
 				if (uni == 0)
 				{
 					utf32.push_back(REPLACEMENT_CHAR);

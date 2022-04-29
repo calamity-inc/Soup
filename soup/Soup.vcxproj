@@ -452,6 +452,7 @@
     <ClInclude Include="JsonFloat.hpp" />
     <ClInclude Include="JsonNull.hpp" />
     <ClInclude Include="JsonObject.hpp" />
+    <ClInclude Include="main.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="MimeType.hpp" />
     <ClInclude Include="Notifyable.hpp" />
@@ -614,6 +615,7 @@
     <ClCompile Include="JsonObject.cpp" />
     <ClCompile Include="JsonString.cpp" />
     <ClCompile Include="Keystore.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />

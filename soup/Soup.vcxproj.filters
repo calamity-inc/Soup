@@ -536,6 +536,9 @@
     <ClInclude Include="WebServer.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
+    <ClInclude Include="main.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -772,6 +775,9 @@
     </ClCompile>
     <ClCompile Include="WebServer.cpp">
       <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
