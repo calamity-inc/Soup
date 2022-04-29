@@ -2,3 +2,4 @@
 bin/
 web/libsoup.js
 web/libsoup.wasm
+*.exe
