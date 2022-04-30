@@ -7,7 +7,7 @@ namespace soup
 	ConuiApp::ConuiApp()
 		: ConuiDiv(nullptr, 1, 1, -1, -1)
 	{
-		console.init();
+		console.init(true);
 		console.onMouseClick([](MouseButton b, unsigned int x, unsigned int y, const Capture& cap)
 		{
 			//console << "You clicked at " << x << ", " << y << ". ";

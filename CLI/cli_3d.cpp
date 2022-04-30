@@ -137,7 +137,7 @@ void cli_3d()
 {
 	s.render_distance = 25.0f;
 
-	console.init();
+	console.init(true);
 	console.enableSizeTracking([](unsigned int width, unsigned int height, const Capture&)
 	{
 		c = Canvas(width, height);

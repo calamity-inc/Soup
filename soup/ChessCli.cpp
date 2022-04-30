@@ -7,7 +7,7 @@ namespace soup
 {
 	void ChessCli::run()
 	{
-		console.init();
+		console.init(true);
 		if (dark_theme)
 		{
 			console.setBackgroundColour(0, 0, 0);

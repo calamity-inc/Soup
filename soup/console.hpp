@@ -42,7 +42,7 @@ namespace soup
 		Callback<void(MouseButton, unsigned int, unsigned int)> mouse_click_handler;
 
 	public:
-		void init(bool fullscreen = true);
+		void init(bool fullscreen);
 		void run();
 		void cleanup();
 
