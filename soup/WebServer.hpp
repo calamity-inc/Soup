@@ -35,6 +35,7 @@ namespace soup
 		static void sendText(Socket& s, std::string body);
 		static void sendData(Socket& s, const char* mime_type, std::string body);
 		static void sendRedirect(Socket& s, const std::string& location);
+		static void sendResponse(Socket& s, const char* status, const std::string& headers_and_body);
 
 	protected:
 		void httpRecv(Socket& s);

@@ -5,6 +5,11 @@
 
 namespace soup
 {
+	struct WebServerClientData
+	{
+		bool keep_alive = false;
+	};
+
 	WebServer::WebServer(handle_request_t handle_request)
 		: Server(), handle_request(handle_request)
 	{
@@ -93,18 +98,27 @@ namespace soup
 		body.insert(0, std::to_string(len));
 		body.insert(0, "\r\nContent-Length: ");
 		body.insert(0, mime_type);
-		body.insert(0, "HTTP/1.0 200\r\nServer: Soup\r\nCache-Control: private\r\nContent-Type: ");
-		s.send(body);
-		s.close();
+		body.insert(0, "Cache-Control: private\r\nContent-Type: ");
+		sendResponse(s, "200", body);
 	}
 
 	void WebServer::sendRedirect(Socket& s, const std::string& location)
 	{
-		std::string cont = "HTTP/1.0 302\r\nServer: Soup\r\nLocation: ";
+		std::string cont = "Location: ";
 		cont.append(location);
 		cont.append("\r\nContent-Length: 0\r\n\r\n");
+		sendResponse(s, "302", cont);
+	}
+
+	void WebServer::sendResponse(Socket& s, const char* status, const std::string& headers_and_body)
+	{
+		std::string cont = "HTTP/1.0 ";
+		cont.append(status);
+		cont.append("\r\nServer: soup\r\nConnection: ");
+		cont.append(s.custom_data.getStructFromMap(WebServerClientData).keep_alive ? "keep-alive" : "close");
+		cont.append("\r\n");
+		cont.append(headers_and_body);
 		s.send(std::move(cont));
-		s.close();
 	}
 
 	void WebServer::httpRecv(Socket& s)
@@ -149,7 +163,20 @@ namespace soup
 				srv.log_func(std::move(msg), srv);
 			}
 
+			if (auto e = req.header_fields.find("Connection"); e != req.header_fields.end())
+			{
+				if (e->second == "keep-alive")
+				{
+					s.custom_data.getStructFromMap(WebServerClientData).keep_alive = true;
+				}
+			}
+
 			srv.handle_request(s, std::move(req));
+
+			if (s.custom_data.getStructFromMap(WebServerClientData).keep_alive)
+			{
+				srv.httpRecv(s);
+			}
 		}, this);
 	}
 }
