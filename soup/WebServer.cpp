@@ -1,5 +1,6 @@
 #include "WebServer.hpp"
 
+#include "HttpRequest.hpp"
 #include "Socket.hpp"
 
 namespace soup
@@ -98,22 +99,31 @@ namespace soup
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap)
 		{
-			auto i = data.find(' ');
-			if (i == std::string::npos)
+			HttpRequest req{};
+			auto method_end = data.find(' ');
+			if (method_end == std::string::npos)
 			{
+			_bad_request:
 				s.send("HTTP/1.0 400\r\n\r\n");
 				s.close();
 				return;
 			}
-			data.erase(0, i + 1);
-			i = data.find(' ');
-			if (i == std::string::npos)
+			req.method = data.substr(0, method_end);
+			method_end += 1;
+			auto path_end = data.find(' ', method_end);
+			if (path_end == std::string::npos)
 			{
-				s.send("HTTP/1.0 400\r\n\r\n");
-				s.close();
-				return;
+				goto _bad_request;
 			}
-			data.erase(i);
+			req.path = data.substr(method_end, path_end - method_end);
+			path_end += 1;
+			auto message_start = data.find("\r\n", path_end);
+			if (message_start == std::string::npos)
+			{
+				goto _bad_request;
+			}
+			message_start += 2;
+			req.loadMessage(data.substr(message_start));
 
 			WebServer& srv = *cap.get<WebServer*>();
 
@@ -121,11 +131,13 @@ namespace soup
 			{
 				std::string msg = s.peer.toString();
 				msg.append(" > ");
-				msg.append(data);
+				msg.append(req.method);
+				msg.push_back(' ');
+				msg.append(req.path);
 				srv.log_func(std::move(msg), srv);
 			}
 
-			srv.handle_request(s, std::move(data));
+			srv.handle_request(s, std::move(req));
 		}, this);
 	}
 }

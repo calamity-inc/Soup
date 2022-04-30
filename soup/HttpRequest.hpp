@@ -11,11 +11,10 @@ namespace soup
 	class HttpRequest : public MimeMessage
 	{
 	public:
-		std::string method;
-	protected:
-		std::string path;
+		std::string method{};
+		std::string path{};
 
-	public:
+		HttpRequest() = default;
 		HttpRequest(std::string&& method, std::string&& host, std::string&& path);
 		HttpRequest(std::string&& host, std::string&& path);
 

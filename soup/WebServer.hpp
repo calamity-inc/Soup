@@ -11,7 +11,7 @@ namespace soup
 	class WebServer : public Server
 	{
 	public:
-		using handle_request_t = void(*)(Socket& client, std::string&& path);
+		using handle_request_t = void(*)(Socket& client, HttpRequest&& req);
 		using log_func_t = void(*)(std::string&&, WebServer&);
 
 		handle_request_t handle_request;

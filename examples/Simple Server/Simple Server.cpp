@@ -3,6 +3,7 @@
 
 #include <Asn1Sequence.hpp>
 #include <crc32.hpp>
+#include <HttpRequest.hpp>
 #include <pem.hpp>
 #include <rsa.hpp>
 #include <Scheduler.hpp>
@@ -19,9 +20,9 @@ struct SimpleServerClientData
 	std::vector<uint16_t> extensions{};
 };
 
-static void handleRequest(soup::Socket& s, std::string&& data)
+static void handleRequest(soup::Socket& s, soup::HttpRequest&& req)
 {
-	if (data == "/")
+	if (req.path == "/")
 	{
 		soup::WebServer::sendHtml(s, R"EOC(<html>
 <head>
@@ -38,7 +39,7 @@ static void handleRequest(soup::Socket& s, std::string&& data)
 </html>
 )EOC");
 	}
-	else if (data == "/pem-decoder")
+	else if (req.path == "/pem-decoder")
 	{
 		soup::WebServer::sendHtml(s, R"EOC(<html>
 <head>
@@ -64,7 +65,7 @@ static void handleRequest(soup::Socket& s, std::string&& data)
 </html>
 )EOC");
 	}
-	else if (data == "/tlsid")
+	else if (req.path == "/tlsid")
 	{
 		if (!s.isEncrypted())
 		{

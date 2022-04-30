@@ -14,6 +14,8 @@ namespace soup
 		MimeMessage(std::unordered_map<std::string, std::string>&& header_fields, std::string&& body = {});
 		MimeMessage(const std::string& data);
 
+		void loadMessage(const std::string& data);
+
 		[[nodiscard]] std::string toString() const;
 	};
 }

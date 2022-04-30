@@ -55,6 +55,9 @@ namespace soup
 	struct TlsServerRsaData;
 	struct TlsClientHello;
 
+	// net.web
+	class HttpRequest;
+
 	// os
 	enum ControlInput : uint8_t;
 	class Module;

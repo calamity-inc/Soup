@@ -11,6 +11,11 @@ namespace soup
 
 	MimeMessage::MimeMessage(const std::string& data)
 	{
+		loadMessage(data);
+	}
+
+	void MimeMessage::loadMessage(const std::string& data)
+	{
 		auto headers_end = data.find("\r\n\r\n");
 		if (headers_end == std::string::npos)
 		{
