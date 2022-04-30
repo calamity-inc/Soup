@@ -69,6 +69,12 @@ int main(int argc, const char** argv)
 			cli_3d();
 			return 0;
 		}
+
+		if (subcommand == "repl")
+		{
+			cli_repl();
+			return 0;
+		}
 	}
 
 	std::cout << R"EOC(Syntax: soup [tool]
@@ -78,6 +84,7 @@ Available tools:
 - edit [files ...]
 - chess <FEN>
 - 3d
+- repl
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;

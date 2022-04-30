@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="cli_3d.cpp" />
+    <ClCompile Include="cli_repl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />
