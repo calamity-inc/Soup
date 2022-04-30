@@ -19,7 +19,11 @@ namespace soup
 				srv.log_func(std::move(msg), srv);
 			}
 
+#if SOUP_CPP20
 			if (srv.secure_ports.contains(port))
+#else
+			if (srv.secure_ports.find(port) != srv.secure_ports.end())
+#endif
 			{
 				WebServer* pSrv = &srv;
 				s.enableCryptoServer(srv.cert_selector, [](Socket& s, Capture&& cap)
