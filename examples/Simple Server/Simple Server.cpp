@@ -72,7 +72,7 @@ static void handleRequest(soup::Socket& s, std::string&& data)
 		}
 		else
 		{
-			auto& data = s.getUserData<SimpleServerClientData>();
+			auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
 
 			std::string cipher_suites_str{};
 			for (const auto& cs : data.cipher_suites)
@@ -233,7 +233,7 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 	};
 	srv.on_client_hello = [](soup::Socket& s, soup::TlsClientHello&& hello)
 	{
-		auto& data = s.getUserData<SimpleServerClientData>();
+		auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
 		data.cipher_suites = std::move(hello.cipher_suites);
 		data.compression_methods = std::move(hello.compression_methods);
 		data.extensions.reserve(hello.extensions.extensions.size());

@@ -15,8 +15,8 @@
 #endif
 
 #include "SocketAddr.hpp"
-#include "Capture.hpp"
 #include "SocketTlsEncrypter.hpp"
+#include "StructMap.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
@@ -36,7 +36,7 @@ namespace soup
 #endif
 		fd_t fd = -1;
 		SocketAddr peer;
-		Capture user_data;
+		StructMap custom_data;
 		bool remote_closed = false;
 
 		std::string tls_record_buf_data{};
@@ -108,16 +108,6 @@ namespace soup
 		// Application Layer
 
 		[[nodiscard]] bool isEncrypted() const noexcept;
-
-		template <typename T>
-		[[nodiscard]] T& getUserData() // Allows you to associate custom data with a socket. Note that all calls to getUserData on the same socket must use the same T.
-		{
-			if (!user_data)
-			{
-				user_data = T{};
-			}
-			return user_data.get<T>();
-		}
 
 		bool send(const std::string& data);
 

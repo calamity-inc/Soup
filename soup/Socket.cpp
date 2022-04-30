@@ -74,7 +74,7 @@ namespace soup
 
 		fd = b.fd;
 		peer = std::move(b.peer);
-		user_data = std::move(b.user_data);
+		custom_data = std::move(b.custom_data);
 		remote_closed = b.remote_closed;
 
 		tls_record_buf_data = std::move(b.tls_record_buf_data);

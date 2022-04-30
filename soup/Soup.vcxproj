@@ -480,6 +480,7 @@
     <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="signal.hpp" />
+    <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="console.hpp" />
