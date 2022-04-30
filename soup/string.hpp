@@ -376,6 +376,43 @@ namespace soup
 
 		static void listAppend(std::string& str, std::string&& add);
 
+		template <typename T>
+		static void trim(T& str)
+		{
+			ltrim(str);
+			rtrim(str);
+		}
+
+		template <typename T>
+		static void ltrim(T& str)
+		{
+			while (!str.empty())
+			{
+				auto i = str.cbegin();
+				const char c = *i;
+				if (!isSpace(c))
+				{
+					return;
+				}
+				str.erase(i);
+			}
+		}
+
+		template <typename T>
+		static void rtrim(T& str)
+		{
+			while (!str.empty())
+			{
+				auto i = (str.cend() - 1);
+				const char c = *i;
+				if (!isSpace(c))
+				{
+					return;
+				}
+				str.erase(i);
+			}
+		}
+
 		// char mutation
 
 		template <typename Str>
