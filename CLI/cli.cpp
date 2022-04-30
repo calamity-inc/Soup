@@ -75,6 +75,12 @@ int main(int argc, const char** argv)
 			cli_repl();
 			return 0;
 		}
+
+		if (subcommand == "snake")
+		{
+			cli_snake();
+			return 0;
+		}
 	}
 
 	std::cout << R"EOC(Syntax: soup [tool]
@@ -85,6 +91,7 @@ Available tools:
 - chess <FEN>
 - 3d
 - repl
+- snake
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;
