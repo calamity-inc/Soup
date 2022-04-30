@@ -78,10 +78,22 @@ namespace soup
 
 	void WebServer::sendHtml(Socket& s, std::string body)
 	{
+		sendData(s, "text/html", std::move(body));
+	}
+
+	void WebServer::sendText(Socket& s, std::string body)
+	{
+		sendData(s, "text/plain", std::move(body));
+	}
+
+	void WebServer::sendData(Socket& s, const char* mime_type, std::string body)
+	{
 		auto len = body.size();
 		body.insert(0, "\r\n\r\n");
 		body.insert(0, std::to_string(len));
-		body.insert(0, "HTTP/1.0 200\r\nServer: Soup\r\nCache-Control: private\r\nContent-Type: text/html\r\nContent-Length: ");
+		body.insert(0, "\r\nContent-Length: ");
+		body.insert(0, mime_type);
+		body.insert(0, "HTTP/1.0 200\r\nServer: Soup\r\nCache-Control: private\r\nContent-Type: ");
 		s.send(body);
 		s.close();
 	}

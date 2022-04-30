@@ -32,6 +32,8 @@ namespace soup
 		void run();
 
 		static void sendHtml(Socket& s, std::string body);
+		static void sendText(Socket& s, std::string body);
+		static void sendData(Socket& s, const char* mime_type, std::string body);
 		static void sendRedirect(Socket& s, const std::string& location);
 
 	protected:
