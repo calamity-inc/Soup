@@ -266,7 +266,7 @@
     <ClInclude Include="Promise.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="mouse_button.hpp">
+    <ClInclude Include="MouseButton.hpp">
       <Filter>os</Filter>
     </ClInclude>
     <ClInclude Include="ConuiApp.hpp">

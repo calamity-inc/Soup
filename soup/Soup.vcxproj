@@ -471,7 +471,7 @@
     <ClInclude Include="JsonString.hpp" />
     <ClInclude Include="Keystore.hpp" />
     <ClInclude Include="MimeMessage.hpp" />
-    <ClInclude Include="mouse_button.hpp" />
+    <ClInclude Include="MouseButton.hpp" />
     <ClInclude Include="NamedCurves.hpp" />
     <ClInclude Include="optimised.hpp" />
     <ClInclude Include="pem.hpp" />

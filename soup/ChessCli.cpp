@@ -1,7 +1,7 @@
 #include "ChessCli.hpp"
 
 #include "console.hpp"
-#include "mouse_button.hpp"
+#include "MouseButton.hpp"
 
 namespace soup
 {

@@ -5,7 +5,7 @@
 #include <thread>
 
 #include "ControlInput.hpp"
-#include "mouse_button.hpp"
+#include "MouseButton.hpp"
 #include "unicode.hpp"
 
 #if SOUP_WINDOWS
