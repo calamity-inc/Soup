@@ -10,13 +10,18 @@ namespace soup
 {
 	struct rand_impl
 	{
+		[[nodiscard]] static std::mt19937_64& getMersenneTwister() noexcept
+		{
+			static std::random_device rd{};
+			static std::mt19937_64 gen{ rd() };
+			return gen;
+		}
+
 		template <typename T>
 		[[nodiscard]] static T t(T min, T max) noexcept
 		{
-			std::random_device rd{};
-			std::mt19937_64 gen{ rd() };
 			std::uniform_int_distribution<T> distr{ min, max };
-			return distr(gen);
+			return distr(getMersenneTwister());
 		}
 
 		[[nodiscard]] size_t operator()(size_t min, size_t max) const noexcept
