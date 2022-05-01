@@ -489,13 +489,12 @@ namespace soup
 
 	void aes::ShiftRow(unsigned char** state, int i, int n)    // shift row i on n positions
 	{
-		unsigned char* tmp = new unsigned char[Nb];
-		for (int j = 0; j < Nb; j++) {
+		unsigned char tmp[Nb];
+		for (int j = 0; j < Nb; j++)
+		{
 			tmp[j] = state[i][(j + n) % Nb];
 		}
 		memcpy(state[i], tmp, Nb * sizeof(unsigned char));
-
-		delete[] tmp;
 	}
 
 	void aes::ShiftRows(unsigned char** state)
