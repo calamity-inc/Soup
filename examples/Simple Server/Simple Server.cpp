@@ -12,6 +12,7 @@
 #include <string.hpp>
 #include <TlsClientHello.hpp>
 #include <WebServer.hpp>
+#include <WebSocketMessage.hpp>
 
 struct SimpleServerClientData
 {
@@ -20,7 +21,7 @@ struct SimpleServerClientData
 	std::vector<uint16_t> extensions{};
 };
 
-static void handleRequest(soup::Socket& s, soup::HttpRequest&& req)
+static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::WebServer&)
 {
 	if (req.path == "/")
 	{
@@ -242,6 +243,14 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 		{
 			data.extensions.emplace_back(ext.id);
 		}
+	};
+	srv.should_accept_websocket_connection = [](soup::Socket& s, const soup::HttpRequest& req, soup::WebServer&)
+	{
+		return true;
+	};
+	srv.on_websocket_message = [](soup::WebSocketMessage& msg, soup::Socket& s, soup::WebServer&)
+	{
+		soup::WebServer::wsSend(s, msg.data, msg.is_text);
 	};
 	srv.run();
 }

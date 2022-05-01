@@ -58,6 +58,9 @@ namespace soup
 	// net.web
 	class HttpRequest;
 
+	// net.web.websocket
+	struct WebSocketMessage;
+
 	// os
 	enum ControlInput : uint8_t;
 	class Module;

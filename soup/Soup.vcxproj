@@ -562,6 +562,8 @@
     <ClInclude Include="vector_maths.hpp" />
     <ClInclude Include="WebResource.hpp" />
     <ClInclude Include="WebServer.hpp" />
+    <ClInclude Include="WebSocketFrameType.hpp" />
+    <ClInclude Include="WebSocketMessage.hpp" />
     <ClInclude Include="Window.hpp" />
     <ClInclude Include="WordMeaning.hpp" />
     <ClInclude Include="WordType.hpp" />
