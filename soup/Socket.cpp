@@ -916,10 +916,13 @@ namespace soup
 
 	void Socket::transport_recv(int max_bytes, transport_recv_callback_t callback, Capture&& cap)
 	{
-		if (auto buf = transport_recvCommon(max_bytes); !buf.empty())
+		if (canRecurse())
 		{
-			callback(*this, std::move(buf), std::move(cap));
-			return;
+			if (auto buf = transport_recvCommon(max_bytes); !buf.empty())
+			{
+				callback(*this, std::move(buf), std::move(cap));
+				return;
+			}
 		}
 		holdup_type = SOCKET;
 		holdup_callback.set([](Worker& w, const Capture& _cap)
@@ -941,19 +944,22 @@ namespace soup
 
 	void Socket::transport_recvExact(int bytes, transport_recv_callback_t callback, Capture&& cap, std::string&& pre)
 	{
-		auto remainder = (bytes - pre.size());
-		if (auto buf = transport_recvCommon(remainder); !buf.empty())
+		if (canRecurse())
 		{
-			pre.append(buf);
-		}
-		if (pre.size() == bytes)
-		{
-			callback(*this, std::move(pre), std::move(cap));
-			return;
-		}
-		if (remote_closed)
-		{
-			return;
+			auto remainder = (bytes - pre.size());
+			if (auto buf = transport_recvCommon(remainder); !buf.empty())
+			{
+				pre.append(buf);
+			}
+			if (pre.size() == bytes)
+			{
+				callback(*this, std::move(pre), std::move(cap));
+				return;
+			}
+			if (remote_closed)
+			{
+				return;
+			}
 		}
 		holdup_type = SOCKET;
 		holdup_callback.set([](Worker& w, const Capture& _cap)

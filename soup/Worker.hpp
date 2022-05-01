@@ -20,6 +20,7 @@ namespace soup
 			PROMISE,
 		};
 
+		uint8_t recursions = 0;
 		holdup_type_t holdup_type = NONE;
 		Callback<void(Worker&)> holdup_callback;
 		void* holdup_data;
@@ -31,5 +32,8 @@ namespace soup
 		void fireHoldupCallback();
 	protected:
 		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, const Capture&), Capture&& cap);
+
+	public:
+		[[nodiscard]] bool canRecurse() noexcept;
 	};
 }

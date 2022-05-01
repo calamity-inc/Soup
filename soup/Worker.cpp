@@ -13,6 +13,7 @@ namespace soup
 
 	void Worker::fireHoldupCallback()
 	{
+		recursions = 0;
 		holdup_type = NONE;
 		holdup_callback(*this);
 	}
@@ -29,5 +30,10 @@ namespace soup
 		{
 			f(*this, std::move(cap));
 		}
+	}
+
+	bool Worker::canRecurse() noexcept
+	{
+		return ++recursions != 20;
 	}
 }
