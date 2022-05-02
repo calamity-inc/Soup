@@ -116,6 +116,11 @@ namespace soup
 		sendResponse(s, "302", cont);
 	}
 
+	void WebServer::send404(Socket& s)
+	{
+		sendResponse(s, "404", "Content-Length: 0\r\n\r\n");
+	}
+
 	void WebServer::sendResponse(Socket& s, const char* status, const std::string& headers_and_body)
 	{
 		std::string cont = "HTTP/1.0 ";

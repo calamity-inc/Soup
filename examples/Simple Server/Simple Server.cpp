@@ -108,8 +108,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::WebSer
 	}
 	else
 	{
-		s.send("HTTP/1.0 404\r\n\r\n");
-		s.close();
+		soup::WebServer::send404(s);
 	}
 }
 
