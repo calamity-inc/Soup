@@ -17,7 +17,7 @@ namespace soup
 		{
 		}
 
-		template <class T, std::enable_if_t<std::is_same_v<T, std::filesystem::path>, int> = 0>
+		template <class T, SOUP_RESTRICT(std::is_same_v<T, std::filesystem::path>)>
 		FileReader(const T& path, bool little_endian = true)
 			: Reader(little_endian), s(path, std::ios::binary)
 		{

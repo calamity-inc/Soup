@@ -1,9 +1,9 @@
 #pragma once
 
-#include <type_traits>
 #include <utility> // move
 
 #include "deleter_impl.hpp"
+#include "type_traits.hpp"
 
 namespace soup
 {
@@ -24,19 +24,19 @@ namespace soup
 			b.data = nullptr;
 		}
 
-		template <typename T, std::enable_if_t<!std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		Capture(const T& v)
 			: data(new std::remove_reference_t<T>(v)), deleter(&deleter_impl<std::remove_reference_t<T>>)
 		{
 		}
 
-		template <typename T, std::enable_if_t<!std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		Capture(T&& v)
 			: data(new std::remove_reference_t<T>(std::move(v))), deleter(&deleter_impl<std::remove_reference_t<T>>)
 		{
 		}
 
-		template <typename T, std::enable_if_t<std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(std::is_pointer_v<std::remove_reference_t<T>>)>
 		Capture(T v)
 			: data(const_cast<void*>(static_cast<const void*>(v)))
 		{
@@ -67,7 +67,7 @@ namespace soup
 			b.data = nullptr;
 		}
 
-		template <typename T, std::enable_if_t<!std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		void operator =(const T& v)
 		{
 			reset();
@@ -75,7 +75,7 @@ namespace soup
 			deleter = &deleter_impl<std::remove_reference_t<T>>;
 		}
 
-		template <typename T, std::enable_if_t<!std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		void operator =(T&& v)
 		{
 			reset();
@@ -83,7 +83,7 @@ namespace soup
 			deleter = &deleter_impl<std::remove_reference_t<T>>;
 		}
 
-		template <typename T, std::enable_if_t<std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(std::is_pointer_v<std::remove_reference_t<T>>)>
 		void operator =(T v)
 		{
 			reset();
@@ -96,13 +96,13 @@ namespace soup
 			return data != nullptr;
 		}
 
-		template <typename T, std::enable_if_t<!std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		[[nodiscard]] T& get() const noexcept
 		{
 			return *reinterpret_cast<T*>(data);
 		}
 
-		template <typename T, std::enable_if_t<std::is_pointer_v<std::remove_reference_t<T>>, int> = 0>
+		template <typename T, SOUP_RESTRICT(std::is_pointer_v<std::remove_reference_t<T>>)>
 		[[nodiscard]] T get() const noexcept
 		{
 			return reinterpret_cast<T>(data);

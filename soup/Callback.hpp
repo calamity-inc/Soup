@@ -43,7 +43,7 @@ namespace soup
 			return cap.get<std::function<Ret(Args...)>>()(std::forward<Args>(args)...);
 		}
 
-		template <typename T, std::enable_if_t<std::is_same_v<std::function<Ret(Args...)>, T>, int> = 0>
+		template <typename T, SOUP_RESTRICT(std::is_same_v<std::function<Ret(Args...)>, T>)>
 		Callback(T&& func) noexcept
 			: Callback(&redirect_to_std_function, std::move(func))
 		{

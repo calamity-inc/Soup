@@ -527,6 +527,7 @@
     <ClInclude Include="StringReader.hpp" />
     <ClInclude Include="StringWriter.hpp" />
     <ClInclude Include="Thread.hpp" />
+    <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="VirtualRegion.hpp" />
     <ClInclude Include="time.hpp" />
     <ClInclude Include="TlsAlertDescription.hpp" />

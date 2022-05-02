@@ -1,5 +1,7 @@
 #pragma once
 
+#include "type_traits.hpp"
+
 namespace soup
 {
 	template <typename T>
@@ -14,7 +16,7 @@ namespace soup
 		{
 		}
 
-		template <typename T2, std::enable_if_t<std::is_base_of_v<T, T2>, int> = 0>
+		template <typename T2, SOUP_RESTRICT(std::is_base_of_v<T, T2>)>
 		UniquePtr(UniquePtr<T2>&& b) noexcept
 			: data(reinterpret_cast<T*>(b.data))
 		{
@@ -75,8 +77,8 @@ namespace soup
 		}
 	};
 
-	template <typename T, typename...Args>
-	[[nodiscard]] std::enable_if_t<!std::is_array_v<T>, UniquePtr<T>> make_unique(Args&&...args)
+	template <typename T, typename...Args, SOUP_RESTRICT(!std::is_array_v<T>)>
+	[[nodiscard]] UniquePtr<T> make_unique(Args&&...args)
 	{
 		return UniquePtr<T>(new T(std::forward<Args>(args)...));
 	}

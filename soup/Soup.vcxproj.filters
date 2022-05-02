@@ -548,6 +548,9 @@
     <ClInclude Include="WebSocketFrameType.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
+    <ClInclude Include="type_traits.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
