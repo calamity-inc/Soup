@@ -31,7 +31,7 @@ namespace soup
 
 		void fireHoldupCallback();
 	protected:
-		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, const Capture&), Capture&& cap);
+		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap);
 
 	public:
 		[[nodiscard]] bool canRecurse() noexcept;

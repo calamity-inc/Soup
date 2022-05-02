@@ -36,10 +36,10 @@ namespace soup
 #endif
 
 	public:
-		Callback<void(char32_t)> char_handler;
-		Callback<void(ControlInput)> control_handler;
+		EventHandler<void(char32_t)> char_handler;
+		EventHandler<void(ControlInput)> control_handler;
 	private:
-		Callback<void(MouseButton, unsigned int, unsigned int)> mouse_click_handler;
+		EventHandler<void(MouseButton, unsigned int, unsigned int)> mouse_click_handler;
 
 	public:
 		void init(bool fullscreen);
@@ -66,7 +66,7 @@ namespace soup
 
 		static void setTitle(const std::string& title);
 
-		inline static Callback<void(unsigned int, unsigned int)> size_handler;
+		inline static EventHandler<void(unsigned int, unsigned int)> size_handler;
 #if SOUP_LINUX
 		static void sigwinch_handler_proc(int);
 #endif

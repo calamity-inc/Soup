@@ -18,7 +18,7 @@ namespace soup
 		holdup_callback(*this);
 	}
 
-	void Worker::awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, const Capture&), Capture&& cap)
+	void Worker::awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap)
 	{
 		if (p->isPending())
 		{

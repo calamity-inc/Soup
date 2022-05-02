@@ -61,7 +61,7 @@ namespace soup
 	void WebResource::download()
 	{
 		HttpRequest req{ std::string(host), std::string(path) };
-		req.execute(Callback<void(HttpResponse&&)>([](HttpResponse&& res, const Capture& cap)
+		req.execute(Callback<void(HttpResponse&&)>([](HttpResponse&& res, Capture&& cap)
 		{
 			WebResource& wr = *cap.get<WebResource*>();
 			wr.has_data = true;

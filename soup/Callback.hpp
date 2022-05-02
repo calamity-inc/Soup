@@ -6,46 +6,45 @@
 
 namespace soup
 {
-	template <typename Func>
-	struct Callback;
-
-	template <typename Ret, typename...Args>
-	struct Callback<Ret(Args...)>
+	template <typename CaptureArgT, typename Ret, typename...Args>
+	struct CallbackBase
 	{
 		using FuncT = Ret(Args...);
-		using FuncWithCaptureT = Ret(Args..., const Capture&);
+		using FuncWithCaptureT = Ret(Args..., CaptureArgT);
 
 		FuncWithCaptureT* fp;
 		Capture cap;
 
-		Callback() noexcept
+		CallbackBase() noexcept
 			: fp(nullptr)
 		{
 		}
 
-		Callback(FuncT* fp) noexcept
+		CallbackBase(const CallbackBase&) = delete;
+
+		CallbackBase(FuncT* fp) noexcept
 			: fp(reinterpret_cast<FuncWithCaptureT*>(fp))
 		{
 		}
-		
-		Callback(FuncWithCaptureT* fp) noexcept
+
+		CallbackBase(FuncWithCaptureT* fp) noexcept
 			: fp(fp)
 		{
 		}
 
-		Callback(FuncWithCaptureT* fp, Capture&& cap) noexcept
+		CallbackBase(FuncWithCaptureT* fp, Capture&& cap) noexcept
 			: fp(fp), cap(std::move(cap))
 		{
 		}
 
-		static void redirect_to_std_function(Args... args, const Capture& cap)
+		static void redirect_to_std_function(Args... args, CaptureArgT cap)
 		{
 			return cap.get<std::function<Ret(Args...)>>()(std::forward<Args>(args)...);
 		}
 
 		template <typename T, SOUP_RESTRICT(std::is_same_v<std::function<Ret(Args...)>, T>)>
-		Callback(T&& func) noexcept
-			: Callback(&redirect_to_std_function, std::move(func))
+		CallbackBase(T&& func) noexcept
+			: CallbackBase(&redirect_to_std_function, std::move(func))
 		{
 		}
 
@@ -61,21 +60,18 @@ namespace soup
 			this->cap.reset();
 		}
 
-		void operator=(Callback&& b) noexcept
+		void operator=(CallbackBase&& b) noexcept
 		{
 			fp = b.fp;
 			cap = std::move(b.cap);
 		}
 
+		void operator=(const CallbackBase& b) noexcept = delete;
+
 		void operator=(std::function<Ret(Args...)>&& func) noexcept
 		{
 			fp = &redirect_to_std_function;
 			cap = std::move(func);
-		}
-
-		Ret operator() (Args&&...args)
-		{
-			return fp(std::forward<Args>(args)..., cap);
 		}
 
 		[[nodiscard]] constexpr operator bool() const noexcept
@@ -87,6 +83,38 @@ namespace soup
 		{
 			fp = nullptr;
 			cap.reset();
+		}
+	};
+
+	template <typename Func>
+	struct Callback;
+
+	template <typename Ret, typename...Args>
+	struct Callback<Ret(Args...)> : public CallbackBase<Capture&&, Ret, Args...>
+	{
+		using Base = CallbackBase<Capture&&, Ret, Args...>;
+
+		using Base::Base;
+
+		Ret operator() (Args&&...args)
+		{
+			return Base::fp(std::forward<Args>(args)..., std::move(Base::cap));
+		}
+	};
+
+	template <typename Func>
+	struct EventHandler;
+
+	template <typename Ret, typename...Args>
+	struct EventHandler<Ret(Args...)> : public CallbackBase<const Capture&, Ret, Args...>
+	{
+		using Base = CallbackBase<const Capture&, Ret, Args...>;
+
+		using Base::Base;
+
+		Ret operator() (Args&&...args)
+		{
+			return Base::fp(std::forward<Args>(args)..., Base::cap);
 		}
 	};
 }
