@@ -114,6 +114,11 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::WebSer
 
 static soup::TlsServerRsaData server_rsa_data;
 
+static void cert_selector(soup::TlsServerRsaData& out, const std::string& server_name)
+{
+	out = server_rsa_data;
+}
+
 int main()
 {
 	soup::WebServer srv(&handleRequest);
@@ -122,7 +127,7 @@ int main()
 		std::cout << "Failed to bind to port 80." << std::endl;
 		return 1;
 	}
-	if (!srv.bindSecure(443))
+	if (!srv.bindCrypto(443, &cert_selector))
 	{
 		std::cout << "Failed to bind to port 443." << std::endl;
 		return 2;
@@ -227,10 +232,6 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 	srv.log_func = [](std::string&& msg, soup::WebServer&)
 	{
 		std::cout << std::move(msg) << std::endl;
-	};
-	srv.cert_selector = [](soup::TlsServerRsaData& out, const std::string& server_name)
-	{
-		out = server_rsa_data;
 	};
 	srv.on_client_hello = [](soup::Socket& s, soup::TlsClientHello&& hello)
 	{

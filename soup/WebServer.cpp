@@ -19,41 +19,31 @@ namespace soup
 	WebServer::WebServer(handle_request_t handle_request)
 		: Server(), handle_request(handle_request)
 	{
-		Server::on_accept = [](soup::Socket& s, uint16_t port, Server& _srv)
-		{
-			WebServer& srv = reinterpret_cast<WebServer&>(_srv);
-
-			if (srv.log_func)
-			{
-				std::string msg = s.peer.toString();
-				msg.append(" + connected at port ");
-				msg.append(std::to_string(port));
-				srv.log_func(std::move(msg), srv);
-			}
-
-#if SOUP_CPP20
-			if (srv.secure_ports.contains(port))
-#else
-			if (srv.secure_ports.find(port) != srv.secure_ports.end())
-#endif
-			{
-				WebServer* pSrv = &srv;
-				s.enableCryptoServer(srv.cert_selector, [](Socket& s, Capture&& cap)
-				{
-					cap.get<WebServer*>()->httpRecv(s);
-				}, pSrv, srv.on_client_hello);
-			}
-			else
-			{
-				srv.httpRecv(s);
-			}
-		};
 	}
 
-	bool WebServer::bindSecure(uint16_t port)
+	void WebServer::httpOnAccept(Socket& s, uint16_t port, Server& _srv)
 	{
-		secure_ports.emplace(port);
-		return bind(port);
+		WebServer& srv = reinterpret_cast<WebServer&>(_srv);
+
+		if (srv.log_func)
+		{
+			std::string msg = s.peer.toString();
+			msg.append(" + connected at port ");
+			msg.append(std::to_string(port));
+			srv.log_func(std::move(msg), srv);
+		}
+
+		srv.httpRecv(s);
+	}
+
+	bool WebServer::bind(uint16_t port)
+	{
+		return Server::bind(port, &httpOnAccept);
+	}
+
+	bool WebServer::bindCrypto(uint16_t port, tls_server_cert_selector_t cert_selector)
+	{
+		return Server::bindCrypto(port, cert_selector, &httpOnAccept);
 	}
 
 	void WebServer::run()
@@ -244,13 +234,13 @@ namespace soup
 				return;
 			}
 
-			if (auto connection_entry = req.header_fields.find("Connection"); connection_entry != req.header_fields.end())
+			/*if (auto connection_entry = req.header_fields.find("Connection"); connection_entry != req.header_fields.end())
 			{
 				if (connection_entry->second == "keep-alive")
 				{
 					s.custom_data.getStructFromMap(WebServerClientData).keep_alive = true;
 				}
-			}
+			}*/
 
 			srv.handle_request(s, std::move(req), srv);
 

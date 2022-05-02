@@ -22,6 +22,11 @@ namespace soup
 
 		CallbackBase(const CallbackBase&) = delete;
 
+		CallbackBase(CallbackBase&& b) noexcept
+			: fp(b.fp), cap(std::move(b.cap))
+		{
+		}
+
 		CallbackBase(FuncT* fp) noexcept
 			: fp(reinterpret_cast<FuncWithCaptureT*>(fp))
 		{
@@ -112,7 +117,7 @@ namespace soup
 
 		using Base::Base;
 
-		Ret operator() (Args&&...args)
+		Ret operator() (Args&&...args) const
 		{
 			return Base::fp(std::forward<Args>(args)..., Base::cap);
 		}

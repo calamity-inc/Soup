@@ -17,21 +17,17 @@ namespace soup
 		using on_websocket_message_t = void(*)(WebSocketMessage&, Socket&, WebServer&);
 
 		handle_request_t handle_request;
-		tls_server_cert_selector_t cert_selector = nullptr;
 		log_func_t log_func = nullptr;
 		tls_server_on_client_hello_t on_client_hello = nullptr;
 		should_accept_websocket_connection_t should_accept_websocket_connection = nullptr;
 		on_websocket_message_t on_websocket_message = nullptr;
 
-	protected:
-		using Server::on_accept;
-
-		std::unordered_set<uint16_t> secure_ports{};
-
-	public:
 		WebServer(handle_request_t handle_request);
 
-		bool bindSecure(uint16_t port);
+		static void httpOnAccept(Socket& s, uint16_t port, Server& _srv);
+
+		bool bind(uint16_t port);
+		bool bindCrypto(uint16_t port, tls_server_cert_selector_t cert_selector);
 
 		void run();
 
