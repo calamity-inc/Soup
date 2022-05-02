@@ -44,27 +44,39 @@ namespace soup
 
 		~Capture()
 		{
-			reset();
+			free();
 		}
 
 		void reset() noexcept
+		{
+			free();
+			forget();
+		}
+
+	protected:
+		void free() noexcept
 		{
 			if (deleter != nullptr)
 			{
 				deleter(data);
 			}
+		}
+
+		void forget() noexcept
+		{
 			data = nullptr;
 			deleter = nullptr;
 		}
 
+	public:
 		void operator =(const Capture&) = delete;
 
 		void operator =(Capture&& b) noexcept
 		{
-			reset();
+			free();
 			data = b.data;
 			deleter = b.deleter;
-			b.data = nullptr;
+			b.forget();
 		}
 
 		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
