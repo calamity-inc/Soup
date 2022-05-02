@@ -36,5 +36,6 @@ namespace soup
 		int poll(std::vector<pollfd>& pollfds, int timeout = -1);
 		void processPollResults(std::vector<pollfd>& pollfds);
 		void fireHoldupCallback(Worker& w);
+		void onConnectionLoss(std::vector<UniquePtr<Worker>>::iterator& workers_i);
 	};
 }

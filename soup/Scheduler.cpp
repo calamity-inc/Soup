@@ -36,6 +36,11 @@ namespace soup
 				}
 				if ((*i)->holdup_type == Worker::SOCKET)
 				{
+					if (reinterpret_cast<Socket*>(i->get())->fd == -1)
+					{
+						onConnectionLoss(i);
+						continue;
+					}
 					pollfds.emplace_back(pollfd{
 						reinterpret_cast<Socket*>(i->get())->fd,
 						POLLIN
@@ -49,7 +54,7 @@ namespace soup
 						POLLIN
 					});
 
-					//if ((*i)->holdup_type == worker::PROMISE)
+					//if ((*i)->holdup_type == Worker::PROMISE)
 					{
 						if (!reinterpret_cast<PromiseBase*>((*i)->holdup_data)->isPending())
 						{
@@ -98,13 +103,11 @@ namespace soup
 				if (i->revents & ~POLLIN)
 				{
 					reinterpret_cast<Socket*>(workers_i->get())->remote_closed = true;
-					if (!reinterpret_cast<Socket*>(workers_i->get())->transport_hasData())
+					if (!reinterpret_cast<Socket*>(workers_i->get())->transport_hasData()
+						|| workers_i->get()->holdup_type != Worker::SOCKET
+						)
 					{
-						if (on_connection_lost)
-						{
-							on_connection_lost(*reinterpret_cast<Socket*>(workers_i->get()), *this);
-						}
-						workers.erase(workers_i);
+						onConnectionLoss(workers_i);
 						i = pollfds.erase(i);
 						continue;
 					}
@@ -128,5 +131,14 @@ namespace soup
 				on_exception(w, e, *this);
 			}
 		}
+	}
+
+	void Scheduler::onConnectionLoss(std::vector<UniquePtr<Worker>>::iterator& workers_i)
+	{
+		if (on_connection_lost)
+		{
+			on_connection_lost(*reinterpret_cast<Socket*>(workers_i->get()), *this);
+		}
+		workers.erase(workers_i);
 	}
 }
