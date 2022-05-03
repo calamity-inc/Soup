@@ -172,19 +172,22 @@ namespace soup
 				return;
 			}
 
-			if (auto connection_entry = req.header_fields.find("Connection"); connection_entry != req.header_fields.end())
+			if (srv.handle_request)
 			{
-				if (connection_entry->second == "keep-alive")
+				if (auto connection_entry = req.header_fields.find("Connection"); connection_entry != req.header_fields.end())
 				{
-					s.custom_data.getStructFromMap(WebServerClientData).keep_alive = true;
+					if (connection_entry->second == "keep-alive")
+					{
+						s.custom_data.getStructFromMap(WebServerClientData).keep_alive = true;
+					}
 				}
-			}
 
-			srv.handle_request(s, std::move(req), srv);
+				srv.handle_request(s, std::move(req), srv);
 
-			if (s.custom_data.getStructFromMap(WebServerClientData).keep_alive)
-			{
-				srv.httpRecv(s);
+				if (s.custom_data.getStructFromMap(WebServerClientData).keep_alive)
+				{
+					srv.httpRecv(s);
+				}
 			}
 		}, this);
 	}

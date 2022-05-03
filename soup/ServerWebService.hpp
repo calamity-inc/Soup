@@ -13,11 +13,11 @@ namespace soup
 		using should_accept_websocket_connection_t = bool(*)(Socket&, const HttpRequest&, ServerWebService&);
 		using on_websocket_message_t = void(*)(WebSocketMessage&, Socket&, ServerWebService&);
 
-		handle_request_t handle_request;
+		handle_request_t handle_request = nullptr;
 		should_accept_websocket_connection_t should_accept_websocket_connection = nullptr;
 		on_websocket_message_t on_websocket_message = nullptr;
 
-		ServerWebService(handle_request_t handle_request);
+		ServerWebService(handle_request_t handle_request = nullptr);
 
 		// HTTP
 		static void sendHtml(Socket& s, std::string body);
