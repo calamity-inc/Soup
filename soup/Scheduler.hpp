@@ -33,7 +33,7 @@ namespace soup
 
 		void run();
 	protected:
-		int poll(std::vector<pollfd>& pollfds, int timeout = -1);
+		int poll(std::vector<pollfd>& pollfds, int timeout);
 		void processPollResults(std::vector<pollfd>& pollfds);
 		void fireHoldupCallback(Worker& w);
 		void onConnectionLoss(std::vector<UniquePtr<Worker>>::iterator& workers_i);

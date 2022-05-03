@@ -74,7 +74,11 @@ namespace soup
 			}
 			else
 			{
-				if (poll(pollfds) > 0)
+#if SOUP_LINUX
+				if (poll(pollfds, 1) > 0) // On Linux, poll does not detect closed sockets, even if shutdown is used.
+#else
+				if (poll(pollfds, -1) > 0)
+#endif
 				{
 					processPollResults(pollfds);
 				}

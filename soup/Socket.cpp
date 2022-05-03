@@ -892,18 +892,20 @@ namespace soup
 			buf.resize(res);
 			return buf;
 		}
-//		/*else*/ if (res == 0
-//			|| (/*res == -1 &&*/
+#if SOUP_LINUX
+		/*else*/ if (res == 0
+			|| (/*res == -1 &&*/
 //#if SOUP_WINDOWS
 //				WSAGetLastError() != WSAEWOULDBLOCK
 //#else
-//				errno != EWOULDBLOCK && errno != EAGAIN
+				errno != EWOULDBLOCK && errno != EAGAIN
 //#endif
-//				)
-//			)
-//		{
-//			close();
-//		}
+				)
+			)
+		{
+			close();
+		}
+#endif
 		return {};
 	}
 
