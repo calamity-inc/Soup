@@ -36,28 +36,55 @@ namespace soup
 				thrd.reset();
 			}
 		}
+
+		void fulfil(Capture&& res)
+		{
+			this->res = std::move(res);
+		}
 	};
 
 	template <typename T>
 	class Promise : public PromiseBase
 	{
 	protected:
-		struct CaptureCtor
+		struct CaptureCtorRet
 		{
 			Promise* _this;
-			T(*f)(Capture&&);
+			T(*f)(Capture&&, PromiseBase*);
 			Capture cap;
 		};
 
-		static void thrdFunc(Capture&& _cap)
+		struct CaptureCtorVoid
 		{
-			auto& cap = _cap.get<CaptureCtor>();
-			cap._this->res = cap.f(std::move(cap.cap));
+			Promise* _this;
+			void(*f)(Capture&&, PromiseBase*);
+			Capture cap;
+		};
+
+		static void thrdFuncRet(Capture&& _cap)
+		{
+			auto& cap = _cap.get<CaptureCtorRet>();
+			cap._this->res = cap.f(std::move(cap.cap), cap._this);
+		}
+
+		static void thrdFuncVoid(Capture&& _cap)
+		{
+			auto& cap = _cap.get<CaptureCtorVoid>();
+			cap.f(std::move(cap.cap), cap._this);
 		}
 
 	public:
-		Promise(T(*f)(Capture&&), Capture&& cap = {})
-			: PromiseBase(make_unique<Thread>(&thrdFunc, CaptureCtor{
+		Promise(T(*f)(Capture&&, PromiseBase*), Capture&& cap = {})
+			: PromiseBase(make_unique<Thread>(&thrdFuncRet, CaptureCtorRet{
+				this,
+				f,
+				std::move(cap)
+			}))
+		{
+		}
+
+		Promise(void(*f)(Capture&&, PromiseBase*), Capture&& cap = {})
+			: PromiseBase(make_unique<Thread>(&thrdFuncVoid, CaptureCtorVoid{
 				this,
 				f,
 				std::move(cap)

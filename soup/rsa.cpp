@@ -239,7 +239,7 @@ namespace soup::rsa
 	Keypair Keypair::random(unsigned int bits)
 	{
 		bits /= 2u;
-		auto g = [](Capture&& cap) -> Bigint
+		auto g = [](Capture&& cap, PromiseBase*) -> Bigint
 		{
 			return Bigint::randomProbablePrime(cap.get<unsigned int>(), 3);
 		};
