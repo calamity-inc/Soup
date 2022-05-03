@@ -18,8 +18,11 @@ namespace soup
 		explicit IntVector(const IntVector<T>& b) noexcept
 			: num_elms(b.num_elms), max_elms(b.max_elms)
 		{
-			data = (T*)malloc(max_elms * sizeof(T));
-			memcpy(data, b.data, num_elms * sizeof(T));
+			if (max_elms != 0)
+			{
+				data = (T*)malloc(max_elms * sizeof(T));
+				memcpy(data, b.data, num_elms * sizeof(T));
+			}
 		}
 
 		explicit IntVector(IntVector<T>&& b) noexcept
@@ -41,8 +44,11 @@ namespace soup
 			num_elms = b.num_elms;
 			max_elms = b.max_elms;
 
-			data = (T*)malloc(max_elms * sizeof(T));
-			memcpy(data, b.data, num_elms * sizeof(T));
+			if (max_elms != 0)
+			{
+				data = (T*)malloc(max_elms * sizeof(T));
+				memcpy(data, b.data, num_elms * sizeof(T));
+			}
 		}
 
 		void operator=(IntVector<T>&& b) noexcept
