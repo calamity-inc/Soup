@@ -157,7 +157,8 @@ namespace soup
 							&& srv.should_accept_websocket_connection(s, req, srv)
 							)
 						{
-							std::string cont = "HTTP/1.0 101\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nServer: Soup\r\nSec-WebSocket-Accept: ";
+							// Firefox throws a SkillIssueException if we say HTTP/1.0
+							std::string cont = "HTTP/1.1 101\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nServer: Soup\r\nSec-WebSocket-Accept: ";
 							cont.append(hashWebSocketKey(key_entry->second));
 							cont.append("\r\n\r\n");
 							s.send(cont);
