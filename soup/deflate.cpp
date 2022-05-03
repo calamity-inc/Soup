@@ -204,56 +204,57 @@ namespace soup
 		 *
 		 * @param rev_symbol_table array of 2 * symbols entries for storing the reverse lookup table
 		 * @param code_length codeword lengths table
-		 *
-		 * @return 0 for success, -1 for failure
 		 */
-		int prepareTable(unsigned int* rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length)
+		bool prepareTable(unsigned int* rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length)
 		{
 			int num_symbols_per_len[16];
 			int i;
 
 			if (read_symbols < 0 || read_symbols > kMaxSymbols || symbols < 0 || symbols > kMaxSymbols || read_symbols > symbols)
-				return -1;
+			{
+				return false;
+			}
 			this->symbols_ = symbols;
 
 
-			for (i = 0; i < 16; i++)
+			for (i = 0; i < 16; ++i)
 				num_symbols_per_len[i] = 0;
 
-			for (i = 0; i < read_symbols; i++)
+			for (i = 0; i < read_symbols; ++i)
 			{
-				if (code_length[i] >= 16) return -1;
+				if (code_length[i] >= 16)
+				{
+					return false;
+				}
 				num_symbols_per_len[code_length[i]]++;
 			}
 
 			this->starting_pos_[0] = 0;
 			this->num_sorted_ = 0;
-			for (i = 1; i < 16; i++)
+			for (i = 1; i != 16; ++i)
 			{
 				this->starting_pos_[i] = this->num_sorted_;
 				this->num_sorted_ += num_symbols_per_len[i];
 			}
 
-			for (i = 0; i < symbols; i++)
+			for (i = 0; i < symbols; ++i)
 				rev_symbol_table[i] = -1;
 
-			for (i = 0; i < read_symbols; i++)
+			for (i = 0; i < read_symbols; ++i)
 			{
 				if (code_length[i])
 					rev_symbol_table[this->starting_pos_[code_length[i]]++] = i;
 			}
 
-			return 0;
+			return true;
 		}
 
 		/**
 		 * Finalize huffman codewords for decoding
 		 *
 		 * @param rev_symbol_table array of 2 * symbols entries that contains the reverse lookup table
-		 *
-		 * @return 0 for success, -1 for failure
 		 */
-		int finaliseTable(unsigned int* rev_symbol_table)
+		bool finaliseTable(unsigned int* rev_symbol_table)
 		{
 			const int symbols = this->symbols_;
 			unsigned int canonical_code_word = 0;
@@ -261,24 +262,36 @@ namespace soup
 			int canonical_length = 1;
 			int i;
 
-			for (i = 0; i < (1 << kFastSymbolBits); i++)
+			for (i = 0; i != (1 << kFastSymbolBits); ++i)
+			{
 				this->fast_symbol_[i] = 0;
-			for (i = 0; i < 16; i++)
+			}
+			for (i = 0; i != 16; ++i)
+			{
 				this->start_index_[i] = 0;
+			}
 
 			i = 0;
 			while (i < this->num_sorted_)
 			{
-				if (canonical_length >= 16) return -1;
+				if (canonical_length >= 16)
+				{
+					return false;
+				}
 				this->start_index_[canonical_length] = i - canonical_code_word;
 
 				while (i < this->starting_pos_[canonical_length])
 				{
-
-					if (i >= symbols) return -1;
+					if (i >= symbols)
+					{
+						return false;
+					}
 					rev_code_length_table[i] = canonical_length;
 
-					if (canonical_code_word >= (1U << canonical_length)) return -1;
+					if (canonical_code_word >= (1U << canonical_length))
+					{
+						return false;
+					}
 
 					if (canonical_length <= kFastSymbolBits)
 					{
@@ -313,7 +326,7 @@ namespace soup
 				rev_code_length_table[i++] = 0;
 			}
 
-			return 0;
+			return true;
 		}
 
 		/**
@@ -324,23 +337,21 @@ namespace soup
 		 * @param symbols number of symbols to build codes for
 		 * @param code_length output code lengths table
 		 * @param bit_reader bit reader context
-		 *
-		 * @return 0 for success, -1 for failure
 		 */
-		static int readRawLengths(const int len_bits, const int read_symbols, const int symbols, unsigned char* code_length, BitReader& bit_reader)
+		static bool readRawLengths(const int len_bits, const int read_symbols, const int symbols, unsigned char* code_length, BitReader& bit_reader)
 		{
 			const unsigned char code_len_syms[kCodeLenSyms] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 			int i;
 
 			if (read_symbols < 0 || read_symbols > kMaxSymbols || symbols < 0 || symbols > kMaxSymbols || read_symbols > symbols)
-				return -1;
+				return false;
 
 			i = 0;
 			while (i < read_symbols)
 			{
 				unsigned int length = bit_reader.getBits(len_bits);
 				if (length == -1)
-					return -1;
+					return false;
 
 				code_length[code_len_syms[i++]] = length;
 			}
@@ -350,7 +361,7 @@ namespace soup
 				code_length[code_len_syms[i++]] = 0;
 			}
 
-			return 0;
+			return true;
 		}
 
 		/**
@@ -361,14 +372,12 @@ namespace soup
 		 * @param symbols number of symbols to build codes for
 		 * @param code_length output code lengths table
 		 * @param bit_reader bit reader context
-		 *
-		 * @return 0 for success, -1 for failure
 		 */
-		int readLength(const unsigned int* tables_rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length, BitReader& bit_reader)
+		bool readLength(const unsigned int* tables_rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length, BitReader& bit_reader)
 		{
 			int i;
 			if (read_symbols < 0 || symbols < 0 || read_symbols > symbols)
-				return -1;
+				return false;
 
 			i = 0;
 			unsigned int previous_length = 0;
@@ -377,7 +386,7 @@ namespace soup
 			{
 				unsigned int length = this->readValue(tables_rev_symbol_table, bit_reader);
 				if (length == -1)
-					return -1;
+					return false;
 
 				if (length < 16)
 				{
@@ -392,14 +401,14 @@ namespace soup
 					{
 						int extra_run_length = bit_reader.getBits(2);
 						if (extra_run_length == -1)
-							return -1;
+							return false;
 						run_length = 3 + extra_run_length;
 					}
 					else if (length == 17)
 					{
 						int extra_run_length = bit_reader.getBits(3);
 						if (extra_run_length == -1)
-							return -1;
+							return false;
 						previous_length = 0;
 						run_length = 3 + extra_run_length;
 					}
@@ -407,7 +416,7 @@ namespace soup
 					{
 						int extra_run_length = bit_reader.getBits(7);
 						if (extra_run_length == -1)
-							return -1;
+							return false;
 						previous_length = 0;
 						run_length = 11 + extra_run_length;
 					}
@@ -422,7 +431,7 @@ namespace soup
 
 			while (i < symbols)
 				code_length[i++] = 0;
-			return 0;
+			return true;
 		}
 
 		/**
@@ -538,18 +547,18 @@ namespace soup
 			if (code_len_syms > kCodeLenSyms)
 				return -1;
 
-			if (HuffmanDecoder::readRawLengths(kCodeLenBits, code_len_syms, kCodeLenSyms, code_length, br) < 0)
+			if (!HuffmanDecoder::readRawLengths(kCodeLenBits, code_len_syms, kCodeLenSyms, code_length, br))
 				return -1;
-			if (tables_decoder.prepareTable(tables_rev_sym_table, kCodeLenSyms, kCodeLenSyms, code_length) < 0)
+			if (!tables_decoder.prepareTable(tables_rev_sym_table, kCodeLenSyms, kCodeLenSyms, code_length))
 				return -1;
-			if (tables_decoder.finaliseTable(tables_rev_sym_table) < 0)
+			if (!tables_decoder.finaliseTable(tables_rev_sym_table))
 				return -1;
 
-			if (tables_decoder.readLength(tables_rev_sym_table, literal_syms + offset_syms, kLiteralSyms + kOffsetSyms, code_length, br) < 0)
+			if (!tables_decoder.readLength(tables_rev_sym_table, literal_syms + offset_syms, kLiteralSyms + kOffsetSyms, code_length, br))
 				return -1;
-			if (literals_decoder.prepareTable(literals_rev_sym_table, literal_syms, kLiteralSyms, code_length) < 0)
+			if (!literals_decoder.prepareTable(literals_rev_sym_table, literal_syms, kLiteralSyms, code_length))
 				return -1;
-			if (offset_decoder.prepareTable(offset_rev_sym_table, offset_syms, kOffsetSyms, code_length + literal_syms) < 0)
+			if (!offset_decoder.prepareTable(offset_rev_sym_table, offset_syms, kOffsetSyms, code_length + literal_syms))
 				return -1;
 		}
 		else
@@ -569,9 +578,9 @@ namespace soup
 			for (i = 0; i < kOffsetSyms; i++)
 				fixed_offset_code_len[i] = 5;
 
-			if (literals_decoder.prepareTable(literals_rev_sym_table, kLiteralSyms, kLiteralSyms, fixed_literal_code_len) < 0)
+			if (!literals_decoder.prepareTable(literals_rev_sym_table, kLiteralSyms, kLiteralSyms, fixed_literal_code_len))
 				return -1;
-			if (offset_decoder.prepareTable(offset_rev_sym_table, kOffsetSyms, kOffsetSyms, fixed_offset_code_len) < 0)
+			if (!offset_decoder.prepareTable(offset_rev_sym_table, kOffsetSyms, kOffsetSyms, fixed_offset_code_len))
 				return -1;
 		}
 
@@ -593,10 +602,12 @@ namespace soup
 			}
 		}
 
-		if (literals_decoder.finaliseTable(literals_rev_sym_table) < 0)
+		if (!literals_decoder.finaliseTable(literals_rev_sym_table)
+			|| !offset_decoder.finaliseTable(offset_rev_sym_table)
+			)
+		{
 			return -1;
-		if (offset_decoder.finaliseTable(offset_rev_sym_table) < 0)
-			return -1;
+		}
 
 		unsigned char* current_out = out + out_offset;
 		const unsigned char* out_end = current_out + block_size_max;
