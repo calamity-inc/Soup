@@ -73,7 +73,14 @@ namespace soup
 
 		void operator=(const CallbackBase& b) noexcept = delete;
 
-		void operator=(std::function<Ret(Args...)>&& func) noexcept
+		void operator=(FuncT* fp) noexcept
+		{
+			this->fp = reinterpret_cast<FuncWithCaptureT*>(fp);
+			this->cap.reset();
+		}
+
+		template <typename T, SOUP_RESTRICT(std::is_same_v<std::function<Ret(Args...)>, T>)>
+		void operator=(T&& func) noexcept
 		{
 			fp = &redirect_to_std_function;
 			cap = std::move(func);

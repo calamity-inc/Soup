@@ -145,7 +145,7 @@ void cli_3d()
 		updateScene();
 		render();
 	});
-	console.char_handler = [](char32_t c)
+	console.char_handler = (void(*)(char32_t))[](char32_t c)
 	{
 		if (c == 'w')
 		{
@@ -202,7 +202,7 @@ void cli_3d()
 			render();
 		}
 	};
-	console.control_handler = [](ControlInput i)
+	console.control_handler = (void(*)(ControlInput))[](ControlInput i)
 	{
 		if (i == RIGHT)
 		{

@@ -152,7 +152,7 @@ void cli_snake()
 		startGameThread();
 	});
 
-	soup::console.char_handler = [](char32_t c, const soup::Capture&)
+	soup::console.char_handler = (void(*)(char32_t))[](char32_t c)
 	{
 		if (c == 'w')
 		{
