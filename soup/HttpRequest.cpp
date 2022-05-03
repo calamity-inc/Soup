@@ -52,7 +52,7 @@ namespace soup
 		body = std::move(payload);
 	}
 
-	struct capture_http_request_execute
+	struct CaptureHttpRequestExecute
 	{
 		const HttpRequest* req;
 		std::string* resp;
@@ -73,7 +73,7 @@ namespace soup
 			Scheduler sched{};
 			sched.addSocket(std::move(sock)).enableCryptoClient(host, [](Socket& s, Capture&& _cap)
 			{
-				auto& cap = _cap.get<capture_http_request_execute>();
+				auto& cap = _cap.get<CaptureHttpRequestExecute>();
 
 				std::string data{};
 				data.append(cap.req->method);
@@ -86,7 +86,7 @@ namespace soup
 				s.send(data);
 
 				execute_tick(s, cap.resp);
-			}, capture_http_request_execute{ this, resp.get() }, certchain_validator);
+			}, CaptureHttpRequestExecute{ this, resp.get() }, certchain_validator);
 			sched.run();
 		}
 		if (!resp->empty())
