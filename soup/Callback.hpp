@@ -44,7 +44,7 @@ namespace soup
 
 		static void redirect_to_std_function(Args... args, CaptureArgT cap)
 		{
-			return cap.get<std::function<Ret(Args...)>>()(std::forward<Args>(args)...);
+			return cap.template get<std::function<Ret(Args...)>>()(std::forward<Args>(args)...);
 		}
 
 		template <typename T, SOUP_RESTRICT(std::is_same_v<std::function<Ret(Args...)>, T>)>
