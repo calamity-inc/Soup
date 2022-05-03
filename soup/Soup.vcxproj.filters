@@ -554,6 +554,9 @@
     <ClInclude Include="ServerService.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
+    <ClInclude Include="bcrypt.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -793,6 +796,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="bcrypt.cpp">
+      <Filter>crypto</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

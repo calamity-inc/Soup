@@ -403,6 +403,7 @@
     <ClInclude Include="Asn1Type.hpp" />
     <ClInclude Include="base.hpp" />
     <ClInclude Include="base64.hpp" />
+    <ClInclude Include="bcrypt.hpp" />
     <ClInclude Include="Bigint.hpp" />
     <ClInclude Include="bitmask.hpp" />
     <ClInclude Include="BitPointer.hpp" />
@@ -588,6 +589,7 @@
     <ClCompile Include="Asn1Sequence.cpp" />
     <ClCompile Include="AssemblyBuilder.cpp" />
     <ClCompile Include="base64.cpp" />
+    <ClCompile Include="bcrypt.cpp" />
     <ClCompile Include="Bigint.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="BoxAxisAligned.cpp" />
