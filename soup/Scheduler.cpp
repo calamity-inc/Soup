@@ -9,6 +9,9 @@ namespace soup
 {
 	Socket& Scheduler::addSocket(UniquePtr<Socket>&& sock) noexcept
 	{
+#if SOUP_LINUX
+		sock->setNonBlocking();
+#endif
 		return *reinterpret_cast<Socket*>(workers.emplace_back(std::move(sock)).get());
 	}
 
