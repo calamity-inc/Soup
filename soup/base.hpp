@@ -15,6 +15,10 @@
 	#endif
 
 	#define SOUP_EXPORT __declspec(dllexport)
+
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
 #else
 	#define SOUP_WINDOWS false
 
