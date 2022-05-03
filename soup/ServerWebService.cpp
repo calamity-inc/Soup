@@ -1,4 +1,4 @@
-#include "WebServer.hpp"
+#include "ServerWebService.hpp"
 
 #include "base64.hpp"
 #include "HttpRequest.hpp"
@@ -16,78 +16,25 @@ namespace soup
 		bool keep_alive = false;
 	};
 
-	WebServer::WebServer(handle_request_t handle_request)
-		: Server(), handle_request(handle_request)
-	{
-	}
-
-	void WebServer::httpOnAccept(Socket& s, uint16_t port, Server& _srv)
-	{
-		WebServer& srv = reinterpret_cast<WebServer&>(_srv);
-
-		if (srv.log_func)
+	ServerWebService::ServerWebService(handle_request_t handle_request)
+		: ServerService([](Socket& s, ServerService& srv, Server&)
 		{
-			std::string msg = s.peer.toString();
-			msg.append(" + connected at port ");
-			msg.append(std::to_string(port));
-			srv.log_func(std::move(msg), srv);
-		}
-
-		srv.httpRecv(s);
-	}
-
-	bool WebServer::bind(uint16_t port)
+			reinterpret_cast<ServerWebService&>(srv).httpRecv(s);
+		}), handle_request(handle_request)
 	{
-		return Server::bind(port, &httpOnAccept);
 	}
 
-	bool WebServer::bindCrypto(uint16_t port, tls_server_cert_selector_t cert_selector)
-	{
-		return Server::bindCrypto(port, cert_selector, &httpOnAccept);
-	}
-
-	void WebServer::run()
-	{
-		if (log_func)
-		{
-			on_work_done = [](Worker& w, Scheduler& sched)
-			{
-				std::string msg = reinterpret_cast<Socket&>(w).peer.toString();
-				msg.append(" - work done");
-				WebServer& srv = reinterpret_cast<WebServer&>(sched);
-				srv.log_func(std::move(msg), srv);
-			};
-			on_connection_lost = [](Socket& s, Scheduler& sched)
-			{
-				std::string msg = s.peer.toString();
-				msg.append(" - connection lost");
-				WebServer& srv = reinterpret_cast<WebServer&>(sched);
-				srv.log_func(std::move(msg), srv);
-			};
-			on_exception = [](Worker& w, const std::exception& e, Scheduler& sched)
-			{
-				std::string msg = reinterpret_cast<Socket&>(w).peer.toString();
-				msg.append(" - exception: ");
-				msg.append(e.what());
-				WebServer& srv = reinterpret_cast<WebServer&>(sched);
-				srv.log_func(std::move(msg), srv);
-			};
-		}
-
-		return Server::run();
-	}
-
-	void WebServer::sendHtml(Socket& s, std::string body)
+	void ServerWebService::sendHtml(Socket& s, std::string body)
 	{
 		sendData(s, "text/html", std::move(body));
 	}
 
-	void WebServer::sendText(Socket& s, std::string body)
+	void ServerWebService::sendText(Socket& s, std::string body)
 	{
 		sendData(s, "text/plain", std::move(body));
 	}
 
-	void WebServer::sendData(Socket& s, const char* mime_type, std::string body)
+	void ServerWebService::sendData(Socket& s, const char* mime_type, std::string body)
 	{
 		auto len = body.size();
 		body.insert(0, "\r\n\r\n");
@@ -98,7 +45,7 @@ namespace soup
 		sendResponse(s, "200", body);
 	}
 
-	void WebServer::sendRedirect(Socket& s, const std::string& location)
+	void ServerWebService::sendRedirect(Socket& s, const std::string& location)
 	{
 		std::string cont = "Location: ";
 		cont.append(location);
@@ -106,12 +53,12 @@ namespace soup
 		sendResponse(s, "302", cont);
 	}
 
-	void WebServer::send404(Socket& s)
+	void ServerWebService::send404(Socket& s)
 	{
 		sendResponse(s, "404", "Content-Length: 0\r\n\r\n");
 	}
 
-	void WebServer::sendResponse(Socket& s, const char* status, const std::string& headers_and_body)
+	void ServerWebService::sendResponse(Socket& s, const char* status, const std::string& headers_and_body)
 	{
 		std::string cont = "HTTP/1.0 ";
 		cont.append(status);
@@ -122,12 +69,12 @@ namespace soup
 		s.send(std::move(cont));
 	}
 	
-	void WebServer::wsSend(Socket& s, const std::string& data, bool is_text)
+	void ServerWebService::wsSend(Socket& s, const std::string& data, bool is_text)
 	{
 		wsSend(s, (is_text ? WebSocketFrameType::TEXT : WebSocketFrameType::BINARY), data);
 	}
 
-	void WebServer::wsSend(Socket& s, uint8_t opcode, const std::string& payload)
+	void ServerWebService::wsSend(Socket& s, uint8_t opcode, const std::string& payload)
 	{
 		StringWriter w{ false };
 		opcode |= 0x80; // fin
@@ -168,7 +115,7 @@ namespace soup
 		s.send(w.str);
 	}
 
-	void WebServer::httpRecv(Socket& s)
+	void ServerWebService::httpRecv(Socket& s)
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap)
 		{
@@ -198,17 +145,7 @@ namespace soup
 			message_start += 2;
 			req.loadMessage(data.substr(message_start));
 
-			WebServer& srv = *cap.get<WebServer*>();
-
-			if (srv.log_func)
-			{
-				std::string msg = s.peer.toString();
-				msg.append(" > ");
-				msg.append(req.method);
-				msg.push_back(' ');
-				msg.append(req.path);
-				srv.log_func(std::move(msg), srv);
-			}
+			ServerWebService& srv = *cap.get<ServerWebService*>();
 
 			if (auto upgrade_entry = req.header_fields.find("Upgrade"); upgrade_entry != req.header_fields.end())
 			{
@@ -234,13 +171,13 @@ namespace soup
 				return;
 			}
 
-			/*if (auto connection_entry = req.header_fields.find("Connection"); connection_entry != req.header_fields.end())
+			if (auto connection_entry = req.header_fields.find("Connection"); connection_entry != req.header_fields.end())
 			{
 				if (connection_entry->second == "keep-alive")
 				{
 					s.custom_data.getStructFromMap(WebServerClientData).keep_alive = true;
 				}
-			}*/
+			}
 
 			srv.handle_request(s, std::move(req), srv);
 
@@ -251,7 +188,7 @@ namespace soup
 		}, this);
 	}
 
-	void WebServer::wsRecv(Socket& s)
+	void ServerWebService::wsRecv(Socket& s)
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap)
 		{
@@ -307,7 +244,7 @@ namespace soup
 						}
 					}
 
-					WebServer& srv = *cap.get<WebServer*>();
+					ServerWebService& srv = *cap.get<ServerWebService*>();
 
 					if (opcode <= WebSocketFrameType::_NON_CONTROL_MAX) // non-control frame
 					{
@@ -351,7 +288,7 @@ namespace soup
 		}, this);
 	}
 
-	std::string WebServer::hashWebSocketKey(std::string key)
+	std::string ServerWebService::hashWebSocketKey(std::string key)
 	{
 		key.append("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
 		return base64::encode(sha1::hash(key));

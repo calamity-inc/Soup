@@ -1,5 +1,6 @@
 #include "Server.hpp"
 
+#include "ServerService.hpp"
 #include "Socket.hpp"
 
 namespace soup
@@ -7,22 +8,29 @@ namespace soup
 	struct CaptureServerPort
 	{
 		Server* server;
-		Server::callback_t on_connection_established;
+		ServerService* service;
 
 		void processAccept(Socket&& sock, uint16_t port) const
 		{
 			if (sock.hasConnection())
 			{
-				on_connection_established(server->addSocket(std::move(sock)), std::move(port), *server);
+				Socket& ref = server->addSocket(std::move(sock));
+				if (service->on_connection_established)
+				{
+					service->on_connection_established(ref, *service, *server);
+				}
+				if (service->on_tunnel_established)
+				{
+					service->on_tunnel_established(ref, *service, *server);
+				}
+				service->srv_on_tunnel_established(ref, *service, *server);
 			}
 		}
 	};
 
 	struct CaptureServerPortCrypto : public CaptureServerPort
 	{
-		uint16_t port;
 		tls_server_cert_selector_t cert_selector;
-		Server::callback_t on_tunnel_established;
 		tls_server_on_client_hello_t on_client_hello;
 
 		void processAccept(Socket&& sock, uint16_t port) const
@@ -30,21 +38,24 @@ namespace soup
 			if (sock.hasConnection())
 			{
 				Socket& ref = server->addSocket(std::move(sock));
-				if (on_connection_established)
+				if (service->on_connection_established)
 				{
-					on_connection_established(ref, std::move(port), *server);
+					service->on_connection_established(ref, *service, *server);
 				}
 				ref.enableCryptoServer(cert_selector, [](Socket& s, Capture&& _cap)
 				{
 					CaptureServerPortCrypto& cap = *_cap.get<CaptureServerPortCrypto*>();
-					cap.on_tunnel_established(s, cap.port, *cap.server);
+					if (cap.service->on_tunnel_established)
+					{
+						cap.service->on_tunnel_established(s, *cap.service, *cap.server);
+					}
+					cap.service->srv_on_tunnel_established(s, *cap.service, *cap.server);
 				}, this, on_client_hello);
 			}
 		}
 	};
 
-
-	bool Server::bind(uint16_t port, callback_t on_connection_established) noexcept
+	bool Server::bind(uint16_t port, ServerService* service) noexcept
 	{
 		Socket sock6{};
 		if (!sock6.bind6(port))
@@ -52,7 +63,7 @@ namespace soup
 			return false;
 		}
 		setDataAvailableHandler6(sock6);
-		sock6.holdup_callback.cap = CaptureServerPort{ this, on_connection_established };
+		sock6.holdup_callback.cap = CaptureServerPort{ this, service };
 		addSocket(std::move(sock6));
 
 #if SOUP_WINDOWS
@@ -62,14 +73,14 @@ namespace soup
 			return false;
 		}
 		setDataAvailableHandler4(sock4);
-		sock4.holdup_callback.cap = CaptureServerPort{ this, on_connection_established };
+		sock4.holdup_callback.cap = CaptureServerPort{ this, service };
 		addSocket(std::move(sock4));
 #endif
 
 		return true;
 	}
 
-	bool Server::bindCrypto(uint16_t port, tls_server_cert_selector_t cert_selector, callback_t on_tunnel_established, tls_server_on_client_hello_t on_client_hello, callback_t on_connection_established) noexcept
+	bool Server::bindCrypto(uint16_t port, ServerService* service, tls_server_cert_selector_t cert_selector, tls_server_on_client_hello_t on_client_hello) noexcept
 	{
 		Socket sock6{};
 		if (!sock6.bind6(port))
@@ -77,7 +88,7 @@ namespace soup
 			return false;
 		}
 		setDataAvailableHandlerCrypto6(sock6);
-		sock6.holdup_callback.cap = CaptureServerPortCrypto{ { this, on_connection_established }, port, cert_selector, on_tunnel_established, on_client_hello };
+		sock6.holdup_callback.cap = CaptureServerPortCrypto{ { this, service }, cert_selector, on_client_hello };
 		addSocket(std::move(sock6));
 
 #if SOUP_WINDOWS
@@ -87,7 +98,7 @@ namespace soup
 			return false;
 		}
 		setDataAvailableHandlerCrypto4(sock4);
-		sock6.holdup_callback.cap = CaptureServerPortCrypto{ { this, on_connection_established }, port, cert_selector, on_tunnel_established, on_client_hello };
+		sock4.holdup_callback.cap = CaptureServerPortCrypto{ { this, service }, cert_selector, on_client_hello };
 		addSocket(std::move(sock4));
 #endif
 

@@ -533,7 +533,7 @@
     <ClInclude Include="dns.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="WebServer.hpp">
+    <ClInclude Include="ServerWebService.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
     <ClInclude Include="main.hpp">
@@ -550,6 +550,9 @@
     </ClInclude>
     <ClInclude Include="type_traits.hpp">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerService.hpp">
+      <Filter>net\web</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -785,7 +788,7 @@
     <ClCompile Include="joaat.cpp">
       <Filter>hash</Filter>
     </ClCompile>
-    <ClCompile Include="WebServer.cpp">
+    <ClCompile Include="ServerWebService.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">

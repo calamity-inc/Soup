@@ -48,6 +48,8 @@ namespace soup
 
 	// net
 	class IpAddr;
+	class Server;
+	struct ServerService;
 	class Socket;
 
 	// net.tls

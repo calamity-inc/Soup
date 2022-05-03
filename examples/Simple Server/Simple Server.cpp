@@ -7,11 +7,12 @@
 #include <pem.hpp>
 #include <rsa.hpp>
 #include <Scheduler.hpp>
+#include <Server.hpp>
+#include <ServerWebService.hpp>
 #include <Socket.hpp>
-#include <TlsServerRsaData.hpp>
 #include <string.hpp>
 #include <TlsClientHello.hpp>
-#include <WebServer.hpp>
+#include <TlsServerRsaData.hpp>
 #include <WebSocketMessage.hpp>
 
 struct SimpleServerClientData
@@ -21,11 +22,12 @@ struct SimpleServerClientData
 	std::vector<uint16_t> extensions{};
 };
 
-static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::WebServer&)
+static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::ServerWebService&)
 {
+	std::cout << s.peer.toString() << " > " << req.method << " " << req.path << std::endl;
 	if (req.path == "/")
 	{
-		soup::WebServer::sendHtml(s, R"EOC(<html>
+		soup::ServerWebService::sendHtml(s, R"EOC(<html>
 <head>
 	<title>Soup</title>
 </head>
@@ -42,7 +44,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::WebSer
 	}
 	else if (req.path == "/pem-decoder")
 	{
-		soup::WebServer::sendHtml(s, R"EOC(<html>
+		soup::ServerWebService::sendHtml(s, R"EOC(<html>
 <head>
 	<title>PEM Decoder | Soup</title>
 </head>
@@ -70,7 +72,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::WebSer
 	{
 		if (!s.isEncrypted())
 		{
-			soup::WebServer::sendHtml(s, "For security reasons, we can only send you your TLS ID over a secure connection. :^)");
+			soup::ServerWebService::sendHtml(s, "For security reasons, we can only send you your TLS ID over a secure connection. :^)");
 		}
 		else
 		{
@@ -103,12 +105,12 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::WebSer
 			str.append("</li></ul><p>\"Hashing\" this together gives us the following: ");
 			str.append(soup::string::hex(soup::crc32::hash(str)));
 			str.append("</p>");
-			soup::WebServer::sendHtml(s, std::move(str));
+			soup::ServerWebService::sendHtml(s, std::move(str));
 		}
 	}
 	else
 	{
-		soup::WebServer::send404(s);
+		soup::ServerWebService::send404(s);
 	}
 }
 
@@ -119,19 +121,20 @@ static void cert_selector(soup::TlsServerRsaData& out, const std::string& server
 	out = server_rsa_data;
 }
 
+static void on_client_hello(soup::Socket& s, soup::TlsClientHello&& hello)
+{
+	auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
+	data.cipher_suites = std::move(hello.cipher_suites);
+	data.compression_methods = std::move(hello.compression_methods);
+	data.extensions.reserve(hello.extensions.extensions.size());
+	for (const auto& ext : hello.extensions.extensions)
+	{
+		data.extensions.emplace_back(ext.id);
+	}
+}
+
 int main()
 {
-	soup::WebServer srv(&handleRequest);
-	if (!srv.bind(80))
-	{
-		std::cout << "Failed to bind to port 80." << std::endl;
-		return 1;
-	}
-	if (!srv.bindCrypto(443, &cert_selector))
-	{
-		std::cout << "Failed to bind to port 443." << std::endl;
-		return 2;
-	}
 	server_rsa_data.der_encoded_certchain = {
 		soup::pem::decode(R"EOC(
 -----BEGIN CERTIFICATE-----
@@ -228,29 +231,46 @@ IWTRPUZRNojVvK1dQ+xPN/9HsFVUb6JWyU4e3gocnYoe2zGdyT9p9u0Pr3JikgAC
 QJg24g1I/Zb4EUJmo2WNBzGS
 -----END PRIVATE KEY-----
 )EOC")));
-	std::cout << "Listening on ports 80 and 443." << std::endl;
-	srv.log_func = [](std::string&& msg, soup::WebServer&)
+
+	soup::Server serv{};
+	serv.on_work_done = [](soup::Worker& w, soup::Scheduler&)
 	{
-		std::cout << std::move(msg) << std::endl;
+		std::cout << reinterpret_cast<soup::Socket&>(w).peer.toString() << " - work done" << std::endl;
 	};
-	srv.on_client_hello = [](soup::Socket& s, soup::TlsClientHello&& hello)
+	serv.on_connection_lost = [](soup::Socket& s, soup::Scheduler&)
 	{
-		auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
-		data.cipher_suites = std::move(hello.cipher_suites);
-		data.compression_methods = std::move(hello.compression_methods);
-		data.extensions.reserve(hello.extensions.extensions.size());
-		for (const auto& ext : hello.extensions.extensions)
-		{
-			data.extensions.emplace_back(ext.id);
-		}
+		std::cout << s.peer.toString() << " - connection lost" << std::endl;
 	};
-	srv.should_accept_websocket_connection = [](soup::Socket& s, const soup::HttpRequest& req, soup::WebServer&)
+	serv.on_exception = [](soup::Worker& w, const std::exception& e, soup::Scheduler&)
 	{
+		std::cout << reinterpret_cast<soup::Socket&>(w).peer.toString() << " - exception: " << e.what() << std::endl;
+	};
+
+	soup::ServerWebService web_srv{ &handleRequest };
+	web_srv.on_connection_established = [](soup::Socket& s, soup::ServerService&, soup::Server&)
+	{
+		std::cout << s.peer.toString() << " + connection established" << std::endl;
+	};
+	web_srv.should_accept_websocket_connection = [](soup::Socket& s, const soup::HttpRequest& req, soup::ServerWebService&)
+	{
+		std::cout << s.peer.toString() << " > WEBSOCKET " << req.path << std::endl;
 		return true;
 	};
-	srv.on_websocket_message = [](soup::WebSocketMessage& msg, soup::Socket& s, soup::WebServer&)
+	web_srv.on_websocket_message = [](soup::WebSocketMessage& msg, soup::Socket& s, soup::ServerWebService&)
 	{
-		soup::WebServer::wsSend(s, msg.data, msg.is_text);
+		soup::ServerWebService::wsSend(s, msg.data, msg.is_text);
 	};
-	srv.run();
+
+	if (!serv.bind(80, &web_srv))
+	{
+		std::cout << "Failed to bind to port 80." << std::endl;
+		return 1;
+	}
+	if (!serv.bindCrypto(443, &web_srv, &cert_selector, &on_client_hello))
+	{
+		std::cout << "Failed to bind to port 443." << std::endl;
+		return 2;
+	}
+	std::cout << "Listening on ports 80 and 443." << std::endl;
+	serv.run();
 }

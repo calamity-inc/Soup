@@ -479,6 +479,7 @@
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="Server.hpp" />
+    <ClInclude Include="ServerService.hpp" />
     <ClInclude Include="signal.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
@@ -562,7 +563,7 @@
     <ClInclude Include="VectorBase.hpp" />
     <ClInclude Include="vector_maths.hpp" />
     <ClInclude Include="WebResource.hpp" />
-    <ClInclude Include="WebServer.hpp" />
+    <ClInclude Include="ServerWebService.hpp" />
     <ClInclude Include="WebSocketFrameType.hpp" />
     <ClInclude Include="WebSocketMessage.hpp" />
     <ClInclude Include="Window.hpp" />
@@ -655,7 +656,7 @@
     <ClCompile Include="UvSphere.cpp" />
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="WebResource.cpp" />
-    <ClCompile Include="WebServer.cpp" />
+    <ClCompile Include="ServerWebService.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
     <ClCompile Include="X509Certificate.cpp" />
