@@ -28,22 +28,22 @@ namespace soup
 				return 0;
 
 			case WM_NCHITTEST:
-			{
-				/*POINT p;
-				p.x = GET_X_LPARAM(lParam);
-				p.y = GET_Y_LPARAM(lParam);
-				MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
-				std::cout << "WM_NCHITTEST: " << p.x << ", " << p.y << std::endl;*/
-
-				// Make window movable from any position
-				LRESULT hit = DefWindowProcW(hWnd, message, wParam, lParam);
-				if (hit == HTCLIENT)
 				{
-					hit = HTCAPTION;
+					/*POINT p;
+					p.x = GET_X_LPARAM(lParam);
+					p.y = GET_Y_LPARAM(lParam);
+					MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
+					std::cout << "WM_NCHITTEST: " << p.x << ", " << p.y << std::endl;*/
+
+					// Make window movable from any position
+					LRESULT hit = DefWindowProcW(hWnd, message, wParam, lParam);
+					if (hit == HTCLIENT)
+					{
+						hit = HTCAPTION;
+					}
+					return hit;
 				}
-				return hit;
-			}
-			break;
+				break;
 
 			case WM_HOTKEY:
 				if (wParam >= 0)
