@@ -41,7 +41,7 @@ namespace soup
 		Window& hide() noexcept;
 
 		Window& bringToFront() noexcept;
-		Window& forceDrawNow() noexcept;
+		Window& redraw() noexcept;
 		Window& setBorderless() noexcept;
 		Window& setExitOnClose() noexcept;
 

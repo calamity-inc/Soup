@@ -168,8 +168,9 @@ namespace soup
 		return *this;
 	}
 
-	Window& Window::forceDrawNow() noexcept
+	Window& Window::redraw() noexcept
 	{
+		InvalidateRect(h, NULL, FALSE);
 		UpdateWindow(h);
 		return *this;
 	}
