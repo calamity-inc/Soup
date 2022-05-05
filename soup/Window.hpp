@@ -12,15 +12,14 @@ namespace soup
 {
 	struct Window
 	{
+		using callback_t = void(*)(Window);
 		using draw_func_t = void(*)(Window, HDC);
-		using on_close_t = void(*)(Window);
-		using hotkey_callback_t = void(*)(Window);
 
 		struct Config
 		{
 			draw_func_t draw_func = nullptr;
-			on_close_t on_close = nullptr;
-			std::vector<hotkey_callback_t> hotkey_callbacks{};
+			callback_t on_close = nullptr;
+			std::vector<callback_t> hotkey_callbacks{};
 		};
 
 		HWND h;
@@ -32,8 +31,8 @@ namespace soup
 
 		[[nodiscard]] Window::Config& getConfig();
 		Window& setDrawFunc(draw_func_t draw_func);
-		Window& onClose(on_close_t on_close);
-		Window& registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, hotkey_callback_t callback);
+		Window& onClose(callback_t on_close);
+		Window& registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, callback_t callback);
 
 		[[nodiscard]] bool getIsVisible() noexcept;
 		Window& setIsVisible(bool visible) noexcept;

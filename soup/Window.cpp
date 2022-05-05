@@ -119,13 +119,13 @@ namespace soup
 		return *this;
 	}
 
-	Window& Window::onClose(on_close_t on_close)
+	Window& Window::onClose(callback_t on_close)
 	{
 		getConfig().on_close = on_close;
 		return *this;
 	}
 
-	Window& Window::registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, hotkey_callback_t callback)
+	Window& Window::registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, callback_t callback)
 	{
 		unsigned int mod = alt;
 		mod |= (ctrl << 1);
