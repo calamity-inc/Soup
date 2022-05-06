@@ -77,6 +77,7 @@ namespace soup
 
 	// vis
 	class Canvas;
+	struct RasterFont;
 
 	// vis.ui.conui
 	struct ConuiApp;

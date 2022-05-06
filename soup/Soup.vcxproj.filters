@@ -557,6 +557,9 @@
     <ClInclude Include="bcrypt.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="RasterFont.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -799,6 +802,9 @@
     </ClCompile>
     <ClCompile Include="bcrypt.cpp">
       <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="RasterFont.cpp">
+      <Filter>vis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -463,6 +463,7 @@
     <ClInclude Include="PointLight.hpp" />
     <ClInclude Include="PolyVector.hpp" />
     <ClInclude Include="QrCode.hpp" />
+    <ClInclude Include="RasterFont.hpp" />
     <ClInclude Include="Reader.hpp" />
     <ClInclude Include="Json.hpp" />
     <ClInclude Include="JsonArray.hpp" />
@@ -634,6 +635,7 @@
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="QrCode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="RasterFont.cpp" />
     <ClCompile Include="Rgb.cpp" />
     <ClCompile Include="rsa.cpp" />
     <ClCompile Include="rtti.cpp" />

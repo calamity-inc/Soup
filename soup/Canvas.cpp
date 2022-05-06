@@ -1,20 +1,27 @@
 #include "Canvas.hpp"
 
 #include "console.hpp"
+#include "RasterFont.hpp"
 #include "string.hpp"
+#include "unicode.hpp"
 
 namespace soup
 {
-	void Canvas::resize(size_t width, size_t height)
-	{
-		pixels.resize(width * height);
-	}
-
 	void Canvas::fill(const Rgb colour)
 	{
 		for (auto& p : pixels)
 		{
 			p = colour;
+		}
+	}
+
+	void Canvas::loadBlackWhiteData(const std::vector<bool>& black_white_data)
+	{
+		size_t i = 0;
+		for (const auto& px : black_white_data)
+		{
+			auto c = (uint8_t)(px * 255);
+			pixels.at(i++) = Rgb{ c, c, c };
 		}
 	}
 
@@ -31,6 +38,37 @@ namespace soup
 	const Rgb& Canvas::ref(size_t x, size_t y) const
 	{
 		return pixels.at(x + (y * width));
+	}
+
+	void Canvas::addText(size_t x, size_t y, const std::string& text, const RasterFont& font)
+	{
+		return addText(x, y, unicode::utf8_to_utf32(text), font);
+	}
+
+	void Canvas::addText(size_t x, size_t y, const std::u32string& text, const RasterFont& font)
+	{
+		for (const auto& c : text)
+		{
+			const auto& g = font.get(c);
+			addCanvas(x, y + g.y_offset, g.getCanvas());
+			x += (g.width + 1);
+		}
+	}
+
+	void Canvas::addCanvas(size_t x_offset, size_t y_offset, const Canvas& b)
+	{
+		for (size_t y = 0; y != b.height; ++y)
+		{
+			for (size_t x = 0; x != b.width; ++x)
+			{
+				set(x + x_offset, y + y_offset, b.get(x, y));
+			}
+		}
+	}
+
+	void Canvas::resize(size_t width, size_t height)
+	{
+		pixels.resize(width * height);
 	}
 
 	void Canvas::resizeWidth(size_t new_width)
