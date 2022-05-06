@@ -27,7 +27,6 @@ int entry(std::vector<std::string>&& args, bool console)
 			}
 		}
 	});
-	w.setBorderless();
 	w.setExitOnClose();
 	w.show();
 	return w.runMessageLoop();

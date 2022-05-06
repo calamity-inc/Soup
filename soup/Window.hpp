@@ -41,7 +41,6 @@ namespace soup
 
 		Window& bringToFront() noexcept;
 		Window& redraw() noexcept;
-		Window& setBorderless() noexcept;
 		Window& setExitOnClose() noexcept;
 
 		static int runMessageLoop() noexcept;

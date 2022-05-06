@@ -92,6 +92,7 @@ namespace soup
 		RegisterClassExW(&wcex);
 
 		HWND hWnd = CreateWindowW(wcex.lpszClassName, wcex.lpszMenuName, 0, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
+		SetWindowLong(hWnd, GWL_STYLE, 0);
 		window_configs.emplace(hWnd, Window::Config{});
 		return Window{ hWnd };
 	}
@@ -172,12 +173,6 @@ namespace soup
 	{
 		InvalidateRect(h, NULL, FALSE);
 		UpdateWindow(h);
-		return *this;
-	}
-
-	Window& Window::setBorderless() noexcept
-	{
-		SetWindowLong(h, GWL_STYLE, 0);
 		return *this;
 	}
 
