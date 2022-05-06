@@ -64,8 +64,8 @@ namespace soup
 		return DefWindowProcW(hWnd, message, wParam, lParam);
 	}
 
-    Window Window::create(const std::string& title, int width, int height, const std::string& icon_ico) noexcept
-    {
+	Window Window::create(const std::string& title, int width, int height, const std::string& icon_ico) noexcept
+	{
 		HINSTANCE hInstance = GetModuleHandle(NULL);
 
 		std::wstring menu_name = unicode::utf8_to_utf16(title);
@@ -94,19 +94,19 @@ namespace soup
 		HWND hWnd = CreateWindowW(wcex.lpszClassName, wcex.lpszMenuName, 0, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
 		window_configs.emplace(hWnd, Window::Config{});
 		return Window{ hWnd };
-    }
+	}
 
-    Window Window::getFocused() noexcept
-    {
+	Window Window::getFocused() noexcept
+	{
 		return Window{ GetForegroundWindow() };
-    }
+	}
 
-    DWORD Window::getOwnerPid() const noexcept
-    {
+	DWORD Window::getOwnerPid() const noexcept
+	{
 		DWORD pid;
 		GetWindowThreadProcessId(h, &pid);
 		return pid;
-    }
+	}
 
 	Window::Config& Window::getConfig()
 	{
