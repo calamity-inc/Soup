@@ -7,12 +7,12 @@
 
 #include "optimised.hpp"
 #include "rand.hpp"
+#include "sha256.hpp"
 
 #define BLF_N	16			/* Number of Subkeys */
 #define BLF_MAXKEYLEN ((BLF_N-2)*4)	/* 448 bits */
 #define BLF_MAXUTILIZED ((BLF_N+2)*4)	/* 576 bits */
 
-#define _PASSWORD_LEN   128             /* max length, not counting NUL */
 #define _SALT_LEN       32              /* max length */
 
 #define BCRYPT_VERSION '2'
@@ -888,7 +888,6 @@ namespace soup
 		node_bcrypt(password.c_str(), password.size(), salt, &hash[0]);
 		hash.resize(60);
 		return hash;
-
 	}
 
 	bool bcrypt::verify(const std::string& password, const std::string& hash)
@@ -897,5 +896,17 @@ namespace soup
 		node_bcrypt(password.c_str(), password.size(), hash.c_str(), &got[0]);
 		got.resize(60);
 		return hash == got;
+	}
+
+	std::string bcrypt::preparePassword(const std::string& password)
+	{
+		if (password.size() <= 71)
+		{
+			return password;
+		}
+		std::string res{};
+		res.append(password.substr(0, 71 - 32));
+		res.append(sha256::hash(password.substr(71 - 32)));
+		return res;
 	}
 }
