@@ -257,7 +257,7 @@ namespace soup
 						if (opcode != 0)
 						{
 							msg_buf.data = std::move(payload);
-							msg_buf.is_text = (opcode == 1);
+							msg_buf.is_text = (opcode == WebSocketFrameType::TEXT);
 						}
 						else
 						{
