@@ -478,6 +478,9 @@
     <ClInclude Include="optimised.hpp" />
     <ClInclude Include="pem.hpp" />
     <ClInclude Include="Promise.hpp" />
+    <ClInclude Include="RenderTarget.hpp" />
+    <ClInclude Include="RenderTargetCanvas.hpp" />
+    <ClInclude Include="RenderTargetWindow.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="Server.hpp" />
@@ -636,6 +639,8 @@
     <ClCompile Include="QrCode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RasterFont.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="RenderTargetCanvas.cpp" />
     <ClCompile Include="Rgb.cpp" />
     <ClCompile Include="rsa.cpp" />
     <ClCompile Include="rtti.cpp" />

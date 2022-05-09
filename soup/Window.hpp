@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#include "fwd.hpp"
 
 #if SOUP_WINDOWS
 #include <string>
@@ -13,7 +14,7 @@ namespace soup
 	struct Window
 	{
 		using callback_t = void(*)(Window);
-		using draw_func_t = void(*)(Window, HDC);
+		using draw_func_t = void(*)(Window, RenderTarget&);
 
 		struct Config
 		{

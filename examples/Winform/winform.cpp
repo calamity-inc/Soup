@@ -1,31 +1,17 @@
-#include <soup/Canvas.hpp>
+#include <soup/RasterFont.hpp>
+#include <soup/RenderTarget.hpp>
 #include <soup/main.hpp>
-#include <soup/QrCode.hpp>
 #include <soup/Window.hpp>
-
-HBRUSH brush_black = CreateSolidBrush(RGB(0, 0, 0));
-HBRUSH brush_white = CreateSolidBrush(RGB(255, 255, 255));
 
 int entry(std::vector<std::string>&& args, bool console)
 {
-	auto w = soup::Window::create("C++ Winform", 200, 200, "a.ico");
-	w.setDrawFunc([](soup::Window, HDC hdc)
+	auto w = soup::Window::create("C++ Winform", 250, 250);
+	w.setDrawFunc([](soup::Window, soup::RenderTarget& rt)
 	{
-		auto c = soup::QrCode::encodeText("Hello, world!").toCanvas(4, true);
-		for (size_t y = 0; y != c.height; ++y)
-		{
-			for (size_t x = 0; x != c.width; ++x)
-			{
-				constexpr auto scale = 7;
+		auto font8 = soup::RasterFont::simple8();
 
-				RECT r;
-				r.left = x * scale;
-				r.top = y * scale;
-				r.right = (x + 1) * scale;
-				r.bottom = (y + 1) * scale;
-				FillRect(hdc, &r, c.get(x, y) == soup::Rgb::BLACK ? brush_black : brush_white);
-			}
-		}
+		rt.fill(soup::Rgb::BLACK);
+		rt.drawText(1, 1, "The quick brown fox jumps over the lazy dog.", font8, soup::Rgb::WHITE);
 	});
 	w.setExitOnClose();
 	w.show();

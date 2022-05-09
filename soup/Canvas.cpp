@@ -66,6 +66,17 @@ namespace soup
 		}
 	}
 
+	void Canvas::addRect(size_t x_offset, size_t y_offset, size_t width, size_t height, Rgb colour)
+	{
+		for (size_t y = 0; y != height; ++y)
+		{
+			for (size_t x = 0; x != width; ++x)
+			{
+				set(x + x_offset, y + y_offset, colour);
+			}
+		}
+	}
+
 	void Canvas::resize(size_t width, size_t height)
 	{
 		pixels.resize(width * height);

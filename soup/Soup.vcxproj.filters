@@ -560,6 +560,15 @@
     <ClInclude Include="RasterFont.hpp">
       <Filter>vis</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTarget.hpp">
+      <Filter>vis\render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetCanvas.hpp">
+      <Filter>vis\render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetWindow.hpp">
+      <Filter>vis\render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -806,6 +815,12 @@
     <ClCompile Include="RasterFont.cpp">
       <Filter>vis</Filter>
     </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>vis\render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetCanvas.cpp">
+      <Filter>vis\render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -897,6 +912,9 @@
     </Filter>
     <Filter Include="net\web\websocket">
       <UniqueIdentifier>{b051e810-7a59-4a16-a3c6-c1489ab35907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis\render">
+      <UniqueIdentifier>{86298434-e9f0-4a23-aa41-1cb7fa3f89a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

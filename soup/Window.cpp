@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "rand.hpp"
+#include "RenderTargetWindow.hpp"
 #include "unicode.hpp"
 
 namespace soup
@@ -20,9 +21,13 @@ namespace soup
 			case WM_PAINT:
 				if (wc.draw_func)
 				{
+					RECT rect;
+					GetUpdateRect(hWnd, &rect, FALSE);
+
 					PAINTSTRUCT ps;
 					HDC hdc = BeginPaint(hWnd, &ps);
-					wc.draw_func(Window{ hWnd }, hdc);
+					RenderTargetWindow rt{ rect.right - rect.left, rect.bottom - rect.top, hdc };
+					wc.draw_func(Window{ hWnd }, rt);
 					EndPaint(hWnd, &ps);
 				}
 				return 0;
@@ -81,7 +86,6 @@ namespace soup
 		wcex.cbWndExtra = 0;
 		wcex.hInstance = hInstance;
 		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 		wcex.lpszMenuName = menu_name.c_str();
 		wcex.lpszClassName = class_name.c_str();
 		if (!icon_ico.empty())

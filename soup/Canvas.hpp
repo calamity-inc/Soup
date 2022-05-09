@@ -45,6 +45,7 @@ namespace soup
 		void addText(size_t x, size_t y, const std::string& text, const RasterFont& font);
 		void addText(size_t x, size_t y, const std::u32string& text, const RasterFont& font);
 		void addCanvas(size_t x_offset, size_t y_offset, const Canvas& b);
+		void addRect(size_t x_offset, size_t y_offset, size_t width, size_t height, Rgb colour);
 
 		void resize(size_t width, size_t height); // Fine for change in height; either trims excess or inserts black pixels below.
 		void resizeWidth(size_t new_width); // Resize algorithm for width; either trims excess or inserts black pixels to the right.
