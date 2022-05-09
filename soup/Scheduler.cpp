@@ -146,6 +146,6 @@ namespace soup
 		{
 			on_connection_lost(*reinterpret_cast<Socket*>(workers_i->get()), *this);
 		}
-		workers.erase(workers_i);
+		workers_i = workers.erase(workers_i);
 	}
 }
