@@ -443,6 +443,7 @@
     <ClInclude Include="EditorTab.hpp" />
     <ClInclude Include="EditorText.hpp" />
     <ClInclude Include="endianness.hpp" />
+    <ClInclude Include="FileWriter.hpp" />
     <ClInclude Include="HttpRequest.hpp" />
     <ClInclude Include="HttpResponse.hpp" />
     <ClInclude Include="IntVector.hpp" />

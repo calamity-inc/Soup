@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "type_traits.hpp"
+
 namespace soup
 {
 	class FileReader final : public Reader
@@ -13,6 +15,11 @@ namespace soup
 		std::ifstream s;
 
 		FileReader(const std::string& path, bool little_endian = true)
+			: Reader(little_endian), s(path, std::ios::binary)
+		{
+		}
+
+		FileReader(const std::wstring& path, bool little_endian = true)
 			: Reader(little_endian), s(path, std::ios::binary)
 		{
 		}
