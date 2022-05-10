@@ -114,14 +114,8 @@
     <ClInclude Include="rand.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="Bitset.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="BitPointer.hpp">
       <Filter>mem</Filter>
-    </ClInclude>
-    <ClInclude Include="BigBitset.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="rtti.hpp">
       <Filter>mem</Filter>
@@ -245,13 +239,7 @@
     <ClInclude Include="TlsServerRsaData.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="endianness.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="optimised.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="IntVector.hpp">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="Worker.hpp">
@@ -338,9 +326,6 @@
     <ClInclude Include="Certchain.hpp">
       <Filter>crypto\x509</Filter>
     </ClInclude>
-    <ClInclude Include="UniquePtr.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="Chessboard.hpp">
       <Filter>chess</Filter>
     </ClInclude>
@@ -355,9 +340,6 @@
     </ClInclude>
     <ClInclude Include="ChessCli.hpp">
       <Filter>chess</Filter>
-    </ClInclude>
-    <ClInclude Include="deleter_impl.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="HttpRequest.hpp">
       <Filter>net\web</Filter>
@@ -425,9 +407,6 @@
     <ClInclude Include="JsonObject.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="DerivableMap.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="JsonNull.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
@@ -479,9 +458,6 @@
     <ClInclude Include="UvSphere.hpp">
       <Filter>math\3d\sphere</Filter>
     </ClInclude>
-    <ClInclude Include="bitmask.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="os.hpp">
       <Filter>os</Filter>
     </ClInclude>
@@ -496,21 +472,6 @@
     </ClInclude>
     <ClInclude Include="MimeType.hpp">
       <Filter>data\mime</Filter>
-    </ClInclude>
-    <ClInclude Include="base64.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="pem.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="unicode.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="urlenc.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="deflate.hpp">
-      <Filter>data</Filter>
     </ClInclude>
     <ClInclude Include="adler32.hpp">
       <Filter>hash</Filter>
@@ -539,9 +500,6 @@
     <ClInclude Include="main.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="StructMap.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="WebSocketMessage.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
@@ -568,6 +526,48 @@
     </ClInclude>
     <ClInclude Include="RenderTargetWindow.hpp">
       <Filter>vis\render</Filter>
+    </ClInclude>
+    <ClInclude Include="BigBitset.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitset.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmask.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="deleter_impl.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="UniquePtr.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="StructMap.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="endianness.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="DerivableMap.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="IntVector.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="base64.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="deflate.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="pem.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="urlenc.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="unicode.hpp">
+      <Filter>data\enc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -767,23 +767,8 @@
     <ClCompile Include="Url.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
-    <ClCompile Include="base64.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="pem.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="unicode.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="urlenc.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
     <ClCompile Include="adler32.cpp">
       <Filter>hash</Filter>
-    </ClCompile>
-    <ClCompile Include="deflate.cpp">
-      <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="Canvas.cpp">
       <Filter>vis</Filter>
@@ -820,6 +805,21 @@
     </ClCompile>
     <ClCompile Include="RenderTargetCanvas.cpp">
       <Filter>vis\render</Filter>
+    </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="deflate.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="pem.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="urlenc.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="unicode.cpp">
+      <Filter>data\enc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -915,6 +915,9 @@
     </Filter>
     <Filter Include="vis\render">
       <UniqueIdentifier>{86298434-e9f0-4a23-aa41-1cb7fa3f89a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\enc">
+      <UniqueIdentifier>{d42a16a2-9997-4a38-b9ab-9db1a0abfb79}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
