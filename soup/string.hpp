@@ -16,16 +16,30 @@ namespace soup
 
 	private:
 		template <typename Str, typename Int, uint8_t Base>
-		[[nodiscard]] static Str from_int_impl_ascii(Int i)
+		[[nodiscard]] static Str from_int_impl_ascii(Int _i)
 		{
-			if (i == 0)
+			if (_i == 0)
 			{
 				return Str(1, '0');
 			}
-			const bool neg = (i < 0);
-			if (neg)
+			using UInt = std::make_unsigned_t<Int>;
+			UInt i;
+			bool neg = false;
+			if constexpr (std::is_signed_v<Int>)
 			{
-				i = i * -1;
+				neg = (_i < 0);
+				if (neg)
+				{
+					i = (_i * -1);
+				}
+				else
+				{
+					i = _i;
+				}
+			}
+			else
+			{
+				i = _i;
 			}
 			Str res{};
 			for (; i != 0; i /= Base)
