@@ -27,10 +27,9 @@ namespace soup
 				{
 					return false;
 				}
-				bool has_next = false;
-				if ((bits < (64 - 8)) && (b & 0x80))
+				bool has_next = ((b >> 7) & (bits < 56));
+				if (has_next)
 				{
-					has_next = true;
 					b &= 0x7F;
 				}
 				v |= ((uint64_t)b << bits);
@@ -39,6 +38,57 @@ namespace soup
 					break;
 				}
 				bits += 7;
+			}
+			return true;
+		}
+
+		// A signed 64-bit integer encoded in 1..9 bytes.
+		bool i64_dyn(int64_t& v)
+		{
+			bool neg;
+			uint8_t b;
+			if (!u8(b))
+			{
+				return false;
+			}
+			uint64_t out = (b & 0b111111);
+			neg = ((b >> 6) & 1);
+			if ((b >> 7))
+			{
+				uint8_t bits = 6;
+				while (true)
+				{
+					if (!u8(b))
+					{
+						return false;
+					}
+					bool has_next = ((b >> 7) & (bits < 55));
+					if (has_next)
+					{
+						b &= 0x7F;
+					}
+					out |= ((uint64_t)b << bits);
+					if (!has_next)
+					{
+						break;
+					}
+					bits += 7;
+				}
+			}
+			if (neg)
+			{
+				if (out == 0)
+				{
+					v = ((uint64_t)1 << 63);
+				}
+				else
+				{
+					v = (out * -1);
+				}
+			}
+			else
+			{
+				v = out;
 			}
 			return true;
 		}

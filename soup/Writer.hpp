@@ -23,20 +23,80 @@ namespace soup
 		bool u64_dyn(const uint64_t& v)
 		{
 			uint64_t in = v;
-			for (uint8_t i = 0; i < 8; i++)
+			for (uint8_t i = 0; i != 8; ++i)
 			{
 				uint8_t cur = (in & 0x7F);
 				in >>= 7;
 				if (in != 0)
 				{
 					cur |= 0x80;
+					u8(cur);
 				}
-				u8(cur);
-				if (in == 0)
+				else
 				{
+					u8(cur);
 					return true;
 				}
 			}
+			if (in != 0)
+			{
+				auto byte = (uint8_t)in;
+				u8(byte);
+			}
+			return true;
+		}
+
+		// A signed 64-bit integer encoded in 1..9 bytes.
+		bool i64_dyn(const int64_t& v)
+		{
+			// Split value
+			uint64_t in;
+			bool neg = (v < 0);
+			if (neg)
+			{
+				in = (v * -1);
+				in &= ~((uint64_t)1 << 63);
+			}
+			else
+			{
+				in = v;
+			}
+
+			// First byte
+			{
+				uint8_t cur = (in & 0b111111);
+				cur |= (neg << 6);
+				in >>= 6;
+				if (in != 0)
+				{
+					cur |= 0x80;
+					u8(cur);
+				}
+				else
+				{
+					u8(cur);
+					return true;
+				}
+			}
+
+			// Next 1..7 bytes
+			for (uint8_t i = 0; i != 7; ++i)
+			{
+				uint8_t cur = (in & 0x7F);
+				in >>= 7;
+				if (in != 0)
+				{
+					cur |= 0x80;
+					u8(cur);
+				}
+				else
+				{
+					u8(cur);
+					return true;
+				}
+			}
+
+			// Optional last byte
 			if (in != 0)
 			{
 				auto byte = (uint8_t)in;
