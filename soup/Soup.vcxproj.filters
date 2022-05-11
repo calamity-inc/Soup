@@ -824,6 +824,12 @@
     <ClCompile Include="unicode.cpp">
       <Filter>data\enc</Filter>
     </ClCompile>
+    <ClCompile Include="JsonBool.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonNull.cpp">
+      <Filter>data\json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

@@ -17,6 +17,8 @@ namespace soup
 		[[nodiscard]] std::string encode() const final;
 		[[nodiscard]] std::string encodePretty(const std::string& prefix = {}) const;
 
+		bool binaryEncode(Writer& w) const final;
+
 		[[nodiscard]] JsonNode& at(size_t i);
 	};
 }

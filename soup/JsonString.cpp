@@ -1,5 +1,7 @@
 #include "JsonString.hpp"
 
+#include "Writer.hpp"
+
 namespace soup
 {
 	JsonString::JsonString() noexcept
@@ -60,5 +62,21 @@ namespace soup
 		str.insert(0, 1, '"');
 		str.push_back('"');
 		return str;
+	}
+
+	bool JsonString::binaryEncode(Writer& w) const
+	{
+		uint8_t b = JSON_STRING;
+		if (value.size() < 0b11111)
+		{
+			b |= ((uint8_t)value.size() << 3);
+			return w.u8(b)
+				&& w.str(value.size(), value)
+				;
+		}
+		b |= (0b11111 << 3);
+		return w.u8(b)
+			&& w.str_lp_u64_dyn(value)
+			;
 	}
 }

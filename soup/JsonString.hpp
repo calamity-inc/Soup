@@ -15,5 +15,7 @@ namespace soup
 		explicit JsonString(const char*& c);
 
 		[[nodiscard]] std::string encode() const final;
+
+		bool binaryEncode(Writer& w) const final;
 	};
 }

@@ -2,6 +2,7 @@
 
 #include "json.hpp"
 #include "string.hpp"
+#include "Writer.hpp"
 
 namespace soup
 {
@@ -73,6 +74,35 @@ namespace soup
 		}
 		res.append(prefix).push_back(']');
 		return res;
+	}
+
+	bool JsonArray::binaryEncode(Writer& w) const
+	{
+		{
+			uint8_t b = JSON_ARRAY;
+			if (!w.u8(b))
+			{
+				return false;
+			}
+		}
+
+		for (const auto& child : children)
+		{
+			if (!child->binaryEncode(w))
+			{
+				return false;
+			}
+		}
+
+		{
+			uint8_t b = 0b111;
+			if (!w.u8(b))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	JsonNode& JsonArray::at(size_t i)

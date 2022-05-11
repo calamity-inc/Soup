@@ -27,6 +27,10 @@ namespace soup
 	struct JsonObject;
 	struct JsonString;
 
+	// io.stream
+	class Reader;
+	class Writer;
+
 	// math
 	class Bigint;
 	struct Vector3;

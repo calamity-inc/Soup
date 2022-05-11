@@ -7,6 +7,7 @@
 #include "JsonNull.hpp"
 #include "JsonObject.hpp"
 #include "JsonString.hpp"
+#include "Reader.hpp"
 
 namespace soup
 {
@@ -91,6 +92,98 @@ namespace soup
 			else if (buf == "null")
 			{
 				return soup::make_unique<JsonNull>();
+			}
+		}
+		return {};
+	}
+
+	void json::binaryDecode(UniquePtr<JsonNode>& out, Reader& r)
+	{
+		out = binaryDecodeForDedicatedVariable(r);
+	}
+
+	UniquePtr<JsonNode> json::binaryDecodeForDedicatedVariable(Reader& r)
+	{
+		uint8_t b;
+		if (r.u8(b))
+		{
+			uint8_t type = (b & 0b111);
+			if (type == JSON_INT)
+			{
+				uint8_t extra = (b >> 3);
+				int64_t val;
+				if (extra == 0b11111
+					? r.i64_dyn(val)
+					: (val = extra, true)
+					)
+				{
+					return soup::make_unique<JsonInt>(val);
+				}
+			}
+			else if (type == JSON_FLOAT)
+			{
+				uint64_t val;
+				if (r.u64(val))
+				{
+					return soup::make_unique<JsonFloat>(*reinterpret_cast<double*>(&val));
+				}
+			}
+			else if (type == JSON_STRING)
+			{
+				uint8_t len = (b >> 3);
+				std::string val;
+				if (len == 0b11111
+					? r.str_lp_u64_dyn(val)
+					: r.str(len, val)
+					)
+				{
+					return soup::make_unique<JsonString>(std::move(val));
+				}
+			}
+			else if (type == JSON_BOOL)
+			{
+				return soup::make_unique<JsonBool>(b >> 3);
+			}
+			else if (type == JSON_NULL)
+			{
+				return soup::make_unique<JsonNull>();
+			}
+			else if (type == JSON_ARRAY)
+			{
+				auto arr = soup::make_unique<JsonArray>();
+				while (true)
+				{
+					UniquePtr<JsonNode> node;
+
+					if (binaryDecode(node, r), !node)
+					{
+						break;
+					}
+
+					arr->children.emplace_back(std::move(node));
+				}
+				return arr;
+			}
+			else if (type == JSON_OBJECT)
+			{
+				auto obj = soup::make_unique<JsonObject>();
+				while (true)
+				{
+					UniquePtr<JsonNode> key;
+					UniquePtr<JsonNode> val;
+
+					if (binaryDecode(key, r), !key)
+					{
+						break;
+					}
+					if (binaryDecode(val, r), !val)
+					{
+						break;
+					}
+
+					obj->children.emplace(std::move(key), std::move(val));
+				}
+				return obj;
 			}
 		}
 		return {};

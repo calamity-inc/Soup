@@ -12,5 +12,9 @@ namespace soup
 
 		[[nodiscard]] static UniquePtr<JsonNode> decodeForDedicatedVariable(const std::string& data);
 		[[nodiscard]] static UniquePtr<JsonNode> decodeForDedicatedVariable(const char*& c);
+
+		// specific to soup
+		static void binaryDecode(UniquePtr<JsonNode>& out, Reader& r);
+		[[nodiscard]] static UniquePtr<JsonNode> binaryDecodeForDedicatedVariable(Reader& r);
 	};
 }

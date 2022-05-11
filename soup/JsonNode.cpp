@@ -49,6 +49,11 @@ namespace soup
 		return encode();
 	}
 
+	bool JsonNode::binaryEncode(Writer& w) const
+	{
+		return false;
+	}
+
 	bool JsonNode::isArr() const noexcept
 	{
 		return type == JSON_ARRAY;

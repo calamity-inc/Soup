@@ -8,19 +8,11 @@ namespace soup
 	{
 		bool value;
 
-		explicit JsonBool() noexcept
-			: JsonNode(JSON_BOOL)
-		{
-		}
+		explicit JsonBool() noexcept;
+		explicit JsonBool(bool value) noexcept;
 
-		explicit JsonBool(bool value) noexcept
-			: JsonNode(JSON_BOOL), value(value)
-		{
-		}
+		[[nodiscard]] std::string encode() const final;
 
-		[[nodiscard]] std::string encode() const final
-		{
-			return value ? "true" : "false";
-		}
+		bool binaryEncode(Writer& w) const final;
 	};
 }

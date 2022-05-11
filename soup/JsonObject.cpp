@@ -4,6 +4,7 @@
 #include "JsonInt.hpp"
 #include "JsonString.hpp"
 #include "string.hpp"
+#include "Writer.hpp"
 
 namespace soup
 {
@@ -82,6 +83,37 @@ namespace soup
 		}
 		res.append(prefix).push_back('}');
 		return res;
+	}
+
+	bool JsonObject::binaryEncode(Writer& w) const
+	{
+		{
+			uint8_t b = JSON_OBJECT;
+			if (!w.u8(b))
+			{
+				return false;
+			}
+		}
+
+		for (const auto& child : children)
+		{
+			if (!child.first->binaryEncode(w)
+				|| !child.second->binaryEncode(w)
+				)
+			{
+				return false;
+			}
+		}
+
+		{
+			uint8_t b = 0b111;
+			if (!w.u8(b))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	bool JsonObject::contains(const JsonNode& k)

@@ -621,9 +621,11 @@
     <ClCompile Include="joaat.cpp" />
     <ClCompile Include="json.cpp" />
     <ClCompile Include="JsonArray.cpp" />
+    <ClCompile Include="JsonBool.cpp" />
     <ClCompile Include="JsonFloat.cpp" />
     <ClCompile Include="JsonInt.cpp" />
     <ClCompile Include="JsonNode.cpp" />
+    <ClCompile Include="JsonNull.cpp" />
     <ClCompile Include="JsonObject.cpp" />
     <ClCompile Include="JsonString.cpp" />
     <ClCompile Include="Keystore.cpp" />

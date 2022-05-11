@@ -29,6 +29,8 @@ namespace soup
 		[[nodiscard]] virtual std::string encode() const = 0;
 		[[nodiscard]] std::string encodePretty(const std::string& prefix = {}) const;
 
+		virtual bool binaryEncode(Writer& w) const; // specific to soup
+
 		[[nodiscard]] bool isArr() const noexcept;
 		[[nodiscard]] bool isBool() const noexcept;
 		[[nodiscard]] bool isFloat() const noexcept;
