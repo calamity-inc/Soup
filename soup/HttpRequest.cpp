@@ -16,7 +16,7 @@ namespace soup
 			{ObfusString("Host"), std::move(host)},
 			{ObfusString("User-Agent"), ObfusString("Mozilla/5.0 (compatible; Soup)")},
 			{ObfusString("Connection"), ObfusString("close")},
-			{ObfusString("Accept-Encoding"), ObfusString("gzip, deflate")},
+			{ObfusString("Accept-Encoding"), ObfusString("deflate, gzip")},
 		}), method(std::move(method)), path(std::move(path))
 	{
 		fixPath();
