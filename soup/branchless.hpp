@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	struct optimised
+	struct branchless
 	{
 		template <typename T>
 		[[nodiscard]] constexpr static std::enable_if_t<!std::is_pointer_v<T>, T> trinary(bool cond, T a, T b)

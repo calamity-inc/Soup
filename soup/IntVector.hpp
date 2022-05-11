@@ -2,7 +2,7 @@
 
 #include <cstring> // memcpy
 
-#include "optimised.hpp"
+#include "branchless.hpp"
 
 namespace soup
 {
@@ -92,7 +92,7 @@ namespace soup
 		{
 			if (num_elms == max_elms)
 			{
-				const auto old_data = optimised::trinary<T*>(max_elms == 0, nullptr, data);
+				const auto old_data = branchless::trinary<T*>(max_elms == 0, nullptr, data);
 				max_elms += (0x1000 / sizeof(T));
 				data = (T*)malloc(max_elms * sizeof(T));
 				memcpy(data, old_data, num_elms * sizeof(T));

@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "optimised.hpp"
+#include "branchless.hpp"
 #include "rand.hpp"
 #include "sha256.hpp"
 
@@ -635,7 +635,7 @@ namespace soup
 		41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
 		51, 52, 53, 255, 255, 255, 255, 255
 	};
-#define CHAR64(c) optimised::trinary<uint8_t>((c) > 127, 255, index_64[(c)])
+#define CHAR64(c) branchless::trinary<uint8_t>((c) > 127, 255, index_64[(c)])
 
 	static void decode_base64(uint8_t* buffer, uint16_t len, uint8_t* data)
 	{

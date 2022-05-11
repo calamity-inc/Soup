@@ -1,8 +1,8 @@
 #include "JsonNode.hpp"
 
+#include "branchless.hpp"
 #include "JsonArray.hpp"
 #include "JsonObject.hpp"
-#include "optimised.hpp"
 
 namespace soup
 {
@@ -86,32 +86,32 @@ namespace soup
 
 	JsonArray* JsonNode::asArr() noexcept
 	{
-		return reinterpret_cast<JsonArray*>(optimised::trinary<JsonNode*>(isArr(), this, nullptr));
+		return reinterpret_cast<JsonArray*>(branchless::trinary<JsonNode*>(isArr(), this, nullptr));
 	}
 
 	JsonBool* JsonNode::asBool() noexcept
 	{
-		return reinterpret_cast<JsonBool*>(optimised::trinary<JsonNode*>(isBool(), this, nullptr));
+		return reinterpret_cast<JsonBool*>(branchless::trinary<JsonNode*>(isBool(), this, nullptr));
 	}
 
 	JsonFloat* JsonNode::asFloat() noexcept
 	{
-		return reinterpret_cast<JsonFloat*>(optimised::trinary<JsonNode*>(isFloat(), this, nullptr));
+		return reinterpret_cast<JsonFloat*>(branchless::trinary<JsonNode*>(isFloat(), this, nullptr));
 	}
 
 	JsonInt* JsonNode::asInt() noexcept
 	{
-		return reinterpret_cast<JsonInt*>(optimised::trinary<JsonNode*>(isInt(), this, nullptr));
+		return reinterpret_cast<JsonInt*>(branchless::trinary<JsonNode*>(isInt(), this, nullptr));
 	}
 
 	JsonObject* JsonNode::asObj() noexcept
 	{
-		return reinterpret_cast<JsonObject*>(optimised::trinary<JsonNode*>(isObj(), this, nullptr));
+		return reinterpret_cast<JsonObject*>(branchless::trinary<JsonNode*>(isObj(), this, nullptr));
 	}
 
 	JsonString* JsonNode::asStr() noexcept
 	{
-		return reinterpret_cast<JsonString*>(optimised::trinary<JsonNode*>(isStr(), this, nullptr));
+		return reinterpret_cast<JsonString*>(branchless::trinary<JsonNode*>(isStr(), this, nullptr));
 	}
 
 	JsonArray& JsonNode::reinterpretAsArr() noexcept

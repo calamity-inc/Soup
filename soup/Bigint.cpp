@@ -1,8 +1,8 @@
 #include "Bigint.hpp"
 
 #include "Bitset.hpp"
+#include "branchless.hpp"
 #include "endianness.hpp"
-#include "optimised.hpp"
 #include "rand.hpp"
 #include "string.hpp"
 
@@ -381,7 +381,7 @@ namespace soup
 	{
 		if (getNumChunks() != b.getNumChunks())
 		{
-			return optimised::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
+			return branchless::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
 		}
 		if (negative)
 		{
@@ -403,7 +403,7 @@ namespace soup
 			--i;
 			if (getChunkInbounds(i) != b.getChunkInbounds(i))
 			{
-				return optimised::trinary(getChunkInbounds(i) > b.getChunkInbounds(i), +1, -1);
+				return branchless::trinary(getChunkInbounds(i) > b.getChunkInbounds(i), +1, -1);
 			}
 		}
 		return 0;
@@ -413,7 +413,7 @@ namespace soup
 	{
 		if (getNumChunks() != b.getNumChunks())
 		{
-			return optimised::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
+			return branchless::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
 		}
 		size_t i = chunks.size();
 		while (i != 0)
@@ -421,7 +421,7 @@ namespace soup
 			--i;
 			if (getChunk(i) != b.getChunk(i))
 			{
-				return optimised::trinary(getChunk(i) > b.getChunk(i), +1, -1);
+				return branchless::trinary(getChunk(i) > b.getChunk(i), +1, -1);
 			}
 		}
 		return 0;
@@ -1083,7 +1083,7 @@ namespace soup
 
 		auto i = u.getTrailingZeroesBinary(); u >>= i;
 		auto j = v.getTrailingZeroesBinary(); v >>= j;
-		auto k = optimised::min(i, j);
+		auto k = branchless::min(i, j);
 
 		while (true)
 		{
