@@ -48,11 +48,11 @@ namespace soup
 		for (auto i = children.begin(); i != children.end(); ++i)
 		{
 			res.append(i->first->encode());
-			res.append(": ");
+			res.push_back(':');
 			res.append(i->second->encode());
 			if (i != children.end() - 1)
 			{
-				res.append(", ");
+				res.push_back(',');
 			}
 		}
 		res.push_back('}');

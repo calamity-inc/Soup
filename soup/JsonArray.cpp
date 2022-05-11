@@ -45,7 +45,7 @@ namespace soup
 			res.append((*i)->encode());
 			if (i != children.end() - 1)
 			{
-				res.append(", ");
+				res.push_back(',');
 			}
 		}
 		res.push_back(']');
