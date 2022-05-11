@@ -1,4 +1,4 @@
-#include "Json.hpp"
+#include "json.hpp"
 
 #include "JsonArray.hpp"
 #include "JsonBool.hpp"
@@ -10,17 +10,17 @@
 
 namespace soup
 {
-	void Json::decode(UniquePtr<JsonNode>& out, const std::string& data)
+	void json::decode(UniquePtr<JsonNode>& out, const std::string& data)
 	{
 		out = decodeForDedicatedVariable(data);
 	}
 
-	void Json::decode(UniquePtr<JsonNode>& out, const char*& c)
+	void json::decode(UniquePtr<JsonNode>& out, const char*& c)
 	{
 		out = decodeForDedicatedVariable(c);
 	}
 
-	UniquePtr<JsonNode> Json::decodeForDedicatedVariable(const std::string& data)
+	UniquePtr<JsonNode> json::decodeForDedicatedVariable(const std::string& data)
 	{
 		if (data.empty())
 		{
@@ -30,7 +30,7 @@ namespace soup
 		return decodeForDedicatedVariable(c);
 	}
 
-	UniquePtr<JsonNode> Json::decodeForDedicatedVariable(const char*& c)
+	UniquePtr<JsonNode> json::decodeForDedicatedVariable(const char*& c)
 	{
 		switch (*c)
 		{

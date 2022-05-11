@@ -1,6 +1,6 @@
 #include "JsonArray.hpp"
 
-#include "Json.hpp"
+#include "json.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -19,7 +19,7 @@ namespace soup
 			{
 				++c;
 			}
-			auto val = Json::decodeForDedicatedVariable(c);
+			auto val = json::decodeForDedicatedVariable(c);
 			if (!val)
 			{
 				break;

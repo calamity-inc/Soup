@@ -371,7 +371,7 @@
     <ClInclude Include="JsonArray.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
-    <ClInclude Include="Json.hpp">
+    <ClInclude Include="json.hpp">
       <Filter>data\json</Filter>
     </ClInclude>
     <ClInclude Include="Oid.hpp">
@@ -704,7 +704,7 @@
     <ClCompile Include="JsonString.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
-    <ClCompile Include="Json.cpp">
+    <ClCompile Include="json.cpp">
       <Filter>data\json</Filter>
     </ClCompile>
     <ClCompile Include="Oid.cpp">

@@ -1,6 +1,6 @@
 #include "JsonObject.hpp"
 
-#include "Json.hpp"
+#include "json.hpp"
 #include "JsonInt.hpp"
 #include "JsonString.hpp"
 #include "string.hpp"
@@ -21,9 +21,9 @@ namespace soup
 			{
 				++c;
 			}
-			auto key = Json::decodeForDedicatedVariable(c);
+			auto key = json::decodeForDedicatedVariable(c);
 			while (string::isSpace(*++c));
-			auto val = Json::decodeForDedicatedVariable(c);
+			auto val = json::decodeForDedicatedVariable(c);
 			if (!key || !val)
 			{
 				break;

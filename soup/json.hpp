@@ -5,7 +5,7 @@
 
 namespace soup
 {
-	struct Json
+	struct json
 	{
 		static void decode(UniquePtr<JsonNode>& out, const std::string& data);
 		static void decode(UniquePtr<JsonNode>& out, const char*& c);

@@ -466,7 +466,7 @@
     <ClInclude Include="QrCode.hpp" />
     <ClInclude Include="RasterFont.hpp" />
     <ClInclude Include="Reader.hpp" />
-    <ClInclude Include="Json.hpp" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="JsonArray.hpp" />
     <ClInclude Include="JsonInt.hpp" />
     <ClInclude Include="JsonNodeType.hpp" />
@@ -619,7 +619,7 @@
     <ClCompile Include="EditorText.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="joaat.cpp" />
-    <ClCompile Include="Json.cpp" />
+    <ClCompile Include="json.cpp" />
     <ClCompile Include="JsonArray.cpp" />
     <ClCompile Include="JsonFloat.cpp" />
     <ClCompile Include="JsonInt.cpp" />
