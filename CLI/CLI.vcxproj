@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="cli_3d.cpp" />
+    <ClCompile Include="cli_dvd.cpp" />
     <ClCompile Include="cli_repl.cpp" />
     <ClCompile Include="cli_snake.cpp" />
   </ItemGroup>

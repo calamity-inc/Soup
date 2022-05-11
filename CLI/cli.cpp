@@ -81,6 +81,12 @@ int main(int argc, const char** argv)
 			cli_snake();
 			return 0;
 		}
+
+		if (subcommand == "dvd")
+		{
+			cli_dvd();
+			return 0;
+		}
 	}
 
 	std::cout << R"EOC(Syntax: soup [tool]
@@ -92,6 +98,7 @@ Available tools:
 - 3d
 - repl
 - snake
+- dvd
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;
