@@ -27,7 +27,7 @@ namespace soup
 		Canvas(size_t width, size_t height)
 			: width(width), height(height)
 		{
-			resize(width, height);
+			pixels.resize(width * height);
 		}
 
 		Canvas(size_t width, size_t height, const std::vector<bool>& black_white_data)
