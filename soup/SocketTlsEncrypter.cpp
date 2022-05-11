@@ -32,18 +32,22 @@ namespace soup
 		}
 	}
 
-	std::string SocketTlsEncrypter::encrypt(TlsContentType_t content_type, std::string content)
+	std::string SocketTlsEncrypter::encrypt(TlsContentType_t content_type, const std::string& content)
 	{
-		content.append(calculateMac(content_type, content));
-
 		constexpr auto cipher_bytes = 16;
 
-		auto in_len = ((((content.size() + 1) / cipher_bytes) + 1) * cipher_bytes);
-		char pad_len = (in_len - content.size());
-		content.append((size_t)pad_len, (pad_len - 1));
+		auto mac = calculateMac(content_type, content);
+		auto cont_with_mac_size = (content.size() + mac.size());
+		auto aligned_in_len = ((((cont_with_mac_size + 1) / cipher_bytes) + 1) * cipher_bytes);
+		char pad_len = (aligned_in_len - cont_with_mac_size);
+
+		std::vector<unsigned char> in{};
+		in.reserve(content.size() + mac.size() + pad_len);
+		in.insert(in.end(), content.begin(), content.end());
+		in.insert(in.end(), mac.begin(), mac.end());
+		in.insert(in.end(), (size_t)pad_len, (pad_len - 1));
 
 		auto iv = rand.vec_u8(cipher_bytes);
-		std::vector<unsigned char> in(content.begin(), content.end());
 		std::vector<unsigned char> key(cipher_key.begin(), cipher_key.end());
 		auto out = aes::encryptCBC(in, key, iv);
 

@@ -586,7 +586,7 @@ namespace soup
 	{
 		if (tls_encrypter_send.isActive())
 		{
-			return tls_sendRecord(TlsContentType::application_data, data);
+			return tls_sendRecordEncrypted(TlsContentType::application_data, data);
 		}
 		return transport_send(data);
 	}
@@ -635,17 +635,30 @@ namespace soup
 		return tls_sendRecord(TlsContentType::handshake, handshaker->pack(handshake_type, content));
 	}
 
-	bool Socket::tls_sendRecord(TlsContentType_t content_type, std::string content)
+	bool Socket::tls_sendRecord(TlsContentType_t content_type, const std::string& content)
 	{
-		if (tls_encrypter_send.isActive())
+		if (!tls_encrypter_send.isActive())
 		{
-			content = tls_encrypter_send.encrypt(content_type, content);
+			TlsRecord record{};
+			record.content_type = content_type;
+			record.length = content.size();
+			auto data = record.toBinary();
+			data.append(content);
+			return transport_send(data);
 		}
+
+		return tls_sendRecordEncrypted(content_type, content);
+	}
+
+	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content)
+	{
+		std::string body = tls_encrypter_send.encrypt(content_type, content);
+
 		TlsRecord record{};
 		record.content_type = content_type;
-		record.length = content.size();
+		record.length = body.size();
 		auto data = record.toBinary();
-		data.append(content);
+		data.append(body);
 		return transport_send(data);
 	}
 

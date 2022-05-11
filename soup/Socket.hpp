@@ -135,7 +135,8 @@ namespace soup
 		// TLS - Crypto Layer
 
 		bool tls_sendHandshake(const UniquePtr<SocketTlsHandshaker>& handshaker, TlsHandshakeType_t handshake_type, const std::string& content);
-		bool tls_sendRecord(TlsContentType_t content_type, std::string content);
+		bool tls_sendRecord(TlsContentType_t content_type, const std::string& content);
+		bool tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content);
 
 		void tls_recvHandshake(UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t expected_handshake_type, void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, std::string&&), std::string&& pre = {});
 		void tls_recvRecord(TlsContentType_t expected_content_type, void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
