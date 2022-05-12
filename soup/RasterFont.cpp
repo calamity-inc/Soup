@@ -1,5 +1,7 @@
 #include "RasterFont.hpp"
 
+#include "base.hpp"
+
 #include "Canvas.hpp"
 #include "unicode.hpp"
 
@@ -1220,11 +1222,19 @@ namespace soup
 
 	uint32_t RasterFont::getFallback() const
 	{
+#if SOUP_CPP20
 		if (glyphs.contains(0xFFFD))
+#else
+		if (glyphs.find(0xFFFD) != glyphs.end())
+#endif
 		{
 			return 0xFFFD;
 		}
+#if SOUP_CPP20
 		if (glyphs.contains('?'))
+#else
+		if (glyphs.find('?') != glyphs.end())
+#endif
 		{
 			return '?';
 		}
