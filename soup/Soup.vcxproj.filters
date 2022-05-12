@@ -572,6 +572,9 @@
     <ClInclude Include="FileWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
+    <ClInclude Include="YubikeyValidator.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -829,6 +832,9 @@
     </ClCompile>
     <ClCompile Include="JsonNull.cpp">
       <Filter>data\json</Filter>
+    </ClCompile>
+    <ClCompile Include="YubikeyValidator.cpp">
+      <Filter>crypto</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
