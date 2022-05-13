@@ -7,7 +7,6 @@
 #include "Worker.hpp"
 
 #if SOUP_WINDOWS
-#pragma comment(lib, "Ws2_32.lib")
 #include <Winsock2.h>
 #else
 #include <sys/socket.h>
