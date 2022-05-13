@@ -18,36 +18,23 @@ namespace soup
 		base_path.append("&otp=");
 	}
 
-	struct CaptureYubikeyValidate
-	{
-		const YubikeyValidator* validator;
-		const std::string* otp;
-		std::string nonce;
-		YubikeyValidator::Result* res;
-	};
-
 	YubikeyValidator::Result YubikeyValidator::validate(const std::string& otp) const
 	{
-		Result res{};
-
 		if (otp.size() == 44)
 		{
-			CaptureYubikeyValidate cap;
-			cap.validator = this;
-			cap.otp = &otp;
-			cap.nonce = soup::rand.str<std::string>(40);
-			cap.res = &res;
+			std::string nonce = soup::rand.str<std::string>(40);
 
 			std::string path = base_path;
 			path.append(otp);
 			path.append("&nonce=");
-			path.append(cap.nonce);
+			path.append(nonce);
 			HttpRequest req{ "GET", "api.yubico.com", std::move(path) };
-			req.execute(Callback<void(HttpResponse&&)>([](HttpResponse&& res, Capture&& _cap)
+			auto res = req.execute();
+			if (res.has_value())
 			{
 				std::map<std::string, std::string> kv_map{};
-				string::replace_all(res.body, "\r\n", "\n");
-				for (const auto& line : string::explode(res.body, '\n'))
+				string::replace_all(res->body, "\r\n", "\n");
+				for (const auto& line : string::explode(res->body, '\n'))
 				{
 					auto sep = line.find('=');
 					if (sep != std::string::npos)
@@ -59,14 +46,13 @@ namespace soup
 				{
 					if (status->second == "OK")
 					{
-						if (auto otp = kv_map.find("otp"); otp != kv_map.end())
+						if (auto e_otp = kv_map.find("otp"); e_otp != kv_map.end())
 						{
-							auto& cap = _cap.get<CaptureYubikeyValidate>();
-							if (otp->second == *cap.otp)
+							if (e_otp->second == otp)
 							{
-								if (auto nonce = kv_map.find("nonce"); nonce != kv_map.end())
+								if (auto e_nonce = kv_map.find("nonce"); e_nonce != kv_map.end())
 								{
-									if (nonce->second == cap.nonce)
+									if (e_nonce->second == nonce)
 									{
 										if (auto h = kv_map.find("h"); h != kv_map.end())
 										{
@@ -84,9 +70,9 @@ namespace soup
 													tbs.append(e.second);
 												}
 											}
-											if (h->second == base64::encode(sha1::hmac(tbs, cap.validator->secret)))
+											if (h->second == base64::encode(sha1::hmac(tbs, secret)))
 											{
-												cap.res->device_id = cap.otp->substr(0, 12);
+												return { otp.substr(0, 12) };
 											}
 										}
 									}
@@ -95,9 +81,8 @@ namespace soup
 						}
 					}
 				}
-			}, std::move(cap)));
+			}
 		}
-
-		return res;
+		return {};
 	}
 }

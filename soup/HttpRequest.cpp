@@ -58,12 +58,12 @@ namespace soup
 		std::string* resp;
 	};
 
-	void HttpRequest::execute(Callback<void(HttpResponse&&)>&& on_success, Callback<void()>&& on_fail) const
+	std::optional<HttpResponse> HttpRequest::execute() const
 	{
-		return execute(std::move(on_success), std::move(on_fail), &Socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
+		return execute(&Socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
 	}
 
-	void HttpRequest::execute(Callback<void(HttpResponse&&)>&& on_success, Callback<void()>&& on_fail, bool(*certchain_validator)(const Certchain&, const std::string& server_name)) const
+	std::optional<HttpResponse> HttpRequest::execute(bool(*certchain_validator)(const Certchain&, const std::string& server_name)) const
 	{
 		auto sock = make_unique<Socket>();
 		auto resp = make_unique<std::string>();
@@ -102,15 +102,9 @@ namespace soup
 					res.body = deflate::decompress(res.body).decompressed;
 				}
 			}
-			on_success(std::move(res));
+			return std::optional<HttpResponse>(std::move(res));
 		}
-		else
-		{
-			if (on_fail)
-			{
-				on_fail();
-			}
-		}
+		return {};
 	}
 
 	void HttpRequest::execute_tick(Socket& s, std::string* resp)

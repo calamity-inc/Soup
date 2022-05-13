@@ -2,6 +2,8 @@
 
 #include "fwd.hpp"
 
+#include <optional>
+
 #include "Callback.hpp"
 #include "MimeMessage.hpp"
 #include "HttpResponse.hpp"
@@ -26,8 +28,8 @@ namespace soup
 	public:
 		void setPayload(std::string payload);
 
-		void execute(Callback<void(HttpResponse&&)>&& on_success, Callback<void()>&& on_fail = {}) const; // blocking
-		void execute(Callback<void(HttpResponse&&)>&& on_success, Callback<void()>&& on_fail, bool(*certchain_validator)(const Certchain&, const std::string& server_name)) const; // blocking
+		[[nodiscard]] std::optional<HttpResponse> execute() const; // blocking
+		[[nodiscard]] std::optional<HttpResponse> execute(bool(*certchain_validator)(const Certchain&, const std::string& server_name)) const; // blocking
 	private:
 		static void execute_tick(Socket& s, std::string* resp);
 	};
