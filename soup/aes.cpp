@@ -324,8 +324,10 @@ namespace soup
 
 	void aes::EncryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, const int Nr)
 	{
-		unsigned char** state = new unsigned char* [4];
-		state[0] = new unsigned  char[4 * Nb];
+		unsigned char state_0[4 * Nb];
+		unsigned char* state[4];
+		state[0] = state_0;
+
 		int i, j, round;
 		for (i = 0; i < 4; i++)
 		{
@@ -361,15 +363,14 @@ namespace soup
 				out[i + 4 * j] = state[i][j];
 			}
 		}
-
-		delete[] state[0];
-		delete[] state;
 	}
 
 	void aes::DecryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, const int Nr)
 	{
-		unsigned char** state = new unsigned char* [4];
-		state[0] = new unsigned  char[4 * Nb];
+		unsigned char state_0[4 * Nb];
+		unsigned char* state[4];
+		state[0] = state_0;
+
 		int i, j, round;
 		for (i = 0; i < 4; i++)
 		{
@@ -403,9 +404,6 @@ namespace soup
 				out[i + 4 * j] = state[i][j];
 			}
 		}
-
-		delete[] state[0];
-		delete[] state;
 	}
 
 	std::vector<unsigned char> aes::KeyExpansion(const std::vector<unsigned char>& key)
@@ -415,8 +413,8 @@ namespace soup
 
 		std::vector<unsigned char> w(4 * Nb * (Nr + 1), 0);
 
-		unsigned char* temp = new unsigned char[4];
-		unsigned char* rcon = new unsigned char[4];
+		unsigned char temp[4];
+		unsigned char rcon[4];
 
 		int i = 0;
 		while (i < 4 * Nk)
@@ -451,9 +449,6 @@ namespace soup
 			w[i + 3] = w[i + 3 - 4 * Nk] ^ temp[3];
 			i += 4;
 		}
-
-		delete[]rcon;
-		delete[]temp;
 
 		return w;
 	}
