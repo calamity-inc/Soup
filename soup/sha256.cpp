@@ -121,6 +121,12 @@ namespace soup
 		return hash(is);
 	}
 
+	std::string sha256::hash(std::string&& s)
+	{
+		std::istringstream is(std::move(s));
+		return hash(is);
+	}
+
 	std::string sha256::hash(std::istream& is)
 	{
 		// init

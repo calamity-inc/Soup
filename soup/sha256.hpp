@@ -11,6 +11,7 @@ namespace soup
 		static constexpr auto BLOCK_BYTES = 64u;
 
 		[[nodiscard]] static std::string hash(const std::string& s);
+		[[nodiscard]] static std::string hash(std::string&& s);
 		[[nodiscard]] static std::string hash(std::istream& is);
 	};
 }
