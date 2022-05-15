@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 namespace soup
@@ -75,5 +76,20 @@ namespace soup
 			val ^= (val >> 11) ^ (val >> 22);
 			val *= 0x38E38E39; // inverse of val += (val << 3);
 		}
+
+		static void undo_partial(uint32_t& val) noexcept
+		{
+			val ^= (val >> 6) ^ (val >> 12) ^ (val >> 18) ^ (val >> 24) ^ (val >> 30);
+			val *= 0xC00FFC01;  // inverse of val += (val << 10);
+		}
+
+		[[nodiscard]] static uint32_t undo_partial(uint32_t val, char c) noexcept
+		{
+			val -= c;
+			undo_partial(val);
+			return val;
+		}
+
+		[[nodiscard]] static std::optional<std::string> reverse_short_key(uint32_t val); // If the input to joaat is 0..3 characters, this will reverse the hash.
 	};
 }
