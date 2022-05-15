@@ -439,12 +439,26 @@ namespace soup
 		}
 
 		template <typename Str>
+		static Str lower(Str&& str)
+		{
+			lower(str);
+			return str;
+		}
+
+		template <typename Str>
 		static void upper(Str& str)
 		{
 			std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
 			{
 				return std::toupper(c);
 			});
+		}
+
+		template <typename Str>
+		static Str upper(Str&& str)
+		{
+			upper(str);
+			return str;
 		}
 
 		[[nodiscard]] static constexpr char rot13(char c) noexcept
