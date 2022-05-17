@@ -575,6 +575,9 @@
     <ClInclude Include="YubikeyValidator.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="ShortString.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
