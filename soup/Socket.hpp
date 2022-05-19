@@ -26,6 +26,8 @@ namespace soup
 	public:
 #if SOUP_WINDOWS
 		inline static size_t wsa_consumers = 0;
+#else
+		inline static bool registered_sigpipe_handler = false;
 #endif
 
 #if SOUP_WINDOWS

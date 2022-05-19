@@ -31,7 +31,7 @@
 
 namespace soup
 {
-#if SOUP_LINUX
+#if !SOUP_WINDOWS
 	static void sigpipe_handler_proc(int)
 	{
 	}
@@ -40,9 +40,6 @@ namespace soup
 	Socket::Socket() noexcept
 	{
 		onConstruct();
-#if SOUP_LINUX
-		signal::handle(SIGPIPE, &sigpipe_handler_proc);
-#endif
 	}
 
 	void Socket::onConstruct() noexcept
@@ -53,6 +50,12 @@ namespace soup
 			WSADATA wsaData;
 			WORD wVersionRequested = MAKEWORD(2, 2);
 			WSAStartup(wVersionRequested, &wsaData);
+		}
+#else
+		if (!registered_sigpipe_handler)
+		{
+			registered_sigpipe_handler = true;
+			signal::handle(SIGPIPE, &sigpipe_handler_proc);
 		}
 #endif
 	}
