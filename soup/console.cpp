@@ -435,7 +435,7 @@ namespace soup
 
 	void console_impl::setTitle(const std::string& title)
 	{
-		// BUG: PuTTY's title will never be restored7
+		// BUG: PuTTY's title will never be restored
 		std::cout << OSC "2;" << title << ST;
 	}
 
