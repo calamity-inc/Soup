@@ -100,13 +100,13 @@ namespace soup
 #endif
 	}
 
-	void Thread::awaitCompletion(std::vector<Thread>& threads) noexcept
+	void Thread::awaitCompletion(std::vector<UniquePtr<Thread>>& threads) noexcept
 	{
 #if SOUP_WINDOWS
 		std::vector<HANDLE> handles{};
 		for (auto& t : threads)
 		{
-			handles.emplace_back(t.handle);
+			handles.emplace_back(t->handle);
 		}
 		WaitForMultipleObjects((DWORD)handles.size(), handles.data(), TRUE, INFINITE);
 #else

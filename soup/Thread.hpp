@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "Capture.hpp"
+#include "UniquePtr.hpp"
 
 namespace soup
 {
@@ -41,6 +42,6 @@ namespace soup
 		void stop() noexcept;
 
 		void awaitCompletion() noexcept;
-		static void awaitCompletion(std::vector<Thread>& threads) noexcept;
+		static void awaitCompletion(std::vector<UniquePtr<Thread>>& threads) noexcept;
 	};
 }
