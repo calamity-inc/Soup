@@ -91,5 +91,7 @@ namespace soup
 		}
 
 		[[nodiscard]] static std::optional<std::string> reverse_short_key(uint32_t val); // If the input to joaat is 0..3 characters, this will reverse the hash.
+
+		[[nodiscard]] static std::string collide(uint32_t val, const char* prefix = ""); // Can take quite a while to complete
 	};
 }

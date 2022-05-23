@@ -48,4 +48,45 @@ namespace soup
 
 		return {};
 	}
+
+	static void collide_inc(char* buf, size_t idx, size_t& len)
+	{
+		if (buf[idx] == '\0')
+		{
+			buf[idx] = 'a';
+			++len;
+			return;
+		}
+		if (buf[idx] == '9')
+		{
+			collide_inc(buf, idx + 1, len);
+			buf[idx] = 'a';
+			return;
+		}
+		if (buf[idx] == 'z')
+		{
+			buf[idx] = '0';
+			return;
+		}
+		++buf[idx];
+	}
+
+	std::string joaat::collide(uint32_t val, const char* prefix)
+	{
+		joaat::undo_finalise(val);
+
+		char buf[100];
+		memset(buf, 0, sizeof(buf));
+
+		size_t idx = strlen(prefix);
+		size_t len = idx;
+		strncpy_s(buf, prefix, len);
+
+		while (joaat::partial(&buf[0], len) != val)
+		{
+			collide_inc(buf, idx, len);
+		}
+
+		return std::string((const char*)&buf[0], len);
+	}
 }
