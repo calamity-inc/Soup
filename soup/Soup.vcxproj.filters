@@ -578,6 +578,18 @@
     <ClInclude Include="ShortString.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="AtomicDeque.hpp">
+      <Filter>util\atomic_containers</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomicStack.hpp">
+      <Filter>util\atomic_containers</Filter>
+    </ClInclude>
+    <ClInclude Include="PoppedNode.hpp">
+      <Filter>util\atomic_containers</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedIterator.hpp">
+      <Filter>util\atomic_containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -936,6 +948,9 @@
     </Filter>
     <Filter Include="data\enc">
       <UniqueIdentifier>{d42a16a2-9997-4a38-b9ab-9db1a0abfb79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\atomic_containers">
+      <UniqueIdentifier>{a887a824-7b3f-4831-b102-4a7c9d4530e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

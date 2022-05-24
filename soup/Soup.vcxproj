@@ -401,6 +401,8 @@
     <ClInclude Include="Asn1Sequence.hpp" />
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
+    <ClInclude Include="AtomicDeque.hpp" />
+    <ClInclude Include="AtomicStack.hpp" />
     <ClInclude Include="base.hpp" />
     <ClInclude Include="base64.hpp" />
     <ClInclude Include="bcrypt.hpp" />
@@ -454,6 +456,7 @@
     <ClInclude Include="JsonFloat.hpp" />
     <ClInclude Include="JsonNull.hpp" />
     <ClInclude Include="JsonObject.hpp" />
+    <ClInclude Include="LinkedIterator.hpp" />
     <ClInclude Include="main.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="MimeType.hpp" />
@@ -463,6 +466,7 @@
     <ClInclude Include="Plane.hpp" />
     <ClInclude Include="PointLight.hpp" />
     <ClInclude Include="PolyVector.hpp" />
+    <ClInclude Include="PoppedNode.hpp" />
     <ClInclude Include="QrCode.hpp" />
     <ClInclude Include="RasterFont.hpp" />
     <ClInclude Include="Reader.hpp" />
