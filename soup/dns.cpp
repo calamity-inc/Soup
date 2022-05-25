@@ -39,7 +39,10 @@ namespace soup::dns
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				res.emplace_back(i->dwTtl, i->Data.A.IpAddress);
+				if (i->wType == DNS_TYPE_A)
+				{
+					res.emplace_back(i->dwTtl, i->Data.A.IpAddress);
+				}
 			}
 			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
@@ -70,7 +73,10 @@ namespace soup::dns
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				res.emplace_back(i->dwTtl, i->Data.AAAA.Ip6Address.IP6Byte);
+				if (i->wType == DNS_TYPE_AAAA)
+				{
+					res.emplace_back(i->dwTtl, i->Data.AAAA.Ip6Address.IP6Byte);
+				}
 			}
 			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
@@ -101,7 +107,10 @@ namespace soup::dns
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				res.emplace_back(i->dwTtl, i->Data.SRV.wPriority, i->Data.SRV.wWeight, i->Data.SRV.pNameTarget, i->Data.SRV.wPort);
+				if (i->wType == DNS_TYPE_SRV)
+				{
+					res.emplace_back(i->dwTtl, i->Data.SRV.wPriority, i->Data.SRV.wWeight, i->Data.SRV.pNameTarget, i->Data.SRV.wPort);
+				}
 			}
 			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
@@ -134,7 +143,10 @@ namespace soup::dns
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				res.emplace_back(i->dwTtl, i->Data.TXT.pStringArray[0]);
+				if (i->wType == DNS_TYPE_TEXT)
+				{
+					res.emplace_back(i->dwTtl, i->Data.TXT.pStringArray[0]);
+				}
 			}
 			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
