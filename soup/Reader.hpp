@@ -15,6 +15,12 @@ namespace soup
 	public:
 		[[nodiscard]] virtual bool hasMore() = 0;
 
+		bool ignore(size_t len)
+		{
+			std::string v;
+			return str(len, v);
+		}
+
 		// An unsigned 64-bit integer encoded in 1..9 bytes. The most significant bit of bytes 1 to 8 is used to indicate if another byte follows.
 		bool u64_dyn(uint64_t& v)
 		{

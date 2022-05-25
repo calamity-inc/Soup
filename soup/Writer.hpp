@@ -13,6 +13,16 @@ namespace soup
 		virtual void write(const char* data, size_t size) = 0;
 
 	public:
+		bool ignore(size_t len)
+		{
+			uint8_t v = 0;
+			while (len-- != 0)
+			{
+				u8(v);
+			}
+			return true;
+		}
+
 		bool u8(uint8_t& v) final
 		{
 			write((const char*)&v, sizeof(uint8_t));
