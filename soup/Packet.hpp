@@ -47,6 +47,7 @@ namespace soup
 			return read(r);
 		}
 
+		template <typename Reader = Reader>
 		bool read(Reader& r)
 		{
 			return reinterpret_cast<T*>(this)->template io<Reader>(r);
@@ -78,6 +79,7 @@ namespace soup
 			return write(w);
 		}
 
+		template <typename Writer = Writer>
 		bool write(Writer& w)
 		{
 			return reinterpret_cast<T*>(this)->template io<Writer>(w);
