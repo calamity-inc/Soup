@@ -40,8 +40,7 @@ namespace soup
 		StructMap custom_data;
 		bool remote_closed = false;
 
-		std::string tls_record_buf_data{};
-		TlsContentType_t tls_record_buf_content_type;
+		std::string tls_record_buf{};
 
 		SocketTlsEncrypter tls_encrypter_send;
 		SocketTlsEncrypter tls_encrypter_recv;
@@ -142,8 +141,6 @@ namespace soup
 		void tls_recvHandshake(UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t expected_handshake_type, void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, std::string&&), std::string&& pre = {});
 		void tls_recvRecord(TlsContentType_t expected_content_type, void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
 		void tls_recvRecord(void(*callback)(Socket&, TlsContentType_t, std::string&&, Capture&&), Capture&& cap = {});
-
-		void tls_unrecv(TlsContentType_t content_type, std::string&& content) noexcept;
 
 		void tls_close(TlsAlertDescription_t desc);
 

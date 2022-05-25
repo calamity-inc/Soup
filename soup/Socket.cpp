@@ -80,8 +80,7 @@ namespace soup
 		custom_data = std::move(b.custom_data);
 		remote_closed = b.remote_closed;
 
-		tls_record_buf_data = std::move(b.tls_record_buf_data);
-		tls_record_buf_content_type = b.tls_record_buf_content_type;
+		tls_record_buf = std::move(b.tls_record_buf);
 		tls_encrypter_send = std::move(b.tls_encrypter_send);
 		tls_encrypter_recv = std::move(b.tls_encrypter_recv);
 
@@ -726,18 +725,18 @@ namespace soup
 
 			if (data.size() > hs.length)
 			{
-				s.tls_unrecv(TlsContentType::handshake, data.substr(hs.length));
+				s.tls_record_buf = data.substr(hs.length);
 				data.erase(hs.length);
 			}
 
 			cap.callback(s, std::move(cap.handshaker), std::move(data));
 		};
 
-		if (!tls_record_buf_data.empty())
+		if (!tls_record_buf.empty())
 		{
-			std::string data = std::move(tls_record_buf_data);
-			tls_record_buf_data.clear();
-			record_callback(*this, tls_record_buf_content_type, std::move(data), std::move(cap));
+			std::string data = std::move(tls_record_buf);
+			tls_record_buf.clear();
+			record_callback(*this, TlsContentType::handshake, std::move(data), std::move(cap));
 			return;
 		}
 
@@ -784,11 +783,11 @@ namespace soup
 
 	void Socket::tls_recvRecord(void(*callback)(Socket&, TlsContentType_t, std::string&&, Capture&&), Capture&& cap)
 	{
-		if (!tls_record_buf_data.empty())
+		if (!tls_record_buf.empty())
 		{
-			std::string data = std::move(tls_record_buf_data);
-			tls_record_buf_data.clear();
-			callback(*this, tls_record_buf_content_type, std::move(data), std::move(cap));
+			std::string data = std::move(tls_record_buf);
+			tls_record_buf.clear();
+			callback(*this, TlsContentType::handshake, std::move(data), std::move(cap));
 			return;
 		}
 		transport_recvExact(5, [](Socket& s, std::string&& data, Capture&& cap)
@@ -858,12 +857,6 @@ namespace soup
 			callback,
 			std::move(cap)
 		});
-	}
-
-	void Socket::tls_unrecv(TlsContentType_t content_type, std::string&& content) noexcept
-	{
-		tls_record_buf_data = std::move(content);
-		tls_record_buf_content_type = content_type;
 	}
 
 	void Socket::tls_close(TlsAlertDescription_t desc)
