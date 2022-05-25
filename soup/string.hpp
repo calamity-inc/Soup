@@ -427,6 +427,9 @@ namespace soup
 			}
 		}
 
+		[[nodiscard]] static std::string _xor(const std::string& l, const std::string& r); // Did you know that "xor" was a C++ keyword?
+		[[nodiscard]] static std::string xor_same_length(const std::string& l, const std::string& r);
+
 		// char mutation
 
 		template <typename Str>

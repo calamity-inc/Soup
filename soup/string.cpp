@@ -18,6 +18,31 @@ namespace soup
 		}
 	}
 
+	std::string string::_xor(const std::string& l, const std::string& r)
+	{
+		if (l.size() < r.size())
+		{
+			return _xor(r, l);
+		}
+		// l.size() >= r.size()
+		std::string res(l.size(), '\0');
+		for (size_t i = 0; i != l.size(); ++i)
+		{
+			res.at(i) = (char)((uint8_t)l.at(i) ^ (uint8_t)r.at(i % r.size()));
+		}
+		return res;
+	}
+
+	std::string string::xor_same_length(const std::string& l, const std::string& r)
+	{
+		std::string res(l.size(), '\0');
+		for (size_t i = 0; i != l.size(); ++i)
+		{
+			res.at(i) = (char)((uint8_t)l.at(i) ^ (uint8_t)r.at(i));
+		}
+		return res;
+	}
+
 	std::string string::fromFile(const std::string& file)
 	{
 		std::string ret{};
