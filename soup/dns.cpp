@@ -41,6 +41,7 @@ namespace soup::dns
 			{
 				res.emplace_back(i->dwTtl, i->Data.A.IpAddress);
 			}
+			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
 #else
 		unsigned char query_buffer[1024];
@@ -71,6 +72,7 @@ namespace soup::dns
 			{
 				res.emplace_back(i->dwTtl, i->Data.AAAA.Ip6Address.IP6Byte);
 			}
+			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
 #else
 		unsigned char query_buffer[1024];
@@ -101,6 +103,7 @@ namespace soup::dns
 			{
 				res.emplace_back(i->dwTtl, i->Data.SRV.wPriority, i->Data.SRV.wWeight, i->Data.SRV.pNameTarget, i->Data.SRV.wPort);
 			}
+			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
 #else
 		unsigned char query_buffer[1024];
@@ -133,6 +136,7 @@ namespace soup::dns
 			{
 				res.emplace_back(i->dwTtl, i->Data.TXT.pStringArray[0]);
 			}
+			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
 #else
 		unsigned char query_buffer[1024];
