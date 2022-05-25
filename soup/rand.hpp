@@ -41,12 +41,9 @@ namespace soup
 			return std::move(vec.at(t<size_t>(0, vec.size() - 1)));
 		}
 
-		[[nodiscard]] static uint8_t byte(unsigned short min = 0u) noexcept
-		{
-			return static_cast<uint8_t>(t<unsigned short>(min, 0xFFu));
-		}
+		[[nodiscard]] static uint8_t byte(uint8_t min = 0) noexcept;
 
-		[[nodiscard]] static char ch(unsigned short min = 0u) noexcept
+		[[nodiscard]] static char ch(char min = 0) noexcept
 		{
 			return (char)byte(min);
 		}
@@ -98,6 +95,12 @@ namespace soup
 			return vec;
 		}
 	};
+
+	template <>
+	inline uint8_t rand_impl::t<uint8_t>(uint8_t min, uint8_t max) noexcept
+	{
+		return static_cast<uint8_t>(t<uint16_t>(min, max));
+	}
 
 	inline rand_impl rand;
 }

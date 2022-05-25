@@ -647,6 +647,7 @@
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="QrCode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="rand.cpp" />
     <ClCompile Include="RasterFont.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RenderTargetCanvas.cpp" />

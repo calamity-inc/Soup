@@ -851,6 +851,9 @@
     <ClCompile Include="YubikeyValidator.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
+    <ClCompile Include="rand.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
