@@ -4,9 +4,6 @@
 #include <cstdio>
 
 #if SOUP_WINDOWS
-#include <Windows.h>
-#include <winternl.h>
-
 #include "ObfusString.hpp"
 #endif
 #include "rand.hpp"
@@ -91,6 +88,21 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
+	PEB* os::getCurrentPeb()
+	{
+		// There is a "simpler" solution (https://gist.github.com/Wack0/849348f9d4f3a73dac864a556e9372a5), but this is what Microsoft does, so we shall, too.
+
+		auto ntdll = LoadLibraryA(ObfusString("ntdll.dll"));
+
+		using NtQueryInformationProcess_t = NTSTATUS(NTAPI*)(HANDLE ProcessHandle, PROCESSINFOCLASS ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength);
+		auto NtQueryInformationProcess = (NtQueryInformationProcess_t)GetProcAddress(ntdll, ObfusString("NtQueryInformationProcess"));
+
+		PROCESS_BASIC_INFORMATION ProcessInformation;
+		NtQueryInformationProcess(GetCurrentProcess(), ProcessBasicInformation, &ProcessInformation, sizeof(ProcessInformation), 0);
+
+		return ProcessInformation.PebBaseAddress;
+	}
+
 	void os::stop()
 	{
 		auto ntdll = LoadLibraryA(ObfusString("ntdll.dll"));

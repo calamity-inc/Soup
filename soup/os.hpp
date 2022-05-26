@@ -6,6 +6,11 @@
 #include <string>
 #include <vector>
 
+#if SOUP_WINDOWS
+#include <Windows.h>
+#include <Winternl.h>
+#endif
+
 namespace soup
 {
 	class os
@@ -20,6 +25,8 @@ namespace soup
 	public:
 
 #if SOUP_WINDOWS
+		[[nodiscard]] static PEB* getCurrentPeb();
+
 		static void stop();
 #endif
 	};

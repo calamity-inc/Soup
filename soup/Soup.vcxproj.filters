@@ -590,6 +590,12 @@
     <ClInclude Include="LinkedIterator.hpp">
       <Filter>util\atomic_containers</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleHider.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="structing.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -853,6 +859,9 @@
     </ClCompile>
     <ClCompile Include="rand.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleHider.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

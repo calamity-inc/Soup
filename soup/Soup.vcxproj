@@ -460,6 +460,7 @@
     <ClInclude Include="main.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="MimeType.hpp" />
+    <ClInclude Include="ModuleHider.hpp" />
     <ClInclude Include="Notifyable.hpp" />
     <ClInclude Include="os.hpp" />
     <ClInclude Include="OstreamWriter.hpp" />
@@ -492,6 +493,7 @@
     <ClInclude Include="ServerService.hpp" />
     <ClInclude Include="ShortString.hpp" />
     <ClInclude Include="signal.hpp" />
+    <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
     <ClInclude Include="Matrix.hpp" />
@@ -641,6 +643,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MimeMessage.cpp" />
     <ClCompile Include="Module.cpp" />
+    <ClCompile Include="ModuleHider.cpp" />
     <ClCompile Include="Oid.cpp" />
     <ClCompile Include="os.cpp" />
     <ClCompile Include="pem.cpp" />
