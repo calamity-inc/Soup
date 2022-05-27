@@ -886,12 +886,14 @@ namespace soup
 		return res;
 	}
 
+	// ++a
 	Bigint& Bigint::operator++()
 	{
 		*this += Bigint((chunk_t)1u);
 		return *this;
 	}
 
+	// a++
 	Bigint Bigint::operator++(int)
 	{
 		Bigint pre(*this);
