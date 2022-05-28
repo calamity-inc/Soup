@@ -47,9 +47,9 @@ namespace soup
 	{
 		auto data = sig.bytes.data();
 		auto length = sig.bytes.size();
-		for (std::uintptr_t i = 0; i < size - length; ++i)
+		for (uintptr_t i = 0; i < size - length; ++i)
 		{
-			if (pattern_matches(base.add(i).as<std::uint8_t*>(), data, length))
+			if (pattern_matches(base.add(i).as<uint8_t*>(), data, length))
 			{
 				return base.add(i);
 			}
@@ -63,9 +63,9 @@ namespace soup
 
 		auto data = sig.bytes.data();
 		auto length = sig.bytes.size();
-		for (std::uintptr_t i = 0; i < size - length; ++i)
+		for (uintptr_t i = 0; i < size - length; ++i)
 		{
-			if (pattern_matches(base.add(i).as<std::uint8_t*>(), data, length))
+			if (pattern_matches(base.add(i).as<uint8_t*>(), data, length))
 			{
 				result.emplace_back(base.add(i));
 				if (result.size() >= limit)

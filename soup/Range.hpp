@@ -22,7 +22,7 @@ namespace soup
 
 		[[nodiscard]] bool contains(Pointer h) const noexcept;
 
-		[[nodiscard]] static bool pattern_matches(std::uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept;
+		[[nodiscard]] static bool pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept;
 
 		[[nodiscard]] Pointer scan(const Pattern& sig) const noexcept;
 		[[nodiscard]] std::vector<Pointer> scan_all(const Pattern& sig, unsigned int limit = -1) const;
