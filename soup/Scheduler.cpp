@@ -15,11 +15,6 @@ namespace soup
 		return *reinterpret_cast<Socket*>(workers.emplace_back(std::move(sock)).get());
 	}
 
-	Socket& Scheduler::addSocket(Socket&& sock) noexcept
-	{
-		return addSocket(make_unique<Socket>(std::move(sock)));
-	}
-
 	void Scheduler::run()
 	{
 		while (!workers.empty())

@@ -29,7 +29,12 @@ namespace soup
 		on_exception_t on_exception = nullptr;
 
 		Socket& addSocket(UniquePtr<Socket>&& sock) noexcept;
-		Socket& addSocket(Socket&& sock) noexcept;
+
+		template <typename T, SOUP_RESTRICT(std::is_same_v<T, Socket>)>
+		T& addSocket(T&& sock) noexcept
+		{
+			return addSocket(make_unique<Socket>(std::move(sock)));
+		}
 
 		void run();
 	protected:
