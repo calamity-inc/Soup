@@ -38,7 +38,7 @@ namespace soup
 
 		template <typename T, SOUP_RESTRICT(std::is_pointer_v<std::remove_reference_t<T>>)>
 		Capture(T v)
-			: data(const_cast<void*>(static_cast<const void*>(v)))
+			: data(reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(v)))
 		{
 		}
 
