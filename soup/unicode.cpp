@@ -56,6 +56,13 @@ namespace soup
 		return uni;
 	}
 
+#if SOUP_CPP20
+	std::u32string unicode::utf8_to_utf32(const char8_t* utf8) noexcept
+	{
+		return utf8_to_utf32(reinterpret_cast<const char*>(utf8));
+	}
+#endif
+
 	std::u32string unicode::utf8_to_utf32(const std::string& utf8) noexcept
 	{
 		std::u32string utf32{};
@@ -75,6 +82,13 @@ namespace soup
 		}
 		return utf32;
 	}
+
+#if SOUP_CPP20
+	UTF16_STRING_TYPE unicode::utf8_to_utf16(const char8_t* utf8) noexcept
+	{
+		return utf8_to_utf16(reinterpret_cast<const char*>(utf8));
+	}
+#endif
 
 	UTF16_STRING_TYPE unicode::utf8_to_utf16(const std::string& utf8) noexcept
 	{

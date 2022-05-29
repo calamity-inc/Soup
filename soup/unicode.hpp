@@ -23,7 +23,13 @@ namespace soup
 		static constexpr uint32_t REPLACEMENT_CHAR = 0xFFFD;
 
 		[[nodiscard]] static char32_t utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept;
+#if SOUP_CPP20
+		[[nodiscard]] static std::u32string utf8_to_utf32(const char8_t* utf8) noexcept;
+#endif
 		[[nodiscard]] static std::u32string utf8_to_utf32(const std::string& utf8) noexcept;
+#if SOUP_CPP20
+		[[nodiscard]] static UTF16_STRING_TYPE utf8_to_utf16(const char8_t* utf8) noexcept;
+#endif
 		[[nodiscard]] static UTF16_STRING_TYPE utf8_to_utf16(const std::string& utf8) noexcept;
 		[[nodiscard]] static UTF16_STRING_TYPE utf32_to_utf16(const std::u32string& utf32) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(char32_t utf32) noexcept;
