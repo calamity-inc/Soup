@@ -40,13 +40,13 @@ namespace soup
 		{
 			if ((*it & 0b1111110000000000) == 0b1101100000000000)
 			{
-				auto hi = (uint32_t)(*it & 0b0000001111111111);
+				auto hi = (char32_t)(*it & 0b0000001111111111);
 				if (++it == end)
 				{
 					return 0;
 				}
-				auto lo = (uint32_t)(*it & 0b0000001111111111);
-				return (char32_t)(((hi - 0xD800) * 0x400) + (lo - 0xDC00));
+				auto lo = (char32_t)(*it++ & 0b0000001111111111);
+				return (((hi * 0x400) + lo) + 0x10000);
 			}
 			return (char32_t)*it++;
 		}
