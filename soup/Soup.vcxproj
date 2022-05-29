@@ -462,6 +462,7 @@
     <ClInclude Include="MimeType.hpp" />
     <ClInclude Include="ModuleHider.hpp" />
     <ClInclude Include="Notifyable.hpp" />
+    <ClInclude Include="OpaqueString.hpp" />
     <ClInclude Include="os.hpp" />
     <ClInclude Include="OstreamWriter.hpp" />
     <ClInclude Include="Plane.hpp" />
@@ -645,6 +646,7 @@
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="ModuleHider.cpp" />
     <ClCompile Include="Oid.cpp" />
+    <ClCompile Include="OpaqueString.cpp" />
     <ClCompile Include="os.cpp" />
     <ClCompile Include="pem.cpp" />
     <ClCompile Include="PointLight.cpp" />
