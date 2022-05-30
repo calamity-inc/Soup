@@ -82,7 +82,7 @@ namespace soup
 		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		void operator =(const T& v)
 		{
-			reset();
+			free();
 			data = new std::remove_reference_t<T>(v);
 			deleter = &deleter_impl<std::remove_reference_t<T>>;
 		}
@@ -90,7 +90,7 @@ namespace soup
 		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		void operator =(T&& v)
 		{
-			reset();
+			free();
 			data = new std::remove_reference_t<T>(std::move(v));
 			deleter = &deleter_impl<std::remove_reference_t<T>>;
 		}
@@ -98,7 +98,7 @@ namespace soup
 		template <typename T, SOUP_RESTRICT(std::is_pointer_v<std::remove_reference_t<T>>)>
 		void operator =(T v)
 		{
-			reset();
+			free();
 			data = v;
 			deleter = nullptr;
 		}
