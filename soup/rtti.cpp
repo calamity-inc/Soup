@@ -142,7 +142,7 @@ if (*c == '\0') \
 		return followRVA<hierarchy_info>(hierarchy_info_rva);
 	}
 
-	std::string object::toHierarchyString() const noexcept
+	std::string object::getHierarchyString() const noexcept
 	{
 		std::string res = getTypeInfo()->getName();
 		for (auto i = 0; i != getNumParentClasses(); ++i)

@@ -68,7 +68,7 @@ namespace soup::rtti
 
 		[[nodiscard]] type_info* getTypeInfo() const noexcept;
 		[[nodiscard]] hierarchy_info* getHierarchyInfo() const noexcept;
-		[[nodiscard]] std::string toHierarchyString() const noexcept;
+		[[nodiscard]] std::string getHierarchyString() const noexcept;
 
 		[[nodiscard]] uint32_t getNumBaseClasses() const noexcept;
 		[[nodiscard]] uint32_t* getBaseClassArray() const noexcept;
