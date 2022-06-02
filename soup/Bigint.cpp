@@ -1470,22 +1470,20 @@ namespace soup
 	{
 		switch (getNumChunks())
 		{
-		default:
-			return false;
-
 		case 0:
 			out = 0;
-			break;
+			return true;
 
 		case 1:
 			out = getChunk(0);
-			break;
+			return true;
 
 		case 2:
 			*(chunk_t*)&out = getChunk(0);
 			*((chunk_t*)&out + 1) = getChunk(1);
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	std::string Bigint::toStringHex(bool prefix) const
