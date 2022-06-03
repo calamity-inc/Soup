@@ -602,6 +602,9 @@
     <ClInclude Include="Mixed.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="Fiber.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -874,6 +877,9 @@
     </ClCompile>
     <ClCompile Include="Mixed.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="Fiber.cpp">
+      <Filter>task</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

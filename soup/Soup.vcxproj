@@ -445,6 +445,7 @@
     <ClInclude Include="EditorTab.hpp" />
     <ClInclude Include="EditorText.hpp" />
     <ClInclude Include="endianness.hpp" />
+    <ClInclude Include="Fiber.hpp" />
     <ClInclude Include="FileWriter.hpp" />
     <ClInclude Include="HttpRequest.hpp" />
     <ClInclude Include="HttpResponse.hpp" />
@@ -627,6 +628,7 @@
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorTab.cpp" />
     <ClCompile Include="EditorText.cpp" />
+    <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="joaat.cpp" />
     <ClCompile Include="json.cpp" />
