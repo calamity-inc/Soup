@@ -51,9 +51,9 @@ namespace soup
 			}
 			return val;*/
 
-			unsigned __int64 v3 = 0;
-			uint32_t result;
-			int v5;
+			size_t v3 = 0;
+			uint32_t result = 0;
+			int v5 = 0;
 			for (result = initial; v3 < size; result = ((uint32_t)(1025 * (v5 + result)) >> 6) ^ (1025 * (v5 + result)))
 			{
 				v5 = data[v3++];

@@ -112,7 +112,7 @@ namespace soup
 #else
 		for (auto& t : threads)
 		{
-			t.awaitCompletion();
+			t->awaitCompletion();
 		}
 #endif
 	}

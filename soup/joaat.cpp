@@ -1,5 +1,9 @@
 #include "joaat.hpp"
 
+#include <cstring> // memset
+
+#include "base.hpp"
+
 namespace soup
 {
 	uint32_t joaat::hash(const std::string& str, uint32_t initial) noexcept
@@ -70,6 +74,10 @@ namespace soup
 		}
 		++buf[idx];
 	}
+
+#if !SOUP_WINDOWS
+#define strncpy_s strncpy
+#endif
 
 	std::string joaat::collide(uint32_t val, const char* prefix)
 	{
