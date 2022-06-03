@@ -599,6 +599,9 @@
     <ClInclude Include="OpaqueString.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="Mixed.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -868,6 +871,9 @@
     </ClCompile>
     <ClCompile Include="OpaqueString.cpp">
       <Filter>util\string</Filter>
+    </ClCompile>
+    <ClCompile Include="Mixed.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -79,6 +79,9 @@ namespace soup
 	class PromiseBase;
 	class Scheduler;
 
+	// util
+	class Mixed;
+
 	// vis
 	class Canvas;
 	struct RasterFont;
