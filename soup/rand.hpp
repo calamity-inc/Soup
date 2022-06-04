@@ -8,13 +8,20 @@
 
 namespace soup
 {
-	struct rand_impl
+	class rand_impl
 	{
+	private:
+		[[nodiscard]] static std::mt19937_64 getMersenneTwisterImpl() noexcept
+		{
+			std::random_device rd{};
+			return std::mt19937_64{ rd() };
+		}
+
+	public:
 		[[nodiscard]] static std::mt19937_64& getMersenneTwister() noexcept
 		{
-			static std::random_device rd{};
-			static std::mt19937_64 gen{ rd() };
-			return gen;
+			static std::mt19937_64 mt = getMersenneTwisterImpl();
+			return mt;
 		}
 
 		template <typename T>
