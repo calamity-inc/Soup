@@ -463,6 +463,16 @@
     <ClInclude Include="MimeType.hpp" />
     <ClInclude Include="Mixed.hpp" />
     <ClInclude Include="ModuleHider.hpp" />
+    <ClInclude Include="MysqlStmtExecute.hpp" />
+    <ClInclude Include="MysqlAuthSwitchRequest.hpp" />
+    <ClInclude Include="MysqlCapabilities.hpp" />
+    <ClInclude Include="MysqlColumnDefinition.hpp" />
+    <ClInclude Include="MysqlConnection.hpp" />
+    <ClInclude Include="MysqlFieldType.hpp" />
+    <ClInclude Include="MysqlFrame.hpp" />
+    <ClInclude Include="MysqlHandshake.hpp" />
+    <ClInclude Include="MysqlHandshakeResponse.hpp" />
+    <ClInclude Include="MysqlStmtPrepareOk.hpp" />
     <ClInclude Include="Notifyable.hpp" />
     <ClInclude Include="OpaqueString.hpp" />
     <ClInclude Include="os.hpp" />
@@ -649,6 +659,7 @@
     <ClCompile Include="Mixed.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="ModuleHider.cpp" />
+    <ClCompile Include="MysqlConnection.cpp" />
     <ClCompile Include="Oid.cpp" />
     <ClCompile Include="OpaqueString.cpp" />
     <ClCompile Include="os.cpp" />

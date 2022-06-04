@@ -1,17 +1,19 @@
 #include "Mixed.hpp"
 
+#include <ostream>
+
 namespace soup
 {
-	intptr_t Mixed::getInt() const
+	int64_t Mixed::getInt() const
 	{
 		if (type != INT)
 		{
 			throw 0;
 		}
-		return static_cast<intptr_t>(val);
+		return (int64_t)val;
 	}
 
-	uintptr_t Mixed::getUInt() const
+	uint64_t Mixed::getUInt() const
 	{
 		if (type != UINT)
 		{
@@ -27,5 +29,11 @@ namespace soup
 			throw 0;
 		}
 		return *reinterpret_cast<std::string*>(val);
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Mixed& v)
+	{
+		os << v.toString();
+		return os;
 	}
 }

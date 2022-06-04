@@ -599,6 +599,36 @@
     <ClInclude Include="OpaqueString.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="MysqlHandshake.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlHandshakeResponse.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlFrame.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlCapabilities.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlAuthSwitchRequest.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlConnection.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlColumnDefinition.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlFieldType.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlStmtPrepareOk.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlStmtExecute.hpp">
+      <Filter>net\mysql</Filter>
+    </ClInclude>
     <ClInclude Include="Mixed.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -866,6 +896,9 @@
     <ClCompile Include="YubikeyValidator.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
+    <ClCompile Include="MysqlConnection.cpp">
+      <Filter>net\mysql</Filter>
+    </ClCompile>
     <ClCompile Include="rand.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -981,6 +1014,9 @@
     </Filter>
     <Filter Include="util\atomic_containers">
       <UniqueIdentifier>{a887a824-7b3f-4831-b102-4a7c9d4530e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\mysql">
+      <UniqueIdentifier>{9c39909c-d109-4853-b572-c2fa9de042e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

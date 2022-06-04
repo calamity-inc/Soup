@@ -119,6 +119,49 @@ namespace soup
 			return true;
 		}
 
+		bool mysql_lenenc(uint64_t& v)
+		{
+			uint8_t first;
+			if (u8(first))
+			{
+				if (first < 0xFB)
+				{
+					v = first;
+					return true;
+				}
+				// 0xFB = NULL
+				if (first == 0xFC)
+				{
+					uint16_t val;
+					if (u16(val))
+					{
+						v = val;
+						return true;
+					}
+				}
+				if (first == 0xFD)
+				{
+					uint32_t val;
+					if (u24(val))
+					{
+						v = val;
+						return true;
+					}
+				}
+				if (first == 0xFE)
+				{
+					uint64_t val;
+					if (u64(val))
+					{
+						v = val;
+						return true;
+					}
+				}
+				// 0xFF = undocumented
+			}
+			return false;
+		}
+
 		// Null-terminated string.
 		bool str_nt(std::string& v)
 		{
@@ -144,6 +187,13 @@ namespace soup
 		{
 			uint64_t len;
 			return u64_dyn(len) && str_impl(v, len);
+		}
+
+		// Length-prefixed string, using mysql_lenenc for the length prefix.
+		bool str_lp_mysql(std::string& v)
+		{
+			uint64_t len;
+			return mysql_lenenc(len) && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u8 for the length prefix.

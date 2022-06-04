@@ -18,7 +18,7 @@ namespace soup
 		};
 
 		Type type = NONE;
-		uintptr_t val;
+		uint64_t val;
 
 		Mixed() = default;
 
@@ -27,7 +27,7 @@ namespace soup
 		{
 			if (type == STRING)
 			{
-				val = reinterpret_cast<uintptr_t>(new std::string(b.getString()));
+				val = (uint64_t)new std::string(b.getString());
 			}
 			else
 			{
@@ -41,35 +41,33 @@ namespace soup
 			b.type = NONE;
 		}
 
-		Mixed(int val)
-			: type(INT), val(static_cast<uintptr_t>(val))
+		Mixed(int32_t val)
+			: type(INT), val((uint64_t)val)
 		{
 		}
 		
-#if SOUP_BITS > 32
-		Mixed(intptr_t val)
-			: type(INT), val(static_cast<uintptr_t>(val))
+		Mixed(int64_t val)
+			: type(INT), val((uint64_t)val)
 		{
 		}
-#endif
 		
-		Mixed(uintptr_t val)
+		Mixed(uint64_t val)
 			: type(UINT), val(val)
 		{
 		}
 
 		Mixed(const char* val)
-			: type(STRING), val(reinterpret_cast<uintptr_t>(new std::string(val)))
+			: type(STRING), val((uint64_t)new std::string(val))
 		{
 		}
 		
 		Mixed(const std::string& val)
-			: type(STRING), val(reinterpret_cast<uintptr_t>(new std::string(val)))
+			: type(STRING), val((uint64_t)new std::string(val))
 		{
 		}
 
-		Mixed(std::string val)
-			: type(STRING), val(reinterpret_cast<uintptr_t>(new std::string(std::move(val))))
+		Mixed(std::string&& val)
+			: type(STRING), val((uint64_t)new std::string(std::move(val)))
 		{
 		}
 
@@ -94,13 +92,13 @@ namespace soup
 			type = NONE;
 		}
 
-		void operator=(const Mixed& b)
+		void operator =(const Mixed& b)
 		{
 			release();
 			type = b.type;
 			if (type == STRING)
 			{
-				val = reinterpret_cast<uintptr_t>(new std::string(b.getString()));
+				val = (uint64_t)new std::string(b.getString());
 			}
 			else
 			{
@@ -116,23 +114,21 @@ namespace soup
 			b.type = NONE;
 		}
 
-		void operator =(int val)
+		void operator =(int32_t val)
 		{
 			release();
 			this->type = INT;
-			this->val = static_cast<uintptr_t>(val);
+			this->val = (uint64_t)val;
 		}
 
-#if SOUP_BITS > 32
-		void operator =(intptr_t val)
+		void operator =(int64_t val)
 		{
 			release();
 			this->type = INT;
-			this->val = static_cast<uintptr_t>(val);
+			this->val = (uint64_t)val;
 		}
-#endif
 		
-		void operator =(uintptr_t val)
+		void operator =(uint64_t val)
 		{
 			release();
 			this->type = UINT;
@@ -143,12 +139,24 @@ namespace soup
 		{
 			release();
 			this->type = STRING;
-			this->val = reinterpret_cast<uintptr_t>(new std::string(val));
+			this->val = (uint64_t)new std::string(val);
+		}
+
+		void operator =(std::string&& val)
+		{
+			release();
+			this->type = STRING;
+			this->val = (uint64_t)new std::string(std::move(val));
 		}
 
 		[[nodiscard]] bool isInt() const noexcept
 		{
 			return type == INT;
+		}
+
+		[[nodiscard]] bool isUInt() const noexcept
+		{
+			return type == UINT;
 		}
 
 		[[nodiscard]] bool isString() const noexcept
@@ -160,7 +168,7 @@ namespace soup
 		{
 			if (type == INT)
 			{
-				return std::to_string(static_cast<intptr_t>(val));
+				return std::to_string((int64_t)val);
 			}
 			if (type == UINT)
 			{
@@ -173,8 +181,10 @@ namespace soup
 			return {};
 		}
 
-		[[nodiscard]] intptr_t getInt() const;
-		[[nodiscard]] uintptr_t getUInt() const;
+		friend std::ostream& operator<<(std::ostream& os, const Mixed& v);
+
+		[[nodiscard]] int64_t getInt() const;
+		[[nodiscard]] uint64_t getUInt() const;
 		[[nodiscard]] const std::string& getString() const;
 	};
 }

@@ -96,22 +96,22 @@ namespace soup
 			}
 		}
 
-		[[nodiscard]] bool i8(int8_t& v)
+		bool i8(int8_t& v)
 		{
 			return u8(*(uint8_t*)&v);
 		}
 
-		[[nodiscard]] bool i16(int16_t& v)
+		bool i16(int16_t& v)
 		{
 			return u16(*(uint16_t*)&v);
 		}
 
-		[[nodiscard]] bool i32(int32_t& v)
+		bool i32(int32_t& v)
 		{
 			return u32(*(uint32_t*)&v);
 		}
 
-		[[nodiscard]] bool i64(int64_t& v)
+		bool i64(int64_t& v)
 		{
 			return u64(*(uint64_t*)&v);
 		}
