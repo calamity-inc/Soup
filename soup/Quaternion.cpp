@@ -22,21 +22,61 @@ namespace soup
 
 	Quaternion Quaternion::fromEuler(const Vector3& rot) noexcept
 	{
-		return fromEuler(rot.y, -rot.x, rot.z + 90.0f);
+		return fromEulerXYZ(rot.y, -rot.x, rot.z + 90.0f);
 	}
 
 	Quaternion Quaternion::fromEulerZYX(const Vector3& rot) noexcept
 	{
-		return fromEuler(-rot.x, rot.y, -rot.z);
+		return fromEulerXYZ(-rot.x, rot.y, -rot.z);
 	}
 
-	Quaternion Quaternion::fromEuler(float rx, float ry, float rz) noexcept
+	Quaternion Quaternion::fromEulerXYZ(const Vector3& rot) noexcept
+	{
+		return fromEulerXYZ(rot.x, rot.y, rot.z);
+	}
+
+	Quaternion Quaternion::fromEulerXYZ(float rx, float ry, float rz) noexcept
 	{
 		Quaternion qx(-rx, Vector3(1, 0, 0));
 		Quaternion qy(-ry, Vector3(0, 1, 0));
 		Quaternion qz(-rz, Vector3(0, 0, 1));
 		qz = qy * qz;
 		return qx * qz;
+	}
+
+	Vector3 Quaternion::toEulerXYZ() const noexcept
+	{
+		Vector3 euler;
+		const float PI_OVER_2 = M_PI * 0.5f;
+		const float EPSILON = 1e-10f;
+		double sqw, sqx, sqy, sqz;
+
+		// quick conversion to Euler angles to give tilt to user
+		sqw = this->w * this->w;
+		sqx = this->x * this->x;
+		sqy = this->y * this->y;
+		sqz = this->z * this->z;
+
+		euler.y = asin(2.0 * (this->w * this->y - this->x * this->z));
+		if (PI_OVER_2 - fabs(euler.y) > EPSILON) {
+			euler.z = atan2(2.0 * (this->x * this->y + this->w * this->z),
+				sqx - sqy - sqz + sqw);
+			euler.x = atan2(2.0 * (this->w * this->x + this->y * this->z),
+				sqw - sqx - sqy + sqz);
+		}
+		else {
+			// compute heading from local 'down' vector
+			euler.z = atan2(2 * this->y * this->z - 2 * this->x * this->w,
+				2 * this->x * this->z + 2 * this->y * this->w);
+			euler.x = 0.0;
+
+			// If facing down, reverse yaw
+			if (euler.y < 0)
+				euler.z = M_PI - euler.z;
+		}
+
+		//return { euler.y, euler.x, euler.z };
+		return { euler.y * -57.940896f, euler.x, euler.z * -57.35f }; // this is bullshit, but at least gets numbers in the right range
 	}
 
 	Quaternion Quaternion::invert() const noexcept

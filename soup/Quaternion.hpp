@@ -17,8 +17,11 @@ namespace soup
 
 		[[nodiscard]] static Quaternion fromEuler(const Vector3& rot) noexcept; // ZXY
 		[[nodiscard]] static Quaternion fromEulerZYX(const Vector3& rot) noexcept;
-	private:
-		[[nodiscard]] static Quaternion fromEuler(float rx, float ry, float rz) noexcept;
+		[[nodiscard]] static Quaternion fromEulerXYZ(const Vector3& rot) noexcept;
+		[[nodiscard]] static Quaternion fromEulerXYZ(float rx, float ry, float rz) noexcept;
+
+	public:
+		[[nodiscard]] Vector3 toEulerXYZ() const noexcept; // highly inaccurate
 
 		[[nodiscard]] Quaternion invert() const noexcept;
 
@@ -31,7 +34,6 @@ namespace soup
 		[[nodiscard]] bool isIdentity() const noexcept;
 		void reset() noexcept;
 
-	public:
 		int normalise() noexcept; // Quaternions store scale as well as rotation, but usually we just want rotation, so we can normalize.
 
 		// Creates a value for this Quaternion from spherical linear interpolation
