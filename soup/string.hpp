@@ -382,9 +382,22 @@ namespace soup
 		template <typename T>
 		static void limit(T& str, const T& target)
 		{
-			for (size_t i = 0; i = str.find(target, i), i != T::npos; )
+			if (size_t i = str.find(target); i != T::npos)
 			{
 				str.erase(i);
+			}
+		}
+
+		// example:
+		// in str = "a b c"
+		// target = " "
+		// out str = "a b"
+		template <typename T>
+		static void limit_last(T& str, const T& target)
+		{
+			if (size_t i = str.find_last_of(target); i != T::npos)
+			{
+				str.erase(0, i);
 			}
 		}
 
