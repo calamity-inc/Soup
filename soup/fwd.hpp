@@ -40,6 +40,7 @@ namespace soup
 	class Matrix;
 	struct Mesh;
 	struct Poly;
+	class Quaternion;
 	struct Ray;
 
 	// mem
