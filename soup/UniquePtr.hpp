@@ -5,8 +5,9 @@
 namespace soup
 {
 	template <typename T>
-	struct UniquePtr
+	class UniquePtr
 	{
+	public:
 		T* data = nullptr;
 
 		UniquePtr() noexcept = default;
@@ -25,12 +26,19 @@ namespace soup
 
 		~UniquePtr()
 		{
+			release();
+		}
+
+	private:
+		void release()
+		{
 			if (data != nullptr)
 			{
 				delete data;
 			}
 		}
 
+	public:
 		void reset() noexcept
 		{
 			if (data != nullptr)
@@ -42,12 +50,9 @@ namespace soup
 
 		UniquePtr<T>& operator =(UniquePtr<T>&& b) noexcept
 		{
-			reset();
-
+			release();
 			data = b.data;
-
 			b.data = nullptr;
-
 			return *this;
 		}
 
