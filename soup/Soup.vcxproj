@@ -426,6 +426,7 @@
     <ClInclude Include="ChessCoordinate.hpp" />
     <ClInclude Include="ChessPiece.hpp" />
     <ClInclude Include="ChessSquare.hpp" />
+    <ClInclude Include="code_tree.hpp" />
     <ClInclude Include="ControlInput.hpp" />
     <ClInclude Include="ConuiApp.hpp" />
     <ClInclude Include="ConuiBase.hpp" />
@@ -506,6 +507,7 @@
     <ClInclude Include="ServerService.hpp" />
     <ClInclude Include="ShortString.hpp" />
     <ClInclude Include="signal.hpp" />
+    <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
@@ -555,6 +557,7 @@
     <ClInclude Include="StringWriter.hpp" />
     <ClInclude Include="Thread.hpp" />
     <ClInclude Include="type_traits.hpp" />
+    <ClInclude Include="unit_testing.hpp" />
     <ClInclude Include="VirtualRegion.hpp" />
     <ClInclude Include="time.hpp" />
     <ClInclude Include="TlsAlertDescription.hpp" />
@@ -690,6 +693,7 @@
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />
     <ClCompile Include="unicode.cpp" />
+    <ClCompile Include="unit_testing.cpp" />
     <ClCompile Include="Url.cpp" />
     <ClCompile Include="urlenc.cpp" />
     <ClCompile Include="UvSphere.cpp" />

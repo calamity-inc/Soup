@@ -635,6 +635,15 @@
     <ClInclude Include="Fiber.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="code_tree.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="unit_testing.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceLocation.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -913,6 +922,9 @@
     </ClCompile>
     <ClCompile Include="Fiber.cpp">
       <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="unit_testing.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
