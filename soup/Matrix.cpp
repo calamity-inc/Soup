@@ -15,6 +15,7 @@ namespace soup
 	{
 		setTranslate(pos);
 		setRotation(rot);
+		mf[15] = 1.0f;
 	}
 
 	void Matrix::reset() noexcept
