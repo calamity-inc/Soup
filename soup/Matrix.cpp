@@ -18,6 +18,13 @@ namespace soup
 		mf[15] = 1.0f;
 	}
 
+	void Matrix::setPosRotXYZ(const Vector3& pos, const Vector3& rot) noexcept
+	{
+		setTranslate(pos);
+		setRotationXYZ(rot);
+		mf[15] = 1.0f;
+	}
+
 	void Matrix::reset() noexcept
 	{
 		mf[0] = 1.0f;	mf[1] = 0.0f;	mf[2] = 0.0f;	mf[3] = 0.0f;
@@ -69,6 +76,11 @@ namespace soup
 	void Matrix::setRotation(const Vector3& rot) noexcept
 	{
 		Quaternion::fromEuler(rot).toMatrix(*this);
+	}
+
+	void Matrix::setRotationXYZ(const Vector3& rot) noexcept
+	{
+		Quaternion::fromEulerXYZ(rot).toMatrix(*this);
 	}
 
 	void Matrix::rotate(const Vector3& rot) noexcept

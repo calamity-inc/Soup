@@ -28,6 +28,9 @@ namespace soup
 		uint8_t max_ray_bounces = 5;
 		Rgb sky_colour{ 127, 127, 127 };
 
+		[[nodiscard]] Matrix getCameraMatrix() const;
+		[[nodiscard]] Vector2 world2screen(const Vector3& pos) const;
+
 		[[nodiscard]] bool intersect(const Ray& r, Vector3* outHitPos = nullptr, const Tri** outHitTri = nullptr) const;
 		[[nodiscard]] bool hasLineOfSight(const Vector3& p1, const Vector3& p2) const;
 

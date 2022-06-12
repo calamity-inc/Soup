@@ -1,10 +1,27 @@
 #include "Scene.hpp"
 
 #include "Canvas.hpp"
+#include "Matrix.hpp"
 #include "Ray.hpp"
+#include "Vector2.hpp"
 
 namespace soup
 {
+	Matrix Scene::getCameraMatrix() const
+	{
+		Matrix m;
+		m.setPosRotXYZ(cam_pos, cam_rot);
+		return m;
+	}
+
+	Vector2 Scene::world2screen(const Vector3& pos) const
+	{
+		Matrix cameraToWorld = getCameraMatrix();
+		Matrix worldToCamera = cameraToWorld.invert();
+		Vector3 v = (worldToCamera * pos);
+		return { 1.0f - ((v.x + 1.0f) * 0.5f), 1.0f - ((v.z + 1.0f) * 0.5f) };
+	}
+
 	bool Scene::intersect(const Ray& r, Vector3* outHitPos, const Tri** outHitTri) const
 	{
 		float best_dist = FLT_MAX;

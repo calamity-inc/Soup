@@ -15,6 +15,8 @@ namespace soup
 		Matrix() noexcept;
 		Matrix(const Vector3& pos, const Vector3& rot) noexcept;
 
+		void setPosRotXYZ(const Vector3& pos, const Vector3& rot) noexcept;
+
 		void reset() noexcept; // set to identity
 
 		[[nodiscard]] Matrix operator* (const Matrix& InM) const noexcept;
@@ -23,6 +25,7 @@ namespace soup
 
 		void resetRotation() noexcept;
 		void setRotation(const Vector3& rot) noexcept;
+		void setRotationXYZ(const Vector3& rot) noexcept;
 		void rotate(const Vector3& rot) noexcept;
 		void rotateCCW(const Vector3& rot) noexcept;
 		void rotateX(float fDegrees) noexcept;

@@ -33,6 +33,7 @@ namespace soup
 
 	// math
 	class Bigint;
+	struct Vector2;
 	struct Vector3;
 
 	// math.3d
