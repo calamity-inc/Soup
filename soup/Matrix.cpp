@@ -49,7 +49,8 @@ namespace soup
 		float x = Point.x * mf[0] + Point.y * mf[4] + Point.z * mf[8] + mf[12];
 		float y = Point.x * mf[1] + Point.y * mf[5] + Point.z * mf[9] + mf[13];
 		float z = Point.x * mf[2] + Point.y * mf[6] + Point.z * mf[10] + mf[14];
-		return Vector3{ x, y, z };
+		float w = Point.x * mf[3] + Point.y * mf[7] + Point.z * mf[11] + mf[15];
+		return Vector3{ x / w, y / w, z / w };
 	}
 
 	void Matrix::resetRotation() noexcept
