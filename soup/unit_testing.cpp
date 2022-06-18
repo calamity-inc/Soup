@@ -65,7 +65,7 @@ namespace soup
 
 	void TestUnit::truncateSuccessfulTests()
 	{
-		for (auto i = children.begin(); i != children.end(); ++i)
+		for (auto i = children.begin(); i != children.end(); )
 		{
 			if ((*i)->is_test
 				&& reinterpret_cast<Test*>(*i)->err.empty()
@@ -73,6 +73,10 @@ namespace soup
 			{
 				//delete *i; // who cares? we're gonna exit soon anyway
 				i = children.erase(i);
+			}
+			else
+			{
+				++i;
 			}
 		}
 	}
