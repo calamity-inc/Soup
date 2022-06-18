@@ -67,16 +67,29 @@ namespace soup
 	{
 		for (auto i = children.begin(); i != children.end(); )
 		{
-			if ((*i)->is_test
-				&& reinterpret_cast<Test*>(*i)->err.empty()
-				)
+			if ((*i)->is_test)
 			{
-				//delete *i; // who cares? we're gonna exit soon anyway
-				i = children.erase(i);
+				if (reinterpret_cast<Test*>(*i)->err.empty())
+				{
+					//delete *i; // who cares? we're gonna exit soon anyway
+					i = children.erase(i);
+				}
+				else
+				{
+					++i;
+				}
 			}
 			else
 			{
-				++i;
+				(*i)->truncateSuccessfulTests();
+				if ((*i)->children.empty())
+				{
+					i = children.erase(i);
+				}
+				else
+				{
+					++i;
+				}
 			}
 		}
 	}
