@@ -252,7 +252,7 @@ namespace soup::rsa
 		qinv = q.modMulInv(p);
 	}
 
-	Keypair Keypair::random(unsigned int bits)
+	Keypair Keypair::generate(unsigned int bits)
 	{
 		bits /= 2u;
 		auto g = [](Capture&& cap, PromiseBase*) -> Bigint

@@ -173,7 +173,7 @@ namespace soup::rsa
 		Keypair() = default;
 		Keypair(Bigint&& _p, Bigint&& _q);
 
-		[[nodiscard]] static Keypair random(unsigned int bits);
+		[[nodiscard]] static Keypair generate(unsigned int bits);
 
 		[[nodiscard]] PublicKey getPublic() const;
 		[[nodiscard]] PrivateKey getPrivate() const;
