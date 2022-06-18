@@ -141,6 +141,7 @@ namespace soup::rsa
 
 		[[nodiscard]] static PrivateKey fromBinary(const std::string bin);
 		[[nodiscard]] static PrivateKey fromAsn1(const Asn1Sequence& seq);
+		[[nodiscard]] static PrivateKey fromJwk(JsonObject& jwk);
 
 		template <typename CryptoHashAlgo>
 		[[nodiscard]] Bigint sign(const std::string& msg) const // deterministic

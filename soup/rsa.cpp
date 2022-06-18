@@ -2,6 +2,9 @@
 
 #include "Asn1Sequence.hpp"
 #include "Asn1Type.hpp"
+#include "base64.hpp"
+#include "JsonObject.hpp"
+#include "JsonString.hpp"
 #include "ObfusString.hpp"
 #include "pem.hpp"
 #include "Promise.hpp"
@@ -158,6 +161,19 @@ namespace soup::rsa
 			seq.getInt(6),
 			seq.getInt(7),
 			seq.getInt(8),
+		};
+	}
+
+	PrivateKey PrivateKey::fromJwk(JsonObject& jwk)
+	{
+		// assuming that jwk["kty"] == "RSA"
+		return {
+			Bigint::fromBinary(base64::urlDecode(*jwk.at("n").asStr())),
+			Bigint::fromBinary(base64::urlDecode(*jwk.at("p").asStr())),
+			Bigint::fromBinary(base64::urlDecode(*jwk.at("q").asStr())),
+			Bigint::fromBinary(base64::urlDecode(*jwk.at("dp").asStr())),
+			Bigint::fromBinary(base64::urlDecode(*jwk.at("dq").asStr())),
+			Bigint::fromBinary(base64::urlDecode(*jwk.at("qi").asStr())),
 		};
 	}
 
