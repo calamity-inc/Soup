@@ -987,6 +987,11 @@ namespace soup
 		return res;
 	}
 
+	bool Bigint::isNegative() const noexcept
+	{
+		return negative;
+	}
+	
 	bool Bigint::isEven() const noexcept
 	{
 		return !isOdd();
