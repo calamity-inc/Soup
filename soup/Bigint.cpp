@@ -1304,6 +1304,69 @@ namespace soup
 		return (*this & (*this - Bigint((chunk_t)1u))).isZero();
 	}
 
+	std::pair<Bigint, Bigint> Bigint::factorise() const
+	{
+		{
+			auto [q, r] = divide((chunk_t)2u);
+			if (r.isZero())
+			{
+				return { q, (chunk_t)2u };
+			}
+		}
+
+		Bigint a = sqrtCeil();
+
+		if ((a * a) == *this)
+		{
+			return { a, a };
+		}
+
+		Bigint b;
+		const Bigint one = (chunk_t)1u;
+		while (true)
+		{
+			Bigint b1 = (a * a) - *this;
+			b = b1.sqrtFloor();
+			if ((b * b) == b1)
+			{
+				break;
+			}
+			a += one;
+		}
+		return { a - b, a + b };
+	}
+
+	Bigint Bigint::sqrtCeil() const
+	{
+		Bigint y = sqrtFloor();
+
+		if (*this == (y * y))
+		{
+			return y;
+		}
+
+		return (y + Bigint((chunk_t)1u));
+	}
+
+	Bigint Bigint::sqrtFloor() const
+	{
+		if (isZero() || *this == (chunk_t)1u)
+		{
+			return *this;
+		}
+
+		const Bigint two = (chunk_t)2u;
+		Bigint y = (*this / two);
+		Bigint x_over_y;
+
+		while (x_over_y = (*this / y), y > x_over_y)
+		{
+			y = (x_over_y + y) / two;
+		}
+
+		return y;
+	}
+
 	Bigint Bigint::modMulInv(const Bigint& m) const
 	{
 		Bigint x, y;

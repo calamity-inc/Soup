@@ -199,6 +199,9 @@ namespace soup
 		[[nodiscard]] Bigint reducedTotient() const;
 		[[nodiscard]] Bigint lcm(const Bigint& b) const;
 		[[nodiscard]] bool isPowerOf2() const;
+		[[nodiscard]] std::pair<Bigint, Bigint> factorise() const;
+		[[nodiscard]] Bigint sqrtCeil() const;
+		[[nodiscard]] Bigint sqrtFloor() const;
 
 		// Operations under a modulus
 		[[nodiscard]] Bigint modMulInv(const Bigint& m) const; // *this ^ -1 mod m
