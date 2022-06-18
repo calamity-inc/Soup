@@ -21,6 +21,7 @@ void assert_impl(bool b, soup::SourceLocation sl)
 		Test::currently_running->err.append(" failed");
 		throw AssertionFailed();
 	}
+	Test::currently_running->last_successful_test = std::move(sl);
 }
 
 namespace soup
@@ -54,6 +55,16 @@ namespace soup
 			catch (const AssertionFailed&)
 			{
 				++failed_tests;
+			}
+			catch (const std::exception& e)
+			{
+				++failed_tests;
+				reinterpret_cast<Test*>(this)->setException(e.what());
+			}
+			catch (...)
+			{
+				++failed_tests;
+				reinterpret_cast<Test*>(this)->setException("exception occurred");
 			}
 			++total_tests;
 		}
@@ -106,6 +117,16 @@ namespace soup
 		for (const auto& child : children)
 		{
 			child->printout(prefix);
+		}
+	}
+
+	void Test::setException(std::string&& msg)
+	{
+		err = std::move(msg);
+		if (last_successful_test.isValid())
+		{
+			err.append(" after line ");
+			err.append(std::to_string(last_successful_test.line));
 		}
 	}
 }

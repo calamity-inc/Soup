@@ -37,6 +37,7 @@ namespace soup
 	struct Test : public TestUnit
 	{
 		void(*test)();
+		SourceLocation last_successful_test{};
 		std::string err{};
 
 		inline static thread_local Test* currently_running;
@@ -45,5 +46,7 @@ namespace soup
 			: TestUnit(name, true), test(test)
 		{
 		}
+
+		void setException(std::string&& msg);
 	};
 }

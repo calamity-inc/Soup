@@ -4,8 +4,13 @@ namespace soup
 {
 	struct SourceLocation
 	{
-		const char* file_name;
-		unsigned int line;
+		const char* file_name = nullptr;
+		unsigned int line = 0;
+
+		[[nodiscard]] bool isValid() const noexcept
+		{
+			return file_name != nullptr;
+		}
 	};
 }
 
