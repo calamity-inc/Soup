@@ -36,9 +36,9 @@ namespace soup
 			JsonObject& data = *e.second->asObj();
 
 			DictionaryWord dw{};
-			dw.antonyms = processRelatedWords(word, *data.at("ANTONYMS").asArr());
-			dw.synonyms = processRelatedWords(word, *data.at("SYNONYMS").asArr());
-			for (const auto& e2 : data.at("MEANINGS").asObj()->children)
+			dw.antonyms = processRelatedWords(word, *data.at("ANTONYMS")->asArr());
+			dw.synonyms = processRelatedWords(word, *data.at("SYNONYMS")->asArr());
+			for (const auto& e2 : data.at("MEANINGS")->asObj()->children)
 			{
 				JsonArray& mdata = *e2.second->asArr();
 				WordMeaning m{};

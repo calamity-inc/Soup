@@ -181,7 +181,7 @@ namespace soup
 						break;
 					}
 
-					obj->children.emplace(std::move(key), std::move(val));
+					obj->children.emplace_back(std::move(key), std::move(val));
 				}
 				return obj;
 			}

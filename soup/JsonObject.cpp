@@ -29,7 +29,7 @@ namespace soup
 			{
 				break;
 			}
-			children.emplace(std::move(key), std::move(val));
+			children.emplace_back(std::move(key), std::move(val));
 			while (*c == ',' || string::isSpace(*c))
 			{
 				++c;
@@ -40,7 +40,6 @@ namespace soup
 			}
 		}
 		++c;
-		children.ensureSorted();
 	}
 
 	std::string JsonObject::encode() const
@@ -116,29 +115,36 @@ namespace soup
 		return true;
 	}
 
-	bool JsonObject::contains(const JsonNode& k)
+	bool JsonObject::contains(const JsonNode& k) const noexcept
 	{
-		return children.contains(k);
+		return at(k) != nullptr;
 	}
 
-	bool JsonObject::contains(std::string k)
+	bool JsonObject::contains(std::string k) const noexcept
 	{
 		return contains(JsonString(std::move(k)));
 	}
 
-	JsonNode& JsonObject::at(const JsonNode& k)
+	JsonNode* JsonObject::at(const JsonNode& k) const noexcept
 	{
-		return *children.at(k);
+		for (const auto& child : children)
+		{
+			if (*child.first == k)
+			{
+				return child.second.get();
+			}
+		}
+		return nullptr;
 	}
 
-	JsonNode& JsonObject::at(std::string k)
+	JsonNode* JsonObject::at(std::string k) const noexcept
 	{
 		return at(JsonString(std::move(k)));
 	}
 
 	void JsonObject::add(UniquePtr<JsonNode>&& k, UniquePtr<JsonNode>&& v)
 	{
-		children.emplace(std::move(k), std::move(v));
+		children.emplace_back(std::move(k), std::move(v));
 	}
 
 	void JsonObject::add(std::string k, std::string v)
