@@ -12,15 +12,22 @@ namespace soup
 	{
 		[[nodiscard]] static std::string encode(const char* data, const bool pad = true) noexcept;
 		[[nodiscard]] static std::string encode(const std::string& data, const bool pad = true) noexcept;
-		[[nodiscard]] static std::string encode(const char* const data, const size_t size, const bool pad = true) noexcept;
-
 		template <typename T>
 		[[nodiscard]] static std::string encode(const T& data, const bool pad = true) noexcept
 		{
 			return encode(&data, pad);
 		}
+		[[nodiscard]] static std::string encode(const char* const data, const size_t size, const bool pad = true) noexcept;
+
+		[[nodiscard]] static std::string urlEncode(const char* data, const bool pad = false) noexcept;
+		[[nodiscard]] static std::string urlEncode(const std::string& data, const bool pad = false) noexcept;
+		[[nodiscard]] static std::string urlEncode(const char* const data, const size_t size, const bool pad = false) noexcept;
+
+		[[nodiscard]] static std::string encode(const char* const data, const size_t size, const bool pad, const char* table) noexcept;
 
 		[[nodiscard]] static std::string decode(std::string enc);
+		[[nodiscard]] static std::string urlDecode(std::string enc);
+		[[nodiscard]] static std::string decode(std::string&& enc, const unsigned char* table);
 
 		template <typename T>
 		static bool decode(T& out, std::string enc) noexcept
