@@ -26,11 +26,11 @@ namespace soup
 
 		~UniquePtr()
 		{
-			release();
+			free();
 		}
 
 	private:
-		void release()
+		void free()
 		{
 			if (data != nullptr)
 			{
@@ -50,7 +50,7 @@ namespace soup
 
 		UniquePtr<T>& operator =(UniquePtr<T>&& b) noexcept
 		{
-			release();
+			free();
 			data = b.data;
 			b.data = nullptr;
 			return *this;
@@ -79,6 +79,13 @@ namespace soup
 		[[nodiscard]] T* operator->() const noexcept
 		{
 			return data;
+		}
+
+		[[nodiscard]] T* release() noexcept
+		{
+			T* val = data;
+			data = nullptr;
+			return val;
 		}
 	};
 
