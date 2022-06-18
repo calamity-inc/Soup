@@ -14,5 +14,15 @@ namespace soup
 		[[nodiscard]] std::string encode() const final;
 
 		bool binaryEncode(Writer& w) const final;
+
+		operator bool() const noexcept
+		{
+			return value;
+		}
+
+		bool operator == (bool b) const noexcept
+		{
+			return value == b;
+		}
 	};
 }

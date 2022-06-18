@@ -14,13 +14,18 @@ namespace soup
 		explicit JsonString(std::string&& value)noexcept;
 		explicit JsonString(const char*& c);
 
+		[[nodiscard]] std::string encode() const final;
+
+		bool binaryEncode(Writer& w) const final;
+
 		operator std::string& () noexcept
 		{
 			return value;
 		}
 
-		[[nodiscard]] std::string encode() const final;
-
-		bool binaryEncode(Writer& w) const final;
+		bool operator ==(const std::string& b) const noexcept
+		{
+			return value == b;
+		}
 	};
 }
