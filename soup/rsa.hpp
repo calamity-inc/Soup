@@ -179,7 +179,7 @@ namespace soup::rsa
 		Bigint qinv;
 
 		Keypair() = default;
-		Keypair(Bigint&& _p, Bigint&& _q);
+		Keypair(Bigint _p, Bigint _q);
 
 		[[nodiscard]] static Keypair generate(unsigned int bits);
 

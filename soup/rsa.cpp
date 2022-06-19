@@ -236,7 +236,7 @@ namespace soup::rsa
 
 	// Keypair
 
-	Keypair::Keypair(Bigint&& _p, Bigint&& _q)
+	Keypair::Keypair(Bigint _p, Bigint _q)
 		: Mod(_p * _q), p(std::move(_p)), q(std::move(_q))
 	{
 		const auto pm1 = (p - 1_b);
@@ -260,18 +260,47 @@ namespace soup::rsa
 		qinv = q.modMulInv(p);
 	}
 
+	[[nodiscard]] static Bigint gen(unsigned int bits)
+	{
+		return Bigint::randomProbablePrime(bits, 3);
+	}
+
 	Keypair Keypair::generate(unsigned int bits)
 	{
-		bits /= 2u;
-		auto g = [](Capture&& cap, PromiseBase*) -> Bigint
+		auto gen_promise = [](Capture&& cap, PromiseBase*) -> Bigint
 		{
-			return Bigint::randomProbablePrime(cap.get<unsigned int>(), 3);
+			return gen(cap.get<unsigned int>());
 		};
-		Promise<Bigint> p{ g, bits };
-		Promise<Bigint> q{ g, bits };
-		p.awaitCompletion();
-		q.awaitCompletion();
-		return Keypair(std::move(p.getResult()), std::move(q.getResult()));
+
+		std::vector<Bigint> primes{};
+		{
+			Promise<Bigint> p{ gen_promise, ((bits / 2u) - 2u) };
+			Promise<Bigint> q{ gen_promise, ((bits / 2u) + 2u) };
+			p.awaitCompletion();
+			q.awaitCompletion();
+			primes.emplace_back(p.getResult());
+			primes.emplace_back(q.getResult());
+		}
+
+		while (true)
+		{
+			for (const auto& p : primes)
+			{
+				for (const auto& q : primes)
+				{
+					if (p != q)
+					{
+						Keypair kp(p, q);
+						if (kp.n.getBitLength() == bits)
+						{
+							return kp;
+						}
+					}
+				}
+			}
+
+			primes.emplace_back(gen(bits / 2u));
+		}
 	}
 
 	PublicKey Keypair::getPublic() const
