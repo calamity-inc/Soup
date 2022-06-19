@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TreeNode.hpp"
+
 #include "base.hpp"
 #include "fwd.hpp"
 
@@ -8,7 +10,7 @@
 
 namespace soup
 {
-	struct JsonNode
+	struct JsonNode : public TreeNode
 	{
 		JsonNodeType type;
 
@@ -16,8 +18,6 @@ namespace soup
 			: type(type)
 		{
 		}
-
-		virtual ~JsonNode() = default;
 
 #if SOUP_SPACESHIP
 		std::strong_ordering operator <=>(const JsonNode& b) const;

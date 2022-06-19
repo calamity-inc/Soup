@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TreeNode.hpp"
+
 #include <vector>
 
 #define SOUP_CODE_TREE_NODE(type, ...) if (::soup::CodeTreeNodeRaii<type> _{}; new type(__VA_ARGS__), true)
@@ -7,7 +9,7 @@
 namespace soup
 {
 	template <typename T>
-	struct CodeTreeNode
+	struct CodeTreeNode : public TreeNode
 	{
 		inline static thread_local T* root = nullptr;
 		inline static thread_local T* current = nullptr;
@@ -28,8 +30,6 @@ namespace soup
 			}
 			current = reinterpret_cast<T*>(this);
 		}
-
-		virtual ~CodeTreeNode() = default;
 
 		static void finishCurrentNode()
 		{

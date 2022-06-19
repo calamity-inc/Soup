@@ -556,6 +556,7 @@
     <ClInclude Include="StringReader.hpp" />
     <ClInclude Include="StringWriter.hpp" />
     <ClInclude Include="Thread.hpp" />
+    <ClInclude Include="TreeNode.hpp" />
     <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="unit_testing.hpp" />
     <ClInclude Include="VirtualRegion.hpp" />
