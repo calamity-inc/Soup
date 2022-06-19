@@ -3,6 +3,7 @@
 #include "fwd.hpp"
 
 #include "Bigint.hpp"
+#include "JsonObject.hpp"
 
 namespace soup::rsa
 {
@@ -32,6 +33,8 @@ namespace soup::rsa
 		}
 
 		static bool unpad(std::string& str);
+
+		[[nodiscard]] UniquePtr<JsonObject> publicToJwk(const Bigint& e) const;
 	};
 
 	template <typename T>
@@ -81,6 +84,11 @@ namespace soup::rsa
 			auto hash_bin = CryptoHashAlgo::hash(msg);
 			return Key<T>::template padHash<CryptoHashAlgo>(hash_bin)
 				&& Key<T>::decryptUnpadded(sig) == hash_bin;
+		}
+
+		[[nodiscard]] UniquePtr<JsonObject> toJwk() const
+		{
+			return Key<T>::publicToJwk(e);
 		}
 	};
 

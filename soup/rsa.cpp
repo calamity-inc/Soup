@@ -3,7 +3,6 @@
 #include "Asn1Sequence.hpp"
 #include "Asn1Type.hpp"
 #include "base64.hpp"
-#include "JsonObject.hpp"
 #include "JsonString.hpp"
 #include "ObfusString.hpp"
 #include "pem.hpp"
@@ -78,6 +77,15 @@ namespace soup::rsa
 			}
 		}
 		return false;
+	}
+
+	UniquePtr<JsonObject> Mod::publicToJwk(const Bigint& e) const
+	{
+		auto obj = soup::make_unique<JsonObject>();
+		obj->add("kty", "RSA");
+		obj->add("n", base64::urlEncode(n.toBinary()));
+		obj->add("e", base64::urlEncode(e.toBinary()));
+		return obj;
 	}
 
 	// KeyMontgomeryData

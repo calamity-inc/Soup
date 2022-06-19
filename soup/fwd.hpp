@@ -15,6 +15,7 @@ namespace soup
 
 	// data
 	struct Oid;
+	template <typename T> class UniquePtr;
 
 	// data.asn1
 	struct Asn1Sequence;
