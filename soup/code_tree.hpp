@@ -29,6 +29,8 @@ namespace soup
 			current = reinterpret_cast<T*>(this);
 		}
 
+		virtual ~CodeTreeNode() = default;
+
 		static void finishCurrentNode()
 		{
 			current = current->parent;
@@ -51,7 +53,7 @@ namespace soup
 			{
 				child->erase();
 			}
-			delete reinterpret_cast<T*>(this);
+			delete this;
 		}
 	};
 
