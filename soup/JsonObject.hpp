@@ -27,7 +27,13 @@ namespace soup
 		[[nodiscard]] JsonNode* at(std::string k) const noexcept;
 
 		void add(UniquePtr<JsonNode>&& k, UniquePtr<JsonNode>&& v);
+		void add(std::string k, UniquePtr<JsonNode>&& v) = delete;
 		void add(std::string k, std::string v);
+		void add(std::string k, const char* v);
+		void add(std::string k, int8_t v);
+		void add(std::string k, int16_t v);
+		void add(std::string k, int32_t v);
 		void add(std::string k, int64_t v);
+		void add(std::string k, bool v);
 	};
 }

@@ -1,6 +1,7 @@
 #include "JsonObject.hpp"
 
 #include "json.hpp"
+#include "JsonBool.hpp"
 #include "JsonInt.hpp"
 #include "JsonString.hpp"
 #include "string.hpp"
@@ -152,8 +153,33 @@ namespace soup
 		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonString>(std::move(v)));
 	}
 
+	void JsonObject::add(std::string k, const char* v)
+	{
+		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonString>(v));
+	}
+
+	void JsonObject::add(std::string k, int8_t v)
+	{
+		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(v));
+	}
+
+	void JsonObject::add(std::string k, int16_t v)
+	{
+		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(v));
+	}
+
+	void JsonObject::add(std::string k, int32_t v)
+	{
+		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(v));
+	}
+
 	void JsonObject::add(std::string k, int64_t v)
 	{
-		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(std::move(v)));
+		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(v));
+	}
+
+	void JsonObject::add(std::string k, bool v)
+	{
+		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonBool>(v));
 	}
 }
