@@ -650,6 +650,9 @@
     <ClInclude Include="elo.hpp">
       <Filter>chess</Filter>
     </ClInclude>
+    <ClInclude Include="Bigfloat.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -931,6 +934,9 @@
     </ClCompile>
     <ClCompile Include="unit_testing.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="Bigfloat.cpp">
+      <Filter>math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
