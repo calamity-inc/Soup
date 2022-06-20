@@ -647,6 +647,9 @@
     <ClInclude Include="TreeNode.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="elo.hpp">
+      <Filter>chess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
