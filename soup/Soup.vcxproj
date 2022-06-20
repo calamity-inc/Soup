@@ -393,6 +393,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="acme.hpp" />
     <ClInclude Include="adler32.hpp" />
     <ClInclude Include="aes.hpp" />
     <ClInclude Include="AllocRaii.hpp" />
@@ -615,6 +616,7 @@
     <ClInclude Include="ZipWriter.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="acme.cpp" />
     <ClCompile Include="adler32.cpp" />
     <ClCompile Include="aes.cpp" />
     <ClCompile Include="Asn1Identifier.cpp" />

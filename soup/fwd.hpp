@@ -9,6 +9,10 @@ namespace soup
 
 	// crypto
 	struct Keystore;
+	namespace rsa
+	{
+		struct Keypair;
+	}
 
 	// crypto.x509
 	struct Certchain;

@@ -653,6 +653,9 @@
     <ClInclude Include="Bigfloat.hpp">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="acme.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -937,6 +940,9 @@
     </ClCompile>
     <ClCompile Include="Bigfloat.cpp">
       <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="acme.cpp">
+      <Filter>net\web</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
