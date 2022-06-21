@@ -17,7 +17,7 @@ namespace soup
 			unpatch();
 		}
 
-		void patch(soup::Pointer p, void* data, size_t size)
+		void patch(Pointer p, void* data, size_t size)
 		{
 			if (!og || this->size != size)
 			{
