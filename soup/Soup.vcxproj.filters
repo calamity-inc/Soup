@@ -121,10 +121,10 @@
       <Filter>mem</Filter>
     </ClInclude>
     <ClInclude Include="sha1.hpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClInclude>
     <ClInclude Include="CryptoHashAlgo.hpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClInclude>
     <ClInclude Include="string.hpp">
       <Filter>util\string</Filter>
@@ -146,7 +146,7 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="sha256.hpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClInclude>
     <ClInclude Include="X509Certificate.hpp">
       <Filter>crypto\x509</Filter>
@@ -297,7 +297,7 @@
       <Filter>io\zip</Filter>
     </ClInclude>
     <ClInclude Include="crc32.hpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClInclude>
     <ClInclude Include="ZipCentralDirectoryFile.hpp">
       <Filter>io\zip</Filter>
@@ -474,10 +474,10 @@
       <Filter>data\mime</Filter>
     </ClInclude>
     <ClInclude Include="adler32.hpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClInclude>
     <ClInclude Include="joaat.hpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClInclude>
     <ClInclude Include="Canvas.hpp">
       <Filter>vis</Filter>
@@ -698,10 +698,10 @@
       <Filter>mem</Filter>
     </ClCompile>
     <ClCompile Include="sha1.cpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClCompile>
     <ClCompile Include="sha256.cpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClCompile>
     <ClCompile Include="X509Certificate.cpp">
       <Filter>crypto\x509</Filter>
@@ -756,7 +756,7 @@
       <Filter>util\string</Filter>
     </ClCompile>
     <ClCompile Include="crc32.cpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClCompile>
     <ClCompile Include="ZipReader.cpp">
       <Filter>io\zip</Filter>
@@ -855,7 +855,7 @@
       <Filter>net\web</Filter>
     </ClCompile>
     <ClCompile Include="adler32.cpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClCompile>
     <ClCompile Include="Canvas.cpp">
       <Filter>vis</Filter>
@@ -873,7 +873,7 @@
       <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="joaat.cpp">
-      <Filter>hash</Filter>
+      <Filter>data\hash</Filter>
     </ClCompile>
     <ClCompile Include="ServerWebService.cpp">
       <Filter>net\web</Filter>
@@ -964,9 +964,6 @@
     <Filter Include="crypto">
       <UniqueIdentifier>{2977e49c-bf74-490c-a67a-0888e8df098f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="hash">
-      <UniqueIdentifier>{31591c67-cd1c-4cc1-82c8-9cbbca1dba34}</UniqueIdentifier>
-    </Filter>
     <Filter Include="io">
       <UniqueIdentifier>{dba0001f-054d-4ddf-ba50-932ef7505446}</UniqueIdentifier>
     </Filter>
@@ -1047,6 +1044,9 @@
     </Filter>
     <Filter Include="net\mysql">
       <UniqueIdentifier>{9c39909c-d109-4853-b572-c2fa9de042e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\hash">
+      <UniqueIdentifier>{31591c67-cd1c-4cc1-82c8-9cbbca1dba34}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
