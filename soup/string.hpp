@@ -128,15 +128,30 @@ namespace soup
 		}
 
 		template <typename T>
+		[[nodiscard]] static constexpr bool isSpace(const T c) noexcept
+		{
+			return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+		}
+
+		template <typename T>
 		[[nodiscard]] static constexpr bool isNumberChar(const T c) noexcept
 		{
 			return c >= '0' && c <= '9';
 		}
 
+		// string attributes
+
 		template <typename T>
-		[[nodiscard]] static constexpr bool isSpace(const T c) noexcept
+		[[nodiscard]] static bool isNumeric(const T& str)
 		{
-			return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+			for (const auto& c : str)
+			{
+				if (!isNumberChar(c))
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 
 		// conversions
