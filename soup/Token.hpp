@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "Mixed.hpp"
 
 namespace soup
 {
@@ -8,10 +8,10 @@ namespace soup
 	{
 		enum ReservedId : int
 		{
-			STRING = -1,
+			VAL = -1,
 		};
 
 		int id;
-		std::string val{};
+		Mixed val;
 	};
 }

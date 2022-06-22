@@ -58,8 +58,6 @@ namespace soup
 
 	enum PhpTokens : int
 	{
-		T_NOP = 0,
-
 		T_ECHO = 100,
 	};
 
@@ -70,30 +68,17 @@ namespace soup
 		{
 			Tokeniser tkser;
 			tkser.addLiteral("echo", T_ECHO);
-			tkser.addLiteral(";", T_NOP);
 			auto tks = tkser.tokenise(code);
-
-			for (auto i = tks.begin(); i != tks.end(); )
-			{
-				if (i->id == T_NOP)
-				{
-					i = tks.erase(i);
-				}
-				else
-				{
-					++i;
-				}
-			}
 
 			for (auto i = tks.begin(); i != tks.end(); ++i)
 			{
 				if (i->id == T_ECHO)
 				{
 					if ((i + 1) != tks.end()
-						&& (i + 1)->id == Token::STRING
+						&& (i + 1)->id == Token::VAL
 						)
 					{
-						output.append((i + 1)->val);
+						output.append((i + 1)->val.toString());
 					}
 					else
 					{

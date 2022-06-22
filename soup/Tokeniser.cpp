@@ -22,15 +22,21 @@ namespace soup
 			{
 				return;
 			}
-			auto tk = tkser->registry.find(lb);
-			if (tk == tkser->registry.end())
+			if (auto tk = tkser->registry.find(lb); tk != tkser->registry.end())
 			{
-				std::string err = "Unregistered literal: ";
-				err.append(lb);
-				throw ParseError{ std::move(err) };
+				tokens.emplace_back(Token{ tk->second });
+				lb.clear();
+				return;
 			}
-			lb.clear();
-			tokens.emplace_back(Token{ tk->second });
+			if (auto opt = string::toInt<int64_t>(lb); opt.has_value())
+			{
+				tokens.emplace_back(Token{ Token::VAL, opt.value()});
+				lb.clear();
+				return;
+			}
+			std::string err = "Unregistered literal: ";
+			err.append(lb);
+			throw ParseError{ std::move(err) };
 		}
 	};
 
@@ -44,11 +50,11 @@ namespace soup
 			{
 				st.flushLiteralBuffer();
 				++i;
-				st.tokens.emplace_back(Token{ Token::STRING, getString(code, i) });
+				st.tokens.emplace_back(Token{ Token::VAL, getString(code, i) });
 				continue;
 			}
 
-			if (string::isSpace(*i))
+			if (string::isSpace(*i) || *i == ';')
 			{
 				st.flushLiteralBuffer();
 			}
@@ -87,10 +93,10 @@ namespace soup
 		{
 			output.push_back('[');
 			output.append(std::to_string(tk.id));
-			if (!tk.val.empty())
+			if (auto str = tk.val.toString(); !str.empty())
 			{
 				output.append(": ");
-				output.append(tk.val);
+				output.append(str);
 			}
 			output.push_back(']');
 		}
