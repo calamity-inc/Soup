@@ -93,19 +93,30 @@ int main(int argc, const char** argv)
 			cli_test();
 			return 0;
 		}
+
+		if (subcommand == "websrv")
+		{
+			if (argc <= 2)
+			{
+				std::cout << "Syntax: soup websrv [dir]" << std::endl;
+				return 0;
+			}
+			return cli_websrv(argv[2]);
+		}
 	}
 
 	std::cout << R"EOC(Syntax: soup [tool]
 
 Available tools:
 - qr [contents]
-- edit [files ...]
+- edit [files...]
 - chess <FEN>
 - 3d
 - repl
 - snake
 - dvd
 - test
+- websrv [dir]
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;

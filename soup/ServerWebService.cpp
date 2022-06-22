@@ -24,6 +24,20 @@ namespace soup
 	{
 	}
 
+	void ServerWebService::sendContent(Socket& s, std::string body)
+	{
+		sendContent(s, "200", std::move(body));
+	}
+
+	void ServerWebService::sendContent(Socket& s, const char* status, std::string body)
+	{
+		HttpResponse resp;
+		resp.body = std::move(body);
+		resp.setContentLength();
+		resp.setContentType();
+		sendResponse(s, status, resp.toString());
+	}
+
 	void ServerWebService::sendHtml(Socket& s, std::string body)
 	{
 		sendData(s, "text/html", std::move(body));

@@ -25,6 +25,7 @@
     <ClCompile Include="cli_repl.cpp" />
     <ClCompile Include="cli_snake.cpp" />
     <ClCompile Include="cli_test.cpp" />
+    <ClCompile Include="cli_websrv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

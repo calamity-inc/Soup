@@ -1,5 +1,6 @@
 #include "MimeMessage.hpp"
 
+#include "MimeType.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -12,6 +13,30 @@ namespace soup
 	MimeMessage::MimeMessage(const std::string& data)
 	{
 		loadMessage(data);
+	}
+
+	void MimeMessage::setContentLength()
+	{
+		header_fields.emplace("Content-Length", std::to_string(body.size()));
+	}
+
+	void MimeMessage::setContentType()
+	{
+		if (body.length() > 4
+			&& body.substr(0, 4) == "\x89PNG"
+			)
+		{
+			header_fields.emplace("Content-Type", MimeType::IMAGE_PNG);
+			return;
+		}
+
+		if (body.find("<body>") != std::string::npos)
+		{
+			header_fields.emplace("Content-Type", MimeType::TEXT_HTML);
+			return;
+		}
+
+		header_fields.emplace("Content-Type", MimeType::TEXT_PLAIN);
 	}
 
 	void MimeMessage::loadMessage(const std::string& data)
