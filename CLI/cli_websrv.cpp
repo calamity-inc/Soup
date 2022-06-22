@@ -14,24 +14,30 @@ static std::string base_dir;
 
 static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::ServerWebService&)
 {
-	if (req.path.find("..") != std::string::npos)
-	{
-		std::cout << s.peer.toString() << " > " << req.method << " " << req.path << " [400 - path traversal]" << std::endl;
-		soup::ServerWebService::sendContent(s, "400", "400 - Potential path traversal attack");
-		return;
-	}
-
 	auto host = req.header_fields.find("Host");
-	if (host == req.header_fields.end())
+	if (host == req.header_fields.end()
+		|| host->second.empty()
+		)
 	{
 		std::cout << s.peer.toString() << " > " << req.method << " " << req.path << " [400 - no host]" << std::endl;
 		soup::ServerWebService::sendContent(s, "400", "400 - Missing 'Host' header");
 		return;
 	}
 
+	std::string req_url = host->second;
+	req_url.append(req.path);
+
+	if (req_url.find("..") != std::string::npos)
+	{
+		std::cout << s.peer.toString() << " > " << req.method << " " << req.path << " [400 - path traversal]" << std::endl;
+		soup::ServerWebService::sendContent(s, "400", "400 - Potential path traversal attack");
+		return;
+	}
+
+	
+
 	std::string file_path = base_dir;
-	file_path.append(host->second);
-	file_path.append(req.path);
+	file_path.append(req_url);
 
 	if (req.path == "/")
 	{
@@ -53,8 +59,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 			if (!std::filesystem::is_regular_file(file_path))
 			{
 				file_path = base_dir;
-				file_path.append(host->second);
-				file_path.append(req.path);
+				file_path.append(req_url);
 				file_path.append(".php");
 			}
 		}
@@ -62,7 +67,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 
 	if (std::filesystem::is_regular_file(file_path))
 	{
-		std::cout << s.peer.toString() << " > " << req.method << " " << host->second << req.path << " [200]" << std::endl;
+		std::cout << s.peer.toString() << " > " << req.method << " " << req_url << " [200]" << std::endl;
 		auto contents = soup::string::fromFile(file_path);
 		if (file_path.length() > 4 && file_path.substr(file_path.length() - 4) == ".php")
 		{
@@ -72,7 +77,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 	}
 	else
 	{
-		std::cout << s.peer.toString() << " > " << req.method << " " << host->second << req.path << " [404]" << std::endl;
+		std::cout << s.peer.toString() << " > " << req.method << " " << req_url << " [404]" << std::endl;
 		soup::ServerWebService::sendContent(s, "404", "404 - Page not found");
 	}
 }
