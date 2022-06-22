@@ -63,7 +63,12 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 	if (std::filesystem::is_regular_file(file_path))
 	{
 		std::cout << s.peer.toString() << " > " << req.method << " " << host->second << req.path << " [200]" << std::endl;
-		soup::ServerWebService::sendContent(s, soup::string::fromFile(file_path));
+		auto contents = soup::string::fromFile(file_path);
+		if (file_path.length() > 4 && file_path.substr(file_path.length() - 4) == ".php")
+		{
+			contents = soup::php::evaluate(contents);
+		}
+		soup::ServerWebService::sendContent(s, std::move(contents));
 	}
 	else
 	{

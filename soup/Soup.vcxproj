@@ -481,6 +481,8 @@
     <ClInclude Include="OpaqueString.hpp" />
     <ClInclude Include="os.hpp" />
     <ClInclude Include="OstreamWriter.hpp" />
+    <ClInclude Include="ParseError.hpp" />
+    <ClInclude Include="php.hpp" />
     <ClInclude Include="Plane.hpp" />
     <ClInclude Include="PointLight.hpp" />
     <ClInclude Include="PolyVector.hpp" />
@@ -559,6 +561,8 @@
     <ClInclude Include="StringReader.hpp" />
     <ClInclude Include="StringWriter.hpp" />
     <ClInclude Include="Thread.hpp" />
+    <ClInclude Include="Token.hpp" />
+    <ClInclude Include="Tokeniser.hpp" />
     <ClInclude Include="TreeNode.hpp" />
     <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="unit_testing.hpp" />
@@ -673,6 +677,7 @@
     <ClCompile Include="OpaqueString.cpp" />
     <ClCompile Include="os.cpp" />
     <ClCompile Include="pem.cpp" />
+    <ClCompile Include="php.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="QrCode.cpp" />
     <ClCompile Include="Quaternion.cpp" />
@@ -698,6 +703,7 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />
+    <ClCompile Include="Tokeniser.cpp" />
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="unit_testing.cpp" />
     <ClCompile Include="Url.cpp" />

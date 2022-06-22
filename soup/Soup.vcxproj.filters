@@ -656,6 +656,18 @@
     <ClInclude Include="acme.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
+    <ClInclude Include="php.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="Tokeniser.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="Token.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="ParseError.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -944,6 +956,12 @@
     <ClCompile Include="acme.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
+    <ClCompile Include="php.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="Tokeniser.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1047,6 +1065,9 @@
     </Filter>
     <Filter Include="data\hash">
       <UniqueIdentifier>{31591c67-cd1c-4cc1-82c8-9cbbca1dba34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang">
+      <UniqueIdentifier>{2e73bbce-41b8-4c8c-8f2f-efdd61207e83}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
