@@ -11,6 +11,8 @@
 #include <JsonObject.hpp>
 #include <JsonString.hpp>
 
+#include <php.hpp>
+
 using namespace soup;
 
 void tests()
@@ -77,6 +79,15 @@ void tests()
 			assert(obj->at("spouse")->isNull());
 		});
 	}
+
+	test("php", []
+	{
+		assert(php::evaluatePhp(R"(echo "Hello")") == "Hello");
+		assert(php::evaluatePhp(R"(echo 123)") == "123");
+		//assert(php::evaluatePhp(R"(?>Hello)") == "Hello");
+		assert(php::evaluate(R"(Hello)") == "Hello");
+		assert(php::evaluate(R"(<?php echo "Hello";)") == "Hello");
+	});
 }
 
 void cli_test()
