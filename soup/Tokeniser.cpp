@@ -62,7 +62,7 @@ namespace soup
 
 		st.flushLiteralBuffer();
 
-		return st.tokens;
+		return std::move(st.tokens);
 	}
 
 	std::string Tokeniser::getString(const std::string& code, std::string::const_iterator& i)
