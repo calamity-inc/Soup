@@ -36,7 +36,7 @@ namespace soup
 		}
 
 		Mixed(Mixed&& b)
-			: type(b.type), val(b.type)
+			: type(b.type), val(b.val)
 		{
 			b.type = NONE;
 		}
