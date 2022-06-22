@@ -40,7 +40,7 @@ namespace soup
 		SourceLocation last_successful_test{};
 		std::string err{};
 
-		inline static thread_local Test* currently_running;
+		inline static thread_local Test* currently_running = nullptr;
 
 		Test(const char* name, void(*test)())
 			: TestUnit(name, true), test(test)

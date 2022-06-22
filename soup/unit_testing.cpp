@@ -1,6 +1,7 @@
 #include "unit_testing.hpp"
 
 #include <iostream>
+#include <stdexcept>
 
 using namespace soup;
 
@@ -12,6 +13,10 @@ void test(const char* name, void(*test)())
 
 void assert_impl(bool b, soup::SourceLocation sl)
 {
+	if (Test::currently_running == nullptr)
+	{
+		throw std::runtime_error("Can't use assert outside of a test");
+	}
 	if (!b)
 	{
 		Test::currently_running->err = "Assertion in ";
@@ -67,6 +72,7 @@ namespace soup
 				reinterpret_cast<Test*>(this)->setException("exception occurred");
 			}
 			++total_tests;
+			Test::currently_running = nullptr;
 		}
 		for (const auto& child : children)
 		{
