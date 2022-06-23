@@ -20,11 +20,11 @@ jobs:
       - name: Build Soup
         run: php linux_lib.php
 
-      - name: Upload Soup
-        uses: actions/upload-artifact@v3
-        with:
-          name: libsoup.a
-          path: libsoup.a
+      #- name: Upload Soup
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: libsoup.a
+      #    path: libsoup.a
 
       - name: Build CLI
         run: php linux_cli.php
