@@ -224,12 +224,24 @@ namespace soup
 			}
 
 			std::map<std::string, Mixed> vars{};
-			for (const auto& op : ops)
+			for (auto& op : ops)
 			{
 				switch (op.id)
 				{
 				case T_SET:
-					vars.emplace(std::move(op.args.at(0).val.getString()), std::move(op.args.at(1).val));
+					{
+						std::string& key = op.args.at(0).val.getString();
+						Mixed& val = op.args.at(1).val;
+
+						if (auto e = vars.find(key); e != vars.end())
+						{
+							e->second = std::move(val);
+						}
+						else
+						{
+							vars.emplace(std::move(key), std::move(val));
+						}
+					}
 					break;
 
 				case T_ECHO:
