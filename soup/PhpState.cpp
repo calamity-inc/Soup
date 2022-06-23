@@ -87,81 +87,66 @@ namespace soup
 		return id == Token::VAL || id == Token::LITERAL;
 	}
 
-	static void collapse_lr(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Op>& ops, int id)
+	[[nodiscard]] static Op collapse_lr(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
 	{
-		for (auto i = tks.begin(); i != tks.end(); )
+		Token tk = *i;
+		if (i == tks.begin())
 		{
-			if (i->id != id)
-			{
-				++i;
-				continue;
-			}
-			Token tk = *i;
-			if (i == tks.begin())
-			{
-				std::string err = tkser.getName(tk);
-				err.append(" expected lefthand argument, found start of code");
-				throw ParseError(std::move(err));
-			}
-			Op op{ id };
-			op.args.reserve(2);
-			i = tks.erase(i);
-			if (i == tks.end())
-			{
-				std::string err = tkser.getName(tk);
-				err.append(" expected righthand argument, found end of code");
-				throw ParseError(std::move(err));
-			}
-			if (!isValidArg((i - 1)->id))
-			{
-				std::string err = tkser.getName(tk);
-				err.append(" expected lefthand argument, found ");
-				err.append(tkser.getName(*i));
-				throw ParseError(std::move(err));
-			}
-			if (!isValidArg(i->id))
-			{
-				std::string err = tkser.getName(tk);
-				err.append(" expected righthand argument, found ");
-				err.append(tkser.getName(*i));
-				throw ParseError(std::move(err));
-			}
-			op.args.emplace_back(std::move(*(i - 1)));
-			op.args.emplace_back(std::move(*i));
-			ops.emplace_back(std::move(op));
-			--i;
-			i = tks.erase(i);
-			i = tks.erase(i);
+			std::string err = tkser.getName(tk);
+			err.append(" expected lefthand argument, found start of code");
+			throw ParseError(std::move(err));
 		}
+		Op op{ tk.id };
+		op.args.reserve(2);
+		i = tks.erase(i);
+		if (i == tks.end())
+		{
+			std::string err = tkser.getName(tk);
+			err.append(" expected righthand argument, found end of code");
+			throw ParseError(std::move(err));
+		}
+		if (!isValidArg((i - 1)->id))
+		{
+			std::string err = tkser.getName(tk);
+			err.append(" expected lefthand argument, found ");
+			err.append(tkser.getName(*i));
+			throw ParseError(std::move(err));
+		}
+		if (!isValidArg(i->id))
+		{
+			std::string err = tkser.getName(tk);
+			err.append(" expected righthand argument, found ");
+			err.append(tkser.getName(*i));
+			throw ParseError(std::move(err));
+		}
+		op.args.emplace_back(std::move(*(i - 1)));
+		op.args.emplace_back(std::move(*i));
+		--i;
+		i = tks.erase(i);
+		i = tks.erase(i);
+		return op;
 	}
 
-	static void collapse_r(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Op>& ops, int id)
+	[[nodiscard]] static Op collapse_r(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
 	{
-		for (auto i = tks.begin(); i != tks.end(); )
+		Token tk = *i;
+		i = tks.erase(i);
+		if (i == tks.end())
 		{
-			if (i->id != id)
-			{
-				++i;
-				continue;
-			}
-			Token tk = *i;
-			i = tks.erase(i);
-			if (i == tks.end())
-			{
-				std::string err = tkser.getName(tk);
-				err.append(" expected righthand argument, found end of code");
-				throw ParseError(std::move(err));
-			}
-			if (!isValidArg(i->id))
-			{
-				std::string err = tkser.getName(tk);
-				err.append(" expected righthand argument, found ");
-				err.append(tkser.getName(*i));
-				throw ParseError(std::move(err));
-			}
-			ops.emplace_back(Op{ id, { std::move(*i) } });
-			i = tks.erase(i);
+			std::string err = tkser.getName(tk);
+			err.append(" expected righthand argument, found end of code");
+			throw ParseError(std::move(err));
 		}
+		if (!isValidArg(i->id))
+		{
+			std::string err = tkser.getName(tk);
+			err.append(" expected righthand argument, found ");
+			err.append(tkser.getName(*i));
+			throw ParseError(std::move(err));
+		}
+		Op op{ tk.id, { std::move(*i) } };
+		i = tks.erase(i);
+		return op;
 	}
 
 #define DEBUG_PARSING false
@@ -208,9 +193,24 @@ namespace soup
 			output.append(tkser.stringify(tks));
 #endif
 
-			collapse_lr(tkser, tks, ops, T_SET);
-			collapse_r(tkser, tks, ops, T_ECHO);
-			collapse_r(tkser, tks, ops, T_REQUIRE);
+			for (auto i = tks.begin(); i != tks.end(); )
+			{
+				switch (i->id)
+				{
+				default:
+					++i;
+					break;
+
+				case T_SET:
+					ops.emplace_back(collapse_lr(tkser, tks, i));
+					break;
+
+				case T_ECHO:
+				case T_REQUIRE:
+					ops.emplace_back(collapse_r(tkser, tks, i));
+					break;
+				}
+			}
 
 #if DEBUG_PARSING
 			output.append("\nOps: ");
