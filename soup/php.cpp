@@ -1,5 +1,7 @@
 #include "php.hpp"
 
+#include <map>
+
 #include "ParseError.hpp"
 #include "Tokeniser.hpp"
 
@@ -58,8 +60,133 @@ namespace soup
 
 	enum PhpTokens : int
 	{
-		T_ECHO = 100,
+		T_SET = 0,
+		T_ECHO,
 	};
+
+	struct Op
+	{
+		int id;
+		std::vector<Token> args{};
+
+		const Mixed& getArg(const std::map<std::string, Mixed>& vars, size_t idx) const
+		{
+			const Token& tk = args.at(idx);
+			if (tk.id == Token::LITERAL)
+			{
+				return vars.at(tk.val.getString());
+			}
+			return tk.val;
+		}
+	};
+
+	[[nodiscard]] static constexpr bool isValidArg(int id) noexcept
+	{
+		return id == Token::VAL || id == Token::LITERAL;
+	}
+
+	static void collapse_lr(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Op>& ops, int id)
+	{
+		for (auto i = tks.begin(); i != tks.end(); )
+		{
+			if (i->id != id)
+			{
+				++i;
+				continue;
+			}
+			Token tk = *i;
+			if (i == tks.begin())
+			{
+				std::string err = tkser.getName(tk);
+				err.append(" expected lefthand argument, found start of code");
+				throw ParseError(std::move(err));
+			}
+			Op op{ id };
+			op.args.reserve(2);
+			i = tks.erase(i);
+			if (i == tks.end())
+			{
+				std::string err = tkser.getName(tk);
+				err.append(" expected righthand argument, found end of code");
+				throw ParseError(std::move(err));
+			}
+			if (!isValidArg((i - 1)->id))
+			{
+				std::string err = tkser.getName(tk);
+				err.append(" expected lefthand argument, found ");
+				err.append(tkser.getName(*i));
+				throw ParseError(std::move(err));
+			}
+			if (!isValidArg(i->id))
+			{
+				std::string err = tkser.getName(tk);
+				err.append(" expected righthand argument, found ");
+				err.append(tkser.getName(*i));
+				throw ParseError(std::move(err));
+			}
+			op.args.emplace_back(std::move(*(i - 1)));
+			op.args.emplace_back(std::move(*i));
+			ops.emplace_back(std::move(op));
+			--i;
+			i = tks.erase(i);
+			i = tks.erase(i);
+		}
+	}
+
+	static void collapse_r(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Op>& ops, int id)
+	{
+		for (auto i = tks.begin(); i != tks.end(); )
+		{
+			if (i->id != id)
+			{
+				++i;
+				continue;
+			}
+			Token tk = *i;
+			i = tks.erase(i);
+			if (i == tks.end())
+			{
+				std::string err = tkser.getName(tk);
+				err.append(" expected righthand argument, found end of code");
+				throw ParseError(std::move(err));
+			}
+			if (!isValidArg(i->id))
+			{
+				std::string err = tkser.getName(tk);
+				err.append(" expected righthand argument, found ");
+				err.append(tkser.getName(*i));
+				throw ParseError(std::move(err));
+			}
+			ops.emplace_back(Op{ id, { std::move(*i) } });
+			i = tks.erase(i);
+		}
+	}
+
+#define DEBUG_PARSING false
+
+#if DEBUG_PARSING
+	[[nodiscard]] static std::string stringifyOps(const Tokeniser& tkser, const std::vector<Op>& ops)
+	{
+		std::string str{};
+		for (auto i = ops.begin(); i != ops.end(); ++i)
+		{
+			str.push_back('{');
+			str.append(tkser.getName(i->id));
+			if (!i->args.empty())
+			{
+				str.append(": ");
+				for (const auto& arg : i->args)
+				{
+					str.push_back('[');
+					str.append(tkser.getName(arg));
+					str.push_back(']');
+				}
+			}
+			str.push_back('}');
+		}
+		return str;
+	}
+#endif
 
 	std::string php::evaluatePhp(const std::string& code)
 	{
@@ -67,23 +194,44 @@ namespace soup
 		try
 		{
 			Tokeniser tkser;
+			tkser.addLiteral("=", T_SET);
 			tkser.addLiteral("echo", T_ECHO);
 			auto tks = tkser.tokenise(code);
 
-			for (auto i = tks.begin(); i != tks.end(); ++i)
+			std::vector<Op> ops{};
+
+#if DEBUG_PARSING
+			output = "Tokens: ";
+			output.append(tkser.stringify(tks));
+#endif
+
+			collapse_lr(tkser, tks, ops, T_SET);
+			collapse_r(tkser, tks, ops, T_ECHO);
+
+			for (const auto& tk : tks)
 			{
-				if (i->id == T_ECHO)
+				std::string err = "Unexpected ";
+				err.append(tkser.getName(tk));
+				throw ParseError(std::move(err));
+			}
+
+#if DEBUG_PARSING
+			output.append("\nOps: ");
+			output.append(stringifyOps(tkser, ops));
+#endif
+			
+			std::map<std::string, Mixed> vars{};
+			for (const auto& op : ops)
+			{
+				switch (op.id)
 				{
-					if ((i + 1) != tks.end()
-						&& (i + 1)->id == Token::VAL
-						)
-					{
-						output.append((i + 1)->val.toString());
-					}
-					else
-					{
-						throw ParseError("Unexpected echo");
-					}
+				case T_SET:
+					vars.emplace(std::move(op.args.at(0).val.getString()), std::move(op.args.at(1).val));
+					break;
+
+				case T_ECHO:
+					output.append(op.getArg(vars, 0).toString());
+					break;
 				}
 			}
 		}

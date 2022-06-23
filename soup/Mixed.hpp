@@ -185,6 +185,6 @@ namespace soup
 
 		[[nodiscard]] int64_t getInt() const;
 		[[nodiscard]] uint64_t getUInt() const;
-		[[nodiscard]] const std::string& getString() const;
+		[[nodiscard]] std::string& getString() const;
 	};
 }

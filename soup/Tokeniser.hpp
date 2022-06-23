@@ -19,6 +19,8 @@ namespace soup
 		[[nodiscard]] static std::string getString(const std::string& code, std::string::const_iterator& i);
 
 	public:
-		[[nodiscard]] static std::string stringify(const std::vector<Token>& tks);
+		[[nodiscard]] std::string getName(int id) const;
+		[[nodiscard]] std::string getName(const Token& tk) const;
+		[[nodiscard]] std::string stringify(const std::vector<Token>& tks) const;
 	};
 }

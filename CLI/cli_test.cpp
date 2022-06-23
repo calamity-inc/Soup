@@ -82,11 +82,12 @@ void tests()
 
 	test("php", []
 	{
+		assert(php::evaluate(R"(Hello)") == "Hello");
+		assert(php::evaluate(R"(<?php echo "Hello";)") == "Hello");
 		assert(php::evaluatePhp(R"(echo "Hello")") == "Hello");
 		assert(php::evaluatePhp(R"(echo 123)") == "123");
 		//assert(php::evaluatePhp(R"(?>Hello)") == "Hello");
-		assert(php::evaluate(R"(Hello)") == "Hello");
-		assert(php::evaluate(R"(<?php echo "Hello";)") == "Hello");
+		assert(php::evaluatePhp(R"($a = 1; echo $a;)") == "1");
 	});
 }
 

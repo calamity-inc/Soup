@@ -9,6 +9,7 @@ namespace soup
 		enum ReservedId : int
 		{
 			VAL = -1,
+			LITERAL = -2,
 		};
 
 		int id;

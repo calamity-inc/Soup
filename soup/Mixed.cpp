@@ -22,7 +22,7 @@ namespace soup
 		return val;
 	}
 
-	const std::string& Mixed::getString() const
+	std::string& Mixed::getString() const
 	{
 		if (type != STRING)
 		{
