@@ -29,6 +29,7 @@ $convs = [
 	["CDECL", "__cdecl", "cdeclCall"],
 	["FASTCALL", "__fastcall", "fastcall"],
 	["STDCALL", "__stdcall", "stdcall"],
+	["THISCALL", "__thiscall", "thiscall"],
 	["VECTORCALL", "__vectorcall", "vectorcall"],
 ];
 

@@ -16,6 +16,7 @@ namespace soup
 			CDECL = 0,
 			FASTCALL,
 			STDCALL,
+			THISCALL,
 			VECTORCALL,
 		};
 
@@ -24,6 +25,7 @@ namespace soup
 		static uintptr_t cdeclCall(void* func, const std::vector<uintptr_t>& args);
 		static uintptr_t fastcall(void* func, const std::vector<uintptr_t>& args);
 		static uintptr_t stdcall(void* func, const std::vector<uintptr_t>& args);
+		static uintptr_t thiscall(void* func, const std::vector<uintptr_t>& args);
 		static uintptr_t vectorcall(void* func, const std::vector<uintptr_t>& args);
 	};
 }

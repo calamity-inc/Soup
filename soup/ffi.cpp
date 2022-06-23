@@ -36,6 +36,7 @@ namespace soup
 		case CDECL: return cdeclCall(func, args);
 		case FASTCALL: return fastcall(func, args);
 		case STDCALL: return stdcall(func, args);
+		case THISCALL: return thiscall(func, args);
 		case VECTORCALL: return vectorcall(func, args);
 		}
 		throw BadCall();
@@ -51,6 +52,10 @@ namespace soup
 	uintptr_t ffi::stdcall(void* func, const std::vector<uintptr_t>& args)
 	{
 		DO_FFI_CALL(__stdcall)
+	}
+	uintptr_t ffi::thiscall(void* func, const std::vector<uintptr_t>& args)
+	{
+		DO_FFI_CALL(__thiscall)
 	}
 	uintptr_t ffi::vectorcall(void* func, const std::vector<uintptr_t>& args)
 	{
