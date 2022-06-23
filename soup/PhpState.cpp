@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	std::string PhpState::evaluate(const std::string& code) const
+	std::string PhpState::evaluate(const std::string& code, unsigned int max_require_depth) const
 	{
 		std::string output{};
 
@@ -26,7 +26,7 @@ namespace soup
 				{
 					++i;
 					output.append(code.data() + plain_start, token_start - plain_start);
-					output.append(evaluatePhpmode(code, i));
+					output.append(evaluatePhpmode(code, i, max_require_depth));
 					plain_start = (i - code.begin());
 					continue;
 				}
@@ -39,7 +39,7 @@ namespace soup
 		return output;
 	}
 
-	std::string PhpState::evaluatePhpmode(const std::string& code, std::string::const_iterator& i) const
+	std::string PhpState::evaluatePhpmode(const std::string& code, std::string::const_iterator& i, unsigned int max_require_depth) const
 	{
 		size_t start = (i - code.begin());
 		size_t code_end = code.length();
@@ -56,7 +56,7 @@ namespace soup
 			}
 		}
 
-		return evaluatePhp(code.substr(start, code_end - start));
+		return evaluatePhp(code.substr(start, code_end - start), max_require_depth);
 	}
 
 	enum PhpTokens : int
@@ -190,7 +190,7 @@ namespace soup
 	}
 #endif
 
-	std::string PhpState::evaluatePhp(const std::string& code) const
+	std::string PhpState::evaluatePhp(const std::string& code, unsigned int max_require_depth) const
 	{
 		std::string output{};
 		try
@@ -239,6 +239,10 @@ namespace soup
 
 				case T_REQUIRE:
 					{
+						if (max_require_depth == 0)
+						{
+							throw std::runtime_error("Max require depth exceeded");
+						}
 						std::filesystem::path file = cwd;
 						file /= op.getArg(vars, 0).toString();
 						if (!std::filesystem::exists(file))
@@ -247,7 +251,7 @@ namespace soup
 							err.append(file.string());
 							throw std::runtime_error(std::move(err));
 						}
-						output.append(evaluate(string::fromFile(file.string())));
+						output.append(evaluate(string::fromFile(file.string()), max_require_depth - 1));
 					}
 					break;
 				}
