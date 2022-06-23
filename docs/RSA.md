@@ -48,14 +48,14 @@ auto priv = soup::rsa::Keypair(
 ).getPrivate();
 ```
 
-Although this will perform a handful of large calculations to construct a `soup::rsa::key_private`. Instead, you may wish to call the constructor directly. All values needed can be read from Soup or OpenSSL. Note that what Soup calls `dp`, `dq`, `qinv`, OpenSSL calls `dmp1`, `dmq1`, `iqmp`, respectively.
+Although this will perform a handful of large calculations to construct a `soup::rsa::PrivateKey`. Instead, you may wish to call the constructor directly. All values needed can be read from Soup or OpenSSL. Note that what Soup calls `dp`, `dq`, `qinv`, OpenSSL calls `dmp1`, `dmq1`, `iqmp`, respectively.
 
 ## Sign & Verify
 
-Signing and verifying messages is done with simple templated functions. The template parameter is the hashing algorithm, which can be any descendant of `soup::crypto_hash_algo`.
+Signing and verifying messages is done with simple templated functions. The template parameter is the hashing algorithm, which can be any descendant of `soup::CryptoHashAlgo`.
 
 ```CPP
-soup::bigint signature_bigint = priv.sign<soup::sha1>("It's me, I promise!");
+soup::Bigint signature_bigint = priv.sign<soup::sha1>("It's me, I promise!");
 ```
 
 A common encapsulation for the signature is base64-encoded binary data, which you can easily convert it to with Soup:
