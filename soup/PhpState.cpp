@@ -212,6 +212,10 @@ namespace soup
 			collapse_r(tkser, tks, ops, T_ECHO);
 			collapse_r(tkser, tks, ops, T_REQUIRE);
 
+#if DEBUG_PARSING
+			output.append("\nOps: ");
+			output.append(stringifyOps(tkser, ops));
+#else
 			for (const auto& tk : tks)
 			{
 				std::string err = "Unexpected ";
@@ -219,11 +223,6 @@ namespace soup
 				throw ParseError(std::move(err));
 			}
 
-#if DEBUG_PARSING
-			output.append("\nOps: ");
-			output.append(stringifyOps(tkser, ops));
-#endif
-			
 			std::map<std::string, Mixed> vars{};
 			for (const auto& op : ops)
 			{
@@ -256,10 +255,15 @@ namespace soup
 					break;
 				}
 			}
+#endif
 		}
 		catch (const std::runtime_error& e)
 		{
-			output = "ERROR: ";
+			if (!output.empty())
+			{
+				output.push_back('\n');
+			}
+			output.append("ERROR: ");
 			output.append(e.what());
 		}
 		return output;
