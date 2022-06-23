@@ -2,8 +2,57 @@
 
 #include <ostream>
 
+#include "Op.hpp"
+
 namespace soup
 {
+	Mixed::Mixed(const Mixed& b)
+		: type(b.type)
+	{
+		switch (type)
+		{
+		default:
+			val = b.val;
+			break;
+
+		case STRING:
+			val = (uint64_t)new std::string(b.getString());
+			break;
+
+		case OP_ARRAY:
+			val = (uint64_t)new std::vector<Op>(b.getOpArray());
+			break;
+		}
+	}
+
+	Mixed::Mixed(std::vector<Op>&& val)
+		: type(OP_ARRAY), val((uint64_t)new std::vector<Op>(std::move(val)))
+	{
+	}
+
+	void Mixed::release()
+	{
+		switch (type)
+		{
+		default:
+			break;
+
+		case STRING:
+			delete reinterpret_cast<std::string*>(val);
+			break;
+
+		case OP_ARRAY:
+			delete reinterpret_cast<std::vector<Op>*>(val);
+			break;
+		}
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Mixed& v)
+	{
+		os << v.toString();
+		return os;
+	}
+
 	int64_t Mixed::getInt() const
 	{
 		if (type != INT)
@@ -31,9 +80,12 @@ namespace soup
 		return *reinterpret_cast<std::string*>(val);
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Mixed& v)
+	std::vector<Op>& Mixed::getOpArray() const
 	{
-		os << v.toString();
-		return os;
+		if (type != OP_ARRAY)
+		{
+			throw 0;
+		}
+		return *reinterpret_cast<std::vector<Op>*>(val);
 	}
 }

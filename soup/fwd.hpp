@@ -36,6 +36,9 @@ namespace soup
 	class Reader;
 	class Writer;
 
+	// lang
+	struct Op;
+
 	// math
 	class Bigint;
 	struct Vector2;

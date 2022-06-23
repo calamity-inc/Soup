@@ -89,6 +89,7 @@ void tests()
 		assert(php.evaluatePhp(R"(echo 123)") == "123");
 		//assert(php.evaluatePhp(R"(?>Hello)") == "Hello");
 		assert(php.evaluatePhp(R"($a = 1; echo $a;)") == "1");
+		assert(php.evaluatePhp(R"($a = function(){ echo "Hello"; }; $a();)") == "Hello");
 	});
 }
 

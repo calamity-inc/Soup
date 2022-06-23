@@ -1,8 +1,10 @@
 #pragma once
 
 #include "base.hpp"
+#include "fwd.hpp"
 
 #include <string>
+#include <vector>
 
 namespace soup
 {
@@ -11,10 +13,11 @@ namespace soup
 	public:
 		enum Type : uint8_t
 		{
-			NONE,
+			NONE = 0,
 			INT,
 			UINT,
 			STRING,
+			OP_ARRAY,
 		};
 
 		Type type = NONE;
@@ -22,18 +25,7 @@ namespace soup
 
 		Mixed() = default;
 
-		Mixed(const Mixed& b)
-			: type(b.type)
-		{
-			if (type == STRING)
-			{
-				val = (uint64_t)new std::string(b.getString());
-			}
-			else
-			{
-				val = b.val;
-			}
-		}
+		Mixed(const Mixed& b);
 
 		Mixed(Mixed&& b)
 			: type(b.type), val(b.val)
@@ -71,19 +63,15 @@ namespace soup
 		{
 		}
 
+		Mixed(std::vector<Op>&& val);
+
 		~Mixed() noexcept
 		{
 			release();
 		}
 
 	private:
-		void release()
-		{
-			if (type == STRING)
-			{
-				delete reinterpret_cast<std::string*>(val);
-			}
-		}
+		void release();
 
 	public:
 		void reset()
@@ -186,5 +174,6 @@ namespace soup
 		[[nodiscard]] int64_t getInt() const;
 		[[nodiscard]] uint64_t getUInt() const;
 		[[nodiscard]] std::string& getString() const;
+		[[nodiscard]] std::vector<Op>& getOpArray() const;
 	};
 }

@@ -479,7 +479,9 @@
     <ClInclude Include="MysqlHandshakeResponse.hpp" />
     <ClInclude Include="MysqlStmtPrepareOk.hpp" />
     <ClInclude Include="Notifyable.hpp" />
+    <ClInclude Include="Op.hpp" />
     <ClInclude Include="OpaqueString.hpp" />
+    <ClInclude Include="op_tree.hpp" />
     <ClInclude Include="os.hpp" />
     <ClInclude Include="OstreamWriter.hpp" />
     <ClInclude Include="ParseError.hpp" />

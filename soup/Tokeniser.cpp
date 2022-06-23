@@ -52,12 +52,20 @@ namespace soup
 				continue;
 			}
 
-			if (string::isSpace(*i) || *i == ';')
+			if (string::isSpace(*i)
+				|| *i == ';'
+				)
 			{
 				st.flushLiteralBuffer();
 			}
 			else
 			{
+				if (*i == '('
+					|| *i == '{'
+					)
+				{
+					st.flushLiteralBuffer();
+				}
 				st.lb.push_back(*i);
 			}
 
@@ -86,13 +94,10 @@ namespace soup
 
 	std::string Tokeniser::getName(int id) const
 	{
-		if (id == Token::VAL)
+		switch (id)
 		{
-			return "value";
-		}
-		if (id == Token::LITERAL)
-		{
-			return "literal";
+		case Token::VAL: return "value";
+		case Token::LITERAL: return "literal";
 		}
 		for (const auto& e : registry)
 		{
@@ -106,26 +111,14 @@ namespace soup
 
 	std::string Tokeniser::getName(const Token& tk) const
 	{
-		if (tk.id == Token::VAL)
+		std::string str = tk.val.toString();
+		if (!str.empty())
 		{
-			std::string str = "value ";
-			str.append(tk.val.toString());
+			str.insert(0, 1, ' ');
+			str.insert(0, getName(tk.id));
 			return str;
 		}
-		if (tk.id == Token::LITERAL)
-		{
-			std::string str = "literal ";
-			str.append(tk.val.toString());
-			return str;
-		}
-		for (const auto& e : registry)
-		{
-			if (e.second == tk.id)
-			{
-				return e.first;
-			}
-		}
-		return std::to_string(tk.id);
+		return getName(tk.id);
 	}
 
 	std::string Tokeniser::stringify(const std::vector<Token>& tks) const
@@ -135,14 +128,6 @@ namespace soup
 		{
 			output.push_back('[');
 			output.append(getName(tk));
-			if (tk.id != Token::VAL && tk.id != Token::LITERAL)
-			{
-				if (auto str = tk.val.toString(); !str.empty())
-				{
-					output.append(": ");
-					output.append(str);
-				}
-			}
 			output.push_back(']');
 		}
 		return output;

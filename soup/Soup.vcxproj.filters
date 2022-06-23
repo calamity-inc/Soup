@@ -674,6 +674,12 @@
     <ClInclude Include="Searchspace.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="op_tree.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="Op.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">

@@ -1,7 +1,6 @@
 #include "PhpState.hpp"
 
-#include <map>
-
+#include "Op.hpp"
 #include "ParseError.hpp"
 #include "string.hpp"
 #include "Tokeniser.hpp"
@@ -64,32 +63,23 @@ namespace soup
 		T_SET = 0,
 		T_ECHO,
 		T_REQUIRE,
-	};
+		T_FUNC,
+		T_BLOCK_START,
+		T_BLOCK_END,
 
-	struct Op
-	{
-		int id;
-		std::vector<Token> args{};
-
-		const Mixed& getArg(const std::map<std::string, Mixed>& vars, size_t idx) const
-		{
-			const Token& tk = args.at(idx);
-			if (tk.id == Token::LITERAL)
-			{
-				return vars.at(tk.val.getString());
-			}
-			return tk.val;
-		}
+		OP_CALL,
 	};
 
 	[[nodiscard]] static constexpr bool isValidArg(int id) noexcept
 	{
-		return id == Token::VAL || id == Token::LITERAL;
+		return id == Token::VAL
+			|| id == Token::LITERAL
+			;
 	}
 
 	[[nodiscard]] static Op collapse_lr(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
 	{
-		Token tk = *i;
+		Token tk = std::move(*i);
 		if (i == tks.begin())
 		{
 			std::string err = tkser.getName(tk);
@@ -127,9 +117,33 @@ namespace soup
 		return op;
 	}
 
+	[[nodiscard]] static Op collapse_l(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
+	{
+		Token tk = std::move(*i);
+		if (i == tks.begin())
+		{
+			std::string err = tkser.getName(tk);
+			err.append(" expected lefthand argument, found start of code");
+			throw ParseError(std::move(err));
+		}
+		Op op{ tk.id };
+		i = tks.erase(i);
+		if (!isValidArg((i - 1)->id))
+		{
+			std::string err = tkser.getName(tk);
+			err.append(" expected lefthand argument, found ");
+			err.append(tkser.getName(*i));
+			throw ParseError(std::move(err));
+		}
+		op.args.emplace_back(std::move(*(i - 1)));
+		--i;
+		i = tks.erase(i);
+		return op;
+	}
+
 	[[nodiscard]] static Op collapse_r(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
 	{
-		Token tk = *i;
+		Token tk = std::move(*i);
 		i = tks.erase(i);
 		if (i == tks.end())
 		{
@@ -149,6 +163,42 @@ namespace soup
 		return op;
 	}
 
+	static bool processBlockTokens(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i, std::vector<Op>& ops)
+	{
+		for (; i != tks.end(); )
+		{
+			switch (i->id)
+			{
+			case Token::LITERAL:
+				if (i->val.getString() == "()")
+				{
+					Op op = collapse_l(tkser, tks, i);
+					op.id = OP_CALL;
+					ops.emplace_back(std::move(op));
+					break;
+				}
+				[[fallthrough]];
+			default:
+				++i;
+				break;
+
+			case T_SET:
+				ops.emplace_back(collapse_lr(tkser, tks, i));
+				break;
+
+			case T_ECHO:
+			case T_REQUIRE:
+				ops.emplace_back(collapse_r(tkser, tks, i));
+				break;
+
+			case T_BLOCK_END:
+				i = tks.erase(i);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 #define DEBUG_PARSING false
 
 #if DEBUG_PARSING
@@ -184,38 +234,72 @@ namespace soup
 			tkser.addLiteral("=", T_SET);
 			tkser.addLiteral("echo", T_ECHO);
 			tkser.addLiteral("require", T_REQUIRE);
+			tkser.addLiteral("function", T_FUNC);
+			tkser.addLiteral("{", T_BLOCK_START);
+			tkser.addLiteral("}", T_BLOCK_END);
 			auto tks = tkser.tokenise(code);
 
-			std::vector<Op> ops{};
-
 #if DEBUG_PARSING
-			output = "Tokens: ";
+			output = "Tokenised: ";
 			output.append(tkser.stringify(tks));
 #endif
 
 			for (auto i = tks.begin(); i != tks.end(); )
 			{
-				switch (i->id)
+				if (i->id != T_FUNC)
 				{
-				default:
 					++i;
-					break;
-
-				case T_SET:
-					ops.emplace_back(collapse_lr(tkser, tks, i));
-					break;
-
-				case T_ECHO:
-				case T_REQUIRE:
-					ops.emplace_back(collapse_r(tkser, tks, i));
-					break;
+					continue;
 				}
+				i = tks.erase(i);
+				if (i == tks.end()
+					|| i->id != Token::LITERAL
+					|| i->val.getString() != "()"
+					)
+				{
+					throw ParseError("Expected 'function' to be followed by '()'");
+				}
+				i = tks.erase(i);
+				if (i == tks.end()
+					|| i->id != T_BLOCK_START
+					)
+				{
+					throw ParseError("Expected block start after function()");
+				}
+				i = tks.erase(i);
+				size_t start = (i - tks.begin());
+				std::vector<Op> ops{};
+				if (!processBlockTokens(tkser, tks, i, ops))
+				{
+					throw ParseError("Expected block end, found end of code");
+				}
+				if ((i - tks.begin()) != start)
+				{
+					std::string err = "Unexpected ";
+					err.append(tkser.getName(*i));
+					throw ParseError(std::move(err));
+				}
+				i = tks.insert(i, Token{ Token::VAL, std::move(ops) });
+			}
+
+#if DEBUG_PARSING
+			output.append("\nFunctions squashed: ");
+			output.append(tkser.stringify(tks));
+#endif
+
+			auto i = tks.begin();
+			std::vector<Op> ops{};
+			if (processBlockTokens(tkser, tks, i, ops))
+			{
+				throw ParseError("Unexpected block end; no matching block start");
 			}
 
 #if DEBUG_PARSING
 			output.append("\nOps: ");
 			output.append(stringifyOps(tkser, ops));
-#else
+			output.push_back('\n');
+#endif
+
 			for (const auto& tk : tks)
 			{
 				std::string err = "Unexpected ";
@@ -223,51 +307,7 @@ namespace soup
 				throw ParseError(std::move(err));
 			}
 
-			std::map<std::string, Mixed> vars{};
-			for (auto& op : ops)
-			{
-				switch (op.id)
-				{
-				case T_SET:
-					{
-						std::string& key = op.args.at(0).val.getString();
-						Mixed& val = op.args.at(1).val;
-
-						if (auto e = vars.find(key); e != vars.end())
-						{
-							e->second = std::move(val);
-						}
-						else
-						{
-							vars.emplace(std::move(key), std::move(val));
-						}
-					}
-					break;
-
-				case T_ECHO:
-					output.append(op.getArg(vars, 0).toString());
-					break;
-
-				case T_REQUIRE:
-					{
-						if (max_require_depth == 0)
-						{
-							throw std::runtime_error("Max require depth exceeded");
-						}
-						std::filesystem::path file = cwd;
-						file /= op.getArg(vars, 0).toString();
-						if (!std::filesystem::exists(file))
-						{
-							std::string err = "Required file doesn't exist: ";
-							err.append(file.string());
-							throw std::runtime_error(std::move(err));
-						}
-						output.append(evaluate(string::fromFile(file.string()), max_require_depth - 1));
-					}
-					break;
-				}
-			}
-#endif
+			execute(output, ops, max_require_depth);
 		}
 		catch (const std::runtime_error& e)
 		{
@@ -279,5 +319,57 @@ namespace soup
 			output.append(e.what());
 		}
 		return output;
+	}
+
+	void PhpState::execute(std::string& output, const std::vector<Op>& ops, unsigned int max_require_depth) const
+	{
+		std::map<std::string, Mixed> vars{};
+		for (const auto& op : ops)
+		{
+			switch (op.id)
+			{
+			case T_SET:
+			{
+				std::string& key = op.args.at(0).val.getString();
+				const Mixed& val = op.args.at(1).val;
+
+				if (auto e = vars.find(key); e != vars.end())
+				{
+					e->second = std::move(val);
+				}
+				else
+				{
+					vars.emplace(std::move(key), val);
+				}
+			}
+			break;
+
+			case T_ECHO:
+				output.append(op.getArg(vars, 0).toString());
+				break;
+
+			case T_REQUIRE:
+			{
+				if (max_require_depth == 0)
+				{
+					throw std::runtime_error("Max require depth exceeded");
+				}
+				std::filesystem::path file = cwd;
+				file /= op.getArg(vars, 0).toString();
+				if (!std::filesystem::exists(file))
+				{
+					std::string err = "Required file doesn't exist: ";
+					err.append(file.string());
+					throw std::runtime_error(std::move(err));
+				}
+				output.append(evaluate(string::fromFile(file.string()), max_require_depth - 1));
+			}
+			break;
+
+			case OP_CALL:
+				execute(output, op.getArg(vars, 0).getOpArray(), max_require_depth);
+				break;
+			}
+		}
 	}
 }
