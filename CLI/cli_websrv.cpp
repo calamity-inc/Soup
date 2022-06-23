@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include <HttpRequest.hpp>
-#include <php.hpp>
+#include <PhpState.hpp>
 #include <Server.hpp>
 #include <ServerWebService.hpp>
 #include <Socket.hpp>
@@ -71,7 +71,9 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 		auto contents = soup::string::fromFile(file_path);
 		if (file_path.length() > 4 && file_path.substr(file_path.length() - 4) == ".php")
 		{
-			contents = soup::php::evaluate(contents);
+			soup::PhpState php;
+			php.cwd = std::filesystem::path(file_path).parent_path();
+			contents = php.evaluate(contents);
 		}
 		soup::ServerWebService::sendContent(s, std::move(contents));
 	}

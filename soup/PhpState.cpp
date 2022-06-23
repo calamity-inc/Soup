@@ -1,13 +1,14 @@
-#include "php.hpp"
+#include "PhpState.hpp"
 
 #include <map>
 
 #include "ParseError.hpp"
+#include "string.hpp"
 #include "Tokeniser.hpp"
 
 namespace soup
 {
-	std::string php::evaluate(const std::string& code)
+	std::string PhpState::evaluate(const std::string& code) const
 	{
 		std::string output{};
 
@@ -38,7 +39,7 @@ namespace soup
 		return output;
 	}
 
-	std::string php::evaluatePhpmode(const std::string& code, std::string::const_iterator& i)
+	std::string PhpState::evaluatePhpmode(const std::string& code, std::string::const_iterator& i) const
 	{
 		size_t start = (i - code.begin());
 		size_t code_end = code.length();
@@ -62,6 +63,7 @@ namespace soup
 	{
 		T_SET = 0,
 		T_ECHO,
+		T_REQUIRE,
 	};
 
 	struct Op
@@ -188,7 +190,7 @@ namespace soup
 	}
 #endif
 
-	std::string php::evaluatePhp(const std::string& code)
+	std::string PhpState::evaluatePhp(const std::string& code) const
 	{
 		std::string output{};
 		try
@@ -196,6 +198,7 @@ namespace soup
 			Tokeniser tkser;
 			tkser.addLiteral("=", T_SET);
 			tkser.addLiteral("echo", T_ECHO);
+			tkser.addLiteral("require", T_REQUIRE);
 			auto tks = tkser.tokenise(code);
 
 			std::vector<Op> ops{};
@@ -207,6 +210,7 @@ namespace soup
 
 			collapse_lr(tkser, tks, ops, T_SET);
 			collapse_r(tkser, tks, ops, T_ECHO);
+			collapse_r(tkser, tks, ops, T_REQUIRE);
 
 			for (const auto& tk : tks)
 			{
@@ -232,10 +236,24 @@ namespace soup
 				case T_ECHO:
 					output.append(op.getArg(vars, 0).toString());
 					break;
+
+				case T_REQUIRE:
+					{
+						std::filesystem::path file = cwd;
+						file /= op.getArg(vars, 0).toString();
+						if (!std::filesystem::exists(file))
+						{
+							std::string err = "Required file doesn't exist: ";
+							err.append(file.string());
+							throw std::runtime_error(std::move(err));
+						}
+						output.append(evaluate(string::fromFile(file.string())));
+					}
+					break;
 				}
 			}
 		}
-		catch (const ParseError& e)
+		catch (const std::runtime_error& e)
 		{
 			output = "ERROR: ";
 			output.append(e.what());

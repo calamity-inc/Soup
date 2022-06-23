@@ -656,7 +656,7 @@
     <ClInclude Include="acme.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
-    <ClInclude Include="php.hpp">
+    <ClInclude Include="PhpState.hpp">
       <Filter>lang</Filter>
     </ClInclude>
     <ClInclude Include="Tokeniser.hpp">
@@ -962,7 +962,7 @@
     <ClCompile Include="acme.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
-    <ClCompile Include="php.cpp">
+    <ClCompile Include="PhpState.cpp">
       <Filter>lang</Filter>
     </ClCompile>
     <ClCompile Include="Tokeniser.cpp">
