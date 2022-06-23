@@ -509,6 +509,7 @@
     <ClInclude Include="RenderTargetWindow.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Scheduler.hpp" />
+    <ClInclude Include="Searchspace.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="ServerService.hpp" />
     <ClInclude Include="ShortString.hpp" />
