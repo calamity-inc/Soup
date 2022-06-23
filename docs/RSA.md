@@ -6,7 +6,7 @@
 
 ## Key Import
 
-Soup supports key exchange as defined by PKCS#1, X.509, and PEM. However, all exchange formats have quite a bit of overhead, especially considering that you only want a couple of integers.
+Soup supports key exchange as defined by PKCS#1, X.509, PEM and JWK. However, all exchange formats have quite a bit of overhead, especially considering that you only want a couple of integers.
 
 ### OpenSSL Export
 
