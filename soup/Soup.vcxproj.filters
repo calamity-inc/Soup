@@ -668,6 +668,9 @@
     <ClInclude Include="ParseError.hpp">
       <Filter>lang</Filter>
     </ClInclude>
+    <ClInclude Include="ffi.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -961,6 +964,9 @@
     </ClCompile>
     <ClCompile Include="Tokeniser.cpp">
       <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="ffi.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
