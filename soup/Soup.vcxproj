@@ -452,6 +452,7 @@
     <ClInclude Include="ffi.hpp" />
     <ClInclude Include="Fiber.hpp" />
     <ClInclude Include="FileWriter.hpp" />
+    <ClInclude Include="FormattedText.hpp" />
     <ClInclude Include="HttpRequest.hpp" />
     <ClInclude Include="HttpResponse.hpp" />
     <ClInclude Include="IntVector.hpp" />
@@ -657,6 +658,7 @@
     <ClCompile Include="EditorText.cpp" />
     <ClCompile Include="ffi.cpp" />
     <ClCompile Include="Fiber.cpp" />
+    <ClCompile Include="FormattedText.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="joaat.cpp" />
     <ClCompile Include="json.cpp" />
