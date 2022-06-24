@@ -37,5 +37,8 @@ namespace soup
 
 		[[nodiscard]] size_t measureWidth(const std::string& text) const;
 		[[nodiscard]] size_t measureWidth(const std::u32string& text) const;
+
+		[[nodiscard]] std::pair<size_t, size_t> measure(const std::string& text) const;
+		[[nodiscard]] std::pair<size_t, size_t> measure(const std::u32string& text) const;
 	};
 }

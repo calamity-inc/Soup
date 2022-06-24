@@ -1259,4 +1259,29 @@ namespace soup
 		}
 		return x;
 	}
+
+	std::pair<size_t, size_t> RasterFont::measure(const std::string& text) const
+	{
+		return measure(unicode::utf8_to_utf32(text));
+	}
+
+	std::pair<size_t, size_t> RasterFont::measure(const std::u32string& text) const
+	{
+		size_t width = 0;
+		size_t height = 0;
+		for (auto c = text.begin(); c != text.end(); ++c)
+		{
+			if (c != text.begin())
+			{
+				width += 1;
+			}
+			const Glyph& g = get(*c);
+			width += g.width;
+			if (g.height > height)
+			{
+				height = g.height;
+			}
+		}
+		return { width, height };
+	}
 }
