@@ -15,6 +15,7 @@ namespace soup
 		const Tokeniser* const tkser;
 		std::vector<Token> tokens{};
 		std::string lb{};
+		bool lb_is_space = false;
 
 		void flushLiteralBuffer()
 		{
@@ -30,11 +31,16 @@ namespace soup
 			{
 				tokens.emplace_back(Token{ Token::VAL, opt.value()});
 			}
+			else if (lb_is_space)
+			{
+				tokens.emplace_back(Token{ Token::SPACE, std::move(lb) });
+			}
 			else
 			{
 				tokens.emplace_back(Token{ Token::LITERAL, std::move(lb) });
 			}
 			lb.clear();
+			lb_is_space = false;
 		}
 	};
 
@@ -56,18 +62,23 @@ namespace soup
 				|| *i == ';'
 				)
 			{
-				st.flushLiteralBuffer();
+				if (!st.lb_is_space)
+				{
+					st.flushLiteralBuffer();
+					st.lb_is_space = true;
+				}
 			}
 			else
 			{
-				if (*i == '('
+				if (st.lb_is_space
+					|| *i == '('
 					|| *i == '{'
 					)
 				{
 					st.flushLiteralBuffer();
 				}
-				st.lb.push_back(*i);
 			}
+			st.lb.push_back(*i);
 
 			++i;
 		}
@@ -98,6 +109,7 @@ namespace soup
 		{
 		case Token::VAL: return "value";
 		case Token::LITERAL: return "literal";
+		case Token::SPACE: return "space";
 		}
 		for (const auto& e : registry)
 		{

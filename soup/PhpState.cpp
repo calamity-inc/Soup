@@ -239,6 +239,18 @@ namespace soup
 			tkser.addLiteral("}", T_BLOCK_END);
 			auto tks = tkser.tokenise(code);
 
+			for (auto i = tks.begin(); i != tks.end(); )
+			{
+				if (i->id == Token::SPACE)
+				{
+					i = tks.erase(i);
+				}
+				else
+				{
+					++i;
+				}
+			}
+
 #if DEBUG_PARSING
 			output = "Tokenised: ";
 			output.append(tkser.stringify(tks));

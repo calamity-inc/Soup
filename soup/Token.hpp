@@ -10,6 +10,7 @@ namespace soup
 		{
 			VAL = -1,
 			LITERAL = -2,
+			SPACE = -3,
 		};
 
 		int id;
