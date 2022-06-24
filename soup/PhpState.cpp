@@ -269,14 +269,18 @@ namespace soup
 					|| i->val.getString() != "()"
 					)
 				{
-					throw ParseError("Expected 'function' to be followed by '()'");
+					std::string msg = "Expected '()' after 'function', found ";
+					msg.append(tkser.getName(*i));
+					throw ParseError(std::move(msg));
 				}
 				i = tks.erase(i);
 				if (i == tks.end()
 					|| i->id != T_BLOCK_START
 					)
 				{
-					throw ParseError("Expected block start after function()");
+					std::string msg = "Expected block start after function(), found ";
+					msg.append(tkser.getName(*i));
+					throw ParseError(std::move(msg));
 				}
 				i = tks.erase(i);
 				size_t start = (i - tks.begin());
