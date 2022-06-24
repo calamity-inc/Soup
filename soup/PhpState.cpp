@@ -7,60 +7,11 @@
 
 namespace soup
 {
-	std::string PhpState::evaluate(const std::string& code, unsigned int max_require_depth) const
-	{
-		std::string output{};
-
-		size_t plain_start = 0;
-		for (auto i = code.begin(); i != code.end();)
-		{
-			if (*i == '<')
-			{
-				size_t token_start = (i - code.begin());
-				if (*++i == '?'
-					&& *++i == 'p'
-					&& *++i == 'h'
-					&& *++i == 'p'
-					)
-				{
-					++i;
-					output.append(code.data() + plain_start, token_start - plain_start);
-					output.append(evaluatePhpmode(code, i, max_require_depth));
-					plain_start = (i - code.begin());
-					continue;
-				}
-			}
-
-			++i;
-		}
-		output.append(code.data() + plain_start);
-
-		return output;
-	}
-
-	std::string PhpState::evaluatePhpmode(const std::string& code, std::string::const_iterator& i, unsigned int max_require_depth) const
-	{
-		size_t start = (i - code.begin());
-		size_t code_end = code.length();
-
-		for (; i != code.end(); ++i)
-		{
-			if (*i == '?'
-				&& *++i == '>'
-				)
-			{
-				code_end = (i - 1 - code.begin());
-				++i;
-				break;
-			}
-		}
-
-		return evaluatePhp(code.substr(start, code_end - start), max_require_depth);
-	}
-
 	enum PhpTokens : int
 	{
-		T_SET = 0,
+		T_PHPMODE_START = 0,
+		T_PHPMODE_END,
+		T_SET,
 		T_ECHO,
 		T_REQUIRE,
 		T_FUNC,
@@ -225,12 +176,14 @@ namespace soup
 	}
 #endif
 
-	std::string PhpState::evaluatePhp(const std::string& code, unsigned int max_require_depth) const
+	std::string PhpState::evaluate(const std::string& code, unsigned int max_require_depth) const
 	{
 		std::string output{};
 		try
 		{
 			Tokeniser tkser;
+			tkser.addLiteral("<?php", T_PHPMODE_START);
+			tkser.addLiteral("?>", T_PHPMODE_END);
 			tkser.addLiteral("=", T_SET);
 			tkser.addLiteral("echo", T_ECHO);
 			tkser.addLiteral("require", T_REQUIRE);
@@ -239,20 +192,44 @@ namespace soup
 			tkser.addLiteral("}", T_BLOCK_END);
 			auto tks = tkser.tokenise(code);
 
+#if DEBUG_PARSING
+			output = "Tokenised: ";
+			output.append(tkser.stringify(tks));
+#endif
+
+			std::string non_phpmode_buffer{};
 			for (auto i = tks.begin(); i != tks.end(); )
 			{
-				if (i->id == Token::SPACE)
+				if (i->id == T_PHPMODE_START)
 				{
 					i = tks.erase(i);
+					if (!non_phpmode_buffer.empty())
+					{
+						i = tks.insert(i, Token{ Token::VAL, std::move(non_phpmode_buffer) });
+						i = tks.insert(i, Token{ T_ECHO });
+						non_phpmode_buffer.clear();
+					}
+					for (; i != tks.end() && i->id != T_PHPMODE_END; )
+					{
+						if (i->id == Token::SPACE)
+						{
+							i = tks.erase(i);
+						}
+						else
+						{
+							++i;
+						}
+					}
 				}
 				else
 				{
-					++i;
+					non_phpmode_buffer.append(tkser.getSourceString(*i));
+					i = tks.erase(i);
 				}
 			}
 
 #if DEBUG_PARSING
-			output = "Tokenised: ";
+			output.append("\nOutside phpmode squashed: ");
 			output.append(tkser.stringify(tks));
 #endif
 

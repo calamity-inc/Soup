@@ -73,12 +73,17 @@ namespace soup
 				if (st.lb_is_space
 					|| *i == '('
 					|| *i == '{'
+					|| *i == '<'
 					)
 				{
 					st.flushLiteralBuffer();
 				}
 			}
 			st.lb.push_back(*i);
+			if (*i == '>')
+			{
+				st.flushLiteralBuffer();
+			}
 
 			++i;
 		}
@@ -123,14 +128,22 @@ namespace soup
 
 	std::string Tokeniser::getName(const Token& tk) const
 	{
-		std::string str = tk.val.toString();
-		if (!str.empty())
+		if (tk.id != Token::SPACE)
 		{
-			str.insert(0, 1, ' ');
-			str.insert(0, getName(tk.id));
-			return str;
+			std::string str = tk.val.toString();
+			if (!str.empty())
+			{
+				str.insert(0, 1, ' ');
+				str.insert(0, getName(tk.id));
+				return str;
+			}
 		}
 		return getName(tk.id);
+	}
+
+	std::string Tokeniser::getSourceString(const Token& tk)
+	{
+		return tk.val.toString();
 	}
 
 	std::string Tokeniser::stringify(const std::vector<Token>& tks) const
