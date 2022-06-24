@@ -182,6 +182,7 @@ namespace soup
 			}
 			if (explicit_nl)
 			{
+				str.append(console.strResetColour<std::string>());
 				str.push_back('\n');
 			}
 		}
@@ -280,6 +281,7 @@ namespace soup
 			}
 			if (explicit_nl)
 			{
+				str.append(console.strResetColour<std::u16string>());
 				str.push_back(u'\n');
 			}
 		}

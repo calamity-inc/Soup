@@ -143,6 +143,16 @@ namespace soup
 
 		static void resetColour();
 
+		template <typename Str>
+		[[nodiscard]] static Str strResetColour()
+		{
+			Str str;
+			str.push_back(CSI[0]);
+			str.push_back(CSI[1]);
+			str.push_back('m');
+			return str;
+		}
+
 		// Ctrl+C
 
 	private:
