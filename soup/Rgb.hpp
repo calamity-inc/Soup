@@ -14,6 +14,9 @@ namespace soup
 
 		static Rgb BLACK;
 		static Rgb WHITE;
+		static Rgb RED;
+		static Rgb GREEN;
+		static Rgb BLUE;
 
 		[[nodiscard]] bool operator==(const Rgb& c) const noexcept;
 		[[nodiscard]] bool operator!=(const Rgb& c) const noexcept;
