@@ -13,6 +13,8 @@ namespace soup
 	public:
 		std::filesystem::path cwd;
 
+		[[nodiscard]] static const Lexer& getLexer();
+
 		[[nodiscard]] std::string evaluate(const std::string& code, unsigned int max_require_depth = 10) const;
 
 		void execute(std::string& output, const std::vector<Op>& ops, unsigned int max_require_depth = 10) const;

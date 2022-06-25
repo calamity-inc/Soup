@@ -38,6 +38,7 @@ namespace soup
 
 	// lang
 	struct Op;
+	class Lexer;
 
 	// math
 	class Bigint;

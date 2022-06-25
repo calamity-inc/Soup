@@ -21,6 +21,26 @@ namespace soup
 		OP_CALL,
 	};
 
+	[[nodiscard]] static Lexer getLexerImpl()
+	{
+		Lexer lexer;
+		lexer.addToken("<?php", T_PHPMODE_START);
+		lexer.addToken("?>", T_PHPMODE_END);
+		lexer.addToken("=", T_SET);
+		lexer.addToken("echo", T_ECHO);
+		lexer.addToken("require", T_REQUIRE);
+		lexer.addToken("function", T_FUNC);
+		lexer.addToken("{", T_BLOCK_START);
+		lexer.addToken("}", T_BLOCK_END);
+		return lexer;
+	}
+
+	const Lexer& PhpState::getLexer()
+	{
+		static Lexer lexer = getLexerImpl();
+		return lexer;
+	}
+
 	[[nodiscard]] static constexpr bool isValidArg(int id) noexcept
 	{
 		return id == Lexeme::VAL
@@ -181,15 +201,7 @@ namespace soup
 		std::string output{};
 		try
 		{
-			Lexer lexer;
-			lexer.addToken("<?php", T_PHPMODE_START);
-			lexer.addToken("?>", T_PHPMODE_END);
-			lexer.addToken("=", T_SET);
-			lexer.addToken("echo", T_ECHO);
-			lexer.addToken("require", T_REQUIRE);
-			lexer.addToken("function", T_FUNC);
-			lexer.addToken("{", T_BLOCK_START);
-			lexer.addToken("}", T_BLOCK_END);
+			const Lexer& lexer = getLexer();
 			auto ls = lexer.tokenise(code);
 
 #if DEBUG_PARSING
