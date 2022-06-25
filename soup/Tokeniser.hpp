@@ -21,7 +21,7 @@ namespace soup
 	public:
 		[[nodiscard]] std::string getName(int id) const;
 		[[nodiscard]] std::string getName(const Token& tk) const;
-		[[nodiscard]] static std::string getSourceString(const Token& tk);
+		[[nodiscard]] std::string getSourceString(const Token& tk) const;
 		[[nodiscard]] std::string stringify(const std::vector<Token>& tks) const;
 	};
 }

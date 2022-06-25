@@ -141,8 +141,15 @@ namespace soup
 		return getName(tk.id);
 	}
 
-	std::string Tokeniser::getSourceString(const Token& tk)
+	std::string Tokeniser::getSourceString(const Token& tk) const
 	{
+		for (const auto& e : registry)
+		{
+			if (e.second == tk.id)
+			{
+				return e.first;
+			}
+		}
 		return tk.val.toString();
 	}
 
