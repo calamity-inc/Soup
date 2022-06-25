@@ -38,7 +38,7 @@ namespace soup
 
 		void fill(const Rgb colour);
 		void loadBlackWhiteData(const std::vector<bool>& black_white_data);
-		void set(size_t x, size_t y, Rgb colour);
+		void set(size_t x, size_t y, Rgb colour) noexcept;
 		[[nodiscard]] Rgb get(size_t x, size_t y) const;
 		[[nodiscard]] const Rgb& ref(size_t x, size_t y) const;
 

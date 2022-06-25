@@ -25,9 +25,12 @@ namespace soup
 		}
 	}
 
-	void Canvas::set(size_t x, size_t y, Rgb colour)
+	void Canvas::set(size_t x, size_t y, Rgb colour) noexcept
 	{
-		pixels.at(x + (y * width)) = colour;
+		if (x < width && y < height)
+		{
+			pixels.at(x + (y * width)) = colour;
+		}
 	}
 
 	Rgb Canvas::get(size_t x, size_t y) const
