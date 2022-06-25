@@ -1,5 +1,6 @@
 #include "FormattedText.hpp"
 
+#include "console.hpp"
 #include "RenderTarget.hpp"
 #include "RasterFont.hpp"
 
@@ -33,5 +34,20 @@ namespace soup
 			}
 			y += font.baseline_glyph_height;
 		}
+	}
+
+	std::string FormattedText::toString() const
+	{
+		std::string str{};
+		for (const auto& line : lines)
+		{
+			for (const auto& span : line)
+			{
+				str.append(console.strSetForegroundColour<std::string>(span.colour.r, span.colour.g, span.colour.b));
+				str.append(span.text);
+			}
+			str.push_back('\n');
+		}
+		return str;
 	}
 }

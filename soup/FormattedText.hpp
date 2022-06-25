@@ -23,5 +23,7 @@ namespace soup
 		[[nodiscard]] std::pair<size_t, size_t> measure(const RasterFont& font) const;
 
 		void draw(RenderTarget& rt, const RasterFont& font) const;
+
+		[[nodiscard]] std::string toString() const;
 	};
 }
