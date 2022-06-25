@@ -566,8 +566,8 @@
     <ClInclude Include="StringReader.hpp" />
     <ClInclude Include="StringWriter.hpp" />
     <ClInclude Include="Thread.hpp" />
-    <ClInclude Include="Token.hpp" />
-    <ClInclude Include="Tokeniser.hpp" />
+    <ClInclude Include="Lexeme.hpp" />
+    <ClInclude Include="Lexer.hpp" />
     <ClInclude Include="TreeNode.hpp" />
     <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="unit_testing.hpp" />
@@ -710,7 +710,7 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />
-    <ClCompile Include="Tokeniser.cpp" />
+    <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="unit_testing.cpp" />
     <ClCompile Include="Url.cpp" />

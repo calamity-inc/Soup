@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Tokeniser.hpp"
+#include "Lexer.hpp"
 #include "TreeNode.hpp"
 #include "UniquePtr.hpp"
 
@@ -25,17 +25,17 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string toString(const Tokeniser& tkser) const
+		[[nodiscard]] std::string toString(const Lexer& lexer) const
 		{
 			std::string str{};
-			str.append(tkser.getName(op.id));
+			str.append(lexer.getName(op.id));
 			if (!op.args.empty())
 			{
 				str.append(": ");
 				for (const auto& arg : op.args)
 				{
 					str.push_back('[');
-					str.append(tkser.getName(arg));
+					str.append(lexer.getName(arg));
 					str.push_back(']');
 				}
 			}
@@ -57,7 +57,7 @@ namespace soup
 			children.emplace_back(soup::make_unique<OpNode>(std::move(op)));
 		}
 
-		[[nodiscard]] std::string toString(const Tokeniser& tkser, const std::string& prefix = {}) const
+		[[nodiscard]] std::string toString(const Lexer& lexer, const std::string& prefix = {}) const
 		{
 			std::string str{};
 			for (const auto& child : children)
@@ -68,11 +68,11 @@ namespace soup
 					str.append("<block>\n");
 					std::string prefix_ = prefix;
 					prefix_.push_back('\t');
-					str.append(reinterpret_cast<Block*>(child.get())->toString(tkser, prefix_));
+					str.append(reinterpret_cast<Block*>(child.get())->toString(lexer, prefix_));
 				}
 				else
 				{
-					str.append(reinterpret_cast<OpNode*>(child.get())->toString(tkser));
+					str.append(reinterpret_cast<OpNode*>(child.get())->toString(lexer));
 					str.push_back('\n');
 				}
 			}

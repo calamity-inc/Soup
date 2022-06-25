@@ -659,10 +659,10 @@
     <ClInclude Include="PhpState.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="Tokeniser.hpp">
+    <ClInclude Include="Lexer.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="Token.hpp">
+    <ClInclude Include="Lexeme.hpp">
       <Filter>lang</Filter>
     </ClInclude>
     <ClInclude Include="ParseError.hpp">
@@ -974,7 +974,7 @@
     <ClCompile Include="PhpState.cpp">
       <Filter>lang</Filter>
     </ClCompile>
-    <ClCompile Include="Tokeniser.cpp">
+    <ClCompile Include="Lexer.cpp">
       <Filter>lang</Filter>
     </ClCompile>
     <ClCompile Include="ffi.cpp">

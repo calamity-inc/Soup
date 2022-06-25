@@ -3,7 +3,7 @@
 #include "Op.hpp"
 #include "ParseError.hpp"
 #include "string.hpp"
-#include "Tokeniser.hpp"
+#include "Lexer.hpp"
 
 namespace soup
 {
@@ -23,107 +23,107 @@ namespace soup
 
 	[[nodiscard]] static constexpr bool isValidArg(int id) noexcept
 	{
-		return id == Token::VAL
-			|| id == Token::LITERAL
+		return id == Lexeme::VAL
+			|| id == Lexeme::LITERAL
 			;
 	}
 
-	[[nodiscard]] static Op collapse_lr(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
+	[[nodiscard]] static Op collapse_lr(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i)
 	{
-		Token tk = std::move(*i);
-		if (i == tks.begin())
+		Lexeme l = std::move(*i);
+		if (i == ls.begin())
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected lefthand argument, found start of code");
 			throw ParseError(std::move(err));
 		}
-		Op op{ tk.id };
+		Op op{ l.type };
 		op.args.reserve(2);
-		i = tks.erase(i);
-		if (i == tks.end())
+		i = ls.erase(i);
+		if (i == ls.end())
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected righthand argument, found end of code");
 			throw ParseError(std::move(err));
 		}
-		if (!isValidArg((i - 1)->id))
+		if (!isValidArg((i - 1)->type))
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected lefthand argument, found ");
-			err.append(tkser.getName(*i));
+			err.append(lexer.getName(*i));
 			throw ParseError(std::move(err));
 		}
-		if (!isValidArg(i->id))
+		if (!isValidArg(i->type))
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected righthand argument, found ");
-			err.append(tkser.getName(*i));
+			err.append(lexer.getName(*i));
 			throw ParseError(std::move(err));
 		}
 		op.args.emplace_back(std::move(*(i - 1)));
 		op.args.emplace_back(std::move(*i));
 		--i;
-		i = tks.erase(i);
-		i = tks.erase(i);
+		i = ls.erase(i);
+		i = ls.erase(i);
 		return op;
 	}
 
-	[[nodiscard]] static Op collapse_l(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
+	[[nodiscard]] static Op collapse_l(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i)
 	{
-		Token tk = std::move(*i);
-		if (i == tks.begin())
+		Lexeme l = std::move(*i);
+		if (i == ls.begin())
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected lefthand argument, found start of code");
 			throw ParseError(std::move(err));
 		}
-		Op op{ tk.id };
-		i = tks.erase(i);
-		if (!isValidArg((i - 1)->id))
+		Op op{ l.type };
+		i = ls.erase(i);
+		if (!isValidArg((i - 1)->type))
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected lefthand argument, found ");
-			err.append(tkser.getName(*i));
+			err.append(lexer.getName(*i));
 			throw ParseError(std::move(err));
 		}
 		op.args.emplace_back(std::move(*(i - 1)));
 		--i;
-		i = tks.erase(i);
+		i = ls.erase(i);
 		return op;
 	}
 
-	[[nodiscard]] static Op collapse_r(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i)
+	[[nodiscard]] static Op collapse_r(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i)
 	{
-		Token tk = std::move(*i);
-		i = tks.erase(i);
-		if (i == tks.end())
+		Lexeme l = std::move(*i);
+		i = ls.erase(i);
+		if (i == ls.end())
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected righthand argument, found end of code");
 			throw ParseError(std::move(err));
 		}
-		if (!isValidArg(i->id))
+		if (!isValidArg(i->type))
 		{
-			std::string err = tkser.getName(tk);
+			std::string err = lexer.getName(l);
 			err.append(" expected righthand argument, found ");
-			err.append(tkser.getName(*i));
+			err.append(lexer.getName(*i));
 			throw ParseError(std::move(err));
 		}
-		Op op{ tk.id, { std::move(*i) } };
-		i = tks.erase(i);
+		Op op{ l.type, { std::move(*i) } };
+		i = ls.erase(i);
 		return op;
 	}
 
-	static bool processBlockTokens(const Tokeniser& tkser, std::vector<Token>& tks, std::vector<Token>::iterator& i, std::vector<Op>& ops)
+	static bool processBlockTokens(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i, std::vector<Op>& ops)
 	{
-		for (; i != tks.end(); )
+		for (; i != ls.end(); )
 		{
-			switch (i->id)
+			switch (i->type)
 			{
-			case Token::LITERAL:
+			case Lexeme::LITERAL:
 				if (i->val.getString() == "()")
 				{
-					Op op = collapse_l(tkser, tks, i);
+					Op op = collapse_l(lexer, ls, i);
 					op.id = OP_CALL;
 					ops.emplace_back(std::move(op));
 					break;
@@ -134,16 +134,16 @@ namespace soup
 				break;
 
 			case T_SET:
-				ops.emplace_back(collapse_lr(tkser, tks, i));
+				ops.emplace_back(collapse_lr(lexer, ls, i));
 				break;
 
 			case T_ECHO:
 			case T_REQUIRE:
-				ops.emplace_back(collapse_r(tkser, tks, i));
+				ops.emplace_back(collapse_r(lexer, ls, i));
 				break;
 
 			case T_BLOCK_END:
-				i = tks.erase(i);
+				i = ls.erase(i);
 				return true;
 			}
 		}
@@ -153,20 +153,20 @@ namespace soup
 #define DEBUG_PARSING false
 
 #if DEBUG_PARSING
-	[[nodiscard]] static std::string stringifyOps(const Tokeniser& tkser, const std::vector<Op>& ops)
+	[[nodiscard]] static std::string stringifyOps(const Lexer& lexer, const std::vector<Op>& ops)
 	{
 		std::string str{};
 		for (auto i = ops.begin(); i != ops.end(); ++i)
 		{
 			str.push_back('{');
-			str.append(tkser.getName(i->id));
+			str.append(lexer.getName(i->id));
 			if (!i->args.empty())
 			{
 				str.append(": ");
 				for (const auto& arg : i->args)
 				{
 					str.push_back('[');
-					str.append(tkser.getName(arg));
+					str.append(lexer.getName(arg));
 					str.push_back(']');
 				}
 			}
@@ -181,39 +181,44 @@ namespace soup
 		std::string output{};
 		try
 		{
-			Tokeniser tkser;
-			tkser.addLiteral("<?php", T_PHPMODE_START);
-			tkser.addLiteral("?>", T_PHPMODE_END);
-			tkser.addLiteral("=", T_SET);
-			tkser.addLiteral("echo", T_ECHO);
-			tkser.addLiteral("require", T_REQUIRE);
-			tkser.addLiteral("function", T_FUNC);
-			tkser.addLiteral("{", T_BLOCK_START);
-			tkser.addLiteral("}", T_BLOCK_END);
-			auto tks = tkser.tokenise(code);
+			Lexer lexer;
+			lexer.addToken("<?php", T_PHPMODE_START);
+			lexer.addToken("?>", T_PHPMODE_END);
+			lexer.addToken("=", T_SET);
+			lexer.addToken("echo", T_ECHO);
+			lexer.addToken("require", T_REQUIRE);
+			lexer.addToken("function", T_FUNC);
+			lexer.addToken("{", T_BLOCK_START);
+			lexer.addToken("}", T_BLOCK_END);
+			auto ls = lexer.tokenise(code);
 
 #if DEBUG_PARSING
 			output = "Tokenised: ";
-			output.append(tkser.stringify(tks));
+			output.append(lexer.stringify(ls));
 #endif
 
 			std::string non_phpmode_buffer{};
-			for (auto i = tks.begin(); i != tks.end(); )
+			for (auto i = ls.begin(); i != ls.end(); )
 			{
-				if (i->id == T_PHPMODE_START)
+				if (i->type == T_PHPMODE_START)
 				{
-					i = tks.erase(i);
+					i = ls.erase(i);
 					if (!non_phpmode_buffer.empty())
 					{
-						i = tks.insert(i, Token{ Token::VAL, std::move(non_phpmode_buffer) });
-						i = tks.insert(i, Token{ T_ECHO });
+						i = ls.insert(i, Lexeme{ Lexeme::VAL, std::move(non_phpmode_buffer) });
+						i = ls.insert(i, Lexeme{ T_ECHO });
 						non_phpmode_buffer.clear();
 					}
-					for (; i != tks.end() && i->id != T_PHPMODE_END; )
+					for (; i != ls.end(); )
 					{
-						if (i->id == Token::SPACE)
+						if (i->type == T_PHPMODE_END)
 						{
-							i = tks.erase(i);
+							i = ls.erase(i);
+							break;
+						}
+						if (i->type == Lexeme::SPACE)
+						{
+							i = ls.erase(i);
 						}
 						else
 						{
@@ -223,80 +228,80 @@ namespace soup
 				}
 				else
 				{
-					non_phpmode_buffer.append(tkser.getSourceString(*i));
-					i = tks.erase(i);
+					non_phpmode_buffer.append(lexer.getSourceString(*i));
+					i = ls.erase(i);
 				}
 			}
 
 #if DEBUG_PARSING
 			output.append("\nOutside phpmode squashed: ");
-			output.append(tkser.stringify(tks));
+			output.append(lexer.stringify(ls));
 #endif
 
-			for (auto i = tks.begin(); i != tks.end(); )
+			for (auto i = ls.begin(); i != ls.end(); )
 			{
-				if (i->id != T_FUNC)
+				if (i->type != T_FUNC)
 				{
 					++i;
 					continue;
 				}
-				i = tks.erase(i);
-				if (i == tks.end()
-					|| i->id != Token::LITERAL
+				i = ls.erase(i);
+				if (i == ls.end()
+					|| i->type != Lexeme::LITERAL
 					|| i->val.getString() != "()"
 					)
 				{
 					std::string msg = "Expected '()' after 'function', found ";
-					msg.append(tkser.getName(*i));
+					msg.append(lexer.getName(*i));
 					throw ParseError(std::move(msg));
 				}
-				i = tks.erase(i);
-				if (i == tks.end()
-					|| i->id != T_BLOCK_START
+				i = ls.erase(i);
+				if (i == ls.end()
+					|| i->type != T_BLOCK_START
 					)
 				{
 					std::string msg = "Expected block start after function(), found ";
-					msg.append(tkser.getName(*i));
+					msg.append(lexer.getName(*i));
 					throw ParseError(std::move(msg));
 				}
-				i = tks.erase(i);
-				size_t start = (i - tks.begin());
+				i = ls.erase(i);
+				size_t start = (i - ls.begin());
 				std::vector<Op> ops{};
-				if (!processBlockTokens(tkser, tks, i, ops))
+				if (!processBlockTokens(lexer, ls, i, ops))
 				{
 					throw ParseError("Expected block end, found end of code");
 				}
-				if ((i - tks.begin()) != start)
+				if ((i - ls.begin()) != start)
 				{
 					std::string err = "Unexpected ";
-					err.append(tkser.getName(*i));
+					err.append(lexer.getName(*i));
 					throw ParseError(std::move(err));
 				}
-				i = tks.insert(i, Token{ Token::VAL, std::move(ops) });
+				i = ls.insert(i, Lexeme{ Lexeme::VAL, std::move(ops) });
 			}
 
 #if DEBUG_PARSING
 			output.append("\nFunctions squashed: ");
-			output.append(tkser.stringify(tks));
+			output.append(lexer.stringify(ls));
 #endif
 
-			auto i = tks.begin();
+			auto i = ls.begin();
 			std::vector<Op> ops{};
-			if (processBlockTokens(tkser, tks, i, ops))
+			if (processBlockTokens(lexer, ls, i, ops))
 			{
 				throw ParseError("Unexpected block end; no matching block start");
 			}
 
 #if DEBUG_PARSING
 			output.append("\nOps: ");
-			output.append(stringifyOps(tkser, ops));
+			output.append(stringifyOps(lexer, ops));
 			output.push_back('\n');
 #endif
 
-			for (const auto& tk : tks)
+			for (const auto& tk : ls)
 			{
 				std::string err = "Unexpected ";
-				err.append(tkser.getName(tk));
+				err.append(lexer.getName(tk));
 				throw ParseError(std::move(err));
 			}
 
