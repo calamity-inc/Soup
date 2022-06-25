@@ -95,6 +95,7 @@ namespace soup
 
 	// vis
 	class Canvas;
+	struct FormattedText;
 	struct RasterFont;
 
 	// vis.render

@@ -26,10 +26,10 @@ namespace soup
 		Lexer lexer;
 		lexer.addToken("<?php", T_PHPMODE_START);
 		lexer.addToken("?>", T_PHPMODE_END);
-		lexer.addToken("=", T_SET);
-		lexer.addToken("echo", T_ECHO);
-		lexer.addToken("require", T_REQUIRE);
-		lexer.addToken("function", T_FUNC);
+		lexer.addToken("=", T_SET, Rgb::RED);
+		lexer.addToken("echo", T_ECHO, Rgb::BLUE);
+		lexer.addToken("require", T_REQUIRE, Rgb::RED);
+		lexer.addToken("function", T_FUNC, Rgb::BLUE);
 		lexer.addToken("{", T_BLOCK_START);
 		lexer.addToken("}", T_BLOCK_END);
 		return lexer;

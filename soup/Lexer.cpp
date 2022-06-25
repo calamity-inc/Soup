@@ -1,5 +1,6 @@
 #include "Lexer.hpp"
 
+#include "FormattedText.hpp"
 #include "ParseError.hpp"
 #include "string.hpp"
 
@@ -8,6 +9,12 @@ namespace soup
 	void Lexer::addToken(std::string keyword, int id)
 	{
 		tokens.emplace(std::move(keyword), id);
+	}
+
+	void Lexer::addToken(std::string keyword, int id, Rgb colour)
+	{
+		addToken(std::move(keyword), id);
+		extras.emplace(id, TokenExtra{ colour });
 	}
 
 	struct LexerState
@@ -163,5 +170,52 @@ namespace soup
 			output.push_back(']');
 		}
 		return output;
+	}
+
+	Rgb Lexer::getColour(int id) const
+	{
+		if (auto e = extras.find(id); e != extras.end())
+		{
+			return e->second.colour;
+		}
+		return Rgb::WHITE;
+	}
+
+	Rgb Lexer::getColour(const Lexeme& l) const
+	{
+		return getColour(l.type);
+	}
+
+	FormattedText Lexer::highlightSyntax(const std::string& code) const
+	{
+		return highlightSyntax(tokenise(code));
+	}
+
+	FormattedText Lexer::highlightSyntax(const std::vector<Lexeme>& ls) const
+	{
+		FormattedText ft;
+		std::vector<FormattedText::Span> line{};
+		for (const auto& l : ls)
+		{
+			if (l.type == Lexeme::SPACE
+				&& l.val.getString() == "\n"
+				)
+			{
+				if (!line.empty())
+				{
+					ft.lines.emplace_back(std::move(line));
+					line.clear();
+				}
+			}
+			else
+			{
+				line.emplace_back(FormattedText::Span{ getSourceString(l), getColour(l) });
+			}
+		}
+		if (!line.empty())
+		{
+			ft.lines.emplace_back(std::move(line));
+		}
+		return ft;
 	}
 }
