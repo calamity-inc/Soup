@@ -10,7 +10,7 @@ namespace soup
 	{
 		EditorFile file;
 
-		static constexpr Rgb unfocused_bg = { 30, 30, 30 };
+		static constexpr Rgb unfocused_bg{ 30, 30, 30 };
 
 		EditorTab(ConuiDiv* parent, unsigned int x, unsigned int y, std::string&& name, std::u32string&& contents)
 			: ConuiSpan(parent, x, y, std::move(std::string(1, ' ').append(name).append(1, ' ')), Rgb::WHITE, unfocused_bg), file{ { std::move(contents) } }

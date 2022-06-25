@@ -4,21 +4,11 @@
 
 namespace soup
 {
-	Rgb Rgb::BLACK = { 0, 0, 0 };
-	Rgb Rgb::WHITE = { 255, 255, 255 };
-	Rgb Rgb::RED = { 255, 0, 0 };
-	Rgb Rgb::GREEN = { 0, 255, 0 };
-	Rgb Rgb::BLUE = { 0, 0, 255 };
-
-	bool Rgb::operator==(const Rgb& c) const noexcept
-	{
-		return r == c.r && g == c.g && b == c.b;
-	}
-
-	bool Rgb::operator!=(const Rgb& c) const noexcept
-	{
-		return !operator==(c);
-	}
+	Rgb Rgb::BLACK{ 0, 0, 0 };
+	Rgb Rgb::WHITE{ 255, 255, 255 };
+	Rgb Rgb::RED{ 255, 0, 0 };
+	Rgb Rgb::GREEN{ 0, 255, 0 };
+	Rgb Rgb::BLUE{ 0, 0, 255 };
 
 	std::string Rgb::toHex() const
 	{

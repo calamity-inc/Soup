@@ -18,8 +18,32 @@ namespace soup
 		static Rgb GREEN;
 		static Rgb BLUE;
 
-		[[nodiscard]] bool operator==(const Rgb& c) const noexcept;
-		[[nodiscard]] bool operator!=(const Rgb& c) const noexcept;
+		constexpr Rgb() noexcept = default;
+
+		constexpr Rgb(uint8_t r, uint8_t g, uint8_t b) noexcept
+			: r(r), g(g), b(b)
+		{
+		}
+
+		constexpr Rgb(uint32_t val) noexcept
+			: r(val >> 16), g((val >> 8) & 0xFF), b(val & 0xFF)
+		{
+		}
+
+		[[nodiscard]] constexpr bool operator==(const Rgb& c) const noexcept
+		{
+			return r == c.r && g == c.g && b == c.b;
+		}
+
+		[[nodiscard]] constexpr bool operator!=(const Rgb& c) const noexcept
+		{
+			return !operator==(c);
+		}
+
+		[[nodiscard]] constexpr uint32_t toInt() const noexcept
+		{
+			return (r << 16) | (g << 8) | b;
+		}
 
 		[[nodiscard]] std::string toHex() const;
 	};
