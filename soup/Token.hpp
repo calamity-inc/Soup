@@ -8,12 +8,21 @@ namespace soup
 	{
 		enum ReservedId : int
 		{
-			VAL = -1,
-			LITERAL = -2,
-			SPACE = -3,
+			_BUILTIN_START = -5009,
+
+			VAL = _BUILTIN_START,
+			LITERAL,
+			SPACE,
+
+			_BUILTIN_END
 		};
 
 		int id;
 		Mixed val;
+
+		[[nodiscard]] constexpr bool isBuiltin() const noexcept
+		{
+			return id >= _BUILTIN_START && id < _BUILTIN_END;
+		}
 	};
 }
