@@ -61,6 +61,15 @@ namespace soup
 #endif
 	}
 
+	void Thread::setTimeCritical() noexcept
+	{
+#if SOUP_WINDOWS
+		SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
+#else
+		pthread_setschedprio(handle, 15);
+#endif
+	}
+
 	bool Thread::isRunning() const noexcept
 	{
 #if SOUP_WINDOWS

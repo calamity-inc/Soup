@@ -38,6 +38,8 @@ namespace soup
 	public:
 		~Thread() noexcept;
 
+		void setTimeCritical() noexcept;
+
 		[[nodiscard]] bool isRunning() const noexcept;
 		void stop() noexcept;
 
