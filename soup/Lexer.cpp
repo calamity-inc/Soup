@@ -79,8 +79,9 @@ namespace soup
 			{
 				if (st.lb_is_space
 					|| *i == '('
-					|| *i == '{'
 					|| *i == '<'
+					|| *i == '['
+					|| *i == '{'
 					)
 				{
 					st.flushLiteralBuffer();
