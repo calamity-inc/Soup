@@ -103,7 +103,7 @@ namespace soup
 		{
 			std::string err = lexer.getName(l);
 			err.append(" expected lefthand argument, found ");
-			err.append(lexer.getName(*i));
+			err.append(lexer.getName(*(i - 1)));
 			throw ParseError(std::move(err));
 		}
 		op.args.emplace_back(std::move(*(i - 1)));
