@@ -4,6 +4,7 @@
 #include "fwd.hpp"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace soup
@@ -18,6 +19,7 @@ namespace soup
 			UINT,
 			STRING,
 			OP_ARRAY,
+			MIXED_MIXED_MAP,
 		};
 
 		Type type = NONE;
@@ -64,6 +66,7 @@ namespace soup
 		}
 
 		Mixed(std::vector<Op>&& val);
+		Mixed(std::unordered_map<Mixed, Mixed>&& val);
 
 		~Mixed() noexcept
 		{
@@ -137,6 +140,13 @@ namespace soup
 			this->val = (uint64_t)new std::string(std::move(val));
 		}
 
+		[[nodiscard]] bool operator==(const Mixed& b) const noexcept
+		{
+			return type == b.type
+				&& val == b.val
+				;
+		}
+
 		[[nodiscard]] bool isInt() const noexcept
 		{
 			return type == INT;
@@ -175,5 +185,18 @@ namespace soup
 		[[nodiscard]] uint64_t getUInt() const;
 		[[nodiscard]] std::string& getString() const;
 		[[nodiscard]] std::vector<Op>& getOpArray() const;
+		[[nodiscard]] std::unordered_map<Mixed, Mixed>& getMixedMixedMap() const;
+	};
+}
+
+namespace std
+{
+	template<>
+	struct hash<::soup::Mixed>
+	{
+		size_t operator() (const ::soup::Mixed& key) const
+		{
+			return key.type | key.val;
+		}
 	};
 }

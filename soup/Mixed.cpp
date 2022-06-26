@@ -30,6 +30,11 @@ namespace soup
 	{
 	}
 
+	Mixed::Mixed(std::unordered_map<Mixed, Mixed>&& val)
+		: type(MIXED_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, Mixed>(std::move(val)))
+	{
+	}
+
 	void Mixed::release()
 	{
 		switch (type)
@@ -43,6 +48,10 @@ namespace soup
 
 		case OP_ARRAY:
 			delete reinterpret_cast<std::vector<Op>*>(val);
+			break;
+
+		case MIXED_MIXED_MAP:
+			delete reinterpret_cast<std::unordered_map<Mixed, Mixed>*>(val);
 			break;
 		}
 	}
@@ -87,5 +96,14 @@ namespace soup
 			throw 0;
 		}
 		return *reinterpret_cast<std::vector<Op>*>(val);
+	}
+
+	std::unordered_map<Mixed, Mixed>& Mixed::getMixedMixedMap() const
+	{
+		if (type != MIXED_MIXED_MAP)
+		{
+			throw 0;
+		}
+		return *reinterpret_cast<std::unordered_map<Mixed, Mixed>*>(val);
 	}
 }
