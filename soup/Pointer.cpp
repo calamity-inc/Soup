@@ -17,7 +17,7 @@ namespace soup
 
 	Pointer Pointer::rva(const Module& mod) const noexcept
 	{
-		return Pointer(as<std::int32_t&>()).add(mod.base().as<uintptr_t>());
+		return Pointer(as<int32_t&>()).add(mod.base().as<uintptr_t>());
 	}
 
 	std::vector<Pointer> Pointer::getJumps() const noexcept
