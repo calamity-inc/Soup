@@ -200,11 +200,12 @@ namespace soup
 	void LangDesc::parseBlock(ParserState& ps, const Token& t) const
 	{
 		ps.i = ps.b->children.begin();
-		for (; ps.i != ps.b->children.end(); ++ps.i)
+		for (; ps.i != ps.b->children.end(); )
 		{
 			if ((*ps.i)->type == ParseTreeNode::BLOCK)
 			{
 				parseBlockRecurse(ps, t, reinterpret_cast<Block*>(ps.i->get()));
+				++ps.i;
 			}
 			else if ((*ps.i)->type == ParseTreeNode::LEXEME)
 			{
@@ -225,16 +226,19 @@ namespace soup
 						err.append(" pushed arguments but didn't set op");
 						throw ParseError(std::move(err));
 					}
-					--ps.i;
 				}
-				else if (reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword == Lexeme::VAL
-					&& reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.isBlock()
-					)
+				else
 				{
-					parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.getBlock());
+					if (reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword == Lexeme::VAL
+						&& reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.isBlock()
+						)
+					{
+						parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.getBlock());
+					}
+					++ps.i;
 				}
 			}
-			else if ((*ps.i)->type == ParseTreeNode::OP)
+			else //if ((*ps.i)->type == ParseTreeNode::OP)
 			{
 				for (const auto& arg : reinterpret_cast<OpNode*>(ps.i->get())->op.args)
 				{
@@ -246,7 +250,12 @@ namespace soup
 						parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.getBlock());
 					}
 				}
+				++ps.i;
 			}
+			/*else
+			{
+				++ps.i;
+			}*/
 		}
 	}
 
