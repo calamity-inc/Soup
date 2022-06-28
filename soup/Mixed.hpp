@@ -5,7 +5,6 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 namespace soup
 {
@@ -18,7 +17,7 @@ namespace soup
 			INT,
 			UINT,
 			STRING,
-			OP_ARRAY,
+			BLOCK,
 			MIXED_MIXED_MAP,
 		};
 
@@ -65,7 +64,13 @@ namespace soup
 		{
 		}
 
-		Mixed(std::vector<Op>&& val);
+		Mixed(std::string* val) // takes ownership
+			: type(STRING), val((uint64_t)val)
+		{
+		}
+
+		Mixed(Block* val); // takes ownership
+
 		Mixed(std::unordered_map<Mixed, Mixed>&& val);
 
 		~Mixed() noexcept
@@ -147,44 +152,36 @@ namespace soup
 				;
 		}
 
-		[[nodiscard]] bool isInt() const noexcept
+		[[nodiscard]] constexpr bool isInt() const noexcept
 		{
 			return type == INT;
 		}
 
-		[[nodiscard]] bool isUInt() const noexcept
+		[[nodiscard]] constexpr bool isUInt() const noexcept
 		{
 			return type == UINT;
 		}
 
-		[[nodiscard]] bool isString() const noexcept
+		[[nodiscard]] constexpr bool isString() const noexcept
 		{
 			return type == STRING;
 		}
 
-		[[nodiscard]] std::string toString() const noexcept
+		[[nodiscard]] constexpr bool isBlock() const noexcept
 		{
-			if (type == INT)
-			{
-				return std::to_string((int64_t)val);
-			}
-			if (type == UINT)
-			{
-				return std::to_string(val);
-			}
-			if (type == STRING)
-			{
-				return *reinterpret_cast<std::string*>(val);
-			}
-			return {};
+			return type == BLOCK;
 		}
+
+		[[nodiscard]] const char* getTypeName() const noexcept;
+
+		[[nodiscard]] std::string toString(const std::string& prefix = {}) const noexcept;
 
 		friend std::ostream& operator<<(std::ostream& os, const Mixed& v);
 
 		[[nodiscard]] int64_t getInt() const;
 		[[nodiscard]] uint64_t getUInt() const;
 		[[nodiscard]] std::string& getString() const;
-		[[nodiscard]] std::vector<Op>& getOpArray() const;
+		[[nodiscard]] Block& getBlock() const;
 		[[nodiscard]] std::unordered_map<Mixed, Mixed>& getMixedMixedMap() const;
 	};
 }

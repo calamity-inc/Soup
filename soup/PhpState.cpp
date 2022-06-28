@@ -1,323 +1,152 @@
 #include "PhpState.hpp"
 
-#include "Op.hpp"
+#include "LangDesc.hpp"
+#include "LangVm.hpp"
 #include "ParseError.hpp"
+#include "ParserState.hpp"
+#include "parse_tree.hpp"
 #include "string.hpp"
-#include "Lexer.hpp"
+#include "StringReader.hpp"
+#include "StringWriter.hpp"
+#include "UniquePtr.hpp"
 
 namespace soup
 {
-	enum PhpTokens : int
+	enum PhpOpCodes : int
 	{
-		T_PHPMODE_START = 0,
-		T_PHPMODE_END,
-		T_SET,
-		T_ECHO,
-		T_REQUIRE,
-		T_FUNC,
-		T_BLOCK_START,
-		T_BLOCK_END,
-
+		OP_CONCAT = 0,
+		OP_ASSIGN,
 		OP_CALL,
+		OP_REQUIRE,
+		OP_ECHO,
 	};
 
-	[[nodiscard]] static Lexer getLexerImpl()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wstring-compare"
+	[[nodiscard]] static LangDesc getLangDescImpl()
 	{
-		Lexer lexer;
-		lexer.addToken("<?php", T_PHPMODE_START);
-		lexer.addToken("?>", T_PHPMODE_END);
-		lexer.addToken("=", T_SET, Rgb::RED);
-		lexer.addToken("echo", T_ECHO, Rgb::BLUE);
-		lexer.addToken("require", T_REQUIRE, Rgb::RED);
-		lexer.addToken("function", T_FUNC, Rgb::BLUE);
-		lexer.addToken("{", T_BLOCK_START);
-		lexer.addToken("}", T_BLOCK_END);
-		return lexer;
+		LangDesc ld;
+		ld.addToken("<?php");
+		ld.addToken("?>");
+		ld.addBlock("{", "}");
+		ld.addToken("function", Rgb::BLUE, [](ParserState& ps)
+		{
+			auto node = ps.popRighthand();
+			if (node->type != ParseTreeNode::LEXEME
+				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "()"
+				)
+			{
+				std::string err = "'function' expected righthand '()', found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			node = ps.popRighthand();
+			if (node->type != ParseTreeNode::BLOCK)
+			{
+				std::string err = "'function()' expected righthand block, found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			ps.pushLefthand(Lexeme{ Lexeme::VAL, reinterpret_cast<Block*>(node.release()) });
+		});
+		ld.addToken("()", [](ParserState& ps)
+		{
+			ps.setOp(OP_CALL);
+			ps.consumeLefthandValue();
+		});
+		ld.addToken(".", Rgb::RED, [](ParserState& ps)
+		{
+			ps.setOp(OP_CONCAT);
+			ps.consumeLefthandValue();
+			ps.consumeRighthandValue();
+		});
+		ld.addToken("=", Rgb::RED, [](ParserState& ps)
+		{
+			ps.setOp(OP_ASSIGN);
+			ps.consumeLefthandValue();
+			ps.consumeRighthandValue();
+		});
+		ld.addToken("require", Rgb::RED, [](ParserState& ps)
+		{
+			ps.setOp(OP_REQUIRE);
+			ps.consumeRighthandValue();
+		});
+		ld.addToken("echo", Rgb::BLUE, [](ParserState& ps)
+		{
+			ps.setOp(OP_ECHO);
+			ps.consumeRighthandValue();
+		});
+		return ld;
 	}
 
-	const Lexer& PhpState::getLexer()
+	const LangDesc& PhpState::getLangDesc()
 	{
-		static Lexer lexer = getLexerImpl();
-		return lexer;
+		static LangDesc ld = getLangDescImpl();
+		return ld;
 	}
 
-	[[nodiscard]] static constexpr bool isValidArg(int id) noexcept
+	static void processNonPhpmodeBuffer(std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i, std::string& non_phpmode_buffer)
 	{
-		return id == Lexeme::VAL
-			|| id == Lexeme::LITERAL
-			;
+		if (!non_phpmode_buffer.empty())
+		{
+			i = ls.insert(i, Lexeme{ Lexeme::VAL, std::move(non_phpmode_buffer) });
+			i = ls.insert(i, Lexeme{ "echo" });
+			non_phpmode_buffer.clear();
+		}
 	}
 
-	[[nodiscard]] static Op collapse_lr(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i)
+	void PhpState::processPhpmodeAndEraseSpace(std::vector<Lexeme>& ls)
 	{
-		Lexeme l = std::move(*i);
-		if (i == ls.begin())
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected lefthand argument, found start of code");
-			throw ParseError(std::move(err));
-		}
-		Op op{ l.type };
-		op.args.reserve(2);
-		i = ls.erase(i);
-		if (i == ls.end())
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected righthand argument, found end of code");
-			throw ParseError(std::move(err));
-		}
-		if (!isValidArg((i - 1)->type))
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected lefthand argument, found ");
-			err.append(lexer.getName(*i));
-			throw ParseError(std::move(err));
-		}
-		if (!isValidArg(i->type))
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected righthand argument, found ");
-			err.append(lexer.getName(*i));
-			throw ParseError(std::move(err));
-		}
-		op.args.emplace_back(std::move(*(i - 1)));
-		op.args.emplace_back(std::move(*i));
-		--i;
-		i = ls.erase(i);
-		i = ls.erase(i);
-		return op;
-	}
-
-	[[nodiscard]] static Op collapse_l(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i)
-	{
-		Lexeme l = std::move(*i);
-		if (i == ls.begin())
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected lefthand argument, found start of code");
-			throw ParseError(std::move(err));
-		}
-		Op op{ l.type };
-		i = ls.erase(i);
-		if (!isValidArg((i - 1)->type))
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected lefthand argument, found ");
-			err.append(lexer.getName(*(i - 1)));
-			throw ParseError(std::move(err));
-		}
-		op.args.emplace_back(std::move(*(i - 1)));
-		--i;
-		i = ls.erase(i);
-		return op;
-	}
-
-	[[nodiscard]] static Op collapse_r(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i)
-	{
-		Lexeme l = std::move(*i);
-		i = ls.erase(i);
-		if (i == ls.end())
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected righthand argument, found end of code");
-			throw ParseError(std::move(err));
-		}
-		if (!isValidArg(i->type))
-		{
-			std::string err = lexer.getName(l);
-			err.append(" expected righthand argument, found ");
-			err.append(lexer.getName(*i));
-			throw ParseError(std::move(err));
-		}
-		Op op{ l.type, { std::move(*i) } };
-		i = ls.erase(i);
-		return op;
-	}
-
-	static bool processBlockTokens(const Lexer& lexer, std::vector<Lexeme>& ls, std::vector<Lexeme>::iterator& i, std::vector<Op>& ops)
-	{
+		std::string non_phpmode_buffer{};
+		auto i = ls.begin();
 		for (; i != ls.end(); )
 		{
-			switch (i->type)
+			if (i->token_keyword == "<?php")
 			{
-			case Lexeme::LITERAL:
-				if (i->val.getString() == "()")
-				{
-					Op op = collapse_l(lexer, ls, i);
-					op.id = OP_CALL;
-					ops.emplace_back(std::move(op));
-					break;
-				}
-				[[fallthrough]];
-			default:
-				++i;
-				break;
-
-			case T_SET:
-				ops.emplace_back(collapse_lr(lexer, ls, i));
-				break;
-
-			case T_ECHO:
-			case T_REQUIRE:
-				ops.emplace_back(collapse_r(lexer, ls, i));
-				break;
-
-			case T_BLOCK_END:
 				i = ls.erase(i);
-				return true;
-			}
-		}
-		return false;
-	}
-	
-#define DEBUG_PARSING false
-
-#if DEBUG_PARSING
-	[[nodiscard]] static std::string stringifyOps(const Lexer& lexer, const std::vector<Op>& ops)
-	{
-		std::string str{};
-		for (auto i = ops.begin(); i != ops.end(); ++i)
-		{
-			str.push_back('{');
-			str.append(lexer.getName(i->id));
-			if (!i->args.empty())
-			{
-				str.append(": ");
-				for (const auto& arg : i->args)
+				processNonPhpmodeBuffer(ls, i, non_phpmode_buffer);
+				for (; i != ls.end(); )
 				{
-					str.push_back('[');
-					str.append(lexer.getName(arg));
-					str.push_back(']');
+					if (i->token_keyword == "?>")
+					{
+						i = ls.erase(i);
+						break;
+					}
+					if (i->token_keyword == Lexeme::SPACE)
+					{
+						i = ls.erase(i);
+					}
+					else
+					{
+						++i;
+					}
 				}
 			}
-			str.push_back('}');
+			else
+			{
+				non_phpmode_buffer.append(i->getSourceString());
+				i = ls.erase(i);
+			}
 		}
-		return str;
+		processNonPhpmodeBuffer(ls, i, non_phpmode_buffer);
 	}
-#endif
+#pragma clang diagnostic pop
 
 	std::string PhpState::evaluate(const std::string& code, unsigned int max_require_depth) const
 	{
 		std::string output{};
 		try
 		{
-			const Lexer& lexer = getLexer();
-			auto ls = lexer.tokenise(code);
+			auto ld = getLangDesc();
+			auto ls = ld.tokenise(code);
+			processPhpmodeAndEraseSpace(ls);
+			auto b = ld.parseImpl(ls);
 
-#if DEBUG_PARSING
-			output = "Tokenised: ";
-			output.append(lexer.stringify(ls));
-#endif
+			StringWriter w;
+			b.compile(w);
 
-			std::string non_phpmode_buffer{};
-			for (auto i = ls.begin(); i != ls.end(); )
-			{
-				if (i->type == T_PHPMODE_START)
-				{
-					i = ls.erase(i);
-					if (!non_phpmode_buffer.empty())
-					{
-						i = ls.insert(i, Lexeme{ Lexeme::VAL, std::move(non_phpmode_buffer) });
-						i = ls.insert(i, Lexeme{ T_ECHO });
-						non_phpmode_buffer.clear();
-					}
-					for (; i != ls.end(); )
-					{
-						if (i->type == T_PHPMODE_END)
-						{
-							i = ls.erase(i);
-							break;
-						}
-						if (i->type == Lexeme::SPACE)
-						{
-							i = ls.erase(i);
-						}
-						else
-						{
-							++i;
-						}
-					}
-				}
-				else
-				{
-					non_phpmode_buffer.append(lexer.getSourceString(*i));
-					i = ls.erase(i);
-				}
-			}
-
-#if DEBUG_PARSING
-			output.append("\nOutside phpmode squashed: ");
-			output.append(lexer.stringify(ls));
-#endif
-
-			for (auto i = ls.begin(); i != ls.end(); )
-			{
-				if (i->type != T_FUNC)
-				{
-					++i;
-					continue;
-				}
-				i = ls.erase(i);
-				if (i == ls.end()
-					|| i->type != Lexeme::LITERAL
-					|| i->val.getString() != "()"
-					)
-				{
-					std::string msg = "Expected '()' after 'function', found ";
-					msg.append(lexer.getName(*i));
-					throw ParseError(std::move(msg));
-				}
-				i = ls.erase(i);
-				if (i == ls.end()
-					|| i->type != T_BLOCK_START
-					)
-				{
-					std::string msg = "Expected block start after function(), found ";
-					msg.append(lexer.getName(*i));
-					throw ParseError(std::move(msg));
-				}
-				i = ls.erase(i);
-				size_t start = (i - ls.begin());
-				std::vector<Op> ops{};
-				if (!processBlockTokens(lexer, ls, i, ops))
-				{
-					throw ParseError("Expected block end, found end of code");
-				}
-				if ((i - ls.begin()) != start)
-				{
-					std::string err = "Unexpected ";
-					err.append(lexer.getName(*i));
-					throw ParseError(std::move(err));
-				}
-				i = ls.insert(i, Lexeme{ Lexeme::VAL, std::move(ops) });
-			}
-
-#if DEBUG_PARSING
-			output.append("\nFunctions squashed: ");
-			output.append(lexer.stringify(ls));
-#endif
-
-			auto i = ls.begin();
-			std::vector<Op> ops{};
-			if (processBlockTokens(lexer, ls, i, ops))
-			{
-				throw ParseError("Unexpected block end; no matching block start");
-			}
-
-#if DEBUG_PARSING
-			output.append("\nOps: ");
-			output.append(stringifyOps(lexer, ops));
-			output.push_back('\n');
-#endif
-
-			for (const auto& tk : ls)
-			{
-				std::string err = "Unexpected ";
-				err.append(lexer.getName(tk));
-				throw ParseError(std::move(err));
-			}
-
-			execute(output, ops, max_require_depth);
+			StringReader r{ std::move(w.str) };
+			execute(output, r, max_require_depth);
 		}
 		catch (const std::runtime_error& e)
 		{
@@ -331,53 +160,59 @@ namespace soup
 		return output;
 	}
 
-	void PhpState::execute(std::string& output, const std::vector<Op>& ops, unsigned int max_require_depth) const
+	void PhpState::execute(std::string& output, Reader& r, unsigned int max_require_depth) const
 	{
-		std::map<std::string, Mixed> vars{};
-		for (const auto& op : ops)
+		LangVm vm{ &r };
+
+		uint8_t op;
+		while (vm.getNextOp(op))
 		{
-			switch (op.id)
+			switch (op)
 			{
-			case T_SET:
-			{
-				std::string& key = op.args.at(0).val.getString();
-				const Mixed& val = op.args.at(1).val;
-
-				if (auto e = vars.find(key); e != vars.end())
+			case OP_CONCAT:
 				{
-					e->second = std::move(val);
+					std::string str = vm.pop().toString();
+					str.append(vm.pop().toString());
+					vm.push(std::move(str));
 				}
-				else
-				{
-					vars.emplace(std::move(key), val);
-				}
-			}
-			break;
-
-			case T_ECHO:
-				output.append(op.getArg(vars, 0).toString());
 				break;
 
-			case T_REQUIRE:
-			{
-				if (max_require_depth == 0)
+			case OP_ASSIGN:
 				{
-					throw std::runtime_error("Max require depth exceeded");
+					auto& var = vm.popVarRef();
+					var = vm.pop();
 				}
-				std::filesystem::path file = cwd;
-				file /= op.getArg(vars, 0).toString();
-				if (!std::filesystem::exists(file))
-				{
-					std::string err = "Required file doesn't exist: ";
-					err.append(file.string());
-					throw std::runtime_error(std::move(err));
-				}
-				output.append(evaluate(string::fromFile(file.string()), max_require_depth - 1));
-			}
-			break;
+				break;
 
 			case OP_CALL:
-				execute(output, op.getArg(vars, 0).getOpArray(), max_require_depth);
+				{
+					auto sr = vm.popFunc();
+					execute(output, sr, max_require_depth);
+				}
+				break;
+
+			case OP_REQUIRE:
+				{
+					if (max_require_depth == 0)
+					{
+						throw std::runtime_error("Max require depth exceeded");
+					}
+					std::filesystem::path file = cwd;
+					file /= vm.popString();
+					if (!std::filesystem::exists(file))
+					{
+						std::string err = "Required file doesn't exist: ";
+						err.append(file.string());
+						throw std::runtime_error(std::move(err));
+					}
+					output.append(evaluate(string::fromFile(file.string()), max_require_depth - 1));
+				}
+				break;
+
+			case OP_ECHO:
+				{
+					output.append(vm.pop().toString());
+				}
 				break;
 			}
 		}

@@ -39,12 +39,16 @@ namespace soup
 	std::string FormattedText::toString() const
 	{
 		std::string str{};
-		for (const auto& line : lines)
+		for (auto line = lines.begin();; )
 		{
-			for (const auto& span : line)
+			for (const auto& span : *line)
 			{
 				str.append(console.strSetForegroundColour<std::string>(span.colour.r, span.colour.g, span.colour.b));
 				str.append(span.text);
+			}
+			if (++line == lines.end())
+			{
+				break;
 			}
 			str.push_back('\n');
 		}

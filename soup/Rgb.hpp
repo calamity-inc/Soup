@@ -15,6 +15,7 @@ namespace soup
 		static Rgb BLACK;
 		static Rgb WHITE;
 		static Rgb RED;
+		static Rgb YELLOW;
 		static Rgb GREEN;
 		static Rgb BLUE;
 

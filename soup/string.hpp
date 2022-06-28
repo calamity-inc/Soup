@@ -204,6 +204,38 @@ namespace soup
 			return val;
 		}
 
+		template <typename IntT, typename CharT>
+		[[nodiscard]] static std::optional<IntT> toIntOpt(const CharT*& it) noexcept
+		{
+			bool had_number_char = false;
+			IntT val = 0;
+			IntT max = 0;
+			IntT prev_max = 0;
+			while (true)
+			{
+				const CharT c = *it++;
+				if (!isNumberChar(c))
+				{
+					break;
+				}
+				had_number_char = true;
+				val *= 10;
+				val += (c - '0');
+				max *= 10;
+				max += 9;
+				if (max < prev_max)
+				{
+					break;
+				}
+				prev_max = max;
+			}
+			if (!had_number_char)
+			{
+				return std::nullopt;
+			}
+			return val;
+		}
+
 		template <typename IntT, typename StringView>
 		[[nodiscard]] static std::optional<IntT> toInt(const StringView& str) noexcept
 		{
@@ -297,7 +329,7 @@ namespace soup
 		}
 
 		template <typename S>
-		static size_t len(S str)
+		static constexpr size_t len(S str) noexcept
 		{
 			if constexpr (std::is_same_v<S, char> || std::is_same_v<S, wchar_t>)
 			{
@@ -305,7 +337,12 @@ namespace soup
 			}
 			else if constexpr (std::is_pointer_v<S>)
 			{
-				return strlen(str);
+				size_t len = 0;
+				while (str[len] != 0)
+				{
+					++len;
+				}
+				return len;
 			}
 			else
 			{

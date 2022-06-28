@@ -34,11 +34,17 @@ namespace soup
 
 	// io.stream
 	class Reader;
+	class StringReader;
 	class Writer;
 
 	// lang
-	struct Op;
-	class Lexer;
+	struct Block;
+	struct CompilerState;
+	class LangDesc;
+	struct Lexeme;
+	class ParserState;
+	struct ParseTreeNode;
+	struct Token;
 
 	// math
 	class Bigint;

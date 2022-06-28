@@ -84,11 +84,14 @@ void tests()
 	{
 		PhpState php;
 		assert(php.evaluate(R"(<?php echo "Hello";)") == "Hello");
-		assert(php.evaluate(R"(<?php echo 123)") == "123");
+		assert(php.evaluate(R"(<?php echo 123;)") == "123");
 		assert(php.evaluate(R"(<?php $a = 1; echo $a;)") == "1");
+		assert(php.evaluate(R"(<?php $a = "Hello"; echo $a;)") == "Hello");
+		assert(php.evaluate(R"(<?php $a = "Hello, "."world!"; echo $a;)") == "Hello, world!");
 		assert(php.evaluate(R"(<?php $a = function(){ echo "Hello"; }; $a();)") == "Hello");
 		assert(php.evaluate(R"(<?php $a = function(){ ?>Hello<?php }; $a();)") == "Hello");
 		assert(php.evaluate(R"(<?php $a = function(){ ?>Hello<?php };)") == "");
+		assert(php.evaluate(R"(<?php $a = function(){ $a = "Hello"; echo $a; }; $a();)") == "Hello");
 	});
 }
 

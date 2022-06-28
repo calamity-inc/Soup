@@ -1,8 +1,9 @@
 #include "Mixed.hpp"
 
 #include <ostream>
+#include <typeinfo> // bad_cast
 
-#include "Op.hpp"
+#include "parse_tree.hpp"
 
 namespace soup
 {
@@ -11,7 +12,11 @@ namespace soup
 	{
 		switch (type)
 		{
-		default:
+		case NONE:
+			break;
+
+		case INT:
+		case UINT:
 			val = b.val;
 			break;
 
@@ -19,14 +24,17 @@ namespace soup
 			val = (uint64_t)new std::string(b.getString());
 			break;
 
-		case OP_ARRAY:
-			val = (uint64_t)new std::vector<Op>(b.getOpArray());
+		case BLOCK:
+			throw std::runtime_error("Can't copy a block");
+
+		case MIXED_MIXED_MAP:
+			val = (uint64_t)new std::unordered_map<Mixed, Mixed>(b.getMixedMixedMap());
 			break;
 		}
 	}
 
-	Mixed::Mixed(std::vector<Op>&& val)
-		: type(OP_ARRAY), val((uint64_t)new std::vector<Op>(std::move(val)))
+	Mixed::Mixed(Block* val)
+		: type(BLOCK), val((uint64_t)val)
 	{
 	}
 
@@ -39,15 +47,17 @@ namespace soup
 	{
 		switch (type)
 		{
-		default:
+		case NONE:
+		case INT:
+		case UINT:
 			break;
 
 		case STRING:
 			delete reinterpret_cast<std::string*>(val);
 			break;
 
-		case OP_ARRAY:
-			delete reinterpret_cast<std::vector<Op>*>(val);
+		case BLOCK:
+			delete reinterpret_cast<Block*>(val);
 			break;
 
 		case MIXED_MIXED_MAP:
@@ -62,11 +72,54 @@ namespace soup
 		return os;
 	}
 
+	const char* Mixed::getTypeName() const noexcept
+	{
+		switch (type)
+		{
+		default:
+			break;
+
+		case INT:
+			return "int";
+
+		case UINT:
+			return "uint";
+
+		case STRING:
+			return "string";
+
+		case BLOCK:
+			return "block";
+		}
+		return "complex type";
+	}
+
+	std::string Mixed::toString(const std::string& prefix) const noexcept
+	{
+		if (type == INT)
+		{
+			return std::to_string((int64_t)val);
+		}
+		if (type == UINT)
+		{
+			return std::to_string(val);
+		}
+		if (type == STRING)
+		{
+			return *reinterpret_cast<std::string*>(val);
+		}
+		if (type == BLOCK)
+		{
+			return reinterpret_cast<Block*>(val)->toString(prefix);
+		}
+		return {};
+	}
+
 	int64_t Mixed::getInt() const
 	{
 		if (type != INT)
 		{
-			throw 0;
+			throw std::bad_cast();
 		}
 		return (int64_t)val;
 	}
@@ -75,7 +128,7 @@ namespace soup
 	{
 		if (type != UINT)
 		{
-			throw 0;
+			throw std::bad_cast();
 		}
 		return val;
 	}
@@ -84,25 +137,25 @@ namespace soup
 	{
 		if (type != STRING)
 		{
-			throw 0;
+			throw std::bad_cast();
 		}
 		return *reinterpret_cast<std::string*>(val);
 	}
 
-	std::vector<Op>& Mixed::getOpArray() const
+	Block& Mixed::getBlock() const
 	{
-		if (type != OP_ARRAY)
+		if (type != BLOCK)
 		{
-			throw 0;
+			throw std::bad_cast();
 		}
-		return *reinterpret_cast<std::vector<Op>*>(val);
+		return *reinterpret_cast<Block*>(val);
 	}
 
 	std::unordered_map<Mixed, Mixed>& Mixed::getMixedMixedMap() const
 	{
 		if (type != MIXED_MIXED_MAP)
 		{
-			throw 0;
+			throw std::bad_cast();
 		}
 		return *reinterpret_cast<std::unordered_map<Mixed, Mixed>*>(val);
 	}

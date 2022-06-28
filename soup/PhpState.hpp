@@ -8,15 +8,16 @@
 
 namespace soup
 {
-	class PhpState
+	struct PhpState
 	{
-	public:
 		std::filesystem::path cwd;
 
-		[[nodiscard]] static const Lexer& getLexer();
+		[[nodiscard]] static const LangDesc& getLangDesc();
+
+		static void processPhpmodeAndEraseSpace(std::vector<Lexeme>& ls);
 
 		[[nodiscard]] std::string evaluate(const std::string& code, unsigned int max_require_depth = 10) const;
 
-		void execute(std::string& output, const std::vector<Op>& ops, unsigned int max_require_depth = 10) const;
+		void execute(std::string& output, Reader& r, unsigned int max_require_depth = 10) const;
 	};
 }

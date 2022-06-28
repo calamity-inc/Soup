@@ -659,9 +659,6 @@
     <ClInclude Include="PhpState.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="Lexer.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
     <ClInclude Include="Lexeme.hpp">
       <Filter>lang</Filter>
     </ClInclude>
@@ -674,14 +671,35 @@
     <ClInclude Include="Searchspace.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="op_tree.hpp">
+    <ClInclude Include="parse_tree.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="FormattedText.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="LangDesc.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstString.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ParserState.hpp">
       <Filter>lang</Filter>
     </ClInclude>
     <ClInclude Include="Op.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="FormattedText.hpp">
-      <Filter>vis</Filter>
+    <ClInclude Include="LangVm.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="BuiltinOp.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilerState.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
+    <ClInclude Include="Token.hpp">
+      <Filter>lang</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -974,14 +992,26 @@
     <ClCompile Include="PhpState.cpp">
       <Filter>lang</Filter>
     </ClCompile>
-    <ClCompile Include="Lexer.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
     <ClCompile Include="ffi.cpp">
       <Filter>os</Filter>
     </ClCompile>
     <ClCompile Include="FormattedText.cpp">
       <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="LangDesc.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserState.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="parse_tree.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="LangVm.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilerState.cpp">
+      <Filter>lang</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
