@@ -4,6 +4,7 @@
 
 namespace soup
 {
+	// Why not std::unique_ptr? RTTI.
 	template <typename T>
 	class UniquePtr
 	{
