@@ -33,6 +33,16 @@ namespace soup
 	{
 		HttpResponse resp;
 		resp.body = std::move(body);
+		sendContent(s, status, std::move(resp));
+	}
+
+	void ServerWebService::sendContent(Socket& s, HttpResponse&& resp)
+	{
+		sendContent(s, "200", std::move(resp));
+	}
+
+	void ServerWebService::sendContent(Socket& s, const char* status, HttpResponse&& resp)
+	{
 		resp.setContentLength();
 		resp.setContentType();
 		sendResponse(s, status, resp.toString());

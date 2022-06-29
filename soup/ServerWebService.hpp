@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fwd.hpp"
 #include "type.hpp"
 
 #include "ServerService.hpp"
@@ -22,6 +23,8 @@ namespace soup
 		// HTTP
 		static void sendContent(Socket& s, std::string body);
 		static void sendContent(Socket& s, const char* status, std::string body);
+		static void sendContent(Socket& s, HttpResponse&& resp);
+		static void sendContent(Socket& s, const char* status, HttpResponse&& resp);
 		static void sendHtml(Socket& s, std::string body);
 		static void sendText(Socket& s, std::string body);
 		static void sendData(Socket& s, const char* mime_type, std::string body);

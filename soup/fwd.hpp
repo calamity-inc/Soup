@@ -80,6 +80,7 @@ namespace soup
 
 	// net.web
 	class HttpRequest;
+	struct HttpResponse;
 
 	// net.web.websocket
 	struct WebSocketMessage;

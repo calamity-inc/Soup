@@ -9,6 +9,7 @@
 #include <ServerWebService.hpp>
 #include <Socket.hpp>
 #include <string.hpp>
+#include <time.hpp>
 
 static std::string base_dir;
 
@@ -68,14 +69,21 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 	if (std::filesystem::is_regular_file(file_path))
 	{
 		std::cout << s.peer.toString() << " > " << req.method << " " << req_url << " [200]" << std::endl;
-		auto contents = soup::string::fromFile(file_path);
+		soup::HttpResponse resp;
+		resp.body = soup::string::fromFile(file_path);
 		if (file_path.length() > 4 && file_path.substr(file_path.length() - 4) == ".php")
 		{
+			auto t = soup::time::nanos();
 			soup::PhpState php;
 			php.cwd = std::filesystem::path(file_path).parent_path();
-			contents = php.evaluate(contents);
+			resp.body = php.evaluate(resp.body);
+			
+			t = soup::time::nanos() - t;
+			std::string timing = "PHP;dur=";
+			timing.append(std::to_string(t / 1000000.0));
+			resp.header_fields.emplace("Server-Timing", std::move(timing));
 		}
-		soup::ServerWebService::sendContent(s, std::move(contents));
+		soup::ServerWebService::sendContent(s, std::move(resp));
 	}
 	else
 	{
