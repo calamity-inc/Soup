@@ -95,6 +95,7 @@ void tests()
 		assert(php.evaluate(R"(<?php
 //echo "Hello";
 echo "Hello, world!";)") == "Hello, world!");
+		assert(php.evaluate(R"(<?php echo 1 == 1;)") == "1"); // this is what vanilla PHP also prints, but "true" would be nicer
 	});
 }
 

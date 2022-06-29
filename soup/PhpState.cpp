@@ -16,6 +16,7 @@ namespace soup
 	{
 		OP_CONCAT = 0,
 		OP_ASSIGN,
+		OP_EQ,
 		OP_CALL,
 		OP_REQUIRE,
 		OP_ECHO,
@@ -63,6 +64,12 @@ namespace soup
 		ld.addToken("=", Rgb::RED, [](ParserState& ps)
 		{
 			ps.setOp(OP_ASSIGN);
+			ps.consumeLefthandValue();
+			ps.consumeRighthandValue();
+		});
+		ld.addToken("==", Rgb::RED, [](ParserState& ps)
+		{
+			ps.setOp(OP_EQ);
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
@@ -177,6 +184,10 @@ namespace soup
 					auto& var = vm.popVarRef();
 					var = vm.pop();
 				}
+				break;
+				
+			case OP_EQ:
+				vm.push(vm.pop().toString() == vm.pop().toString());
 				break;
 
 			case OP_CALL:
