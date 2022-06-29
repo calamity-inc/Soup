@@ -47,5 +47,12 @@ namespace soup
 		{
 			return len;
 		}
+
+		[[nodiscard]] bool isStartOf(const std::string& b) const noexcept
+		{
+			return b.length() >= length()
+				&& memcmp(b.c_str(), c_str(), length()) == 0
+				;
+		}
 	};
 }

@@ -133,6 +133,7 @@ namespace soup
 			auto ld = getLangDesc();
 			auto ls = ld.tokenise(code);
 			processPhpmode(ls);
+			ld.eraseNlTerminatedComments(ls, "//");
 			ld.eraseSpace(ls);
 			auto b = ld.parseImpl(ls);
 

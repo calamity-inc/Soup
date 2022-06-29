@@ -92,6 +92,9 @@ void tests()
 		assert(php.evaluate(R"(<?php $a = function(){ ?>Hello<?php }; $a();)") == "Hello");
 		assert(php.evaluate(R"(<?php $a = function(){ ?>Hello<?php };)") == "");
 		assert(php.evaluate(R"(<?php $a = function(){ $a = "Hello"; echo $a; }; $a();)") == "Hello");
+		assert(php.evaluate(R"(<?php
+//echo "Hello";
+echo "Hello, world!";)") == "Hello, world!");
 	});
 }
 

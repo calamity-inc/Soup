@@ -101,32 +101,40 @@ namespace soup
 				continue;
 			}
 
-			if (string::isSpace(*i)
-				|| *i == ';'
-				)
+			if (*i == '\n')
 			{
-				if (!st.lb_is_space)
-				{
-					st.flushLiteralBuffer();
-					st.lb_is_space = true;
-				}
+				st.flushLiteralBuffer();
+				st.lexemes.emplace_back(Lexeme{ Lexeme::SPACE, "\n" });
 			}
 			else
 			{
-				if (st.lb_is_space
-					|| *i == '('
-					|| *i == '<'
-					|| *i == '['
-					|| *i == '{'
+				if (string::isSpace(*i)
+					|| *i == ';'
 					)
+				{
+					if (!st.lb_is_space)
+					{
+						st.flushLiteralBuffer();
+						st.lb_is_space = true;
+					}
+				}
+				else
+				{
+					if (st.lb_is_space
+						|| *i == '('
+						|| *i == '<'
+						|| *i == '['
+						|| *i == '{'
+						)
+					{
+						st.flushLiteralBuffer();
+					}
+				}
+				st.lb.push_back(*i);
+				if (*i == '>')
 				{
 					st.flushLiteralBuffer();
 				}
-			}
-			st.lb.push_back(*i);
-			if (*i == '>')
-			{
-				st.flushLiteralBuffer();
 			}
 
 			++i;
@@ -135,6 +143,28 @@ namespace soup
 		st.flushLiteralBuffer();
 
 		return std::move(st.lexemes);
+	}
+
+	void LangDesc::eraseNlTerminatedComments(std::vector<Lexeme>& ls, const ConstString& prefix)
+	{
+		for (auto i = ls.begin(); i != ls.end(); )
+		{
+			if (i->token_keyword == Lexeme::LITERAL
+				&& prefix.isStartOf(i->val.getString())
+				)
+			{
+				do
+				{
+					i = ls.erase(i);
+				} while (i != ls.end()
+					&& !i->isNewLine()
+					);
+			}
+			else
+			{
+				++i;
+			}
+		}
 	}
 
 	void LangDesc::eraseSpace(std::vector<Lexeme>& ls)
@@ -290,9 +320,7 @@ namespace soup
 		std::vector<FormattedText::Span> line{};
 		for (const auto& l : ls)
 		{
-			if (l.token_keyword == Lexeme::SPACE
-				&& l.val.getString() == "\n"
-				)
+			if (l.isNewLine())
 			{
 				if (!line.empty())
 				{

@@ -26,6 +26,7 @@ namespace soup
 		void addBlock(const char* start_keyword, const char* end_keyword);
 
 		[[nodiscard]] std::vector<Lexeme> tokenise(const std::string& code) const;
+		static void eraseNlTerminatedComments(std::vector<Lexeme>& ls, const ConstString& prefix);
 		static void eraseSpace(std::vector<Lexeme>& ls);
 		[[nodiscard]] Block parse(std::vector<Lexeme> ls) const;
 		[[nodiscard]] Block parseImpl(std::vector<Lexeme>& ls) const;

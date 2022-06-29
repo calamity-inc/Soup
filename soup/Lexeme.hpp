@@ -55,5 +55,12 @@ namespace soup
 			}
 			return str;
 		}
+
+		[[nodiscard]] bool isNewLine() const noexcept
+		{
+			return token_keyword == SPACE
+				&& val.getString() == "\n"
+				;
+		}
 	};
 }
