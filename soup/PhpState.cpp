@@ -18,6 +18,7 @@ namespace soup
 		OP_ASSIGN,
 		OP_EQ,
 		OP_IF,
+		OP_IF_ELSE,
 		OP_CALL,
 		OP_REQUIRE,
 		OP_ECHO,
@@ -109,6 +110,29 @@ namespace soup
 			if (node->type != ParseTreeNode::BLOCK)
 			{
 				std::string err = "'if(cond)' expected righthand block, found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			ps.pushArg(reinterpret_cast<Block*>(node.release()));
+		});
+		ld.addToken("else", Rgb::RED, [](ParserState& ps)
+		{
+			auto node = ps.popLefthand();
+			if (node->type != ParseTreeNode::OP
+				|| reinterpret_cast<OpNode*>(node.get())->op.type != OP_IF
+				)
+			{
+				std::string err = "'else' expected lefthand OP_IF, found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			ps.setOp(OP_IF_ELSE);
+			ps.setArgs(std::move(reinterpret_cast<OpNode*>(node.get())->op.args));
+
+			node = ps.popRighthand();
+			if (node->type != ParseTreeNode::BLOCK)
+			{
+				std::string err = "'else' expected righthand block, found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
@@ -249,10 +273,26 @@ namespace soup
 			case OP_IF:
 				{
 					auto cond_val = vm.pop().getInt();
-					auto sr = vm.popFunc();
+					auto true_sr = vm.popFunc();
 					if (cond_val)
 					{
-						execute(output, sr, max_require_depth);
+						execute(output, true_sr, max_require_depth);
+					}
+				}
+				break;
+
+			case OP_IF_ELSE:
+				{
+					auto cond_val = vm.pop().getInt();
+					auto true_sr = vm.popFunc();
+					auto false_sr = vm.popFunc();
+					if (cond_val)
+					{
+						execute(output, true_sr, max_require_depth);
+					}
+					else
+					{
+						execute(output, false_sr, max_require_depth);
 					}
 				}
 				break;

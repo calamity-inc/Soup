@@ -24,6 +24,25 @@ namespace soup
 		}
 	}
 
+	bool ParseTreeNode::isValue() const noexcept
+	{
+		switch (type)
+		{
+		case ParseTreeNode::LEXEME:
+			return reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::LITERAL // variable name
+				|| reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::VAL // rvalue
+				;
+
+		case ParseTreeNode::OP: // result of an expression
+			return true;
+
+		default:
+			break;
+		}
+		// otherwise, probably an oopsie
+		return false;
+	}
+
 	void ParseTreeNode::compile(CompilerState& st) const
 	{
 		if (type == ParseTreeNode::BLOCK)

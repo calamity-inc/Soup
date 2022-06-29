@@ -8,6 +8,8 @@
 #include "parse_tree.hpp"
 #include "UniquePtr.hpp"
 
+#define ENSURE_SANITY false
+
 namespace soup
 {
 	void ParserState::setOp(int type)
@@ -17,49 +19,44 @@ namespace soup
 
 	void ParserState::consumeLefthandValue()
 	{
-		if (i == b->children.begin())
+		auto node = popLefthand();
+		if (!node->isValue())
 		{
 			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
-			err.append(" expected lefthand value, found start of block");
-			throw ParseError(std::move(err));
-		}
-		--i;
-		if (!isValue())
-		{
-			std::string err = reinterpret_cast<LexemeNode*>((i + 1)->get())->lexeme.token_keyword;
 			err.append(" expected lefthand value, found ");
-			err.append((*i)->toString());
+			err.append(node->toString());
 			throw ParseError(std::move(err));
 		}
-		op.args.emplace_back(std::move(*i));
-		i = b->children.erase(i);
+		op.args.emplace_back(std::move(node));
+#if ENSURE_SANITY
+		ensureValidIterator();
+#endif
 	}
 
 	void ParserState::consumeRighthandValue()
 	{
-		++i;
-		if (i == b->children.end())
+		auto node = popRighthand();
+		if (!node->isValue())
 		{
-			--i;
 			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
-			err.append(" expected righthand value, found end of block");
-			throw ParseError(std::move(err));
-		}
-		if (!isValue())
-		{
-			std::string err = reinterpret_cast<LexemeNode*>((i - 1)->get())->lexeme.token_keyword;
 			err.append(" expected righthand value, found ");
-			err.append((*i)->toString());
+			err.append(node->toString());
 			throw ParseError(std::move(err));
 		}
-		op.args.emplace_back(std::move(*i));
-		i = b->children.erase(i);
-		--i;
+		op.args.emplace_back(std::move(node));
+#if ENSURE_SANITY
+		ensureValidIterator();
+#endif
 	}
 
 	void ParserState::pushArg(Mixed&& val)
 	{
 		op.args.emplace_back(soup::make_unique<LexemeNode>(Lexeme{ Lexeme::VAL, std::move(val) }));
+	}
+
+	void ParserState::setArgs(std::vector<UniquePtr<ParseTreeNode>>&& args)
+	{
+		op.args = std::move(args);
 	}
 
 	void ParserState::pushLefthand(UniquePtr<ParseTreeNode>&& node)
@@ -73,34 +70,39 @@ namespace soup
 		pushLefthand(soup::make_unique<LexemeNode>(std::move(l)));
 	}
 
-	ParseTreeNode* ParserState::peekRighthand()
+	UniquePtr<ParseTreeNode> ParserState::popLefthand()
 	{
-		++i;
-		if (i == b->children.end())
+		if (i == b->children.begin())
 		{
-			--i;
 			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
-			err.append(" expected righthand token, found end of block");
+			err.append(" expected lefthand, found start of block");
 			throw ParseError(std::move(err));
 		}
-		ParseTreeNode* ret = i->get();
 		--i;
+		UniquePtr<ParseTreeNode> ret = std::move(*i);
+		i = b->children.erase(i);
+#if ENSURE_SANITY
+		ensureValidIterator();
+#endif
 		return ret;
+	}
+
+	ParseTreeNode* ParserState::peekRighthand() const
+	{
+		checkRighthand();
+		return (i + 1)->get();
 	}
 
 	UniquePtr<ParseTreeNode> ParserState::popRighthand()
 	{
+		checkRighthand();
 		++i;
-		if (i == b->children.end())
-		{
-			--i;
-			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
-			err.append(" expected righthand token, found end of block");
-			throw ParseError(std::move(err));
-		}
 		UniquePtr<ParseTreeNode> ret = std::move(*i);
 		i = b->children.erase(i);
 		--i;
+#if ENSURE_SANITY
+		ensureValidIterator();
+#endif
 		return ret;
 	}
 
@@ -109,22 +111,23 @@ namespace soup
 		return ld->getToken(reinterpret_cast<LexemeNode*>(i->get())->lexeme);
 	}
 
-	bool ParserState::isValue() const noexcept
+	void ParserState::checkRighthand() const
 	{
-		switch ((*i)->type)
+		if ((i + 1) == b->children.end())
 		{
-		case ParseTreeNode::LEXEME:
-			return reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword == Lexeme::LITERAL // variable name
-				|| reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword == Lexeme::VAL // rvalue
-				;
-
-		case ParseTreeNode::OP: // result of an expression
-			return true;
-
-		default:
-			break;
+			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
+			err.append(" expected righthand, found end of block");
+			throw ParseError(std::move(err));
 		}
-		// otherwise, probably an oopsie
-		return false;
+	}
+
+	void ParserState::ensureValidIterator() const
+	{
+		if ((*i)->type != ParseTreeNode::LEXEME
+			|| reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword == Lexeme::VAL
+			)
+		{
+			throw 0;
+		}
 	}
 }

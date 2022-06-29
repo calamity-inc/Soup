@@ -27,6 +27,8 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] bool isValue() const noexcept;
+
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const;
 
 		void compile(CompilerState& st) const;

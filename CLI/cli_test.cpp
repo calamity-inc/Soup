@@ -126,6 +126,10 @@ if($a == 1)
 {
 	echo "true";
 }
+else
+{
+	echo "false";
+}
 )") == "true");
 			assert(php.evaluate(R"(<?php
 $a = 2;
@@ -133,7 +137,11 @@ if($a == 1)
 {
 	echo "true";
 }
-)") == "");
+else
+{
+	echo "false";
+}
+)") == "false");
 		});
 	}
 }

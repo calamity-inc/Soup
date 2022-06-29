@@ -21,15 +21,18 @@ namespace soup
 		void consumeRighthandValue();
 
 		void pushArg(Mixed&& val);
+		void setArgs(std::vector<UniquePtr<ParseTreeNode>>&& args);
 
 		void pushLefthand(UniquePtr<ParseTreeNode>&& node);
 		void pushLefthand(Lexeme&& l);
-		[[nodiscard]] ParseTreeNode* peekRighthand();
+		UniquePtr<ParseTreeNode> popLefthand();
+		[[nodiscard]] ParseTreeNode* peekRighthand() const;
 		UniquePtr<ParseTreeNode> popRighthand();
 
 		[[nodiscard]] const Token& getToken() const;
 
 	private:
-		[[nodiscard]] bool isValue() const noexcept;
+		void checkRighthand() const;
+		void ensureValidIterator() const;
 	};
 }
