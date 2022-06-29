@@ -14,44 +14,6 @@
 
 namespace soup
 {
-	struct LexerState
-	{
-		const LangDesc* const ld;
-		std::vector<Lexeme> lexemes{};
-		std::string lb{};
-		bool lb_is_space = false;
-
-		void flushLiteralBuffer()
-		{
-			if (lb.empty())
-			{
-				return;
-			}
-			
-			const char* c;
-			std::optional<int64_t> opt;
-
-			if (auto tk = std::find(ld->tokens.begin(), ld->tokens.end(), lb); tk != ld->tokens.end())
-			{
-				lexemes.emplace_back(Lexeme{ tk->keyword });
-			}
-			else if (c = lb.c_str(), opt = string::toIntOpt<int64_t>(c); opt.has_value() && *c == 0)
-			{
-				lexemes.emplace_back(Lexeme{ Lexeme::VAL, opt.value() });
-			}
-			else if (lb_is_space)
-			{
-				lexemes.emplace_back(Lexeme{ Lexeme::SPACE, std::move(lb) });
-			}
-			else
-			{
-				lexemes.emplace_back(Lexeme{ Lexeme::LITERAL, std::move(lb) });
-			}
-			lb.clear();
-			lb_is_space = false;
-		}
-	};
-
 	[[nodiscard]] static std::string getString(const std::string& code, std::string::const_iterator& i)
 	{
 		size_t start = (i - code.begin());
@@ -86,6 +48,44 @@ namespace soup
 		}).user_data = reinterpret_cast<uintptr_t>(end_keyword);
 		addToken(end_keyword);
 	}
+
+	struct LexerState
+	{
+		const LangDesc* const ld;
+		std::vector<Lexeme> lexemes{};
+		std::string lb{};
+		bool lb_is_space = false;
+
+		void flushLiteralBuffer()
+		{
+			if (lb.empty())
+			{
+				return;
+			}
+
+			const char* c;
+			std::optional<int64_t> opt;
+
+			if (auto tk = std::find(ld->tokens.begin(), ld->tokens.end(), lb); tk != ld->tokens.end())
+			{
+				lexemes.emplace_back(Lexeme{ tk->keyword });
+			}
+			else if (c = lb.c_str(), opt = string::toIntOpt<int64_t>(c); opt.has_value() && *c == 0)
+			{
+				lexemes.emplace_back(Lexeme{ Lexeme::VAL, opt.value() });
+			}
+			else if (lb_is_space)
+			{
+				lexemes.emplace_back(Lexeme{ Lexeme::SPACE, std::move(lb) });
+			}
+			else
+			{
+				lexemes.emplace_back(Lexeme{ Lexeme::LITERAL, std::move(lb) });
+			}
+			lb.clear();
+			lb_is_space = false;
+		}
+	};
 
 	std::vector<Lexeme> LangDesc::tokenise(const std::string& code) const
 	{
