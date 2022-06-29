@@ -524,6 +524,7 @@
     <ClInclude Include="ShortString.hpp" />
     <ClInclude Include="signal.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
+    <ClInclude Include="Status.hpp" />
     <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />

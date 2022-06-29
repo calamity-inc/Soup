@@ -99,6 +99,7 @@ namespace soup
 
 	// util
 	class Mixed;
+	struct Status;
 
 	// vis
 	class Canvas;
