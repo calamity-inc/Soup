@@ -117,6 +117,24 @@ echo "Hello, world!";)") == "Hello, world!");
 			PhpState php;
 			assert(php.evaluate(R"(<?php echo 1 == 1;)") == "1"); // this is what vanilla PHP also prints, but "true" would be nicer
 		});
+		test("conditionals", []
+		{
+			PhpState php;
+			assert(php.evaluate(R"(<?php
+$a = 1;
+if($a == 1)
+{
+	echo "true";
+}
+)") == "true");
+			assert(php.evaluate(R"(<?php
+$a = 2;
+if($a == 1)
+{
+	echo "true";
+}
+)") == "");
+		});
 	}
 }
 

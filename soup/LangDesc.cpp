@@ -122,6 +122,7 @@ namespace soup
 				{
 					if (st.lb_is_space
 						|| *i == '('
+						|| *i == ')'
 						|| *i == '<'
 						|| *i == '['
 						|| *i == '{'
@@ -131,7 +132,9 @@ namespace soup
 					}
 				}
 				st.lb.push_back(*i);
-				if (*i == '>')
+				if (*i == '('
+					|| *i == '>'
+					)
 				{
 					st.flushLiteralBuffer();
 				}
@@ -272,12 +275,18 @@ namespace soup
 			{
 				for (const auto& arg : reinterpret_cast<OpNode*>(ps.i->get())->op.args)
 				{
-					if (arg->type == ParseTreeNode::LEXEME
-						&& reinterpret_cast<LexemeNode*>(arg.get())->lexeme.token_keyword == Lexeme::VAL
-						&& reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.isBlock()
-						)
+					/*if (arg->type == ParseTreeNode::BLOCK)
 					{
-						parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.getBlock());
+						parseBlockRecurse(ps, t, reinterpret_cast<Block*>(arg.get()));
+					}
+					else*/ if (arg->type == ParseTreeNode::LEXEME)
+					{
+						if (reinterpret_cast<LexemeNode*>(arg.get())->lexeme.token_keyword == Lexeme::VAL
+							&& reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.isBlock()
+							)
+						{
+							parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.getBlock());
+						}
 					}
 				}
 				++ps.i;

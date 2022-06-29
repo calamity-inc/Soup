@@ -17,6 +17,7 @@ namespace soup
 		OP_CONCAT = 0,
 		OP_ASSIGN,
 		OP_EQ,
+		OP_IF,
 		OP_CALL,
 		OP_REQUIRE,
 		OP_ECHO,
@@ -34,13 +35,24 @@ namespace soup
 		{
 			auto node = ps.popRighthand();
 			if (node->type != ParseTreeNode::LEXEME
-				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "()"
+				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "("
 				)
 			{
-				std::string err = "'function' expected righthand '()', found ";
+				std::string err = "'function' expected righthand '(', found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
+
+			node = ps.popRighthand();
+			if (node->type != ParseTreeNode::LEXEME
+				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+				)
+			{
+				std::string err = "'function(' expected righthand ')', found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+
 			node = ps.popRighthand();
 			if (node->type != ParseTreeNode::BLOCK)
 			{
@@ -49,11 +61,6 @@ namespace soup
 				throw ParseError(std::move(err));
 			}
 			ps.pushLefthand(Lexeme{ Lexeme::VAL, reinterpret_cast<Block*>(node.release()) });
-		});
-		ld.addToken("()", [](ParserState& ps)
-		{
-			ps.setOp(OP_CALL);
-			ps.consumeLefthandValue();
 		});
 		ld.addToken(".", Rgb::RED, [](ParserState& ps)
 		{
@@ -72,6 +79,55 @@ namespace soup
 			ps.setOp(OP_EQ);
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
+		});
+		ld.addToken("if", Rgb::RED, [](ParserState& ps)
+		{
+			ps.setOp(OP_IF);
+			auto node = ps.popRighthand();
+			if (node->type != ParseTreeNode::LEXEME
+				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "("
+				)
+			{
+				std::string err = "'if' expected righthand '(', found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			
+			ps.consumeRighthandValue(); // condition
+
+			node = ps.popRighthand();
+			if (node->type != ParseTreeNode::LEXEME
+				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+				)
+			{
+				std::string err = "'if(cond' expected righthand ')', found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+
+			node = ps.popRighthand();
+			if (node->type != ParseTreeNode::BLOCK)
+			{
+				std::string err = "'if(cond)' expected righthand block, found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			ps.pushArg(reinterpret_cast<Block*>(node.release()));
+		});
+		ld.addToken("(", [](ParserState& ps)
+		{
+			if (auto node = ps.popRighthand();
+				node->type != ParseTreeNode::LEXEME
+				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+				)
+			{
+				std::string err = "'(' expected righthand ')', found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+
+			ps.setOp(OP_CALL);
+			ps.consumeLefthandValue();
 		});
 		ld.addToken("require", Rgb::RED, [](ParserState& ps)
 		{
@@ -188,6 +244,17 @@ namespace soup
 				
 			case OP_EQ:
 				vm.push(vm.pop().toString() == vm.pop().toString());
+				break;
+
+			case OP_IF:
+				{
+					auto cond_val = vm.pop().getInt();
+					auto sr = vm.popFunc();
+					if (cond_val)
+					{
+						execute(output, sr, max_require_depth);
+					}
+				}
 				break;
 
 			case OP_CALL:

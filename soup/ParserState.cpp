@@ -57,6 +57,11 @@ namespace soup
 		--i;
 	}
 
+	void ParserState::pushArg(Mixed&& val)
+	{
+		op.args.emplace_back(soup::make_unique<LexemeNode>(Lexeme{ Lexeme::VAL, std::move(val) }));
+	}
+
 	void ParserState::pushLefthand(UniquePtr<ParseTreeNode>&& node)
 	{
 		i = b->children.insert(i, std::move(node));

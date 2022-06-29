@@ -20,6 +20,8 @@ namespace soup
 		void consumeLefthandValue();
 		void consumeRighthandValue();
 
+		void pushArg(Mixed&& val);
+
 		void pushLefthand(UniquePtr<ParseTreeNode>&& node);
 		void pushLefthand(Lexeme&& l);
 		[[nodiscard]] ParseTreeNode* peekRighthand();

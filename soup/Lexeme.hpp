@@ -62,5 +62,12 @@ namespace soup
 				&& val.getString() == "\n"
 				;
 		}
+
+		[[nodiscard]] bool isLiteral(const std::string& b) const noexcept
+		{
+			return token_keyword == LITERAL
+				&& val.getString() == b
+				;
+		}
 	};
 }
