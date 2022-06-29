@@ -95,7 +95,7 @@ namespace soup
 		}
 	}
 
-	void PhpState::processPhpmodeAndEraseSpace(std::vector<Lexeme>& ls)
+	void PhpState::processPhpmode(std::vector<Lexeme>& ls)
 	{
 		std::string non_phpmode_buffer{};
 		auto i = ls.begin();
@@ -112,14 +112,7 @@ namespace soup
 						i = ls.erase(i);
 						break;
 					}
-					if (i->token_keyword == Lexeme::SPACE)
-					{
-						i = ls.erase(i);
-					}
-					else
-					{
-						++i;
-					}
+					++i;
 				}
 			}
 			else
@@ -139,7 +132,8 @@ namespace soup
 		{
 			auto ld = getLangDesc();
 			auto ls = ld.tokenise(code);
-			processPhpmodeAndEraseSpace(ls);
+			processPhpmode(ls);
+			ld.eraseSpace(ls);
 			auto b = ld.parseImpl(ls);
 
 			StringWriter w;

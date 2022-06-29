@@ -14,7 +14,7 @@ namespace soup
 
 		[[nodiscard]] static const LangDesc& getLangDesc();
 
-		static void processPhpmodeAndEraseSpace(std::vector<Lexeme>& ls);
+		static void processPhpmode(std::vector<Lexeme>& ls);
 
 		[[nodiscard]] std::string evaluate(const std::string& code, unsigned int max_require_depth = 10) const;
 
