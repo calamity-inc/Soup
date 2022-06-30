@@ -1,6 +1,7 @@
 #include "Layout.hpp"
 
 #include "RasterFont.hpp"
+#include "Rgb.hpp"
 #include "RenderTarget.hpp"
 
 namespace soup

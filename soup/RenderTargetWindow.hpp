@@ -4,6 +4,8 @@
 
 #include <Windows.h>
 
+#include "Rgb.hpp"
+
 namespace soup
 {
 	struct RenderTargetWindow : public RenderTarget

@@ -2,7 +2,7 @@
 
 #include "fwd.hpp"
 
-#include "Rgb.hpp"
+#include <string>
 
 namespace soup
 {
