@@ -40,20 +40,58 @@ namespace soup
 					LRESULT hit = DefWindowProcW(hWnd, message, wParam, lParam);
 					if (hit == HTCLIENT)
 					{
-						if (wc.mouse_informer == nullptr)
+						POINT p;
+						p.x = GET_X_LPARAM(lParam);
+						p.y = GET_Y_LPARAM(lParam);
+						MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
+
+						if (wc.resizable)
+						{
+							RECT r;
+							GetWindowRect(hWnd, &r);
+							const auto dx = ((r.right - r.left) - 5);
+							const auto dy = ((r.bottom - r.top) - 5);
+
+							if (p.x <= 5 && p.y <= 5)
+							{
+								hit = HTTOPLEFT;
+							}
+							else if (p.x >= dx && p.y <= 5)
+							{
+								hit = HTTOPRIGHT;
+							}
+							else if (p.x <= 5 && p.y >= dy)
+							{
+								hit = HTTOPRIGHT;
+							}
+							else if (p.x >= dx && p.y >= dy)
+							{
+								hit = HTBOTTOMRIGHT;
+							}
+							else if (p.x <= 5)
+							{
+								hit = HTLEFT;
+							}
+							else if (p.y <= 5)
+							{
+								hit = HTTOP;
+							}
+							else if (p.x >= dx)
+							{
+								hit = HTRIGHT;
+							}
+							else if (p.y >= dy)
+							{
+								hit = HTBOTTOM;
+							}
+						}
+						if (hit == HTCLIENT
+							&& (wc.mouse_informer == nullptr
+								|| wc.mouse_informer(Window{ hWnd }, p.x, p.y) == nullptr
+								)
+							)
 						{
 							hit = HTCAPTION;
-						}
-						else
-						{
-							POINT p;
-							p.x = GET_X_LPARAM(lParam);
-							p.y = GET_Y_LPARAM(lParam);
-							MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
-							if (wc.mouse_informer(Window{ hWnd }, p.x, p.y) == nullptr)
-							{
-								hit = HTCAPTION;
-							}
 						}
 					}
 					return hit;
@@ -193,6 +231,12 @@ namespace soup
 	Window& Window::hide() noexcept
 	{
 		ShowWindow(h, SW_HIDE);
+		return *this;
+	}
+
+	Window& Window::setResizable(bool b) noexcept
+	{
+		getConfig().resizable = b;
 		return *this;
 	}
 

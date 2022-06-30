@@ -21,6 +21,7 @@ namespace soup
 		struct Config
 		{
 			draw_func_t draw_func = nullptr;
+			bool resizable = false;
 			mouse_informer_t mouse_informer = nullptr;
 			callback_t on_close = nullptr;
 			std::vector<callback_t> hotkey_callbacks{};
@@ -43,6 +44,8 @@ namespace soup
 		Window& setIsVisible(bool visible) noexcept;
 		Window& show() noexcept;
 		Window& hide() noexcept;
+
+		Window& setResizable(bool b) noexcept;
 
 		Window& bringToFront() noexcept;
 		Window& redraw() noexcept;
