@@ -226,6 +226,12 @@ namespace soup
 		return *this;
 	}
 
+	Window& Window::setTransparency(int a) noexcept
+	{
+		SetLayeredWindowAttributes(h, 0, a, LWA_ALPHA);
+		return *this;
+	}
+
 	int Window::runMessageLoop() noexcept
 	{
 		MSG msg;
