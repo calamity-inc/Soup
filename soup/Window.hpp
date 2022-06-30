@@ -15,10 +15,12 @@ namespace soup
 	{
 		using callback_t = void(*)(Window);
 		using draw_func_t = void(*)(Window, RenderTarget&);
+		using on_click_t = void(*)(Window, int, int);
 
 		struct Config
 		{
 			draw_func_t draw_func = nullptr;
+			on_click_t on_click = nullptr;
 			callback_t on_close = nullptr;
 			std::vector<callback_t> hotkey_callbacks{};
 		};
@@ -32,6 +34,7 @@ namespace soup
 
 		[[nodiscard]] Window::Config& getConfig();
 		Window& setDrawFunc(draw_func_t draw_func);
+		Window& onClick(on_click_t on_click);
 		Window& onClose(callback_t on_close);
 		Window& registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, callback_t callback);
 

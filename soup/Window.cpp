@@ -1,6 +1,8 @@
 #include "Window.hpp"
 
 #if SOUP_WINDOWS
+#include <Windowsx.h> // GET_X_LPARAM, GET_Y_LPARAM
+
 #include <unordered_map>
 
 #include "rand.hpp"
@@ -34,12 +36,6 @@ namespace soup
 
 			case WM_NCHITTEST:
 				{
-					/*POINT p;
-					p.x = GET_X_LPARAM(lParam);
-					p.y = GET_Y_LPARAM(lParam);
-					MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
-					std::cout << "WM_NCHITTEST: " << p.x << ", " << p.y << std::endl;*/
-
 					// Make window movable from any position
 					LRESULT hit = DefWindowProcW(hWnd, message, wParam, lParam);
 					if (hit == HTCLIENT)
@@ -47,6 +43,34 @@ namespace soup
 						hit = HTCAPTION;
 					}
 					return hit;
+				}
+				break;
+
+			case WM_NCLBUTTONDOWN:
+				if (!GetSystemMetrics(SM_SWAPBUTTON))
+				{
+					if (wc.on_click)
+					{
+						POINT p;
+						p.x = GET_X_LPARAM(lParam);
+						p.y = GET_Y_LPARAM(lParam);
+						MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
+						wc.on_click(Window{ hWnd }, p.x, p.y);
+					}
+				}
+				break;
+
+			case WM_NCRBUTTONDOWN:
+				if (GetSystemMetrics(SM_SWAPBUTTON))
+				{
+					if (wc.on_click)
+					{
+						POINT p;
+						p.x = GET_X_LPARAM(lParam);
+						p.y = GET_Y_LPARAM(lParam);
+						MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
+						wc.on_click(Window{ hWnd }, p.x, p.y);
+					}
 				}
 				break;
 
@@ -121,6 +145,12 @@ namespace soup
 	Window& Window::setDrawFunc(draw_func_t draw_func)
 	{
 		getConfig().draw_func = draw_func;
+		return *this;
+	}
+
+	Window& Window::onClick(on_click_t on_click)
+	{
+		getConfig().on_click = on_click;
 		return *this;
 	}
 
