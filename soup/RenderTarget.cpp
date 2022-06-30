@@ -10,12 +10,12 @@ namespace soup
 		drawRect(0, 0, width, height, colour);
 	}
 
-	void RenderTarget::drawText(size_t x, size_t y, const std::string& text, const RasterFont& font, Rgb colour)
+	void RenderTarget::drawText(size_t x, size_t y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
-		drawText(x, y, unicode::utf8_to_utf32(text), font, colour);
+		drawText(x, y, unicode::utf8_to_utf32(text), font, colour, scale);
 	}
 
-	void RenderTarget::drawText(size_t x, size_t y, const std::u32string& text, const RasterFont& font, Rgb colour)
+	void RenderTarget::drawText(size_t x, size_t y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		for (const auto& c : text)
 		{
@@ -27,7 +27,7 @@ namespace soup
 				{
 					if (g.pixels.at(i))
 					{
-						drawRect(x + glyph_x, y + glyph_y + g.y_offset, 1, 1, colour);
+						drawRect((x + glyph_x) * scale, (y + glyph_y + g.y_offset) * scale, scale, scale, colour);
 					}
 					++i;
 				}

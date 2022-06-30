@@ -518,6 +518,9 @@
     <ClInclude Include="RasterFont.hpp">
       <Filter>vis</Filter>
     </ClInclude>
+    <ClInclude Include="Layout.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
     <ClInclude Include="RenderTarget.hpp">
       <Filter>vis\render</Filter>
     </ClInclude>
@@ -934,6 +937,9 @@
     </ClCompile>
     <ClCompile Include="RenderTarget.cpp">
       <Filter>vis\render</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout.cpp">
+      <Filter>vis</Filter>
     </ClCompile>
     <ClCompile Include="RenderTargetCanvas.cpp">
       <Filter>vis\render</Filter>

@@ -467,6 +467,7 @@
     <ClInclude Include="JsonObject.hpp" />
     <ClInclude Include="LangDesc.hpp" />
     <ClInclude Include="LangVm.hpp" />
+    <ClInclude Include="Layout.hpp" />
     <ClInclude Include="LinkedIterator.hpp" />
     <ClInclude Include="main.hpp" />
     <ClInclude Include="Mesh.hpp" />
@@ -679,6 +680,7 @@
     <ClCompile Include="Keystore.cpp" />
     <ClCompile Include="LangDesc.cpp" />
     <ClCompile Include="LangVm.cpp" />
+    <ClCompile Include="Layout.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
