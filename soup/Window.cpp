@@ -189,6 +189,13 @@ namespace soup
 		return *this;
 	}
 
+	Window& Window::setInvisibleColour(Rgb rgb) noexcept
+	{
+		SetWindowLong(h, GWL_EXSTYLE, GetWindowLong(h, GWL_EXSTYLE) | WS_EX_LAYERED);
+		SetLayeredWindowAttributes(h, RGB(rgb.r, rgb.g, rgb.b), 0, LWA_COLORKEY);
+		return *this;
+	}
+
 	int Window::runMessageLoop() noexcept
 	{
 		MSG msg;

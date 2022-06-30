@@ -44,6 +44,8 @@ namespace soup
 		Window& redraw() noexcept;
 		Window& setExitOnClose() noexcept;
 
+		Window& setInvisibleColour(Rgb rgb) noexcept;
+
 		static int runMessageLoop() noexcept;
 		static void endMessageLoop(int exit_code = 0) noexcept;
 	};
