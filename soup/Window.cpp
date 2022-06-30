@@ -206,7 +206,6 @@ namespace soup
 	Window& Window::redraw() noexcept
 	{
 		InvalidateRect(h, NULL, FALSE);
-		UpdateWindow(h);
 		return *this;
 	}
 
