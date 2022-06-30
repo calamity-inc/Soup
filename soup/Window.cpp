@@ -40,36 +40,35 @@ namespace soup
 					LRESULT hit = DefWindowProcW(hWnd, message, wParam, lParam);
 					if (hit == HTCLIENT)
 					{
-						hit = HTCAPTION;
+						if (wc.mouse_informer == nullptr)
+						{
+							hit = HTCAPTION;
+						}
+						else
+						{
+							POINT p;
+							p.x = GET_X_LPARAM(lParam);
+							p.y = GET_Y_LPARAM(lParam);
+							MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
+							if (wc.mouse_informer(Window{ hWnd }, p.x, p.y) == nullptr)
+							{
+								hit = HTCAPTION;
+							}
+						}
 					}
 					return hit;
 				}
 				break;
 
-			case WM_NCLBUTTONDOWN:
-				if (!GetSystemMetrics(SM_SWAPBUTTON))
+			case WM_LBUTTONDOWN:
+				if (wc.mouse_informer != nullptr)
 				{
-					if (wc.on_click)
+					POINT p;
+					p.x = GET_X_LPARAM(lParam);
+					p.y = GET_Y_LPARAM(lParam);
+					if (auto on_click = wc.mouse_informer(Window{ hWnd }, p.x, p.y))
 					{
-						POINT p;
-						p.x = GET_X_LPARAM(lParam);
-						p.y = GET_Y_LPARAM(lParam);
-						MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
-						wc.on_click(Window{ hWnd }, p.x, p.y);
-					}
-				}
-				break;
-
-			case WM_NCRBUTTONDOWN:
-				if (GetSystemMetrics(SM_SWAPBUTTON))
-				{
-					if (wc.on_click)
-					{
-						POINT p;
-						p.x = GET_X_LPARAM(lParam);
-						p.y = GET_Y_LPARAM(lParam);
-						MapWindowPoints(HWND_DESKTOP, hWnd, &p, 1);
-						wc.on_click(Window{ hWnd }, p.x, p.y);
+						on_click(Window{ hWnd }, p.x, p.y);
 					}
 				}
 				break;
@@ -148,9 +147,9 @@ namespace soup
 		return *this;
 	}
 
-	Window& Window::onClick(on_click_t on_click)
+	Window& Window::setMouseInformer(mouse_informer_t mouse_informer)
 	{
-		getConfig().on_click = on_click;
+		getConfig().mouse_informer = mouse_informer;
 		return *this;
 	}
 
