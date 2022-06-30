@@ -1,7 +1,6 @@
 #include "parse_tree.hpp"
 
 #include "BuiltinOp.hpp"
-#include "CompilerState.hpp"
 #include "Lexeme.hpp"
 #include "ParseError.hpp"
 #include "StringWriter.hpp"
@@ -43,19 +42,19 @@ namespace soup
 		return false;
 	}
 
-	void ParseTreeNode::compile(CompilerState& st) const
+	void ParseTreeNode::compile(Writer& w) const
 	{
 		if (type == ParseTreeNode::BLOCK)
 		{
-			reinterpret_cast<const Block*>(this)->compile(st);
+			reinterpret_cast<const Block*>(this)->compile(w);
 		}
 		else if (type == ParseTreeNode::LEXEME)
 		{
-			reinterpret_cast<const LexemeNode*>(this)->compile(st);
+			reinterpret_cast<const LexemeNode*>(this)->compile(w);
 		}
 		else //if (type == ParseTreeNode::OP)
 		{
-			reinterpret_cast<const OpNode*>(this)->compile(st);
+			reinterpret_cast<const OpNode*>(this)->compile(w);
 		}
 	}
 
@@ -93,15 +92,9 @@ namespace soup
 
 	void Block::compile(Writer& w) const
 	{
-		CompilerState st{ &w };
-		compile(st);
-	}
-
-	void Block::compile(CompilerState& st) const
-	{
 		for (const auto& child : children)
 		{
-			child->compile(st);
+			child->compile(w);
 		}
 	}
 
@@ -112,49 +105,40 @@ namespace soup
 		return lexeme.toString(prefix);
 	}
 
-	void LexemeNode::compile(CompilerState& st) const
+	void LexemeNode::compile(Writer& w) const
 	{
 		if (lexeme.token_keyword == Lexeme::VAL)
 		{
 			if (lexeme.val.isInt())
 			{
 				uint8_t b = OP_PUSH_INT;
-				st.w->u8(b);
-				st.w->i64_dyn(lexeme.val.getInt());
+				w.u8(b);
+				w.i64_dyn(lexeme.val.getInt());
 				return;
 			}
 			if (lexeme.val.isString())
 			{
 				uint8_t b = OP_PUSH_STR;
-				st.w->u8(b);
-				st.w->str_lp_u64_dyn(lexeme.val.getString());
+				w.u8(b);
+				w.str_lp_u64_dyn(lexeme.val.getString());
 				return;
 			}
 			if (lexeme.val.isBlock())
 			{
-				auto og_w = st.w;
-				StringWriter w;
-				st.w = &w;
-				lexeme.val.getBlock().compile(st);
-				st.w = og_w;
+				StringWriter sw;
+				lexeme.val.getBlock().compile(sw);
 
 				uint8_t b = OP_PUSH_FUN;
-				st.w->u8(b);
-				st.w->str_lp_u64_dyn(std::move(w.str));
+				w.u8(b);
+				w.str_lp_u64_dyn(std::move(sw.str));
 				return;
 			}
 		}
 		else if (lexeme.token_keyword == Lexeme::LITERAL)
 		{
 			uint8_t b = OP_PUSH_VAR;
-			st.w->u8(b);
-			auto idx = st.getVarIndex(lexeme.val.getString());
-			if (idx > 0xFF)
-			{
-				throw ParseError("Too many variables");
-			}
-			b = idx;
-			st.w->u8(b);
+			w.u8(b);
+			w.str_lp_u64_dyn(lexeme.val.getString());
 			return;
 		}
 		std::string err = "Non-compilable lexeme in parse tree at compile time: ";
@@ -182,13 +166,13 @@ namespace soup
 		return str;
 	}
 
-	void OpNode::compile(CompilerState& st) const
+	void OpNode::compile(Writer& w) const
 	{
 		for (auto i = op.args.rbegin(); i != op.args.rend(); ++i)
 		{
-			(*i)->compile(st);
+			(*i)->compile(w);
 		}
 		uint8_t b = op.type;
-		st.w->u8(b);
+		w.u8(b);
 	}
 }

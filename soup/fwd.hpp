@@ -39,7 +39,6 @@ namespace soup
 
 	// lang
 	struct Block;
-	struct CompilerState;
 	class LangDesc;
 	struct Lexeme;
 	class ParserState;

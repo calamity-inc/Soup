@@ -76,6 +76,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 			auto t = soup::time::nanos();
 			soup::PhpState php;
 			php.cwd = std::filesystem::path(file_path).parent_path();
+			php.request_uri = req.path;
 			resp.body = php.evaluate(resp.body);
 			
 			t = soup::time::nanos() - t;

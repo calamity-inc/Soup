@@ -2,6 +2,7 @@
 
 #include "fwd.hpp"
 
+#include <memory>
 #include <stack>
 
 #include "Mixed.hpp"
@@ -11,38 +12,10 @@ namespace soup
 	class LangVm
 	{
 	public:
-		struct Val : public Mixed
-		{
-			bool is_func = false;
-
-			using Mixed::Mixed;
-
-			[[nodiscard]] constexpr bool isFunc() const
-			{
-				return is_func;
-			}
-
-			[[nodiscard]] const char* getTypeName() const
-			{
-				if (is_func)
-				{
-					return "function";
-				}
-				if (isUInt())
-				{
-					return "var ref";
-				}
-				return Mixed::getTypeName();
-			}
-
-			[[nodiscard]] std::string& getString() const;
-			[[nodiscard]] std::string& getFunc() const;
-		};
-
 		Reader* r;
 		uint8_t current_op;
-		std::stack<Val> stack{};
-		std::unordered_map<uint8_t, Val> vars{};
+		std::stack<std::shared_ptr<Mixed>> stack{};
+		std::unordered_map<std::string, std::shared_ptr<Mixed>> vars{};
 
 		explicit LangVm(Reader* r) noexcept
 			: r(r)
@@ -51,12 +24,14 @@ namespace soup
 
 		[[nodiscard]] bool getNextOp(uint8_t& op);
 
-		void push(Val&& val);
+		void push(Mixed&& val);
+		void push(std::shared_ptr<Mixed> val);
+
 	private:
-		[[nodiscard]] Val popRaw();
+		[[nodiscard]] std::shared_ptr<Mixed> popRaw();
 	public:
-		[[nodiscard]] Val pop();
-		[[nodiscard]] Val& popVarRef();
+		[[nodiscard]] std::shared_ptr<Mixed> pop();
+		[[nodiscard]] std::shared_ptr<Mixed>& popVarRef();
 		[[nodiscard]] std::string popString();
 		[[nodiscard]] StringReader popFunc();
 	};

@@ -22,7 +22,7 @@ namespace soup
 
 		const Type type;
 
-		ParseTreeNode(Type type)
+		ParseTreeNode(Type type) noexcept
 			: type(type)
 		{
 		}
@@ -31,7 +31,7 @@ namespace soup
 
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const;
 
-		void compile(CompilerState& st) const;
+		void compile(Writer& w) const;
 	};
 
 	struct Block : public ParseTreeNode
@@ -48,7 +48,6 @@ namespace soup
 		[[nodiscard]] std::string toString(std::string prefix = {}) const;
 
 		void compile(Writer& w) const;
-		void compile(CompilerState& st) const;
 	};
 
 	struct LexemeNode : public ParseTreeNode
@@ -62,7 +61,7 @@ namespace soup
 
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const;
 
-		void compile(CompilerState& st) const;
+		void compile(Writer& w) const;
 	};
 
 	struct OpNode : public ParseTreeNode
@@ -76,6 +75,6 @@ namespace soup
 
 		[[nodiscard]] std::string toString(std::string prefix = {}) const;
 
-		void compile(CompilerState& st) const;
+		void compile(Writer& w) const;
 	};
 }

@@ -430,7 +430,6 @@
     <ClInclude Include="ChessPiece.hpp" />
     <ClInclude Include="ChessSquare.hpp" />
     <ClInclude Include="code_tree.hpp" />
-    <ClInclude Include="CompilerState.hpp" />
     <ClInclude Include="ConstString.hpp" />
     <ClInclude Include="ControlInput.hpp" />
     <ClInclude Include="ConuiApp.hpp" />
@@ -651,7 +650,6 @@
     <ClCompile Include="Chessboard.cpp" />
     <ClCompile Include="ChessCli.cpp" />
     <ClCompile Include="ChessSquare.cpp" />
-    <ClCompile Include="CompilerState.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="ConuiApp.cpp" />
     <ClCompile Include="ConuiBase.cpp" />

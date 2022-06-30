@@ -129,7 +129,7 @@ static void myVm(soup::Reader& r)
         switch (op)
         {
         case OP_ECHO:
-            std::cout << vm.pop().toString() << std::endl;
+            std::cout << vm.pop()->toString() << std::endl;
             break;
         }
     }
@@ -176,7 +176,7 @@ static void myVm(soup::Reader& r)
         switch (op)
         {
         case OP_ECHO:
-            std::cout << vm.pop().toString() << std::endl;
+            std::cout << vm.pop()->toString() << std::endl;
             break;
         }
     }

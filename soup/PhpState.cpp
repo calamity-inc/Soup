@@ -15,6 +15,7 @@ namespace soup
 	enum PhpOpCodes : int
 	{
 		OP_CONCAT = 0,
+		OP_INDEX,
 		OP_ASSIGN,
 		OP_EQ,
 		OP_IF,
@@ -62,6 +63,22 @@ namespace soup
 				throw ParseError(std::move(err));
 			}
 			ps.pushLefthand(Lexeme{ Lexeme::VAL, reinterpret_cast<Block*>(node.release()) });
+		});
+		ld.addToken("[", [](ParserState& ps)
+		{
+			ps.setOp(OP_INDEX);
+			ps.consumeLefthandValue();
+			ps.consumeRighthandValue();
+
+			if (auto node = ps.popRighthand();
+				node->type != ParseTreeNode::LEXEME
+				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral("]")
+				)
+			{
+				std::string err = "'[' expected ']' after index/key, found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
 		});
 		ld.addToken(".", Rgb::RED, [](ParserState& ps)
 		{
@@ -246,16 +263,37 @@ namespace soup
 	{
 		LangVm vm{ &r };
 
-		uint8_t op;
-		while (vm.getNextOp(op))
+		std::unordered_map<Mixed, std::shared_ptr<Mixed>> _SERVER{};
+		_SERVER.emplace("REQUEST_URI", std::make_shared<Mixed>(request_uri));
+
+		vm.vars.emplace("$_SERVER", std::make_shared<Mixed>(std::move(_SERVER)));
+
+		for (uint8_t op; vm.getNextOp(op); )
 		{
 			switch (op)
 			{
 			case OP_CONCAT:
 				{
-					std::string str = vm.pop().toString();
-					str.append(vm.pop().toString());
+					std::string str = vm.pop()->toString();
+					str.append(vm.pop()->toString());
 					vm.push(std::move(str));
+				}
+				break;
+
+			case OP_INDEX:
+				{
+					auto arr = vm.pop();
+					auto key = vm.pop();
+					if (auto e = arr->getMixedSpMixedMap().find(*key); e != arr->getMixedSpMixedMap().end())
+					{
+						vm.push(e->second);
+					}
+					else
+					{
+						std::string err = "Array has no entry with key ";
+						err.append(key->toString());
+						throw ParseError(std::move(err));
+					}
 				}
 				break;
 
@@ -267,12 +305,12 @@ namespace soup
 				break;
 				
 			case OP_EQ:
-				vm.push(vm.pop().toString() == vm.pop().toString());
+				vm.push(vm.pop()->toString() == vm.pop()->toString());
 				break;
 
 			case OP_IF:
 				{
-					auto cond_val = vm.pop().getInt();
+					auto cond_val = vm.pop()->getInt();
 					auto true_sr = vm.popFunc();
 					if (cond_val)
 					{
@@ -283,7 +321,7 @@ namespace soup
 
 			case OP_IF_ELSE:
 				{
-					auto cond_val = vm.pop().getInt();
+					auto cond_val = vm.pop()->getInt();
 					auto true_sr = vm.popFunc();
 					auto false_sr = vm.popFunc();
 					if (cond_val)
@@ -324,7 +362,7 @@ namespace soup
 
 			case OP_ECHO:
 				{
-					output.append(vm.pop().toString());
+					output.append(vm.pop()->toString());
 				}
 				break;
 			}

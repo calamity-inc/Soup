@@ -133,6 +133,7 @@ namespace soup
 				}
 				st.lb.push_back(*i);
 				if (*i == '('
+					|| *i == '.'
 					|| *i == '>'
 					)
 				{

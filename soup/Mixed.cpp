@@ -21,15 +21,17 @@ namespace soup
 			break;
 
 		case STRING:
-			val = (uint64_t)new std::string(b.getString());
+		case FUNC:
+		case VAR_NAME:
+			val = (uint64_t)new std::string(*reinterpret_cast<std::string*>(b.val));
+			break;
+
+		case MIXED_SP_MIXED_MAP:
+			val = (uint64_t)new std::unordered_map<Mixed, std::shared_ptr<Mixed>>(b.getMixedSpMixedMap());
 			break;
 
 		case BLOCK:
 			throw std::runtime_error("Can't copy a block");
-
-		case MIXED_MIXED_MAP:
-			val = (uint64_t)new std::unordered_map<Mixed, Mixed>(b.getMixedMixedMap());
-			break;
 		}
 	}
 
@@ -38,8 +40,8 @@ namespace soup
 	{
 	}
 
-	Mixed::Mixed(std::unordered_map<Mixed, Mixed>&& val)
-		: type(MIXED_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, Mixed>(std::move(val)))
+	Mixed::Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val)
+		: type(MIXED_SP_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, std::shared_ptr<Mixed>>(std::move(val)))
 	{
 	}
 
@@ -53,15 +55,17 @@ namespace soup
 			break;
 
 		case STRING:
+		case FUNC:
+		case VAR_NAME:
 			delete reinterpret_cast<std::string*>(val);
+			break;
+
+		case MIXED_SP_MIXED_MAP:
+			delete reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
 			break;
 
 		case BLOCK:
 			delete reinterpret_cast<Block*>(val);
-			break;
-
-		case MIXED_MIXED_MAP:
-			delete reinterpret_cast<std::unordered_map<Mixed, Mixed>*>(val);
 			break;
 		}
 	}
@@ -87,6 +91,12 @@ namespace soup
 
 		case STRING:
 			return "string";
+
+		case FUNC:
+			return "func";
+
+		case VAR_NAME:
+			return "var name";
 
 		case BLOCK:
 			return "block";
@@ -142,6 +152,33 @@ namespace soup
 		return *reinterpret_cast<std::string*>(val);
 	}
 
+	std::string& Mixed::getFunc() const
+	{
+		if (type != FUNC)
+		{
+			throw std::bad_cast();
+		}
+		return *reinterpret_cast<std::string*>(val);
+	}
+
+	std::string& Mixed::getVarName() const
+	{
+		if (type != VAR_NAME)
+		{
+			throw std::bad_cast();
+		}
+		return *reinterpret_cast<std::string*>(val);
+	}
+
+	std::unordered_map<Mixed, std::shared_ptr<Mixed>>& Mixed::getMixedSpMixedMap() const
+	{
+		if (type != MIXED_SP_MIXED_MAP)
+		{
+			throw std::bad_cast();
+		}
+		return *reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
+	}
+
 	Block& Mixed::getBlock() const
 	{
 		if (type != BLOCK)
@@ -149,14 +186,5 @@ namespace soup
 			throw std::bad_cast();
 		}
 		return *reinterpret_cast<Block*>(val);
-	}
-
-	std::unordered_map<Mixed, Mixed>& Mixed::getMixedMixedMap() const
-	{
-		if (type != MIXED_MIXED_MAP)
-		{
-			throw std::bad_cast();
-		}
-		return *reinterpret_cast<std::unordered_map<Mixed, Mixed>*>(val);
 	}
 }

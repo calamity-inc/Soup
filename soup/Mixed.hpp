@@ -3,6 +3,7 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -17,8 +18,10 @@ namespace soup
 			INT,
 			UINT,
 			STRING,
+			FUNC,
+			VAR_NAME,
+			MIXED_SP_MIXED_MAP,
 			BLOCK,
-			MIXED_MIXED_MAP,
 		};
 
 		Type type = NONE;
@@ -69,9 +72,9 @@ namespace soup
 		{
 		}
 
-		Mixed(Block* val); // takes ownership
+		Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val);
 
-		Mixed(std::unordered_map<Mixed, Mixed>&& val);
+		Mixed(Block* val); // takes ownership
 
 		~Mixed() noexcept
 		{
@@ -147,11 +150,22 @@ namespace soup
 
 		[[nodiscard]] bool operator==(const Mixed& b) const noexcept
 		{
-			return type == b.type
-				&& val == b.val
-				;
+			if (type != b.type)
+			{
+				return false;
+			}
+			if (type == STRING)
+			{
+				return getString() == b.getString();
+			}
+			return val == b.val;
 		}
 
+		[[nodiscard]] constexpr bool empty() const noexcept
+		{
+			return type == NONE;
+		}
+		
 		[[nodiscard]] constexpr bool isInt() const noexcept
 		{
 			return type == INT;
@@ -165,6 +179,16 @@ namespace soup
 		[[nodiscard]] constexpr bool isString() const noexcept
 		{
 			return type == STRING;
+		}
+
+		[[nodiscard]] constexpr bool isFunc() const noexcept
+		{
+			return type == FUNC;
+		}
+
+		[[nodiscard]] constexpr bool isVarName() const noexcept
+		{
+			return type == VAR_NAME;
 		}
 
 		[[nodiscard]] constexpr bool isBlock() const noexcept
@@ -181,8 +205,10 @@ namespace soup
 		[[nodiscard]] int64_t getInt() const;
 		[[nodiscard]] uint64_t getUInt() const;
 		[[nodiscard]] std::string& getString() const;
+		[[nodiscard]] std::string& getFunc() const;
+		[[nodiscard]] std::string& getVarName() const;
+		[[nodiscard]] std::unordered_map<Mixed, std::shared_ptr<Mixed>>& getMixedSpMixedMap() const;
 		[[nodiscard]] Block& getBlock() const;
-		[[nodiscard]] std::unordered_map<Mixed, Mixed>& getMixedMixedMap() const;
 	};
 }
 
@@ -193,6 +219,10 @@ namespace std
 	{
 		size_t operator() (const ::soup::Mixed& key) const
 		{
+			if (key.isString())
+			{
+				return hash<string>()(key.getString());
+			}
 			return key.type | key.val;
 		}
 	};

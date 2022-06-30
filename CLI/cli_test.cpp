@@ -115,7 +115,7 @@ echo "Hello, world!";)") == "Hello, world!");
 		test("comparisons", []
 		{
 			PhpState php;
-			assert(php.evaluate(R"(<?php echo 1 == 1;)") == "1"); // this is what vanilla PHP also prints, but "true" would be nicer
+			assert(php.evaluate(R"(<?php echo 1 == 1;)") == "1");
 		});
 		test("conditionals", []
 		{
@@ -142,6 +142,12 @@ else
 	echo "false";
 }
 )") == "false");
+		});
+		test("comparisons", []
+		{
+			PhpState php;
+			php.request_uri = "/1337";
+			assert(php.evaluate(R"(<?php echo "Request URI: ".$_SERVER["REQUEST_URI"];)") == "Request URI: /1337");
 		});
 	}
 }

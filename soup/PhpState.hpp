@@ -11,6 +11,7 @@ namespace soup
 	struct PhpState
 	{
 		std::filesystem::path cwd;
+		std::string request_uri;
 
 		[[nodiscard]] static const LangDesc& getLangDesc();
 

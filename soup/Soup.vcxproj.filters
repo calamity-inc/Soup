@@ -695,9 +695,6 @@
     <ClInclude Include="BuiltinOp.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="CompilerState.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
     <ClInclude Include="Token.hpp">
       <Filter>lang</Filter>
     </ClInclude>
@@ -1011,9 +1008,6 @@
       <Filter>lang</Filter>
     </ClCompile>
     <ClCompile Include="LangVm.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
-    <ClCompile Include="CompilerState.cpp">
       <Filter>lang</Filter>
     </ClCompile>
   </ItemGroup>

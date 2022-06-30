@@ -14,26 +14,6 @@
 
 namespace soup
 {
-	using Val = LangVm::Val;
-
-	std::string& Val::getString() const
-	{
-		if (is_func)
-		{
-			throw std::bad_cast();
-		}
-		return Mixed::getString();
-	}
-
-	std::string& Val::getFunc() const
-	{
-		if (!is_func)
-		{
-			throw std::bad_cast();
-		}
-		return Mixed::getString();
-	}
-
 	bool LangVm::getNextOp(uint8_t& op)
 	{
 		while (r->u8(op))
@@ -54,26 +34,28 @@ namespace soup
 #endif
 				int64_t val;
 				r->i64_dyn(val);
-				push(val);
-			}
-			else if (op == OP_PUSH_VAR)
-			{
-#if DEBUG_VM
-				std::cout << "OP_PUSH_VAR" << std::endl;
-#endif
-				uint8_t val;
-				r->u8(val);
-				push((uint64_t)val);
+				push(std::make_shared<Mixed>(val));
 			}
 			else if (op == OP_PUSH_FUN)
 			{
 #if DEBUG_VM
 				std::cout << "OP_PUSH_FUN" << std::endl;
 #endif
-				std::string str;
-				r->str_lp_u64_dyn(str);
-				Val val = std::move(str);
-				val.is_func = true;
+				auto str = new std::string();
+				r->str_lp_u64_dyn(*str);
+				auto val = std::make_shared<Mixed>(str);
+				val->type = Mixed::FUNC;
+				push(std::move(val));
+			}
+			else if (op == OP_PUSH_VAR)
+			{
+#if DEBUG_VM
+				std::cout << "OP_PUSH_VAR" << std::endl;
+#endif
+				auto str = new std::string();
+				r->str_lp_u64_dyn(*str);
+				auto val = std::make_shared<Mixed>(str);
+				val->type = Mixed::VAR_NAME;
 				push(std::move(val));
 			}
 			else
@@ -88,15 +70,20 @@ namespace soup
 		return false;
 	}
 
-	void LangVm::push(Val&& val)
+	void LangVm::push(Mixed&& val)
+	{
+		push(std::make_shared<Mixed>(val));
+	}
+
+	void LangVm::push(std::shared_ptr<Mixed> val)
 	{
 #if DEBUG_VM
-		std::cout << "> Push " << val.getTypeName() << std::endl;
+		std::cout << "> Push " << val->getTypeName() << std::endl;
 #endif
 		stack.emplace(std::move(val));
 	}
 
-	Val LangVm::popRaw()
+	std::shared_ptr<Mixed> LangVm::popRaw()
 	{
 		if (stack.empty())
 		{
@@ -105,75 +92,76 @@ namespace soup
 			err.append(" failed to pop a value because the stack is empty");
 			throw ParseError(std::move(err));
 		}
-		Val val = std::move(stack.top());
+		std::shared_ptr<Mixed> val = std::move(stack.top());
 #if DEBUG_VM
-		std::cout << "> Pop " << val.getTypeName() << std::endl;
+		std::cout << "> Pop " << val->getTypeName() << std::endl;
 #endif
 		stack.pop();
 		return val;
 	}
 
-	Val LangVm::pop()
+	std::shared_ptr<Mixed> LangVm::pop()
 	{
 		auto val = popRaw();
-		if (val.isUInt())
+		if (val->isVarName())
 		{
-			if (auto e = vars.find((uint8_t)val.getUInt()); e != vars.end())
+			if (auto e = vars.find(val->getVarName()); e != vars.end())
 			{
 				return e->second;
 			}
 			std::string err = "Op ";
 			err.append(std::to_string(current_op));
-			err.append(" expected a value, found undefined variable");
+			err.append(" expected a value, found undefined variable ");
+			err.append(val->getVarName());
 			throw ParseError(std::move(err));
 		}
 		return val;
 	}
 
-	Val& LangVm::popVarRef()
+	std::shared_ptr<Mixed>& LangVm::popVarRef()
 	{
 		auto val = popRaw();
-		if (!val.isUInt())
+		if (!val->isVarName())
 		{
 			std::string err = "Op ";
 			err.append(std::to_string(current_op));
-			err.append(" expected a variable name, found ");
-			err.append(val.getTypeName());
+			err.append(" expected a var name, found ");
+			err.append(val->getTypeName());
 			throw ParseError(std::move(err));
 		}
-		auto idx = (uint8_t)val.getUInt();
-		if (auto e = vars.find(idx); e != vars.end())
+		auto name = val->getVarName();
+		if (auto e = vars.find(name); e != vars.end())
 		{
 			return e->second;
 		}
-		return vars.emplace(idx, Val{}).first->second;
+		return vars.emplace(std::move(name), std::make_shared<Mixed>()).first->second;
 	}
 
 	std::string LangVm::popString()
 	{
 		auto val = pop();
-		if (!val.isString())
+		if (!val->isString())
 		{
 			std::string err = "Op ";
 			err.append(std::to_string(current_op));
-			err.append(" expected a function, found ");
-			err.append(val.getTypeName());
+			err.append(" expected a string, found ");
+			err.append(val->getTypeName());
 			throw ParseError(std::move(err));
 		}
-		return std::move(val.getString());
+		return std::move(val->getString());
 	}
 
 	StringReader LangVm::popFunc()
 	{
 		auto val = pop();
-		if (!val.isFunc())
+		if (!val->isFunc())
 		{
 			std::string err = "Op ";
 			err.append(std::to_string(current_op));
 			err.append(" expected a function, found ");
-			err.append(val.getTypeName());
+			err.append(val->getTypeName());
 			throw ParseError(std::move(err));
 		}
-		return StringReader(std::move(val.getFunc()));
+		return StringReader(std::move(val->getFunc()));
 	}
 }
