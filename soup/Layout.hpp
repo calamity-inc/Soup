@@ -1,9 +1,10 @@
 #pragma once
 
+#include "base.hpp"
+#include "fwd.hpp"
+
 #include <string>
 #include <vector>
-
-#include "fwd.hpp"
 
 namespace soup
 {
@@ -24,5 +25,9 @@ namespace soup
 		std::vector<Block> blocks{};
 
 		void draw(RenderTarget& rt);
+
+#if SOUP_WINDOWS
+		[[nodiscard]] Window createWindow(const std::string& title);
+#endif
 	};
 }

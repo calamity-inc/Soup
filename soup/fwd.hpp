@@ -88,6 +88,7 @@ namespace soup
 	enum ControlInput : uint8_t;
 	class Module;
 	enum MouseButton : uint8_t;
+	struct Window;
 
 	// os.windows
 	struct HandleRaii;

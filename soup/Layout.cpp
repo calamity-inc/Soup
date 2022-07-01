@@ -3,6 +3,9 @@
 #include "RasterFont.hpp"
 #include "Rgb.hpp"
 #include "RenderTarget.hpp"
+#if SOUP_WINDOWS
+#include "Window.hpp"
+#endif
 
 namespace soup
 {
@@ -26,4 +29,46 @@ namespace soup
 			y += (font.baseline_glyph_height * 2);
 		}
 	}
+
+#if SOUP_WINDOWS
+	Window Layout::createWindow(const std::string& title)
+	{
+		auto w = Window::create(title, 200, 200);
+		w.getCustomData() = this;
+		w.setDrawFunc([](Window w, RenderTarget& rt)
+		{
+			rt.fill(Rgb::BLACK);
+			w.getCustomData().get<Layout*>()->draw(rt);
+		});
+		w.setMouseInformer([](Window w, int x, int y) -> Window::on_click_t
+		{
+			/*if (x >= 20
+				&& y >= 20
+				&& x <= 40
+				&& y <= 40
+				)
+			{
+				return [](Window w, int x, int y)
+				{
+					toggle = !toggle;
+					w.redraw();
+				};
+			}*/
+			return nullptr;
+		});
+		w.setExitOnClose();
+		w.setResizable(true);
+		w.show();
+		/*std::thread t([]
+		{
+			while (true)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
+				w.redraw();
+			}
+		});
+		t.detach();*/
+		return w;
+	}
+#endif
 }
