@@ -1,5 +1,6 @@
 #include "RenderTarget.hpp"
 
+#include "math.hpp"
 #include "RasterFont.hpp"
 #include "Rgb.hpp"
 #include "unicode.hpp"
@@ -9,6 +10,14 @@ namespace soup
 	void RenderTarget::fill(Rgb colour)
 	{
 		drawRect(0, 0, width, height, colour);
+	}
+
+	void RenderTarget::drawCircle(size_t x, size_t y, float r, Rgb colour)
+	{
+		for (float i = 0.01f; i < M_TAU; i += 0.01f)
+		{
+			drawRect(x + (size_t)(cos(i) * r), y + (size_t)(sin(i) * r), 1, 1, colour);
+		}
 	}
 
 	void RenderTarget::drawText(size_t x, size_t y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
