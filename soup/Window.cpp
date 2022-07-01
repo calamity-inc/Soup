@@ -109,7 +109,7 @@ namespace soup
 						on_click(Window{ hWnd }, p.x, p.y);
 					}
 				}
-				break;
+				return 0;
 
 			case WM_HOTKEY:
 				if (wParam >= 0)
