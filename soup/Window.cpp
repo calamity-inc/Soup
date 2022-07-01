@@ -179,6 +179,11 @@ namespace soup
 		return window_configs.at(h);
 	}
 
+	Capture& Window::getCustomData()
+	{
+		return getConfig().custom_data;
+	}
+
 	Window& Window::setDrawFunc(draw_func_t draw_func)
 	{
 		getConfig().draw_func = draw_func;

@@ -1,13 +1,15 @@
 #pragma once
 
 #include "base.hpp"
+#if SOUP_WINDOWS
 #include "fwd.hpp"
 
-#if SOUP_WINDOWS
 #include <string>
 #include <vector>
 
 #include <Windows.h>
+
+#include "Capture.hpp"
 
 namespace soup
 {
@@ -20,6 +22,7 @@ namespace soup
 
 		struct Config
 		{
+			Capture custom_data;
 			draw_func_t draw_func = nullptr;
 			bool resizable = false;
 			mouse_informer_t mouse_informer = nullptr;
@@ -35,6 +38,7 @@ namespace soup
 		[[nodiscard]] DWORD getOwnerPid() const noexcept;
 
 		[[nodiscard]] Window::Config& getConfig();
+		Capture& getCustomData();
 		Window& setDrawFunc(draw_func_t draw_func);
 		Window& setMouseInformer(mouse_informer_t mouse_informer);
 		Window& onClose(callback_t on_close);
