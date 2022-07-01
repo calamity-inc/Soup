@@ -275,6 +275,19 @@ namespace soup
 		return *this;
 	}
 
+	Window& Window::setTopmost(bool on) noexcept
+	{
+		if (on)
+		{
+			SetWindowPos(h, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		}
+		else
+		{
+			SetWindowPos(h, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		}
+		return *this;
+	}
+
 	int Window::runMessageLoop() noexcept
 	{
 		MSG msg;
