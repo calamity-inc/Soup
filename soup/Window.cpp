@@ -234,6 +234,18 @@ namespace soup
 		return *this;
 	}
 
+	Window& Window::setPos(int x, int y) noexcept
+	{
+		SetWindowPos(h, 0, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+		return *this;
+	}
+
+	Window& Window::setSize(int width, int height) noexcept
+	{
+		SetWindowPos(h, 0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
+		return *this;
+	}
+
 	Window& Window::setResizable(bool b) noexcept
 	{
 		getConfig().resizable = b;

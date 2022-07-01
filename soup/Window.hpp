@@ -45,6 +45,8 @@ namespace soup
 		Window& show() noexcept;
 		Window& hide() noexcept;
 
+		Window& setPos(int x, int y) noexcept;
+		Window& setSize(int width, int height) noexcept;
 		Window& setResizable(bool b) noexcept;
 
 		Window& bringToFront() noexcept;
