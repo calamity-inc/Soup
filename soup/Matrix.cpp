@@ -1,7 +1,7 @@
 #include "Matrix.hpp"
 
 #include "Quaternion.hpp"
-#include "vector_maths.hpp"
+#include "math.hpp"
 #include "Vector3.hpp"
 
 namespace soup

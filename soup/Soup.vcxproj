@@ -610,7 +610,7 @@
     <ClInclude Include="Vector3Base.hpp" />
     <ClInclude Include="Vector4.hpp" />
     <ClInclude Include="VectorBase.hpp" />
-    <ClInclude Include="vector_maths.hpp" />
+    <ClInclude Include="math.hpp" />
     <ClInclude Include="WebResource.hpp" />
     <ClInclude Include="ServerWebService.hpp" />
     <ClInclude Include="WebSocketFrameType.hpp" />

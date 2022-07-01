@@ -78,7 +78,7 @@
     <ClInclude Include="VectorBase.hpp">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="vector_maths.hpp">
+    <ClInclude Include="math.hpp">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="Vector2.hpp">

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector_maths.hpp"
+#include "math.hpp"
 
 namespace soup
 {

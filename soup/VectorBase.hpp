@@ -3,7 +3,7 @@
 #include <cfloat>
 #include <cstdint>
 
-#include "vector_maths.hpp"
+#include "math.hpp"
 
 #undef min
 #undef max
