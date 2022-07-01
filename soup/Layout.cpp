@@ -9,10 +9,10 @@
 
 namespace soup
 {
+	using Element = Layout::Element;
+
 	void Layout::draw(RenderTarget& rt)
 	{
-		auto font = RasterFont::simple8();
-
 		size_t x = 0;
 		size_t y = 0;
 		for (const auto& block : blocks)
@@ -21,13 +21,45 @@ namespace soup
 			y += block.margin;
 			for (const auto& elm : block.elms)
 			{
-				rt.drawText(x, y, elm.text, font, Rgb::WHITE, elm.font_size / font.baseline_glyph_height);
-				x += (font.measureWidth(elm.text) + 1);
-				x += (font.get(' ').width + 1);
+				const uint8_t elm_scale = (elm.font_size / font.baseline_glyph_height);
+				rt.drawText(x, y, elm.text, font, Rgb::WHITE, elm_scale);
+				x += ((font.measureWidth(elm.text) * elm_scale) + 1);
+				x += ((font.get(' ').width * elm_scale) + 1);
 			}
 			x -= block.margin;
 			y += (font.baseline_glyph_height * 2);
 		}
+	}
+
+	Element* Layout::getElementAtPos(size_t ix, size_t iy)
+	{
+		size_t x = 0;
+		size_t y = 0;
+		for (auto& block : blocks)
+		{
+			x += block.margin;
+			y += block.margin;
+			size_t dy = y + (font.baseline_glyph_height * 2);
+			for (auto& elm : block.elms)
+			{
+				const uint8_t elm_scale = (elm.font_size / font.baseline_glyph_height);
+				size_t dx = x;
+				dx += ((font.measureWidth(elm.text) * elm_scale) + 1);
+				if (ix >= x
+					&& iy >= y
+					&& ix <= dx
+					&& iy <= dy
+					)
+				{
+					return &elm;
+				}
+				x = dx;
+				x += ((font.get(' ').width * elm_scale) + 1);
+			}
+			x -= block.margin;
+			y = dy;
+		}
+		return nullptr;
 	}
 
 #if SOUP_WINDOWS
@@ -42,19 +74,20 @@ namespace soup
 		});
 		w.setMouseInformer([](Window w, int x, int y) -> Window::on_click_t
 		{
-			/*if (x >= 20
-				&& y >= 20
-				&& x <= 40
-				&& y <= 40
-				)
+			if (w.getCustomData().get<Layout*>()->getElementAtPos(x, y) == nullptr)
 			{
-				return [](Window w, int x, int y)
+				return nullptr;
+			}
+			return [](Window w, int x, int y)
+			{
+				Layout& l = *w.getCustomData().get<Layout*>();
+				Element& elm = *l.getElementAtPos(x, y);
+				if (elm.on_click)
 				{
-					toggle = !toggle;
+					elm.on_click(elm, l);
 					w.redraw();
-				};
-			}*/
-			return nullptr;
+				}
+			};
 		});
 		w.setExitOnClose();
 		w.setResizable(true);

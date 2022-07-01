@@ -27,6 +27,7 @@ namespace soup
 
 	void RenderTarget::drawText(size_t x, size_t y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
+		size_t text_x = (x / scale);
 		for (const auto& c : text)
 		{
 			const auto& g = font.get(c);
@@ -37,12 +38,12 @@ namespace soup
 				{
 					if (g.pixels.at(i))
 					{
-						drawRect((x + glyph_x) * scale, (y + glyph_y + g.y_offset) * scale, scale, scale, colour);
+						drawRect((text_x + glyph_x) * scale, y + ((glyph_y + g.y_offset) * scale), scale, scale, colour);
 					}
 					++i;
 				}
 			}
-			x += (g.width + 1);
+			text_x += (g.width + 1);
 		}
 	}
 }
