@@ -270,6 +270,7 @@ namespace soup
 
 	Window& Window::setTransparency(int a) noexcept
 	{
+		SetWindowLong(h, GWL_EXSTYLE, GetWindowLong(h, GWL_EXSTYLE) | WS_EX_LAYERED);
 		SetLayeredWindowAttributes(h, 0, a, LWA_ALPHA);
 		return *this;
 	}
