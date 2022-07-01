@@ -111,6 +111,14 @@ namespace soup
 				}
 				return 0;
 
+			case WM_GETMINMAXINFO:
+				{
+					LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
+					lpMMI->ptMinTrackSize.x = 15;
+					lpMMI->ptMinTrackSize.y = 15;
+				}
+				return 0;
+
 			case WM_HOTKEY:
 				if (wParam >= 0)
 				{
