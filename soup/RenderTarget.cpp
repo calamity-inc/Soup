@@ -1,5 +1,7 @@
 #include "RenderTarget.hpp"
 
+#include <map>
+
 #include "math.hpp"
 #include "RasterFont.hpp"
 #include "Rgb.hpp"
@@ -34,6 +36,45 @@ namespace soup
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
 			drawRect(lerp(a.x, b.x, t), lerp(a.y, b.y, t), 1, 1, Rgb::lerp(a_colour, b_colour, t));
+		}
+	}
+
+	static void processPoint(std::map<size_t, std::pair<size_t, size_t>>& lines, size_t x, size_t y)
+	{
+		if (auto e = lines.find(y); e != lines.end())
+		{
+			if (x < e->second.first)
+			{
+				e->second.first = x;
+			}
+			else if (x > e->second.second)
+			{
+				e->second.second = x;
+			}
+		}
+		else
+		{
+			lines.emplace(y, std::pair<size_t, size_t>{ x, x });
+		}
+	}
+
+	static void processLine(std::map<size_t, std::pair<size_t, size_t>>& lines, Vector2 a, Vector2 b)
+	{
+		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
+		{
+			processPoint(lines, lerp(a.x, b.x, t), lerp(a.y, b.y, t));
+		}
+	}
+
+	void RenderTarget::drawTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour)
+	{
+		std::map<size_t, std::pair<size_t, size_t>> lines{};
+		processLine(lines, a, b);
+		processLine(lines, b, c);
+		processLine(lines, c, a);
+		for (const auto& line : lines)
+		{
+			drawRect(line.second.first, line.first, (line.second.second - line.second.first) + 1, 1, colour);
 		}
 	}
 
