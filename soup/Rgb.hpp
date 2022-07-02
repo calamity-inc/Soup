@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include "math.hpp"
+
 namespace soup
 {
 #pragma pack(push, 1)
@@ -51,9 +53,9 @@ namespace soup
 		[[nodiscard]] static Rgb lerp(Rgb a, Rgb b, float t)
 		{
 			return Rgb{
-				uint8_t(a.r + (b.r - a.r) * t),
-				uint8_t(a.g + (b.g - a.g) * t),
-				uint8_t(a.b + (b.b - a.b) * t),
+				soup::lerp<uint8_t>(a.r, b.r, t),
+				soup::lerp<uint8_t>(a.g, b.g, t),
+				soup::lerp<uint8_t>(a.b, b.b, t),
 			};
 		}
 	};
