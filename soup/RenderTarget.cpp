@@ -13,7 +13,7 @@ namespace soup
 		drawRect(0, 0, width, height, colour);
 	}
 
-	void RenderTarget::drawCircle(size_t x, size_t y, float r, Rgb colour)
+	void RenderTarget::drawHollowCircle(size_t x, size_t y, float r, Rgb colour)
 	{
 		for (float i = 0.01f; i < M_TAU; i += 0.01f)
 		{
@@ -37,7 +37,7 @@ namespace soup
 		}
 	}
 
-	void RenderTarget::drawTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour)
+	void RenderTarget::drawHollowTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour)
 	{
 		drawLine(a, b, colour);
 		drawLine(b, c, colour);
