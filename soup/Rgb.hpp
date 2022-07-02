@@ -47,6 +47,15 @@ namespace soup
 		}
 
 		[[nodiscard]] std::string toHex() const;
+
+		[[nodiscard]] static Rgb lerp(Rgb a, Rgb b, float t)
+		{
+			return Rgb{
+				uint8_t(a.r + (b.r - a.r) * t),
+				uint8_t(a.g + (b.g - a.g) * t),
+				uint8_t(a.b + (b.b - a.b) * t),
+			};
+		}
 	};
 	static_assert(sizeof(Rgb) == 3);
 #pragma pack(pop)
