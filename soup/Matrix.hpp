@@ -15,6 +15,8 @@ namespace soup
 		Matrix() noexcept;
 		Matrix(const Vector3& pos, const Vector3& rot) noexcept;
 
+		[[nodiscard]] static Matrix projection(float aspect_ratio, float fov, float z_near, float z_far); // aspect_ratio = height / width
+
 		void setPosRotXYZ(const Vector3& pos, const Vector3& rot) noexcept;
 
 		void reset() noexcept; // set to identity

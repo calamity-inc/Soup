@@ -18,6 +18,21 @@ namespace soup
 		mf[15] = 1.0f;
 	}
 
+	Matrix Matrix::projection(float aspect_ratio, float fov, float z_near, float z_far)
+	{
+		float fov_rad = 1.0f / tanf(DEG_TO_RAD(fov) * 0.5f);
+
+		Matrix m;
+		m.mf[(4 * 0) + 0] = aspect_ratio * fov_rad;
+		m.mf[(4 * 1) + 1] = fov_rad;
+		m.mf[(4 * 2) + 2] = z_far / (z_far - z_near);
+		m.mf[(4 * 3) + 2] = (-z_far * z_near) / (z_far - z_near);
+		m.mf[(4 * 2) + 3] = 1.0f;
+		m.mf[(4 * 3) + 3] = 0.0f;
+
+		return m;
+	}
+
 	void Matrix::setPosRotXYZ(const Vector3& pos, const Vector3& rot) noexcept
 	{
 		setTranslate(pos);
