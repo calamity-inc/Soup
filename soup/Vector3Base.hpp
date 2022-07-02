@@ -35,13 +35,23 @@ namespace soup
 		}
 
 		template <typename T2>
-		[[nodiscard]] T rotate(const T2& rot_vec) const noexcept
+		[[nodiscard]] T rotate(const T2& rot) const noexcept
 		{
 			auto as_rot = toRot();
-			as_rot += rot_vec;
-			auto rotated_unit_vec = as_rot.toDir();
-			return (rotated_unit_vec * Base::magnitude());
+			as_rot += rot;
+			return (as_rot.toDir() * Base::magnitude());
 		}
+
+		//template <typename T2, typename T3>
+		//[[nodiscard]] T rotateAround(const T2& origin, const T3& rot) const noexcept
+		//{
+		//	// C++ sucks, this won't compile.
+		//	//auto as_rot = origin.lookAt(*this);
+		//	auto as_rot = (origin - *this).toRot();
+		//
+		//	as_rot += rot;
+		//	return origin + (as_rot.toDir() * origin.distance(*this));
+		//}
 
 		// Rotates by the 3x3 rotation portion of a 4x4 matrix
 		[[nodiscard]] T rotateByMatrix(const float m[16]) const noexcept
@@ -56,9 +66,15 @@ namespace soup
 		// position vectors
 
 		template <typename T2>
+		[[nodiscard]] T2 lookAtDir(const T2& b) const noexcept
+		{
+			return (b - *(const T*)this);
+		}
+
+		template <typename T2>
 		[[nodiscard]] T2 lookAt(const T2& b) const noexcept
 		{
-			return (b - *(const T*)this).toRot();
+			return lookAtDir(b).toRot();
 		}
 
 		// rotation vectors
