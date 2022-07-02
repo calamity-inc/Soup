@@ -91,7 +91,6 @@ namespace soup
 		});
 		w.setExitOnClose();
 		w.setResizable(true);
-		w.show();
 		/*std::thread t([]
 		{
 			while (true)
