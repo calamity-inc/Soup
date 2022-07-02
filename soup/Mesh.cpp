@@ -1,9 +1,58 @@
 #include "Mesh.hpp"
 
 #include "Poly.hpp"
+#include "string.hpp"
 
 namespace soup
 {
+	Mesh Mesh::fromObj(const std::string& obj)
+	{
+		Mesh m;
+		try
+		{
+			auto lines = string::explode<std::string>(obj, '\n');
+			for (const auto& line : lines)
+			{
+				if (line.length() < 2)
+				{
+					continue;
+				}
+				if (line.substr(0, 2) == "v ")
+				{
+					auto ps = string::explode<std::string>(line.substr(2), ' ');
+					if (ps.size() == 3)
+					{
+						m.verts.emplace_back(Vector3{ std::stof(ps[0]), std::stof(ps[1]), std::stof(ps[2]) });
+					}
+				}
+				else if (line.substr(0, 2) == "f ")
+				{
+					auto is = string::explode<std::string>(line.substr(2), ' ');
+					if (is.size() == 3)
+					{
+						m.tris.emplace_back(Tri{ (size_t)(std::stoi(is[0]) - 1), (size_t)(std::stoi(is[1]) - 1), (size_t)(std::stoi(is[2]) - 1) });
+					}
+				}
+			}
+		}
+		catch (const std::exception&)
+		{
+			m.clear();
+		}
+		return m;
+	}
+
+	bool Mesh::empty() const noexcept
+	{
+		return tris.empty();
+	}
+
+	void Mesh::clear() noexcept
+	{
+		verts.clear();
+		tris.clear();
+	}
+
 	Vector3 Mesh::getCentrePoint() const
 	{
 		Vector3 centre{};

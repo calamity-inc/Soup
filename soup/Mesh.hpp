@@ -2,7 +2,9 @@
 
 #include "fwd.hpp"
 
+#include <string>
 #include <vector>
+
 #include "Vector3.hpp"
 
 namespace soup
@@ -18,6 +20,11 @@ namespace soup
 
 		std::vector<Vector3> verts{};
 		std::vector<Tri> tris{};
+
+		[[nodiscard]] static Mesh fromObj(const std::string& obj);
+
+		[[nodiscard]] bool empty() const noexcept;
+		void clear() noexcept;
 
 		[[nodiscard]] Vector3 getCentrePoint() const;
 
