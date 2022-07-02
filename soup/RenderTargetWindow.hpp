@@ -5,6 +5,7 @@
 #include <Windows.h>
 
 #include "Rgb.hpp"
+#include "Vector2.hpp"
 
 namespace soup
 {
@@ -29,6 +30,15 @@ namespace soup
 			FillRect(hdc, &r, brush);
 
 			DeleteObject(brush);
+		}
+
+		void drawLine(Vector2 a, Vector2 b, Rgb colour) final
+		{
+			SelectObject(hdc, GetStockObject(DC_PEN));
+			SetDCPenColor(hdc, RGB(colour.r, colour.g, colour.b));
+
+			MoveToEx(hdc, a.x, a.y, nullptr);
+			LineTo(hdc, b.x, b.y);
 		}
 	};
 }
