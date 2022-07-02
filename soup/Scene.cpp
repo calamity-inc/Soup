@@ -14,10 +14,16 @@ namespace soup
 		return m;
 	}
 
-	Vector2 Scene::world2screen(const Vector3& pos) const
+	Matrix Scene::getLookAtMatrix() const
 	{
 		Matrix cameraToWorld = getCameraMatrix();
 		Matrix worldToCamera = cameraToWorld.invert();
+		return worldToCamera;
+	}
+
+	Vector2 Scene::world2screen(const Vector3& pos) const
+	{
+		Matrix worldToCamera = getLookAtMatrix();
 		Vector3 v = (worldToCamera * pos);
 		return { 1.0f - ((v.x + 1.0f) * 0.5f), 1.0f - ((v.z + 1.0f) * 0.5f) };
 	}
