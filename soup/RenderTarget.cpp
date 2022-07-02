@@ -4,6 +4,7 @@
 #include "RasterFont.hpp"
 #include "Rgb.hpp"
 #include "unicode.hpp"
+#include "Vector2.hpp"
 
 namespace soup
 {
@@ -17,6 +18,22 @@ namespace soup
 		for (float i = 0.01f; i < M_TAU; i += 0.01f)
 		{
 			drawRect(x + (size_t)(cos(i) * r), y + (size_t)(sin(i) * r), 1, 1, colour);
+		}
+	}
+
+	void RenderTarget::drawLine(Vector2 a, Vector2 b, Rgb colour)
+	{
+		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
+		{
+			drawRect(lerp(a.x, b.x, t), lerp(a.y, b.y, t), 1, 1, colour);
+		}
+	}
+
+	void RenderTarget::drawLine(Vector2 a, Vector2 b, Rgb a_colour, Rgb b_colour)
+	{
+		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
+		{
+			drawRect(lerp(a.x, b.x, t), lerp(a.y, b.y, t), 1, 1, Rgb::lerp(a_colour, b_colour, t));
 		}
 	}
 
