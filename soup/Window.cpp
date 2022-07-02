@@ -167,8 +167,13 @@ namespace soup
 		HWND hWnd = CreateWindowW(wcex.lpszClassName, wcex.lpszMenuName, 0, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
 		SetWindowLong(hWnd, GWL_STYLE, 0);
 		window_configs.emplace(hWnd, Window::Config{});
-		ShowWindow(hWnd, SW_SHOW);
-		return Window{ hWnd };
+		Window w{ hWnd };
+		w.show();
+		w.onClose([](Window w)
+		{
+			endMessageLoop();
+		});
+		return w;
 	}
 
 	Window Window::getFocused() noexcept
@@ -275,15 +280,6 @@ namespace soup
 	Window& Window::redraw() noexcept
 	{
 		InvalidateRect(h, NULL, FALSE);
-		return *this;
-	}
-
-	Window& Window::setExitOnClose() noexcept
-	{
-		onClose([](Window w)
-		{
-			endMessageLoop();
-		});
 		return *this;
 	}
 

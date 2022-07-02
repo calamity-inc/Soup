@@ -89,7 +89,6 @@ namespace soup
 				}
 			};
 		});
-		w.setExitOnClose();
 		w.setResizable(true);
 		/*std::thread t([]
 		{
