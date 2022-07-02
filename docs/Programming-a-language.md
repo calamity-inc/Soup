@@ -58,7 +58,7 @@ This step is all about building an abstract syntax tree (aka., parse tree). We c
 #include <soup/LangDesc.hpp>
 #include <soup/Lexeme.hpp>
 #include <soup/ParserState.hpp>
-#include <soup/parse_tree.hpp> // Block
+#include <soup/parse_tree.hpp> // ast::Block
 
 enum MyOpCodes : int
 {
@@ -79,8 +79,8 @@ int main()
     soup::console << ld.highlightSyntax(ls).toString() << "\n";
     soup::console.resetColour();
 
-    soup::Block ast = ld.parse(ls);
-    soup::console << ast.toString() << "\n";
+    soup::ast::Block root = ld.parse(ls);
+    soup::console << root.toString() << "\n";
 }
 ```
 
@@ -159,7 +159,7 @@ For further reading, check out `soup::PhpState`, which uses Soup's language stac
 #include <soup/LangVm.hpp>
 #include <soup/Lexeme.hpp>
 #include <soup/ParserState.hpp>
-#include <soup/parse_tree.hpp> // Block
+#include <soup/parse_tree.hpp> // ast::Block
 #include <soup/StringReader.hpp>
 #include <soup/StringWriter.hpp>
 
@@ -196,11 +196,11 @@ int main()
     soup::console << ld.highlightSyntax(ls).toString() << "\n";
     soup::console.resetColour();
 
-    soup::Block ast = ld.parse(ls);
-    soup::console << ast.toString() << "\n";
+    soup::ast::Block root = ld.parse(ls);
+    soup::console << root.toString() << "\n";
 
     soup::StringWriter w;
-    ast.compile(w);
+    root.compile(w);
 
     soup::StringReader r{ std::move(w.str) };
     myVm(r);

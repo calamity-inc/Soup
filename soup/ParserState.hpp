@@ -12,8 +12,8 @@ namespace soup
 	{
 	public:
 		const LangDesc* ld;
-		Block* b;
-		std::vector<UniquePtr<ParseTreeNode>>::iterator i;
+		ast::Block* b;
+		std::vector<UniquePtr<ast::Node>>::iterator i;
 		Op op;
 
 		void setOp(int type);
@@ -21,13 +21,13 @@ namespace soup
 		void consumeRighthandValue();
 
 		void pushArg(Mixed&& val);
-		void setArgs(std::vector<UniquePtr<ParseTreeNode>>&& args);
+		void setArgs(std::vector<UniquePtr<ast::Node>>&& args);
 
-		void pushLefthand(UniquePtr<ParseTreeNode>&& node);
+		void pushLefthand(UniquePtr<ast::Node>&& node);
 		void pushLefthand(Lexeme&& l);
-		UniquePtr<ParseTreeNode> popLefthand();
-		[[nodiscard]] ParseTreeNode* peekRighthand() const;
-		UniquePtr<ParseTreeNode> popRighthand();
+		UniquePtr<ast::Node> popLefthand();
+		[[nodiscard]] ast::Node* peekRighthand() const;
+		UniquePtr<ast::Node> popRighthand();
 
 		[[nodiscard]] const Token& getToken() const;
 

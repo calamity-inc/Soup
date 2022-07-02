@@ -28,12 +28,12 @@ namespace soup
 		[[nodiscard]] std::vector<Lexeme> tokenise(const std::string& code) const;
 		static void eraseNlTerminatedComments(std::vector<Lexeme>& ls, const ConstString& prefix);
 		static void eraseSpace(std::vector<Lexeme>& ls);
-		[[nodiscard]] Block parse(std::vector<Lexeme> ls) const;
-		[[nodiscard]] Block parseImpl(std::vector<Lexeme>& ls) const;
-		[[nodiscard]] Block parseNoCheck(std::vector<Lexeme>& ls) const;
+		[[nodiscard]] ast::Block parse(std::vector<Lexeme> ls) const;
+		[[nodiscard]] ast::Block parseImpl(std::vector<Lexeme>& ls) const;
+		[[nodiscard]] ast::Block parseNoCheck(std::vector<Lexeme>& ls) const;
 	private:
 		void parseBlock(ParserState& ps, const Token& t) const;
-		void parseBlockRecurse(ParserState& ps, const Token& t, Block* b) const;
+		void parseBlockRecurse(ParserState& ps, const Token& t, ast::Block* b) const;
 
 	public:
 		[[nodiscard]] const Token& getToken(const char* keyword) const;

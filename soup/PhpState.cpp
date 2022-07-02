@@ -36,8 +36,8 @@ namespace soup
 		ld.addToken("function", Rgb::BLUE, [](ParserState& ps)
 		{
 			auto node = ps.popRighthand();
-			if (node->type != ParseTreeNode::LEXEME
-				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "("
+			if (node->type != ast::Node::LEXEME
+				|| reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != "("
 				)
 			{
 				std::string err = "'function' expected righthand '(', found ";
@@ -46,8 +46,8 @@ namespace soup
 			}
 
 			node = ps.popRighthand();
-			if (node->type != ParseTreeNode::LEXEME
-				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+			if (node->type != ast::Node::LEXEME
+				|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
 				)
 			{
 				std::string err = "'function(' expected righthand ')', found ";
@@ -56,13 +56,13 @@ namespace soup
 			}
 
 			node = ps.popRighthand();
-			if (node->type != ParseTreeNode::BLOCK)
+			if (node->type != ast::Node::BLOCK)
 			{
 				std::string err = "'function()' expected righthand block, found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
-			ps.pushLefthand(Lexeme{ Lexeme::VAL, reinterpret_cast<Block*>(node.release()) });
+			ps.pushLefthand(Lexeme{ Lexeme::VAL, reinterpret_cast<ast::Block*>(node.release()) });
 		});
 		ld.addToken("[", [](ParserState& ps)
 		{
@@ -71,8 +71,8 @@ namespace soup
 			ps.consumeRighthandValue();
 
 			if (auto node = ps.popRighthand();
-				node->type != ParseTreeNode::LEXEME
-				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral("]")
+				node->type != ast::Node::LEXEME
+				|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral("]")
 				)
 			{
 				std::string err = "'[' expected ']' after index/key, found ";
@@ -102,8 +102,8 @@ namespace soup
 		{
 			ps.setOp(OP_IF);
 			auto node = ps.popRighthand();
-			if (node->type != ParseTreeNode::LEXEME
-				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "("
+			if (node->type != ast::Node::LEXEME
+				|| reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != "("
 				)
 			{
 				std::string err = "'if' expected righthand '(', found ";
@@ -114,8 +114,8 @@ namespace soup
 			ps.consumeRighthandValue(); // condition
 
 			node = ps.popRighthand();
-			if (node->type != ParseTreeNode::LEXEME
-				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+			if (node->type != ast::Node::LEXEME
+				|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
 				)
 			{
 				std::string err = "'if(cond' expected righthand ')', found ";
@@ -124,19 +124,19 @@ namespace soup
 			}
 
 			node = ps.popRighthand();
-			if (node->type != ParseTreeNode::BLOCK)
+			if (node->type != ast::Node::BLOCK)
 			{
 				std::string err = "'if(cond)' expected righthand block, found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
-			ps.pushArg(reinterpret_cast<Block*>(node.release()));
+			ps.pushArg(reinterpret_cast<ast::Block*>(node.release()));
 		});
 		ld.addToken("else", Rgb::RED, [](ParserState& ps)
 		{
 			auto node = ps.popLefthand();
-			if (node->type != ParseTreeNode::OP
-				|| reinterpret_cast<OpNode*>(node.get())->op.type != OP_IF
+			if (node->type != ast::Node::OP
+				|| reinterpret_cast<ast::OpNode*>(node.get())->op.type != OP_IF
 				)
 			{
 				std::string err = "'else' expected lefthand OP_IF, found ";
@@ -144,22 +144,22 @@ namespace soup
 				throw ParseError(std::move(err));
 			}
 			ps.setOp(OP_IF_ELSE);
-			ps.setArgs(std::move(reinterpret_cast<OpNode*>(node.get())->op.args));
+			ps.setArgs(std::move(reinterpret_cast<ast::OpNode*>(node.get())->op.args));
 
 			node = ps.popRighthand();
-			if (node->type != ParseTreeNode::BLOCK)
+			if (node->type != ast::Node::BLOCK)
 			{
 				std::string err = "'else' expected righthand block, found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
-			ps.pushArg(reinterpret_cast<Block*>(node.release()));
+			ps.pushArg(reinterpret_cast<ast::Block*>(node.release()));
 		});
 		ld.addToken("(", [](ParserState& ps)
 		{
 			if (auto node = ps.popRighthand();
-				node->type != ParseTreeNode::LEXEME
-				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+				node->type != ast::Node::LEXEME
+				|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
 				)
 			{
 				std::string err = "'(' expected righthand ')', found ";

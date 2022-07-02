@@ -38,11 +38,14 @@ namespace soup
 	class Writer;
 
 	// lang
-	struct Block;
+	namespace ast
+	{
+		struct Block;
+		struct Node;
+	}
 	class LangDesc;
 	struct Lexeme;
 	class ParserState;
-	struct ParseTreeNode;
 	struct Token;
 
 	// math

@@ -30,13 +30,13 @@ namespace soup
 			val = (uint64_t)new std::unordered_map<Mixed, std::shared_ptr<Mixed>>(b.getMixedSpMixedMap());
 			break;
 
-		case BLOCK:
-			throw std::runtime_error("Can't copy a block");
+		case AST_BLOCK:
+			throw std::runtime_error("Can't copy this type");
 		}
 	}
 
-	Mixed::Mixed(Block* val)
-		: type(BLOCK), val((uint64_t)val)
+	Mixed::Mixed(ast::Block* val)
+		: type(AST_BLOCK), val((uint64_t)val)
 	{
 	}
 
@@ -64,8 +64,8 @@ namespace soup
 			delete reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
 			break;
 
-		case BLOCK:
-			delete reinterpret_cast<Block*>(val);
+		case AST_BLOCK:
+			delete reinterpret_cast<ast::Block*>(val);
 			break;
 		}
 	}
@@ -98,8 +98,8 @@ namespace soup
 		case VAR_NAME:
 			return "var name";
 
-		case BLOCK:
-			return "block";
+		case AST_BLOCK:
+			return "ast block";
 		}
 		return "complex type";
 	}
@@ -118,9 +118,9 @@ namespace soup
 		{
 			return *reinterpret_cast<std::string*>(val);
 		}
-		if (type == BLOCK)
+		if (type == AST_BLOCK)
 		{
-			return reinterpret_cast<Block*>(val)->toString(prefix);
+			return reinterpret_cast<ast::Block*>(val)->toString(prefix);
 		}
 		return {};
 	}
@@ -179,12 +179,12 @@ namespace soup
 		return *reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
 	}
 
-	Block& Mixed::getBlock() const
+	ast::Block& Mixed::getAstBlock() const
 	{
-		if (type != BLOCK)
+		if (type != AST_BLOCK)
 		{
 			throw std::bad_cast();
 		}
-		return *reinterpret_cast<Block*>(val);
+		return *reinterpret_cast<ast::Block*>(val);
 	}
 }

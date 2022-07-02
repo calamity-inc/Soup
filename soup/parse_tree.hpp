@@ -9,9 +9,9 @@
 #include "TreeNode.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+namespace soup::ast
 {
-	struct ParseTreeNode : public TreeNode
+	struct Node : public TreeNode
 	{
 		enum Type : uint8_t
 		{
@@ -22,7 +22,7 @@ namespace soup
 
 		const Type type;
 
-		ParseTreeNode(Type type) noexcept
+		Node(Type type) noexcept
 			: type(type)
 		{
 		}
@@ -34,12 +34,12 @@ namespace soup
 		void compile(Writer& w) const;
 	};
 
-	struct Block : public ParseTreeNode
+	struct Block : public Node
 	{
-		std::vector<UniquePtr<ParseTreeNode>> children{};
+		std::vector<UniquePtr<Node>> children{};
 
-		Block(std::vector<UniquePtr<ParseTreeNode>>&& children = {})
-			: ParseTreeNode(BLOCK), children(std::move(children))
+		Block(std::vector<UniquePtr<Node>>&& children = {})
+			: Node(BLOCK), children(std::move(children))
 		{
 		}
 
@@ -50,12 +50,12 @@ namespace soup
 		void compile(Writer& w) const;
 	};
 
-	struct LexemeNode : public ParseTreeNode
+	struct LexemeNode : public Node
 	{
 		Lexeme lexeme;
 
 		LexemeNode(Lexeme lexeme)
-			: ParseTreeNode(LEXEME), lexeme(std::move(lexeme))
+			: Node(LEXEME), lexeme(std::move(lexeme))
 		{
 		}
 
@@ -64,12 +64,12 @@ namespace soup
 		void compile(Writer& w) const;
 	};
 
-	struct OpNode : public ParseTreeNode
+	struct OpNode : public Node
 	{
 		Op op;
 
 		OpNode(Op&& op)
-			: ParseTreeNode(OP), op(std::move(op))
+			: Node(OP), op(std::move(op))
 		{
 		}
 

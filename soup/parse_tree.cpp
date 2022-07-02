@@ -5,15 +5,15 @@
 #include "ParseError.hpp"
 #include "StringWriter.hpp"
 
-namespace soup
+namespace soup::ast
 {
-	std::string ParseTreeNode::toString(const std::string& prefix) const
+	std::string Node::toString(const std::string& prefix) const
 	{
-		if (type == ParseTreeNode::BLOCK)
+		if (type == Node::BLOCK)
 		{
 			return reinterpret_cast<const Block*>(this)->toString(prefix);
 		}
-		else if (type == ParseTreeNode::LEXEME)
+		else if (type == Node::LEXEME)
 		{
 			return reinterpret_cast<const LexemeNode*>(this)->toString(prefix);
 		}
@@ -23,16 +23,16 @@ namespace soup
 		}
 	}
 
-	bool ParseTreeNode::isValue() const noexcept
+	bool Node::isValue() const noexcept
 	{
 		switch (type)
 		{
-		case ParseTreeNode::LEXEME:
+		case Node::LEXEME:
 			return reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::LITERAL // variable name
 				|| reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::VAL // rvalue
 				;
 
-		case ParseTreeNode::OP: // result of an expression
+		case Node::OP: // result of an expression
 			return true;
 
 		default:
@@ -42,13 +42,13 @@ namespace soup
 		return false;
 	}
 
-	void ParseTreeNode::compile(Writer& w) const
+	void Node::compile(Writer& w) const
 	{
-		if (type == ParseTreeNode::BLOCK)
+		if (type == Node::BLOCK)
 		{
 			reinterpret_cast<const Block*>(this)->compile(w);
 		}
-		else if (type == ParseTreeNode::LEXEME)
+		else if (type == Node::LEXEME)
 		{
 			reinterpret_cast<const LexemeNode*>(this)->compile(w);
 		}
@@ -64,11 +64,11 @@ namespace soup
 	{
 		for (const auto& child : children)
 		{
-			if (child->type == ParseTreeNode::BLOCK)
+			if (child->type == Node::BLOCK)
 			{
 				reinterpret_cast<const Block*>(child.get())->checkUnexpected();
 			}
-			else if (child->type == ParseTreeNode::LEXEME)
+			else if (child->type == Node::LEXEME)
 			{
 				std::string err = "Unexpected ";
 				err.append(child->toString());
@@ -123,10 +123,10 @@ namespace soup
 				w.str_lp_u64_dyn(lexeme.val.getString());
 				return;
 			}
-			if (lexeme.val.isBlock())
+			if (lexeme.val.isAstBlock())
 			{
 				StringWriter sw;
-				lexeme.val.getBlock().compile(sw);
+				lexeme.val.getAstBlock().compile(sw);
 
 				uint8_t b = OP_PUSH_FUN;
 				w.u8(b);

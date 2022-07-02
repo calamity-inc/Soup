@@ -21,7 +21,7 @@ namespace soup
 			FUNC,
 			VAR_NAME,
 			MIXED_SP_MIXED_MAP,
-			BLOCK,
+			AST_BLOCK,
 		};
 
 		Type type = NONE;
@@ -74,7 +74,7 @@ namespace soup
 
 		Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val);
 
-		Mixed(Block* val); // takes ownership
+		Mixed(ast::Block* val); // takes ownership
 
 		~Mixed() noexcept
 		{
@@ -191,9 +191,9 @@ namespace soup
 			return type == VAR_NAME;
 		}
 
-		[[nodiscard]] constexpr bool isBlock() const noexcept
+		[[nodiscard]] constexpr bool isAstBlock() const noexcept
 		{
-			return type == BLOCK;
+			return type == AST_BLOCK;
 		}
 
 		[[nodiscard]] const char* getTypeName() const noexcept;
@@ -208,7 +208,7 @@ namespace soup
 		[[nodiscard]] std::string& getFunc() const;
 		[[nodiscard]] std::string& getVarName() const;
 		[[nodiscard]] std::unordered_map<Mixed, std::shared_ptr<Mixed>>& getMixedSpMixedMap() const;
-		[[nodiscard]] Block& getBlock() const;
+		[[nodiscard]] ast::Block& getAstBlock() const;
 	};
 }
 
