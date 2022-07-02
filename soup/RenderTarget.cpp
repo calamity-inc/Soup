@@ -37,6 +37,13 @@ namespace soup
 		}
 	}
 
+	void RenderTarget::drawTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour)
+	{
+		drawLine(a, b, colour);
+		drawLine(b, c, colour);
+		drawLine(c, a, colour);
+	}
+
 	void RenderTarget::drawText(size_t x, size_t y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		drawText(x, y, unicode::utf8_to_utf32(text), font, colour, scale);
