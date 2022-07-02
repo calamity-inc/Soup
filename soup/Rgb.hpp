@@ -20,6 +20,7 @@ namespace soup
 		static Rgb YELLOW;
 		static Rgb GREEN;
 		static Rgb BLUE;
+		static Rgb MAGENTA;
 
 		constexpr Rgb() noexcept = default;
 
