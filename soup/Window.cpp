@@ -28,8 +28,19 @@ namespace soup
 
 					PAINTSTRUCT ps;
 					HDC hdc = BeginPaint(hWnd, &ps);
-					RenderTargetWindow rt{ rect.right - rect.left, rect.bottom - rect.top, hdc };
+					auto buf_hdc = CreateCompatibleDC(hdc);
+					RenderTargetWindow rt{ rect.right - rect.left, rect.bottom - rect.top, buf_hdc };
+
+					auto buf_bitmap = CreateCompatibleBitmap(hdc, rt.width, rt.height);
+					SelectObject(buf_hdc, buf_bitmap);
+
 					wc.draw_func(Window{ hWnd }, rt);
+
+					BitBlt(hdc, 0, 0, rt.width, rt.height, buf_hdc, 0, 0, SRCCOPY);
+
+					DeleteObject(buf_bitmap);
+					DeleteDC(buf_hdc);
+
 					EndPaint(hWnd, &ps);
 				}
 				return 0;
