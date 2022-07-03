@@ -20,6 +20,7 @@ namespace soup
 		void setPosRotXYZ(const Vector3& pos, const Vector3& rot) noexcept;
 
 		void reset() noexcept; // set to identity
+		void null() noexcept; // set to all-zero
 
 		[[nodiscard]] Matrix operator* (const Matrix& InM) const noexcept;
 		void operator*= (const Matrix& InM) noexcept;

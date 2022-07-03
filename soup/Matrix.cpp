@@ -48,6 +48,14 @@ namespace soup
 		mf[12] = 0.0f;	mf[13] = 0.0f;	mf[14] = 0.0f;	mf[15] = 1.0f;
 	}
 
+	void Matrix::null() noexcept
+	{
+		mf[0] = 0.0f;	mf[1] = 0.0f;	mf[2] = 0.0f;	mf[3] = 0.0f;
+		mf[4] = 0.0f;	mf[5] = 0.0f;	mf[6] = 0.0f;	mf[7] = 0.0f;
+		mf[8] = 0.0f;	mf[9] = 0.0f;	mf[10] = 0.0f;	mf[11] = 0.0f;
+		mf[12] = 0.0f;	mf[13] = 0.0f;	mf[14] = 0.0f;	mf[15] = 0.0f;
+	}
+
 	Matrix Matrix::operator*(const Matrix& InM) const noexcept
 	{
 		Matrix res;
