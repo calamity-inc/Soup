@@ -79,7 +79,7 @@ namespace soup
 
 		// rotation vectors
 
-		[[nodiscard]] T toDir() const noexcept
+		[[nodiscard]] T toDir() const noexcept // Z Up
 		{
 			const float yaw_radians = DEG_TO_RAD(((const T*)this)->z);
 			const float pitch_radians = DEG_TO_RAD(((const T*)this)->x) * -1.0f;
@@ -87,6 +87,17 @@ namespace soup
 				cosf(pitch_radians) * sinf(yaw_radians) * -1.0f,
 				cosf(pitch_radians) * cosf(yaw_radians),
 				sinf(pitch_radians) * -1.0f
+			};
+		}
+
+		[[nodiscard]] T toDirYUp() const noexcept
+		{
+			const float yaw_radians = DEG_TO_RAD(((const T*)this)->z);
+			const float pitch_radians = DEG_TO_RAD(((const T*)this)->x) * -1.0f;
+			return T{
+				cosf(pitch_radians) * sinf(yaw_radians) * -1.0f,
+				sinf(pitch_radians) * -1.0f,
+				cosf(pitch_radians) * cosf(yaw_radians)
 			};
 		}
 
