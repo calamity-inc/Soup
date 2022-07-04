@@ -35,8 +35,6 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 		return;
 	}
 
-	
-
 	std::string file_path = base_dir;
 	file_path.append(req_url);
 

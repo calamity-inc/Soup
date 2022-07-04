@@ -110,7 +110,7 @@ namespace soup
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
-			
+
 			ps.consumeRighthandValue(); // condition
 
 			node = ps.popRighthand();
@@ -303,7 +303,7 @@ namespace soup
 					var = vm.pop();
 				}
 				break;
-				
+
 			case OP_EQ:
 				vm.push(vm.pop()->toString() == vm.pop()->toString());
 				break;
