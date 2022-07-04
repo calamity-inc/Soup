@@ -15,7 +15,7 @@
 
 using namespace soup;
 
-void tests()
+static void test_data()
 {
 	unit("base64")
 	{
@@ -76,7 +76,10 @@ void tests()
 		assert(*obj->at("phoneNumbers")->asArr()->at(0).asObj()->at("type")->asStr() == "home");
 		assert(obj->at("spouse")->isNull());
 	});
+}
 
+static void test_lang()
+{
 	unit("php")
 	{
 		test("echo", []
@@ -156,6 +159,13 @@ void cli_test()
 {
 	unit("soup")
 	{
-		tests();
+		unit("data")
+		{
+			test_data();
+		}
+		unit("lang")
+		{
+			test_lang();
+		}
 	}
 }
