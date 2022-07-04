@@ -36,9 +36,19 @@ namespace soup
 		ld.addToken("function", Rgb::BLUE, [](ParserState& ps)
 		{
 			auto node = ps.popRighthand();
-			if (node->type != ast::Node::LEXEME
-				|| reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != "("
-				)
+			if (node->type != ast::Node::LEXEME)
+			{
+				std::string err = "'function' expected righthand name or '(', found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			UniquePtr<ast::Node> var_name_literal{};
+			if (reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword == Lexeme::LITERAL)
+			{
+				var_name_literal = std::move(node);
+				node = ps.popRighthand();
+			}
+			if (reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != "(")
 			{
 				std::string err = "'function' expected righthand '(', found ";
 				err.append(node->toString());
@@ -50,7 +60,7 @@ namespace soup
 				|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
 				)
 			{
-				std::string err = "'function(' expected righthand ')', found ";
+				std::string err = "'function' expected righthand ')', found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
@@ -58,11 +68,21 @@ namespace soup
 			node = ps.popRighthand();
 			if (node->type != ast::Node::BLOCK)
 			{
-				std::string err = "'function()' expected righthand block, found ";
+				std::string err = "'function' expected righthand block, found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
-			ps.pushLefthand(Lexeme{ Lexeme::VAL, reinterpret_cast<ast::Block*>(node.release()) });
+
+			if (var_name_literal)
+			{
+				ps.setOp(OP_ASSIGN);
+				ps.pushArgNode(std::move(var_name_literal));
+				ps.pushArg(reinterpret_cast<ast::Block*>(node.release()));
+			}
+			else
+			{
+				ps.pushLefthand(reinterpret_cast<ast::Block*>(node.release()));
+			}
 		});
 		ld.addToken("[", [](ParserState& ps)
 		{
