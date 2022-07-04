@@ -18,6 +18,8 @@ namespace soup
 
 		void fill(Rgb colour);
 
+		void drawPixel(size_t x, size_t y, Rgb colour);
+
 		virtual void drawRect(size_t x, size_t y, size_t width, size_t height, Rgb colour) = 0;
 		void drawHollowCircle(size_t x, size_t y, float r, Rgb colour);
 

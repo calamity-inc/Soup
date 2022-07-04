@@ -11,7 +11,9 @@
 #include <Poly.hpp>
 #include <PolyVector.hpp>
 #include <Ray.hpp>
+#include <RenderTargetCanvas.hpp>
 #include <Scene.hpp>
+#include <SceneRaytracingRenderer.hpp>
 #include <time.hpp>
 #include <unicode.hpp>
 #include <UvSphere.hpp>
@@ -20,6 +22,7 @@ using namespace soup;
 
 static Canvas c;
 static Scene s;
+static SceneRaytracingRenderer sr;
 static float fov = 80.0f;
 
 static void amogus()
@@ -112,10 +115,16 @@ static void updateScene()
 	amogus();
 }
 
+static void renderOnto(Canvas& c)
+{
+	RenderTargetCanvas rt{ &c };
+	sr.render(s, rt, fov);
+}
+
 static void render()
 {
 	auto render_time = time::millis();
-	s.renderOnto(c, fov);
+	renderOnto(c);
 	render_time = time::millis() - render_time;
 	
 	console.setCursorPos(0, 0);
@@ -135,7 +144,7 @@ static void render()
 
 void cli_3d()
 {
-	s.render_distance = 25.0f;
+	sr.render_distance = 25.0f;
 
 	console.init(true);
 	console.enableSizeTracking([](unsigned int width, unsigned int height, const Capture&)
@@ -190,7 +199,7 @@ void cli_3d()
 		if (c == 'h')
 		{
 			Canvas hires{ 500, 500 };
-			s.renderOnto(hires, fov);
+			renderOnto(hires);
 			{
 				std::ofstream of("hires.ppm");
 				of << hires.toPpm();

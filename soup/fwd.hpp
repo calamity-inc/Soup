@@ -61,6 +61,9 @@ namespace soup
 	class Quaternion;
 	struct Ray;
 
+	// math.3d.scene
+	struct Scene;
+
 	// mem
 	struct AllocRaiiRemote;
 	struct Pattern;

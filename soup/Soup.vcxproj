@@ -517,6 +517,9 @@
     <ClInclude Include="RenderTargetWindow.hpp" />
     <ClInclude Include="BuiltinOp.hpp" />
     <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="SceneRasterisingRenderer.hpp" />
+    <ClInclude Include="SceneRaytracingRenderer.hpp" />
+    <ClInclude Include="SceneRenderer.hpp" />
     <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="Searchspace.hpp" />
     <ClInclude Include="Server.hpp" />
@@ -708,6 +711,8 @@
     <ClCompile Include="rsa.cpp" />
     <ClCompile Include="rtti.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneRasterisingRenderer.cpp" />
+    <ClCompile Include="SceneRaytracingRenderer.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
