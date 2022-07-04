@@ -27,7 +27,7 @@ namespace soup
 			err.append(node->toString());
 			throw ParseError(std::move(err));
 		}
-		op.args.emplace_back(std::move(node));
+		pushArgNode(std::move(node));
 #if ENSURE_SANITY
 		ensureValidIterator();
 #endif
@@ -43,7 +43,7 @@ namespace soup
 			err.append(node->toString());
 			throw ParseError(std::move(err));
 		}
-		op.args.emplace_back(std::move(node));
+		pushArgNode(std::move(node));
 #if ENSURE_SANITY
 		ensureValidIterator();
 #endif
@@ -51,7 +51,12 @@ namespace soup
 
 	void ParserState::pushArg(Mixed&& val)
 	{
-		op.args.emplace_back(soup::make_unique<ast::LexemeNode>(Lexeme{ Lexeme::VAL, std::move(val) }));
+		pushArgNode(soup::make_unique<ast::LexemeNode>(Lexeme{ Lexeme::VAL, std::move(val) }));
+	}
+
+	void ParserState::pushArgNode(UniquePtr<ast::Node>&& node)
+	{
+		op.args.emplace_back(std::move(node));
 	}
 
 	void ParserState::setArgs(std::vector<UniquePtr<ast::Node>>&& args)
@@ -59,15 +64,20 @@ namespace soup
 		op.args = std::move(args);
 	}
 
-	void ParserState::pushLefthand(UniquePtr<ast::Node>&& node)
+	void ParserState::pushLefthand(Mixed&& val)
 	{
-		i = b->children.insert(i, std::move(node));
-		++i;
+		pushLefthand(Lexeme{ Lexeme::VAL, std::move(val) });
 	}
 
 	void ParserState::pushLefthand(Lexeme&& l)
 	{
-		pushLefthand(soup::make_unique<ast::LexemeNode>(std::move(l)));
+		pushLefthandNode(soup::make_unique<ast::LexemeNode>(std::move(l)));
+	}
+
+	void ParserState::pushLefthandNode(UniquePtr<ast::Node>&& node)
+	{
+		i = b->children.insert(i, std::move(node));
+		++i;
 	}
 
 	UniquePtr<ast::Node> ParserState::popLefthand()

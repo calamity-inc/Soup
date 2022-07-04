@@ -44,7 +44,7 @@ namespace soup
 				b->children.emplace_back(std::move(node));
 			}
 
-			ps.pushLefthand(std::move(b));
+			ps.pushLefthandNode(std::move(b));
 		}).user_data = reinterpret_cast<uintptr_t>(end_keyword);
 		addToken(end_keyword);
 	}

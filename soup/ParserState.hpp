@@ -21,10 +21,12 @@ namespace soup
 		void consumeRighthandValue();
 
 		void pushArg(Mixed&& val);
+		void pushArgNode(UniquePtr<ast::Node>&& node);
 		void setArgs(std::vector<UniquePtr<ast::Node>>&& args);
 
-		void pushLefthand(UniquePtr<ast::Node>&& node);
+		void pushLefthand(Mixed&& val);
 		void pushLefthand(Lexeme&& l);
+		void pushLefthandNode(UniquePtr<ast::Node>&& node);
 		UniquePtr<ast::Node> popLefthand();
 		[[nodiscard]] ast::Node* peekRighthand() const;
 		UniquePtr<ast::Node> popRighthand();
