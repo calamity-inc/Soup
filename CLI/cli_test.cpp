@@ -122,6 +122,15 @@ static void test_lang()
 			PhpState php;
 			assert(php.evaluate(R"(<?php $a = "Hello"; echo $a;)") == "Hello");
 			assert(php.evaluate(R"(<?php $a = 1; echo $a;)") == "1");
+			assert(php.evaluate(R"(<?php
+$a = "Hi";
+function f()
+{
+	$a = "Hello";
+}
+f();
+echo $a;
+)") == "Hi");
 		});
 		test("concat", []
 		{
