@@ -155,6 +155,14 @@ else
 	}
 }
 
+static void test_string()
+{
+	test("bin2hex", []
+	{
+		assert(string::bin2hex("\x1\x2\x3") == "010203");
+	});
+}
+
 void cli_test()
 {
 	unit("soup")
@@ -166,6 +174,10 @@ void cli_test()
 		unit("lang")
 		{
 			test_lang();
+		}
+		unit("string")
+		{
+			test_string();
 		}
 	}
 }
