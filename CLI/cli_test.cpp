@@ -48,6 +48,7 @@ static void test_data()
 	{
 		test("encode", []
 		{
+			assert(base64::encode("a") == "YQ==");
 			assert(base64::encode("Hello") == "SGVsbG8=");
 			assert(base64::encode("😀") == "8J+YgA==");
 		});
@@ -58,6 +59,7 @@ static void test_data()
 		});
 		test("decode", []
 		{
+			assert(base64::decode("YQ==") == "a");
 			assert(base64::decode("SGVsbG8=") == "Hello");
 			assert(base64::decode("8J+YgA==") == "😀");
 		});

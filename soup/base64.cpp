@@ -58,15 +58,18 @@ namespace soup
 	{
 		size_t out_len = 4 * ((size + 2) / 3);
 		std::string enc(out_len, '\0');
-		size_t i;
+		size_t i = 0;
 		char* p = enc.data();
 
-		for (i = 0; i < size - 2; i += 3)
+		if (size > 2)
 		{
-			*p++ = table[(data[i] >> 2) & 0x3F];
-			*p++ = table[((data[i] & 0x3) << 4) | ((int)(data[i + 1] & 0xF0) >> 4)];
-			*p++ = table[((data[i + 1] & 0xF) << 2) | ((int)(data[i + 2] & 0xC0) >> 6)];
-			*p++ = table[data[i + 2] & 0x3F];
+			for (; i < size - 2; i += 3)
+			{
+				*p++ = table[(data[i] >> 2) & 0x3F];
+				*p++ = table[((data[i] & 0x3) << 4) | ((int)(data[i + 1] & 0xF0) >> 4)];
+				*p++ = table[((data[i + 1] & 0xF) << 2) | ((int)(data[i + 2] & 0xC0) >> 6)];
+				*p++ = table[data[i + 2] & 0x3F];
+			}
 		}
 		if (i < size)
 		{
