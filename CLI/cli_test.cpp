@@ -223,6 +223,10 @@ static void test_util()
 		assert(intutil::invertEndianness(0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
 		assert(intutil::invertEndianness(0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
 	});
+	test("pow", []
+	{
+		assert(intutil::pow(10, 6) == 1000000);
+	});
 }
 
 void cli_test()

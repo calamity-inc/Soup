@@ -16,5 +16,16 @@ namespace soup
 				| ((val >> 56) & 0xFF)
 				;
 		}
+
+		template <typename T>
+		static T pow(T a, T b)
+		{
+			T res = a;
+			while (--b)
+			{
+				res *= a;
+			}
+			return res;
+		}
 	};
 }
