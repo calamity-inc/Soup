@@ -121,6 +121,7 @@ namespace soup
 				else
 				{
 					if (st.lb_is_space
+						|| *i == '$'
 						|| *i == '('
 						|| *i == ')'
 						|| *i == ','
@@ -135,7 +136,6 @@ namespace soup
 				}
 				st.lb.push_back(*i);
 				if (*i == '('
-					|| *i == '.'
 					|| *i == '>'
 					)
 				{
