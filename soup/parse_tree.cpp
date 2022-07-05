@@ -80,6 +80,12 @@ namespace soup::ast
 	std::string Block::toString(std::string prefix) const
 	{
 		std::string str = "block";
+		for (const auto& child : param_literals)
+		{
+			str.append(" [");
+			str.append(child->toString());
+			str.push_back(']');
+		}
 		prefix.push_back('\t');
 		for (const auto& child : children)
 		{
@@ -92,6 +98,16 @@ namespace soup::ast
 
 	void Block::compile(Writer& w) const
 	{
+		if (size_t num_params = param_literals.size())
+		{
+			for (auto i = param_literals.rbegin(); i != param_literals.rend(); ++i)
+			{
+				(*i)->compile(w);
+			}
+			uint8_t b = OP_POP_ARGS;
+			w.u8(b);
+			w.u64_dyn(num_params);
+		}
 		for (const auto& child : children)
 		{
 			child->compile(w);
@@ -114,6 +130,13 @@ namespace soup::ast
 				uint8_t b = OP_PUSH_INT;
 				w.u8(b);
 				w.i64_dyn(lexeme.val.getInt());
+				return;
+			}
+			if (lexeme.val.isUInt())
+			{
+				uint8_t b = OP_PUSH_UINT;
+				w.u8(b);
+				w.u64_dyn(lexeme.val.getUInt());
 				return;
 			}
 			if (lexeme.val.isString())

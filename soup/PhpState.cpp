@@ -38,7 +38,7 @@ namespace soup
 			auto node = ps.popRighthand();
 			if (node->type != ast::Node::LEXEME)
 			{
-				std::string err = "'function' expected righthand name or '(', found ";
+				std::string err = "'function' expected righthand '(' or name, found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
 			}
@@ -57,12 +57,46 @@ namespace soup
 
 			node = ps.popRighthand();
 			if (node->type != ast::Node::LEXEME
-				|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
+				|| reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != Lexeme::LITERAL
 				)
 			{
-				std::string err = "'function' expected righthand ')', found ";
+				std::string err = "'function' expected righthand ')' or parameter list, found ";
 				err.append(node->toString());
 				throw ParseError(std::move(err));
+			}
+			std::vector<UniquePtr<ast::Node>> param_literals{};
+			if (reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.val.getString() != ")")
+			{
+				while (true)
+				{
+					param_literals.emplace_back(std::move(node));
+
+					node = ps.popRighthand();
+					if (node->type != ast::Node::LEXEME
+						|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(",")
+						)
+					{
+						if (node->type == ast::Node::LEXEME
+							&& reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
+							)
+						{
+							break;
+						}
+						std::string err = "Parameter list expected righthand ',', found ";
+						err.append(node->toString());
+						throw ParseError(std::move(err));
+					}
+
+					node = ps.popRighthand();
+					if (node->type != ast::Node::LEXEME
+						|| reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != Lexeme::LITERAL
+						)
+					{
+						std::string err = "Parameter list expected righthand parameter after ',', found ";
+						err.append(node->toString());
+						throw ParseError(std::move(err));
+					}
+				}
 			}
 
 			node = ps.popRighthand();
@@ -73,6 +107,7 @@ namespace soup
 				throw ParseError(std::move(err));
 			}
 
+			reinterpret_cast<ast::Block*>(node.get())->param_literals = std::move(param_literals);
 			if (var_name_literal)
 			{
 				ps.setOp(OP_ASSIGN);
@@ -177,18 +212,51 @@ namespace soup
 		});
 		ld.addToken("(", [](ParserState& ps)
 		{
-			if (auto node = ps.popRighthand();
-				node->type != ast::Node::LEXEME
+			ps.setOp(OP_CALL);
+			ps.consumeLefthandValue();
+
+			std::vector<UniquePtr<ast::Node>> arg_nodes{};
+
+			auto node = ps.popRighthand();
+			if (node->type != ast::Node::LEXEME
 				|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
 				)
 			{
-				std::string err = "'(' expected righthand ')', found ";
-				err.append(node->toString());
-				throw ParseError(std::move(err));
-			}
+				while (true)
+				{
+					if (!node->isValue())
+					{
+						std::string err = "Argument list expected value, found ";
+						err.append(node->toString());
+						throw ParseError(std::move(err));
+					}
+					arg_nodes.emplace_back(std::move(node));
 
-			ps.setOp(OP_CALL);
-			ps.consumeLefthandValue();
+					node = ps.popRighthand();
+					if (node->type != ast::Node::LEXEME
+						|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(",")
+						)
+					{
+						if (node->type == ast::Node::LEXEME
+							&& reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(")")
+							)
+						{
+							break;
+						}
+						std::string err = "Argument list expected righthand ',', found ";
+						err.append(node->toString());
+						throw ParseError(std::move(err));
+					}
+
+					node = ps.popRighthand();
+				}
+			}
+			
+			ps.pushArg(arg_nodes.size());
+			for (auto& node : arg_nodes)
+			{
+				ps.pushArgNode(std::move(node));
+			}
 		});
 		ld.addToken("require", Rgb::RED, [](ParserState& ps)
 		{
@@ -279,9 +347,9 @@ namespace soup
 		return output;
 	}
 
-	void PhpState::execute(std::string& output, Reader& r, unsigned int max_require_depth) const
+	void PhpState::execute(std::string& output, Reader& r, unsigned int max_require_depth, std::stack<std::shared_ptr<Mixed>>&& stack) const
 	{
-		LangVm vm{ &r };
+		LangVm vm(&r, std::move(stack));
 
 		std::unordered_map<Mixed, std::shared_ptr<Mixed>> _SERVER{};
 		_SERVER.emplace("REQUEST_URI", std::make_shared<Mixed>(request_uri));
@@ -358,7 +426,19 @@ namespace soup
 			case OP_CALL:
 				{
 					auto sr = vm.popFunc();
-					execute(output, sr, max_require_depth);
+					auto num_args = vm.popRaw()->getUInt();
+					std::vector<std::shared_ptr<Mixed>> args{};
+					args.reserve(num_args);
+					while (num_args--)
+					{
+						args.emplace_back(vm.pop());
+					}
+					std::stack<std::shared_ptr<Mixed>> handover_stack{};
+					for (auto i = args.rbegin(); i != args.rend(); ++i)
+					{
+						handover_stack.emplace(std::move(*i));
+					}
+					execute(output, sr, max_require_depth, std::move(handover_stack));
 				}
 				break;
 

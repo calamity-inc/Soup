@@ -3,6 +3,7 @@
 #include "fwd.hpp"
 
 #include <filesystem>
+#include <stack>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,6 @@ namespace soup
 
 		[[nodiscard]] std::string evaluate(const std::string& code, unsigned int max_require_depth = 10) const;
 
-		void execute(std::string& output, Reader& r, unsigned int max_require_depth = 10) const;
+		void execute(std::string& output, Reader& r, unsigned int max_require_depth = 10, std::stack<std::shared_ptr<Mixed>>&& stack = {}) const;
 	};
 }

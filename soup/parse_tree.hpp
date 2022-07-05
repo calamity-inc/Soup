@@ -37,6 +37,7 @@ namespace soup::ast
 	struct Block : public Node
 	{
 		std::vector<UniquePtr<Node>> children{};
+		std::vector<UniquePtr<Node>> param_literals;
 
 		Block(std::vector<UniquePtr<Node>>&& children = {})
 			: Node(BLOCK), children(std::move(children))
