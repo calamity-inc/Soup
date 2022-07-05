@@ -41,5 +41,9 @@ namespace soup
 		[[nodiscard]] std::string toString(bool inverted = false) const noexcept;
 		[[nodiscard]] const char* toString(ChessCoordinate coord, bool inverted = false) const noexcept;
 		[[nodiscard]] const char* toString(uint8_t file, uint8_t rank, bool inverted = false) const noexcept;
+
+		void playMove(ChessCoordinate from, ChessCoordinate to);
+
+		void playRandomMove(bool black = true);
 	};
 }

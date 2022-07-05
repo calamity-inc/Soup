@@ -52,9 +52,9 @@ namespace soup
 					}
 					else
 					{
-						cc.board.square(coord) = cc.board.square(cc.selection);
-						cc.board.square(cc.selection).reset();
+						cc.board.playMove(cc.selection, coord);
 						cc.selection.invalidate();
+						cc.board.playRandomMove();
 					}
 				}
 			}

@@ -3,6 +3,7 @@
 #include <cstring> // memset
 
 #include "ChessCoordinate.hpp"
+#include "rand.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -184,5 +185,51 @@ namespace soup
 			return piece_symbol;
 		}
 		return ((((rank + file) % 2) ^ !inverted) ? "■" : "□");
+	}
+
+	void Chessboard::playMove(ChessCoordinate from, ChessCoordinate to)
+	{
+		square(to) = square(from);
+		square(from).reset();
+	}
+
+	void Chessboard::playRandomMove(bool black)
+	{
+		std::vector<ChessCoordinate> my_pieces{};
+		for (uint8_t file = 0; file != 8; ++file)
+		{
+			for (uint8_t rank = 0; rank != 8; ++rank)
+			{
+				ChessCoordinate coord(file, rank);
+				if (!square(coord).isEmpty()
+					&& square(coord).black == black
+					)
+				{
+					my_pieces.emplace_back(coord);
+				}
+			}
+		}
+		if (my_pieces.empty())
+		{
+			return;
+		}
+		ChessCoordinate move_from;
+		std::vector<ChessCoordinate> move_to_options{};
+		ChessCoordinate move_to;
+		while (true)
+		{
+			move_from = rand(my_pieces);
+			move_to_options = square(move_from).getMoves(move_from);
+			move_to = rand(move_to_options);
+
+			// Shitty move validation
+			if (square(move_to).isEmpty()
+				|| square(move_to).black != black
+				)
+			{
+				break;
+			}
+		}
+		playMove(move_from, move_to);
 	}
 }
