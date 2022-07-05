@@ -116,6 +116,18 @@ namespace soup
 		return ret;
 	}
 
+	UniquePtr<ast::Block> ParserState::collapseRighthandBlock(const char* end_token)
+	{
+		auto b = soup::make_unique<ast::Block>();
+		for (UniquePtr<ast::Node> node;
+			node = popRighthand(), node->type != ast::Node::LEXEME || reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != end_token;
+			)
+		{
+			b->children.emplace_back(std::move(node));
+		}
+		return b;
+	}
+
 	const Token& ParserState::getToken() const
 	{
 		return ld->getToken(reinterpret_cast<ast::LexemeNode*>(i->get())->lexeme);

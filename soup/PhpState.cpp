@@ -179,6 +179,21 @@ namespace soup
 			}
 
 			node = ps.popRighthand();
+			if (node->type != ast::Node::BLOCK
+				&& (
+					node->type != ast::Node::LEXEME
+					|| !reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.isLiteral(":")
+					)
+				)
+			{
+				std::string err = "'if(cond)' expected righthand block or ':', found ";
+				err.append(node->toString());
+				throw ParseError(std::move(err));
+			}
+			if (node->type != ast::Node::BLOCK)
+			{
+				node = ps.collapseRighthandBlock("endif");
+			}
 			if (node->type != ast::Node::BLOCK)
 			{
 				std::string err = "'if(cond)' expected righthand block, found ";
@@ -187,6 +202,7 @@ namespace soup
 			}
 			ps.pushArg(reinterpret_cast<ast::Block*>(node.release()));
 		});
+		ld.addToken("endif");
 		ld.addToken("else", Rgb::RED, [](ParserState& ps)
 		{
 			auto node = ps.popLefthand();

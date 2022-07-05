@@ -30,6 +30,7 @@ namespace soup
 		UniquePtr<ast::Node> popLefthand();
 		[[nodiscard]] ast::Node* peekRighthand() const;
 		UniquePtr<ast::Node> popRighthand();
+		UniquePtr<ast::Block> collapseRighthandBlock(const char* end_token); // end_token must've been registered with addToken
 
 		[[nodiscard]] const Token& getToken() const;
 

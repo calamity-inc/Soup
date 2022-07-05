@@ -178,8 +178,7 @@ if($a == 1)
 else
 {
 	echo "false";
-}
-)") == "true");
+})") == "true");
 			assert(php.evaluate(R"(<?php
 $a = 2;
 if($a == 1)
@@ -189,8 +188,17 @@ if($a == 1)
 else
 {
 	echo "false";
-}
-)") == "false");
+})") == "false");
+			assert(php.evaluate(R"(<?php
+$a = 1;
+if($a == 1):
+echo "Hello";
+endif;)") == "Hello");
+			assert(php.evaluate(R"(<?php
+$a = 1;
+if($a == 2):
+echo "Hello";
+endif;)") == "");
 		});
 		test("comparisons", []
 		{

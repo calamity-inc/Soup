@@ -33,18 +33,7 @@ namespace soup
 	{
 		addToken(start_keyword, [](ParserState& ps)
 		{
-			const auto end_keyword = reinterpret_cast<const char*>(ps.getToken().user_data);
-
-			auto b = soup::make_unique<ast::Block>();
-
-			for (UniquePtr<ast::Node> node;
-				node = ps.popRighthand(), node->type != ast::Node::LEXEME || reinterpret_cast<ast::LexemeNode*>(node.get())->lexeme.token_keyword != end_keyword;
-				)
-			{
-				b->children.emplace_back(std::move(node));
-			}
-
-			ps.pushLefthandNode(std::move(b));
+			ps.pushLefthandNode(ps.collapseRighthandBlock(reinterpret_cast<const char*>(ps.getToken().user_data)));
 		}).user_data = reinterpret_cast<uintptr_t>(end_keyword);
 		addToken(end_keyword);
 	}
@@ -126,6 +115,7 @@ namespace soup
 						|| *i == ')'
 						|| *i == ','
 						|| *i == '.'
+						|| *i == ':'
 						|| *i == '<'
 						|| *i == '['
 						|| *i == '{'
