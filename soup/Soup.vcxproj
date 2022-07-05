@@ -403,6 +403,8 @@
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
     <ClInclude Include="intutil.hpp" />
+    <ClInclude Include="LcgRandomDevice.hpp" />
+    <ClInclude Include="MtRandomDevice.hpp" />
     <ClInclude Include="Op.hpp" />
     <ClInclude Include="AtomicDeque.hpp" />
     <ClInclude Include="AtomicStack.hpp" />
@@ -498,6 +500,7 @@
     <ClInclude Include="PolyVector.hpp" />
     <ClInclude Include="PoppedNode.hpp" />
     <ClInclude Include="QrCode.hpp" />
+    <ClInclude Include="RandomDevice.hpp" />
     <ClInclude Include="RasterFont.hpp" />
     <ClInclude Include="Reader.hpp" />
     <ClInclude Include="json.hpp" />
@@ -685,6 +688,7 @@
     <ClCompile Include="LangDesc.cpp" />
     <ClCompile Include="LangVm.cpp" />
     <ClCompile Include="Layout.cpp" />
+    <ClCompile Include="LcgRandomDevice.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
@@ -693,6 +697,7 @@
     <ClCompile Include="Mixed.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="ModuleHider.cpp" />
+    <ClCompile Include="MtRandomDevice.cpp" />
     <ClCompile Include="MysqlConnection.cpp" />
     <ClCompile Include="Oid.cpp" />
     <ClCompile Include="OpaqueString.cpp" />

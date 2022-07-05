@@ -713,8 +713,17 @@
     <ClInclude Include="SceneRasterisingRenderer.hpp">
       <Filter>math\3d\scene</Filter>
     </ClInclude>
+    <ClInclude Include="RandomDevice.hpp">
+      <Filter>algos\rand</Filter>
+    </ClInclude>
+    <ClInclude Include="LcgRandomDevice.hpp">
+      <Filter>algos\rand</Filter>
+    </ClInclude>
     <ClInclude Include="intutil.hpp">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="MtRandomDevice.hpp">
+      <Filter>algos\rand</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1034,6 +1043,12 @@
     <ClCompile Include="SceneRasterisingRenderer.cpp">
       <Filter>math\3d\scene</Filter>
     </ClCompile>
+    <ClCompile Include="LcgRandomDevice.cpp">
+      <Filter>algos\rand</Filter>
+    </ClCompile>
+    <ClCompile Include="MtRandomDevice.cpp">
+      <Filter>algos\rand</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1143,6 +1158,12 @@
     </Filter>
     <Filter Include="math\3d\scene">
       <UniqueIdentifier>{865109e2-8a37-48ea-be8d-f85c1c1a7a36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos">
+      <UniqueIdentifier>{039cce06-0529-4573-b017-965ff1ca2670}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos\rand">
+      <UniqueIdentifier>{bd18ff21-d179-48f9-9f75-aac83f019e2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
