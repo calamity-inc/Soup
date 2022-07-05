@@ -48,7 +48,7 @@ namespace soup
 		return shift_right(byte, -offset);
 	}
 
-	static void encode_sequence(const uint8_t* plain, size_t len, std::string& out)
+	static void encode_sequence(const uint8_t* plain, size_t len, std::string& out, bool pad)
 	{
 		for (int block = 0; block != 8; ++block)
 		{
@@ -57,7 +57,10 @@ namespace soup
 
 			if (octet >= len) // we hit the end of the buffer
 			{
-				out.append(8 - block, '=');
+				if (pad)
+				{
+					out.append(8 - block, '=');
+				}
 				return;
 			}
 
@@ -72,14 +75,14 @@ namespace soup
 		}
 	}
 
-	std::string base32::encode(const std::string& in)
+	std::string base32::encode(const std::string& in, bool pad)
 	{
 		const auto len = in.length();
 		std::string out{};
 		out.reserve(getEncodedLength(len));
 		for (size_t i = 0; i < len; i += 5)
 		{
-			encode_sequence((const uint8_t*)&in.at(i), std::min<size_t>(len - i, 5), out);
+			encode_sequence((const uint8_t*)&in.at(i), std::min<size_t>(len - i, 5), out, pad);
 		}
 		return out;
 	}

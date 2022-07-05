@@ -20,7 +20,7 @@ namespace soup
 			return (len / 8) * 5;
 		}
 
-		[[nodiscard]] static std::string encode(const std::string& in);
+		[[nodiscard]] static std::string encode(const std::string& in, bool pad = true);
 		[[nodiscard]] static std::string decode(const std::string& in);
 	};
 }
