@@ -46,7 +46,7 @@ namespace soup
 				}
 				else
 				{
-					if (cc.board.square(coord).isEmpty())
+					if (!cc.board.square(coord).isEmpty())
 					{
 						cc.selection = coord;
 					}

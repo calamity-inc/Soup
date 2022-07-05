@@ -15,7 +15,7 @@ namespace soup
 
 		[[nodiscard]] constexpr bool isEmpty() const noexcept
 		{
-			return piece != PIECE_NONE;
+			return piece == PIECE_NONE;
 		}
 
 		void reset() noexcept
