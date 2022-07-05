@@ -402,6 +402,7 @@
     <ClInclude Include="Asn1Sequence.hpp" />
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
+    <ClInclude Include="hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
     <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
@@ -675,6 +676,7 @@
     <ClCompile Include="ffi.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FormattedText.cpp" />
+    <ClCompile Include="hotp.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="joaat.cpp" />
     <ClCompile Include="json.cpp" />
