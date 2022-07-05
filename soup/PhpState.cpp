@@ -268,7 +268,7 @@ namespace soup
 				}
 			}
 			
-			ps.pushArg(arg_nodes.size());
+			ps.pushArg((uint64_t)arg_nodes.size());
 			for (auto& node : arg_nodes)
 			{
 				ps.pushArgNode(std::move(node));
