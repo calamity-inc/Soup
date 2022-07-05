@@ -734,6 +734,9 @@
     <ClInclude Include="hotp.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="base32.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1062,6 +1065,7 @@
       <Filter>algos\maze</Filter>
     </ClCompile>
     <ClCompile Include="hotp.cpp" />
+    <ClCompile Include="base32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

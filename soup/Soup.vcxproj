@@ -402,6 +402,7 @@
     <ClInclude Include="Asn1Sequence.hpp" />
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
+    <ClInclude Include="base32.hpp" />
     <ClInclude Include="hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
@@ -648,6 +649,7 @@
     <ClCompile Include="Asn1Identifier.cpp" />
     <ClCompile Include="Asn1Sequence.cpp" />
     <ClCompile Include="AssemblyBuilder.cpp" />
+    <ClCompile Include="base32.cpp" />
     <ClCompile Include="base64.cpp" />
     <ClCompile Include="bcrypt.cpp" />
     <ClCompile Include="Bigfloat.cpp" />
