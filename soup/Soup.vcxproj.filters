@@ -725,6 +725,12 @@
     <ClInclude Include="MtRandomDevice.hpp">
       <Filter>algos\rand</Filter>
     </ClInclude>
+    <ClInclude Include="MazeGenerator.hpp">
+      <Filter>algos\maze</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeGeneratorDepthFirst.hpp">
+      <Filter>algos\maze</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1049,6 +1055,9 @@
     <ClCompile Include="MtRandomDevice.cpp">
       <Filter>algos\rand</Filter>
     </ClCompile>
+    <ClCompile Include="MazeGeneratorDepthFirst.cpp">
+      <Filter>algos\maze</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1164,6 +1173,9 @@
     </Filter>
     <Filter Include="algos\rand">
       <UniqueIdentifier>{bd18ff21-d179-48f9-9f75-aac83f019e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos\maze">
+      <UniqueIdentifier>{16b78dc5-8998-48bd-b278-3bcd7be2a396}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -404,7 +404,9 @@
     <ClInclude Include="Asn1Type.hpp" />
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
+    <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
     <ClInclude Include="MtRandomDevice.hpp" />
+    <ClInclude Include="MazeGenerator.hpp" />
     <ClInclude Include="Op.hpp" />
     <ClInclude Include="AtomicDeque.hpp" />
     <ClInclude Include="AtomicStack.hpp" />
@@ -691,6 +693,7 @@
     <ClCompile Include="LcgRandomDevice.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="MazeGeneratorDepthFirst.cpp" />
     <ClCompile Include="MemoryBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MimeMessage.cpp" />
