@@ -713,6 +713,9 @@
     <ClInclude Include="SceneRasterisingRenderer.hpp">
       <Filter>math\3d\scene</Filter>
     </ClInclude>
+    <ClInclude Include="intutil.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">

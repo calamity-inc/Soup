@@ -16,6 +16,9 @@
 
 #include <PhpState.hpp>
 
+#include <string.hpp>
+#include <intutil.hpp>
+
 using namespace soup;
 
 static void test_data()
@@ -209,11 +212,16 @@ endif;)") == "");
 	}
 }
 
-static void test_string()
+static void test_util()
 {
 	test("bin2hex", []
 	{
 		assert(string::bin2hex("\x1\x2\x3") == "010203");
+	});
+	test("invertEndianness", []
+	{
+		assert(intutil::invertEndianness(0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
+		assert(intutil::invertEndianness(0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
 	});
 }
 
@@ -229,9 +237,9 @@ void cli_test()
 		{
 			test_lang();
 		}
-		unit("string")
+		unit("util")
 		{
-			test_string();
+			test_util();
 		}
 	}
 }

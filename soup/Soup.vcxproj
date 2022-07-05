@@ -402,6 +402,7 @@
     <ClInclude Include="Asn1Sequence.hpp" />
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
+    <ClInclude Include="intutil.hpp" />
     <ClInclude Include="Op.hpp" />
     <ClInclude Include="AtomicDeque.hpp" />
     <ClInclude Include="AtomicStack.hpp" />
