@@ -106,7 +106,7 @@ namespace soup
 				{
 					if (stack.empty())
 					{
-						break;
+						throw ParseError("Function got less arguments than expected");
 					}
 					vars.emplace(std::move(var_name), pop());
 				}

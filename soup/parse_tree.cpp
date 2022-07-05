@@ -100,9 +100,9 @@ namespace soup::ast
 	{
 		if (size_t num_params = param_literals.size())
 		{
-			for (auto i = param_literals.rbegin(); i != param_literals.rend(); ++i)
+			for (const auto& param : param_literals)
 			{
-				(*i)->compile(w);
+				param->compile(w);
 			}
 			uint8_t b = OP_POP_ARGS;
 			w.u8(b);

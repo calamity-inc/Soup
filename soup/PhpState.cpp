@@ -427,16 +427,10 @@ namespace soup
 				{
 					auto sr = vm.popFunc();
 					auto num_args = vm.popRaw()->getUInt();
-					std::vector<std::shared_ptr<Mixed>> args{};
-					args.reserve(num_args);
+					std::stack<std::shared_ptr<Mixed>> handover_stack{};
 					while (num_args--)
 					{
-						args.emplace_back(vm.pop());
-					}
-					std::stack<std::shared_ptr<Mixed>> handover_stack{};
-					for (auto i = args.rbegin(); i != args.rend(); ++i)
-					{
-						handover_stack.emplace(std::move(*i));
+						handover_stack.emplace(vm.pop());
 					}
 					execute(output, sr, max_require_depth, std::move(handover_stack));
 				}

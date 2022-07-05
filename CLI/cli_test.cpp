@@ -147,7 +147,6 @@ echo $a;
 			assert(php.evaluate(R"(<?php $a = function(){ $a = "Hello"; echo $a; }; $a();)") == "Hello");
 			assert(php.evaluate(R"(<?php function a() { echo "Hello"; } a();)") == "Hello");
 			assert(php.evaluate(R"(<?php function a($a) { echo $a; } a("Hi");)") == "Hi");
-			assert(php.evaluate(R"(<?php function a($a, $b) { echo $a; } a("Hi");)") == "Hi");
 			assert(php.evaluate(R"(<?php
 function greet($greeting, $subject)
 {
