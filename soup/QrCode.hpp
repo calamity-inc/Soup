@@ -49,6 +49,7 @@ namespace soup
 		* the ecl argument if it can be done without increasing the version.
 		*/
 		static QrCode encodeText(const char* text, ecc ecl = ecc::LOW);
+		static QrCode encodeText(const std::string& text, ecc ecl = ecc::LOW);
 
 		/*
 		* Returns a QR Code representing the given binary data at the given error correction level.

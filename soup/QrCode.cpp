@@ -198,12 +198,19 @@ namespace soup
 
 	const char* Segment::ALPHANUMERIC_CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
 
-	QrCode QrCode::encodeText(const char* text, ecc ecl) {
+	QrCode QrCode::encodeText(const char* text, ecc ecl)
+	{
 		std::vector<Segment> segs = Segment::makeSegments(text);
 		return encodeSegments(segs, ecl);
 	}
 
-	QrCode QrCode::encodeBinary(const std::vector<uint8_t>& data, ecc ecl) {
+	QrCode QrCode::encodeText(const std::string& text, ecc ecl)
+	{
+		return encodeText(text.c_str());
+	}
+
+	QrCode QrCode::encodeBinary(const std::vector<uint8_t>& data, ecc ecl)
+	{
 		std::vector<Segment> segs{ Segment::makeBytes(data) };
 		return encodeSegments(segs, ecl);
 	}
