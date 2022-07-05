@@ -2,8 +2,9 @@
 
 #include <unit_testing.hpp>
 
-#include <hotp.hpp>
+#include <Hotp.hpp>
 
+#include <base32.hpp>
 #include <base64.hpp>
 #include <sha1.hpp>
 #include <sha256.hpp>
@@ -29,21 +30,44 @@ static void test_crypto()
 {
 	test("hotp", []
 	{
-		assert(hotp("12345678901234567890", 0) == 755224);
-		assert(hotp("12345678901234567890", 1) == 287082);
-		assert(hotp("12345678901234567890", 2) == 359152);
-		assert(hotp("12345678901234567890", 3) == 969429);
-		assert(hotp("12345678901234567890", 4) == 338314);
-		assert(hotp("12345678901234567890", 5) == 254676);
-		assert(hotp("12345678901234567890", 6) == 287922);
-		assert(hotp("12345678901234567890", 7) == 162583);
-		assert(hotp("12345678901234567890", 8) == 399871);
-		assert(hotp("12345678901234567890", 9) == 520489);
+		Hotp gen("12345678901234567890");
+		assert(gen.getValue(0) == 755224);
+		assert(gen.getValue(1) == 287082);
+		assert(gen.getValue(2) == 359152);
+		assert(gen.getValue(3) == 969429);
+		assert(gen.getValue(4) == 338314);
+		assert(gen.getValue(5) == 254676);
+		assert(gen.getValue(6) == 287922);
+		assert(gen.getValue(7) == 162583);
+		assert(gen.getValue(8) == 399871);
+		assert(gen.getValue(9) == 520489);
 	});
 }
 
 static void test_data()
 {
+	unit("base32")
+	{
+		test("encode", []
+		{
+			assert(base32::encode("a") == "ME======");
+			assert(base32::encode("aa") == "MFQQ====");
+			assert(base32::encode("aaa") == "MFQWC===");
+			assert(base32::encode("aaaa") == "MFQWCYI=");
+			assert(base32::encode("aaaaa") == "MFQWCYLB");
+			assert(base32::encode("aaaaaa") == "MFQWCYLBME======");
+		});
+		test("decode", []
+		{
+			assert(base32::decode("ME======") == "a");
+			assert(base32::decode("MFQQ====") == "aa");
+			assert(base32::decode("MFQWC===") == "aaa");
+			assert(base32::decode("MFQWCYI=") == "aaaa");
+			assert(base32::decode("MFQWCYLB") == "aaaaa");
+			assert(base32::decode("MFQWCYLBME======") == "aaaaaa");
+		});
+	}
+	
 	unit("base64")
 	{
 		test("encode", []

@@ -403,7 +403,7 @@
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
     <ClInclude Include="base32.hpp" />
-    <ClInclude Include="hotp.hpp" />
+    <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
     <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
@@ -586,6 +586,7 @@
     <ClInclude Include="Thread.hpp" />
     <ClInclude Include="Lexeme.hpp" />
     <ClInclude Include="Token.hpp" />
+    <ClInclude Include="Totp.hpp" />
     <ClInclude Include="TreeNode.hpp" />
     <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="unit_testing.hpp" />
@@ -678,7 +679,7 @@
     <ClCompile Include="ffi.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FormattedText.cpp" />
-    <ClCompile Include="hotp.cpp" />
+    <ClCompile Include="Hotp.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="joaat.cpp" />
     <ClCompile Include="json.cpp" />
@@ -740,6 +741,7 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />
+    <ClCompile Include="Totp.cpp" />
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="unit_testing.cpp" />
     <ClCompile Include="Url.cpp" />

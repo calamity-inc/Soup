@@ -731,7 +731,10 @@
     <ClInclude Include="MazeGeneratorDepthFirst.hpp">
       <Filter>algos\maze</Filter>
     </ClInclude>
-    <ClInclude Include="hotp.hpp">
+    <ClInclude Include="Hotp.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="Totp.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
     <ClInclude Include="base32.hpp">
@@ -1064,8 +1067,13 @@
     <ClCompile Include="MazeGeneratorDepthFirst.cpp">
       <Filter>algos\maze</Filter>
     </ClCompile>
-    <ClCompile Include="hotp.cpp" />
     <ClCompile Include="base32.cpp" />
+    <ClCompile Include="Hotp.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="Totp.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

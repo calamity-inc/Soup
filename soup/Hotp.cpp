@@ -1,12 +1,24 @@
-#include "hotp.hpp"
+#include "Hotp.hpp"
 
 #include "intutil.hpp"
+#include "rand.hpp"
 #include "sha1.hpp"
 #include "StringWriter.hpp"
 
 namespace soup
 {
-	int hotp(const std::string& secret, uint64_t counter, uint8_t digits)
+	std::string Hotp::generateSecret(size_t bytes)
+	{
+		std::string secret;
+		secret.reserve(bytes);
+		while (bytes--)
+		{
+			secret.push_back(soup::rand.byte());
+		}
+		return secret;
+	}
+
+	int Hotp::getValue(uint64_t counter, uint8_t digits) const
 	{
 		StringWriter w(false);
 		w.u64(counter);
