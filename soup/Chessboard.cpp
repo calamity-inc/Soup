@@ -2,7 +2,6 @@
 
 #include <cstring> // memset
 
-#include "ChessCoordinate.hpp"
 #include "rand.hpp"
 #include "string.hpp"
 
@@ -191,6 +190,7 @@ namespace soup
 	{
 		square(to) = square(from);
 		square(from).reset();
+		last_move = { from, to };
 	}
 
 	void Chessboard::playRandomMove(bool black)

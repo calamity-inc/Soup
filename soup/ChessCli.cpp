@@ -64,6 +64,20 @@ namespace soup
 			console.clearScreen();
 			console.setCursorPos(0, 0);
 			console << cc.board.toString(cc.dark_theme);
+			if (cc.board.last_move.from.isValid())
+			{
+				auto xy = chess2console(cc.board.last_move.from);
+				console.setCursorPos(xy.first, xy.second);
+				console.setBackgroundColour(0, 170, 0);
+				console << cc.board.toString(cc.board.last_move.from, cc.dark_theme);
+
+				xy = chess2console(cc.board.last_move.to);
+				console.setCursorPos(xy.first, xy.second);
+				console.setBackgroundColour(0, 170, 0);
+				console << cc.board.toString(cc.board.last_move.to, cc.dark_theme);
+
+				console.setBackgroundColour(0, 0, 0);
+			}
 			if (cc.selection.isValid())
 			{
 				console.setCursorPos(x, y);

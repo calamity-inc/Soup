@@ -4,6 +4,7 @@
 #include <string>
 
 #include "fwd.hpp"
+#include "ChessCoordinate.hpp"
 #include "ChessSquare.hpp"
 
 namespace soup
@@ -11,9 +12,16 @@ namespace soup
 	class Chessboard
 	{
 	public:
+		struct Move
+		{
+			ChessCoordinate from;
+			ChessCoordinate to;
+		};
+
 		static constexpr auto num_squares = (8 * 8);
 
 		std::array<ChessSquare, num_squares> squares{};
+		Move last_move{};
 
 		Chessboard();
 
