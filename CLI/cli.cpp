@@ -19,17 +19,26 @@ int main(int argc, const char** argv)
 		std::string subcommand = argv[1];
 		string::lower(subcommand);
 
-		if (subcommand == "qr")
+		if (subcommand == "3d")
 		{
-			if (argc != 3)
+			cli_3d();
+			return 0;
+		}
+
+		if (subcommand == "chess")
+		{
+			ChessCli cc{};
+			if (argc > 2)
 			{
-				std::cout << "Syntax: soup qr [contents]" << std::endl;
-				return 0;
+				cc.board.loadFen(argv[2]);
 			}
-			auto qrcode = QrCode::encodeText(argv[2]);
-			console.init(false);
-			console << qrcode.toCanvas(4, true).toStringDownsampledDoublewidth(true);
-			console.resetColour();
+			cc.run();
+			return 0;
+		}
+
+		if (subcommand == "dvd")
+		{
+			cli_dvd();
 			return 0;
 		}
 
@@ -53,20 +62,23 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
-		if (subcommand == "chess")
+		if (subcommand == "maze")
 		{
-			ChessCli cc{};
-			if (argc > 2)
-			{
-				cc.board.loadFen(argv[2]);
-			}
-			cc.run();
+			cli_maze();
 			return 0;
 		}
 
-		if (subcommand == "3d")
+		if (subcommand == "qr")
 		{
-			cli_3d();
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup qr [contents]" << std::endl;
+				return 0;
+			}
+			auto qrcode = QrCode::encodeText(argv[2]);
+			console.init(false);
+			console << qrcode.toCanvas(4, true).toStringDownsampledDoublewidth(true);
+			console.resetColour();
 			return 0;
 		}
 
@@ -79,12 +91,6 @@ int main(int argc, const char** argv)
 		if (subcommand == "snake")
 		{
 			cli_snake();
-			return 0;
-		}
-
-		if (subcommand == "dvd")
-		{
-			cli_dvd();
 			return 0;
 		}
 
@@ -108,13 +114,14 @@ int main(int argc, const char** argv)
 	std::cout << R"EOC(Syntax: soup [tool]
 
 Available tools:
-- qr [contents]
-- edit [files...]
-- chess <FEN>
 - 3d
+- chess <FEN>
+- dvd
+- edit [files...]
+- maze
+- qr [contents]
 - repl
 - snake
-- dvd
 - test
 - websrv [dir]
 

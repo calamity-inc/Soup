@@ -22,6 +22,7 @@
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="cli_3d.cpp" />
     <ClCompile Include="cli_dvd.cpp" />
+    <ClCompile Include="cli_maze.cpp" />
     <ClCompile Include="cli_repl.cpp" />
     <ClCompile Include="cli_snake.cpp" />
     <ClCompile Include="cli_test.cpp" />
