@@ -1,20 +1,26 @@
 #pragma once
 
 #include <cstdint>
-#include <istream>
+
+#include "Reader.hpp"
+
+#define DEBUG_BR false
+
+#if DEBUG_BR
+#include <iostream>
+#endif
 
 namespace soup
 {
-	class BitInStream
+	class BitReader
 	{
-	protected:
-		std::istream* is;
-		uint8_t bit_idx;
+	public:
+		Reader* r;
+		uint8_t bit_idx = 0;
 		uint8_t byte;
 
-	public:
-		BitInStream(std::istream* is)
-			: is(is)
+		BitReader(Reader* r)
+			: r(r)
 		{
 		}
 
@@ -32,7 +38,7 @@ namespace soup
 		{
 			if (isByteAligned())
 			{
-				is->read((char*)&byte, 1);
+				r->u8(byte);
 			}
 			forward(bits);
 		}
@@ -49,8 +55,7 @@ namespace soup
 			else if (bit_idx > 8)
 			{
 				bit_idx -= 8;
-				is->read((char*)&byte, 1);
-				if (is->bad() || is->eof())
+				if (!r->u8(byte))
 				{
 					bit_idx = 0;
 					return false;
@@ -85,8 +90,7 @@ namespace soup
 			if (isByteAligned())
 			{
 				bit_idx = 1;
-				is->read((char*)&byte, 1);
-				if (is->bad() || is->eof())
+				if (!r->u8(byte))
 				{
 					return false;
 				}
@@ -103,29 +107,37 @@ namespace soup
 			return true;
 		}
 
-		[[nodiscard]] uint8_t readByte(uint8_t bits, uint8_t& out)
+		bool readByte(uint8_t bits, uint8_t& out)
 		{
 			if (isByteAligned())
 			{
 				bit_idx = bits;
-				is->read((char*)&byte, 1);
-				if (is->bad() || is->eof())
+				if (!r->u8(byte))
 				{
 					bit_idx = 0;
 					return false;
 				}
+#if DEBUG_BR
+				std::cout << "Fetched byte: " << std::hex << (int)byte << std::endl;
+#endif
 				out = (byte & ((1 << bits) - 1));
+#if DEBUG_BR
+				std::cout << "Taking " << std::dec << (int)bits << " bits: " << std::hex << (int)out << std::endl;
+#endif
 			}
 			else
 			{
-				out = ((byte >> bit_idx) & ((1 << bits) - 1));
 				if (bit_idx + bits > 8)
 				{
-					auto readable_bits = (8 - bit_idx);
-					auto read_bits = (bits - readable_bits);
+					out = (byte >> bit_idx);
+
+					auto remaining_bits = (8 - bit_idx);
 					auto next_byte_bits = (bit_idx - (8 - bits));
+#if DEBUG_BR
+					std::cout << "We want to take " << std::dec << (int)bits << " bits at bit_idx " << (int)bit_idx << ", so we'll take the remaining " << (int)remaining_bits << " bits and go to the next byte for " <<  (int)next_byte_bits << " more bits" << std::endl;
+#endif
 					out <<= next_byte_bits;
-					if (forward(read_bits))
+					if (forward(remaining_bits))
 					{
 						uint8_t next_byte;
 						if (readByte(next_byte_bits, next_byte))
@@ -136,6 +148,7 @@ namespace soup
 				}
 				else
 				{
+					out = ((byte >> bit_idx) & ((1 << bits) - 1));
 					forward(bits);
 				}
 			}

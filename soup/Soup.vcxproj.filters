@@ -317,7 +317,7 @@
     <ClInclude Include="ZipIndexedFile.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="BitInStream.hpp">
+    <ClInclude Include="BitReader.hpp">
       <Filter>io</Filter>
     </ClInclude>
     <ClInclude Include="Keystore.hpp">

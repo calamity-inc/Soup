@@ -15,6 +15,9 @@
 #include <JsonObject.hpp>
 #include <JsonString.hpp>
 
+#include <BitReader.hpp>
+#include <StringReader.hpp>
+
 #include <PhpState.hpp>
 
 #include <string.hpp>
@@ -125,6 +128,26 @@ static void test_data()
 		assert(*obj->at("age")->asInt() == 27);
 		assert(*obj->at("phoneNumbers")->asArr()->at(0).asObj()->at("type")->asStr() == "home");
 		assert(obj->at("spouse")->isNull());
+	});
+}
+
+static void test_io()
+{
+	test("BitReader", []
+	{
+		StringReader r("\xF0\x0F");
+		BitReader br(&r);
+		uint8_t b;
+
+		assert(br.readByte(4, b) && b == 0x0);
+		assert(br.readByte(4, b) && b == 0xF);
+		assert(br.readByte(4, b) && b == 0xF);
+		assert(br.readByte(4, b) && b == 0x0);
+
+		r = "\xE0\x03";
+		assert(br.readByte(5, b) && b == 0);
+		assert(br.readByte(5, b) && b == 0b11111);
+		assert(br.readByte(6, b) && b == 0);
 	});
 }
 
@@ -258,6 +281,10 @@ void cli_test()
 		unit("data")
 		{
 			test_data();
+		}
+		unit("io")
+		{
+			test_io();
 		}
 		unit("lang")
 		{

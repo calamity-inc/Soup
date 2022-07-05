@@ -420,7 +420,7 @@
     <ClInclude Include="BitPointer.hpp" />
     <ClInclude Include="Bitset.hpp" />
     <ClInclude Include="BigBitset.hpp" />
-    <ClInclude Include="BitInStream.hpp" />
+    <ClInclude Include="BitReader.hpp" />
     <ClInclude Include="Box.hpp" />
     <ClInclude Include="BoxAxisAligned.hpp" />
     <ClInclude Include="BoxCorners.hpp" />

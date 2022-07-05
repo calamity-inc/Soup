@@ -17,6 +17,12 @@ namespace soup
 
 		~StringReader() final = default;
 
+		void operator =(std::string new_data) noexcept
+		{
+			data = std::move(new_data);
+			offset = 0;
+		}
+
 		bool hasMore() final
 		{
 			return offset != data.size();

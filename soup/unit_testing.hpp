@@ -7,7 +7,7 @@
 
 #define unit(name) SOUP_CODE_TREE_NODE(::soup::TestUnit, name)
 extern void test(const char* name, void(*test)());
-#define assert(b) assert_impl((b), SOUP_CAPTURE_SOURCE_LOCATION);
+#define assert(...) assert_impl((__VA_ARGS__), SOUP_CAPTURE_SOURCE_LOCATION);
 
 extern void assert_impl(bool b, soup::SourceLocation sl);
 
