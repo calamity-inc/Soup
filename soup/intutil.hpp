@@ -4,7 +4,7 @@ namespace soup
 {
 	struct intutil
 	{
-		static uint64_t invertEndianness(uint64_t val)
+		static constexpr uint64_t invertEndianness(uint64_t val)
 		{
 			return (val & 0xFF) << (64 - 8)
 				| ((val >> 8) & 0xFF) << (64 - 16)
@@ -18,7 +18,7 @@ namespace soup
 		}
 
 		template <typename T>
-		static T pow(T a, T b)
+		static constexpr T pow(T a, T b)
 		{
 			T res = a;
 			while (--b)
