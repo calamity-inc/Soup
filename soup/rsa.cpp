@@ -241,7 +241,7 @@ namespace soup::rsa
 	{
 		const auto pm1 = (p - 1_b);
 		const auto qm1 = (q - 1_b);
-		const auto t = pm1.lcm(qm1);
+		const auto t = (pm1 * qm1);
 		if (t < PublicKey::E_PREF)
 		{
 			const auto bl = t.getBitLength();
