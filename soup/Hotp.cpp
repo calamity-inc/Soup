@@ -18,7 +18,17 @@ namespace soup
 		return secret;
 	}
 
+	int Hotp::getValue(uint64_t counter) const
+	{
+		return getValueRaw(counter) % 1000000;
+	}
+
 	int Hotp::getValue(uint64_t counter, uint8_t digits) const
+	{
+		return getValueRaw(counter) % intutil::pow<int>(10, digits);
+	}
+
+	int Hotp::getValueRaw(uint64_t counter) const
 	{
 		StringWriter w(false);
 		w.u64(counter);
@@ -31,7 +41,6 @@ namespace soup
 			| ((uint8_t)mac.at(offset + 2) & 0xff) << 8
 			| ((uint8_t)mac.at(offset + 3) & 0xff);
 
-		bin_code %= intutil::pow<int>(10, digits);
 		return bin_code;
 	}
 }
