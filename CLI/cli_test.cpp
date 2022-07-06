@@ -3,6 +3,7 @@
 #include <unit_testing.hpp>
 
 #include <Hotp.hpp>
+#include <rsa.hpp>
 
 #include <base32.hpp>
 #include <base64.hpp>
@@ -25,6 +26,7 @@
 #include <intutil.hpp>
 
 using namespace soup;
+using namespace soup::literals;
 
 static void test_crypto()
 {
@@ -41,6 +43,17 @@ static void test_crypto()
 		assert(gen.getValue(7) == 162583);
 		assert(gen.getValue(8) == 399871);
 		assert(gen.getValue(9) == 520489);
+	});
+
+	test("rsa", []
+	{
+		rsa::Keypair kp(
+			"96529209707922958264660626622151327182265565708623147261613126577409795199887"_b,
+			"87505296413890087200392682183900465764322220376584167643884573751015402662091"_b
+		);
+		auto enc = "3939991117139809241563517827579718715756222298160587806559781632547966505691296013680068230342942841852094486596819343548681582442588753971618922157744527"_b;
+		assert(kp.getPrivate().encryptUnpadded("Soup") == enc);
+		assert(kp.getPublic().decryptUnpadded(enc) == "Soup");
 	});
 }
 
