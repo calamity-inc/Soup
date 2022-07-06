@@ -614,7 +614,7 @@
     <ClInclude Include="type.hpp" />
     <ClInclude Include="unicode.hpp" />
     <ClInclude Include="UniquePtr.hpp" />
-    <ClInclude Include="Url.hpp" />
+    <ClInclude Include="Uri.hpp" />
     <ClInclude Include="urlenc.hpp" />
     <ClInclude Include="UvSphere.hpp" />
     <ClInclude Include="Vector2.hpp" />
@@ -744,7 +744,7 @@
     <ClCompile Include="Totp.cpp" />
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="unit_testing.cpp" />
-    <ClCompile Include="Url.cpp" />
+    <ClCompile Include="Uri.cpp" />
     <ClCompile Include="urlenc.cpp" />
     <ClCompile Include="UvSphere.cpp" />
     <ClCompile Include="wasm.cpp" />

@@ -464,7 +464,7 @@
     <ClInclude Include="Notifyable.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="Url.hpp">
+    <ClInclude Include="Uri.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
     <ClInclude Include="MimeType.hpp">
@@ -932,7 +932,7 @@
     <ClCompile Include="QrCode.cpp">
       <Filter>vis</Filter>
     </ClCompile>
-    <ClCompile Include="Url.cpp">
+    <ClCompile Include="Uri.cpp">
       <Filter>net\web</Filter>
     </ClCompile>
     <ClCompile Include="adler32.cpp">

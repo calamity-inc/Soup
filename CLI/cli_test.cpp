@@ -22,6 +22,8 @@
 
 #include <PhpState.hpp>
 
+#include <Uri.hpp>
+
 #include <string.hpp>
 #include <intutil.hpp>
 
@@ -292,6 +294,60 @@ endif;)") == "");
 	}
 }
 
+static void test_uri()
+{
+	std::string str;
+	Uri uri;
+
+	str = "//google.com";
+	uri = Uri(str);
+	assert(uri.scheme == "");
+	assert(uri.host == "google.com");
+	assert(uri.port == 0);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "");
+	assert(uri.query == "");
+	assert(uri.fragment == "");
+	assert(uri.toString() == str);
+
+	str = "//google.com/";
+	uri = Uri(str);
+	assert(uri.scheme == "");
+	assert(uri.host == "google.com");
+	assert(uri.port == 0);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "/");
+	assert(uri.query == "");
+	assert(uri.fragment == "");
+	assert(uri.toString() == str);
+
+	str = "//shady.nz/path#anchor";
+	uri = Uri(str);
+	assert(uri.scheme == "");
+	assert(uri.host == "shady.nz");
+	assert(uri.port == 0);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "/path");
+	assert(uri.query == "");
+	assert(uri.fragment == "anchor");
+	assert(uri.toString() == str);
+
+	str = "http://username:password@hostname:9090/path?arg=value#anchor";
+	uri = Uri(str);
+	assert(uri.scheme == "http");
+	assert(uri.host == "hostname");
+	assert(uri.port == 9090);
+	assert(uri.user == "username");
+	assert(uri.pass == "password");
+	assert(uri.path == "/path");
+	assert(uri.query == "arg=value");
+	assert(uri.fragment == "anchor");
+	assert(uri.toString() == str);
+}
+
 static void test_util()
 {
 	test("bin2hex", []
@@ -328,6 +384,13 @@ void cli_test()
 		unit("lang")
 		{
 			test_lang();
+		}
+		unit("net")
+		{
+			unit("web")
+			{
+				test("uri", test_uri);
+			}
 		}
 		unit("util")
 		{
