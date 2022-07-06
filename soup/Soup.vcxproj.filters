@@ -1067,12 +1067,14 @@
     <ClCompile Include="MazeGeneratorDepthFirst.cpp">
       <Filter>algos\maze</Filter>
     </ClCompile>
-    <ClCompile Include="base32.cpp" />
     <ClCompile Include="Hotp.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
     <ClCompile Include="Totp.cpp">
       <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="base32.cpp">
+      <Filter>data\enc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
