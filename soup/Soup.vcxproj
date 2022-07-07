@@ -524,6 +524,7 @@
     <ClInclude Include="RenderTargetCanvas.hpp" />
     <ClInclude Include="RenderTargetWindow.hpp" />
     <ClInclude Include="BuiltinOp.hpp" />
+    <ClInclude Include="ripemd160.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="SceneRasterisingRenderer.hpp" />
     <ClInclude Include="SceneRaytracingRenderer.hpp" />
@@ -722,6 +723,7 @@
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RenderTargetCanvas.cpp" />
     <ClCompile Include="Rgb.cpp" />
+    <ClCompile Include="ripemd160.cpp" />
     <ClCompile Include="rsa.cpp" />
     <ClCompile Include="rtti.cpp" />
     <ClCompile Include="Scene.cpp" />

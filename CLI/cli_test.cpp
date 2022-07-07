@@ -7,6 +7,7 @@
 
 #include <base32.hpp>
 #include <base64.hpp>
+#include <ripemd160.hpp>
 #include <sha1.hpp>
 #include <sha256.hpp>
 
@@ -108,6 +109,13 @@ static void test_data()
 			assert(base64::urlDecode("8J-YgA==") == "😀");
 		});
 	}
+
+	test("ripemd160", []
+	{
+		assert(string::bin2hexLower(soup::ripemd160("The quick brown fox jumps over the lazy dog")) == "37f332f68db77bd9d7edd4969571ad671cf9dd3b");
+		assert(string::bin2hexLower(soup::ripemd160("The quick brown fox jumps over the lazy cog")) == "132072df690933835eb8b6ad0b77e7b6f14acad7");
+		assert(string::bin2hexLower(soup::ripemd160("")) == "9c1185a5c5e9fc54612808977ee8f548b2258d31");
+	});
 
 	test("sha1", []
 	{

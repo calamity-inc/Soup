@@ -740,6 +740,9 @@
     <ClInclude Include="base32.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
+    <ClInclude Include="ripemd160.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1075,6 +1078,9 @@
     </ClCompile>
     <ClCompile Include="base32.cpp">
       <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="ripemd160.cpp">
+      <Filter>data\hash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
