@@ -403,6 +403,7 @@
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
     <ClInclude Include="base32.hpp" />
+    <ClInclude Include="bitconv.hpp" />
     <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />

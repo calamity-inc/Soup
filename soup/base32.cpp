@@ -1,14 +1,34 @@
 #include "base32.hpp"
 
 #include <algorithm>
+#include <vector>
+
+#include "bitconv.hpp"
 
 namespace soup
 {
-	static unsigned char b32_alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+	static const char b32_alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-	static unsigned char encode_char(unsigned char c)
+	std::string base32::encode(const std::string& in, bool pad)
 	{
-		return b32_alpha[c & 0b11111];
+		return encode(in, pad, b32_alpha);
+	}
+
+	std::string base32::encode(const std::string& in, bool pad, const char* alpha)
+	{
+		auto chunks = bitconv::msb_first<std::string, 8, 5>(in);
+		for (auto& chunk : chunks)
+		{
+			chunk = alpha[(uint8_t)chunk];
+		}
+		if (pad)
+		{
+			if (auto padlen = getEncodedLength(in.length()) - chunks.length())
+			{
+				chunks.append(padlen, '=');
+			}
+		}
+		return chunks;
 	}
 
 	static int decode_char(unsigned char c)
@@ -34,57 +54,13 @@ namespace soup
 		return (8 - 5 - (5 * block) % 8);
 	}
 
-	static unsigned char shift_right(unsigned char byte, char offset)
+	static unsigned char shift_left(unsigned char byte, char offset)
 	{
 		if (offset < 0)
 		{
-			return byte << -offset;
+			return byte >> -offset;
 		}
-		return byte >> offset;
-	}
-
-	static unsigned char shift_left(unsigned char byte, char offset)
-	{
-		return shift_right(byte, -offset);
-	}
-
-	static void encode_sequence(const uint8_t* plain, size_t len, std::string& out, bool pad)
-	{
-		for (int block = 0; block != 8; ++block)
-		{
-			int octet = get_octet(block);  // figure out which octet this block starts in
-			int junk = get_offset(block);  // how many bits do we drop from this octet?
-
-			if (octet >= len) // we hit the end of the buffer
-			{
-				if (pad)
-				{
-					out.append(8 - block, '=');
-				}
-				return;
-			}
-
-			unsigned char c = shift_right(plain[octet], junk);  // first part
-
-			if (junk < 0  // is there a second part?
-				&& octet < len - 1)  // is there still something to read?
-			{
-				c |= shift_right(plain[octet + 1], 8 + junk);
-			}
-			out.push_back(encode_char(c));
-		}
-	}
-
-	std::string base32::encode(const std::string& in, bool pad)
-	{
-		const auto len = in.length();
-		std::string out{};
-		out.reserve(getEncodedLength(len));
-		for (size_t i = 0; i < len; i += 5)
-		{
-			encode_sequence((const uint8_t*)&in.at(i), std::min<size_t>(len - i, 5), out, pad);
-		}
-		return out;
+		return byte << offset;
 	}
 
 	static bool decode_sequence(const uint8_t* coded, uint8_t octet_base, std::string& out)

@@ -317,9 +317,6 @@
     <ClInclude Include="ZipIndexedFile.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="BitReader.hpp">
-      <Filter>io</Filter>
-    </ClInclude>
     <ClInclude Include="Keystore.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
@@ -742,6 +739,12 @@
     </ClInclude>
     <ClInclude Include="ripemd160.hpp">
       <Filter>data\hash</Filter>
+    </ClInclude>
+    <ClInclude Include="BitReader.hpp">
+      <Filter>io\bits</Filter>
+    </ClInclude>
+    <ClInclude Include="bitconv.hpp">
+      <Filter>io\bits</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1200,6 +1203,9 @@
     </Filter>
     <Filter Include="algos\maze">
       <UniqueIdentifier>{16b78dc5-8998-48bd-b278-3bcd7be2a396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\bits">
+      <UniqueIdentifier>{ebe8b704-42e4-428a-b61d-1fdb19129b40}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -6,7 +6,9 @@
 
 namespace soup
 {
-	// Adapted from https://github.com/mjg59/tpmtotp/blob/master/base32.c
+	// Made with code from:
+	// - https://github.com/mjg59/tpmtotp
+	// - https://github.com/sipa/bech32
 
 	struct base32
 	{
@@ -21,6 +23,7 @@ namespace soup
 		}
 
 		[[nodiscard]] static std::string encode(const std::string& in, bool pad = true);
+		[[nodiscard]] static std::string encode(const std::string& in, bool pad, const char* alpha);
 		[[nodiscard]] static std::string decode(const std::string& in);
 	};
 }
