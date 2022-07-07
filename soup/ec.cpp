@@ -342,7 +342,7 @@ namespace soup
 		c25519_prepare(private_key);
 	}
 
-	void ec::curve25519_derivePublic(uint8_t(&public_key)[X25519_KEY_SIZE], const uint8_t(&private_key)[X25519_KEY_SIZE])
+	void ec::curve25519_derivePublic(uint8_t* public_key, const uint8_t* private_key)
 	{
 		c25519_smult(public_key, c25519_base_x, private_key);
 	}
