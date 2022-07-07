@@ -752,6 +752,12 @@
     <ClInclude Include="bitconv.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
+    <ClInclude Include="alpha2decodetbl.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="base58.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1096,6 +1102,9 @@
     </ClCompile>
     <ClCompile Include="bech32.cpp">
       <Filter>crypto\btc</Filter>
+    </ClCompile>
+    <ClCompile Include="base58.cpp">
+      <Filter>data\enc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

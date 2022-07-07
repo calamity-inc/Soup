@@ -398,11 +398,13 @@
     <ClInclude Include="aes.hpp" />
     <ClInclude Include="AllocRaii.hpp" />
     <ClInclude Include="AllocRaiiRemote.hpp" />
+    <ClInclude Include="alpha2decodetbl.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
     <ClInclude Include="base32.hpp" />
+    <ClInclude Include="base58.hpp" />
     <ClInclude Include="bech32.hpp" />
     <ClInclude Include="bitconv.hpp" />
     <ClInclude Include="Hotp.hpp" />
@@ -655,6 +657,7 @@
     <ClCompile Include="Asn1Sequence.cpp" />
     <ClCompile Include="AssemblyBuilder.cpp" />
     <ClCompile Include="base32.cpp" />
+    <ClCompile Include="base58.cpp" />
     <ClCompile Include="base64.cpp" />
     <ClCompile Include="bcrypt.cpp" />
     <ClCompile Include="bech32.cpp" />

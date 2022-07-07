@@ -1,5 +1,7 @@
 #include "ripemd160.hpp"
 
+#include <cstring>
+
 namespace soup
 {
     /* macro definitions */

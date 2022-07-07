@@ -7,6 +7,7 @@
 #include <rsa.hpp>
 
 #include <base32.hpp>
+#include <base58.hpp>
 #include <base64.hpp>
 #include <ripemd160.hpp>
 #include <sha1.hpp>
@@ -89,6 +90,14 @@ static void test_data()
 			assert(base32::decode("MFQWCYI=") == "aaaa");
 			assert(base32::decode("MFQWCYLB") == "aaaaa");
 			assert(base32::decode("MFQWCYLBME======") == "aaaaaa");
+		});
+	}
+
+	unit("base58")
+	{
+		test("decode", []
+		{
+			assert(string::bin2hex(base58::decode("5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ")) == "800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D");
 		});
 	}
 	
