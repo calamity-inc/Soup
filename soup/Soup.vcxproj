@@ -403,6 +403,7 @@
     <ClInclude Include="Asn1Identifier.hpp" />
     <ClInclude Include="Asn1Type.hpp" />
     <ClInclude Include="base32.hpp" />
+    <ClInclude Include="bech32.hpp" />
     <ClInclude Include="bitconv.hpp" />
     <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
@@ -532,6 +533,7 @@
     <ClInclude Include="SceneRenderer.hpp" />
     <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="Searchspace.hpp" />
+    <ClInclude Include="SegWitAddress.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="ServerService.hpp" />
     <ClInclude Include="ShortString.hpp" />
@@ -655,6 +657,7 @@
     <ClCompile Include="base32.cpp" />
     <ClCompile Include="base64.cpp" />
     <ClCompile Include="bcrypt.cpp" />
+    <ClCompile Include="bech32.cpp" />
     <ClCompile Include="Bigfloat.cpp" />
     <ClCompile Include="Bigint.cpp" />
     <ClCompile Include="Box.cpp" />
@@ -730,6 +733,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneRasterisingRenderer.cpp" />
     <ClCompile Include="SceneRaytracingRenderer.cpp" />
+    <ClCompile Include="SegWitAddress.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />

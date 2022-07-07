@@ -2,6 +2,7 @@
 
 #include <unit_testing.hpp>
 
+#include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
 
@@ -33,6 +34,13 @@ using namespace soup::literals;
 
 static void test_crypto()
 {
+	test("SegWitAddress", []
+	{
+		SegWitAddress addr;
+		addr.compressed_pub_key = Bigint::fromStringHex("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798", 66).toBinary();
+		assert(addr.encode() == "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
+	});
+
 	test("hotp", []
 	{
 		Hotp gen("12345678901234567890");

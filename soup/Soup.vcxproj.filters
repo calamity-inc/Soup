@@ -740,6 +740,12 @@
     <ClInclude Include="ripemd160.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="bech32.hpp">
+      <Filter>crypto\btc</Filter>
+    </ClInclude>
+    <ClInclude Include="SegWitAddress.hpp">
+      <Filter>crypto\btc</Filter>
+    </ClInclude>
     <ClInclude Include="BitReader.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
@@ -1085,6 +1091,12 @@
     <ClCompile Include="ripemd160.cpp">
       <Filter>data\hash</Filter>
     </ClCompile>
+    <ClCompile Include="SegWitAddress.cpp">
+      <Filter>crypto\btc</Filter>
+    </ClCompile>
+    <ClCompile Include="bech32.cpp">
+      <Filter>crypto\btc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1203,6 +1215,9 @@
     </Filter>
     <Filter Include="algos\maze">
       <UniqueIdentifier>{16b78dc5-8998-48bd-b278-3bcd7be2a396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto\btc">
+      <UniqueIdentifier>{385363c6-a64d-429c-b5a5-967db32a31db}</UniqueIdentifier>
     </Filter>
     <Filter Include="io\bits">
       <UniqueIdentifier>{ebe8b704-42e4-428a-b61d-1fdb19129b40}</UniqueIdentifier>
