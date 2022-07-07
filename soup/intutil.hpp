@@ -4,7 +4,7 @@ namespace soup
 {
 	struct intutil
 	{
-		static constexpr uint64_t invertEndianness(uint64_t val)
+		[[nodiscard]] static constexpr uint64_t invertEndianness(uint64_t val)
 		{
 			// C++23 will add std::byteswap
 			return (val & 0xFF) << (64 - 8)
@@ -19,7 +19,7 @@ namespace soup
 		}
 
 		template <typename T>
-		static constexpr T pow(T a, T b)
+		[[nodiscard]] static constexpr T pow(T a, T b)
 		{
 			T res = a;
 			while (--b)
