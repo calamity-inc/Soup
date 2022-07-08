@@ -147,7 +147,7 @@ namespace soup::rsa
 		PrivateKey() = default;
 		PrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv);
 
-		[[nodiscard]] static PrivateKey fromBinary(const std::string bin);
+		[[nodiscard]] static PrivateKey fromBinary(const std::string& bin);
 		[[nodiscard]] static PrivateKey fromAsn1(const Asn1Sequence& seq);
 		[[nodiscard]] static PrivateKey fromJwk(const JsonObject& jwk);
 

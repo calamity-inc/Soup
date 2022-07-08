@@ -150,7 +150,7 @@ namespace soup::rsa
 	{
 	}
 
-	PrivateKey PrivateKey::fromBinary(const std::string bin)
+	PrivateKey PrivateKey::fromBinary(const std::string& bin)
 	{
 		return fromAsn1(Asn1Sequence::fromBinary(bin));
 	}
