@@ -120,7 +120,7 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "websrv")
 		{
-			if (argc <= 2)
+			if (argc != 3)
 			{
 				std::cout << "Syntax: soup websrv [dir]" << std::endl;
 				return 0;
