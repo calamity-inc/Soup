@@ -26,7 +26,7 @@ namespace soup
 		CompiledExecutable res{
 			Tempfile("exe")
 		};
-		os::execute("clang", {
+		res.compiler_output = os::execute("clang", {
 #if SOUP_WINDOWS
 			"-std=c++20",
 #else
