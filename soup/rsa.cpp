@@ -160,7 +160,7 @@ namespace soup::rsa
 		if (seq.getChildType(1).type != Asn1Type::INTEGER)
 		{
 			// assuming that seq[1] is sequence containing OID 1.2.840.113549.1.1.1
-			return fromAsn1(soup::Asn1Sequence::fromBinary(seq.getString(2)));
+			return fromAsn1(Asn1Sequence::fromBinary(seq.getString(2)));
 		}
 		return {
 			seq.getInt(1),
