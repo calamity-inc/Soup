@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <HttpRequest.hpp>
+#include <JitModule.hpp>
 #include <PhpState.hpp>
 #include <Server.hpp>
 #include <ServerWebService.hpp>
@@ -12,6 +13,8 @@
 #include <time.hpp>
 
 static std::string base_dir;
+
+static std::unordered_map<std::string, soup::UniquePtr<soup::JitModule>> jit_modules{};
 
 static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::ServerWebService&)
 {
@@ -69,18 +72,71 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 		std::cout << s.peer.toString() << " > " << req.method << " " << req_url << " [200]" << std::endl;
 		soup::HttpResponse resp;
 		resp.body = soup::string::fromFile(file_path);
-		if (file_path.length() > 4 && file_path.substr(file_path.length() - 4) == ".php")
+		if (file_path.length() > 4)
 		{
-			auto t = soup::time::nanos();
-			soup::PhpState php;
-			php.cwd = std::filesystem::path(file_path).parent_path();
-			php.request_uri = req.path;
-			resp.body = php.evaluate(resp.body);
-			
-			t = soup::time::nanos() - t;
-			std::string timing = "PHP;dur=";
-			timing.append(std::to_string(t / 1000000.0));
-			resp.header_fields.emplace("Server-Timing", std::move(timing));
+			if (file_path.substr(file_path.length() - 4) == ".php")
+			{
+				auto t = soup::time::nanos();
+				soup::PhpState php;
+				php.cwd = std::filesystem::path(file_path).parent_path();
+				php.request_uri = req.path;
+				resp.body = php.evaluate(resp.body);
+
+				t = soup::time::nanos() - t;
+				std::string timing = "PHP;dur=";
+				timing.append(std::to_string(t / 1000000.0));
+				resp.header_fields.emplace("Server-Timing", std::move(timing));
+			}
+			else if (file_path.substr(file_path.length() - 4) == ".cpp")
+			{
+				soup::JitModule* m;
+				if (auto e = jit_modules.find(file_path); e != jit_modules.end())
+				{
+					m = e->second.get();
+				}
+				else
+				{
+					m = jit_modules.emplace(file_path, soup::make_unique<soup::JitModule>(file_path)).first->second.get();
+				}
+				
+				std::string timing{};
+				if (m->needsToBeCompiled())
+				{
+					auto t = soup::time::nanos();
+					auto compiler_output = m->compile();
+					t = soup::time::nanos() - t;
+					timing = "Compile_JitModule;dur=";
+					timing.append(std::to_string(t / 1000000.0));
+
+					if (m->needsToBeCompiled())
+					{
+						resp.body = compiler_output;
+					}
+				}
+
+				if (!m->needsToBeCompiled())
+				{
+					auto fp = (std::string(*)())m->getEntrypoint("web_module");
+					if (fp == nullptr)
+					{
+						resp.body = "'web_module' entrypoint not found";
+					}
+					else
+					{
+						auto t = soup::time::nanos();
+						resp.body = fp();
+						t = soup::time::nanos() - t;
+						if (!timing.empty())
+						{
+							timing.push_back(',');
+						}
+						timing.append("Run_JitModule;dur=");
+						timing.append(std::to_string(t / 1000000.0));
+					}
+				}
+
+				resp.header_fields.emplace("Server-Timing", std::move(timing));
+			}
 		}
 		soup::ServerWebService::sendContent(s, std::move(resp));
 	}

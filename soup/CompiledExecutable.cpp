@@ -1,8 +1,6 @@
 #include "CompiledExecutable.hpp"
 
-#include "base.hpp"
-
-#include "os.hpp"
+#include "Compiler.hpp"
 
 namespace soup
 {
@@ -26,16 +24,7 @@ namespace soup
 		CompiledExecutable res{
 			Tempfile("exe")
 		};
-		res.compiler_output = os::execute("clang", {
-#if SOUP_WINDOWS
-			"-std=c++20",
-#else
-			"-std=c++17",
-			"-lstdc++",
-			"-lstdc++fs",
-#endif
-			"-o", res.exe_file, path
-		});
+		res.compiler_output = Compiler::compileExecutable(path, res.exe_file);
 		return res;
     }
 }

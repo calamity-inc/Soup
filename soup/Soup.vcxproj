@@ -408,8 +408,10 @@
     <ClInclude Include="bech32.hpp" />
     <ClInclude Include="bitconv.hpp" />
     <ClInclude Include="CompiledExecutable.hpp" />
+    <ClInclude Include="Compiler.hpp" />
     <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
+    <ClInclude Include="JitModule.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
     <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
     <ClInclude Include="MtRandomDevice.hpp" />
@@ -539,6 +541,7 @@
     <ClInclude Include="SegWitAddress.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="ServerService.hpp" />
+    <ClInclude Include="SharedLibrary.hpp" />
     <ClInclude Include="ShortString.hpp" />
     <ClInclude Include="signal.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
@@ -676,6 +679,7 @@
     <ClCompile Include="ChessCli.cpp" />
     <ClCompile Include="ChessSquare.cpp" />
     <ClCompile Include="CompiledExecutable.cpp" />
+    <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="ConuiApp.cpp" />
     <ClCompile Include="ConuiBase.cpp" />
@@ -693,6 +697,7 @@
     <ClCompile Include="FormattedText.cpp" />
     <ClCompile Include="Hotp.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
+    <ClCompile Include="JitModule.cpp" />
     <ClCompile Include="joaat.cpp" />
     <ClCompile Include="json.cpp" />
     <ClCompile Include="JsonArray.cpp" />
@@ -744,6 +749,7 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
+    <ClCompile Include="SharedLibrary.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Pointer.cpp" />

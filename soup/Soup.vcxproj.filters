@@ -767,6 +767,15 @@
     <ClInclude Include="CompiledExecutable.hpp">
       <Filter>io\files</Filter>
     </ClInclude>
+    <ClInclude Include="JitModule.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedLibrary.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1123,6 +1132,15 @@
     </ClCompile>
     <ClCompile Include="CompiledExecutable.cpp">
       <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="JitModule.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiler.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedLibrary.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
