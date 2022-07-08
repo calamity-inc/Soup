@@ -764,6 +764,9 @@
     <ClInclude Include="Tempfile.hpp">
       <Filter>io\files</Filter>
     </ClInclude>
+    <ClInclude Include="CompiledExecutable.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1116,6 +1119,9 @@
       <Filter>io\files</Filter>
     </ClCompile>
     <ClCompile Include="Tempfile.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="CompiledExecutable.cpp">
       <Filter>io\files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,9 +6,9 @@
 #include <iostream>
 #include <string>
 
+#include "CompiledExecutable.hpp"
 #include "os.hpp"
 #include "string.hpp"
-#include "Tempfile.hpp"
 
 struct AppendableStringTracker
 {
@@ -54,20 +54,8 @@ int main()
 		std::ofstream f{ code_file };
 		f << std::move(program);
 	}
-
-	soup::Tempfile exe_file("exe");
-
-	bool success = true;
-	auto compile_output = state.compile_output_tracker.getNew(soup::os::execute("clang", {
-#if SOUP_WINDOWS
-		"-std=c++20",
-#else
-		"-std=c++17",
-		"-lstdc++",
-		"-lstdc++fs",
-#endif
-		"-o", exe_file, code_file
-	}));
+	auto comp_res = soup::CompiledExecutable::fromCpp(code_file);
+	auto compile_output = state.compile_output_tracker.getNew(comp_res.compiler_output);
 	if (!compile_output.empty()) // BUG: Compile output is truncated too much when producing an error if a previous line causes a warning.
 	{
 		std::string line_name = code_file;
@@ -76,11 +64,10 @@ int main()
 		soup::string::replace_all(compile_output, line_name, "[code]");
 		soup::string::replace_all(compile_output, code_file, "[repl]");
 		std::cout << compile_output;
-		success = (compile_output.find(": error: ") == std::string::npos);
 	}
-	if (success)
+	if (std::filesystem::is_regular_file(comp_res.exe_file))
 	{
-		auto execute_output = state.execute_output_tracker.getNew(soup::os::execute(exe_file));
+		auto execute_output = state.execute_output_tracker.getNew(soup::os::execute(comp_res.exe_file));
 		if (!execute_output.empty())
 		{
 			std::cout << execute_output << std::endl;

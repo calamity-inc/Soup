@@ -407,6 +407,7 @@
     <ClInclude Include="base58.hpp" />
     <ClInclude Include="bech32.hpp" />
     <ClInclude Include="bitconv.hpp" />
+    <ClInclude Include="CompiledExecutable.hpp" />
     <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
@@ -674,6 +675,7 @@
     <ClCompile Include="Chessboard.cpp" />
     <ClCompile Include="ChessCli.cpp" />
     <ClCompile Include="ChessSquare.cpp" />
+    <ClCompile Include="CompiledExecutable.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="ConuiApp.cpp" />
     <ClCompile Include="ConuiBase.cpp" />

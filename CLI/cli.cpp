@@ -4,8 +4,10 @@
 
 #include <Canvas.hpp>
 #include <ChessCli.hpp>
+#include <CompiledExecutable.hpp>
 #include <console.hpp>
 #include <Editor.hpp>
+#include <os.hpp>
 #include <QrCode.hpp>
 #include <string.hpp>
 #include <unicode.hpp>
@@ -88,6 +90,22 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "script")
+		{
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup script [.cpp file]" << std::endl;
+				return 0;
+			}
+			auto res = CompiledExecutable::fromCpp(argv[2]);
+			std::cout << res.compiler_output;
+			if (res.exe_file.exists())
+			{
+				std::cout << os::execute(res.exe_file);
+			}
+			return 0;
+		}
+
 		if (subcommand == "snake")
 		{
 			cli_snake();
@@ -121,6 +139,7 @@ Available tools:
 - maze
 - qr [contents]
 - repl
+- script [.cpp file]
 - snake
 - test
 - websrv [dir]

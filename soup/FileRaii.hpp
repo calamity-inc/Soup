@@ -27,6 +27,8 @@ namespace soup
 			return path.string();
 		}
 
+		[[nodiscard]] bool exists() const noexcept;
+
 		friend std::ostream& operator<<(std::ostream& os, const FileRaii& v);
 	};
 }

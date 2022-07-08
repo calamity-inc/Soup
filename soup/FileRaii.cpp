@@ -26,6 +26,11 @@ namespace soup
 		b.path.clear();
 	}
 
+	bool FileRaii::exists() const noexcept
+	{
+		return std::filesystem::exists(path);
+	}
+
 	std::ostream& operator<<(std::ostream& os, const FileRaii& v)
 	{
 		os << v.path;
