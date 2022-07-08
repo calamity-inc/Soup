@@ -758,6 +758,12 @@
     <ClInclude Include="base58.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
+    <ClInclude Include="FileRaii.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tempfile.hpp">
+      <Filter>io\files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1106,6 +1112,12 @@
     <ClCompile Include="base58.cpp">
       <Filter>data\enc</Filter>
     </ClCompile>
+    <ClCompile Include="FileRaii.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tempfile.cpp">
+      <Filter>io\files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1230,6 +1242,9 @@
     </Filter>
     <Filter Include="io\bits">
       <UniqueIdentifier>{ebe8b704-42e4-428a-b61d-1fdb19129b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\files">
+      <UniqueIdentifier>{91cc5788-ba3a-40f8-b033-de517ffd69b7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

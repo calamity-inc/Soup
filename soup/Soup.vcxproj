@@ -544,6 +544,8 @@
     <ClInclude Include="Status.hpp" />
     <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
+    <ClInclude Include="FileRaii.hpp" />
+    <ClInclude Include="Tempfile.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="console.hpp" />
@@ -749,6 +751,8 @@
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="SocketTlsEncrypter.cpp" />
     <ClCompile Include="string.cpp" />
+    <ClCompile Include="FileRaii.cpp" />
+    <ClCompile Include="Tempfile.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />
     <ClCompile Include="Totp.cpp" />

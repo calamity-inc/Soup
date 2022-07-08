@@ -8,6 +8,7 @@
 
 #include "os.hpp"
 #include "string.hpp"
+#include "Tempfile.hpp"
 
 struct AppendableStringTracker
 {
@@ -48,13 +49,13 @@ int main()
 	program.append(state.code);
 	program.append("\nreturn 0;\n}");
 
-	auto code_file_path = soup::os::tempfile("cpp");
+	soup::Tempfile code_file("cpp");
 	{
-		std::ofstream f{ code_file_path };
+		std::ofstream f{ code_file };
 		f << std::move(program);
 	}
 
-	auto exe_file_path = soup::os::tempfile("exe");
+	soup::Tempfile exe_file("exe");
 
 	bool success = true;
 	auto compile_output = state.compile_output_tracker.getNew(soup::os::execute("clang", {
@@ -65,27 +66,25 @@ int main()
 		"-lstdc++",
 		"-lstdc++fs",
 #endif
-		"-o", exe_file_path.string(), code_file_path.string()
+		"-o", exe_file, code_file
 	}));
 	if (!compile_output.empty()) // BUG: Compile output is truncated too much when producing an error if a previous line causes a warning.
 	{
-		std::string line_name = code_file_path.string();
+		std::string line_name = code_file;
 		line_name.push_back(':');
 		line_name.append(std::to_string(state.line_offset));
 		soup::string::replace_all(compile_output, line_name, "[code]");
-		soup::string::replace_all(compile_output, code_file_path.string(), "[repl]");
+		soup::string::replace_all(compile_output, code_file, "[repl]");
 		std::cout << compile_output;
 		success = (compile_output.find(": error: ") == std::string::npos);
 	}
-	std::filesystem::remove(code_file_path);
 	if (success)
 	{
-		auto execute_output = state.execute_output_tracker.getNew(soup::os::execute(exe_file_path.string()));
+		auto execute_output = state.execute_output_tracker.getNew(soup::os::execute(exe_file));
 		if (!execute_output.empty())
 		{
 			std::cout << execute_output << std::endl;
 		}
-		std::filesystem::remove(exe_file_path);
 		return true;
 	}
 	return false;
