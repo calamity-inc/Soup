@@ -782,6 +782,9 @@
     <ClInclude Include="StringBuilder.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="Timer.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">

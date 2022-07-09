@@ -551,6 +551,7 @@
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="FileRaii.hpp" />
     <ClInclude Include="Tempfile.hpp" />
+    <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="console.hpp" />
