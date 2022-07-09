@@ -104,6 +104,12 @@ namespace soup
 	};
 
 	template <>
+	inline int8_t rand_impl::t<int8_t>(int8_t min, int8_t max) noexcept
+	{
+		return static_cast<int8_t>(t<int16_t>(min, max));
+	}
+
+	template <>
 	inline uint8_t rand_impl::t<uint8_t>(uint8_t min, uint8_t max) noexcept
 	{
 		return static_cast<uint8_t>(t<uint16_t>(min, max));
