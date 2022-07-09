@@ -1,6 +1,5 @@
 #include "JsonInt.hpp"
 
-#include "string.hpp"
 #include "Writer.hpp"
 
 namespace soup
@@ -12,7 +11,7 @@ namespace soup
 
 	std::string JsonInt::encode() const
 	{
-		return string::decimal<std::string, int64_t>(value);
+		return std::to_string(value);
 	}
 
 	bool JsonInt::binaryEncode(Writer& w) const

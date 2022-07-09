@@ -2,7 +2,6 @@
 
 #include "console.hpp"
 #include "RasterFont.hpp"
-#include "string.hpp"
 #include "unicode.hpp"
 
 namespace soup
@@ -354,15 +353,15 @@ namespace soup
 	std::string Canvas::toPpm() const
 	{
 		std::string res = "P3\n";
-		res.append(string::decimal(width));
+		res.append(std::to_string(width));
 		res.push_back(' ');
-		res.append(string::decimal(height));
+		res.append(std::to_string(height));
 		res.append("\n255\n");
 		for (const auto& p : pixels)
 		{
-			res.append(string::decimal(p.r)).push_back(' ');
-			res.append(string::decimal(p.g)).push_back(' ');
-			res.append(string::decimal(p.b)).push_back('\n');
+			res.append(std::to_string(p.r)).push_back(' ');
+			res.append(std::to_string(p.g)).push_back(' ');
+			res.append(std::to_string(p.b)).push_back('\n');
 		}
 		return res;
 	}

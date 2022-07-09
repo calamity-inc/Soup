@@ -472,7 +472,7 @@ namespace soup
 						default:
 							{
 								std::string msg = "[soup] Unsupported response type: ";
-								msg.append(string::decimal(cap.result.at(i).first.type));
+								msg.append(std::to_string(cap.result.at(i).first.type));
 								cap.on_error(con, std::move(msg));
 								return;
 							}

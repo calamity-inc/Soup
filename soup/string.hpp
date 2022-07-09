@@ -56,7 +56,7 @@ namespace soup
 
 	public:
 		template <typename Str = std::string, typename Int>
-		[[nodiscard]] static Str decimal(Int i)
+		[[nodiscard]] static Str decimal(Int i) // prefer std::to_string if possible as it's more optimsed
 		{
 			return from_int_impl_ascii<Str, Int, 10>(i);
 		}
