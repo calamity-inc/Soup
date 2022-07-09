@@ -776,6 +776,12 @@
     <ClInclude Include="SharedLibrary.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="xml.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="StringBuilder.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1141,6 +1147,9 @@
     </ClCompile>
     <ClCompile Include="SharedLibrary.cpp">
       <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="xml.cpp">
+      <Filter>data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

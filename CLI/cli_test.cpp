@@ -19,6 +19,7 @@
 #include <JsonInt.hpp>
 #include <JsonObject.hpp>
 #include <JsonString.hpp>
+#include <xml.hpp>
 
 #include <BitReader.hpp>
 #include <StringReader.hpp>
@@ -194,6 +195,20 @@ static void test_data()
 		assert(*obj->at("age")->asInt() == 27);
 		assert(*obj->at("phoneNumbers")->asArr()->at(0).asObj()->at("type")->asStr() == "home");
 		assert(obj->at("spouse")->isNull());
+	});
+
+	test("xml", []
+	{
+		UniquePtr<XmlTag> tag;
+
+		tag = xml::parse("<html></html>"); assert(tag->encode() == "<html></html>");
+		tag = xml::parse("<html>Hello</html>"); assert(tag->encode() == "<html>Hello</html>");
+		tag = xml::parse("<html>Hello"); assert(tag->encode() == "<html>Hello</html>");
+		tag = xml::parse("<html>"); assert(tag->encode() == "<html></html>");
+		tag = xml::parse("<html><body>Hello</body></html>"); assert(tag->encode() == "<html><body>Hello</body></html>");
+		tag = xml::parse(R"(<html lang="en">Hello</html>)"); assert(tag->encode() == R"(<html lang="en">Hello</html>)");
+		tag = xml::parse(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
+		tag = xml::parse(R"(<html><body><h1></body>test)"); assert(tag->encode() == R"(<html><body><h1></h1></body>test</html>)");
 	});
 }
 

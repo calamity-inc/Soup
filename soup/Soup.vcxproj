@@ -546,6 +546,7 @@
     <ClInclude Include="signal.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="Status.hpp" />
+    <ClInclude Include="StringBuilder.hpp" />
     <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="FileRaii.hpp" />
@@ -646,6 +647,7 @@
     <ClInclude Include="Writer.hpp" />
     <ClInclude Include="X509Certificate.hpp" />
     <ClInclude Include="X509RelativeDistinguishedName.hpp" />
+    <ClInclude Include="xml.hpp" />
     <ClInclude Include="YubikeyValidator.hpp" />
     <ClInclude Include="ZipIndexedFile.hpp" />
     <ClInclude Include="ZipFileCommon.hpp" />
@@ -775,6 +777,7 @@
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
     <ClCompile Include="X509Certificate.cpp" />
+    <ClCompile Include="xml.cpp" />
     <ClCompile Include="YubikeyValidator.cpp" />
     <ClCompile Include="ZipReader.cpp" />
     <ClCompile Include="ZipWriter.cpp" />
