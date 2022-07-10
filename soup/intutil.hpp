@@ -7,7 +7,7 @@ namespace soup
 		[[nodiscard]] static constexpr uint64_t invertEndianness(uint64_t val)
 		{
 			// C++23 will add std::byteswap
-			return (val & 0xFF) << (64 - 8)
+			return val << (64 - 8)
 				| ((val >> 8) & 0xFF) << (64 - 16)
 				| ((val >> 16) & 0xFF) << (64 - 24)
 				| ((val >> 24) & 0xFF) << (64 - 32)
