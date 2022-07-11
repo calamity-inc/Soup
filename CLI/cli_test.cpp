@@ -40,7 +40,7 @@ static void test_algos()
 {
 	test("search_match", []
 	{
-		assert(search_match("run program", "run script/program") == true);
+		assert(search_match("run program", "Run Script/Program") == true);
 		assert(search_match("apple", "orange") == false);
 	});
 }
