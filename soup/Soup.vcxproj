@@ -538,7 +538,7 @@
     <ClInclude Include="SceneRenderer.hpp" />
     <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="Searchspace.hpp" />
-    <ClInclude Include="search_match.hpp" />
+    <ClInclude Include="SearchMatch.hpp" />
     <ClInclude Include="SegWitAddress.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="ServerService.hpp" />
@@ -749,7 +749,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneRasterisingRenderer.cpp" />
     <ClCompile Include="SceneRaytracingRenderer.cpp" />
-    <ClCompile Include="search_match.cpp" />
+    <ClCompile Include="SearchMatch.cpp" />
     <ClCompile Include="SegWitAddress.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="sha1.cpp" />

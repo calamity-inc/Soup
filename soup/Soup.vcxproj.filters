@@ -785,7 +785,7 @@
     <ClInclude Include="branchless.hpp">
       <Filter>algos</Filter>
     </ClInclude>
-    <ClInclude Include="search_match.hpp">
+    <ClInclude Include="SearchMatch.hpp">
       <Filter>algos</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1157,7 +1157,7 @@
     <ClCompile Include="xml.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="search_match.cpp">
+    <ClCompile Include="SearchMatch.cpp">
       <Filter>algos</Filter>
     </ClCompile>
   </ItemGroup>
