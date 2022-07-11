@@ -2,7 +2,7 @@
 
 #include <unit_testing.hpp>
 
-#include <SearchMatch.hpp>
+#include <search_match.hpp>
 
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
@@ -40,17 +40,15 @@ static void test_algos()
 {
 	test("search_match", []
 	{
-		assert(SearchMatch::getStrategyForQuery("abc") == SearchMatch::SUBSTRING);
-		assert(SearchMatch::getStrategyForQuery("run program") == SearchMatch::ALL_LETTERS_IN_ORDER_NOT_NECESSARILY_CONSECUTIVE);
-
-		assert(SearchMatch::run("run program", "Run Script/Program") == true);
-		assert(SearchMatch::run("apple", "orange") == false);
-		assert(SearchMatch::run("bad", "The quick brown fox jumps over the lazy dog.") == false);
-		assert(SearchMatch::run("the same", "the same") == true);
-		assert(SearchMatch::run("play level", "Play next level") == true);
-		assert(SearchMatch::run("play next", "Play next level") == true);
-		assert(SearchMatch::run("find", "Find Objective") == true);
-		assert(SearchMatch::run("find", "Finish Dagger") == false);
+		assert(search_match("run program", "Run Script/Program") == true);
+		assert(search_match("apple", "orange") == false);
+		assert(search_match("bad", "The quick brown fox jumps over the lazy dog.") == false);
+		assert(search_match("the bow", "The quick brown fox jumps over the lazy dog.") == false);
+		assert(search_match("the same", "the same") == true);
+		assert(search_match("play level", "Play next level") == true);
+		assert(search_match("play next", "Play next level") == true);
+		assert(search_match("find", "Find Objective") == true);
+		assert(search_match("find", "Finish Dagger") == false);
 	});
 }
 
