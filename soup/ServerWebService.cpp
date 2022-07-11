@@ -189,6 +189,8 @@ namespace soup
 
 							s.custom_data.removeStructFromMap(WebServerClientData);
 
+							srv.on_websocket_connection_established(s, req, srv);
+
 							srv.wsRecv(s);
 						}
 					}
