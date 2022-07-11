@@ -1,5 +1,4 @@
 #include <iostream>
-#include <thread>
 
 #include <Asn1Sequence.hpp>
 #include <crc32.hpp>
