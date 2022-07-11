@@ -42,6 +42,7 @@ static void test_algos()
 	{
 		assert(search_match("run program", "Run Script/Program") == true);
 		assert(search_match("apple", "orange") == false);
+		assert(search_match("bad", "The quick brown fox jumps over the lazy dog.") == false);
 	});
 }
 
