@@ -2,6 +2,8 @@
 
 #include <unit_testing.hpp>
 
+#include <search_match.hpp>
+
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
@@ -33,6 +35,15 @@
 
 using namespace soup;
 using namespace soup::literals;
+
+static void test_algos()
+{
+	test("search_match", []
+	{
+		assert(search_match("run program", "run script/program") == true);
+		assert(search_match("apple", "orange") == false);
+	});
+}
 
 static void test_crypto()
 {
@@ -409,6 +420,10 @@ void cli_test()
 {
 	unit("soup")
 	{
+		unit("algos")
+		{
+			test_algos();
+		}
 		unit("crypto")
 		{
 			test_crypto();

@@ -239,9 +239,6 @@
     <ClInclude Include="TlsServerRsaData.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="branchless.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="Worker.hpp">
       <Filter>task</Filter>
     </ClInclude>
@@ -752,9 +749,6 @@
     <ClInclude Include="bitconv.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
-    <ClInclude Include="alpha2decodetbl.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="base58.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
@@ -784,6 +778,15 @@
     </ClInclude>
     <ClInclude Include="Timer.hpp">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="alpha2decodetbl.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="branchless.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="search_match.hpp">
+      <Filter>algos</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1153,6 +1156,9 @@
     </ClCompile>
     <ClCompile Include="xml.cpp">
       <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="search_match.cpp">
+      <Filter>algos</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
