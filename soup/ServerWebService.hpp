@@ -35,6 +35,8 @@ namespace soup
 		static void sendResponse(Socket& s, const char* status, const std::string& headers_and_body);
 
 		// WebSocket
+		static void wsSendText(Socket& s, const std::string& data);
+		static void wsSendBin(Socket& s, const std::string& data);
 		static void wsSend(Socket& s, const std::string& data, bool is_text);
 		static void wsSend(Socket& s, uint8_t opcode, const std::string& payload);
 

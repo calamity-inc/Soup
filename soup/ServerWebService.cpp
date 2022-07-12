@@ -93,6 +93,16 @@ namespace soup
 		s.send(std::move(cont));
 	}
 	
+	void ServerWebService::wsSendText(Socket& s, const std::string& data)
+	{
+		wsSend(s, WebSocketFrameType::TEXT, data);
+	}
+
+	void ServerWebService::wsSendBin(Socket& s, const std::string& data)
+	{
+		wsSend(s, WebSocketFrameType::BINARY, data);
+	}
+
 	void ServerWebService::wsSend(Socket& s, const std::string& data, bool is_text)
 	{
 		wsSend(s, (is_text ? WebSocketFrameType::TEXT : WebSocketFrameType::BINARY), data);
