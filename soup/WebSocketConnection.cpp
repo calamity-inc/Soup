@@ -6,11 +6,10 @@ namespace soup
 {
 	WebSocketConnection::WebSocketConnection(const std::string& url)
 	{
-		EmscriptenWebSocketCreateAttributes ws_attrs{
-			url.c_str(),
-			NULL,
-			EM_TRUE
-		};
+		EmscriptenWebSocketCreateAttributes ws_attrs;
+		emscripten_websocket_init_create_attributes(&ws_attrs);
+		ws_attrs.url = url.c_str();
+		ws_attrs.createOnMainThread = EM_TRUE;
 		ws = emscripten_websocket_new(&ws_attrs);
 	}
 

@@ -10,7 +10,9 @@
 
 namespace soup
 {
-	// Emscripten documentation kinda poo, but there's this: https://gist.github.com/nus/564e9e57e4c107faa1a45b8332c265b9
+	// Emscripten documentation kinda poo, but there's this:
+	// - https://github.com/emscripten-core/emscripten/blob/main/system/include/emscripten/websocket.h
+	// - https://gist.github.com/nus/564e9e57e4c107faa1a45b8332c265b9
 	// Need to link with -lwebsocket.js
 
 	class WebSocketConnection
