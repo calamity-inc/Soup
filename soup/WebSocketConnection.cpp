@@ -13,9 +13,10 @@ namespace soup
 		ws = emscripten_websocket_new(&ws_attrs);
 	}
 
-	static EM_BOOL em_onopen(int eventType, const EmscriptenWebSocketOpenEvent*, void* userData)
+	static EM_BOOL em_onopen(int eventType, const EmscriptenWebSocketOpenEvent* e, void* userData)
 	{
-		reinterpret_cast<WebSocketConnection::on_open_t>(userData)();
+		WebSocketConnection con{ e->socket };
+		reinterpret_cast<WebSocketConnection::on_open_t>(userData)(con);
 		return EM_TRUE;
 	}
 
@@ -26,11 +27,12 @@ namespace soup
 
 	static EM_BOOL em_onmessage(int eventType, const EmscriptenWebSocketMessageEvent* e, void* userData)
 	{
+		WebSocketConnection con{ e->socket };
 		WebSocketMessage msg{
 			std::string((const char*)e->data, (size_t)e->numBytes),
 			(bool)e->isText
 		};
-		reinterpret_cast<WebSocketConnection::on_message_t>(userData)(msg);
+		reinterpret_cast<WebSocketConnection::on_message_t>(userData)(con, msg);
 		return EM_TRUE;
 	}
 
@@ -39,9 +41,10 @@ namespace soup
 		emscripten_websocket_set_onmessage_callback(ws, reinterpret_cast<void*>(f), &em_onmessage);
 	}
 
-	static EM_BOOL em_onclose(int eventType, const EmscriptenWebSocketCloseEvent*, void* userData)
+	static EM_BOOL em_onclose(int eventType, const EmscriptenWebSocketCloseEvent* e, void* userData)
 	{
-		reinterpret_cast<WebSocketConnection::on_close_t>(userData)();
+		WebSocketConnection con{ e->socket };
+		reinterpret_cast<WebSocketConnection::on_close_t>(userData)(con);
 		return EM_TRUE;
 	}
 
