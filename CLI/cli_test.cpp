@@ -369,6 +369,18 @@ static void test_uri()
 	assert(uri.fragment == "");
 	assert(uri.toString() == str);
 
+	str = "https://google.com";
+	uri = Uri(str);
+	assert(uri.scheme == "https");
+	assert(uri.host == "google.com");
+	assert(uri.port == 0);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "");
+	assert(uri.query == "");
+	assert(uri.fragment == "");
+	assert(uri.toString() == str);
+
 	str = "//google.com/";
 	uri = Uri(str);
 	assert(uri.scheme == "");
