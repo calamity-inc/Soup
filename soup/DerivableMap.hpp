@@ -51,7 +51,7 @@ namespace soup
 			{
 				auto size = std::distance(first, last);
 				DataIt pivot = first + (size / 2);
-#if SOUP_SPACESHIP
+#if SOUP_CPP20
 				auto cmp = (k <=> *pivot->first);
 				if (cmp == 0)
 #else
@@ -64,7 +64,7 @@ namespace soup
 				{
 					return nullptr;
 				}
-#if SOUP_SPACESHIP
+#if SOUP_CPP20
 				if (cmp < 0)
 #else
 				if (k < *pivot->first)

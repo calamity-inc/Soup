@@ -1,5 +1,7 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
 #include "fwd.hpp"
 #include "type.hpp"
 
@@ -47,3 +49,4 @@ namespace soup
 		[[nodiscard]] static std::string hashWebSocketKey(std::string key);
 	};
 }
+#endif

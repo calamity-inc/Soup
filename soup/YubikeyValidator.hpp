@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <string>
 
 namespace soup
@@ -27,3 +30,5 @@ namespace soup
 		std::string secret;
 	};
 }
+
+#endif

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
 #include "fwd.hpp"
 #include "type.hpp"
 
@@ -53,3 +55,4 @@ namespace soup
 		[[nodiscard]] std::string getFinishVerifyData(const std::string& label);
 	};
 }
+#endif

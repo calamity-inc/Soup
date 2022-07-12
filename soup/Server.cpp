@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+#if !SOUP_WASM
+
 #include "ServerService.hpp"
 #include "Socket.hpp"
 
@@ -155,3 +157,5 @@ namespace soup
 	}
 #endif
 }
+
+#endif

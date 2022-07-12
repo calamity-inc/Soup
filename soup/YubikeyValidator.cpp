@@ -1,5 +1,7 @@
 #include "YubikeyValidator.hpp"
 
+#if !SOUP_WASM
+
 #include <map>
 
 #include "base64.hpp"
@@ -86,3 +88,5 @@ namespace soup
 		return {};
 	}
 }
+
+#endif

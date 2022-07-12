@@ -1,5 +1,7 @@
 #include "MysqlConnection.hpp"
 
+#if !SOUP_WASM
+
 #include "Mixed.hpp"
 #include "MysqlAuthSwitchRequest.hpp"
 #include "MysqlCapabilities.hpp"
@@ -569,3 +571,5 @@ namespace soup
 		send(data);
 	}
 }
+
+#endif

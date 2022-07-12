@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Socket.hpp"
+#if !SOUP_WASM
 
 #include "Callback.hpp"
 #include "MysqlColumnDefinition.hpp"
@@ -55,3 +56,4 @@ namespace soup
 		void mysqlSend(std::string data);
 	};
 }
+#endif

@@ -73,11 +73,6 @@
 #define SOUP_CPP20 true
 #endif
 
-// === Feature macros
-
-// emscripten seems to be missing std::string::operator<=>
-#define SOUP_SPACESHIP (SOUP_CPP20 && !SOUP_WASM)
-
 // === Platform-specific types
 // This is the only thing soup puts into the global namespace
 

@@ -1,5 +1,7 @@
 #include "HttpRequest.hpp"
 
+#if !SOUP_WASM
+
 #include "ObfusString.hpp"
 #include "Scheduler.hpp"
 #include "Socket.hpp"
@@ -117,3 +119,5 @@ namespace soup
 		}, resp);
 	}
 }
+
+#endif

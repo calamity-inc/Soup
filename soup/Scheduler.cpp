@@ -1,5 +1,7 @@
 #include "Scheduler.hpp"
 
+#if !SOUP_WASM
+
 #include <thread>
 
 #include "Promise.hpp"
@@ -144,3 +146,5 @@ namespace soup
 		workers_i = workers.erase(workers_i);
 	}
 }
+
+#endif

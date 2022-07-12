@@ -241,7 +241,7 @@ namespace soup
 			else do
 			{
 				auto res = quotient.divide((chunk_t)10u);
-				str.insert(0, 1, '0' + res.second.getChunk(0));
+				str.insert(0, 1, (char)('0' + res.second.getChunk(0)));
 				quotient = std::move(res.first);
 			} while (!quotient.isZero());
 			if (negative)

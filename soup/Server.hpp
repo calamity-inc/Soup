@@ -1,8 +1,9 @@
 #pragma once
 
-#include "type.hpp"
-
 #include "Scheduler.hpp"
+#if !SOUP_WASM
+
+#include "type.hpp"
 
 namespace soup
 {
@@ -20,3 +21,4 @@ namespace soup
 #endif
 	};
 }
+#endif

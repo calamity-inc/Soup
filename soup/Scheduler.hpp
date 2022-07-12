@@ -1,8 +1,9 @@
 #pragma once
 
-#include <vector>
-
 #include "base.hpp"
+#if !SOUP_WASM
+
+#include <vector>
 
 #if SOUP_WINDOWS
 #include <WinSock2.h>
@@ -44,3 +45,5 @@ namespace soup
 		void onConnectionLoss(std::vector<UniquePtr<Worker>>::iterator& workers_i);
 	};
 }
+
+#endif

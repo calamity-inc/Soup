@@ -1,5 +1,7 @@
 #include "SocketTlsHandshaker.hpp"
 
+#if !SOUP_WASM
+
 #include "ObfusString.hpp"
 #include "sha256.hpp"
 #include "TlsHandshake.hpp"
@@ -102,3 +104,4 @@ namespace soup
 		return sha256::tls_prf(label, 12, getMasterSecret(), sha256::hash(layer_bytes));
 	}
 }
+#endif

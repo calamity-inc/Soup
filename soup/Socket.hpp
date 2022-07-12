@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#if !SOUP_WASM
 #include "fwd.hpp"
 #include "type.hpp"
 
@@ -20,7 +21,6 @@
 
 namespace soup
 {
-#pragma pack(push, 1)
 	class Socket : public Worker
 	{
 	public:
@@ -161,5 +161,5 @@ namespace soup
 
 		void transport_close() noexcept;
 	};
-#pragma pack(pop)
 }
+#endif

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#if !SOUP_WASM
 #include "Capture.hpp"
 
 #if SOUP_LINUX
@@ -46,3 +47,5 @@ namespace soup
 		[[nodiscard]] bool hasFinished() const noexcept;
 	};
 }
+
+#endif

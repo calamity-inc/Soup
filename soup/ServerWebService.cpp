@@ -1,5 +1,7 @@
 #include "ServerWebService.hpp"
 
+#if !SOUP_WASM
+
 #include "base64.hpp"
 #include "HttpRequest.hpp"
 #include "sha1.hpp"
@@ -334,3 +336,5 @@ namespace soup
 		return base64::encode(sha1::hash(key));
 	}
 }
+
+#endif

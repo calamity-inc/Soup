@@ -6,7 +6,7 @@
 
 namespace soup
 {
-#if SOUP_SPACESHIP
+#if SOUP_CPP20
 	std::strong_ordering JsonNode::operator<=>(const JsonNode& b) const
 	{
 		if (type != b.type)

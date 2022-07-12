@@ -1,5 +1,7 @@
 #include "Fiber.hpp"
 
+#if !SOUP_WASM
+
 #if SOUP_WINDOWS
 #include <Windows.h>
 #endif
@@ -86,3 +88,5 @@ namespace soup
 		return func == nullptr;
 	}
 }
+
+#endif
