@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <cstdint>
 
+// === Determine platform (windows, wasm, or linux) and bits (32 or 64)
+
 #ifdef _WIN32
 	#define SOUP_WINDOWS true
 	#define SOUP_WASM false
@@ -44,6 +46,16 @@
 	#endif
 #endif
 
+// === Determine if code inspector
+
+#ifdef __INTELLISENSE__
+#define SOUP_CODE_INSPECTOR true
+#else
+#define SOUP_CODE_INSPECTOR false
+#endif
+
+// === Misc. macros for cross-platform goodness
+
 #define SOUP_CEXPORT extern "C" SOUP_EXPORT
 
 #ifdef _MSC_VER
@@ -61,10 +73,13 @@
 #define SOUP_CPP20 true
 #endif
 
+// === Feature macros
+
 // emscripten seems to be missing std::string::operator<=>
 #define SOUP_SPACESHIP (SOUP_CPP20 && !SOUP_WASM)
 
-// platform-specific types, this is the only thing soup puts into the global namespace
+// === Platform-specific types
+// This is the only thing soup puts into the global namespace
 
 #if SOUP_BITS == 64
 	using halfintmax_t = int32_t;

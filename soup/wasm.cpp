@@ -1,6 +1,6 @@
 #include "base.hpp"
 
-#if SOUP_WASM || defined(__INTELLISENSE__)
+#if SOUP_WASM || SOUP_CODE_INSPECTOR
 
 #include "Asn1Sequence.hpp"
 #include "base64.hpp"
