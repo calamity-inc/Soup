@@ -20,7 +20,7 @@ namespace soup
 			started_at = time::nanos();
 		}
 
-		inline void stop() noexcept // returns ms
+		inline void stop() noexcept
 		{
 			started_at = (time::nanos() - started_at);
 		}
