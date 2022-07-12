@@ -788,6 +788,9 @@
     <ClInclude Include="search_match.hpp">
       <Filter>algos</Filter>
     </ClInclude>
+    <ClInclude Include="WebSocketConnection.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1159,6 +1162,9 @@
     </ClCompile>
     <ClCompile Include="search_match.cpp">
       <Filter>algos</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocketConnection.cpp">
+      <Filter>net\web\websocket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

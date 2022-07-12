@@ -640,6 +640,7 @@
     <ClInclude Include="math.hpp" />
     <ClInclude Include="WebResource.hpp" />
     <ClInclude Include="ServerWebService.hpp" />
+    <ClInclude Include="WebSocketConnection.hpp" />
     <ClInclude Include="WebSocketFrameType.hpp" />
     <ClInclude Include="WebSocketMessage.hpp" />
     <ClInclude Include="Window.hpp" />
@@ -777,6 +778,7 @@
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="WebResource.cpp" />
     <ClCompile Include="ServerWebService.cpp" />
+    <ClCompile Include="WebSocketConnection.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
     <ClCompile Include="X509Certificate.cpp" />
