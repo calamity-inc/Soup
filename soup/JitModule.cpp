@@ -43,7 +43,7 @@ namespace soup
 	std::string JitModule::compile()
 	{
 		dll_path = os::tempfile(Compiler::getSharedLibraryExtension());
-		auto output = Compiler::compileSharedLibrary(cpp_path, dll_path.string());
+		auto output = Compiler::makeSharedLibrary(cpp_path, dll_path.string());
 		if (std::filesystem::exists(dll_path))
 		{
 			dll = SharedLibrary(dll_path.string().c_str());

@@ -13,7 +13,19 @@
 
 namespace soup
 {
-	std::string Compiler::compileExecutable(const std::string& in, const std::string& out)
+	std::string Compiler::makeObject(const std::string& in, const std::string& out)
+	{
+		return os::execute("clang", {
+			STD_ARG,
+#if !SOUP_WINDOWS
+			"-lstdc++",
+			"-lstdc++fs",
+#endif
+			"-o", out, "-c", in
+			});
+	}
+
+	std::string Compiler::makeExecutable(const std::string& in, const std::string& out)
 	{
 		return os::execute("clang", {
 			STD_ARG,
@@ -25,6 +37,20 @@ namespace soup
 		});
 	}
 
+	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out)
+	{
+		std::vector<std::string> args = {
+			STD_ARG,
+#if !SOUP_WINDOWS
+			"-lstdc++",
+			"-lstdc++fs",
+#endif
+			"-o", out
+		};
+		args.insert(args.end(), objects.begin(), objects.end());
+		return os::execute("clang", std::move(args));
+	}
+
 	const char* Compiler::getSharedLibraryExtension() noexcept
 	{
 #if SOUP_WINDOWS
@@ -34,7 +60,7 @@ namespace soup
 #endif
 	}
 
-	std::string Compiler::compileSharedLibrary(const std::string& in, const std::string& out)
+	std::string Compiler::makeSharedLibrary(const std::string& in, const std::string& out)
 	{
 		return os::execute("clang", {
 			STD_ARG,
