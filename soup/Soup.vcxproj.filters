@@ -791,6 +791,9 @@
     <ClInclude Include="WebSocketConnection.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
+    <ClInclude Include="MsvcLcgRandomDevice.hpp">
+      <Filter>algos\rand</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">

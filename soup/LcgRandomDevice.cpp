@@ -12,10 +12,10 @@ namespace soup
 
 	uint64_t LcgRandomDevice::generate()
 	{
-		last *= multiplier;
-		last += increment;
+		state *= multiplier;
+		state += increment;
 
 		// invert byte order since the higher-order bits have longer periods
-		return intutil::invertEndianness(last);
+		return intutil::invertEndianness(state);
 	}
 }

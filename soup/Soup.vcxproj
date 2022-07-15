@@ -414,6 +414,7 @@
     <ClInclude Include="JitModule.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
     <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
+    <ClInclude Include="MsvcLcgRandomDevice.hpp" />
     <ClInclude Include="MtRandomDevice.hpp" />
     <ClInclude Include="MazeGenerator.hpp" />
     <ClInclude Include="Op.hpp" />
