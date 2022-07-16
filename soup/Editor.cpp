@@ -7,6 +7,8 @@
 #include "EditorText.hpp"
 #include "unicode.hpp"
 
+#undef min
+
 namespace soup
 {
 	static Editor* inst;
