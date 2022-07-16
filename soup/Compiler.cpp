@@ -11,18 +11,20 @@
 #define STD_ARG "-std=c++17"
 #endif
 
+#if SOUP_WINDOWS
+#define CLANG_DEFAULT_ARGS STD_ARG, "-D", "_CRT_SECURE_NO_WARNINGS"
+#else
+#define CLANG_DEFAULT_ARGS STD_ARG, "-lstdc++", "-lstdc++fs"
+#endif
+
 namespace soup
 {
 	std::string Compiler::makeObject(const std::string& in, const std::string& out)
 	{
 		return os::execute("clang", {
-			STD_ARG,
-#if !SOUP_WINDOWS
-			"-lstdc++",
-			"-lstdc++fs",
-#endif
+			CLANG_DEFAULT_ARGS,
 			"-o", out, "-c", in
-			});
+		});
 	}
 
 	const char* Compiler::getExecutableExtension() noexcept
@@ -37,11 +39,7 @@ namespace soup
 	std::string Compiler::makeExecutable(const std::string& in, const std::string& out)
 	{
 		return os::execute("clang", {
-			STD_ARG,
-#if !SOUP_WINDOWS
-			"-lstdc++",
-			"-lstdc++fs",
-#endif
+			CLANG_DEFAULT_ARGS,
 			"-o", out, in
 		});
 	}
@@ -49,11 +47,7 @@ namespace soup
 	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out)
 	{
 		std::vector<std::string> args = {
-			STD_ARG,
-#if !SOUP_WINDOWS
-			"-lstdc++",
-			"-lstdc++fs",
-#endif
+			CLANG_DEFAULT_ARGS,
 			"-o", out
 		};
 		args.insert(args.end(), objects.begin(), objects.end());
@@ -92,10 +86,8 @@ namespace soup
 	std::string Compiler::makeSharedLibrary(const std::string& in, const std::string& out)
 	{
 		return os::execute("clang", {
-			STD_ARG,
+			CLANG_DEFAULT_ARGS,
 #if !SOUP_WINDOWS
-			"-lstdc++",
-			"-lstdc++fs",
 			"-fPIC",
 #endif
 			"--shared",
