@@ -25,6 +25,15 @@ namespace soup
 			});
 	}
 
+	const char* Compiler::getExecutableExtension() noexcept
+	{
+#if SOUP_WINDOWS
+		return ".exe";
+#else
+		return "";
+#endif
+	}
+
 	std::string Compiler::makeExecutable(const std::string& in, const std::string& out)
 	{
 		return os::execute("clang", {
@@ -51,12 +60,32 @@ namespace soup
 		return os::execute("clang", std::move(args));
 	}
 
+	const char* Compiler::getStaticLibraryExtension() noexcept
+	{
+#if SOUP_WINDOWS
+		return ".lib";
+#else
+		return ".a";
+#endif
+	}
+
+	std::string Compiler::makeStaticLibrary(const std::vector<std::string>& objects, const std::string& out)
+	{
+		std::vector<std::string> args = { "rc", out };
+		args.insert(args.end(), objects.begin(), objects.end());
+#if SOUP_WINDOWS
+		return os::execute("llvm-ar", std::move(args));
+#else
+		return os::execute("ar", std::move(args));
+#endif
+	}
+
 	const char* Compiler::getSharedLibraryExtension() noexcept
 	{
 #if SOUP_WINDOWS
-		return "dll";
+		return ".dll";
 #else
-		return "so";
+		return ".so";
 #endif
 	}
 
