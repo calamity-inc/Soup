@@ -4,27 +4,40 @@
 
 #include "os.hpp"
 
-#if SOUP_WINDOWS
-#define STD_ARG "-std=c++20"
-#else
-// Debian's at clang 11 right now, which does support C++20, but not enough to compile Soup without modifications.
-#define STD_ARG "-std=c++17"
-#endif
-
-#if SOUP_WINDOWS
-#define CLANG_DEFAULT_ARGS STD_ARG, "-D", "_CRT_SECURE_NO_WARNINGS"
-#else
-#define CLANG_DEFAULT_ARGS STD_ARG, "-lm", "-lstdc++", "-lstdc++fs", "-pthreads", "-Wno-unused-command-line-argument"
-#endif
-
 namespace soup
 {
-	std::string Compiler::makeObject(const std::string& in, const std::string& out)
+	Compiler::Compiler()
+#if SOUP_WINDOWS
+		: lang("c++20")
+#else
+		// Debian's at clang 11 right now, which does support C++20, but not enough to compile Soup without modifications.
+		: lang("c++17")
+#endif
 	{
-		return os::execute("clang", {
-			CLANG_DEFAULT_ARGS,
-			"-o", out, "-c", in
-		});
+	}
+
+	std::vector<std::string> Compiler::getArgs() const
+	{
+		std::vector<std::string> args{
+#if SOUP_WINDOWS
+			"-D", "_CRT_SECURE_NO_WARNINGS",
+#else
+			"-lm", "-lstdc++", "-lstdc++fs", "-pthreads", "-Wno-unused-command-line-argument",
+#endif
+			"-std="
+		};
+		args.back().append(lang);
+		return args;
+	}
+
+	std::string Compiler::makeObject(const std::string& in, const std::string& out) const
+	{
+		auto args = getArgs();
+		args.emplace_back("-o");
+		args.emplace_back(out);
+		args.emplace_back("-c");
+		args.emplace_back(in);
+		return os::execute("clang", std::move(args));
 	}
 
 	const char* Compiler::getExecutableExtension() noexcept
@@ -36,20 +49,20 @@ namespace soup
 #endif
 	}
 
-	std::string Compiler::makeExecutable(const std::string& in, const std::string& out)
+	std::string Compiler::makeExecutable(const std::string& in, const std::string& out) const
 	{
-		return os::execute("clang", {
-			CLANG_DEFAULT_ARGS,
-			"-o", out, in
-		});
+		auto args = getArgs();
+		args.emplace_back("-o");
+		args.emplace_back(out);
+		args.emplace_back(in);
+		return os::execute("clang", std::move(args));
 	}
 
-	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out)
+	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out) const
 	{
-		std::vector<std::string> args = {
-			CLANG_DEFAULT_ARGS,
-			"-o", out
-		};
+		auto args = getArgs();
+		args.emplace_back("-o");
+		args.emplace_back(out);
 		args.insert(args.end(), objects.begin(), objects.end());
 		return os::execute("clang", std::move(args));
 	}
@@ -63,7 +76,7 @@ namespace soup
 #endif
 	}
 
-	std::string Compiler::makeStaticLibrary(const std::vector<std::string>& objects, const std::string& out)
+	std::string Compiler::makeStaticLibrary(const std::vector<std::string>& objects, const std::string& out) const
 	{
 		std::vector<std::string> args = { "rc", out };
 		args.insert(args.end(), objects.begin(), objects.end());
@@ -83,15 +96,16 @@ namespace soup
 #endif
 	}
 
-	std::string Compiler::makeSharedLibrary(const std::string& in, const std::string& out)
+	std::string Compiler::makeSharedLibrary(const std::string& in, const std::string& out) const
 	{
-		return os::execute("clang", {
-			CLANG_DEFAULT_ARGS,
+		auto args = getArgs();
 #if !SOUP_WINDOWS
-			"-fPIC",
+		args.emplace_back("-fPIC");
 #endif
-			"--shared",
-			"-o", out, in
-		});
+		args.emplace_back("--shared");
+		args.emplace_back("-o");
+		args.emplace_back(out);
+		args.emplace_back(in);
+		return os::execute("clang", std::move(args));
 	}
 }

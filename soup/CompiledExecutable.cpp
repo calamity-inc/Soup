@@ -24,7 +24,8 @@ namespace soup
 		CompiledExecutable res{
 			Tempfile("exe")
 		};
-		res.compiler_output = Compiler::makeExecutable(path, res.exe_file);
+		Compiler compiler;
+		res.compiler_output = compiler.makeExecutable(path, res.exe_file);
 		return res;
     }
 }
