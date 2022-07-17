@@ -51,5 +51,28 @@ namespace soup
 			} while (node && !head.compare_exchange_weak(node, node->next));
 			return node;
 		}
+
+		// non-atomic operations
+
+		void operator=(AtomicStack&& b) noexcept
+		{
+			head = b.head.load();
+			b.head = nullptr;
+		}
+
+		[[nodiscard]] bool empty() const noexcept
+		{
+			return head.load() != nullptr;
+		}
+
+		[[nodiscard]] size_t size() const noexcept
+		{
+			size_t accum = 0;
+			for (Node* node = head.load(); node != nullptr; node = node->next)
+			{
+				++accum;
+			}
+			return accum;
+		}
 	};
 }
