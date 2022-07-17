@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "Reader.hpp"
+
 namespace soup
 {
 	[[nodiscard]] static std::array<uint32_t, 256> generate_crc_lookup_table() noexcept
@@ -25,6 +27,20 @@ namespace soup
 	{
 		static const auto table = generate_crc_lookup_table();
 		return table;
+	}
+
+	uint32_t crc32::hash(Reader& r)
+	{
+		const auto table = get_crc_lookup_table();
+
+		uint32_t checksum = 0xFFFFFFFFul;
+		for (uint8_t c; r.u8(c); )
+		{
+			const uint32_t lookupIndex = (checksum ^ c) & 0xff;
+			checksum = (checksum >> 8) ^ table[lookupIndex];
+		}
+		checksum ^= 0xFFFFFFFFu;
+		return checksum;
 	}
 
 	uint32_t crc32::hash(const std::string& data)
