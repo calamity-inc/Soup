@@ -14,7 +14,7 @@
 #if SOUP_WINDOWS
 #define CLANG_DEFAULT_ARGS STD_ARG, "-D", "_CRT_SECURE_NO_WARNINGS"
 #else
-#define CLANG_DEFAULT_ARGS STD_ARG, "-lstdc++", "-lstdc++fs", "-pthreads", "-Wno-unused-command-line-argument"
+#define CLANG_DEFAULT_ARGS STD_ARG, "-lm", "-lstdc++", "-lstdc++fs", "-pthreads", "-Wno-unused-command-line-argument"
 #endif
 
 namespace soup
