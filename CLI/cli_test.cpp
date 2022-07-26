@@ -416,6 +416,26 @@ static void test_util_string()
 		assert(StringMatch::search("find", "Find Objective") == true);
 		assert(StringMatch::search("find", "Finish Dagger") == false);
 	});
+	test("StringMatch::wildcard", []
+	{
+		assert(StringMatch::wildcard("*.cpp", "foo.cpp") == true);
+		assert(StringMatch::wildcard("*.cpp", "foo.bar.cpp") == true);
+
+		assert(StringMatch::wildcard("*.*.cpp", "f.cpp") == false);
+		assert(StringMatch::wildcard("*.*.cpp", "fo.cpp") == false);
+		assert(StringMatch::wildcard("*.*.cpp", "foo.cpp") == false);
+		assert(StringMatch::wildcard("*.*.cpp", "fooo.cpp") == false);
+		assert(StringMatch::wildcard("*.*.cpp", "foooo.cpp") == false);
+		assert(StringMatch::wildcard("*.*.cpp", "foo.bar.cpp") == true);
+
+		assert(StringMatch::wildcard("****.cpp", "foo.cpp", 0) == true);
+		assert(StringMatch::wildcard("***.cpp", "foo.cpp", 1) == true);
+		assert(StringMatch::wildcard("****.cpp", "foo.cpp", 1) == false);
+
+		assert(StringMatch::wildcard("lib*.so", "libsoup.so") == true);
+
+		assert(StringMatch::wildcard("lib*_ext*.cpp", "libsoup_extspoon.cpp") == true);
+	});
 }
 
 static void test_util()
