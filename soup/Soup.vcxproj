@@ -539,7 +539,6 @@
     <ClInclude Include="SceneRenderer.hpp" />
     <ClInclude Include="Scheduler.hpp" />
     <ClInclude Include="Searchspace.hpp" />
-    <ClInclude Include="search_match.hpp" />
     <ClInclude Include="SegWitAddress.hpp" />
     <ClInclude Include="Server.hpp" />
     <ClInclude Include="ServerService.hpp" />
@@ -549,6 +548,7 @@
     <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="Status.hpp" />
     <ClInclude Include="StringBuilder.hpp" />
+    <ClInclude Include="StringMatch.hpp" />
     <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="FileRaii.hpp" />
@@ -751,7 +751,6 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneRasterisingRenderer.cpp" />
     <ClCompile Include="SceneRaytracingRenderer.cpp" />
-    <ClCompile Include="search_match.cpp" />
     <ClCompile Include="SegWitAddress.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="sha1.cpp" />
@@ -767,6 +766,7 @@
     <ClCompile Include="SocketTlsEncrypter.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="FileRaii.cpp" />
+    <ClCompile Include="StringMatch.cpp" />
     <ClCompile Include="Tempfile.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />

@@ -1,10 +1,10 @@
-#include "search_match.hpp"
+#include "StringMatch.hpp"
 
 #include "string.hpp"
 
 namespace soup
 {
-	bool search_match(const std::string& query, std::string item)
+	bool StringMatch::search(const std::string& query, std::string item)
 	{
 		string::lower(item);
 

@@ -2,8 +2,6 @@
 
 #include <unit_testing.hpp>
 
-#include <search_match.hpp>
-
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
@@ -30,27 +28,13 @@
 
 #include <Uri.hpp>
 
+#include <StringMatch.hpp>
+
 #include <string.hpp>
 #include <intutil.hpp>
 
 using namespace soup;
 using namespace soup::literals;
-
-static void test_algos()
-{
-	test("search_match", []
-	{
-		assert(search_match("run program", "Run Script/Program") == true);
-		assert(search_match("apple", "orange") == false);
-		assert(search_match("bad", "The quick brown fox jumps over the lazy dog.") == false);
-		assert(search_match("the bow", "The quick brown fox jumps over the lazy dog.") == false);
-		assert(search_match("the same", "the same") == true);
-		assert(search_match("play level", "Play next level") == true);
-		assert(search_match("play next", "Play next level") == true);
-		assert(search_match("find", "Find Objective") == true);
-		assert(search_match("find", "Finish Dagger") == false);
-	});
-}
 
 static void test_crypto()
 {
@@ -418,6 +402,22 @@ static void test_uri()
 	assert(uri.toString() == str);
 }
 
+static void test_util_string()
+{
+	test("StringMatch::search", []
+	{
+		assert(StringMatch::search("run program", "Run Script/Program") == true);
+		assert(StringMatch::search("apple", "orange") == false);
+		assert(StringMatch::search("bad", "The quick brown fox jumps over the lazy dog.") == false);
+		assert(StringMatch::search("the bow", "The quick brown fox jumps over the lazy dog.") == false);
+		assert(StringMatch::search("the same", "the same") == true);
+		assert(StringMatch::search("play level", "Play next level") == true);
+		assert(StringMatch::search("play next", "Play next level") == true);
+		assert(StringMatch::search("find", "Find Objective") == true);
+		assert(StringMatch::search("find", "Finish Dagger") == false);
+	});
+}
+
 static void test_util()
 {
 	test("bin2hex", []
@@ -439,10 +439,6 @@ void cli_test()
 {
 	unit("soup")
 	{
-		unit("algos")
-		{
-			test_algos();
-		}
 		unit("crypto")
 		{
 			test_crypto();
@@ -468,6 +464,10 @@ void cli_test()
 		}
 		unit("util")
 		{
+			unit("string")
+			{
+				test_util_string();
+			}
 			test_util();
 		}
 	}

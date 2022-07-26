@@ -785,14 +785,14 @@
     <ClInclude Include="branchless.hpp">
       <Filter>algos</Filter>
     </ClInclude>
-    <ClInclude Include="search_match.hpp">
-      <Filter>algos</Filter>
-    </ClInclude>
     <ClInclude Include="WebSocketConnection.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
     <ClInclude Include="MsvcLcgRandomDevice.hpp">
       <Filter>algos\rand</Filter>
+    </ClInclude>
+    <ClInclude Include="StringMatch.hpp">
+      <Filter>util\string</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1163,12 +1163,10 @@
     <ClCompile Include="xml.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="search_match.cpp">
-      <Filter>algos</Filter>
-    </ClCompile>
     <ClCompile Include="WebSocketConnection.cpp">
       <Filter>net\web\websocket</Filter>
     </ClCompile>
+    <ClCompile Include="StringMatch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
