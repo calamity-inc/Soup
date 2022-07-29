@@ -22,16 +22,6 @@ namespace soup
 
 		std::atomic<Node*> head = nullptr;
 
-		~AtomicStack() noexcept
-		{
-			for (Node* node = head.load(); node != nullptr; )
-			{
-				Node* tbd = node;
-				node = node->next;
-				delete tbd;
-			}
-		}
-
 		Node* emplace_front(Data&& data)
 		{
 			Node* node = new Node(std::move(data));
@@ -53,6 +43,24 @@ namespace soup
 		}
 
 		// non-atomic operations
+
+		constexpr AtomicStack() noexcept = default;
+
+		AtomicStack(AtomicStack&& b) noexcept
+			: head(b.head.load())
+		{
+			b.head = nullptr;
+		}
+
+		~AtomicStack() noexcept
+		{
+			for (Node* node = head.load(); node != nullptr; )
+			{
+				Node* tbd = node;
+				node = node->next;
+				delete tbd;
+			}
+		}
 
 		void operator=(AtomicStack&& b) noexcept
 		{
