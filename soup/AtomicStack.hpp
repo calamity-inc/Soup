@@ -82,5 +82,22 @@ namespace soup
 			}
 			return accum;
 		}
+
+		void erase(Node* target) noexcept
+		{
+			if (head.load() == target)
+			{
+				head = target->next;
+			}
+			else for (Node* node = head.load(); node != nullptr; node = node->next)
+			{
+				if (node->next == target)
+				{
+					node->next = target->next;
+					break;
+				}
+			}
+			delete target;
+		}
 	};
 }
