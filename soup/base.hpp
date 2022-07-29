@@ -73,6 +73,17 @@
 #define SOUP_CPP20 true
 #endif
 
+#if SOUP_CPP20
+#define SOUP_IF_LIKELY(cond) if (cond) [[likely]]
+#define SOUP_IF_UNLIKELY(cond) if (cond) [[unlikely]]
+#elif defined(__clang__) || defined(__GNUC__)
+#define SOUP_IF_LIKELY(cond) if (__builtin_expect((cond), 1))
+#define SOUP_IF_UNLIKELY(cond) if (__builtin_expect((cond), 0))
+#else
+#define SOUP_IF_LIKELY(cond) if (cond)
+#define SOUP_IF_UNLIKELY(cond) if (cond)
+#endif
+
 // === Platform-specific types
 // This is the only thing soup puts into the global namespace
 
