@@ -7,13 +7,30 @@
 
 namespace soup
 {
+	static void translateV3(Vector3& v)
+	{
+		v.y *= -1.0f;
+		std::swap(v.y, v.z);
+	}
+
 	void SceneRasterisingRenderer::render(const Scene& s, RenderTarget& rt, float fov) const
 	{
 		rt.fill(s.sky_colour);
 
-		auto cam = s.getCameraMatrix();
+		Vector3 cam_pos_fixed = s.cam_pos;
+		translateV3(cam_pos_fixed);
+
+		Vector3 cam_rot_fixed = s.cam_rot;
+		translateV3(cam_rot_fixed);
+
+		Matrix cam; // s.getCameraMatrix
+		cam.setPosRotXYZ(cam_pos_fixed, cam_rot_fixed);
+
 		auto look_at = cam.invert();
 		auto proj_mat = Matrix::projection((float)rt.height / rt.width, fov, z_near, z_far);
+
+		std::vector<float> depth_buffer;
+		depth_buffer.resize(rt.width * rt.height);
 
 		for (const auto& t : s.tris)
 		{
@@ -24,8 +41,9 @@ namespace soup
 			if (normal.dot(p_to_cam) < 0.0f)
 			{
 				Poly p = t.p;
-
-				// TODO: This is Y Up. Either fix whatever causes this to have a different coordinate system, or translate it.
+				translateV3(p.a);
+				translateV3(p.b);
+				translateV3(p.c);
 
 				// World -> View
 				p.a = look_at * p.a;

@@ -14,6 +14,7 @@
 #include <RenderTargetCanvas.hpp>
 #include <Scene.hpp>
 #include <SceneRaytracingRenderer.hpp>
+#include <SceneRasterisingRenderer.hpp>
 #include <time.hpp>
 #include <unicode.hpp>
 #include <UvSphere.hpp>
