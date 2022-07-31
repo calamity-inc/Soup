@@ -1,5 +1,7 @@
 #include "AssemblyBuilder.hpp"
 
+#include <cstring> // memcpy
+
 #include "base.hpp"
 
 #if SOUP_WINDOWS

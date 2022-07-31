@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <stack>
+#include <vector>
 
 #include "Capture.hpp"
 #include "Mixed.hpp"
