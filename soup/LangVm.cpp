@@ -2,9 +2,12 @@
 
 #include <typeinfo> // bad_cast
 
+#include "AllocRaiiLocalBase.hpp"
+#include "AssemblyBuilder.hpp"
 #include "BuiltinOp.hpp"
 #include "ParseError.hpp"
 #include "StringReader.hpp"
+#include "UniquePtr.hpp"
 
 #define DEBUG_VM false
 
@@ -125,9 +128,86 @@ namespace soup
 		return false;
 	}
 
+	void LangVm::addOpcode(uint8_t opcode, LangVm::op_t op)
+	{
+		if (opcode != ops.size())
+		{
+			throw 0;
+		}
+		ops.emplace_back(op);
+	}
+
 	void LangVm::push(Mixed&& val)
 	{
 		push(std::make_shared<Mixed>(val));
+	}
+
+	void LangVm::execute()
+	{
+		for (uint8_t op; getNextOp(op); )
+		{
+			ops.at(op)(*this);
+		}
+	}
+
+	static void asmvm_pushInt(LangVm& rcx, int64_t rdx)
+	{
+		rcx.push(std::make_shared<Mixed>(rdx));
+	}
+
+	static void asmvm_pushUint(LangVm& rcx, uint64_t rdx)
+	{
+		rcx.push(std::make_shared<Mixed>(rdx));
+	}
+
+	void LangVm::assembleAndExecute()
+	{
+		AssemblyBuilder b;
+		b.funcBegin();
+		b.set12toC(); // LangVm& is in RCX, moving to nonvolatile R12
+		for (uint8_t op; r->u8(op); )
+		{
+			switch (op)
+			{
+			case OP_PUSH_STR:
+			case OP_PUSH_FUN:
+			case OP_PUSH_VAR:
+			case OP_POP_ARGS:
+				throw ParseError("Can't assemble this (yet)");
+
+			case OP_PUSH_INT:
+			{
+				int64_t val;
+				r->i64_dyn(val);
+				b.setCto12();
+				b.setD((uint64_t)val);
+				b.setA((uint64_t)&asmvm_pushInt);
+				b.callA();
+				break;
+			}
+
+			case OP_PUSH_UINT:
+			{
+				uint64_t val;
+				r->u64_dyn(val);
+				b.setCto12();
+				b.setD(val);
+				b.setA((uint64_t)&asmvm_pushUint);
+				b.callA();
+				break;
+			}
+
+			default:
+				b.setCto12();
+				b.setA((uint64_t)ops.at(op));
+				b.callA();
+				break;
+			}
+		}
+		b.funcEnd();
+		auto f = b.allocate();
+		using ft = void(*)(LangVm&);
+		((ft)f->addr)(*this);
 	}
 
 	void LangVm::push(std::shared_ptr<Mixed> val)

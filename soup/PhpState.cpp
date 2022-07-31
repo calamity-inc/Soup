@@ -363,119 +363,116 @@ namespace soup
 		return output;
 	}
 
+	struct CapturePhpVm
+	{
+		const PhpState* state;
+		std::string* output;
+		unsigned int max_require_depth;
+	};
+
 	void PhpState::execute(std::string& output, Reader& r, unsigned int max_require_depth, std::stack<std::shared_ptr<Mixed>>&& stack) const
 	{
 		LangVm vm(&r, std::move(stack));
+		vm.cap = CapturePhpVm{ this, &output, max_require_depth };
 
+		// Setup variables
 		std::unordered_map<Mixed, std::shared_ptr<Mixed>> _SERVER{};
 		_SERVER.emplace("REQUEST_URI", std::make_shared<Mixed>(request_uri));
 
 		vm.vars.emplace("$_SERVER", std::make_shared<Mixed>(std::move(_SERVER)));
 
-		for (uint8_t op; vm.getNextOp(op); )
+		// Setup opcodes
+		vm.addOpcode(OP_CONCAT, [](LangVm& vm)
 		{
-			switch (op)
+			std::string str = vm.pop()->toString();
+			str.append(vm.pop()->toString());
+			vm.push(std::move(str));
+		});
+		vm.addOpcode(OP_INDEX, [](LangVm& vm)
+		{
+			auto arr = vm.pop();
+			auto key = vm.pop();
+			if (auto e = arr->getMixedSpMixedMap().find(*key); e != arr->getMixedSpMixedMap().end())
 			{
-			case OP_CONCAT:
-				{
-					std::string str = vm.pop()->toString();
-					str.append(vm.pop()->toString());
-					vm.push(std::move(str));
-				}
-				break;
-
-			case OP_INDEX:
-				{
-					auto arr = vm.pop();
-					auto key = vm.pop();
-					if (auto e = arr->getMixedSpMixedMap().find(*key); e != arr->getMixedSpMixedMap().end())
-					{
-						vm.push(e->second);
-					}
-					else
-					{
-						std::string err = "Array has no entry with key ";
-						err.append(key->toString());
-						throw ParseError(std::move(err));
-					}
-				}
-				break;
-
-			case OP_ASSIGN:
-				{
-					auto& var = vm.popVarRef();
-					var = vm.pop();
-				}
-				break;
-
-			case OP_EQ:
-				vm.push(vm.pop()->toString() == vm.pop()->toString());
-				break;
-
-			case OP_IF:
-				{
-					auto cond_val = vm.pop()->getInt();
-					auto true_sr = vm.popFunc();
-					if (cond_val)
-					{
-						execute(output, true_sr, max_require_depth);
-					}
-				}
-				break;
-
-			case OP_IF_ELSE:
-				{
-					auto cond_val = vm.pop()->getInt();
-					auto true_sr = vm.popFunc();
-					auto false_sr = vm.popFunc();
-					if (cond_val)
-					{
-						execute(output, true_sr, max_require_depth);
-					}
-					else
-					{
-						execute(output, false_sr, max_require_depth);
-					}
-				}
-				break;
-
-			case OP_CALL:
-				{
-					auto sr = vm.popFunc();
-					auto num_args = vm.popRaw()->getUInt();
-					std::stack<std::shared_ptr<Mixed>> handover_stack{};
-					while (num_args--)
-					{
-						handover_stack.emplace(vm.pop());
-					}
-					execute(output, sr, max_require_depth, std::move(handover_stack));
-				}
-				break;
-
-			case OP_REQUIRE:
-				{
-					if (max_require_depth == 0)
-					{
-						throw std::runtime_error("Max require depth exceeded");
-					}
-					std::filesystem::path file = cwd;
-					file /= vm.popString();
-					if (!std::filesystem::exists(file))
-					{
-						std::string err = "Required file doesn't exist: ";
-						err.append(file.string());
-						throw std::runtime_error(std::move(err));
-					}
-					output.append(evaluate(string::fromFile(file.string()), max_require_depth - 1));
-				}
-				break;
-
-			case OP_ECHO:
-				{
-					output.append(vm.pop()->toString());
-				}
-				break;
+				vm.push(e->second);
 			}
-		}
+			else
+			{
+				std::string err = "Array has no entry with key ";
+				err.append(key->toString());
+				throw ParseError(std::move(err));
+			}
+		});
+		vm.addOpcode(OP_ASSIGN, [](LangVm& vm)
+		{
+			auto& var = vm.popVarRef();
+			var = vm.pop();
+		});
+		vm.addOpcode(OP_EQ, [](LangVm& vm)
+		{
+			vm.push(vm.pop()->toString() == vm.pop()->toString());
+		});
+		vm.addOpcode(OP_IF, [](LangVm& vm)
+		{
+			auto cond_val = vm.pop()->getInt();
+			auto true_sr = vm.popFunc();
+			if (cond_val)
+			{
+				auto& cap = vm.cap.get<CapturePhpVm>();
+				cap.state->execute(*cap.output, true_sr, cap.max_require_depth);
+			}
+		});
+		vm.addOpcode(OP_IF_ELSE, [](LangVm& vm)
+		{
+			auto cond_val = vm.pop()->getInt();
+			auto true_sr = vm.popFunc();
+			auto false_sr = vm.popFunc();
+			auto& cap = vm.cap.get<CapturePhpVm>();
+			if (cond_val)
+			{
+				cap.state->execute(*cap.output, true_sr, cap.max_require_depth);
+			}
+			else
+			{
+				cap.state->execute(*cap.output, false_sr, cap.max_require_depth);
+			}
+		});
+		vm.addOpcode(OP_CALL, [](LangVm& vm)
+		{
+			auto sr = vm.popFunc();
+			auto num_args = vm.popRaw()->getUInt();
+			std::stack<std::shared_ptr<Mixed>> handover_stack{};
+			while (num_args--)
+			{
+				handover_stack.emplace(vm.pop());
+			}
+			auto& cap = vm.cap.get<CapturePhpVm>();
+			cap.state->execute(*cap.output, sr, cap.max_require_depth, std::move(handover_stack));
+		});
+		vm.addOpcode(OP_REQUIRE, [](LangVm& vm)
+		{
+			auto& cap = vm.cap.get<CapturePhpVm>();
+			if (cap.max_require_depth == 0)
+			{
+				throw std::runtime_error("Max require depth exceeded");
+			}
+			std::filesystem::path file = cap.state->cwd;
+			file /= vm.popString();
+			if (!std::filesystem::exists(file))
+			{
+				std::string err = "Required file doesn't exist: ";
+				err.append(file.string());
+				throw std::runtime_error(std::move(err));
+			}
+			cap.output->append(cap.state->evaluate(string::fromFile(file.string()), cap.max_require_depth - 1));
+		});
+		vm.addOpcode(OP_ECHO, [](LangVm& vm)
+		{
+			auto& cap = vm.cap.get<CapturePhpVm>();
+			cap.output->append(vm.pop()->toString());
+		});
+
+		// Let's do this
+		vm.execute();
 	}
 }

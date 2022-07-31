@@ -81,7 +81,23 @@ namespace soup
 	void AssemblyBuilder::setAtoC()
 	{
 		uint8_t bytes[] = {
-			0x48, 0x89, 0xc8
+			0x48, 0x89, 0xC8
+		};
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::set12toC()
+	{
+		uint8_t bytes[] = {
+			0x49, 0x89, 0xCC
+		};
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::setCto12()
+	{
+		uint8_t bytes[] = {
+			0x4C, 0x89, 0xE1
 		};
 		addBytes(bytes);
 	}

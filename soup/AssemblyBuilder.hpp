@@ -34,6 +34,8 @@ namespace soup
 		void set14(uint64_t val);
 
 		void setAtoC(); // mov rax, rcx
+		void set12toC(); // mov r12, rcx
+		void setCto12(); // mov rcx, r12
 
 		void incRAX();
 
