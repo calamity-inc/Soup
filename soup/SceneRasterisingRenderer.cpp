@@ -49,7 +49,6 @@ namespace soup
 				p.c.x *= 0.5f * rt.width;
 				p.c.y *= 0.5f * rt.height;
 
-
 				// TODO: Add depth buffer
 				// TODO: Steal clipping from https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part3.cpp
 
