@@ -1166,7 +1166,9 @@
     <ClCompile Include="WebSocketConnection.cpp">
       <Filter>net\web\websocket</Filter>
     </ClCompile>
-    <ClCompile Include="StringMatch.cpp" />
+    <ClCompile Include="StringMatch.cpp">
+      <Filter>util\string</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
