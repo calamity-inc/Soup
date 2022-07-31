@@ -128,9 +128,9 @@ static void render()
 	auto render_time = time::millis();
 	renderOnto(c);
 	render_time = time::millis() - render_time;
-	
+
 	console.setCursorPos(0, 0);
-	
+
 	auto print_time = time::millis();
 	console << c.toString();
 	print_time = time::millis() - print_time;
