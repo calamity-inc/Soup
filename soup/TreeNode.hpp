@@ -1,9 +1,10 @@
 #pragma once
 
+#include "VirtualDtorBase.hpp"
+
 namespace soup
 {
-	struct TreeNode
+	struct TreeNode : public VirtualDtorBase
 	{
-		virtual ~TreeNode() = default;
 	};
 }
