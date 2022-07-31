@@ -13,7 +13,7 @@ namespace soup
 
 		auto cam = s.getCameraMatrix();
 		auto look_at = cam.invert();
-		auto proj_mat = Matrix::projection(rt.height / rt.width, fov, z_near, z_far);
+		auto proj_mat = Matrix::projection((float)rt.height / rt.width, fov, z_near, z_far);
 
 		for (const auto& t : s.tris)
 		{
