@@ -1,5 +1,15 @@
 #include "AssemblyBuilder.hpp"
 
+#include "base.hpp"
+
+#if SOUP_WINDOWS
+#include "AllocRaiiVirtual.hpp"
+#else
+#include "AllocRaii.hpp"
+#endif
+
+#include "UniquePtr.hpp"
+
 namespace soup
 {
 	void AssemblyBuilder::funcBegin()
@@ -68,6 +78,14 @@ namespace soup
 		addBytes(bytes);
 	}
 
+	void AssemblyBuilder::setAtoC()
+	{
+		uint8_t bytes[] = {
+			0x48, 0x89, 0xc8
+		};
+		addBytes(bytes);
+	}
+
 	void AssemblyBuilder::incRAX()
 	{
 		uint8_t bytes[] = {
@@ -105,8 +123,24 @@ namespace soup
 		return &m_data.at(0);
 	}
 
+	const uint8_t* AssemblyBuilder::data() const
+	{
+		return &m_data.at(0);
+	}
+
 	size_t AssemblyBuilder::size() const noexcept
 	{
 		return m_data.size();
+	}
+
+	UniquePtr<AllocRaiiLocalBase> AssemblyBuilder::allocate() const
+	{
+#if SOUP_WINDOWS
+		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaiiVirtual>(size());
+#else
+		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaii>(size());
+#endif
+		memcpy(alloc->addr, data(), size());
+		return alloc;
 	}
 }

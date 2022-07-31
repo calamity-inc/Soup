@@ -397,7 +397,9 @@
     <ClInclude Include="adler32.hpp" />
     <ClInclude Include="aes.hpp" />
     <ClInclude Include="AllocRaii.hpp" />
+    <ClInclude Include="AllocRaiiLocalBase.hpp" />
     <ClInclude Include="AllocRaiiRemote.hpp" />
+    <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />

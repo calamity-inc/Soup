@@ -1,25 +1,17 @@
 #pragma once
 
+#include "AllocRaiiLocalBase.hpp"
+
 #include <cstdlib>
 
 namespace soup
 {
-	struct AllocRaii
+	struct AllocRaii : public AllocRaiiLocalBase
 	{
-		void* data;
-
-		AllocRaii() noexcept
-			: data(nullptr)
-		{
-		}
-
-		AllocRaii(void* data) noexcept
-			: data(data)
-		{
-		}
+		using AllocRaiiLocalBase::AllocRaiiLocalBase;
 
 		AllocRaii(size_t size)
-			: AllocRaii(malloc(size))
+			: AllocRaiiLocalBase(malloc(size))
 		{
 		}
 
@@ -30,28 +22,28 @@ namespace soup
 
 		void release() noexcept
 		{
-			if (data != nullptr)
+			if (addr != nullptr)
 			{
-				free(data);
-				data = nullptr;
+				free(addr);
+				addr = nullptr;
 			}
 		}
 
 		void operator=(AllocRaii&& b) noexcept
 		{
 			release();
-			data = b.data;
-			b.data = nullptr;
+			addr = b.addr;
+			b.addr = nullptr;
 		}
 
 		operator bool() const noexcept
 		{
-			return data != nullptr;
+			return addr != nullptr;
 		}
 
 		operator void* () const noexcept
 		{
-			return data;
+			return addr;
 		}
 	};
 }

@@ -3,13 +3,7 @@
   <ItemGroup>
     <ClInclude Include="fwd.hpp" />
     <ClInclude Include="macros.hpp" />
-    <ClInclude Include="AllocRaii.hpp">
-      <Filter>mem</Filter>
-    </ClInclude>
     <ClInclude Include="AssemblyBuilder.hpp">
-      <Filter>mem</Filter>
-    </ClInclude>
-    <ClInclude Include="AllocRaiiRemote.hpp">
       <Filter>mem</Filter>
     </ClInclude>
     <ClInclude Include="Bytepatch.hpp">
@@ -797,6 +791,18 @@
     <ClInclude Include="VirtualDtorBase.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="AllocRaii.hpp">
+      <Filter>mem\alloc</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiLocalBase.hpp">
+      <Filter>mem\alloc</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiRemote.hpp">
+      <Filter>mem\alloc</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiVirtual.hpp">
+      <Filter>mem\alloc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1299,6 +1305,9 @@
     </Filter>
     <Filter Include="io\files">
       <UniqueIdentifier>{91cc5788-ba3a-40f8-b033-de517ffd69b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem\alloc">
+      <UniqueIdentifier>{94274a4e-32df-4623-92f5-91d366f63fb4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "fwd.hpp"
+
 namespace soup
 {
 	class AssemblyBuilder
@@ -31,6 +33,8 @@ namespace soup
 		void set8(uint64_t val);
 		void set14(uint64_t val);
 
+		void setAtoC(); // mov rax, rcx
+
 		void incRAX();
 
 		void movPtrRAX(uint8_t val);
@@ -40,6 +44,9 @@ namespace soup
 		void jmpA();
 
 		uint8_t* data();
+		const uint8_t* data() const;
 		size_t size() const noexcept;
+
+		[[nodiscard]] UniquePtr<AllocRaiiLocalBase> allocate() const;
 	};
 }

@@ -68,12 +68,15 @@ namespace soup
 	struct Scene;
 
 	// mem
-	struct AllocRaiiRemote;
 	struct Pattern;
 	struct CompiletimePatternWithOptBytesBase;
 	class Pointer;
 	class Range;
 	struct VirtualRegion;
+	
+	// mem.alloc
+	struct AllocRaiiLocalBase;
+	struct AllocRaiiRemote;
 
 	// net
 	class IpAddr;
