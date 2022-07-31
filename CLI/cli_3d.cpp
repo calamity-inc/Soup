@@ -18,6 +18,7 @@
 #include <time.hpp>
 #include <unicode.hpp>
 #include <UvSphere.hpp>
+#include <Window.hpp>
 
 using namespace soup;
 
@@ -145,7 +146,13 @@ static void render()
 
 void cli_3d()
 {
-	sr.render_distance = 25.0f;
+	/*updateScene();
+	auto w = Window::create("Soup 3D", 720, 480);
+	w.setDrawFunc([](Window, RenderTarget& rt)
+	{
+		sr.render(s, rt, fov);
+	});
+	w.runMessageLoop();*/
 
 	console.init(true);
 	console.enableSizeTracking([](unsigned int width, unsigned int height, const Capture&)
