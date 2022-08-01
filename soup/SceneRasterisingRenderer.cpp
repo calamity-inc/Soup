@@ -264,7 +264,10 @@ namespace soup
 		});
 		
 		// Finally draw
-		rt.fill(s.sky_colour);
+		if (!no_sky_draw)
+		{
+			rt.fill(s.sky_colour);
+		}
 		for (auto& t : trisToDraw)
 		{
 			screenClipAndDraw(rt, std::move(t.p), t.colour);
