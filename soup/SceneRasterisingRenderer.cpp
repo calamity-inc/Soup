@@ -1,5 +1,6 @@
 #include "SceneRasterisingRenderer.hpp"
 
+#include <algorithm>
 #include <deque>
 
 #include "Matrix.hpp"
@@ -136,7 +137,7 @@ namespace soup
 		return 0; // No returned triangles are valid
 	}
 
-	static void screenClipAndDraw(const Scene& s, RenderTarget& rt, Poly&& p, const Rgb& colour)
+	static void screenClipAndDraw(RenderTarget& rt, Poly&& p, const Rgb& colour)
 	{
 		Poly clipped[2];
 		std::deque<Poly> listTriangles;
@@ -188,8 +189,6 @@ namespace soup
 
 	void SceneRasterisingRenderer::render(const Scene& s, RenderTarget& rt, float fov) const
 	{
-		rt.fill(s.sky_colour);
-
 		Vector3 cam_pos_fixed = s.cam_pos;
 		translatePos(cam_pos_fixed);
 
@@ -202,8 +201,7 @@ namespace soup
 		auto look_at = cam.invert();
 		auto proj_mat = Matrix::projection((float)rt.height / rt.width, fov, z_near, z_far);
 
-		std::vector<float> depth_buffer;
-		depth_buffer.resize(rt.width * rt.height);
+		std::vector<Scene::Tri> trisToDraw{};
 
 		for (const auto& t : s.tris)
 		{
@@ -246,16 +244,30 @@ namespace soup
 					p.c.x *= 0.5f * rt.width;
 					p.c.y *= 0.5f * rt.height;
 
-					// TODO: Sort triangles before drawing as a poor person's depth buffer (https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part3.cpp#L634)
-
 					float l = s.light.getPointBrightness(p.a, normal);
 					Rgb colour = t.colour;
 					colour.r *= l;
 					colour.g *= l;
 					colour.b *= l;
-					screenClipAndDraw(s, rt, std::move(p), colour);
+					//screenClipAndDraw(rt, depth_buffer, std::move(p), colour);
+					trisToDraw.emplace_back(Scene::Tri{ std::move(p), colour });
 				}
 			}
+		}
+
+		// Poor person's depth buffer
+		std::sort(trisToDraw.begin(), trisToDraw.end(), [](const Scene::Tri& a, const Scene::Tri& b)
+		{
+			float za = (a.p.a.z + a.p.b.z + a.p.c.z) / 3.0f;
+			float zb = (b.p.a.z + b.p.b.z + b.p.c.z) / 3.0f;
+			return za > zb;
+		});
+		
+		// Finally draw
+		rt.fill(s.sky_colour);
+		for (auto& t : trisToDraw)
+		{
+			screenClipAndDraw(rt, std::move(t.p), t.colour);
 		}
 	}
 }
