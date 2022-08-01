@@ -11,6 +11,7 @@ namespace soup
 	{
 		float z_near = 0.00001f;
 		float z_far = 1000.0f;
+		bool backface_culling = true;
 		bool no_sky_draw = false;
 
 		void render(const Scene& s, RenderTarget& rt, float fov) const final;

@@ -208,50 +208,55 @@ namespace soup
 			auto normal = t.p.getSurfaceNormal();
 
 			// Backface Culling
-			auto p_to_cam = (t.p.a - s.cam_pos);
-			if (normal.dot(p_to_cam) < 0.0f)
+			if (backface_culling)
 			{
-				Poly p = t.p;
-				translatePos(p.a);
-				translatePos(p.b);
-				translatePos(p.c);
-
-				// World -> View
-				p.a = look_at * p.a;
-				p.b = look_at * p.b;
-				p.c = look_at * p.c;
-
-				Poly clipped[2];
-				int nClippedTriangles = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, z_near }, { 0.0f, 0.0f, 1.0f }, p, clipped[0], clipped[1]);
-				for (int n = 0; n != nClippedTriangles; ++n)
+				auto p_to_cam = (t.p.a - s.cam_pos);
+				if (normal.dot(p_to_cam) >= 0.0f)
 				{
-					p = clipped[n];
-
-					// View -> Projection
-					p.a = proj_mat * p.a;
-					p.b = proj_mat * p.b;
-					p.c = proj_mat * p.c;
-
-					// Projection -> Screen
-					p.a.x += 1.0f; p.a.y += 1.0f;
-					p.b.x += 1.0f; p.b.y += 1.0f;
-					p.c.x += 1.0f; p.c.y += 1.0f;
-
-					p.a.x *= 0.5f * rt.width;
-					p.a.y *= 0.5f * rt.height;
-					p.b.x *= 0.5f * rt.width;
-					p.b.y *= 0.5f * rt.height;
-					p.c.x *= 0.5f * rt.width;
-					p.c.y *= 0.5f * rt.height;
-
-					float l = s.light.getPointBrightness(p.a, normal);
-					Rgb colour = t.colour;
-					colour.r *= l;
-					colour.g *= l;
-					colour.b *= l;
-					//screenClipAndDraw(rt, depth_buffer, std::move(p), colour);
-					trisToDraw.emplace_back(Scene::Tri{ std::move(p), colour });
+					continue;
 				}
+			}
+
+			Poly p = t.p;
+			translatePos(p.a);
+			translatePos(p.b);
+			translatePos(p.c);
+
+			// World -> View
+			p.a = look_at * p.a;
+			p.b = look_at * p.b;
+			p.c = look_at * p.c;
+
+			Poly clipped[2];
+			int nClippedTriangles = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, z_near }, { 0.0f, 0.0f, 1.0f }, p, clipped[0], clipped[1]);
+			for (int n = 0; n != nClippedTriangles; ++n)
+			{
+				p = clipped[n];
+
+				// View -> Projection
+				p.a = proj_mat * p.a;
+				p.b = proj_mat * p.b;
+				p.c = proj_mat * p.c;
+
+				// Projection -> Screen
+				p.a.x += 1.0f; p.a.y += 1.0f;
+				p.b.x += 1.0f; p.b.y += 1.0f;
+				p.c.x += 1.0f; p.c.y += 1.0f;
+
+				p.a.x *= 0.5f * rt.width;
+				p.a.y *= 0.5f * rt.height;
+				p.b.x *= 0.5f * rt.width;
+				p.b.y *= 0.5f * rt.height;
+				p.c.x *= 0.5f * rt.width;
+				p.c.y *= 0.5f * rt.height;
+
+				float l = s.light.getPointBrightness(p.a, normal);
+				Rgb colour = t.colour;
+				colour.r *= l;
+				colour.g *= l;
+				colour.b *= l;
+				//screenClipAndDraw(rt, depth_buffer, std::move(p), colour);
+				trisToDraw.emplace_back(Scene::Tri{ std::move(p), colour });
 			}
 		}
 
