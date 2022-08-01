@@ -4,6 +4,9 @@
 
 namespace soup
 {
+	// Adapted from https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part3.cpp
+	// with thanks to One Lone Coder for explaining rasterisation in reasonably understandable terms
+
 	struct SceneRasterisingRenderer : public SceneRenderer
 	{
 		float z_near = 0.1f;

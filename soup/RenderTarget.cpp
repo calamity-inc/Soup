@@ -44,26 +44,8 @@ namespace soup
 		}
 	}
 
-	static void processPoint(RenderTarget& rt, std::map<size_t, std::pair<size_t, size_t>>& lines, float x, float y)
+	static void processPoint(std::map<size_t, std::pair<size_t, size_t>>& lines, size_t x, size_t y)
 	{
-		// clamp
-		if (x < 0.0f)
-		{
-			x = 0.0f;
-		}
-		else if (x >= rt.width)
-		{
-			x = rt.width;
-		}
-		if (y < 0.0f)
-		{
-			y = 0.0f;
-		}
-		else if (y >= rt.height)
-		{
-			y = rt.height;
-		}
-		// update lines data
 		if (auto e = lines.find(y); e != lines.end())
 		{
 			if (x < e->second.first)
@@ -81,20 +63,20 @@ namespace soup
 		}
 	}
 
-	static void processLine(RenderTarget& rt, std::map<size_t, std::pair<size_t, size_t>>& lines, Vector2 a, Vector2 b)
+	static void processLine(std::map<size_t, std::pair<size_t, size_t>>& lines, Vector2 a, Vector2 b)
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			processPoint(rt, lines, lerp(a.x, b.x, t), lerp(a.y, b.y, t));
+			processPoint(lines, lerp(a.x, b.x, t), lerp(a.y, b.y, t));
 		}
 	}
 
 	void RenderTarget::drawTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour)
 	{
 		std::map<size_t, std::pair<size_t, size_t>> lines{};
-		processLine(*this, lines, a, b);
-		processLine(*this, lines, b, c);
-		processLine(*this, lines, c, a);
+		processLine(lines, a, b);
+		processLine(lines, b, c);
+		processLine(lines, c, a);
 		for (const auto& line : lines)
 		{
 			drawRect(line.second.first, line.first, (line.second.second - line.second.first) + 1, 1, colour);
