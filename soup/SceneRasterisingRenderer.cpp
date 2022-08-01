@@ -209,8 +209,8 @@ namespace soup
 		{
 			auto normal = t.p.getSurfaceNormal();
 
-			// backface culling
-			auto p_to_cam = (t.p.a - cam.getTranslate());
+			// Backface Culling
+			auto p_to_cam = (t.p.a - s.cam_pos);
 			if (normal.dot(p_to_cam) < 0.0f)
 			{
 				Poly p = t.p;
