@@ -224,7 +224,7 @@ namespace soup
 				p.c = look_at * p.c;
 
 				Poly clipped[2];
-				int nClippedTriangles = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, p, clipped[0], clipped[1]);
+				int nClippedTriangles = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, z_near }, { 0.0f, 0.0f, 1.0f }, p, clipped[0], clipped[1]);
 				for (int n = 0; n != nClippedTriangles; ++n)
 				{
 					p = clipped[n];
