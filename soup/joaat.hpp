@@ -52,9 +52,9 @@ namespace soup
 			return val;*/
 
 			size_t v3 = 0;
-			uint32_t result = 0;
+			uint32_t result = initial;
 			int v5 = 0;
-			for (result = initial; v3 < size; result = ((uint32_t)(1025 * (v5 + result)) >> 6) ^ (1025 * (v5 + result)))
+			for (; v3 < size; result = ((uint32_t)(1025 * (v5 + result)) >> 6) ^ (1025 * (v5 + result)))
 			{
 				v5 = data[v3++];
 			}
