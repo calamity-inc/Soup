@@ -7,6 +7,6 @@ namespace soup
 	struct Op
 	{
 		uint8_t type = 0xFF;
-		std::vector<UniquePtr<ast::Node>> args{};
+		std::vector<UniquePtr<astNode>> args{};
 	};
 }

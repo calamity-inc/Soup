@@ -2,12 +2,12 @@
 
 namespace soup
 {
-	template <typename Node, typename Data>
+	template <typename astNode, typename Data>
 	struct PoppedNode
 	{
-		Node* node;
+		astNode* node;
 
-		constexpr PoppedNode(Node* node = nullptr) noexcept
+		constexpr PoppedNode(astNode* node = nullptr) noexcept
 			: node(node)
 		{
 		}

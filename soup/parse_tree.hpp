@@ -9,9 +9,9 @@
 #include "TreeNode.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup::ast
+namespace soup
 {
-	struct Node : public TreeNode
+	struct astNode : public TreeNode
 	{
 		enum Type : uint8_t
 		{
@@ -22,7 +22,7 @@ namespace soup::ast
 
 		const Type type;
 
-		Node(Type type) noexcept
+		astNode(Type type) noexcept
 			: type(type)
 		{
 		}
@@ -34,13 +34,13 @@ namespace soup::ast
 		void compile(Writer& w) const;
 	};
 
-	struct Block : public Node
+	struct astBlock : public astNode
 	{
-		std::vector<UniquePtr<Node>> children{};
-		std::vector<UniquePtr<Node>> param_literals;
+		std::vector<UniquePtr<astNode>> children{};
+		std::vector<UniquePtr<astNode>> param_literals;
 
-		Block(std::vector<UniquePtr<Node>>&& children = {})
-			: Node(BLOCK), children(std::move(children))
+		astBlock(std::vector<UniquePtr<astNode>>&& children = {})
+			: astNode(BLOCK), children(std::move(children))
 		{
 		}
 
@@ -51,12 +51,12 @@ namespace soup::ast
 		void compile(Writer& w) const;
 	};
 
-	struct LexemeNode : public Node
+	struct LexemeNode : public astNode
 	{
 		Lexeme lexeme;
 
 		LexemeNode(Lexeme lexeme)
-			: Node(LEXEME), lexeme(std::move(lexeme))
+			: astNode(LEXEME), lexeme(std::move(lexeme))
 		{
 		}
 
@@ -65,12 +65,12 @@ namespace soup::ast
 		void compile(Writer& w) const;
 	};
 
-	struct OpNode : public Node
+	struct OpNode : public astNode
 	{
 		Op op;
 
 		OpNode(Op&& op)
-			: Node(OP), op(std::move(op))
+			: astNode(OP), op(std::move(op))
 		{
 		}
 

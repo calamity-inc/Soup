@@ -35,7 +35,7 @@ namespace soup
 		}
 	}
 
-	Mixed::Mixed(ast::Block* val)
+	Mixed::Mixed(astBlock* val)
 		: type(AST_BLOCK), val((uint64_t)val)
 	{
 	}
@@ -65,7 +65,7 @@ namespace soup
 			break;
 
 		case AST_BLOCK:
-			delete reinterpret_cast<ast::Block*>(val);
+			delete reinterpret_cast<astBlock*>(val);
 			break;
 		}
 	}
@@ -120,7 +120,7 @@ namespace soup
 		}
 		if (type == AST_BLOCK)
 		{
-			return reinterpret_cast<ast::Block*>(val)->toString(prefix);
+			return reinterpret_cast<astBlock*>(val)->toString(prefix);
 		}
 		return {};
 	}
@@ -179,12 +179,12 @@ namespace soup
 		return *reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
 	}
 
-	ast::Block& Mixed::getAstBlock() const
+	astBlock& Mixed::getAstBlock() const
 	{
 		if (type != AST_BLOCK)
 		{
 			throw std::bad_cast();
 		}
-		return *reinterpret_cast<ast::Block*>(val);
+		return *reinterpret_cast<astBlock*>(val);
 	}
 }

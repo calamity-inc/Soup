@@ -5,15 +5,15 @@
 #include "ParseError.hpp"
 #include "StringWriter.hpp"
 
-namespace soup::ast
+namespace soup
 {
-	std::string Node::toString(const std::string& prefix) const
+	std::string astNode::toString(const std::string& prefix) const
 	{
-		if (type == Node::BLOCK)
+		if (type == astNode::BLOCK)
 		{
-			return reinterpret_cast<const Block*>(this)->toString(prefix);
+			return reinterpret_cast<const astBlock*>(this)->toString(prefix);
 		}
-		else if (type == Node::LEXEME)
+		else if (type == astNode::LEXEME)
 		{
 			return reinterpret_cast<const LexemeNode*>(this)->toString(prefix);
 		}
@@ -23,16 +23,16 @@ namespace soup::ast
 		}
 	}
 
-	bool Node::isValue() const noexcept
+	bool astNode::isValue() const noexcept
 	{
 		switch (type)
 		{
-		case Node::LEXEME:
+		case astNode::LEXEME:
 			return reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::LITERAL // variable name
 				|| reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::VAL // rvalue
 				;
 
-		case Node::OP: // result of an expression
+		case astNode::OP: // result of an expression
 			return true;
 
 		default:
@@ -42,13 +42,13 @@ namespace soup::ast
 		return false;
 	}
 
-	void Node::compile(Writer& w) const
+	void astNode::compile(Writer& w) const
 	{
-		if (type == Node::BLOCK)
+		if (type == astNode::BLOCK)
 		{
-			reinterpret_cast<const Block*>(this)->compile(w);
+			reinterpret_cast<const astBlock*>(this)->compile(w);
 		}
-		else if (type == Node::LEXEME)
+		else if (type == astNode::LEXEME)
 		{
 			reinterpret_cast<const LexemeNode*>(this)->compile(w);
 		}
@@ -60,15 +60,15 @@ namespace soup::ast
 
 	// Block
 
-	void Block::checkUnexpected() const
+	void astBlock::checkUnexpected() const
 	{
 		for (const auto& child : children)
 		{
-			if (child->type == Node::BLOCK)
+			if (child->type == astNode::BLOCK)
 			{
-				reinterpret_cast<const Block*>(child.get())->checkUnexpected();
+				reinterpret_cast<const astBlock*>(child.get())->checkUnexpected();
 			}
-			else if (child->type == Node::LEXEME)
+			else if (child->type == astNode::LEXEME)
 			{
 				std::string err = "Unexpected ";
 				err.append(child->toString());
@@ -77,7 +77,7 @@ namespace soup::ast
 		}
 	}
 
-	std::string Block::toString(std::string prefix) const
+	std::string astBlock::toString(std::string prefix) const
 	{
 		std::string str = "block";
 		for (const auto& child : param_literals)
@@ -96,7 +96,7 @@ namespace soup::ast
 		return str;
 	}
 
-	void Block::compile(Writer& w) const
+	void astBlock::compile(Writer& w) const
 	{
 		if (size_t num_params = param_literals.size())
 		{

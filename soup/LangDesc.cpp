@@ -178,25 +178,25 @@ namespace soup
 		}
 	}
 
-	ast::Block LangDesc::parse(std::vector<Lexeme> ls) const
+	astBlock LangDesc::parse(std::vector<Lexeme> ls) const
 	{
 		eraseSpace(ls);
 		return parseImpl(ls);
 	}
 
-	ast::Block LangDesc::parseImpl(std::vector<Lexeme>& ls) const
+	astBlock LangDesc::parseImpl(std::vector<Lexeme>& ls) const
 	{
 		auto b = parseNoCheck(ls);
 		b.checkUnexpected();
 		return b;
 	}
 
-	ast::Block LangDesc::parseNoCheck(std::vector<Lexeme>& ls) const
+	astBlock LangDesc::parseNoCheck(std::vector<Lexeme>& ls) const
 	{
-		ast::Block b;
+		astBlock b;
 		for (auto& l : ls)
 		{
-			b.children.emplace_back(soup::make_unique<ast::LexemeNode>(std::move(l)));
+			b.children.emplace_back(soup::make_unique<LexemeNode>(std::move(l)));
 		}
 
 #if DEBUG_PARSE
@@ -228,20 +228,20 @@ namespace soup
 		ps.i = ps.b->children.begin();
 		for (; ps.i != ps.b->children.end(); )
 		{
-			if ((*ps.i)->type == ast::Node::BLOCK)
+			if ((*ps.i)->type == astNode::BLOCK)
 			{
-				parseBlockRecurse(ps, t, reinterpret_cast<ast::Block*>(ps.i->get()));
+				parseBlockRecurse(ps, t, reinterpret_cast<astBlock*>(ps.i->get()));
 				++ps.i;
 			}
-			else if ((*ps.i)->type == ast::Node::LEXEME)
+			else if ((*ps.i)->type == astNode::LEXEME)
 			{
-				if (t == reinterpret_cast<ast::LexemeNode*>(ps.i->get())->lexeme.token_keyword)
+				if (t == reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword)
 				{
 					t.parse(ps);
-					ps.i = ps.b->children.erase(ps.i);
+					ps.i = ps.b->children.erase(ps.i);	
 					if (ps.op.type != 0xFF)
 					{
-						ps.i = ps.b->children.insert(ps.i, soup::make_unique<ast::OpNode>(std::move(ps.op)));
+						ps.i = ps.b->children.insert(ps.i, soup::make_unique<OpNode>(std::move(ps.op)));
 						ps.op.type = 0xFF;
 						ps.op.args.clear();
 					}
@@ -255,30 +255,30 @@ namespace soup
 				}
 				else
 				{
-					if (reinterpret_cast<ast::LexemeNode*>(ps.i->get())->lexeme.token_keyword == Lexeme::VAL
-						&& reinterpret_cast<ast::LexemeNode*>(ps.i->get())->lexeme.val.isAstBlock()
+					if (reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword == Lexeme::VAL
+						&& reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.isAstBlock()
 						)
 					{
-						parseBlockRecurse(ps, t, &reinterpret_cast<ast::LexemeNode*>(ps.i->get())->lexeme.val.getAstBlock());
+						parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.getAstBlock());
 					}
 					++ps.i;
 				}
 			}
-			else //if ((*ps.i)->type == ast::Node::OP)
+			else //if ((*ps.i)->type == Node::OP)
 			{
-				for (const auto& arg : reinterpret_cast<ast::OpNode*>(ps.i->get())->op.args)
+				for (const auto& arg : reinterpret_cast<OpNode*>(ps.i->get())->op.args)
 				{
-					/*if (arg->type == ast::Node::BLOCK)
+					/*if (arg->type == Node::BLOCK)
 					{
 						parseBlockRecurse(ps, t, reinterpret_cast<Block*>(arg.get()));
 					}
-					else*/ if (arg->type == ast::Node::LEXEME)
+					else*/ if (arg->type == astNode::LEXEME)
 					{
-						if (reinterpret_cast<ast::LexemeNode*>(arg.get())->lexeme.token_keyword == Lexeme::VAL
-							&& reinterpret_cast<ast::LexemeNode*>(arg.get())->lexeme.val.isAstBlock()
+						if (reinterpret_cast<LexemeNode*>(arg.get())->lexeme.token_keyword == Lexeme::VAL
+							&& reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.isAstBlock()
 							)
 						{
-							parseBlockRecurse(ps, t, &reinterpret_cast<ast::LexemeNode*>(arg.get())->lexeme.val.getAstBlock());
+							parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.getAstBlock());
 						}
 					}
 				}
@@ -291,7 +291,7 @@ namespace soup
 		}
 	}
 
-	void LangDesc::parseBlockRecurse(ParserState& ps, const Token& t, ast::Block* b) const
+	void LangDesc::parseBlockRecurse(ParserState& ps, const Token& t, astBlock* b) const
 	{
 		auto og_b = ps.b;
 		auto og_i = ps.i;

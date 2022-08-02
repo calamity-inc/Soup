@@ -74,7 +74,7 @@ namespace soup
 
 		Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val);
 
-		Mixed(ast::Block* val); // takes ownership
+		Mixed(astBlock* val); // takes ownership
 
 		~Mixed() noexcept
 		{
@@ -208,7 +208,7 @@ namespace soup
 		[[nodiscard]] std::string& getFunc() const;
 		[[nodiscard]] std::string& getVarName() const;
 		[[nodiscard]] std::unordered_map<Mixed, std::shared_ptr<Mixed>>& getMixedSpMixedMap() const;
-		[[nodiscard]] ast::Block& getAstBlock() const;
+		[[nodiscard]] astBlock& getAstBlock() const;
 	};
 }
 

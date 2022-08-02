@@ -12,8 +12,8 @@ namespace soup
 	{
 	public:
 		const LangDesc* ld;
-		ast::Block* b;
-		std::vector<UniquePtr<ast::Node>>::iterator i;
+		astBlock* b;
+		std::vector<UniquePtr<astNode>>::iterator i;
 		Op op;
 
 		void setOp(int type);
@@ -21,16 +21,16 @@ namespace soup
 		void consumeRighthandValue();
 
 		void pushArg(Mixed&& val);
-		void pushArgNode(UniquePtr<ast::Node>&& node);
-		void setArgs(std::vector<UniquePtr<ast::Node>>&& args);
+		void pushArgNode(UniquePtr<astNode>&& node);
+		void setArgs(std::vector<UniquePtr<astNode>>&& args);
 
 		void pushLefthand(Mixed&& val);
 		void pushLefthand(Lexeme&& l);
-		void pushLefthandNode(UniquePtr<ast::Node>&& node);
-		UniquePtr<ast::Node> popLefthand();
-		[[nodiscard]] ast::Node* peekRighthand() const;
-		UniquePtr<ast::Node> popRighthand();
-		UniquePtr<ast::Block> collapseRighthandBlock(const char* end_token); // end_token must've been registered with addToken
+		void pushLefthandNode(UniquePtr<astNode>&& node);
+		UniquePtr<astNode> popLefthand();
+		[[nodiscard]] astNode* peekRighthand() const;
+		UniquePtr<astNode> popRighthand();
+		UniquePtr<astBlock> collapseRighthandBlock(const char* end_token); // end_token must've been registered with addToken
 
 		[[nodiscard]] const Token& getToken() const;
 
