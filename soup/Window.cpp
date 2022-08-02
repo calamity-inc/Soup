@@ -204,7 +204,7 @@ namespace soup
 		return window_configs.at(h);
 	}
 
-	Capture& Window::getCustomData()
+	Capture& Window::customData()
 	{
 		return getConfig().custom_data;
 	}

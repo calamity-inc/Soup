@@ -38,7 +38,7 @@ namespace soup
 		[[nodiscard]] DWORD getOwnerPid() const noexcept;
 
 		[[nodiscard]] Window::Config& getConfig();
-		Capture& getCustomData();
+		Capture& customData();
 		Window& setDrawFunc(draw_func_t draw_func);
 		Window& setMouseInformer(mouse_informer_t mouse_informer);
 		Window& onClose(callback_t on_close);

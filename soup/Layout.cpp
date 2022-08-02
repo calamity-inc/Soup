@@ -66,21 +66,21 @@ namespace soup
 	Window Layout::createWindow(const std::string& title)
 	{
 		auto w = Window::create(title, 200, 200);
-		w.getCustomData() = this;
+		w.customData() = this;
 		w.setDrawFunc([](Window w, RenderTarget& rt)
 		{
 			rt.fill(Rgb::BLACK);
-			w.getCustomData().get<Layout*>()->draw(rt);
+			w.customData().get<Layout*>()->draw(rt);
 		});
 		w.setMouseInformer([](Window w, int x, int y) -> Window::on_click_t
 		{
-			if (w.getCustomData().get<Layout*>()->getElementAtPos(x, y) == nullptr)
+			if (w.customData().get<Layout*>()->getElementAtPos(x, y) == nullptr)
 			{
 				return nullptr;
 			}
 			return [](Window w, int x, int y)
 			{
-				Layout& l = *w.getCustomData().get<Layout*>();
+				Layout& l = *w.customData().get<Layout*>();
 				Element& elm = *l.getElementAtPos(x, y);
 				if (elm.on_click)
 				{
