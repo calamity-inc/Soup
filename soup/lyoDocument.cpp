@@ -48,7 +48,7 @@ namespace soup
 			rt.fill(Rgb::BLACK);
 			cap.flat.draw(rt);
 		});
-		w.setMouseInformer([](Window w, int x, int y) -> Window::on_click_t
+		w.setMouseInformer([](Window w, unsigned int x, unsigned int y) -> Window::on_click_t
 		{
 			lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
 			if (!cap.flat.isInitialised()
@@ -57,7 +57,7 @@ namespace soup
 			{
 				return nullptr;
 			}
-			return [](Window w, int x, int y)
+			return [](Window w, unsigned int x, unsigned int y)
 			{
 				lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
 				lyoElement& elm = cap.flat.getElementAtPos(x, y);

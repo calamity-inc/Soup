@@ -9,10 +9,10 @@ namespace soup
 	{
 		lyoContainer* parent;
 
-		int flat_x;
-		int flat_y;
-		int flat_width;
-		int flat_height;
+		unsigned int flat_x;
+		unsigned int flat_y;
+		unsigned int flat_width;
+		unsigned int flat_height;
 
 		bool display_inline = false;
 

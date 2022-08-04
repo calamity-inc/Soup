@@ -12,7 +12,7 @@ namespace soup
 		}
 	}
 
-	lyoElement& lyoFlatDocument::getElementAtPos(int x, int y) const
+	lyoElement& lyoFlatDocument::getElementAtPos(unsigned int x, unsigned int y) const
 	{
 		auto i = elms.rbegin();
 		for (; i != elms.rend(); ++i)

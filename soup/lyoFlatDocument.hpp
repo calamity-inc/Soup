@@ -18,6 +18,6 @@ namespace soup
 
 		void draw(RenderTarget& rt) const;
 
-		[[nodiscard]] lyoElement& getElementAtPos(int x, int y) const;
+		[[nodiscard]] lyoElement& getElementAtPos(unsigned int x, unsigned int y) const;
 	};
 }

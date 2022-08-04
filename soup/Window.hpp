@@ -17,8 +17,8 @@ namespace soup
 	{
 		using callback_t = void(*)(Window);
 		using draw_func_t = void(*)(Window, RenderTarget&);
-		using on_click_t = void(*)(Window, int, int);
-		using mouse_informer_t = on_click_t(*)(Window, int, int);
+		using on_click_t = void(*)(Window, unsigned int, unsigned int);
+		using mouse_informer_t = on_click_t(*)(Window, unsigned int, unsigned int);
 
 		struct Config
 		{
