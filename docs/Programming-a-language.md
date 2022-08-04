@@ -58,7 +58,7 @@ This step is all about building an abstract syntax tree (aka., parse tree). We c
 #include <soup/LangDesc.hpp>
 #include <soup/Lexeme.hpp>
 #include <soup/ParserState.hpp>
-#include <soup/parse_tree.hpp> // ast::Block
+#include <soup/parse_tree.hpp> // astBlock
 
 enum MyOpCodes : int
 {
@@ -79,7 +79,7 @@ int main()
     soup::console << ld.highlightSyntax(ls).toString() << "\n";
     soup::console.resetColour();
 
-    soup::ast::Block root = ld.parse(ls);
+    soup::astBlock root = ld.parse(ls);
     soup::console << root.toString() << "\n";
 }
 ```
@@ -159,7 +159,7 @@ For further reading, check out `soup::PhpState`, which uses Soup's language stac
 #include <soup/LangVm.hpp>
 #include <soup/Lexeme.hpp>
 #include <soup/ParserState.hpp>
-#include <soup/parse_tree.hpp> // ast::Block
+#include <soup/parse_tree.hpp> // astBlock
 #include <soup/StringReader.hpp>
 #include <soup/StringWriter.hpp>
 
@@ -196,7 +196,7 @@ int main()
     soup::console << ld.highlightSyntax(ls).toString() << "\n";
     soup::console.resetColour();
 
-    soup::ast::Block root = ld.parse(ls);
+    soup::astBlock root = ld.parse(ls);
     soup::console << root.toString() << "\n";
 
     soup::StringWriter w;
