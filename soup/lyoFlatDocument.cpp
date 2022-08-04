@@ -12,7 +12,7 @@ namespace soup
 		}
 	}
 
-	lyoElement& lyoFlatDocument::getElementAtPos(unsigned int x, unsigned int y) const
+	lyoElement* lyoFlatDocument::getElementAtPos(unsigned int x, unsigned int y) const
 	{
 		auto i = elms.rbegin();
 		for (; i != elms.rend(); ++i)
@@ -23,9 +23,9 @@ namespace soup
 				&& y < (*i)->flat_y + (*i)->flat_height
 				)
 			{
-				break;
+				return *i;
 			}
 		}
-		return **i;
+		return nullptr;
 	}
 }

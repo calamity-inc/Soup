@@ -51,19 +51,18 @@ namespace soup
 		w.setMouseInformer([](Window w, unsigned int x, unsigned int y) -> Window::on_click_t
 		{
 			lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
-			if (!cap.flat.isInitialised()
-				|| cap.flat.getElementAtPos(x, y).on_click == nullptr
-				)
+			auto elm = cap.flat.getElementAtPos(x, y);
+			if (!elm || !elm->on_click)
 			{
 				return nullptr;
 			}
 			return [](Window w, unsigned int x, unsigned int y)
 			{
 				lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
-				lyoElement& elm = cap.flat.getElementAtPos(x, y);
-				if (elm.on_click != nullptr)
+				auto elm = cap.flat.getElementAtPos(x, y);
+				if (elm && elm->on_click != nullptr)
 				{
-					elm.on_click(elm, *cap.doc);
+					elm->on_click(*elm, *cap.doc);
 					if (!cap.doc->isValid())
 					{
 						w.redraw();
