@@ -16,6 +16,8 @@ namespace soup
 			setMargin(8);
 		}
 
+		[[nodiscard]] static lyoDocument fromMarkup(const std::string& markup);
+
 		[[nodiscard]] bool isValid() const noexcept
 		{
 			return flat_width != 0;
