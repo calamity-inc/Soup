@@ -13,4 +13,9 @@ namespace soup
 	{
 		canvas->addRect(x, y, width, height, colour);
 	}
+
+	Rgb RenderTargetCanvas::getPixel(unsigned int x, unsigned int y) const
+	{
+		return canvas->get(x, y);
+	}
 }

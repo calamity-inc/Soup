@@ -40,5 +40,11 @@ namespace soup
 			MoveToEx(hdc, a.x, a.y, nullptr);
 			LineTo(hdc, b.x, b.y);
 		}
+
+		[[nodiscard]] Rgb getPixel(unsigned int x, unsigned int y) const final
+		{
+			auto col = GetPixel(hdc, x, y);
+			return Rgb{ GetRValue(col), GetGValue(col), GetBValue(col) };
+		}
 	};
 }
