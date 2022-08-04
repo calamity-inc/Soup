@@ -24,16 +24,6 @@ namespace soup
 	{
 		lyoDocument* doc;
 		lyoFlatDocument flat;
-
-		void ensureFlat(const RenderTarget& rt)
-		{
-			if (doc->flat_width != rt.width
-				|| doc->flat_height != rt.height
-				)
-			{
-				flat = doc->flatten(rt.width, rt.height);
-			}
-		}
 	};
 
 #if SOUP_WINDOWS
@@ -44,7 +34,16 @@ namespace soup
 		w.setDrawFunc([](Window w, RenderTarget& rt)
 		{
 			lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
-			cap.ensureFlat(rt);
+
+			auto [width, height] = w.getSize();
+
+			if (cap.doc->flat_width != width
+				|| cap.doc->flat_height != height
+				)
+			{
+				cap.flat = cap.doc->flatten(width, height);
+			}
+
 			rt.fill(Rgb::BLACK);
 			cap.flat.draw(rt);
 		});
