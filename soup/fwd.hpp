@@ -116,6 +116,13 @@ namespace soup
 	struct RasterFont;
 	struct Rgb;
 
+	// vis.layout
+	struct lyoContainer;
+	struct lyoDocument;
+	struct lyoElement;
+	struct lyoFlatDocument;
+	struct lyoTextElement;
+
 	// vis.render
 	struct RenderTarget;
 

@@ -503,9 +503,6 @@
     <ClInclude Include="RasterFont.hpp">
       <Filter>vis</Filter>
     </ClInclude>
-    <ClInclude Include="Layout.hpp">
-      <Filter>vis</Filter>
-    </ClInclude>
     <ClInclude Include="RenderTarget.hpp">
       <Filter>vis\render</Filter>
     </ClInclude>
@@ -803,6 +800,21 @@
     <ClInclude Include="AllocRaiiVirtual.hpp">
       <Filter>mem\alloc</Filter>
     </ClInclude>
+    <ClInclude Include="lyoDocument.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoElement.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoContainer.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoTextElement.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoFlatDocument.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyBuilder.cpp">
@@ -1034,9 +1046,6 @@
     <ClCompile Include="RenderTarget.cpp">
       <Filter>vis\render</Filter>
     </ClCompile>
-    <ClCompile Include="Layout.cpp">
-      <Filter>vis</Filter>
-    </ClCompile>
     <ClCompile Include="RenderTargetCanvas.cpp">
       <Filter>vis\render</Filter>
     </ClCompile>
@@ -1178,6 +1187,21 @@
     <ClCompile Include="StringMatch.cpp">
       <Filter>util\string</Filter>
     </ClCompile>
+    <ClCompile Include="lyoDocument.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoTextElement.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoContainer.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoFlatDocument.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoElement.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1308,6 +1332,9 @@
     </Filter>
     <Filter Include="mem\alloc">
       <UniqueIdentifier>{94274a4e-32df-4623-92f5-91d366f63fb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vis\layout">
+      <UniqueIdentifier>{16ee7ff8-9fa2-45ca-a0dc-af917f737be9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

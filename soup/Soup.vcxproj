@@ -415,6 +415,11 @@
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="JitModule.hpp" />
     <ClInclude Include="LcgRandomDevice.hpp" />
+    <ClInclude Include="lyoContainer.hpp" />
+    <ClInclude Include="lyoDocument.hpp" />
+    <ClInclude Include="lyoElement.hpp" />
+    <ClInclude Include="lyoFlatDocument.hpp" />
+    <ClInclude Include="lyoTextElement.hpp" />
     <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
     <ClInclude Include="MsvcLcgRandomDevice.hpp" />
     <ClInclude Include="MtRandomDevice.hpp" />
@@ -484,7 +489,6 @@
     <ClInclude Include="JsonObject.hpp" />
     <ClInclude Include="LangDesc.hpp" />
     <ClInclude Include="LangVm.hpp" />
-    <ClInclude Include="Layout.hpp" />
     <ClInclude Include="LinkedIterator.hpp" />
     <ClInclude Include="main.hpp" />
     <ClInclude Include="Mesh.hpp" />
@@ -720,8 +724,12 @@
     <ClCompile Include="Keystore.cpp" />
     <ClCompile Include="LangDesc.cpp" />
     <ClCompile Include="LangVm.cpp" />
-    <ClCompile Include="Layout.cpp" />
     <ClCompile Include="LcgRandomDevice.cpp" />
+    <ClCompile Include="lyoContainer.cpp" />
+    <ClCompile Include="lyoDocument.cpp" />
+    <ClCompile Include="lyoElement.cpp" />
+    <ClCompile Include="lyoFlatDocument.cpp" />
+    <ClCompile Include="lyoTextElement.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MazeGeneratorDepthFirst.cpp" />
