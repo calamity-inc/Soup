@@ -16,7 +16,7 @@ namespace soup
 
 	void Canvas::loadBlackWhiteData(const std::vector<bool>& black_white_data)
 	{
-		size_t i = 0;
+		unsigned int i = 0;
 		for (const auto& px : black_white_data)
 		{
 			auto c = (uint8_t)(px * 255);
@@ -24,7 +24,7 @@ namespace soup
 		}
 	}
 
-	void Canvas::set(size_t x, size_t y, Rgb colour) noexcept
+	void Canvas::set(unsigned int x, unsigned int y, Rgb colour) noexcept
 	{
 		if (x < width && y < height)
 		{
@@ -32,22 +32,22 @@ namespace soup
 		}
 	}
 
-	Rgb Canvas::get(size_t x, size_t y) const
+	Rgb Canvas::get(unsigned int x, unsigned int y) const
 	{
 		return pixels.at(x + (y * width));
 	}
 
-	const Rgb& Canvas::ref(size_t x, size_t y) const
+	const Rgb& Canvas::ref(unsigned int x, unsigned int y) const
 	{
 		return pixels.at(x + (y * width));
 	}
 
-	void Canvas::addText(size_t x, size_t y, const std::string& text, const RasterFont& font)
+	void Canvas::addText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font)
 	{
 		return addText(x, y, unicode::utf8_to_utf32(text), font);
 	}
 
-	void Canvas::addText(size_t x, size_t y, const std::u32string& text, const RasterFont& font)
+	void Canvas::addText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font)
 	{
 		for (const auto& c : text)
 		{
@@ -57,42 +57,42 @@ namespace soup
 		}
 	}
 
-	void Canvas::addCanvas(size_t x_offset, size_t y_offset, const Canvas& b)
+	void Canvas::addCanvas(unsigned int x_offset, unsigned int y_offset, const Canvas& b)
 	{
-		for (size_t y = 0; y != b.height; ++y)
+		for (unsigned int y = 0; y != b.height; ++y)
 		{
-			for (size_t x = 0; x != b.width; ++x)
+			for (unsigned int x = 0; x != b.width; ++x)
 			{
 				set(x + x_offset, y + y_offset, b.get(x, y));
 			}
 		}
 	}
 
-	void Canvas::addRect(size_t x_offset, size_t y_offset, size_t width, size_t height, Rgb colour)
+	void Canvas::addRect(unsigned int x_offset, unsigned int y_offset, unsigned int width, unsigned int height, Rgb colour)
 	{
-		for (size_t y = 0; y != height; ++y)
+		for (unsigned int y = 0; y != height; ++y)
 		{
-			for (size_t x = 0; x != width; ++x)
+			for (unsigned int x = 0; x != width; ++x)
 			{
 				set(x + x_offset, y + y_offset, colour);
 			}
 		}
 	}
 
-	void Canvas::resize(size_t width, size_t height)
+	void Canvas::resize(unsigned int width, unsigned int height)
 	{
 		this->width = width;
 		this->height = height;
 		pixels.resize(width * height);
 	}
 
-	void Canvas::resizeWidth(size_t new_width)
+	void Canvas::resizeWidth(unsigned int new_width)
 	{
 		std::vector<Rgb> new_pixels{};
 		new_pixels.resize(new_width * height);
-		for (size_t y = 0; y != height; ++y)
+		for (unsigned int y = 0; y != height; ++y)
 		{
-			for (size_t x = 0; x != width; ++x)
+			for (unsigned int x = 0; x != width; ++x)
 			{
 				new_pixels.at(x + (y * new_width)) = pixels.at(x + (y * width));
 			}
@@ -122,16 +122,16 @@ namespace soup
 		}
 	}
 
-	void Canvas::resizeNearestNeighbour(size_t desired_width, size_t desired_height)
+	void Canvas::resizeNearestNeighbour(unsigned int desired_width, unsigned int desired_height)
 	{
 		Canvas c{ desired_width, desired_height };
-		for (size_t y = 0; y != c.height; ++y)
+		for (unsigned int y = 0; y != c.height; ++y)
 		{
-			for (size_t x = 0; x != c.width; ++x)
+			for (unsigned int x = 0; x != c.width; ++x)
 			{
 				c.set(x, y, get(
-					(size_t)(((double)x / c.width) * width),
-					(size_t)(((double)y / c.height) * height)
+					(unsigned int)(((double)x / c.width) * width),
+					(unsigned int)(((double)y / c.height) * height)
 				));
 			}
 		}
@@ -143,9 +143,9 @@ namespace soup
 		std::string str{};
 		Rgb prev = pixels.front();
 		++prev.r;
-		for (size_t y = 0; y != height; ++y)
+		for (unsigned int y = 0; y != height; ++y)
 		{
-			for (size_t x = 0; x != width; ++x)
+			for (unsigned int x = 0; x != width; ++x)
 			{
 				const Rgb& colour = ref(x, y);
 				if (colour != prev)
@@ -169,9 +169,9 @@ namespace soup
 		std::string str{};
 		Rgb prev = pixels.front();
 		++prev.r;
-		for (size_t y = 0; y != height; ++y)
+		for (unsigned int y = 0; y != height; ++y)
 		{
-			for (size_t x = 0; x != width; ++x)
+			for (unsigned int x = 0; x != width; ++x)
 			{
 				const Rgb& colour = ref(x, y);
 				if (colour != prev)
@@ -196,7 +196,7 @@ namespace soup
 		ensureWidthAndHeightAreEven();
 
 		std::u16string str{};
-		str.reserve((size_t)width * height);
+		str.reserve((unsigned int)width * height);
 		for (int y = 0; y != height; y += 2)
 		{
 			for (int x = 0; x != width; x += 2)
@@ -245,7 +245,7 @@ namespace soup
 		ensureHeightIsEven();
 
 		std::u16string str{};
-		str.reserve((size_t)width * height);
+		str.reserve((unsigned int)width * height);
 		for (int y = 0; y != height; y += 2)
 		{
 			for (int x = 0; x != width; ++x)
@@ -320,7 +320,7 @@ namespace soup
 	}
 
 
-	std::string Canvas::toSvg(size_t scale) const
+	std::string Canvas::toSvg(unsigned int scale) const
 	{
 		std::string str = R"(<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width=")";
 		str.append(std::to_string(width * scale));
@@ -333,9 +333,9 @@ namespace soup
 		rect_suffix.append(R"(" height=")");
 		rect_suffix.append(std::to_string(scale));
 		rect_suffix.append("\"/>");
-		for (size_t y = 0; y != height; ++y)
+		for (unsigned int y = 0; y != height; ++y)
 		{
-			for (size_t x = 0; x != width; ++x)
+			for (unsigned int x = 0; x != width; ++x)
 			{
 				str.append(R"(<rect x=")");
 				str.append(std::to_string(x * scale));

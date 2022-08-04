@@ -8,20 +8,20 @@ namespace soup
 {
 	struct RenderTarget
 	{
-		size_t width;
-		size_t height;
+		unsigned int width;
+		unsigned int height;
 
-		RenderTarget(size_t width, size_t height)
+		RenderTarget(unsigned int width, unsigned int height)
 			: width(width), height(height)
 		{
 		}
 
 		void fill(Rgb colour);
 
-		void drawPixel(size_t x, size_t y, Rgb colour);
+		void drawPixel(unsigned int x, unsigned int y, Rgb colour);
 
-		virtual void drawRect(size_t x, size_t y, size_t width, size_t height, Rgb colour) = 0;
-		void drawHollowCircle(size_t x, size_t y, float r, Rgb colour);
+		virtual void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) = 0;
+		void drawHollowCircle(unsigned int x, unsigned int y, float r, Rgb colour);
 
 		virtual void drawLine(Vector2 a, Vector2 b, Rgb colour);
 		void drawLine(Vector2 a, Vector2 b, Rgb a_colour, Rgb b_colour);
@@ -29,7 +29,7 @@ namespace soup
 		void drawTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour);
 		void drawHollowTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour);
 
-		void drawText(size_t x, size_t y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
-		void drawText(size_t x, size_t y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
+		void drawText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
+		void drawText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
 	};
 }

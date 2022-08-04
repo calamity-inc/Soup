@@ -9,7 +9,7 @@ namespace soup
 	{
 	}
 
-	void RenderTargetCanvas::drawRect(size_t x, size_t y, size_t width, size_t height, Rgb colour)
+	void RenderTargetCanvas::drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour)
 	{
 		canvas->addRect(x, y, width, height, colour);
 	}

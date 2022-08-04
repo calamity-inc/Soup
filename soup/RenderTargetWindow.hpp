@@ -18,7 +18,7 @@ namespace soup
 		{
 		}
 
-		void drawRect(size_t x, size_t y, size_t width, size_t height, Rgb colour) final
+		void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) final
 		{
 			HBRUSH brush = CreateSolidBrush(RGB(colour.r, colour.g, colour.b));
 
