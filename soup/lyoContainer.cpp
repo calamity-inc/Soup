@@ -16,6 +16,18 @@ namespace soup
 		return reinterpret_cast<lyoTextElement*>(children.emplace_back(soup::make_unique<lyoTextElement>(this, std::move(text))).get());
 	}
 
+	lyoElement* lyoContainer::querySelector(const std::string& selector)
+	{
+		for(const auto& node : children)
+		{
+			if (node->tag_name == selector)
+			{
+				return node.get();
+			}
+		}
+		return nullptr;
+	}
+
 	void lyoContainer::flattenElement(lyoFlatDocument& flat)
 	{
 		auto og_x = flat_x;

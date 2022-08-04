@@ -23,6 +23,7 @@ namespace soup
 					)
 				{
 					auto txt = doc.addText(reinterpret_cast<XmlText*>(tag.children.at(0).get())->contents);
+					txt->tag_name = tag.name;
 					txt->scale = 2;
 				}
 			}

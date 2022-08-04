@@ -3,6 +3,8 @@
 #include "fwd.hpp"
 #include "TreeNode.hpp"
 
+#include <string>
+
 namespace soup
 {
 	struct lyoElement : public TreeNode
@@ -13,6 +15,8 @@ namespace soup
 		unsigned int flat_y;
 		unsigned int flat_width;
 		unsigned int flat_height;
+
+		std::string tag_name{};
 
 		bool display_inline = false;
 

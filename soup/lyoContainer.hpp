@@ -18,6 +18,8 @@ namespace soup
 		lyoTextElement* addText(const std::string& text);
 		lyoTextElement* addText(std::u32string text);
 
+		[[nodiscard]] lyoElement* querySelector(const std::string& selector);
+
 		void flattenElement(lyoFlatDocument& flat) final;
 	};
 }
