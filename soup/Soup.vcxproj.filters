@@ -3,9 +3,6 @@
   <ItemGroup>
     <ClInclude Include="fwd.hpp" />
     <ClInclude Include="macros.hpp" />
-    <ClInclude Include="AssemblyBuilder.hpp">
-      <Filter>mem</Filter>
-    </ClInclude>
     <ClInclude Include="Bytepatch.hpp">
       <Filter>mem</Filter>
     </ClInclude>
@@ -815,11 +812,11 @@
     <ClInclude Include="lyoFlatDocument.hpp">
       <Filter>vis\layout</Filter>
     </ClInclude>
+    <ClInclude Include="AssemblyBuilder.hpp">
+      <Filter>cpu\x64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssemblyBuilder.cpp">
-      <Filter>mem</Filter>
-    </ClCompile>
     <ClCompile Include="Bytepatch.cpp">
       <Filter>mem</Filter>
     </ClCompile>
@@ -1202,6 +1199,9 @@
     <ClCompile Include="lyoElement.cpp">
       <Filter>vis\layout</Filter>
     </ClCompile>
+    <ClCompile Include="AssemblyBuilder.cpp">
+      <Filter>cpu\x64</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1335,6 +1335,12 @@
     </Filter>
     <Filter Include="vis\layout">
       <UniqueIdentifier>{16ee7ff8-9fa2-45ca-a0dc-af917f737be9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu">
+      <UniqueIdentifier>{b18c0394-f8e2-4766-8d61-5935815a793a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu\x64">
+      <UniqueIdentifier>{5cebdfd1-ff30-423b-ac88-52db95a78ef4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
