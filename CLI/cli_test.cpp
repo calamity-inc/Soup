@@ -66,6 +66,9 @@ static void test_cpu()
 
 		TEST_CPU_X64("ret", 0xC3);
 
+		TEST_CPU_X64("push ax", 0x66, 0x50);
+		TEST_CPU_X64("push rax", 0x50);
+		TEST_CPU_X64("push r15", 0x41, 0x57);
 	});
 }
 

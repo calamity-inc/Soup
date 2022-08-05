@@ -139,6 +139,7 @@ namespace soup
 		ZO = 0,
 		MR,
 		RM,
+		O,
 	};
 
 	struct InsInfo
@@ -147,6 +148,15 @@ namespace soup
 		uint8_t opcode;
 		InsMode mode;
 		uint8_t operand_size = 0;
+
+		[[nodiscard]] bool matches(uint8_t code) const noexcept
+		{
+			if (mode == O)
+			{
+				code &= 0b11111000;
+			}
+			return opcode == code;
+		}
 	};
 
 	// https://www.felixcloutier.com/x86/index.html
@@ -157,6 +167,7 @@ namespace soup
 		{ "mov", 0x8A, RM, 8 },
 		{ "mov", 0x8B, RM },
 		{ "ret", 0xC3, ZO },
+		{ "push", 0x50, O, 64 },
 	};
 
 	std::string x64::disasm(const uint8_t*& code)
@@ -196,12 +207,13 @@ namespace soup
 		// Opcode
 		for (const auto& ins : instructions)
 		{
-			if (ins.opcode == *code)
+			if (ins.matches(*code))
 			{
-				++code;
 				std::string res = ins.name;
 				if (ins.mode != ZO)
 				{
+					res.push_back(' ');
+
 					uint8_t operand_size;
 					if (operand_size_override)
 					{
@@ -215,31 +227,42 @@ namespace soup
 					{
 						operand_size = ins.operand_size;
 					}
-					InsOperand left, right;
-					bool direct = ((*code >> 6) == 0b11);
-					left.decode(rex, operand_size, (*code >> 3) & 0b111, reg_x);
-					right.decode(rex, operand_size, *code & 0b111, rm_x);
-					if (ins.mode == MR)
-					{
-						if (!direct)
-						{
-							left.setDeref(address_size_override);
-						}
-					}
-					else if (ins.mode == RM)
-					{
-						if (!direct)
-						{
-							right.setDeref(address_size_override);
-						}
-					}
 
-					res.push_back(' ');
-					res.append(left.toString());
-					res.append(", ");
-					res.append(right.toString());
-					++code;
+					if (ins.mode == O)
+					{
+						InsOperand opr;
+						opr.decode(rex, operand_size, *code & 0b111, rm_x);
+						res.append(opr.toString());
+					}
+					else
+					{
+						++code;
+
+						InsOperand left, right;
+						bool direct = ((*code >> 6) == 0b11);
+						left.decode(rex, operand_size, (*code >> 3) & 0b111, reg_x);
+						right.decode(rex, operand_size, *code & 0b111, rm_x);
+						if (ins.mode == MR)
+						{
+							if (!direct)
+							{
+								left.setDeref(address_size_override);
+							}
+						}
+						else if (ins.mode == RM)
+						{
+							if (!direct)
+							{
+								right.setDeref(address_size_override);
+							}
+						}
+
+						res.append(left.toString());
+						res.append(", ");
+						res.append(right.toString());
+					}
 				}
+				++code;
 				return res;
 			}
 		}
