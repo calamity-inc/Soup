@@ -815,6 +815,9 @@
     <ClInclude Include="AssemblyBuilder.hpp">
       <Filter>cpu\x64</Filter>
     </ClInclude>
+    <ClInclude Include="x64.hpp">
+      <Filter>cpu\x64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1200,6 +1203,9 @@
       <Filter>vis\layout</Filter>
     </ClCompile>
     <ClCompile Include="AssemblyBuilder.cpp">
+      <Filter>cpu\x64</Filter>
+    </ClCompile>
+    <ClCompile Include="x64.cpp">
       <Filter>cpu\x64</Filter>
     </ClCompile>
   </ItemGroup>

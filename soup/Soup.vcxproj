@@ -658,6 +658,7 @@
     <ClInclude Include="Writer.hpp" />
     <ClInclude Include="X509Certificate.hpp" />
     <ClInclude Include="X509RelativeDistinguishedName.hpp" />
+    <ClInclude Include="x64.hpp" />
     <ClInclude Include="xml.hpp" />
     <ClInclude Include="YubikeyValidator.hpp" />
     <ClInclude Include="ZipIndexedFile.hpp" />
@@ -794,6 +795,7 @@
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
     <ClCompile Include="X509Certificate.cpp" />
+    <ClCompile Include="x64.cpp" />
     <ClCompile Include="xml.cpp" />
     <ClCompile Include="YubikeyValidator.cpp" />
     <ClCompile Include="ZipReader.cpp" />

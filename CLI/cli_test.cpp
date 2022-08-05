@@ -2,6 +2,8 @@
 
 #include <unit_testing.hpp>
 
+#include <x64.hpp>
+
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
@@ -35,6 +37,37 @@
 
 using namespace soup;
 using namespace soup::literals;
+
+static void test_cpu()
+{
+	test("x64", []
+	{
+#define TEST_CPU_X64(asm, ...) { uint8_t code[] = { __VA_ARGS__ }; const uint8_t* cp = code; assert(x64::disasm(cp) == asm); assert(cp == &code[sizeof(code)]); }
+
+		TEST_CPU_X64("mov al, al", 0x88, 0xC0);
+		TEST_CPU_X64("mov r8, r8", 0x4D, 0x89, 0xC0);
+		TEST_CPU_X64("mov ah, ah", 0x88, 0xE4);
+		TEST_CPU_X64("mov ax, ax", 0x66, 0x89, 0xC0);
+		TEST_CPU_X64("mov eax, eax", 0x89, 0xC0);
+		TEST_CPU_X64("mov rax, rax", 0x48, 0x89, 0xC0);
+
+		TEST_CPU_X64("mov [eax], eax", 0x67, 0x89, 0x00);
+		TEST_CPU_X64("mov [eax], rax", 0x67, 0x48, 0x89, 0x00);
+		TEST_CPU_X64("mov [rax], eax", 0x89, 0x00);
+		TEST_CPU_X64("mov [rax], rax", 0x48, 0x89, 0x00);
+
+		TEST_CPU_X64("mov al, [eax]", 0x67, 0x8A, 0x00);
+		TEST_CPU_X64("mov ah, [eax]", 0x67, 0x8A, 0x20);
+		TEST_CPU_X64("mov ax, [eax]", 0x67, 0x66, 0x8B, 0x00);
+		TEST_CPU_X64("mov eax, [eax]", 0x67, 0x8B, 0x00);
+		TEST_CPU_X64("mov eax, [rax]", 0x8B, 0x00);
+		TEST_CPU_X64("mov rax, [eax]", 0x67, 0x48, 0x8B, 0x00);
+		TEST_CPU_X64("mov rax, [rax]", 0x48, 0x8B, 0x00);
+
+		TEST_CPU_X64("ret", 0xC3);
+
+	});
+}
 
 static void test_crypto()
 {
@@ -459,6 +492,10 @@ void cli_test()
 {
 	unit("soup")
 	{
+		unit("cpu")
+		{
+			test_cpu();
+		}
 		unit("crypto")
 		{
 			test_crypto();
