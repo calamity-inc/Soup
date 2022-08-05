@@ -28,7 +28,7 @@ If you wish to use the public key with Soup, you only need to know the modulus (
 ```CPP
 using namespace soup::literals;
 
-soup::rsa::PublicKey pub{
+soup::rsaPublicKey pub{
 	"8446817108090355031541999500037472701172098105390664609736912338763723234754560584168907115333937153377507172109710102394091436024688692795634373262383717"_b
 };
 ```
@@ -42,13 +42,13 @@ You really only need to know the 2 prime numbers (`p` and `q`) to use an RSA pri
 ```CPP
 using namespace soup::literals;
 
-auto priv = soup::rsa::Keypair(
+auto priv = soup::rsaKeypair(
 	"96529209707922958264660626622151327182265565708623147261613126577409795199887"_b,
 	"87505296413890087200392682183900465764322220376584167643884573751015402662091"_b
 ).getPrivate();
 ```
 
-Although this will perform a handful of large calculations to construct a `soup::rsa::PrivateKey`. Instead, you may wish to call the constructor directly. All values needed can be read from Soup or OpenSSL. Note that what Soup calls `dp`, `dq`, `qinv`, OpenSSL calls `dmp1`, `dmq1`, `iqmp`, respectively.
+Although this will perform a handful of large calculations to construct a `soup::rsaPrivateKey`. Instead, you may wish to call the constructor directly. All values needed can be read from Soup or OpenSSL. Note that what Soup calls `dp`, `dq`, `qinv`, OpenSSL calls `dmp1`, `dmq1`, `iqmp`, respectively.
 
 ## Sign & Verify
 

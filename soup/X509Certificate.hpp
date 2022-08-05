@@ -15,7 +15,7 @@ namespace soup
 	public:
 		X509RelativeDistinguishedName issuer;
 		X509RelativeDistinguishedName subject;
-		rsa::PublicKey key;
+		rsaPublicKey key;
 
 		bool fromBinary(const std::string& str);
 		bool fromBinary(std::istream& s);
@@ -28,6 +28,6 @@ namespace soup
 		[[nodiscard]] bool isEc() const noexcept;
 
 		[[nodiscard]] bool verify(const X509Certificate& issuer) const;
-		[[nodiscard]] bool verify(const rsa::PublicKey& issuer) const;
+		[[nodiscard]] bool verify(const rsaPublicKey& issuer) const;
 	};
 }

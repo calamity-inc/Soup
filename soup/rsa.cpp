@@ -9,23 +9,23 @@
 #include "Promise.hpp"
 #include "rand.hpp"
 
-namespace soup::rsa
+namespace soup
 {
 	using namespace literals;
 
 	// Mod
 
-	size_t Mod::getMaxUnpaddedMessageBytes() const
+	size_t rsaMod::getMaxUnpaddedMessageBytes() const
 	{
 		return n.getNumBytes();
 	}
 
-	size_t Mod::getMaxPkcs1MessageBytes() const
+	size_t rsaMod::getMaxPkcs1MessageBytes() const
 	{
 		return getMaxUnpaddedMessageBytes() - 11;
 	}
 
-	bool Mod::padPublic(std::string& str) const
+	bool rsaMod::padPublic(std::string& str) const
 	{
 		const auto len = str.length();
 		const auto max_unpadded_len = getMaxUnpaddedMessageBytes();
@@ -44,7 +44,7 @@ namespace soup::rsa
 		return true;
 	}
 
-	bool Mod::padPrivate(std::string& str) const
+	bool rsaMod::padPrivate(std::string& str) const
 	{
 		const auto len = str.length();
 		const auto max_unpadded_len = getMaxUnpaddedMessageBytes();
@@ -60,7 +60,7 @@ namespace soup::rsa
 		return true;
 	}
 
-	bool Mod::unpad(std::string& str)
+	bool rsaMod::unpad(std::string& str)
 	{
 		size_t len = str.length();
 		if (len > 11)
@@ -79,7 +79,7 @@ namespace soup::rsa
 		return false;
 	}
 
-	UniquePtr<JsonObject> Mod::publicToJwk(const Bigint& e) const
+	UniquePtr<JsonObject> rsaMod::publicToJwk(const Bigint& e) const
 	{
 		auto obj = soup::make_unique<JsonObject>();
 		obj->add("kty", "RSA");
@@ -90,7 +90,7 @@ namespace soup::rsa
 
 	// KeyMontgomeryData
 
-	KeyMontgomeryData::KeyMontgomeryData(const Bigint& n, const Bigint& e)
+	rsaKeyMontgomeryData::rsaKeyMontgomeryData(const Bigint& n, const Bigint& e)
 		: re(n.montgomeryREFromM()),
 		r(Bigint::montgomeryRFromRE(re)),
 		one_mont(r.modUnsignedNotpowerof2(n))
@@ -98,7 +98,7 @@ namespace soup::rsa
 		Bigint::modMulInv2Coprimes(n, r, n_mod_mul_inv, r_mod_mul_inv);
 	}
 
-	Bigint KeyMontgomeryData::modPow(const Bigint& n, const Bigint& e, const Bigint& x) const
+	Bigint rsaKeyMontgomeryData::modPow(const Bigint& n, const Bigint& e, const Bigint& x) const
 	{
 		return x.modPowMontgomery(e, re, r, n, r_mod_mul_inv, n_mod_mul_inv, one_mont);
 	}
@@ -107,55 +107,55 @@ namespace soup::rsa
 
 #define E_PREF_VAL 65537_b
 
-	Bigint PublicKey::E_PREF = E_PREF_VAL;
+	Bigint rsaPublicKey::E_PREF = E_PREF_VAL;
 
-	PublicKey::PublicKey(const Bigint& n)
-		: PublicKey(n, E_PREF_VAL)
+	rsaPublicKey::rsaPublicKey(const Bigint& n)
+		: rsaPublicKey(n, E_PREF_VAL)
 	{
 	}
 
-	PublicKey::PublicKey(const Bigint& n, const Bigint& e)
-		: PublicKeyBase(n, e)
+	rsaPublicKey::rsaPublicKey(const Bigint& n, const Bigint& e)
+		: rsaPublicKeyBase(n, e)
 	{
 	}
 
-	Bigint PublicKey::modPow(const Bigint& x) const
+	Bigint rsaPublicKey::modPow(const Bigint& x) const
 	{
 		return x.modPowBasic(e, n);
 	}
 
 	// LonglivedPublicKey
 
-	LonglivedPublicKey::LonglivedPublicKey(const Bigint& n)
-		: LonglivedPublicKey(n, E_PREF_VAL)
+	rsaLonglivedPublicKey::rsaLonglivedPublicKey(const Bigint& n)
+		: rsaLonglivedPublicKey(n, E_PREF_VAL)
 	{
 	}
 
-	LonglivedPublicKey::LonglivedPublicKey(const Bigint& n, const Bigint& e)
-		: PublicKeyBase(n, e), mont_data(n, e)
+	rsaLonglivedPublicKey::rsaLonglivedPublicKey(const Bigint& n, const Bigint& e)
+		: rsaPublicKeyBase(n, e), mont_data(n, e)
 	{
 	}
 
-	Bigint LonglivedPublicKey::modPow(const Bigint& x) const
+	Bigint rsaLonglivedPublicKey::modPow(const Bigint& x) const
 	{
 		return mont_data.modPow(n, e, x);
 	}
 
 	// PrivateKey
 
-	PrivateKey::PrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv)
-		: Key(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv),
+	rsaPrivateKey::rsaPrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv)
+		: rsaKey(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv),
 		p_mont_data(p, dp),
 		q_mont_data(q, dq)
 	{
 	}
 
-	PrivateKey PrivateKey::fromBinary(const std::string& bin)
+	rsaPrivateKey rsaPrivateKey::fromBinary(const std::string& bin)
 	{
 		return fromAsn1(Asn1Sequence::fromBinary(bin));
 	}
 
-	PrivateKey PrivateKey::fromAsn1(const Asn1Sequence& seq)
+	rsaPrivateKey rsaPrivateKey::fromAsn1(const Asn1Sequence& seq)
 	{
 		if (seq.getChildType(1).type != Asn1Type::INTEGER)
 		{
@@ -172,7 +172,7 @@ namespace soup::rsa
 		};
 	}
 
-	PrivateKey PrivateKey::fromJwk(const JsonObject& jwk)
+	rsaPrivateKey rsaPrivateKey::fromJwk(const JsonObject& jwk)
 	{
 		// assuming that jwk["kty"] == "RSA"
 		return {
@@ -185,18 +185,18 @@ namespace soup::rsa
 		};
 	}
 
-	Bigint PrivateKey::encryptPkcs1(std::string msg) const
+	Bigint rsaPrivateKey::encryptPkcs1(std::string msg) const
 	{
 		padPrivate(msg);
 		return encryptUnpadded(msg);
 	}
 
-	PublicKey PrivateKey::derivePublic() const
+	rsaPublicKey rsaPrivateKey::derivePublic() const
 	{
-		return PublicKey(n);
+		return rsaPublicKey(n);
 	}
 
-	Asn1Sequence PrivateKey::toAsn1() const
+	Asn1Sequence rsaPrivateKey::toAsn1() const
 	{
 		Asn1Sequence seq{};
 		/* 0 */ seq.addInt({}); // version (0)
@@ -211,12 +211,12 @@ namespace soup::rsa
 		return seq;
 	}
 
-	std::string PrivateKey::toPem() const
+	std::string rsaPrivateKey::toPem() const
 	{
 		return pem::encode(ObfusString("RSA PRIVATE KEY"), toAsn1().toDer());
 	}
 
-	Bigint PrivateKey::modPow(const Bigint& x) const
+	Bigint rsaPrivateKey::modPow(const Bigint& x) const
 	{
 		auto mp = p_mont_data.modPow(p, dp, x);
 		auto mq = q_mont_data.modPow(q, dq, x);
@@ -224,25 +224,25 @@ namespace soup::rsa
 		return ((mq + (h * q)) % n);
 	}
 
-	Bigint PrivateKey::getE() const
+	Bigint rsaPrivateKey::getE() const
 	{
-		return PublicKey::E_PREF;
+		return rsaPublicKey::E_PREF;
 	}
 
-	Bigint PrivateKey::getD() const
+	Bigint rsaPrivateKey::getD() const
 	{
 		return getE().modMulInv((p - 1_b).lcm(q - 1_b));
 	}
 
 	// Keypair
 
-	Keypair::Keypair(Bigint _p, Bigint _q)
-		: Mod(_p * _q), p(std::move(_p)), q(std::move(_q))
+	rsaKeypair::rsaKeypair(Bigint _p, Bigint _q)
+		: rsaMod(_p * _q), p(std::move(_p)), q(std::move(_q))
 	{
 		const auto pm1 = (p - 1_b);
 		const auto qm1 = (q - 1_b);
 		const auto t = (pm1 * qm1);
-		if (t < PublicKey::E_PREF)
+		if (t < rsaPublicKey::E_PREF)
 		{
 			const auto bl = t.getBitLength();
 			do
@@ -252,7 +252,7 @@ namespace soup::rsa
 		}
 		else
 		{
-			e = PublicKey::E_PREF;
+			e = rsaPublicKey::E_PREF;
 		}
 		const auto d = e.modMulInv(t);
 		dp = d.modUnsigned(pm1);
@@ -265,7 +265,7 @@ namespace soup::rsa
 		return Bigint::randomProbablePrime(bits, 3);
 	}
 
-	Keypair Keypair::generate(unsigned int bits)
+	rsaKeypair rsaKeypair::generate(unsigned int bits)
 	{
 		auto gen_promise = [](Capture&& cap, PromiseBase*) -> Bigint
 		{
@@ -290,7 +290,7 @@ namespace soup::rsa
 				{
 					if (p != q)
 					{
-						Keypair kp(p, q);
+						rsaKeypair kp(p, q);
 						if (kp.n.getBitLength() == bits)
 						{
 							return kp;
@@ -303,13 +303,13 @@ namespace soup::rsa
 		}
 	}
 
-	PublicKey Keypair::getPublic() const
+	rsaPublicKey rsaKeypair::getPublic() const
 	{
-		return PublicKey(n, e);
+		return rsaPublicKey(n, e);
 	}
 
-	PrivateKey Keypair::getPrivate() const
+	rsaPrivateKey rsaKeypair::getPrivate() const
 	{
-		return PrivateKey(n, p, q, dp, dq, qinv);
+		return rsaPrivateKey(n, p, q, dp, dq, qinv);
 	}
 }

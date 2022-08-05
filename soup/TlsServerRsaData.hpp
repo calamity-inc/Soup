@@ -10,6 +10,6 @@ namespace soup
 	struct TlsServerRsaData
 	{
 		std::vector<std::string> der_encoded_certchain{};
-		rsa::PrivateKey private_key{};
+		rsaPrivateKey private_key{};
 	};
 }

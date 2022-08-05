@@ -51,12 +51,12 @@ namespace soup
 		}
 	}
 
-	void Keystore::addCa(std::string&& common_name, rsa::PublicKey&& key)
+	void Keystore::addCa(std::string&& common_name, rsaPublicKey&& key)
 	{
 		data.emplace(std::move(common_name), std::move(key));
 	}
 
-	const rsa::PublicKey* Keystore::findCommonName(const std::string& cn) const
+	const rsaPublicKey* Keystore::findCommonName(const std::string& cn) const
 	{
 		auto i = data.find(cn);
 		if (i == data.end())
