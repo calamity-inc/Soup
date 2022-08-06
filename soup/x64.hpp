@@ -54,10 +54,15 @@ namespace soup
 				};
 				struct // immediate
 				{
-					/* 0 */ uint64_t val = 0;
+					/* 0 */ uint64_t val;
 					/* 8 */
 				};
 			};
+
+			Operand()
+				: val(0)
+			{
+			}
 
 			void decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept;
 
