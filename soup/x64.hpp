@@ -25,6 +25,7 @@ namespace soup
 			R13,
 			R14,
 			R15,
+			IP,
 
 			IMM,
 		};
@@ -44,13 +45,18 @@ namespace soup
 			Register reg;
 			union
 			{
-				struct
+				struct // register
 				{
-					RegisterAccessType access_type;
-					uint8_t deref_size;
-					uint8_t deref_offset;
-				}; // 3 bytes
-				uint64_t val = 0;
+					/* 0 */ RegisterAccessType access_type;
+					/* 1 */ uint8_t deref_size;
+					/* 2 */ int32_t deref_offset;
+					/* 6 */
+				};
+				struct // immediate
+				{
+					/* 0 */ uint64_t val = 0;
+					/* 8 */
+				};
 			};
 
 			void decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept;
@@ -125,6 +131,20 @@ namespace soup
 				}
 				return 2;
 			}
+
+			[[nodiscard]] uint8_t getNumModrmOperands() const noexcept
+			{
+				uint8_t count = 0;
+				if (getOpr1Encoding() == M || getOpr1Encoding() == R)
+				{
+					++count;
+				}
+				if (getOpr2Encoding() == M || getOpr2Encoding() == R)
+				{
+					++count;
+				}
+				return count;
+			}
 		};
 
 		inline static Operation operations[] = {
@@ -134,6 +154,7 @@ namespace soup
 			{ "mov", 0x8B, RM },
 			{ "mov", 0xB0, OI, 8 },
 			{ "mov", 0xB8, OI },
+			{ "mov", 0xC6, MI, 8 },
 			{ "mov", 0xC7, MI, 32 },
 			{ "ret", 0xC3, ZO },
 			{ "push", 0x50, O, 64 },

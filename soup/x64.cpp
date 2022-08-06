@@ -5,7 +5,7 @@
 
 namespace soup
 {
-	const char* reg_names[16] = {
+	static const char* reg_names[] = {
 		"a",
 		"c",
 		"d",
@@ -22,6 +22,7 @@ namespace soup
 		"13",
 		"14",
 		"15",
+		"ip",
 	};
 
 	void x64::Operand::decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept
@@ -114,7 +115,7 @@ namespace soup
 			if (deref_offset != 0)
 			{
 				name.append("+0x");
-				name.append(string::hex(deref_offset - 1));
+				name.append(string::hex(deref_offset));
 			}
 			name.push_back(']');
 		}
@@ -138,6 +139,18 @@ namespace soup
 	}
 
 	// https://www.felixcloutier.com/x86/index.html
+
+	template <typename T = uint64_t>
+	static void getImmediate(T& val, const uint8_t*& code, const uint8_t imm_bytes)
+	{
+		++code;
+		for (uint8_t i = imm_bytes; i-- != 0; )
+		{
+			val <<= 8;
+			val |= code[i];
+		}
+		code += (imm_bytes - 1);
+	}
 
 	x64::Instruction x64::disasm(const uint8_t*& code)
 	{
@@ -203,6 +216,7 @@ namespace soup
 
 					uint8_t opcode = *code;
 					uint8_t opr_i = 0;
+					uint8_t num_modrm_oprs = op.getNumModrmOperands();
 					bool modrm_read = false;
 					uint8_t modrm;
 
@@ -224,18 +238,26 @@ namespace soup
 							const bool direct = ((modrm >> 6) == 0b11);
 							if (opr_enc == M)
 							{
-								opr.decode(rex, operand_size, modrm & 0b111, rm_x);
+								opr.decode(rex || !direct, operand_size, modrm & 0b111, rm_x);
 								if (!direct)
 								{
 									opr.access_type = (address_size_override ? ACCESS_32 : ACCESS_64);
-									opr.deref_size = ((op.getOpr2Encoding() == ZO) ? operand_size : 1); // Hiding pointer type when other operand makes it apparent
+									opr.deref_size = ((num_modrm_oprs == 2) ? 1 : operand_size); // Hiding pointer type when other operand makes it apparent
 									if (opr.reg == SP)
 									{
 										++code; // Skipping what I assume is the SIB byte
 									}
 									if ((modrm >> 6) == 0b01)
 									{
-										opr.deref_offset = (*++code) + 1;
+										opr.deref_offset = *++code;
+									}
+									else if ((modrm >> 6) == 0b00
+										&& num_modrm_oprs == 1
+										&& opr.reg == BP
+										)
+									{
+										opr.reg = IP;
+										getImmediate(opr.deref_offset, code, 4);
 									}
 								}
 							}
@@ -247,14 +269,7 @@ namespace soup
 						else if (opr_enc == I)
 						{
 							opr.reg = IMM;
-							++code;
-							const uint8_t imm_bytes = (immediate_size / 8);
-							for (uint8_t i = imm_bytes; i-- != 0; )
-							{
-								opr.val <<= 8;
-								opr.val |= code[i];
-							}
-							code += (imm_bytes - 1);
+							getImmediate(opr.val, code, immediate_size / 8);
 						}
 
 						if (++opr_i == COUNT(res.operands))
