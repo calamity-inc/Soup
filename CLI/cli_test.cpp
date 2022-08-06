@@ -69,6 +69,10 @@ static void test_cpu()
 		TEST_CPU_X64("push ax", 0x66, 0x50);
 		TEST_CPU_X64("push rax", 0x50);
 		TEST_CPU_X64("push r15", 0x41, 0x57);
+
+		TEST_CPU_X64("push word ptr [rax]", 0x66, 0xFF, 0x30);
+		TEST_CPU_X64("push word ptr [r15]", 0x66, 0x41, 0xFF, 0x37);
+		TEST_CPU_X64("push qword ptr [rax]", 0xFF, 0x30);
 	});
 }
 

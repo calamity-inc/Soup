@@ -54,12 +54,12 @@ namespace soup
 	{
 		Register reg;
 		RegisterAccessType access_type;
-		bool deref = false;
+		uint8_t deref_size = 0;
 
 		void decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept
 		{
 			reg |= (x << 3);
-			
+
 			this->reg = (Register)reg;
 			access_type = (RegisterAccessType)size;
 
@@ -70,12 +70,8 @@ namespace soup
 				this->reg = (Register)(this->reg - 4);
 				access_type = ACCESS_8_H;
 			}
-		}
 
-		void setDeref(bool address_size_override) noexcept
-		{
-			access_type = address_size_override ? ACCESS_32 : ACCESS_64;
-			deref = true;
+			deref_size = 0;
 		}
 
 		[[nodiscard]] std::string toString() const
@@ -125,37 +121,70 @@ namespace soup
 					name.push_back('l');
 				}
 			}
-			if (deref)
+			if (deref_size != 0)
 			{
 				name.insert(0, 1, '[');
+				if (deref_size == 8)
+				{
+					name.insert(0, "byte ptr ");
+				}
+				else if (deref_size == 16)
+				{
+					name.insert(0, "word ptr ");
+				}
+				else if (deref_size == 32)
+				{
+					name.insert(0, "dword ptr ");
+				}
+				else if (deref_size == 64)
+				{
+					name.insert(0, "qword ptr ");
+				}
 				name.push_back(']');
 			}
 			return name;
 		}
 	};
 
-	enum InsMode : uint8_t
+	enum InsOperandEncoding : uint8_t
 	{
 		ZO = 0,
-		MR,
-		RM,
-		O,
+
+		O = 0b01,
+		M = 0b10,
+		R = 0b11,
+
+		OPERAND_MASK = 0b11,
+		BITS_PER_OPERAND = 2,
+
+		MR = M | (R << BITS_PER_OPERAND),
+		RM = R | (M << BITS_PER_OPERAND),
 	};
 
 	struct InsInfo
 	{
 		const char* name;
 		uint8_t opcode;
-		InsMode mode;
+		InsOperandEncoding operand_encoding;
 		uint8_t operand_size = 0;
 
 		[[nodiscard]] bool matches(uint8_t code) const noexcept
 		{
-			if (mode == O)
+			if (getOpr1Encoding() == O)
 			{
 				code &= 0b11111000;
 			}
 			return opcode == code;
+		}
+
+		[[nodiscard]] InsOperandEncoding getOpr1Encoding() const noexcept
+		{
+			return (InsOperandEncoding)(operand_encoding & OPERAND_MASK);
+		}
+
+		[[nodiscard]] InsOperandEncoding getOpr2Encoding() const noexcept
+		{
+			return (InsOperandEncoding)((operand_encoding >> BITS_PER_OPERAND) & OPERAND_MASK);
 		}
 	};
 
@@ -168,6 +197,7 @@ namespace soup
 		{ "mov", 0x8B, RM },
 		{ "ret", 0xC3, ZO },
 		{ "push", 0x50, O, 64 },
+		{ "push", 0xFF, M, 64 },
 	};
 
 	std::string x64::disasm(const uint8_t*& code)
@@ -210,7 +240,7 @@ namespace soup
 			if (ins.matches(*code))
 			{
 				std::string res = ins.name;
-				if (ins.mode != ZO)
+				if (ins.operand_encoding != ZO)
 				{
 					res.push_back(' ');
 
@@ -228,38 +258,50 @@ namespace soup
 						operand_size = ins.operand_size;
 					}
 
-					if (ins.mode == O)
-					{
-						InsOperand opr;
-						opr.decode(rex, operand_size, *code & 0b111, rm_x);
-						res.append(opr.toString());
-					}
-					else
-					{
-						++code;
+					uint8_t opcode = *code;
+					InsOperand opr;
+					uint8_t opr_offset = 0;
+					bool opr_cont = false;
+					bool modrm_read = false;
+					uint8_t modrm;
 
-						InsOperand left, right;
-						bool direct = ((*code >> 6) == 0b11);
-						left.decode(rex, operand_size, (*code >> 3) & 0b111, reg_x);
-						right.decode(rex, operand_size, *code & 0b111, rm_x);
-						if (ins.mode == MR)
+					for (uint8_t opr_enc; opr_enc = ((ins.operand_encoding >> opr_offset) & OPERAND_MASK), opr_enc != ZO; opr_offset += BITS_PER_OPERAND)
+					{
+						if (opr_cont)
 						{
-							if (!direct)
+							res.append(", ");
+						}
+						if (opr_enc == O)
+						{
+							opr.decode(rex, operand_size, opcode & 0b111, rm_x);
+							res.append(opr.toString());
+						}
+						else if (opr_enc == M || opr_enc == R)
+						{
+							const bool left = !modrm_read;
+							if (left)
 							{
-								left.setDeref(address_size_override);
+								modrm_read = true;
+								modrm = *++code;
+							}
+							const bool direct = ((modrm >> 6) == 0b11);
+							if (opr_enc == M)
+							{
+								opr.decode(rex, operand_size, modrm & 0b111, rm_x);
+								if (!direct)
+								{
+									opr.access_type = (address_size_override ? ACCESS_32 : ACCESS_64);
+									opr.deref_size = ((ins.getOpr2Encoding() == ZO) ? operand_size : 1); // hiding pointer type when other operand makes it apparent
+								}
+								res.append(opr.toString());
+							}
+							else if (opr_enc == R)
+							{
+								opr.decode(rex, operand_size, (*code >> 3) & 0b111, reg_x);
+								res.append(opr.toString());
 							}
 						}
-						else if (ins.mode == RM)
-						{
-							if (!direct)
-							{
-								right.setDeref(address_size_override);
-							}
-						}
-
-						res.append(left.toString());
-						res.append(", ");
-						res.append(right.toString());
+						opr_cont = true;
 					}
 				}
 				++code;
