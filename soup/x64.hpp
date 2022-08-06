@@ -80,6 +80,8 @@ namespace soup
 			I = 0b100,
 			A = 0b101,
 
+			D = I,
+
 			OPERAND_MASK = 0b111,
 			BITS_PER_OPERAND = 3,
 
@@ -99,12 +101,12 @@ namespace soup
 			const uint8_t distinguish;
 
 			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding)
-				: Operation(name, opcode, operand_encoding, 0, 0)
+				: Operation(name, opcode, operand_encoding, 0, 8)
 			{
 			}
 
 			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding, uint8_t operand_size)
-				: Operation(name, opcode, operand_encoding, operand_size, 0)
+				: Operation(name, opcode, operand_encoding, operand_size, 8)
 			{
 			}
 
@@ -121,7 +123,7 @@ namespace soup
 					b &= 0b11111000;
 				}
 				return opcode == b
-					&& (distinguish == 0
+					&& (distinguish == 8
 						|| ((code[1] >> 3) & 0b111) == distinguish
 						)
 					;
@@ -176,7 +178,11 @@ namespace soup
 			{ "mov", 0xC7, MI, 32 },
 			{ "ret", 0xC3, ZO },
 			{ "push", 0x50, O, 64 },
+			{ "pop", 0x58, O, 64 },
 			{ "push", 0xFF, M, 64 },
+			{ "add", 0x81, MI, 32, 0 },
+			{ "add", 0x83, MI, 8, 0 },
+			{ "sub", 0x81, MI, 32, 5 },
 			{ "sub", 0x83, MI, 8, 5 },
 			{ "cmp", 0x80, MI, 8, 7 },
 			{ "cmp", 0x83, MI, 8, 7 },
@@ -184,6 +190,14 @@ namespace soup
 			{ "cmp", 0x3D, AI, 32 },
 			{ "cmp", 0x38, MR, 8 },
 			{ "cmp", 0x39, MR },
+			{ "lea", 0x8D, RM },
+			{ "jz", 0x74, D, 8 },
+			{ "jnz", 0x75, D, 8 },
+			{ "call", 0xE8, D, 32 },
+			{ "jmp", 0xEB, D, 8 },
+			{ "test", 0x84, MR, 8 },
+			{ "test", 0x85, MR },
+			{ "xor", 0x33, RM },
 		};
 
 		struct Instruction

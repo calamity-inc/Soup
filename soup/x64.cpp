@@ -258,7 +258,6 @@ namespace soup
 										getImmediate(opr.deref_offset, code, 4);
 									}
 									else if ((modrm >> 6) == 0b00
-										&& num_modrm_oprs == 1
 										&& opr.reg == BP
 										)
 									{
