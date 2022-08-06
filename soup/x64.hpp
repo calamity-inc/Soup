@@ -64,10 +64,20 @@ namespace soup
 
 		struct Operation
 		{
-			const char* name;
-			uint8_t opcode;
-			OperandEncoding operand_encoding;
-			uint8_t operand_size = 0;
+			const char* const name;
+			const uint8_t opcode;
+			const OperandEncoding operand_encoding;
+			const uint8_t operand_size;
+
+			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding)
+				: name(name), opcode(opcode), operand_encoding(operand_encoding), operand_size(0)
+			{
+			}
+			
+			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding, uint8_t operand_size)
+				: name(name), opcode(opcode), operand_encoding(operand_encoding), operand_size(operand_size)
+			{
+			}
 
 			[[nodiscard]] bool matches(uint8_t code) const noexcept
 			{
@@ -100,6 +110,16 @@ namespace soup
 				}
 				return 2;
 			}
+		};
+
+		inline static Operation operations[] = {
+			{ "mov", 0x88, MR, 8 },
+			{ "mov", 0x89, MR },
+			{ "mov", 0x8A, RM, 8 },
+			{ "mov", 0x8B, RM },
+			{ "ret", 0xC3, ZO },
+			{ "push", 0x50, O, 64 },
+			{ "push", 0xFF, M, 64 },
 		};
 
 		struct Instruction

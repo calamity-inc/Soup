@@ -130,18 +130,6 @@ namespace soup
 
 	// https://www.felixcloutier.com/x86/index.html
 
-	using enum x64::OperandEncoding;
-
-	static x64::Operation operations[] = {
-		{ "mov", 0x88, MR, 8 },
-		{ "mov", 0x89, MR },
-		{ "mov", 0x8A, RM, 8 },
-		{ "mov", 0x8B, RM },
-		{ "ret", 0xC3, ZO },
-		{ "push", 0x50, O, 64 },
-		{ "push", 0xFF, M, 64 },
-	};
-
 	x64::Instruction x64::disasm(const uint8_t*& code)
 	{
 		bool operand_size_override = false;
