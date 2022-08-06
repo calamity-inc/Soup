@@ -306,4 +306,49 @@ namespace soup
 		}
 		return res;
 	}
+
+	uint8_t x64::getLength(const uint8_t* code)
+	{
+		auto start = code;
+		return disasm(code).isValid()
+			? (uint8_t)(code - start)
+			: 0;
+	}
+
+	const uint8_t* x64::getPrev(const uint8_t* code)
+	{
+		const auto present = code;
+		for (uint8_t i = 0; i != 100; ++i)
+		{
+			--code;
+			auto start = code;
+			if (isStartByte(code)
+				&& getNext(code) == present
+				)
+			{
+				return start;
+			}
+		}
+		return nullptr;
+	}
+
+	const uint8_t* x64::getNext(const uint8_t* code)
+	{
+		return disasm(code).isValid()
+			? code
+			: nullptr
+			;
+	}
+
+	bool x64::isStartByte(const uint8_t* code)
+	{
+		return (*code & 0xF0) == 0x40 // REX
+			|| (
+				(((*code & 0xF0) == 0x50) // push or pop
+					|| *code == 0x33 // or xor
+				)
+				&& ((*(code - 1) & 0xF0) != 0x40) // and no REX before
+			)
+			;
+	}
 }

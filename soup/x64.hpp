@@ -213,6 +213,11 @@ namespace soup
 			[[nodiscard]] std::string toString() const;
 		};
 
-		[[nodiscard]] static Instruction disasm(const uint8_t*& code);
+		static Instruction disasm(const uint8_t*& code);
+
+		[[nodiscard]] static uint8_t getLength(const uint8_t* code);
+		[[nodiscard]] static const uint8_t* getPrev(const uint8_t* code);
+		[[nodiscard]] static const uint8_t* getNext(const uint8_t* code);
+		[[nodiscard]] static bool isStartByte(const uint8_t* code);
 	};
 }
