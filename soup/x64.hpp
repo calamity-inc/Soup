@@ -38,6 +38,7 @@ namespace soup
 			ACCESS_8_H = 0,
 		};
 
+#pragma pack(push, 1)
 		struct Operand
 		{
 			Register reg;
@@ -47,7 +48,8 @@ namespace soup
 				{
 					RegisterAccessType access_type;
 					uint8_t deref_size;
-				};
+					uint8_t deref_offset;
+				}; // 3 bytes
 				uint64_t val = 0;
 			};
 
@@ -55,6 +57,7 @@ namespace soup
 
 			[[nodiscard]] std::string toString() const;
 		};
+#pragma pack(pop)
 
 		enum OperandEncoding : uint8_t
 		{

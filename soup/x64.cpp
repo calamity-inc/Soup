@@ -1,6 +1,7 @@
 #include "x64.hpp"
 
 #include "macros.hpp"
+#include "string.hpp"
 
 namespace soup
 {
@@ -110,6 +111,11 @@ namespace soup
 			{
 				name.insert(0, "qword ptr ");
 			}
+			if (deref_offset != 0)
+			{
+				name.append("+0x");
+				name.append(string::hex(deref_offset - 1));
+			}
 			name.push_back(']');
 		}
 		return name;
@@ -216,12 +222,20 @@ namespace soup
 								if (!direct)
 								{
 									opr.access_type = (address_size_override ? ACCESS_32 : ACCESS_64);
-									opr.deref_size = ((op.getOpr2Encoding() == ZO) ? operand_size : 1); // hiding pointer type when other operand makes it apparent
+									opr.deref_size = ((op.getOpr2Encoding() == ZO) ? operand_size : 1); // Hiding pointer type when other operand makes it apparent
+									if (opr.reg == SP)
+									{
+										++code; // Skipping what I assume is the SIB byte
+									}
+									if ((modrm >> 6) == 0b01)
+									{
+										opr.deref_offset = (*++code) + 1;
+									}
 								}
 							}
 							else if (opr_enc == R)
 							{
-								opr.decode(rex, operand_size, (*code >> 3) & 0b111, reg_x);
+								opr.decode(rex, operand_size, (modrm >> 3) & 0b111, reg_x);
 							}
 						}
 						else if (opr_enc == I)
