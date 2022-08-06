@@ -59,7 +59,13 @@ namespace soup
 				};
 			};
 
+			void reset() noexcept
+			{
+				val = 0;
+			}
+
 			void decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept;
+			void fromString(const char* str);
 
 			[[nodiscard]] std::string toString() const;
 		};
@@ -210,7 +216,12 @@ namespace soup
 				return operation->getNumOperands();
 			}
 
+			void reset() noexcept;
+
+			void fromString(const std::string& str);
+
 			[[nodiscard]] std::string toString() const;
+			[[nodiscard]] std::string toBytecode() const;
 		};
 
 		static Instruction disasm(const uint8_t*& code);

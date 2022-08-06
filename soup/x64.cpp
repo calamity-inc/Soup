@@ -2,6 +2,7 @@
 
 #include "macros.hpp"
 #include "string.hpp"
+#include "StringBuilder.hpp"
 
 namespace soup
 {
@@ -123,6 +124,140 @@ namespace soup
 		return name;
 	}
 
+	static void decodeAccessType(x64::RegisterAccessType& typ, const char*& str)
+	{
+		++str; // skip last char of register name
+		
+		if (typ == x64::ACCESS_64 || typ == x64::ACCESS_32)
+		{
+			++str; // skip 'x'
+		}
+		else if (*str == 'x')
+		{
+			typ = x64::ACCESS_16;
+			++str;
+		}
+		else if (*str == 'l')
+		{
+			typ = x64::ACCESS_8;
+			++str;
+		}
+		else if (*str == 'h')
+		{
+			typ = x64::ACCESS_8_H;
+			++str;
+		}
+	}
+
+	void x64::Operand::fromString(const char* str)
+	{
+		access_type = (RegisterAccessType)-1;
+		
+		while (*str == ' ')
+		{
+			++str;
+		}
+
+		if (*str == 'r')
+		{
+			access_type = ACCESS_64;
+			++str;
+		}
+		else if (*str == 'e')
+		{
+			access_type = ACCESS_32;
+			++str;
+		}
+
+		if (*str == 'a')
+		{
+			reg = RA;
+			decodeAccessType(access_type, str);
+		}
+		else if (*str == 'c')
+		{
+			reg = RC;
+			decodeAccessType(access_type, str);
+		}
+		else if (*str == 'b')
+		{
+			reg = RB;
+			decodeAccessType(access_type, str);
+		}
+		else if (*str == 'd')
+		{
+			reg = RD;
+			decodeAccessType(access_type, str);
+		}
+	}
+
+	void x64::Instruction::reset() noexcept
+	{
+		operation = nullptr;
+		for (auto& opr : operands)
+		{
+			opr.reset();
+		}
+	}
+
+	void x64::Instruction::fromString(const std::string& str)
+	{
+		reset();
+
+		StringBuilder op;
+		auto it = str.begin();
+		op.beginCopy(str, it);
+		uint8_t opr_i = 0;
+		for (; it != str.end(); ++it)
+		{
+			if (*it == ' ')
+			{
+				op.endCopy(str, it);
+				++it;
+				StringBuilder opr;
+				opr.beginCopy(str, it);
+				for (; it != str.end(); ++it)
+				{
+					if (*it == ',')
+					{
+						opr.endCopy(str, it);
+						operands[opr_i++].fromString(opr.c_str());
+						opr.clear();
+						if (++it == str.end())
+						{
+							opr.beginCopy(str, it);
+							break;
+						}
+						opr.beginCopy(str, it);
+					}
+				}
+				opr.endCopy(str, it);
+				if (!opr.empty())
+				{
+					operands[opr_i++].fromString(opr.c_str());
+				}
+				break;
+			}
+		}
+
+		for (const auto& opinfo : operations)
+		{
+			if (opinfo.name == op
+				&& opinfo.operand_size == 0
+				&& opinfo.getNumOperands() == opr_i
+				&& opinfo.getNumModrmOperands() != 0
+				)
+			{
+				operation = &opinfo;
+				break;
+			}
+		}
+		if (operation == nullptr)
+		{
+			throw 0;
+		}
+	}
+
 	std::string x64::Instruction::toString() const
 	{
 		std::string res = operation->name;
@@ -136,6 +271,29 @@ namespace soup
 				res.append(operands[1].toString());
 			}
 		}
+		return res;
+	}
+
+	std::string x64::Instruction::toBytecode() const
+	{
+		std::string res{};
+
+		if (operands[0].access_type == ACCESS_64)
+		{
+			res.push_back('\x48'); // REX.W
+		}
+
+		res.push_back(operation->opcode);
+
+		if (operation->getNumModrmOperands() != 0)
+		{
+			uint8_t modrm = 0;
+			modrm |= (0b11 << 6); // direct
+			modrm |= (operands[1].reg << 3); // reg
+			modrm |= operands[0].reg; // r/m
+			res.push_back(modrm);
+		}
+
 		return res;
 	}
 
