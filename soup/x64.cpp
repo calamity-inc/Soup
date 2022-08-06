@@ -145,6 +145,7 @@ namespace soup
 	static void getImmediate(T& val, const uint8_t*& code, const uint8_t imm_bytes)
 	{
 		++code;
+		val = 0;
 		for (uint8_t i = imm_bytes; i-- != 0; )
 		{
 			val <<= 8;
@@ -221,6 +222,7 @@ namespace soup
 					uint8_t num_modrm_oprs = op.getNumModrmOperands();
 					bool modrm_read = false;
 					uint8_t modrm;
+					uint8_t sib;
 
 					for (uint8_t opr_enc; opr_enc = ((op.operand_encoding >> (opr_i * BITS_PER_OPERAND)) & OPERAND_MASK), opr_enc != ZO; )
 					{
@@ -247,7 +249,7 @@ namespace soup
 									opr.deref_size = ((num_modrm_oprs == 2) ? 1 : operand_size); // Hiding pointer type when other operand makes it apparent
 									if (opr.reg == SP)
 									{
-										++code; // Skipping what I assume is the SIB byte
+										sib = *++code;
 									}
 									if ((modrm >> 6) == 0b01)
 									{
@@ -257,12 +259,23 @@ namespace soup
 									{
 										getImmediate(opr.deref_offset, code, 4);
 									}
-									else if ((modrm >> 6) == 0b00
-										&& opr.reg == BP
-										)
+									else if ((modrm >> 6) == 0b00)
 									{
-										opr.reg = IP;
-										getImmediate(opr.deref_offset, code, 4);
+										if (opr.reg == SP)
+										{
+											if (sib == 0x25)
+											{
+												// Absolute address
+												opr.reg = IMM;
+												getImmediate(opr.val, code, 4);
+											}
+										}
+										else if (opr.reg == BP)
+										{
+											// RIP-relative
+											opr.reg = IP;
+											getImmediate(opr.deref_offset, code, 4);
+										}
 									}
 								}
 							}

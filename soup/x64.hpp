@@ -59,11 +59,6 @@ namespace soup
 				};
 			};
 
-			Operand()
-				: val(0)
-			{
-			}
-
 			void decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept;
 
 			[[nodiscard]] std::string toString() const;
