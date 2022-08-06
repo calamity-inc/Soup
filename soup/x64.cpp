@@ -189,7 +189,7 @@ namespace soup
 		// Opcode
 		for (const auto& op : operations)
 		{
-			if (op.matches(*code))
+			if (op.matches(code))
 			{
 				Instruction res{ &op };
 				if (op.operand_encoding != ZO)
@@ -251,6 +251,10 @@ namespace soup
 									{
 										opr.deref_offset = *++code;
 									}
+									else if ((modrm >> 6) == 0b10)
+									{
+										getImmediate(opr.deref_offset, code, 4);
+									}
 									else if ((modrm >> 6) == 0b00
 										&& num_modrm_oprs == 1
 										&& opr.reg == BP
@@ -270,6 +274,10 @@ namespace soup
 						{
 							opr.reg = IMM;
 							getImmediate(opr.val, code, immediate_size / 8);
+						}
+						else if (opr_enc == A)
+						{
+							opr.decode(rex, operand_size, RA, reg_x);
 						}
 
 						if (++opr_i == COUNT(res.operands))

@@ -73,6 +73,7 @@ namespace soup
 			M = 0b010,
 			R = 0b011,
 			I = 0b100,
+			A = 0b101,
 
 			OPERAND_MASK = 0b111,
 			BITS_PER_OPERAND = 3,
@@ -81,6 +82,7 @@ namespace soup
 			RM = R | (M << BITS_PER_OPERAND),
 			OI = O | (I << BITS_PER_OPERAND),
 			MI = M | (I << BITS_PER_OPERAND),
+			AI = A | (I << BITS_PER_OPERAND),
 		};
 
 		struct Operation
@@ -89,24 +91,35 @@ namespace soup
 			const uint8_t opcode;
 			const OperandEncoding operand_encoding;
 			const uint8_t operand_size;
+			const uint8_t distinguish;
 
 			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding)
-				: name(name), opcode(opcode), operand_encoding(operand_encoding), operand_size(0)
-			{
-			}
-			
-			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding, uint8_t operand_size)
-				: name(name), opcode(opcode), operand_encoding(operand_encoding), operand_size(operand_size)
+				: Operation(name, opcode, operand_encoding, 0, 0)
 			{
 			}
 
-			[[nodiscard]] bool matches(uint8_t code) const noexcept
+			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding, uint8_t operand_size)
+				: Operation(name, opcode, operand_encoding, operand_size, 0)
 			{
+			}
+
+			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding, uint8_t operand_size, uint8_t distinguish)
+				: name(name), opcode(opcode), operand_encoding(operand_encoding), operand_size(operand_size), distinguish(distinguish)
+			{
+			}
+
+			[[nodiscard]] bool matches(const uint8_t* code) const noexcept
+			{
+				uint8_t b = *code;
 				if (getOpr1Encoding() == O)
 				{
-					code &= 0b11111000;
+					b &= 0b11111000;
 				}
-				return opcode == code;
+				return opcode == b
+					&& (distinguish == 0
+						|| ((code[1] >> 3) & 0b111) == distinguish
+						)
+					;
 			}
 
 			[[nodiscard]] OperandEncoding getOpr1Encoding() const noexcept
@@ -159,7 +172,13 @@ namespace soup
 			{ "ret", 0xC3, ZO },
 			{ "push", 0x50, O, 64 },
 			{ "push", 0xFF, M, 64 },
-			{ "sub", 0x83, MI, 8 },
+			{ "sub", 0x83, MI, 8, 5 },
+			{ "cmp", 0x80, MI, 8, 7 },
+			{ "cmp", 0x83, MI, 8, 7 },
+			{ "cmp", 0x3C, AI, 8 },
+			{ "cmp", 0x3D, AI, 32 },
+			{ "cmp", 0x38, MR, 8 },
+			{ "cmp", 0x39, MR },
 		};
 
 		struct Instruction
