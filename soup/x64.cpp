@@ -182,17 +182,23 @@ namespace soup
 				if (op.operand_encoding != ZO)
 				{
 					uint8_t operand_size;
+					uint8_t immediate_size;
 					if (operand_size_override)
 					{
-						operand_size = 16;
+						operand_size = immediate_size = 16;
 					}
 					else if (op.operand_size == 0)
 					{
-						operand_size = (default_operand_size ? 32 : 64);
+						operand_size = immediate_size = (default_operand_size ? 32 : 64);
+					}
+					else if (default_operand_size)
+					{
+						operand_size = immediate_size = op.operand_size;
 					}
 					else
 					{
-						operand_size = op.operand_size;
+						operand_size = 64;
+						immediate_size = op.operand_size;
 					}
 
 					uint8_t opcode = *code;
@@ -242,7 +248,7 @@ namespace soup
 						{
 							opr.reg = IMM;
 							++code;
-							const uint8_t imm_bytes = (operand_size / 8);
+							const uint8_t imm_bytes = (immediate_size / 8);
 							for (uint8_t i = imm_bytes; i-- != 0; )
 							{
 								opr.val <<= 8;

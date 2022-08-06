@@ -138,6 +138,7 @@ namespace soup
 			{ "ret", 0xC3, ZO },
 			{ "push", 0x50, O, 64 },
 			{ "push", 0xFF, M, 64 },
+			{ "sub", 0x83, MI, 8 },
 		};
 
 		struct Instruction
