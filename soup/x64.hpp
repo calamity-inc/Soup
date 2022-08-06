@@ -25,6 +25,8 @@ namespace soup
 			R13,
 			R14,
 			R15,
+
+			IMM,
 		};
 
 		enum RegisterAccessType : uint8_t
@@ -39,8 +41,15 @@ namespace soup
 		struct Operand
 		{
 			Register reg;
-			RegisterAccessType access_type;
-			uint8_t deref_size = 0;
+			union
+			{
+				struct
+				{
+					RegisterAccessType access_type;
+					uint8_t deref_size;
+				};
+				uint64_t val = 0;
+			};
 
 			void decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept;
 
@@ -51,15 +60,18 @@ namespace soup
 		{
 			ZO = 0,
 
-			O = 0b01,
-			M = 0b10,
-			R = 0b11,
+			O = 0b001,
+			M = 0b010,
+			R = 0b011,
+			I = 0b100,
 
-			OPERAND_MASK = 0b11,
-			BITS_PER_OPERAND = 2,
+			OPERAND_MASK = 0b111,
+			BITS_PER_OPERAND = 3,
 
 			MR = M | (R << BITS_PER_OPERAND),
 			RM = R | (M << BITS_PER_OPERAND),
+			OI = O | (I << BITS_PER_OPERAND),
+			MI = M | (I << BITS_PER_OPERAND),
 		};
 
 		struct Operation
@@ -117,6 +129,9 @@ namespace soup
 			{ "mov", 0x89, MR },
 			{ "mov", 0x8A, RM, 8 },
 			{ "mov", 0x8B, RM },
+			{ "mov", 0xB0, OI, 8 },
+			{ "mov", 0xB8, OI },
+			{ "mov", 0xC7, MI, 32 },
 			{ "ret", 0xC3, ZO },
 			{ "push", 0x50, O, 64 },
 			{ "push", 0xFF, M, 64 },

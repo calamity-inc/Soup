@@ -37,12 +37,15 @@ namespace soup
 			this->reg = (Register)(this->reg - 4);
 			access_type = ACCESS_8_H;
 		}
-
-		deref_size = 0;
 	}
 
 	std::string x64::Operand::toString() const
 	{
+		if (reg == IMM)
+		{
+			return std::to_string(val);
+		}
+
 		std::string name{};
 		if (reg < R8)
 		{
@@ -220,6 +223,18 @@ namespace soup
 							{
 								opr.decode(rex, operand_size, (*code >> 3) & 0b111, reg_x);
 							}
+						}
+						else if (opr_enc == I)
+						{
+							opr.reg = IMM;
+							++code;
+							const uint8_t imm_bytes = (operand_size / 8);
+							for (uint8_t i = imm_bytes; i-- != 0; )
+							{
+								opr.val <<= 8;
+								opr.val |= code[i];
+							}
+							code += (imm_bytes - 1);
 						}
 
 						if (++opr_i == COUNT(res.operands))
