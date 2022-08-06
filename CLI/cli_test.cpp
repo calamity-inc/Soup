@@ -42,7 +42,7 @@ static void test_cpu()
 {
 	test("x64", []
 	{
-#define TEST_CPU_X64(asm, ...) { uint8_t code[] = { __VA_ARGS__ }; const uint8_t* cp = code; assert(x64::disasm(cp) == asm); assert(cp == &code[sizeof(code)]); }
+#define TEST_CPU_X64(asm, ...) { uint8_t code[] = { __VA_ARGS__ }; const uint8_t* cp = code; assert(x64::disasm(cp).toString() == asm); assert(cp == &code[sizeof(code)]); }
 
 		TEST_CPU_X64("mov al, al", 0x88, 0xC0);
 		TEST_CPU_X64("mov r8, r8", 0x4D, 0x89, 0xC0);

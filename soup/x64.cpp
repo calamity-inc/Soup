@@ -1,36 +1,9 @@
 #include "x64.hpp"
 
+#include "macros.hpp"
+
 namespace soup
 {
-	enum Register : uint8_t
-	{
-		RA = 0,
-		RC,
-		RB,
-		RD,
-		SP,
-		BP,
-		SI,
-		DI,
-		R8,
-		R9,
-		R10,
-		R11,
-		R12,
-		R13,
-		R14,
-		R15,
-	};
-
-	enum RegisterAccessType : uint8_t
-	{
-		ACCESS_64 = 64,
-		ACCESS_32 = 32,
-		ACCESS_16 = 16,
-		ACCESS_8 = 8,
-		ACCESS_8_H = 0,
-	};
-
 	const char* reg_names[16] = {
 		"a",
 		"c",
@@ -50,147 +23,116 @@ namespace soup
 		"15",
 	};
 
-	struct InsOperand
+	void x64::Operand::decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept
 	{
-		Register reg;
-		RegisterAccessType access_type;
-		uint8_t deref_size = 0;
+		reg |= (x << 3);
 
-		void decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept
+		this->reg = (Register)reg;
+		access_type = (RegisterAccessType)size;
+
+		if (reg >= SP && reg <= DI
+			&& !rex
+			)
 		{
-			reg |= (x << 3);
-
-			this->reg = (Register)reg;
-			access_type = (RegisterAccessType)size;
-
-			if (reg >= SP && reg <= DI
-				&& !rex
-				)
-			{
-				this->reg = (Register)(this->reg - 4);
-				access_type = ACCESS_8_H;
-			}
-
-			deref_size = 0;
+			this->reg = (Register)(this->reg - 4);
+			access_type = ACCESS_8_H;
 		}
 
-		[[nodiscard]] std::string toString() const
+		deref_size = 0;
+	}
+
+	std::string x64::Operand::toString() const
+	{
+		std::string name{};
+		if (reg < R8)
 		{
-			std::string name{};
-			if (reg < R8)
+			name = reg_names[reg];
+			if (access_type == ACCESS_8_H)
 			{
-				name = reg_names[reg];
-				if (access_type == ACCESS_8_H)
-				{
-					name.push_back('h');
-				}
-				else if (access_type == ACCESS_8)
-				{
-					name.push_back('l');
-				}
-				else // >= 16-bit
-				{
-					if (reg < SP)
-					{
-						name.push_back('x');
-					}
-					if (access_type == ACCESS_32)
-					{
-						name.insert(0, 1, 'e');
-					}
-					else if (access_type == ACCESS_64)
-					{
-						name.insert(0, 1, 'r');
-					}
-				}
+				name.push_back('h');
 			}
-			else // >= R8
+			else if (access_type == ACCESS_8)
 			{
-				name.push_back('r');
-				name.append(reg_names[reg]);
+				name.push_back('l');
+			}
+			else // >= 16-bit
+			{
+				if (reg < SP)
+				{
+					name.push_back('x');
+				}
 				if (access_type == ACCESS_32)
 				{
-					name.push_back('d');
+					name.insert(0, 1, 'e');
 				}
-				else if (access_type == ACCESS_16)
+				else if (access_type == ACCESS_64)
 				{
-					name.push_back('w');
-				}
-				else if (access_type == ACCESS_8)
-				{
-					name.push_back('l');
+					name.insert(0, 1, 'r');
 				}
 			}
-			if (deref_size != 0)
+		}
+		else // >= R8
+		{
+			name.push_back('r');
+			name.append(reg_names[reg]);
+			if (access_type == ACCESS_32)
 			{
-				name.insert(0, 1, '[');
-				if (deref_size == 8)
-				{
-					name.insert(0, "byte ptr ");
-				}
-				else if (deref_size == 16)
-				{
-					name.insert(0, "word ptr ");
-				}
-				else if (deref_size == 32)
-				{
-					name.insert(0, "dword ptr ");
-				}
-				else if (deref_size == 64)
-				{
-					name.insert(0, "qword ptr ");
-				}
-				name.push_back(']');
+				name.push_back('d');
 			}
-			return name;
-		}
-	};
-
-	enum InsOperandEncoding : uint8_t
-	{
-		ZO = 0,
-
-		O = 0b01,
-		M = 0b10,
-		R = 0b11,
-
-		OPERAND_MASK = 0b11,
-		BITS_PER_OPERAND = 2,
-
-		MR = M | (R << BITS_PER_OPERAND),
-		RM = R | (M << BITS_PER_OPERAND),
-	};
-
-	struct InsInfo
-	{
-		const char* name;
-		uint8_t opcode;
-		InsOperandEncoding operand_encoding;
-		uint8_t operand_size = 0;
-
-		[[nodiscard]] bool matches(uint8_t code) const noexcept
-		{
-			if (getOpr1Encoding() == O)
+			else if (access_type == ACCESS_16)
 			{
-				code &= 0b11111000;
+				name.push_back('w');
 			}
-			return opcode == code;
+			else if (access_type == ACCESS_8)
+			{
+				name.push_back('l');
+			}
 		}
-
-		[[nodiscard]] InsOperandEncoding getOpr1Encoding() const noexcept
+		if (deref_size != 0)
 		{
-			return (InsOperandEncoding)(operand_encoding & OPERAND_MASK);
+			name.insert(0, 1, '[');
+			if (deref_size == 8)
+			{
+				name.insert(0, "byte ptr ");
+			}
+			else if (deref_size == 16)
+			{
+				name.insert(0, "word ptr ");
+			}
+			else if (deref_size == 32)
+			{
+				name.insert(0, "dword ptr ");
+			}
+			else if (deref_size == 64)
+			{
+				name.insert(0, "qword ptr ");
+			}
+			name.push_back(']');
 		}
+		return name;
+	}
 
-		[[nodiscard]] InsOperandEncoding getOpr2Encoding() const noexcept
+	std::string x64::Instruction::toString() const
+	{
+		std::string res = operation->name;
+		if (operation->getOpr1Encoding() != ZO)
 		{
-			return (InsOperandEncoding)((operand_encoding >> BITS_PER_OPERAND) & OPERAND_MASK);
+			res.push_back(' ');
+			res.append(operands[0].toString());
+			if (operation->getOpr2Encoding() != ZO)
+			{
+				res.append(", ");
+				res.append(operands[1].toString());
+			}
 		}
-	};
+		return res;
+	}
 
 	// https://www.felixcloutier.com/x86/index.html
 
-	static InsInfo instructions[] = {
+	using enum x64::OperandEncoding;
+
+	static x64::Operation operations[] = {
 		{ "mov", 0x88, MR, 8 },
 		{ "mov", 0x89, MR },
 		{ "mov", 0x8A, RM, 8 },
@@ -200,7 +142,7 @@ namespace soup
 		{ "push", 0xFF, M, 64 },
 	};
 
-	std::string x64::disasm(const uint8_t*& code)
+	x64::Instruction x64::disasm(const uint8_t*& code)
 	{
 		bool operand_size_override = false;
 		bool address_size_override = false;
@@ -235,46 +177,38 @@ namespace soup
 		}
 
 		// Opcode
-		for (const auto& ins : instructions)
+		for (const auto& op : operations)
 		{
-			if (ins.matches(*code))
+			if (op.matches(*code))
 			{
-				std::string res = ins.name;
-				if (ins.operand_encoding != ZO)
+				Instruction res{ &op };
+				if (op.operand_encoding != ZO)
 				{
-					res.push_back(' ');
-
 					uint8_t operand_size;
 					if (operand_size_override)
 					{
 						operand_size = 16;
 					}
-					else if (ins.operand_size == 0)
+					else if (op.operand_size == 0)
 					{
 						operand_size = (default_operand_size ? 32 : 64);
 					}
 					else
 					{
-						operand_size = ins.operand_size;
+						operand_size = op.operand_size;
 					}
 
 					uint8_t opcode = *code;
-					InsOperand opr;
-					uint8_t opr_offset = 0;
-					bool opr_cont = false;
+					uint8_t opr_i = 0;
 					bool modrm_read = false;
 					uint8_t modrm;
 
-					for (uint8_t opr_enc; opr_enc = ((ins.operand_encoding >> opr_offset) & OPERAND_MASK), opr_enc != ZO; opr_offset += BITS_PER_OPERAND)
+					for (uint8_t opr_enc; opr_enc = ((op.operand_encoding >> (opr_i * BITS_PER_OPERAND)) & OPERAND_MASK), opr_enc != ZO; )
 					{
-						if (opr_cont)
-						{
-							res.append(", ");
-						}
+						Operand& opr = res.operands[opr_i];
 						if (opr_enc == O)
 						{
 							opr.decode(rex, operand_size, opcode & 0b111, rm_x);
-							res.append(opr.toString());
 						}
 						else if (opr_enc == M || opr_enc == R)
 						{
@@ -291,17 +225,19 @@ namespace soup
 								if (!direct)
 								{
 									opr.access_type = (address_size_override ? ACCESS_32 : ACCESS_64);
-									opr.deref_size = ((ins.getOpr2Encoding() == ZO) ? operand_size : 1); // hiding pointer type when other operand makes it apparent
+									opr.deref_size = ((op.getOpr2Encoding() == ZO) ? operand_size : 1); // hiding pointer type when other operand makes it apparent
 								}
-								res.append(opr.toString());
 							}
 							else if (opr_enc == R)
 							{
 								opr.decode(rex, operand_size, (*code >> 3) & 0b111, reg_x);
-								res.append(opr.toString());
 							}
 						}
-						opr_cont = true;
+
+						if (++opr_i == COUNT(res.operands))
+						{
+							break;
+						}
 					}
 				}
 				++code;
