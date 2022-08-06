@@ -188,8 +188,13 @@ namespace soup
 
 		struct Instruction
 		{
-			const Operation* operation;
+			const Operation* operation = nullptr;
 			Operand operands[2];
+
+			[[nodiscard]] bool isValid() const noexcept
+			{
+				return operation != nullptr;
+			}
 
 			[[nodiscard]] uint8_t getNumOperands() const noexcept
 			{

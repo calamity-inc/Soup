@@ -188,11 +188,12 @@ namespace soup
 		}
 
 		// Opcode
+		Instruction res{};
 		for (const auto& op : operations)
 		{
 			if (op.matches(code))
 			{
-				Instruction res{ &op };
+				res.operation = &op;
 				if (op.operand_encoding != ZO)
 				{
 					uint8_t operand_size;
@@ -288,9 +289,9 @@ namespace soup
 					}
 				}
 				++code;
-				return res;
+				break;
 			}
 		}
-		throw 0;
+		return res;
 	}
 }
