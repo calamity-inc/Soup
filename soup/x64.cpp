@@ -34,6 +34,7 @@ namespace soup
 
 		if (reg >= SP && reg <= DI
 			&& !rex
+			&& size != 64
 			)
 		{
 			this->reg = (Register)(this->reg - 4);
