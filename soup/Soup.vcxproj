@@ -401,6 +401,7 @@
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="country_names.hpp" />
     <ClInclude Include="netAs.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />
@@ -701,6 +702,7 @@
     <ClCompile Include="ConuiApp.cpp" />
     <ClCompile Include="ConuiBase.cpp" />
     <ClCompile Include="ConuiSpan.cpp" />
+    <ClCompile Include="country_names.cpp" />
     <ClCompile Include="crc32.cpp" />
     <ClCompile Include="deflate.cpp" />
     <ClCompile Include="Dictionary.cpp" />

@@ -827,6 +827,9 @@
     <ClInclude Include="RangeMap.hpp">
       <Filter>data\container</Filter>
     </ClInclude>
+    <ClInclude Include="country_names.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1218,6 +1221,9 @@
       <Filter>cpu\x64</Filter>
     </ClCompile>
     <ClCompile Include="netIntel.cpp">
+      <Filter>net\intel</Filter>
+    </ClCompile>
+    <ClCompile Include="country_names.cpp">
       <Filter>net\intel</Filter>
     </ClCompile>
   </ItemGroup>
