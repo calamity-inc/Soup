@@ -22,7 +22,20 @@ namespace soup
 
 		IpAddr() noexcept = default;
 
-		explicit IpAddr(const std::string& str)
+		IpAddr(const char* str)
+		{
+			if (strstr(str, ".") == nullptr)
+			{
+				inet_pton(AF_INET6, str, &data);
+			}
+			else
+			{
+				setV4();
+				inet_pton(AF_INET, str, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
+			}
+		}
+
+		IpAddr(const std::string& str)
 		{
 			if (str.find('.') == std::string::npos)
 			{
