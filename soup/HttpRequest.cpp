@@ -80,7 +80,7 @@ namespace soup
 				std::string data{};
 				data.append(cap.req->method);
 				data.push_back(' ');
-				data.append(urlenc::encodePathWithQuery(cap.req->path));
+				data.append(cap.req->path_is_encoded ? cap.req->path : urlenc::encodePathWithQuery(cap.req->path));
 				data.append(ObfusString(" HTTP/1.0").str());
 				data.append("\r\n");
 				data.append(cap.req->toString());

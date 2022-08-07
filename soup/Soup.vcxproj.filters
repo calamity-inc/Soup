@@ -524,16 +524,7 @@
     <ClInclude Include="UniquePtr.hpp">
       <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="StructMap.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
     <ClInclude Include="endianness.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="DerivableMap.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="IntVector.hpp">
       <Filter>data</Filter>
     </ClInclude>
     <ClInclude Include="base64.hpp">
@@ -817,6 +808,24 @@
     </ClInclude>
     <ClInclude Include="x64.hpp">
       <Filter>cpu\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="netIntel.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="netAs.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="DerivableMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="IntVector.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="StructMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="RangeMap.hpp">
+      <Filter>data\container</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1208,6 +1217,9 @@
     <ClCompile Include="x64.cpp">
       <Filter>cpu\x64</Filter>
     </ClCompile>
+    <ClCompile Include="netIntel.cpp">
+      <Filter>net\intel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1347,6 +1359,12 @@
     </Filter>
     <Filter Include="cpu\x64">
       <UniqueIdentifier>{5cebdfd1-ff30-423b-ac88-52db95a78ef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\intel">
+      <UniqueIdentifier>{8dd56217-4732-43f0-9717-85a0debe1adf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\container">
+      <UniqueIdentifier>{81e9b45e-7d1b-4a89-801c-fbdb09ba896d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

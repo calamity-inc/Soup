@@ -356,6 +356,7 @@ namespace soup
 			std::vector<S> res{};
 			if (!str.empty())
 			{
+				res.reserve(5);
 				size_t prev = 0;
 				size_t del_pos;
 				while ((del_pos = str.find(delim, prev)) != std::string::npos)

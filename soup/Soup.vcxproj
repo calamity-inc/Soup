@@ -401,6 +401,7 @@
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="netAs.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />
     <ClInclude Include="Asn1Identifier.hpp" />
@@ -411,6 +412,7 @@
     <ClInclude Include="bitconv.hpp" />
     <ClInclude Include="CompiledExecutable.hpp" />
     <ClInclude Include="Compiler.hpp" />
+    <ClInclude Include="netIntel.hpp" />
     <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="intutil.hpp" />
     <ClInclude Include="JitModule.hpp" />
@@ -519,6 +521,7 @@
     <ClInclude Include="PoppedNode.hpp" />
     <ClInclude Include="QrCode.hpp" />
     <ClInclude Include="RandomDevice.hpp" />
+    <ClInclude Include="RangeMap.hpp" />
     <ClInclude Include="RasterFont.hpp" />
     <ClInclude Include="Reader.hpp" />
     <ClInclude Include="json.hpp" />
@@ -709,6 +712,7 @@
     <ClCompile Include="ffi.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FormattedText.cpp" />
+    <ClCompile Include="netIntel.cpp" />
     <ClCompile Include="Hotp.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
     <ClCompile Include="JitModule.cpp" />

@@ -69,6 +69,36 @@ namespace soup
 			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
 		}
 
+		[[nodiscard]] bool operator ==(const IpAddr& b) const noexcept
+		{
+			return memcmp(reinterpret_cast<const void*>(&data), reinterpret_cast<const void*>(&b.data), sizeof(data)) == 0;
+		}
+
+		[[nodiscard]] bool operator !=(const IpAddr& b) const noexcept
+		{
+			return memcmp(reinterpret_cast<const void*>(&data), reinterpret_cast<const void*>(&b.data), sizeof(data)) != 0;
+		}
+
+		[[nodiscard]] bool operator <(const IpAddr& b) const noexcept
+		{
+			return memcmp(reinterpret_cast<const void*>(&data), reinterpret_cast<const void*>(&b.data), sizeof(data)) < 0;
+		}
+
+		[[nodiscard]] bool operator <=(const IpAddr& b) const noexcept
+		{
+			return memcmp(reinterpret_cast<const void*>(&data), reinterpret_cast<const void*>(&b.data), sizeof(data)) <= 0;
+		}
+
+		[[nodiscard]] bool operator >(const IpAddr& b) const noexcept
+		{
+			return memcmp(reinterpret_cast<const void*>(&data), reinterpret_cast<const void*>(&b.data), sizeof(data)) > 0;
+		}
+
+		[[nodiscard]] bool operator >=(const IpAddr& b) const noexcept
+		{
+			return memcmp(reinterpret_cast<const void*>(&data), reinterpret_cast<const void*>(&b.data), sizeof(data)) >= 0;
+		}
+
 		void reset() noexcept
 		{
 			memset(&data, 0, sizeof(data));

@@ -3,8 +3,14 @@
 #if SOUP_WASM
 #include <emscripten/fetch.h>
 #else
+#include "FileReader.hpp"
+#include "FileWriter.hpp"
 #include "HttpRequest.hpp"
+#include "os.hpp"
+#include "sha1.hpp"
+#include "string.hpp"
 #endif
+#include "time.hpp"
 
 namespace soup
 {
@@ -13,13 +19,18 @@ namespace soup
 	{
 	}
 
+	bool WebResource::isDataExpired() const noexcept
+	{
+		return time::unixSeconds() > data_expires;
+	}
+
 #if SOUP_WASM
 	static WebResource* fetch_wr;
 	static Callback<void(WebResource&)> fetch_cb;
 
 	static void fetchSuccess(emscripten_fetch_t* fetch)
 	{
-		fetch_wr->has_data = true;
+		fetch_wr->data_expires = time::unixSeconds() + (60 * 60 * 24);
 		fetch_wr->data = std::string(fetch->data, fetch->numBytes);
 		emscripten_fetch_close(fetch);
 		if (fetch_cb)
@@ -61,11 +72,84 @@ namespace soup
 	void WebResource::download()
 	{
 		HttpRequest req{ std::string(host), std::string(path) };
-		auto res = req.execute();
-		if (res.has_value())
+		for (uint8_t i = 0; i != 3; ++i)
 		{
-			has_data = true;
-			data = std::move(res->body);
+			auto res = req.execute();
+			if (!res.has_value())
+			{
+				break;
+			}
+			auto e = res->header_fields.find("Location");
+			if (e == res->header_fields.end())
+			{
+				// TODO: Consider "Age" header
+				// TODO: Respect "Cache-Control: max-age=..."
+				data_expires = time::unixSeconds() + (60 * 60 * 24);
+				data = std::move(res->body);
+				break;
+			}
+			if (e->second.substr(0, 8) != "https://")
+			{
+				break;
+			}
+			e->second.erase(0, 8);
+			auto sep = e->second.find('/');
+			if (sep == std::string::npos)
+			{
+				break;
+			}
+			req.header_fields.at("Host") = e->second.substr(0, sep);
+			req.path = e->second.substr(sep);
+			req.path_is_encoded = true;
+		}
+	}
+
+	std::filesystem::path WebResource::getCacheFile() const
+	{
+		auto file = os::getProgramData();
+		file /= "Calamity, Inc";
+		file /= "Soup";
+		file /= "WebResource";
+		if (!std::filesystem::exists(file))
+		{
+			std::filesystem::create_directories(file);
+		}
+		file /= string::bin2hex(sha1::hash(std::string(host).append(path)));
+		return file;
+	}
+
+	bool WebResource::store()
+	{
+		if (!hasData())
+		{
+			return false;
+		}
+		FileWriter w = getCacheFile();
+		return w.u64_dyn(data_expires)
+			&& w.str_lp_u64_dyn(data)
+			;
+	}
+
+	bool WebResource::restore()
+	{
+		auto file = getCacheFile();
+		if (std::filesystem::exists(file))
+		{
+			FileReader r = getCacheFile();
+			return r.u64_dyn(data_expires)
+				&& r.str_lp_u64_dyn(data)
+				;
+		}
+		return false;
+	}
+
+	void WebResource::downloadWithCaching()
+	{
+		restore();
+		if (!hasData() || isDataExpired())
+		{
+			download();
+			store();
 		}
 	}
 #endif
