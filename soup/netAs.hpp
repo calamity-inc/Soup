@@ -1,20 +1,19 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
 
 namespace soup
 {
 	struct netAs
 	{
 		uint32_t number;
-		std::string handle;
-		std::string name;
+		const char* handle;
+		const char* name;
 
 		netAs() = default;
 
-		netAs(uint32_t number, std::string&& name)
-			: number(number), handle(name), name(std::move(name))
+		netAs(uint32_t number, const char* name)
+			: number(number), handle(name), name(name)
 		{
 		}
 	};

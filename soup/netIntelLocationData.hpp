@@ -7,7 +7,7 @@ namespace soup
 	struct netIntelLocationData
 	{
 		ShortString<3> country_code;
-		std::string state;
-		std::string city;
+		const char* state;
+		const char* city;
 	};
 }

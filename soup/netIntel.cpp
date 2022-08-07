@@ -49,8 +49,8 @@ namespace soup
 			as.number = string::toInt<uint32_t>(line.substr(0, asn_sep)).value();
 			++asn_sep;
 			auto handle_sep = line.find(',', asn_sep);
-			as.handle = line.substr(asn_sep, handle_sep - asn_sep);
-			as.name = line.substr(handle_sep + 2, line.length() - handle_sep - 3);
+			as.handle = as_pool.emplace(line.substr(asn_sep, handle_sep - asn_sep));
+			as.name = as_pool.emplace(line.substr(handle_sep + 2, line.length() - handle_sep - 3));
 			aslist.emplace(as.number, soup::make_unique<netAs>(std::move(as)));
 		}
 	}
@@ -80,7 +80,7 @@ namespace soup
 			netAs* as = getAsByNumber(asn);
 			if (as == nullptr)
 			{
-				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, std::move(arr.at(4)))).first->second.get();
+				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, as_pool.emplace(std::move(arr.at(4))))).first->second.get();
 			}
 			ipv4toas.emplace(begin, end, as);
 		}
@@ -111,7 +111,7 @@ namespace soup
 			netAs* as = getAsByNumber(asn);
 			if (as == nullptr)
 			{
-				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, std::move(arr.at(4)))).first->second.get();
+				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, as_pool.emplace(std::move(arr.at(4))))).first->second.get();
 			}
 			ipv6toas.emplace(std::move(begin), std::move(end), as);
 		}
@@ -138,8 +138,8 @@ namespace soup
 				string::toInt<uint32_t>(arr.at(1)).value(),
 				netIntelLocationData{
 					std::move(arr.at(2)),
-					std::move(arr.at(3)),
-					std::move(arr.at(5))
+					location_pool.emplace(std::move(arr.at(3))),
+					location_pool.emplace(std::move(arr.at(5))),
 				}
 			);
 		}
@@ -163,8 +163,8 @@ namespace soup
 			}
 			ipv6tolocation.emplace(arr.at(0), arr.at(1), netIntelLocationData{
 				std::move(arr.at(2)),
-				std::move(arr.at(3)),
-				std::move(arr.at(5))
+				location_pool.emplace(std::move(arr.at(3))),
+				location_pool.emplace(std::move(arr.at(5))),
 			});
 		}
 	}

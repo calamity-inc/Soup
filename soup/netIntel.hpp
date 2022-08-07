@@ -6,6 +6,7 @@
 #include "netAs.hpp"
 #include "netIntelLocationData.hpp"
 #include "RangeMap.hpp"
+#include "StringPool.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
@@ -13,6 +14,8 @@ namespace soup
 	class netIntel
 	{
 	private:
+		inline static StringPool as_pool{};
+		inline static StringPool location_pool{};
 		inline static std::unordered_map<uint32_t, UniquePtr<netAs>> aslist{};
 		inline static RangeMap<uint32_t, netAs*> ipv4toas{};
 		inline static RangeMap<IpAddr, netAs*> ipv6toas{};
