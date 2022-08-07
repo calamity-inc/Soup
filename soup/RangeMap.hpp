@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <vector>
 
 namespace soup
@@ -21,6 +22,14 @@ namespace soup
 		V& emplace(K begin, K end, V val)
 		{
 			return data.emplace_back(Entry{ std::move(begin), std::move(end), std::move(val) }).data;
+		}
+
+		void sort()
+		{
+			std::sort(data.begin(), data.end(), [](const Entry& a, const Entry& b)
+			{
+				return a.lower < b.lower;
+			});
 		}
 
 		[[nodiscard]] V* find(const K& k)
