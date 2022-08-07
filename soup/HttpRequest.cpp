@@ -16,7 +16,7 @@ namespace soup
 	HttpRequest::HttpRequest(std::string&& method, std::string&& host, std::string&& path)
 		: MimeMessage({
 			{ObfusString("Host"), std::move(host)},
-			{ObfusString("User-Agent"), ObfusString("Mozilla/5.0 (compatible; Soup)")},
+			{ObfusString("User-Agent"), ObfusString("Mozilla/5.0 (compatible; Soup Library; +https://soup.do)")},
 			{ObfusString("Connection"), ObfusString("close")},
 			{ObfusString("Accept-Encoding"), ObfusString("deflate, gzip")},
 		}), method(std::move(method)), path(std::move(path))
