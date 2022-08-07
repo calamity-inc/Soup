@@ -19,10 +19,12 @@ namespace soup
 		{
 		}
 
+#if SOUP_WINDOWS
 		FileWriter(const std::wstring& path, bool little_endian = true)
 			: Writer(little_endian), s(path, std::ios::binary)
 		{
 		}
+#endif
 
 		template <class T, SOUP_RESTRICT(std::is_same_v<T, std::filesystem::path>)>
 		FileWriter(const T& path, bool little_endian = true)

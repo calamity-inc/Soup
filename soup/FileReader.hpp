@@ -19,10 +19,12 @@ namespace soup
 		{
 		}
 
+#if SOUP_WINDOWS
 		FileReader(const std::wstring& path, bool little_endian = true)
 			: Reader(little_endian), s(path, std::ios::binary)
 		{
 		}
+#endif
 
 		template <class T, SOUP_RESTRICT(std::is_same_v<T, std::filesystem::path>)>
 		FileReader(const T& path, bool little_endian = true)
