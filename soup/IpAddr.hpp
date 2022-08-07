@@ -109,10 +109,12 @@ namespace soup
 			return IN6_IS_ADDR_V4MAPPED(&data);
 		}
 
-		[[nodiscard]] uint32_t getV4() const noexcept
+		[[nodiscard]] uint32_t getV4() const noexcept // network byte order
 		{
 			return *reinterpret_cast<const uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
+
+		[[nodiscard]] uint32_t getV4NativeEndian() const noexcept;
 
 	private:
 		void setV4()

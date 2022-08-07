@@ -519,8 +519,10 @@ static void test_util()
 	});
 	test("invertEndianness", []
 	{
-		assert(intutil::invertEndianness(0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
-		assert(intutil::invertEndianness(0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
+		assert(intutil::invertEndianness((uint32_t)0x12345678u) == 0x78563412u);
+		assert(intutil::invertEndianness((uint32_t)0x78563412u) == 0x12345678u);
+		assert(intutil::invertEndianness((uint64_t)0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
+		assert(intutil::invertEndianness((uint64_t)0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
 	});
 	test("pow", []
 	{

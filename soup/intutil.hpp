@@ -4,9 +4,18 @@ namespace soup
 {
 	struct intutil
 	{
+		// C++23 will add std::byteswap
+		[[nodiscard]] static constexpr uint32_t invertEndianness(uint32_t val)
+		{
+			return val << (32 - 8)
+				| ((val >> 8) & 0xFF) << (32 - 16)
+				| ((val >> 16) & 0xFF) << (32 - 24)
+				| ((val >> 24) & 0xFF)
+				;
+		}
+		
 		[[nodiscard]] static constexpr uint64_t invertEndianness(uint64_t val)
 		{
-			// C++23 will add std::byteswap
 			return val << (64 - 8)
 				| ((val >> 8) & 0xFF) << (64 - 16)
 				| ((val >> 16) & 0xFF) << (64 - 24)
