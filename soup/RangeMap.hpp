@@ -19,6 +19,11 @@ namespace soup
 		std::vector<Entry> data;
 
 	public:
+		void reserve(size_t i)
+		{
+			data.reserve(i);
+		}
+
 		V& emplace(K begin, K end, V val)
 		{
 			return data.emplace_back(Entry{ std::move(begin), std::move(end), std::move(val) }).data;

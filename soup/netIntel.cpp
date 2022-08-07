@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+#include "csv.hpp"
 #include "deflate.hpp"
 #include "string.hpp"
 #include "WebResource.hpp"
@@ -10,9 +11,21 @@ namespace soup
 {
 	void netIntel::init()
 	{
+		initAs();
+		initLocation();
+	}
+
+	void netIntel::initAs()
+	{
 		initAsList();
 		initIpv4ToAs();
 		initIpv6ToAs();
+	}
+
+	void netIntel::initLocation()
+	{
+		initIpv4ToLocation();
+		initIpv6ToLocation();
 	}
 
 	void netIntel::initAsList()
@@ -101,6 +114,58 @@ namespace soup
 				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, std::move(arr.at(4)))).first->second.get();
 			}
 			ipv6toas.emplace(std::move(begin), std::move(end), as);
+		}
+	}
+
+	void netIntel::initIpv4ToLocation()
+	{
+		std::stringstream ipv4tolocationcsv{};
+		{
+			WebResource rsc("github.com", "/sapics/ip-location-db/raw/master/dbip-city/dbip-city-ipv4-num.csv.gz");
+			rsc.downloadWithCaching();
+			ipv4tolocationcsv << deflate::decompress(std::move(rsc.data)).decompressed;
+		}
+		ipv4tolocation.reserve(3000000);
+		for (std::string line; std::getline(ipv4tolocationcsv, line); )
+		{
+			auto arr = csv::parseLine(line);
+			SOUP_IF_UNLIKELY(arr.size() < 6)
+			{
+				continue;
+			}
+			ipv4tolocation.emplace(
+				string::toInt<uint32_t>(arr.at(0)).value(),
+				string::toInt<uint32_t>(arr.at(1)).value(),
+				netIntelLocationData{
+					std::move(arr.at(2)),
+					std::move(arr.at(3)),
+					std::move(arr.at(5))
+				}
+			);
+		}
+	}
+
+	void netIntel::initIpv6ToLocation()
+	{
+		std::stringstream ipv6tolocationcsv{};
+		{
+			WebResource rsc("github.com", "/sapics/ip-location-db/raw/master/dbip-city/dbip-city-ipv6.csv.gz");
+			rsc.downloadWithCaching();
+			ipv6tolocationcsv << deflate::decompress(std::move(rsc.data)).decompressed;
+		}
+		ipv6tolocation.reserve(3000000);
+		for (std::string line; std::getline(ipv6tolocationcsv, line); )
+		{
+			auto arr = csv::parseLine(line);
+			SOUP_IF_UNLIKELY(arr.size() < 6)
+			{
+				continue;
+			}
+			ipv6tolocation.emplace(arr.at(0), arr.at(1), netIntelLocationData{
+				std::move(arr.at(2)),
+				std::move(arr.at(3)),
+				std::move(arr.at(5))
+			});
 		}
 	}
 }

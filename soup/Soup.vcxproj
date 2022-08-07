@@ -402,6 +402,7 @@
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
     <ClInclude Include="country_names.hpp" />
+    <ClInclude Include="csv.hpp" />
     <ClInclude Include="netAs.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />
@@ -427,6 +428,7 @@
     <ClInclude Include="MsvcLcgRandomDevice.hpp" />
     <ClInclude Include="MtRandomDevice.hpp" />
     <ClInclude Include="MazeGenerator.hpp" />
+    <ClInclude Include="netIntelLocationData.hpp" />
     <ClInclude Include="Op.hpp" />
     <ClInclude Include="AtomicDeque.hpp" />
     <ClInclude Include="AtomicStack.hpp" />
@@ -704,6 +706,7 @@
     <ClCompile Include="ConuiSpan.cpp" />
     <ClCompile Include="country_names.cpp" />
     <ClCompile Include="crc32.cpp" />
+    <ClCompile Include="csv.cpp" />
     <ClCompile Include="deflate.cpp" />
     <ClCompile Include="Dictionary.cpp" />
     <ClCompile Include="dns.cpp" />
