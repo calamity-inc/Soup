@@ -17,6 +17,7 @@ namespace soup
 	{
 	public:
 		[[nodiscard]] static std::filesystem::path tempfile(const std::string& ext = {});
+		[[nodiscard]] static std::filesystem::path getProgramData();
 
 		static void escape(std::string& str);
 		static std::string execute(std::string program, const std::vector<std::string>& args = {});

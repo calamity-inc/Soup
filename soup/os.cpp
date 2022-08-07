@@ -4,6 +4,8 @@
 #include <cstdio>
 
 #if SOUP_WINDOWS
+#include <ShlObj.h> // CSIDL_COMMON_APPDATA
+
 #include "ObfusString.hpp"
 #endif
 #include "rand.hpp"
@@ -29,6 +31,20 @@ namespace soup
 			path /= file;
 		} while (std::filesystem::exists(path));
 		return path;
+	}
+
+	std::filesystem::path os::getProgramData()
+	{
+#if SOUP_WINDOWS
+		wchar_t szPath[MAX_PATH];
+		if (SHGetFolderPathW(NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath) == 0)
+		{
+			return szPath;
+		}
+		return "C:\\ProgramData";
+#else
+		return "/var/lib";
+#endif
 	}
 
 	void os::escape(std::string& str)
