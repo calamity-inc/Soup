@@ -9,21 +9,17 @@ namespace soup
 		switch (number)
 		{
 		case 4766: // Korea Telecom
-		case 7203: // Leaseweb USA, Inc.
 		case 9009: // M247 Ltd
 		case 9335: // CAT Telecom Public Company Limited
 		case 12876: // ONLINE S.A.S.
 		case 13046: // ISKON INTERNET d.d. za informatiku i telekomunikacije
 		case 13213: // UK-2 Limited
 		case 16247: // M247 Ltd
-		case 19148: // Leaseweb USA, Inc.
 		case 20278: // Nexeon Technologies, Inc.
 		case 20473: // The Constant Company, LLC
 		case 25369: // Hydra Communications Ltd
-		case 27411: // Leaseweb USA, Inc.
 		case 29485: // A1 Hrvatska d.o.o.
 		case 30083: // GoDaddy.com, LLC
-		case 30633: // Leaseweb USA, Inc.
 		case 34594: // OT - OPTIMA TELEKOM d.d.
 		case 37518: // Fiber Grid INC
 		case 38731: // Vietel - CHT Compamy Ltd
@@ -53,11 +49,34 @@ namespace soup
 		case 206804: // EstNOC OY
 		case 212238: // Datacamp Limited
 		case 263702: // GRUPO ZGH SPA
-		case 393886: // Leaseweb USA, Inc.
-		case 394380: // Leaseweb USA, Inc.
-		case 395954: // Leaseweb USA, Inc.
-		case 396190: // Leaseweb USA, Inc.
-		case 396362: // Leaseweb USA, Inc.
+			// Leaseweb USA, Inc.
+		case 393886:
+		case 7203:
+		case 19148:
+		case 27411:
+		case 30633:
+		case 394380:
+		case 395954:
+		case 396190:
+		case 396362:
+			// Cogent Communications
+		case 174:
+		case 2149:
+		case 4550:
+		case 6259:
+		case 6299:
+		case 6494:
+		case 6496:
+		case 7061:
+		case 7458:
+		case 10768:
+		case 11024:
+		case 11220:
+		case 11526:
+		case 12207:
+		case 16631:
+		case 19164:
+		case 22099:
 			return true;
 		}
 		std::string slug = handle;
