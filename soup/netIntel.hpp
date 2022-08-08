@@ -34,50 +34,14 @@ namespace soup
 		static void initIpv6ToLocation(); // blocking
 
 	public:
-		// Currently limited to AS with announced IPs
-		[[nodiscard]] static netAs* getAsByNumber(uint32_t number) noexcept
-		{
-			if (auto e = aslist.find(number); e != aslist.end())
-			{
-				return e->second.get();
-			}
-			return nullptr;
-		}
+		[[nodiscard]] static netAs* getAsByNumber(uint32_t number) noexcept;
 
-		[[nodiscard]] static netAs* getAsByIp(const IpAddr& addr)
-		{
-			return addr.isV4()
-				? getAsByIpv4(addr.getV4NativeEndian())
-				: getAsByIpv6(addr)
-				;
-		}
+		[[nodiscard]] static netAs* getAsByIp(const IpAddr& addr);
+		[[nodiscard]] static netAs* getAsByIpv4(uint32_t ip);
+		[[nodiscard]] static netAs* getAsByIpv6(const IpAddr& addr);
 
-		[[nodiscard]] static netIntelLocationData* getLocationByIp(const IpAddr& addr)
-		{
-			return addr.isV4()
-				? ipv4tolocation.find(addr.getV4NativeEndian())
-				: ipv6tolocation.find(addr)
-				;
-		}
-
-		[[nodiscard]] static netAs* getAsByIpv4(uint32_t ip)
-		{
-			auto e = ipv4toas.find(ip);
-			if (e == nullptr)
-			{
-				return nullptr;
-			}
-			return *e;
-		}
-
-		[[nodiscard]] static netAs* getAsByIpv6(const IpAddr& addr)
-		{
-			auto e = ipv6toas.find(addr);
-			if (e == nullptr)
-			{
-				return nullptr;
-			}
-			return *e;
-		}
+		[[nodiscard]] static netIntelLocationData* getLocationByIp(const IpAddr& addr);
+		[[nodiscard]] static netIntelLocationData* getLocationByIpv4(uint32_t ip);
+		[[nodiscard]] static netIntelLocationData* getLocationByIpv6(const IpAddr& addr);
 	};
 }

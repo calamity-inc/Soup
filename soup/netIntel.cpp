@@ -168,4 +168,59 @@ namespace soup
 			});
 		}
 	}
+
+	netAs* netIntel::getAsByNumber(uint32_t number) noexcept
+	{
+		if (auto e = aslist.find(number); e != aslist.end())
+		{
+			return e->second.get();
+		}
+		return nullptr;
+	}
+
+	netAs* netIntel::getAsByIp(const IpAddr& addr)
+	{
+		return addr.isV4()
+			? getAsByIpv4(addr.getV4NativeEndian())
+			: getAsByIpv6(addr)
+			;
+	}
+
+	netAs* netIntel::getAsByIpv4(uint32_t ip)
+	{
+		auto e = ipv4toas.find(ip);
+		if (e == nullptr)
+		{
+			return nullptr;
+		}
+		return *e;
+	}
+
+	netAs* netIntel::getAsByIpv6(const IpAddr& addr)
+	{
+		auto e = ipv6toas.find(addr);
+		if (e == nullptr)
+		{
+			return nullptr;
+		}
+		return *e;
+	}
+
+	netIntelLocationData* netIntel::getLocationByIp(const IpAddr& addr)
+	{
+		return addr.isV4()
+			? getLocationByIpv4(addr.getV4NativeEndian())
+			: getLocationByIpv6(addr)
+			;
+	}
+	
+	netIntelLocationData* netIntel::getLocationByIpv4(uint32_t ip)
+	{
+		return ipv4tolocation.find(ip);
+	}
+
+	netIntelLocationData* netIntel::getLocationByIpv6(const IpAddr& addr)
+	{
+		return ipv6tolocation.find(addr);
+	}
 }
