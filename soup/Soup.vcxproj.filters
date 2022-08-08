@@ -1238,6 +1238,9 @@
     <ClCompile Include="IpAddr.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="netAs.cpp">
+      <Filter>net\intel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

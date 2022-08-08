@@ -718,6 +718,7 @@
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FormattedText.cpp" />
     <ClCompile Include="IpAddr.cpp" />
+    <ClCompile Include="netAs.cpp" />
     <ClCompile Include="netIntel.cpp" />
     <ClCompile Include="Hotp.cpp" />
     <ClCompile Include="HttpRequest.cpp" />
