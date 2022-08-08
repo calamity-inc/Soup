@@ -23,9 +23,9 @@ namespace soup
 		inline static RangeMap<IpAddr, netIntelLocationData> ipv6tolocation{};
 
 	public:
-		static void init(); // blocking; initialises AS & location data
-		static void initAs(); // blocking; initialises AS data
-		static void initLocation(); // blocking; initialises location data
+		static void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
+		static void initAs(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS data
+		static void initLocation(bool ipv4 = true, bool ipv6 = true); // blocking; initialises location data
 	private:
 		static void initAsList(); // blocking
 		static void initIpv4ToAs(); // blocking

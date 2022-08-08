@@ -9,23 +9,35 @@
 
 namespace soup
 {
-	void netIntel::init()
+	void netIntel::init(bool ipv4, bool ipv6)
 	{
-		initAs();
-		initLocation();
+		initAs(ipv4, ipv6);
+		initLocation(ipv4, ipv6);
 	}
 
-	void netIntel::initAs()
+	void netIntel::initAs(bool ipv4, bool ipv6)
 	{
 		initAsList();
-		initIpv4ToAs();
-		initIpv6ToAs();
+		if (ipv4)
+		{
+			initIpv4ToAs();
+		}
+		if (ipv6)
+		{
+			initIpv6ToAs();
+		}
 	}
 
-	void netIntel::initLocation()
+	void netIntel::initLocation(bool ipv4, bool ipv6)
 	{
-		initIpv4ToLocation();
-		initIpv6ToLocation();
+		if (ipv4)
+		{
+			initIpv4ToLocation();
+		}
+		if (ipv6)
+		{
+			initIpv6ToLocation();
+		}
 	}
 
 	void netIntel::initAsList()
