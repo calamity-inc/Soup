@@ -11,11 +11,11 @@ namespace soup
 {
 	void netIntel::init(bool ipv4, bool ipv6)
 	{
-		initAs(ipv4, ipv6);
-		initLocation(ipv4, ipv6);
+		asInit(ipv4, ipv6);
+		locationInit(ipv4, ipv6);
 	}
 
-	void netIntel::initAs(bool ipv4, bool ipv6)
+	void netIntel::asInit(bool ipv4, bool ipv6)
 	{
 		initAsList();
 		if (ipv4)
@@ -28,7 +28,20 @@ namespace soup
 		}
 	}
 
-	void netIntel::initLocation(bool ipv4, bool ipv6)
+	bool netIntel::asIsInited() noexcept
+	{
+		return !as_pool.empty();
+	}
+
+	void netIntel::asDeinit() noexcept
+	{
+		as_pool.clear();
+		aslist.clear();
+		ipv4toas.clear();
+		ipv6toas.clear();
+	}
+
+	void netIntel::locationInit(bool ipv4, bool ipv6)
 	{
 		if (ipv4)
 		{
@@ -38,6 +51,18 @@ namespace soup
 		{
 			initIpv6ToLocation();
 		}
+	}
+
+	bool netIntel::locationIsInited() noexcept
+	{
+		return !location_pool.empty();
+	}
+
+	void netIntel::locationDeinit() noexcept
+	{
+		location_pool.clear();
+		ipv4tolocation.clear();
+		ipv6tolocation.clear();
 	}
 
 	void netIntel::initAsList()

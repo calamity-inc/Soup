@@ -24,8 +24,15 @@ namespace soup
 
 	public:
 		static void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
-		static void initAs(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS data
-		static void initLocation(bool ipv4 = true, bool ipv6 = true); // blocking; initialises location data
+		
+		static void asInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS data
+		[[nodiscard]] static bool asIsInited() noexcept;
+		static void asDeinit() noexcept;
+		
+		static void locationInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises location data
+		[[nodiscard]] static bool locationIsInited() noexcept;
+		static void locationDeinit() noexcept;
+
 	private:
 		static void initAsList(); // blocking
 		static void initIpv4ToAs(); // blocking

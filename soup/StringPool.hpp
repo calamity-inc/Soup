@@ -19,5 +19,15 @@ namespace soup
 		{
 			return pool.emplace(std::move(str)).first->c_str();
 		}
+
+		[[nodiscard]] bool empty() const noexcept
+		{
+			return pool.empty();
+		}
+
+		void clear() noexcept
+		{
+			pool.clear();
+		}
 	};
 }

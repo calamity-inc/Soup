@@ -67,5 +67,10 @@ namespace soup
 				}
 			}
 		}
+
+		void clear() noexcept
+		{
+			data.clear();
+		}
 	};
 }
