@@ -34,5 +34,10 @@ namespace soup
 			}
 			return false;
 		}
+
+		std::vector<uint8_t> getVec() const
+		{
+			return std::vector<uint8_t>(aob.begin(), aob.end());
+		}
 	};
 }

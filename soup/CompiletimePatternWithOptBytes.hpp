@@ -26,9 +26,9 @@ namespace soup
 			}
 		}
 
-		std::vector<std::optional<std::uint8_t>> getVec() const final
+		std::vector<std::optional<uint8_t>> getVec() const final
 		{
-			return std::vector<std::optional<std::uint8_t>>(aob.begin(), aob.end());
+			return std::vector<std::optional<uint8_t>>(aob.begin(), aob.end());
 		}
 	};
 }
