@@ -27,6 +27,10 @@ namespace soup
 			"-std="
 		};
 		args.back().append(lang);
+		if (!rtti)
+		{
+			args.emplace_back("-fno-rtti");
+		}
 		return args;
 	}
 

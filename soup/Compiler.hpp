@@ -8,6 +8,7 @@ namespace soup
 	struct Compiler
 	{
 		std::string lang; // defaults to "c++20" or "c++17" depending on platform
+		bool rtti = false;
 
 		Compiler();
 
