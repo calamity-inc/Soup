@@ -31,6 +31,14 @@ namespace soup
 		{
 			args.emplace_back("-fno-rtti");
 		}
+		args.insert(args.end(), extra_args.begin(), extra_args.end());
+		return args;
+	}
+
+	std::vector<std::string> Compiler::getLinkerArgs() const
+	{
+		auto args = getArgs();
+		args.insert(args.end(), extra_linker_args.begin(), extra_linker_args.end());
 		return args;
 	}
 
@@ -55,7 +63,7 @@ namespace soup
 
 	std::string Compiler::makeExecutable(const std::string& in, const std::string& out) const
 	{
-		auto args = getArgs();
+		auto args = getLinkerArgs();
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.emplace_back(in);
@@ -64,7 +72,7 @@ namespace soup
 
 	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out) const
 	{
-		auto args = getArgs();
+		auto args = getLinkerArgs();
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.insert(args.end(), objects.begin(), objects.end());
@@ -102,7 +110,7 @@ namespace soup
 
 	std::string Compiler::makeSharedLibrary(const std::string& in, const std::string& out) const
 	{
-		auto args = getArgs();
+		auto args = getLinkerArgs();
 #if !SOUP_WINDOWS
 		args.emplace_back("-fPIC");
 #endif

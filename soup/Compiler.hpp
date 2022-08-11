@@ -9,10 +9,13 @@ namespace soup
 	{
 		std::string lang; // defaults to "c++20" or "c++17" depending on platform
 		bool rtti = false;
+		std::vector<std::string> extra_args{};
+		std::vector<std::string> extra_linker_args{};
 
 		Compiler();
 
 		[[nodiscard]] std::vector<std::string> getArgs() const;
+		[[nodiscard]] std::vector<std::string> getLinkerArgs() const;
 
 		// Intermediate objects (.o)
 		std::string makeObject(const std::string& in, const std::string& out) const;
