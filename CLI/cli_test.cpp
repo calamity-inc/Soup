@@ -25,6 +25,8 @@
 
 #include <BitReader.hpp>
 #include <StringReader.hpp>
+#include <BitWriter.hpp>
+#include <StringWriter.hpp>
 
 #include <PhpState.hpp>
 
@@ -304,6 +306,24 @@ static void test_io()
 		assert(br.readByte(5, b) && b == 0);
 		assert(br.readByte(5, b) && b == 0b11111);
 		assert(br.readByte(6, b) && b == 0);
+	});
+	test("BitWriter", []
+	{
+		StringWriter w;
+		BitWriter bw(&w);
+
+		w.str.clear();
+		bw.writeByte(4, 0x0);
+		bw.writeByte(4, 0xF);
+		bw.writeByte(4, 0xF);
+		bw.writeByte(4, 0x0);
+		assert(w.str == "\xF0\x0F");
+
+		w.str.clear();
+		bw.writeByte(5, 0b11111);
+		bw.writeByte(5, 0);
+		bw.writeByte(6, 0b111111);
+		assert(w.str == "\x1F\xFC");
 	});
 }
 

@@ -401,6 +401,7 @@
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="netAs.hpp" />
