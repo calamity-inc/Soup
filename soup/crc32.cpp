@@ -31,7 +31,7 @@ namespace soup
 
 	uint32_t crc32::hash(Reader& r)
 	{
-		const auto table = get_crc_lookup_table();
+		const auto& table = get_crc_lookup_table();
 
 		uint32_t checksum = 0xFFFFFFFFul;
 		for (uint8_t c; r.u8(c); )
@@ -45,7 +45,7 @@ namespace soup
 
 	uint32_t crc32::hash(const std::string& data)
 	{
-		const auto table = get_crc_lookup_table();
+		const auto& table = get_crc_lookup_table();
 
 		uint32_t checksum = 0xFFFFFFFFul;
 		for (const auto& c : data)
@@ -59,7 +59,7 @@ namespace soup
 
 	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init)
 	{
-		const auto table = get_crc_lookup_table();
+		const auto& table = get_crc_lookup_table();
 
 		uint32_t checksum = ~init;
 		for (; size != 0; ++data, --size)
