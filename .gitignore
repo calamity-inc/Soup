@@ -3,3 +3,7 @@ bin/
 web/libsoup.js
 web/libsoup.wasm
 *.exe
+
+# Sun build
+soup/int/
+soup/soup.lib
