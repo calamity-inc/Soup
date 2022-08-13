@@ -297,15 +297,15 @@ static void test_io()
 		BitReader br(&r);
 		uint8_t b;
 
-		assert(br.readByte(4, b) && b == 0x0);
-		assert(br.readByte(4, b) && b == 0xF);
-		assert(br.readByte(4, b) && b == 0xF);
-		assert(br.readByte(4, b) && b == 0x0);
+		assert(br.u8(4, b) && b == 0x0);
+		assert(br.u8(4, b) && b == 0xF);
+		assert(br.u8(4, b) && b == 0xF);
+		assert(br.u8(4, b) && b == 0x0);
 
 		r = "\xE0\x03";
-		assert(br.readByte(5, b) && b == 0);
-		assert(br.readByte(5, b) && b == 0b11111);
-		assert(br.readByte(6, b) && b == 0);
+		assert(br.u8(5, b) && b == 0);
+		assert(br.u8(5, b) && b == 0b11111);
+		assert(br.u8(6, b) && b == 0);
 	});
 	test("BitWriter", []
 	{
@@ -313,16 +313,16 @@ static void test_io()
 		BitWriter bw(&w);
 
 		w.str.clear();
-		bw.writeByte(4, 0x0);
-		bw.writeByte(4, 0xF);
-		bw.writeByte(4, 0xF);
-		bw.writeByte(4, 0x0);
+		bw.u8(4, 0x0);
+		bw.u8(4, 0xF);
+		bw.u8(4, 0xF);
+		bw.u8(4, 0x0);
 		assert(w.str == "\xF0\x0F");
 
 		w.str.clear();
-		bw.writeByte(5, 0b11111);
-		bw.writeByte(5, 0);
-		bw.writeByte(6, 0b111111);
+		bw.u8(5, 0b11111);
+		bw.u8(5, 0);
+		bw.u8(6, 0b111111);
 		assert(w.str == "\x1F\xFC");
 	});
 }

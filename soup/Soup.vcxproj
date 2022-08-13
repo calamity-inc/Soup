@@ -690,6 +690,8 @@
     <ClCompile Include="bech32.cpp" />
     <ClCompile Include="Bigfloat.cpp" />
     <ClCompile Include="Bigint.cpp" />
+    <ClCompile Include="BitReader.cpp" />
+    <ClCompile Include="BitWriter.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="BoxAxisAligned.cpp" />
     <ClCompile Include="BoxCorners.cpp" />

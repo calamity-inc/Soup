@@ -1244,6 +1244,12 @@
     <ClCompile Include="netAs.cpp">
       <Filter>net\intel</Filter>
     </ClCompile>
+    <ClCompile Include="BitWriter.cpp">
+      <Filter>io\bits</Filter>
+    </ClCompile>
+    <ClCompile Include="BitReader.cpp">
+      <Filter>io\bits</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
