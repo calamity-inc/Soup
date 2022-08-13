@@ -839,6 +839,9 @@
     <ClInclude Include="BitWriter.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
+    <ClInclude Include="SipFile.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1249,6 +1252,9 @@
     </ClCompile>
     <ClCompile Include="BitReader.cpp">
       <Filter>io\bits</Filter>
+    </ClCompile>
+    <ClCompile Include="SipFile.cpp">
+      <Filter>io</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
