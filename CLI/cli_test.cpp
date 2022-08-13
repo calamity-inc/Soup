@@ -317,13 +317,21 @@ static void test_io()
 		bw.u8(4, 0xF);
 		bw.u8(4, 0xF);
 		bw.u8(4, 0x0);
+		bw.finishByte();
 		assert(w.str == "\xF0\x0F");
 
 		w.str.clear();
 		bw.u8(5, 0b11111);
 		bw.u8(5, 0);
 		bw.u8(6, 0b111111);
+		bw.finishByte();
 		assert(w.str == "\x1F\xFC");
+
+		w.str.clear();
+		bw.u8(5, 0b11111);
+		bw.u8(4, 0b101);
+		bw.finishByte();
+		assert(w.str == "\x5F\x01");
 	});
 }
 

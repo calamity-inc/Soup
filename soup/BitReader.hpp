@@ -71,5 +71,8 @@ namespace soup
 
 		bool b(bool& out);
 		bool u8(uint8_t bits, uint8_t& out);
+		bool u20_dyn(uint32_t& val); // A 20-bit value encoded using up 6-22 bits.
+		bool str_utf8dyn(std::string& str); // A UTF-8 string encoded using 6-23 bits per codepoint.
+		bool str_utf32dyn(std::u32string& str); // A UTF-32 string encoded using 6-23 bits per codepoint.
 	};
 }

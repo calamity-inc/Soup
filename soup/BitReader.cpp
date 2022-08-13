@@ -1,5 +1,7 @@
 #include "BitReader.hpp"
 
+#include "unicode.hpp"
+
 #define DEBUG_BR false
 
 #if DEBUG_BR
@@ -108,6 +110,87 @@ namespace soup
 			{
 				out = ((byte >> bit_idx) & ((1 << bits) - 1));
 				forward(bits);
+			}
+		}
+		return true;
+	}
+
+	bool BitReader::u20_dyn(uint32_t& val)
+	{
+		uint8_t nibbles_needed;
+		if (!u8(2, nibbles_needed))
+		{
+			return false;
+		}
+
+		val = 0;
+
+		if (nibbles_needed == 0)
+		{
+			return t(20, val);
+		}
+
+		const auto total_nibbles_needed = nibbles_needed;
+		while (nibbles_needed)
+		{
+			uint8_t tmp;
+			if (!u8(4, tmp))
+			{
+				return false;
+			}
+			val |= (tmp << ((total_nibbles_needed - nibbles_needed) * 4));
+			--nibbles_needed;
+		}
+		return true;
+	}
+
+	bool BitReader::str_utf8dyn(std::string& str)
+	{
+		std::u32string tmp;
+		if (!str_utf32dyn(tmp))
+		{
+			return false;
+		}
+		str = unicode::utf32_to_utf8(tmp);
+		return true;
+	}
+
+	bool BitReader::str_utf32dyn(std::u32string& str)
+	{
+		const std::string charset = "abcdefghijklmnopqrstuvwxyzTIAHSW";
+		while (true)
+		{
+			bool shorthand;
+			if (!b(shorthand))
+			{
+				return false;
+			}
+
+			if (shorthand)
+			{
+				uint8_t tmp;
+				if (!u8(5, tmp))
+				{
+					return false;
+				}
+				str.push_back(charset.at(tmp));
+			}
+			else
+			{
+				uint32_t tmp;
+				if (!u20_dyn(tmp))
+				{
+					return false;
+				}
+				if (tmp == 0)
+				{
+					break;
+				}
+				if (tmp >= 'a')
+				{
+					tmp += 26;
+				}
+				str.push_back(tmp);
 			}
 		}
 		return true;

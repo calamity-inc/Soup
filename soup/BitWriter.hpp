@@ -6,8 +6,9 @@
 
 namespace soup
 {
-	struct BitWriter
+	class BitWriter
 	{
+	public:
 		Writer* w;
 		uint8_t bit_idx = 0;
 		uint8_t byte = 0;
@@ -28,7 +29,10 @@ namespace soup
 		}
 
 		bool finishByte();
+	protected:
+		bool commitByte();
 
+	public:
 		template <typename T>
 		bool t(uint8_t bits, T val)
 		{
@@ -50,5 +54,9 @@ namespace soup
 
 		bool b(bool val);
 		bool u8(uint8_t bits, uint8_t val);
+		bool u20_dyn(uint32_t val); // A 20-bit value encoded using up 6-22 bits.
+		bool u32_dyn(uint32_t val); // A 32-bit value encoded using up 10-34 bits.
+		bool str_utf8dyn(const std::string& str); // A UTF-8 string encoded using 6-23 bits per codepoint.
+		bool str_utf32dyn(const std::u32string& str); // A UTF-32 string encoded using 6-23 bits per codepoint.
 	};
 }
