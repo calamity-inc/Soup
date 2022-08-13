@@ -1,4 +1,5 @@
 #include <soup/RasterFont.hpp>
+#include <soup/Rgb.hpp>
 #include <soup/RenderTarget.hpp>
 #include <soup/main.hpp>
 #include <soup/Window.hpp>
@@ -13,8 +14,6 @@ int entry(std::vector<std::string>&& args, bool console)
 		rt.fill(soup::Rgb::BLACK);
 		rt.drawText(1, 1, "The quick brown fox jumps over the lazy dog.", font8, soup::Rgb::WHITE);
 	});
-	w.setExitOnClose();
-	w.show();
 	return w.runMessageLoop();
 }
 

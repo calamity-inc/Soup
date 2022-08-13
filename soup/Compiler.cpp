@@ -38,6 +38,10 @@ namespace soup
 	std::vector<std::string> Compiler::getLinkerArgs() const
 	{
 		auto args = getArgs();
+#if SOUP_WINDOWS
+		args.emplace_back("-luser32");
+		args.emplace_back("-lgdi32");
+#endif
 		args.insert(args.end(), extra_linker_args.begin(), extra_linker_args.end());
 		return args;
 	}
