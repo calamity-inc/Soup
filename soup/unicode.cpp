@@ -7,7 +7,7 @@ namespace soup
 		uint32_t uni;
 		uint8_t todo = 0;
 		uint8_t ch = *it++;
-		if (ch & 0b10000000)
+		if (UTF8_HAS_CONTINUATION(ch))
 		{
 			if (UTF8_IS_CONTINUATION(ch))
 			{
