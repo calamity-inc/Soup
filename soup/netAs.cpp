@@ -11,6 +11,7 @@ namespace soup
 		case 4766: // Korea Telecom
 		case 9009: // M247 Ltd
 		case 9335: // CAT Telecom Public Company Limited
+		case 11878: // tzulo, inc.
 		case 12876: // ONLINE S.A.S.
 		case 13046: // ISKON INTERNET d.d. za informatiku i telekomunikacije
 		case 13213: // UK-2 Limited
@@ -28,6 +29,7 @@ namespace soup
 		case 41564: // Orion Network Limited
 		case 43289: // Trabia SRL
 		case 45899: // VNPT Corp
+		case 46562: // Performive LLC
 		case 46805: // Inter Connects Inc
 		case 47810: // Proservice LLC
 		case 49981: // WorldStream B.V.
