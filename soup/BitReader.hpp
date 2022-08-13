@@ -35,20 +35,38 @@ namespace soup
 		bool forward(uint8_t bits);
 
 	public:
-		template <uint8_t Bits, typename T>
-		bool t(T& out)
+		template <typename T>
+		bool t(uint8_t bits, T& out) // out needs to be initialised before calling
 		{
-			if constexpr (Bits == 1)
+			if (bits == 1)
 			{
-				bool b;
-				if (!b(b))
+				bool tmp;
+				if (!b(tmp))
 				{
 					return false;
 				}
-				out = b;
+				out = tmp;
 				return true;
 			}
-			return u8(Bits, out);
+			while (bits >= 8)
+			{
+				uint8_t tmp;
+				if (!u8(bits, tmp))
+				{
+					return false;
+				}
+				bits -= 8;
+				out <<= 8;
+				out |= tmp;
+			}
+			uint8_t tmp;
+			if (!u8(bits, tmp))
+			{
+				return false;
+			}
+			out <<= bits;
+			out |= tmp;
+			return true;
 		}
 
 		bool b(bool& out);

@@ -29,14 +29,23 @@ namespace soup
 
 		bool finishByte();
 
-		template <uint8_t Bits, typename T>
-		bool t(T val)
+		template <typename T>
+		bool t(uint8_t bits, T val)
 		{
-			if constexpr (Bits == 1)
+			if (bits == 1)
 			{
 				return b(val);
 			}
-			return u8(Bits, val);
+			while (bits >= 8)
+			{
+				if (!u8(bits, val))
+				{
+					return false;
+				}
+				bits -= 8;
+				val >>= 8;
+			}
+			return u8(bits, val);
 		}
 
 		bool b(bool val);
