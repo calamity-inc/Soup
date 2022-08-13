@@ -13,6 +13,6 @@ namespace soup
 	template <typename T = float>
 	[[nodiscard]] constexpr T lerp(T a, T b, float t)
 	{
-		return a + (b - a) * t;
+		return (T)(a + (b - a) * t);
 	}
 }
