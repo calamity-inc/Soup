@@ -8,9 +8,15 @@ namespace soup
 	{
 		switch (number)
 		{
+		case 3214: // xTom GmbH
 		case 4766: // Korea Telecom
+		case 4785: // xTom Limited
+		case 6233: // xTom
+		case 8100: // QuadraNet Enterprises LLC
 		case 9009: // M247 Ltd
+		case 9312: // xTom Hong Kong Limited
 		case 9335: // CAT Telecom Public Company Limited
+		case 11831: // eSecureData
 		case 11878: // tzulo, inc.
 		case 12876: // ONLINE S.A.S.
 		case 13046: // ISKON INTERNET d.d. za informatiku i telekomunikacije
@@ -21,37 +27,48 @@ namespace soup
 		case 25369: // Hydra Communications Ltd
 		case 29485: // A1 Hrvatska d.o.o.
 		case 30083: // GoDaddy.com, LLC
+		case 30736: // ASERGO Scandinavia ApS
 		case 34594: // OT - OPTIMA TELEKOM d.d.
+		case 35758: // Rachamim Aviel Twito trading as A.B INTERNET SOLUTIONS
 		case 37518: // Fiber Grid INC
 		case 38731: // Vietel - CHT Compamy Ltd
 		case 39351: // 31173 Services AB
 		case 40676: // Psychz Networks
 		case 41564: // Orion Network Limited
 		case 43289: // Trabia SRL
+		case 43513: // Sia Nano IT
 		case 45899: // VNPT Corp
 		case 46562: // Performive LLC
 		case 46805: // Inter Connects Inc
 		case 46844: // Sharktech
 		case 47810: // Proservice LLC
 		case 49981: // WorldStream B.V.
+		case 50304: // Blix Solutions AS
 		case 51747: // Internet Vikings International AB
 		case 52423: // Data Miners S.A. ( Racknation.cr )
+		case 53013: // W I X NET DO BRASIL LTDA - ME
 		case 55664: // PT Inovasi Global Mumpuni
 		case 58065: // Packet Exchange Limited
 		case 58073: // YISP B.V.
 		case 60068: // Datacamp Limited
 		case 62240: // Clouvider Limited
 		case 131199: // Nexeon Technologies, Inc.
+		case 133480: // Intergrid Group Pty Ltd
+		case 133752: // Leaseweb Asia Pacific pte. ltd.
 		case 136787: // TEFINCOM S.A.
 		case 137409: // GSL Networks Pty LTD
 		case 141039: // TEFINCOM S.A.
 		case 147049: // PacketHub S.A.
 		case 197706: // Keminet SHPK
+		case 198371: // NINET Company Nis d.o.o.
 		case 199524: // G-Core Labs S.A.
+		case 205053: // Asimia Damaskou
 		case 205119: // TELEKS DOOEL Skopje
 		case 206804: // EstNOC OY
 		case 212238: // Datacamp Limited
+		case 213277: // ALMOUROLTEC SERVICOS DE INFORMATICA E INTERNET LDA
 		case 263702: // GRUPO ZGH SPA
+		case 268581: // QNAX LTDA
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
