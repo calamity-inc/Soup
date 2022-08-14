@@ -9,7 +9,6 @@ namespace soup
 		switch (number)
 		{
 		case 3214: // xTom GmbH
-		case 4766: // Korea Telecom
 		case 4785: // xTom Limited
 		case 6233: // xTom
 		case 8100: // QuadraNet Enterprises LLC
