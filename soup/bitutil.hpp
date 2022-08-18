@@ -40,5 +40,19 @@ namespace soup
 			//}
 			return out;
 		}
+
+		[[nodiscard]] static uint8_t getBitsNeededToEncodeRange(size_t range_size) // aka. integer log2
+		{
+#if SOUP_CPP20
+			return std::bit_width(range_size) - 1;
+#else
+			uint8_t bits = 0;
+			while ((((size_t)1) << bits) < range_size)
+			{
+				++bits;
+			}
+			return bits;
+#endif
+		}
 	};
 }
