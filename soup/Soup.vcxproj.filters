@@ -1268,6 +1268,9 @@
     <ClCompile Include="SipFile.cpp">
       <Filter>io\sip</Filter>
     </ClCompile>
+    <ClCompile Include="huffman_tree.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

@@ -724,6 +724,7 @@
     <ClCompile Include="ffi.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FormattedText.cpp" />
+    <ClCompile Include="huffman_tree.cpp" />
     <ClCompile Include="IpAddr.cpp" />
     <ClCompile Include="netAs.cpp" />
     <ClCompile Include="netIntel.cpp" />

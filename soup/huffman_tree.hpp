@@ -1,6 +1,9 @@
 #pragma once
 
+#include "fwd.hpp"
+
 #include <algorithm>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -9,8 +12,12 @@
 
 namespace soup
 {
-	struct htNode : public TreeNode
+	template <typename Data>
+	struct htDataNode;
+
+	class htNode : public TreeNode
 	{
+	public:
 		const bool is_data;
 
 		htNode(bool is_data)
@@ -20,6 +27,23 @@ namespace soup
 
 		template <typename Data, typename Weight>
 		[[nodiscard]] Weight getWeight() const noexcept;
+
+		void serialise(BitWriter& bw, void(*serialise_data_node)(BitWriter&, const htNode&)) const;
+	private:
+		void serialiseImpl(BitWriter& bw, void(*serialise_data_node)(BitWriter&, const htNode&)) const;
+
+	public:
+		template <typename Data>
+		[[nodiscard]] const htDataNode<Data>& asDataNode() const noexcept
+		{
+			return *reinterpret_cast<const htDataNode<Data>*>(this);
+		}
+
+		template <typename Data>
+		[[nodiscard]] const Data& getData() const noexcept
+		{
+			return asDataNode<Data>().data;
+		}
 	};
 
 	struct htLinkNode : public htNode
@@ -158,4 +182,6 @@ namespace soup
 			htPrint<Data, Weight>(*reinterpret_cast<const htLinkNode&>(node).right, p2);
 		}
 	}
+
+	[[nodiscard]] extern UniquePtr<htNode> htDeserialise(BitReader& br, htNode*(*deserialise_data_node)(BitReader&)); // deserialise_data_node should use `new htDataNode`, don't worry, it won't leak.
 }
