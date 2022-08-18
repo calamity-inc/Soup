@@ -69,7 +69,7 @@ namespace soup
 	{
 		std::stringstream aslistcsv{};
 		{
-			WebResource rsc("github.com", "/Umkus/asn-ip/releases/download/latest/as.csv");
+			WebResource rsc("raw.githubusercontent.com", "/ipverse/asn-info/master/as.csv");
 			rsc.downloadWithCaching();
 			aslistcsv << std::move(rsc.data);
 		}
