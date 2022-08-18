@@ -18,9 +18,9 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] Writer* getStream() const noexcept
+		[[nodiscard]] Writer& getStream() const noexcept
 		{
-			return w;
+			return *w;
 		}
 
 		[[nodiscard]] constexpr bool isByteAligned() const noexcept

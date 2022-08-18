@@ -839,11 +839,17 @@
     <ClInclude Include="BitWriter.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
-    <ClInclude Include="SipArchive.hpp">
-      <Filter>io</Filter>
-    </ClInclude>
     <ClInclude Include="huffman_tree.hpp">
       <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="SipArchive.hpp">
+      <Filter>io\sip</Filter>
+    </ClInclude>
+    <ClInclude Include="SipFile.hpp">
+      <Filter>io\sip</Filter>
+    </ClInclude>
+    <ClInclude Include="SipMethod.hpp">
+      <Filter>io\sip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1257,7 +1263,10 @@
       <Filter>io\bits</Filter>
     </ClCompile>
     <ClCompile Include="SipArchive.cpp">
-      <Filter>io</Filter>
+      <Filter>io\sip</Filter>
+    </ClCompile>
+    <ClCompile Include="SipFile.cpp">
+      <Filter>io\sip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1404,6 +1413,9 @@
     </Filter>
     <Filter Include="data\container">
       <UniqueIdentifier>{81e9b45e-7d1b-4a89-801c-fbdb09ba896d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\sip">
+      <UniqueIdentifier>{1b69c7f0-6589-4133-b608-2e0d70aa1dfc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

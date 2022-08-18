@@ -559,6 +559,8 @@
     <ClInclude Include="SharedLibrary.hpp" />
     <ClInclude Include="ShortString.hpp" />
     <ClInclude Include="signal.hpp" />
+    <ClInclude Include="SipFile.hpp" />
+    <ClInclude Include="SipMethod.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="Status.hpp" />
     <ClInclude Include="StringBuilder.hpp" />
@@ -784,6 +786,7 @@
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="SharedLibrary.cpp" />
+    <ClCompile Include="SipFile.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Pointer.cpp" />

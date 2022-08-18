@@ -9,14 +9,9 @@ namespace soup
 {
 	/*
 	* Sip is a prototype of what a zip alternative that is truly focused on minimising the file size would look like.
-	*
-	* The only way I think we can really make a leap here is by specialising for every file type, which does mean going somewhat lossy.
-	* For example, when we have a .json file, we don't particularly care about the spacing and indentation; we care about the data.
-	* And if the data is all we have to care about, we can get worthwhile results:
-	* - Input: 486 bytes
-	* - .zip: 403 bytes (DEFLATE)
-	* - .7z: 385 bytes (LZMA2:12)
-	* - .sip: 263 bytes (JSON specialisation)
+	* A big part of this is making specialisations for common formats to beat the more generic DEFLATE and LZMA2 algorithms.
+	* 
+	* A SipArchive is a collection of multiple files. The recommended file extension is ".sip", although no compatibility is guaranteed at this stage.
 	*/
 	struct SipArchive
 	{

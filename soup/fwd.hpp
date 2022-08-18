@@ -32,6 +32,10 @@ namespace soup
 	struct JsonObject;
 	struct JsonString;
 
+	// io.bits
+	class BitReader;
+	class BitWriter;
+
 	// io.stream
 	class Reader;
 	class StringReader;
