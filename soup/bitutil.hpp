@@ -1,8 +1,10 @@
 #pragma once
 
+#include "base.hpp"
+
 namespace soup
 {
-	struct bitconv
+	struct bitutil
 	{
 		template<typename OutContainer, int frombits, int tobits, typename InContainer>
 		[[nodiscard]] static OutContainer msb_first(const InContainer& in)

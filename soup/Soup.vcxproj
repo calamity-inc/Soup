@@ -412,7 +412,7 @@
     <ClInclude Include="base32.hpp" />
     <ClInclude Include="base58.hpp" />
     <ClInclude Include="bech32.hpp" />
-    <ClInclude Include="bitconv.hpp" />
+    <ClInclude Include="bitutil.hpp" />
     <ClInclude Include="CompiledExecutable.hpp" />
     <ClInclude Include="Compiler.hpp" />
     <ClInclude Include="netIntel.hpp" />

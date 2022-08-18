@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "bitconv.hpp"
+#include "bitutil.hpp"
 
 namespace soup
 {
@@ -16,7 +16,7 @@ namespace soup
 
 	std::string base32::encode(const std::string& in, bool pad, const char* alpha)
 	{
-		auto chunks = bitconv::msb_first<std::string, 8, 5>(in);
+		auto chunks = bitutil::msb_first<std::string, 8, 5>(in);
 		for (auto& chunk : chunks)
 		{
 			chunk = alpha[(uint8_t)chunk];

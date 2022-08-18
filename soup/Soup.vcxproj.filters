@@ -725,7 +725,7 @@
     <ClInclude Include="BitReader.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
-    <ClInclude Include="bitconv.hpp">
+    <ClInclude Include="bitutil.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
     <ClInclude Include="base58.hpp">
