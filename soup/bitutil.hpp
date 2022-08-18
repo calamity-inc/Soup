@@ -14,8 +14,8 @@ namespace soup
 
 			int acc = 0;
 			int bits = 0;
-			const int maxv = (1 << tobits) - 1;
-			const int max_acc = (1 << (frombits + tobits - 1)) - 1;
+			constexpr int maxv = (1 << tobits) - 1;
+			constexpr int max_acc = (1 << (frombits + tobits - 1)) - 1;
 			for (size_t i = 0; i < in.size(); ++i)
 			{
 				int value = (uint8_t)in[i];
