@@ -1,4 +1,4 @@
-#include "SipFile.hpp"
+#include "SipArchive.hpp"
 
 #include "BitReader.hpp"
 #include "BitWriter.hpp"
@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	void SipFile::write(Writer& w)
+	void SipArchive::write(Writer& w)
 	{
 		uint8_t format_version = 0;
 		w.u8(format_version);
@@ -36,7 +36,7 @@ namespace soup
 		}
 	}
 
-	void SipFile::read(Reader& r)
+	void SipArchive::read(Reader& r)
 	{
 		uint8_t format_version;
 		r.u8(format_version);

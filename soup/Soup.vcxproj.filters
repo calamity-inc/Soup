@@ -839,7 +839,7 @@
     <ClInclude Include="BitWriter.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
-    <ClInclude Include="SipFile.hpp">
+    <ClInclude Include="SipArchive.hpp">
       <Filter>io</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1253,7 +1253,7 @@
     <ClCompile Include="BitReader.cpp">
       <Filter>io\bits</Filter>
     </ClCompile>
-    <ClCompile Include="SipFile.cpp">
+    <ClCompile Include="SipArchive.cpp">
       <Filter>io</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,7 +18,7 @@ namespace soup
 	* - .7z: 385 bytes (LZMA2:12)
 	* - .sip: 263 bytes (JSON specialisation)
 	*/
-	struct SipFile
+	struct SipArchive
 	{
 		std::unordered_map<std::string, std::string> files{};
 

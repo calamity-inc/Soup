@@ -565,7 +565,7 @@
     <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="FileRaii.hpp" />
-    <ClInclude Include="SipFile.hpp" />
+    <ClInclude Include="SipArchive.hpp" />
     <ClInclude Include="Tempfile.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
@@ -794,7 +794,7 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="FileRaii.cpp" />
     <ClCompile Include="StringMatch.cpp" />
-    <ClCompile Include="SipFile.cpp" />
+    <ClCompile Include="SipArchive.cpp" />
     <ClCompile Include="Tempfile.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />
