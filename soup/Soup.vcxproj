@@ -404,6 +404,7 @@
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="netAs.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />

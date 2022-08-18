@@ -842,6 +842,9 @@
     <ClInclude Include="SipArchive.hpp">
       <Filter>io</Filter>
     </ClInclude>
+    <ClInclude Include="huffman_tree.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
