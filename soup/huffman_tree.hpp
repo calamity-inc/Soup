@@ -3,6 +3,7 @@
 #include "fwd.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -33,6 +34,11 @@ namespace soup
 		void serialiseImpl(BitWriter& bw, void(*serialise_data_node)(BitWriter&, const htNode&)) const;
 
 	public:
+		[[nodiscard]] std::optional<std::vector<bool>> find(const void* ud, bool(*compare_data_node)(const htNode&, const void*), std::vector<bool>&& path = {}) const;
+
+		void encode(BitWriter& bw, const void* ud, bool(*compare_data_node)(const htNode&, const void*)) const;
+		static void encode(BitWriter& bw, const std::vector<bool>& path);
+
 		template <typename Data>
 		[[nodiscard]] const htDataNode<Data>& asDataNode() const noexcept
 		{
@@ -183,5 +189,5 @@ namespace soup
 		}
 	}
 
-	[[nodiscard]] extern UniquePtr<htNode> htDeserialise(BitReader& br, htNode*(*deserialise_data_node)(BitReader&)); // deserialise_data_node should use `new htDataNode`, don't worry, it won't leak.
+	[[nodiscard]] extern UniquePtr<htNode> htDeserialise(BitReader& br, htNode* (*deserialise_data_node)(BitReader&)); // deserialise_data_node should use `new htDataNode`, don't worry, it won't leak.
 }

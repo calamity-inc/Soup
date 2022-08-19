@@ -24,6 +24,42 @@ namespace soup
 		}
 	}
 
+	std::optional<std::vector<bool>> htNode::find(const void* ud, bool(*compare_data_node)(const htNode&, const void*), std::vector<bool>&& path) const
+	{
+		if (is_data)
+		{
+			if (compare_data_node(*this, ud))
+			{
+				return { std::move(path) };
+			}
+			return std::nullopt;
+		}
+
+		std::vector<bool> lp = path;
+		lp.emplace_back(true);
+		if (auto res = reinterpret_cast<const htLinkNode*>(this)->left->find(ud, compare_data_node, std::move(lp)); res.has_value())
+		{
+			return res;
+		}
+
+		std::vector<bool> rp = std::move(path);
+		rp.emplace_back(false);
+		return reinterpret_cast<const htLinkNode*>(this)->right->find(ud, compare_data_node, std::move(rp));
+	}
+
+	void htNode::encode(BitWriter& bw, const void* ud, bool(*compare_data_node)(const htNode&, const void*)) const
+	{
+		encode(bw, find(ud, compare_data_node).value());
+	}
+
+	void htNode::encode(BitWriter& bw, const std::vector<bool>& path)
+	{
+		for (const bool& b : path)
+		{
+			bw.b(b);
+		}
+	}
+
 	[[nodiscard]] static UniquePtr<htNode> htDeserialiseImpl(BitReader& br, htNode* (*deserialise_data_node)(BitReader&));
 
 	UniquePtr<htNode> htDeserialise(BitReader& br, htNode*(*deserialise_data_node)(BitReader&))
