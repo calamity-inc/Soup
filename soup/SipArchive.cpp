@@ -16,7 +16,7 @@ namespace soup
 		BitWriter bw(&w);
 		for (const auto& file : files)
 		{
-			bw.str_utf8dyn(file.first);
+			bw.str_utf8_nt(file.first);
 			SipFile::compress(bw, file.second);
 		}
 	}
@@ -30,7 +30,7 @@ namespace soup
 		while (r.hasMore())
 		{
 			std::string name;
-			br.str_utf8dyn(name);
+			br.str_utf8_nt(name);
 			files.emplace(std::move(name), SipFile::decompress(br));
 		}
 	}

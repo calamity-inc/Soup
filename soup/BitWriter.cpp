@@ -125,12 +125,47 @@ namespace soup
 		return true;
 	}
 
-	bool BitWriter::str_utf8dyn(const std::string& str)
+	bool BitWriter::str_utf8_nt(const std::string& str)
 	{
-		return str_utf32dyn(unicode::utf8_to_utf32(str));
+		return str_utf32_nt(unicode::utf8_to_utf32(str));
 	}
 
-	bool BitWriter::str_utf32dyn(const std::u32string& str)
+	bool BitWriter::str_utf32_nt(const std::u32string& str)
+	{
+		return str_utf32_raw(str)
+			&& b(false)
+			&& u20_dyn(0)
+			;
+	}
+
+	bool BitWriter::str_utf8_lp(const std::string& str, uint8_t lpbits)
+	{
+		return str_utf32_lp(unicode::utf8_to_utf32(str), lpbits);
+	}
+
+	bool BitWriter::str_utf32_lp(const std::u32string& str, uint8_t lpbits)
+	{
+		auto lpmask = ((1 << lpbits) - 1);
+		if (str.length() < lpmask)
+		{
+			if (!t(lpbits, str.length()))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if (!t(lpbits, lpmask)
+				|| u32_dyn(str.length())
+				)
+			{
+				return false;
+			}
+		}
+		return str_utf32_raw(str);
+	}
+
+	bool BitWriter::str_utf32_raw(const std::u32string& str)
 	{
 		const std::string charset = "abcdefghijklmnopqrstuvwxyzTIAHSW";
 		for (char32_t c : str)
@@ -159,12 +194,6 @@ namespace soup
 			{
 				return false;
 			}
-		}
-		if (!b(false)
-			|| !u20_dyn(0)
-			)
-		{
-			return false;
 		}
 		return true;
 	}

@@ -144,10 +144,10 @@ namespace soup
 		return true;
 	}
 
-	bool BitReader::str_utf8dyn(std::string& str)
+	bool BitReader::str_utf8_nt(std::string& str)
 	{
 		std::u32string tmp;
-		if (!str_utf32dyn(tmp))
+		if (!str_utf32_nt(tmp))
 		{
 			return false;
 		}
@@ -155,7 +155,7 @@ namespace soup
 		return true;
 	}
 
-	bool BitReader::str_utf32dyn(std::u32string& str)
+	bool BitReader::str_utf32_nt(std::u32string& str)
 	{
 		const std::string charset = "abcdefghijklmnopqrstuvwxyzTIAHSW";
 		while (true)
