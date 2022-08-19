@@ -54,8 +54,8 @@ namespace soup
 
 		bool b(bool val);
 		bool u8(uint8_t bits, uint8_t val);
-		bool u20_dyn(uint32_t val); // A 20-bit value encoded using up 6-22 bits.
-		bool u32_dyn(uint32_t val); // A 32-bit value encoded using up 10-34 bits.
+		bool u20_dyn(uint32_t val); // A 20-bit value encoded using 6-22 bits. Assumes that smaller numbers are the norm.
+		bool u32_dyn(uint32_t val); // A 32-bit value encoded using 10-34 bits. Assumes that smaller numbers are the norm.
 		bool str_utf8dyn(const std::string& str); // A UTF-8 string encoded using 6-23 bits per codepoint.
 		bool str_utf32dyn(const std::u32string& str); // A UTF-32 string encoded using 6-23 bits per codepoint.
 	};
