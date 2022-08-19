@@ -32,7 +32,7 @@ namespace soup
 			}
 			else if (s.isWrite())
 			{
-				auto num_meanings = meanings.size();
+				uint64_t num_meanings = meanings.size();
 				if (!s.u64_dyn(num_meanings))
 				{
 					return false;
