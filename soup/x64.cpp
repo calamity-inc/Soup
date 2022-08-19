@@ -260,6 +260,7 @@ namespace soup
 
 	std::string x64::Instruction::toString() const
 	{
+		// This could be a bit cleverer and show e.g. "imul rax, 100" instead of "imul rax, rax, 100"
 		std::string res = operation->name;
 		if (operation->getOpr1Encoding() != ZO)
 		{
@@ -269,6 +270,11 @@ namespace soup
 			{
 				res.append(", ");
 				res.append(operands[1].toString());
+				if (operation->getOpr3Encoding() != ZO)
+				{
+					res.append(", ");
+					res.append(operands[2].toString());
+				}
 			}
 		}
 		return res;

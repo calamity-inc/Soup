@@ -71,7 +71,7 @@ namespace soup
 		};
 #pragma pack(pop)
 
-		enum OperandEncoding : uint8_t
+		enum OperandEncoding : uint16_t
 		{
 			ZO = 0,
 
@@ -91,6 +91,8 @@ namespace soup
 			OI = O | (I << BITS_PER_OPERAND),
 			MI = M | (I << BITS_PER_OPERAND),
 			AI = A | (I << BITS_PER_OPERAND),
+
+			RMI = R | (M << BITS_PER_OPERAND) | (I << (BITS_PER_OPERAND * 2)),
 		};
 
 		struct Operation
@@ -146,6 +148,11 @@ namespace soup
 				return (OperandEncoding)((operand_encoding >> BITS_PER_OPERAND) & OPERAND_MASK);
 			}
 
+			[[nodiscard]] OperandEncoding getOpr3Encoding() const noexcept
+			{
+				return (OperandEncoding)((operand_encoding >> (BITS_PER_OPERAND * 2)) & OPERAND_MASK);
+			}
+
 			[[nodiscard]] uint8_t getNumOperands() const noexcept
 			{
 				if (getOpr1Encoding() == ZO)
@@ -156,7 +163,11 @@ namespace soup
 				{
 					return 1;
 				}
-				return 2;
+				if (getOpr3Encoding() == ZO)
+				{
+					return 2;
+				}
+				return 3;
 			}
 
 			[[nodiscard]] uint8_t getNumModrmOperands() const noexcept
@@ -167,6 +178,10 @@ namespace soup
 					++count;
 				}
 				if (getOpr2Encoding() == M || getOpr2Encoding() == R)
+				{
+					++count;
+				}
+				if (getOpr3Encoding() == M || getOpr3Encoding() == R)
 				{
 					++count;
 				}
@@ -207,12 +222,13 @@ namespace soup
 			{ "xor", 0x33, RM },
 			{ "movzx", 0x0FB6, RM, 8 },
 			{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
+			{ "imul", 0x69, RMI, 32 },
 		};
 
 		struct Instruction
 		{
 			const Operation* operation = nullptr;
-			Operand operands[2];
+			Operand operands[3];
 
 			[[nodiscard]] bool isValid() const noexcept
 			{
