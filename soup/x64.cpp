@@ -283,7 +283,11 @@ namespace soup
 			res.push_back('\x48'); // REX.W
 		}
 
-		res.push_back(operation->opcode);
+		if ((operation->opcode >> 8) & 0xFF)
+		{
+			res.push_back((operation->opcode >> 8) & 0xFF);
+		}
+		res.push_back(operation->opcode & 0xFF);
 
 		if (operation->getNumModrmOperands() != 0)
 		{
@@ -352,6 +356,10 @@ namespace soup
 		{
 			if (op.matches(code))
 			{
+				if (*code == 0x0F)
+				{
+					++code;
+				}
 				res.operation = &op;
 				if (op.operand_encoding != ZO)
 				{
@@ -500,7 +508,8 @@ namespace soup
 
 	bool x64::isStartByte(const uint8_t* code)
 	{
-		return (*code & 0xF0) == 0x40 // REX
+		return *code == 0x0F // 2-byte opcode
+			|| (*code & 0xF0) == 0x40 // REX
 			|| (
 				(((*code & 0xF0) == 0x50) // push or pop
 					|| *code == 0x33 // or xor

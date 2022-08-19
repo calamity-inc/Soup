@@ -96,32 +96,38 @@ namespace soup
 		struct Operation
 		{
 			const char* const name;
-			const uint8_t opcode;
+			const uint16_t opcode;
 			const OperandEncoding operand_encoding;
 			const uint8_t operand_size;
 			const uint8_t distinguish;
 
-			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding)
+			Operation(const char* name, uint16_t opcode, OperandEncoding operand_encoding)
 				: Operation(name, opcode, operand_encoding, 0, 8)
 			{
 			}
 
-			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding, uint8_t operand_size)
+			Operation(const char* name, uint16_t opcode, OperandEncoding operand_encoding, uint8_t operand_size)
 				: Operation(name, opcode, operand_encoding, operand_size, 8)
 			{
 			}
 
-			Operation(const char* name, uint8_t opcode, OperandEncoding operand_encoding, uint8_t operand_size, uint8_t distinguish)
+			Operation(const char* name, uint16_t opcode, OperandEncoding operand_encoding, uint8_t operand_size, uint8_t distinguish)
 				: name(name), opcode(opcode), operand_encoding(operand_encoding), operand_size(operand_size), distinguish(distinguish)
 			{
 			}
 
 			[[nodiscard]] bool matches(const uint8_t* code) const noexcept
 			{
-				uint8_t b = *code;
+				uint16_t b = *code;
+				if (b == 0x0F)
+				{
+					++code;
+					b <<= 8;
+					b |= *code;
+				}
 				if (getOpr1Encoding() == O)
 				{
-					b &= 0b11111000;
+					b &= ~0b111;
 				}
 				return opcode == b
 					&& (distinguish == 8
@@ -199,6 +205,8 @@ namespace soup
 			{ "test", 0x84, MR, 8 },
 			{ "test", 0x85, MR },
 			{ "xor", 0x33, RM },
+			{ "movzx", 0x0FB6, RM, 8 },
+			{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
 		};
 
 		struct Instruction
