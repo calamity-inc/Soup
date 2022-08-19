@@ -851,6 +851,24 @@
     <ClInclude Include="szMethod.hpp">
       <Filter>io\sip</Filter>
     </ClInclude>
+    <ClInclude Include="szCompressResult.hpp">
+      <Filter>io\sip</Filter>
+    </ClInclude>
+    <ClInclude Include="szCompressor.hpp">
+      <Filter>io\sip\compressor</Filter>
+    </ClInclude>
+    <ClInclude Include="BitString.hpp">
+      <Filter>io\bits</Filter>
+    </ClInclude>
+    <ClInclude Include="szLevelOfPreservation.hpp">
+      <Filter>io\sip</Filter>
+    </ClInclude>
+    <ClInclude Include="szJsonCompressor.hpp">
+      <Filter>io\sip\compressor</Filter>
+    </ClInclude>
+    <ClInclude Include="szStoreCompressor.hpp">
+      <Filter>io\sip\compressor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1271,6 +1289,9 @@
     <ClCompile Include="huffman_tree.cpp">
       <Filter>data</Filter>
     </ClCompile>
+    <ClCompile Include="szCompressor.cpp">
+      <Filter>io\sip\compressor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1419,6 +1440,9 @@
     </Filter>
     <Filter Include="io\sip">
       <UniqueIdentifier>{1b69c7f0-6589-4133-b608-2e0d70aa1dfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\sip\compressor">
+      <UniqueIdentifier>{9f3701d9-0f6f-4d87-8ffe-48a0aa2cb91f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

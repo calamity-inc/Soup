@@ -2,9 +2,8 @@
 
 #include "BitReader.hpp"
 #include "bitutil.hpp"
-#include "BitWriter.hpp"
-#include "json.hpp"
-#include "szMethod.hpp"
+#include "szCompressor.hpp"
+#include "UniquePtr.hpp"
 
 namespace soup
 {
@@ -12,43 +11,43 @@ namespace soup
 
 	void szFile::compress(BitWriter& bw, const std::string& data)
 	{
-		auto jt = json::decodeForDedicatedVariable(data);
-		bw.t<unsigned int>(method_bits, jt ? SM_JSON : SM_PLAIN);
-		if (jt)
+		unsigned int best_method = SM_STORE;
+		auto compressor = szCompressor::fromMethod(SM_STORE);
+		BitString best_result(std::move(compressor->compress(data).data));
+
+		for (unsigned int method = SM_STORE + 1; method != SM_SIZE; ++method)
+		{
+			compressor = szCompressor::fromMethod((szMethod)method);
+			szCompressResult res = compressor->compress(data);
+			if (res.level_of_preservation != NONE
+				&& best_result.getBitLength() > res.data.getBitLength()
+				)
+			{
+				best_method = method;
+				best_result = std::move(res.data);
+			}
+		}
+
+		bw.t(method_bits, best_method);
+		if (compressor->isByteAligned())
 		{
 			bw.finishByte();
-			jt->binaryEncode(bw.getStream());
 		}
-		else
-		{
-			bw.finishByte();
-			bw.getStream().str_lp_u64_dyn(data);
-		}
+		best_result.commit(bw);
 	}
 
 	std::string szFile::decompress(BitReader& br)
 	{
 		unsigned int method;
-		br.t<unsigned int>(method_bits, method);
-		std::string out;
-		switch (method)
+		SOUP_IF_UNLIKELY(!br.t<unsigned int>(method_bits, method))
 		{
-		case SM_PLAIN:
-			br.finishByte();
-			br.getStream().str_lp_u64_dyn(out);
-			break;
-
-		case SM_JSON:
-			{
-				br.finishByte();
-				auto jt = json::binaryDecodeForDedicatedVariable(br.getStream());
-				out = jt->encodePretty();
-			}
-			break;
-
-		case SM_SIZE:
-			break;
+			return {};
 		}
-		return out;
+		auto compressor = szCompressor::fromMethod((szMethod)method);
+		if (compressor->isByteAligned())
+		{
+			br.finishByte();
+		}
+		return compressor->decompress(br);
 	}
 }

@@ -401,6 +401,7 @@
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="csv.hpp" />
@@ -559,7 +560,11 @@
     <ClInclude Include="SharedLibrary.hpp" />
     <ClInclude Include="ShortString.hpp" />
     <ClInclude Include="signal.hpp" />
+    <ClInclude Include="szCompressResult.hpp" />
+    <ClInclude Include="szCompressor.hpp" />
     <ClInclude Include="szFile.hpp" />
+    <ClInclude Include="szJsonCompressor.hpp" />
+    <ClInclude Include="szLevelOfPreservation.hpp" />
     <ClInclude Include="szMethod.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="Status.hpp" />
@@ -569,6 +574,7 @@
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="FileRaii.hpp" />
     <ClInclude Include="szArchive.hpp" />
+    <ClInclude Include="szStoreCompressor.hpp" />
     <ClInclude Include="Tempfile.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
@@ -787,6 +793,7 @@
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="SharedLibrary.cpp" />
+    <ClCompile Include="szCompressor.cpp" />
     <ClCompile Include="szFile.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="Pattern.cpp" />
