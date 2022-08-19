@@ -564,7 +564,7 @@
     <ClInclude Include="szCompressor.hpp" />
     <ClInclude Include="szFile.hpp" />
     <ClInclude Include="szJsonCompressor.hpp" />
-    <ClInclude Include="szLevelOfPreservation.hpp" />
+    <ClInclude Include="szPreservationLevel.hpp" />
     <ClInclude Include="szMethod.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="Status.hpp" />
@@ -575,6 +575,7 @@
     <ClInclude Include="FileRaii.hpp" />
     <ClInclude Include="szArchive.hpp" />
     <ClInclude Include="szStoreCompressor.hpp" />
+    <ClInclude Include="szUnicodeCompresor.hpp" />
     <ClInclude Include="Tempfile.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />

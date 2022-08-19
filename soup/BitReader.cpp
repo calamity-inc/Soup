@@ -38,7 +38,6 @@ namespace soup
 			bit_idx -= 8;
 			if (!r->u8(byte))
 			{
-				bit_idx = 0;
 				return false;
 			}
 		}
@@ -69,20 +68,24 @@ namespace soup
 
 	bool BitReader::u8(uint8_t bits, uint8_t& out)
 	{
+		if (bits > 8)
+		{
+			bits = 8;
+		}
+
 		if (isByteAligned())
 		{
 			bit_idx = bits;
 			if (!r->u8(byte))
 			{
-				bit_idx = 0;
 				return false;
 			}
 #if DEBUG_BR
-			std::cout << "Fetched byte: " << std::hex << (int)byte << std::endl;
+			std::cout << "Fetched byte: " << std::hex << (int)byte << std::dec << std::endl;
 #endif
 			out = (byte & ((1 << bits) - 1));
 #if DEBUG_BR
-			std::cout << "Taking " << std::dec << (int)bits << " bits: " << std::hex << (int)out << std::endl;
+			std::cout << "Taking " << (int)bits << " bits: " << std::hex << (int)out << std::dec << std::endl;
 #endif
 		}
 		else
@@ -94,7 +97,7 @@ namespace soup
 				auto remaining_bits = (8 - bit_idx);
 				auto next_byte_bits = (bit_idx - (8 - bits));
 #if DEBUG_BR
-				std::cout << "We want to take " << std::dec << (int)bits << " bits at bit_idx " << (int)bit_idx << ", so we'll take the remaining " << (int)remaining_bits << " bits and go to the next byte for " << (int)next_byte_bits << " more bits" << std::endl;
+				std::cout << "We want to take " << (int)bits << " bits at bit_idx " << (int)bit_idx << ", so we'll take the remaining " << (int)remaining_bits << " bits and go to the next byte for " << (int)next_byte_bits << " more bits" << std::endl;
 #endif
 				out <<= next_byte_bits;
 				if (forward(remaining_bits))
@@ -146,13 +149,10 @@ namespace soup
 
 	bool BitReader::str_utf8_nt(std::string& str)
 	{
-		std::u32string tmp;
-		if (!str_utf32_nt(tmp))
-		{
-			return false;
-		}
+		std::u32string tmp{};
+		bool ret = str_utf32_nt(tmp);
 		str = unicode::utf32_to_utf8(tmp);
-		return true;
+		return ret;
 	}
 
 	bool BitReader::str_utf32_nt(std::u32string& str)

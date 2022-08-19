@@ -29,9 +29,9 @@ namespace soup
 		BitReader br(&r);
 		while (r.hasMore())
 		{
-			std::string name;
+			std::string name{};
 			br.str_utf8_nt(name);
-			files.emplace(std::move(name), szFile::decompress(br));
+			files.emplace_back(std::move(name), szFile::decompress(br));
 		}
 	}
 }

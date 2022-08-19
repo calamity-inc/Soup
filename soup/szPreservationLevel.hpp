@@ -4,10 +4,10 @@
 
 namespace soup
 {
-	enum szLevelOfPreservation : uint8_t
+	enum szPreservationLevel : uint8_t
 	{
 		NONE = 0,
-		//CORRUPTED,
+		CORRUPTED,
 		LOSSY,
 		LOSSLESS,
 	};

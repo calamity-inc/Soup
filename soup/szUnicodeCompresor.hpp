@@ -4,32 +4,27 @@
 
 namespace soup
 {
-	struct szStoreCompressor : public szCompressor
+	struct szUnicodeCompresor : public szCompressor
 	{
 		[[nodiscard]] szMethod getMethod() const noexcept final
 		{
-			return SM_STORE;
-		}
-
-		[[nodiscard]] bool isByteAligned() const noexcept final
-		{
-			return true;
+			return SM_UNICODE;
 		}
 
 		void compress(BitWriter& bw, const std::string& data) const final
 		{
-			bw.getStream().str_lp_u64_dyn(data);
+			bw.str_utf8_nt(data);
 		}
 
 		[[nodiscard]] virtual szPreservationLevel getPreservationLevel(const szCompressResult& res, const std::string& data) const
 		{
-			return LOSSLESS;
+			return checkDecompressed(res, data) ? LOSSLESS : CORRUPTED;
 		}
 
 		[[nodiscard]] std::string decompress(BitReader& br) const final
 		{
-			std::string str;
-			br.getStream().str_lp_u64_dyn(str);
+			std::string str{};
+			br.str_utf8_nt(str);
 			return str;
 		}
 	};

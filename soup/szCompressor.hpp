@@ -14,9 +14,11 @@ namespace soup
 
 		[[nodiscard]] virtual szMethod getMethod() const noexcept = 0;
 		[[nodiscard]] virtual bool isByteAligned() const noexcept;
-		[[nodiscard]] virtual szCompressResult compress(const std::string& data) const = 0;
-		[[nodiscard]] virtual std::string decompress(const BitReader& br) const = 0;
+		virtual void compress(BitWriter& bw, const std::string& data) const = 0;
+		[[nodiscard]] szCompressResult compress(const std::string& data) const;
+		[[nodiscard]] virtual szPreservationLevel getPreservationLevel(const szCompressResult& res, const std::string& data) const = 0;
+		[[nodiscard]] virtual std::string decompress(BitReader& br) const = 0;
 	protected:
-		void setLevelOfPreservation(szCompressResult& res, const std::string& data) const;
+		[[nodiscard]] bool checkDecompressed(const szCompressResult& res, const std::string& data) const;
 	};
 }

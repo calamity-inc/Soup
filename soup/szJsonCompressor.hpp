@@ -18,18 +18,28 @@ namespace soup
 			return true;
 		}
 
-		[[nodiscard]] szCompressResult compress(const std::string& data) const final
+		void compress(BitWriter& bw, const std::string& data) const final
 		{
-			szCompressResult res;
 			if (auto jt = json::decodeForDedicatedVariable(data))
 			{
-				jt->binaryEncode(res.data->getStream());
-				setLevelOfPreservation(res, data);
+				jt->binaryEncode(bw.getStream());
 			}
-			return res;
 		}
 
-		[[nodiscard]] std::string decompress(const BitReader& br) const final
+		[[nodiscard]] virtual szPreservationLevel getPreservationLevel(const szCompressResult& res, const std::string& data) const
+		{
+			if (res.data.getBitLength() == 0)
+			{
+				return NONE;
+			}
+			if (checkDecompressed(res, data))
+			{
+				return LOSSLESS;
+			}
+			return LOSSY;
+		}
+
+		[[nodiscard]] std::string decompress(BitReader& br) const final
 		{
 			auto jt = json::binaryDecodeForDedicatedVariable(br.getStream());
 			return jt->encodePretty();

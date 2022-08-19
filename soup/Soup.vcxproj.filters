@@ -860,13 +860,16 @@
     <ClInclude Include="BitString.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
-    <ClInclude Include="szLevelOfPreservation.hpp">
+    <ClInclude Include="szPreservationLevel.hpp">
       <Filter>io\sip</Filter>
     </ClInclude>
     <ClInclude Include="szJsonCompressor.hpp">
       <Filter>io\sip\compressor</Filter>
     </ClInclude>
     <ClInclude Include="szStoreCompressor.hpp">
+      <Filter>io\sip\compressor</Filter>
+    </ClInclude>
+    <ClInclude Include="szUnicodeCompresor.hpp">
       <Filter>io\sip\compressor</Filter>
     </ClInclude>
   </ItemGroup>

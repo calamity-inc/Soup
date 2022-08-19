@@ -57,8 +57,12 @@ namespace soup
 			return &bw;
 		}
 
-		void commit(BitWriter& target)
+		void commit(BitWriter& target) const
 		{
+			if (!target.isByteAligned())
+			{
+				throw 0; // no idea why, but this just breaks big time if the target is not byte-aligned
+			}
 			for (const auto& c : sw.str)
 			{
 				target.u8(8, (uint8_t)c);

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "fwd.hpp"
 
@@ -15,7 +16,7 @@ namespace soup
 	*/
 	struct szArchive
 	{
-		std::unordered_map<std::string, std::string> files{};
+		std::vector<std::pair<std::string, std::string>> files{};
 
 		void write(Writer& w);
 		void read(Reader& r);
