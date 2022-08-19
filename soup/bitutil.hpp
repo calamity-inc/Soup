@@ -2,10 +2,6 @@
 
 #include "base.hpp"
 
-#if SOUP_CPP20
-#include <bit>
-#endif
-
 namespace soup
 {
 	struct bitutil
@@ -45,18 +41,14 @@ namespace soup
 			return out;
 		}
 
-		[[nodiscard]] static constexpr uint8_t getBitsNeededToEncodeRange(size_t range_size) // aka. integer log2
+		[[nodiscard]] static constexpr uint8_t getBitsNeededToEncodeRange(size_t range_size) // aka. ceil(log2(range_size))
 		{
-#if SOUP_CPP20
-			return std::bit_width(range_size) - 1;
-#else
 			uint8_t bits = 0;
 			while ((((size_t)1) << bits) < range_size)
 			{
 				++bits;
 			}
 			return bits;
-#endif
 		}
 	};
 }
