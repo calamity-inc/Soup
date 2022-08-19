@@ -42,18 +42,20 @@ namespace soup
 			}
 			while (bits >= 8)
 			{
-				if (!u8(bits, val))
+				if (!u8(bits, (val >> (bits - 8))))
 				{
 					return false;
 				}
 				bits -= 8;
-				val >>= 8;
 			}
 			return u8(bits, val);
 		}
 
 		bool b(bool val);
 		bool u8(uint8_t bits, uint8_t val);
+		bool u16_dyn(uint16_t val); // A 16-bit value encoded using 9-17 bits. Assumes that smaller numbers are the norm.
+		bool u16_dyn_2(uint16_t val); // A 16-bit value encoded using 5-18 bits. Assumes that smaller numbers are the norm.
+		bool u17_dyn_2(uint32_t val); // A 17-bit value encoded using 5-19 bits. Assumes that smaller numbers are the norm.
 		bool u20_dyn(uint32_t val); // A 20-bit value encoded using 6-22 bits. Assumes that smaller numbers are the norm.
 		bool u32_dyn(uint32_t val); // A 32-bit value encoded using 10-34 bits. Assumes that smaller numbers are the norm.
 		bool str_utf8_nt(const std::string& str); // A UTF-8 string encoded using 6-23 bits per codepoint. Null-terminated.

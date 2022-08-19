@@ -19,6 +19,7 @@ namespace soup
 			bw.str_utf8_nt(file.first);
 			szFile::compress(bw, file.second);
 		}
+		bw.finishByte();
 	}
 
 	void szArchive::read(Reader& r)

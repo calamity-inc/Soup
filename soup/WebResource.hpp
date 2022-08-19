@@ -38,5 +38,6 @@ namespace soup
 		bool restore();
 
 		void downloadWithCaching(); // blocking
+		void downloadWithStaleCaching(); // blocking
 	};
 }

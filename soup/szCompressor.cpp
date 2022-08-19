@@ -2,9 +2,10 @@
 
 #include "BitReader.hpp"
 #include "StringReader.hpp"
+#include "szEnglishCompressor.hpp"
 #include "szJsonCompressor.hpp"
 #include "szStoreCompressor.hpp"
-#include "szUnicodeCompresor.hpp"
+#include "szUnicodeCompressor.hpp"
 
 namespace soup
 {
@@ -14,7 +15,8 @@ namespace soup
 		{
 		case SM_STORE: return soup::make_unique<szStoreCompressor>();
 		case SM_JSON: return soup::make_unique<szJsonCompressor>();
-		case SM_UNICODE: return soup::make_unique<szUnicodeCompresor>();
+		case SM_UNICODE: return soup::make_unique<szUnicodeCompressor>();
+		case SM_ENGLISH: return soup::make_unique<szEnglishCompressor>();
 
 		case SM_SIZE: break;
 		}
@@ -32,6 +34,11 @@ namespace soup
 		compress(*res.data, data);
 		res.preservation_level = getPreservationLevel(res, data);
 		return res;
+	}
+
+	szPreservationLevel szCompressor::getPreservationLevel(const szCompressResult& res, const std::string& data) const
+	{
+		return checkDecompressed(res, data) ? LOSSLESS : CORRUPTED;
 	}
 
 	bool szCompressor::checkDecompressed(const szCompressResult& res, const std::string& data) const

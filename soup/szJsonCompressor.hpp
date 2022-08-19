@@ -26,7 +26,7 @@ namespace soup
 			}
 		}
 
-		[[nodiscard]] virtual szPreservationLevel getPreservationLevel(const szCompressResult& res, const std::string& data) const
+		[[nodiscard]] szPreservationLevel getPreservationLevel(const szCompressResult& res, const std::string& data) const final
 		{
 			if (res.data.getBitLength() == 0)
 			{

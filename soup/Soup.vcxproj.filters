@@ -869,7 +869,10 @@
     <ClInclude Include="szStoreCompressor.hpp">
       <Filter>io\sip\compressor</Filter>
     </ClInclude>
-    <ClInclude Include="szUnicodeCompresor.hpp">
+    <ClInclude Include="szUnicodeCompressor.hpp">
+      <Filter>io\sip\compressor</Filter>
+    </ClInclude>
+    <ClInclude Include="szEnglishCompressor.hpp">
       <Filter>io\sip\compressor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1293,6 +1296,9 @@
       <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="szCompressor.cpp">
+      <Filter>io\sip\compressor</Filter>
+    </ClCompile>
+    <ClCompile Include="szEnglishCompressor.cpp">
       <Filter>io\sip\compressor</Filter>
     </ClCompile>
   </ItemGroup>

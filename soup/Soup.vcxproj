@@ -562,6 +562,7 @@
     <ClInclude Include="signal.hpp" />
     <ClInclude Include="szCompressResult.hpp" />
     <ClInclude Include="szCompressor.hpp" />
+    <ClInclude Include="szEnglishCompressor.hpp" />
     <ClInclude Include="szFile.hpp" />
     <ClInclude Include="szJsonCompressor.hpp" />
     <ClInclude Include="szPreservationLevel.hpp" />
@@ -575,7 +576,7 @@
     <ClInclude Include="FileRaii.hpp" />
     <ClInclude Include="szArchive.hpp" />
     <ClInclude Include="szStoreCompressor.hpp" />
-    <ClInclude Include="szUnicodeCompresor.hpp" />
+    <ClInclude Include="szUnicodeCompressor.hpp" />
     <ClInclude Include="Tempfile.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
@@ -795,6 +796,7 @@
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="SharedLibrary.cpp" />
     <ClCompile Include="szCompressor.cpp" />
+    <ClCompile Include="szEnglishCompressor.cpp" />
     <ClCompile Include="szFile.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="Pattern.cpp" />

@@ -21,7 +21,7 @@ namespace soup
 			bw.getStream().str_lp_u64_dyn(data);
 		}
 
-		[[nodiscard]] virtual szPreservationLevel getPreservationLevel(const szCompressResult& res, const std::string& data) const
+		[[nodiscard]] szPreservationLevel getPreservationLevel(const szCompressResult& res, const std::string& data) const final
 		{
 			return LOSSLESS;
 		}

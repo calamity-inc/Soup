@@ -8,6 +8,7 @@ namespace soup
 
 		SM_JSON,
 		SM_UNICODE,
+		SM_ENGLISH,
 
 		SM_SIZE
 	};

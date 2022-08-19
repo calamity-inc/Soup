@@ -152,5 +152,15 @@ namespace soup
 			store();
 		}
 	}
+
+	void WebResource::downloadWithStaleCaching()
+	{
+		restore();
+		if (!hasData())
+		{
+			download();
+			store();
+		}
+	}
 #endif
 }
