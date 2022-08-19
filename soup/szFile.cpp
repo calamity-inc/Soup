@@ -1,16 +1,16 @@
-#include "SipFile.hpp"
+#include "szFile.hpp"
 
 #include "BitReader.hpp"
 #include "bitutil.hpp"
 #include "BitWriter.hpp"
 #include "json.hpp"
-#include "SipMethod.hpp"
+#include "szMethod.hpp"
 
 namespace soup
 {
 	static constexpr auto method_bits = bitutil::getBitsNeededToEncodeRange(SM_SIZE);
 
-	void SipFile::compress(BitWriter& bw, const std::string& data)
+	void szFile::compress(BitWriter& bw, const std::string& data)
 	{
 		auto jt = json::decodeForDedicatedVariable(data);
 		bw.t<unsigned int>(method_bits, jt ? SM_JSON : SM_PLAIN);
@@ -26,7 +26,7 @@ namespace soup
 		}
 	}
 
-	std::string SipFile::decompress(BitReader& br)
+	std::string szFile::decompress(BitReader& br)
 	{
 		unsigned int method;
 		br.t<unsigned int>(method_bits, method);

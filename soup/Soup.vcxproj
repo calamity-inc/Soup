@@ -559,8 +559,8 @@
     <ClInclude Include="SharedLibrary.hpp" />
     <ClInclude Include="ShortString.hpp" />
     <ClInclude Include="signal.hpp" />
-    <ClInclude Include="SipFile.hpp" />
-    <ClInclude Include="SipMethod.hpp" />
+    <ClInclude Include="szFile.hpp" />
+    <ClInclude Include="szMethod.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
     <ClInclude Include="Status.hpp" />
     <ClInclude Include="StringBuilder.hpp" />
@@ -568,7 +568,7 @@
     <ClInclude Include="structing.hpp" />
     <ClInclude Include="StructMap.hpp" />
     <ClInclude Include="FileRaii.hpp" />
-    <ClInclude Include="SipArchive.hpp" />
+    <ClInclude Include="szArchive.hpp" />
     <ClInclude Include="Tempfile.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
@@ -787,7 +787,7 @@
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="SharedLibrary.cpp" />
-    <ClCompile Include="SipFile.cpp" />
+    <ClCompile Include="szFile.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Pointer.cpp" />
@@ -799,7 +799,7 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="FileRaii.cpp" />
     <ClCompile Include="StringMatch.cpp" />
-    <ClCompile Include="SipArchive.cpp" />
+    <ClCompile Include="szArchive.cpp" />
     <ClCompile Include="Tempfile.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="SocketTlsHandshaker.cpp" />

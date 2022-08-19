@@ -842,13 +842,13 @@
     <ClInclude Include="huffman_tree.hpp">
       <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="SipArchive.hpp">
+    <ClInclude Include="szArchive.hpp">
       <Filter>io\sip</Filter>
     </ClInclude>
-    <ClInclude Include="SipFile.hpp">
+    <ClInclude Include="szFile.hpp">
       <Filter>io\sip</Filter>
     </ClInclude>
-    <ClInclude Include="SipMethod.hpp">
+    <ClInclude Include="szMethod.hpp">
       <Filter>io\sip</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1262,10 +1262,10 @@
     <ClCompile Include="BitReader.cpp">
       <Filter>io\bits</Filter>
     </ClCompile>
-    <ClCompile Include="SipArchive.cpp">
+    <ClCompile Include="szArchive.cpp">
       <Filter>io\sip</Filter>
     </ClCompile>
-    <ClCompile Include="SipFile.cpp">
+    <ClCompile Include="szFile.cpp">
       <Filter>io\sip</Filter>
     </ClCompile>
     <ClCompile Include="huffman_tree.cpp">
