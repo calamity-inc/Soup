@@ -3,6 +3,7 @@
 #include "fwd.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <utility>
