@@ -26,6 +26,11 @@ namespace soup
 
 	bool BitWriter::u8(uint8_t bits, uint8_t val)
 	{
+		if (bits > 8)
+		{
+			bits = 8;
+		}
+
 		val &= ((1 << bits) - 1);
 
 		auto bufferable_bits = (8 - bit_idx);
