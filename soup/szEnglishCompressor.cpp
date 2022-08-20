@@ -84,6 +84,67 @@ namespace soup
 		NUM_PUNCT_BITS = 2
 	};
 
+	struct DictionaryEncoding
+	{
+		ControlBits control_bits = LITERAL_WORD;
+		size_t dictionary_index;
+
+		[[nodiscard]] static DictionaryEncoding get(const std::vector<std::string>& english_words, const std::string& word)
+		{
+			DictionaryEncoding res;
+			if (auto e = std::find(english_words.begin(), english_words.end(), word); e != english_words.end())
+			{
+				res.control_bits = DICTIONARY_WORD_LOWER;
+				res.dictionary_index = (e - english_words.begin());
+				//std::cout << "in dictionary: \"" << word << "\" (" << res.dictionary_index << ")\n";
+			}
+			else
+			{
+				std::string title_cased_word = word;
+				string::lower(title_cased_word);
+				title_cased_word[0] = std::toupper(title_cased_word[0]);
+
+				const bool word_is_title_cased = (word == title_cased_word);
+				title_cased_word[0] = std::tolower(title_cased_word[0]);
+
+				//std::vector<std::string>::iterator e;
+				if (word_is_title_cased)
+				{
+					e = std::find(english_words.begin(), english_words.end(), title_cased_word);
+				}
+
+				if (word_is_title_cased && e != english_words.end())
+				{
+					res.control_bits = DICTIONARY_WORD_TITLE;
+					res.dictionary_index = (e - english_words.begin());
+					//std::cout << "in dictionary: \"" << word << "\" (" << res.dictionary_index << ")\n";
+				}
+				else
+				{
+					//std::cout << "not in dictionary: \"" << word << "\"\n";
+				}
+			}
+			return res;
+		}
+
+		[[nodiscard]] bool isValid() const noexcept
+		{
+			return control_bits != LITERAL_WORD;
+		}
+
+		void commit(BitWriter& bw) const
+		{
+			bw.u8(NUM_CTRL_BITS, control_bits);
+			bw.u17_dyn_2(dictionary_index);
+		}
+	};
+
+	static void exitpunctmode(BitWriter& bw)
+	{
+		bw.u8(NUM_PUNCT_BITS, PUNCT_LITERAL);
+		bw.str_utf32_lp(std::u32string{}, 2);
+	}
+
 	void szEnglishCompressor::compress(BitWriter& bw, const std::string& data) const
 	{
 		const auto english_words = getWordList();
@@ -120,45 +181,32 @@ namespace soup
 						else
 						{
 							//std::cout << "not a specialised punctuation: \"" << word << "\" (" << word.size() << ")\n";
-							bw.u8(NUM_PUNCT_BITS, PUNCT_LITERAL);
-							bw.str_utf8_lp(word, 2);
+							auto dictenc = DictionaryEncoding::get(english_words, word);
+							if (dictenc.isValid())
+							{
+								//std::cout << "but " << word << " is in dictionary, so switching modes\n";
+								exitpunctmode(bw);
+								dictenc.commit(bw);
+								punctmode = false;
+							}
+							else
+							{
+								bw.u8(NUM_PUNCT_BITS, PUNCT_LITERAL);
+								bw.str_utf8_lp(word, 2);
+							}
 						}
 					}
 					else
 					{
-						if (auto e = std::find(english_words.begin(), english_words.end(), word); e != english_words.end())
+						auto dictenc = DictionaryEncoding::get(english_words, word);
+						if (dictenc.isValid())
 						{
-							//std::cout << "in dictionary: \"" << word << "\" (" << (e - english_words.begin()) << ")\n";
-							bw.u8(NUM_CTRL_BITS, DICTIONARY_WORD_LOWER);
-							bw.u17_dyn_2(e - english_words.begin());
+							dictenc.commit(bw);
 						}
 						else
 						{
-							std::string title_cased_word = word;
-							string::lower(title_cased_word);
-							title_cased_word[0] = std::toupper(title_cased_word[0]);
-
-							const bool word_is_title_cased = (word == title_cased_word);
-							title_cased_word[0] = std::tolower(title_cased_word[0]);
-
-							//std::vector<std::string>::iterator e;
-							if (word_is_title_cased)
-							{
-								e = std::find(english_words.begin(), english_words.end(), title_cased_word);
-							}
-
-							if (word_is_title_cased && e != english_words.end())
-							{
-								//std::cout << "in dictionary: \"" << word << "\" (" << (e - english_words.begin()) << ")\n";
-								bw.u8(NUM_CTRL_BITS, DICTIONARY_WORD_TITLE);
-								bw.u17_dyn_2(e - english_words.begin());
-							}
-							else
-							{
-								//std::cout << "not in dictionary: \"" << word << "\"\n";
-								bw.u8(NUM_CTRL_BITS, LITERAL_WORD);
-								bw.str_utf8_nt(word);
-							}
+							bw.u8(NUM_CTRL_BITS, LITERAL_WORD);
+							bw.str_utf8_nt(word);
 						}
 					}
 					punctmode = !punctmode;
@@ -185,8 +233,7 @@ namespace soup
 		}
 		if (punctmode)
 		{
-			bw.u8(NUM_PUNCT_BITS, PUNCT_LITERAL);
-			bw.str_utf32_lp(std::u32string{}, 2);
+			exitpunctmode(bw);
 			punctmode = false;
 		}
 		bw.u8(NUM_CTRL_BITS, END_OF_STRING);
