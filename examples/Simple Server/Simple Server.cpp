@@ -200,7 +200,7 @@ nLRbwHOoq7hHwg==
 -----END CERTIFICATE-----
 )EOC"),
 	};
-	server_rsa_data.private_key = soup::rsaPrivateKey::fromAsn1(soup::Asn1Sequence::fromBinary(soup::pem::decode(R"EOC(
+	server_rsa_data.private_key = soup::RsaPrivateKey::fromAsn1(soup::Asn1Sequence::fromBinary(soup::pem::decode(R"EOC(
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYbeJly69Nd+bP
 EnzCEAJZzqp/xsGr2YTgisYGyBKqp0ubWfl4ItRx7a50siEVy57oNBc4AGhQ6/A1

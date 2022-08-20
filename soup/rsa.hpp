@@ -7,13 +7,13 @@
 
 namespace soup
 {
-	struct rsaMod
+	struct RsaMod
 	{
 		Bigint n{};
 
-		rsaMod() = default;
+		RsaMod() = default;
 
-		rsaMod(const Bigint& n)
+		RsaMod(const Bigint& n)
 			: n(n)
 		{
 		}
@@ -38,9 +38,9 @@ namespace soup
 	};
 
 	template <typename T>
-	struct rsaKey : public rsaMod
+	struct RsaKey : public RsaMod
 	{
-		using rsaMod::rsaMod;
+		using RsaMod::RsaMod;
 
 		[[nodiscard]] Bigint encryptUnpadded(const std::string& msg) const // deterministic
 		{
@@ -61,49 +61,49 @@ namespace soup
 	};
 
 	template <typename T>
-	struct rsaPublicKeyBase : public rsaKey<T>
+	struct RsaPublicKeyBase : public RsaKey<T>
 	{
 		Bigint e{};
 
-		rsaPublicKeyBase() = default;
+		RsaPublicKeyBase() = default;
 
-		rsaPublicKeyBase(const Bigint& n, const Bigint& e)
-			: rsaKey<T>(n), e(e)
+		RsaPublicKeyBase(const Bigint& n, const Bigint& e)
+			: RsaKey<T>(n), e(e)
 		{
 		}
 
 		[[nodiscard]] Bigint encryptPkcs1(std::string msg) const // non-deterministic
 		{
-			rsaKey<T>::padPublic(msg);
-			return rsaKey<T>::encryptUnpadded(msg);
+			RsaKey<T>::padPublic(msg);
+			return RsaKey<T>::encryptUnpadded(msg);
 		}
 
 		template <typename CryptoHashAlgo>
 		[[nodiscard]] bool verify(const std::string& msg, const Bigint& sig) const
 		{
 			auto hash_bin = CryptoHashAlgo::hash(msg);
-			return rsaKey<T>::template padHash<CryptoHashAlgo>(hash_bin)
-				&& rsaKey<T>::decryptUnpadded(sig) == hash_bin;
+			return RsaKey<T>::template padHash<CryptoHashAlgo>(hash_bin)
+				&& RsaKey<T>::decryptUnpadded(sig) == hash_bin;
 		}
 
 		[[nodiscard]] UniquePtr<JsonObject> toJwk() const
 		{
-			return rsaKey<T>::publicToJwk(e);
+			return RsaKey<T>::publicToJwk(e);
 		}
 	};
 
-	struct rsaPublicKey : public rsaPublicKeyBase<rsaPublicKey>
+	struct RsaPublicKey : public RsaPublicKeyBase<RsaPublicKey>
 	{
 		static Bigint E_PREF;
 
-		rsaPublicKey() = default;
-		rsaPublicKey(const Bigint& n);
-		rsaPublicKey(const Bigint& n, const Bigint& e);
+		RsaPublicKey() = default;
+		RsaPublicKey(const Bigint& n);
+		RsaPublicKey(const Bigint& n, const Bigint& e);
 
 		[[nodiscard]] Bigint modPow(const Bigint& x) const;
 	};
 
-	struct rsaKeyMontgomeryData
+	struct RsaKeyMontgomeryData
 	{
 		size_t re{};
 		Bigint r{};
@@ -111,8 +111,8 @@ namespace soup
 		Bigint r_mod_mul_inv{};
 		Bigint one_mont{};
 
-		rsaKeyMontgomeryData() = default;
-		rsaKeyMontgomeryData(const Bigint& n, const Bigint& e);
+		RsaKeyMontgomeryData() = default;
+		RsaKeyMontgomeryData(const Bigint& n, const Bigint& e);
 
 		[[nodiscard]] Bigint modPow(const Bigint& n, const Bigint& e, const Bigint& x) const;
 	};
@@ -122,18 +122,18 @@ namespace soup
 	* ~12ms using a short-lived instance. From these numbers, we can estimate that a long-lived instance is the right choice for rsa public
 	* keys that are (expected to be) used more than 13 times.
 	*/
-	struct rsaLonglivedPublicKey : public rsaPublicKeyBase<rsaLonglivedPublicKey>
+	struct RsaPublicKeyLonglived : public RsaPublicKeyBase<RsaPublicKeyLonglived>
 	{
-		rsaKeyMontgomeryData mont_data;
+		RsaKeyMontgomeryData mont_data;
 
-		rsaLonglivedPublicKey() = default;
-		rsaLonglivedPublicKey(const Bigint& n);
-		rsaLonglivedPublicKey(const Bigint& n, const Bigint& e);
+		RsaPublicKeyLonglived() = default;
+		RsaPublicKeyLonglived(const Bigint& n);
+		RsaPublicKeyLonglived(const Bigint& n, const Bigint& e);
 
 		[[nodiscard]] Bigint modPow(const Bigint& x) const;
 	};
 
-	struct rsaPrivateKey : public rsaKey<rsaPrivateKey>
+	struct RsaPrivateKey : public RsaKey<RsaPrivateKey>
 	{
 		Bigint p;
 		Bigint q;
@@ -141,15 +141,15 @@ namespace soup
 		Bigint dq;
 		Bigint qinv;
 
-		rsaKeyMontgomeryData p_mont_data;
-		rsaKeyMontgomeryData q_mont_data;
+		RsaKeyMontgomeryData p_mont_data;
+		RsaKeyMontgomeryData q_mont_data;
 
-		rsaPrivateKey() = default;
-		rsaPrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv);
+		RsaPrivateKey() = default;
+		RsaPrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv);
 
-		[[nodiscard]] static rsaPrivateKey fromBinary(const std::string& bin);
-		[[nodiscard]] static rsaPrivateKey fromAsn1(const Asn1Sequence& seq);
-		[[nodiscard]] static rsaPrivateKey fromJwk(const JsonObject& jwk);
+		[[nodiscard]] static RsaPrivateKey fromBinary(const std::string& bin);
+		[[nodiscard]] static RsaPrivateKey fromAsn1(const Asn1Sequence& seq);
+		[[nodiscard]] static RsaPrivateKey fromJwk(const JsonObject& jwk);
 
 		template <typename CryptoHashAlgo>
 		[[nodiscard]] Bigint sign(const std::string& msg) const // deterministic
@@ -159,7 +159,7 @@ namespace soup
 
 		[[nodiscard]] Bigint encryptPkcs1(std::string msg) const; // deterministic
 
-		[[nodiscard]] rsaPublicKey derivePublic() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+		[[nodiscard]] RsaPublicKey derivePublic() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 
 		[[nodiscard]] Asn1Sequence toAsn1() const; // as per PKCS#1. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 		[[nodiscard]] std::string toPem() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
@@ -169,7 +169,7 @@ namespace soup
 		[[nodiscard]] Bigint getD() const; // returns private exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 	};
 
-	struct rsaKeypair : public rsaMod
+	struct RsaKeypair : public RsaMod
 	{
 		Bigint p;
 		Bigint q;
@@ -178,12 +178,12 @@ namespace soup
 		Bigint dq;
 		Bigint qinv;
 
-		rsaKeypair() = default;
-		rsaKeypair(Bigint _p, Bigint _q);
+		RsaKeypair() = default;
+		RsaKeypair(Bigint _p, Bigint _q);
 
-		[[nodiscard]] static rsaKeypair generate(unsigned int bits);
+		[[nodiscard]] static RsaKeypair generate(unsigned int bits);
 
-		[[nodiscard]] rsaPublicKey getPublic() const;
-		[[nodiscard]] rsaPrivateKey getPrivate() const;
+		[[nodiscard]] RsaPublicKey getPublic() const;
+		[[nodiscard]] RsaPrivateKey getPrivate() const;
 	};
 }

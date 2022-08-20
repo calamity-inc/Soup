@@ -10,7 +10,7 @@
 
 namespace soup
 {
-	std::string acme::getNewAcctPayload(const rsaKeypair& kp, const std::string& nonce, std::string email)
+	std::string acme::getNewAcctPayload(const RsaKeypair& kp, const std::string& nonce, std::string email)
 	{
 		// This works, but only against let's encrypt staging.
 		// Must be POST'd to https://acme-staging-v02.api.letsencrypt.org/acme/new-acct

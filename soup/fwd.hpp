@@ -12,7 +12,7 @@ namespace soup
 
 	// crypto
 	struct Keystore;
-	struct rsaKeypair;
+	struct RsaKeypair;
 
 	// crypto.x509
 	struct X509Certchain;

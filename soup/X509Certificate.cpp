@@ -77,7 +77,7 @@ namespace soup
 		return verify(issuer.key);
 	}
 
-	bool X509Certificate::verify(const rsaPublicKey& issuer) const
+	bool X509Certificate::verify(const RsaPublicKey& issuer) const
 	{
 		// Assuming cert[1] is sequence of OID 1.2.840.113549.1.1.11 (rsa with sha256)
 		return issuer.verify<soup::sha256>(tbsCertDer, sig);
