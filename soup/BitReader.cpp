@@ -87,7 +87,7 @@ namespace soup
 
 		if (isByteAligned())
 		{
-			bit_idx = bits;
+			bit_idx = bits % 8;
 			if (!r->u8(byte))
 			{
 				bit_idx = 0;
@@ -107,7 +107,7 @@ namespace soup
 				auto remaining_bits = (8 - bit_idx);
 				auto next_byte_bits = (bit_idx - (8 - bits));
 #if DEBUG_BR
-				std::cout << "We want to take " << (int)bits << " bits at bit_idx " << (int)bit_idx << ", so we'll take the remaining " << (int)remaining_bits << " bits and go to the next byte for " << (int)next_byte_bits << " more bits" << std::endl;
+				std::cout << "We want to take " << (int)bits << " bits at bit_idx " << (int)bit_idx << ", so we'll take the remaining " << (int)remaining_bits << " bits (" << (int)out << ") and go to the next byte for " << (int)next_byte_bits << " more bits" << std::endl;
 #endif
 				out <<= next_byte_bits;
 				if (forward(remaining_bits))

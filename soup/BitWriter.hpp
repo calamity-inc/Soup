@@ -40,7 +40,7 @@ namespace soup
 			{
 				return b(val);
 			}
-			while (bits >= 8)
+			while (bits > 8)
 			{
 				if (!u8(bits, (val >> (bits - 8))))
 				{

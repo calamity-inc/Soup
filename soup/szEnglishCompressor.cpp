@@ -104,14 +104,17 @@ namespace soup
 					{
 						if (word == " ")
 						{
+							//std::cout << "PUNCT_SPACE\n";
 							bw.u8(NUM_PUNCT_BITS, PUNCT_SPACE);
 						}
 						else if (word == ", ")
 						{
+							//std::cout << "PUNCT_COMMA_SPACE\n";
 							bw.u8(NUM_PUNCT_BITS, PUNCT_COMMA_SPACE);
 						}
 						else if (word == ". ")
 						{
+							//std::cout << "PUNCT_DOT_SPACE\n";
 							bw.u8(NUM_PUNCT_BITS, PUNCT_DOT_SPACE);
 						}
 						else

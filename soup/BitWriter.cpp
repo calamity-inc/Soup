@@ -52,13 +52,13 @@ namespace soup
 
 		if (bits <= bufferable_bits)
 		{
-			//std::cout << "We want to write " << (int)bits << " at " << (int)bit_idx << ", we can buffer " << (int)bufferable_bits << "\n";
+			//std::cout << "We want to write " << (int)bits << " bits (" << (int)val << ") at " << (int)bit_idx << ", we can buffer " << (int)bufferable_bits << "\n";
 			byte |= (val << bit_idx);
 			bit_idx += bits;
 			return bit_idx < 8 || commitByte();
 		}
 
-		//std::cout << "We want to write " << (int)bits << " at " << (int)bit_idx << " so we'll have to write " << (int)next_byte_bits << " bits to the next one.\n";
+		//std::cout << "We want to write " << (int)bits << " bits (" << (int)val << ") at " << (int)bit_idx << " so we'll have to write " << (int)(val >> next_byte_bits) << " and " << (int)next_byte_bits << " bits to the next one.\n";
 
 		byte |= ((val >> next_byte_bits) << bit_idx);
 
