@@ -1,4 +1,4 @@
-#include "Certchain.hpp"
+#include "X509Certchain.hpp"
 
 #include <cstring> // strlen
 
@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	bool Certchain::fromDer(const std::vector<std::string>& vec)
+	bool X509Certchain::fromDer(const std::vector<std::string>& vec)
 	{
 		for (auto& cert : vec)
 		{
@@ -22,7 +22,7 @@ namespace soup
 		return !certs.empty();
 	}
 
-	bool Certchain::fromPem(std::string str)
+	bool X509Certchain::fromPem(std::string str)
 	{
 		std::string cert{};
 		for (const auto& line : string::explode(str, "\n"))
@@ -50,25 +50,25 @@ namespace soup
 		return !certs.empty();
 	}
 
-	bool Certchain::verify(const std::string& domain, const Keystore& ks) const
+	bool X509Certchain::verify(const std::string& domain, const Keystore& ks) const
 	{
 		return isValidForDomain(domain)
 			&& verify(ks);
 	}
 
-	bool Certchain::isValidForDomain(const std::string& domain) const
+	bool X509Certchain::isValidForDomain(const std::string& domain) const
 	{
 		return certs.at(0).subject.getCommonName() == domain;
 	}
 
-	bool Certchain::verify(const Keystore& ks) const
+	bool X509Certchain::verify(const Keystore& ks) const
 	{
 		return verifyTrust(ks)
 			&& verifySignatures()
 			;
 	}
 
-	bool Certchain::verifyTrust(const Keystore& ks) const
+	bool X509Certchain::verifyTrust(const Keystore& ks) const
 	{
 		if (!certs.empty())
 		{
@@ -89,7 +89,7 @@ namespace soup
 		return false;
 	}
 
-	bool Certchain::isAnyInKeystore(const Keystore& ks) const
+	bool X509Certchain::isAnyInKeystore(const Keystore& ks) const
 	{
 		for (auto i = certs.rbegin(); i != certs.rend(); ++i)
 		{
@@ -104,7 +104,7 @@ namespace soup
 		return false;
 	}
 
-	bool Certchain::verifySignatures() const
+	bool X509Certchain::verifySignatures() const
 	{
 		if (certs.size() > 1)
 		{

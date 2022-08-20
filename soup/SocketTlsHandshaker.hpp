@@ -6,7 +6,7 @@
 #include "type.hpp"
 
 #include "Capture.hpp"
-#include "Certchain.hpp"
+#include "X509Certchain.hpp"
 #include "Promise.hpp"
 #include "SocketTlsEncrypter.hpp"
 #include "TlsServerRsaData.hpp"
@@ -30,8 +30,8 @@ namespace soup
 		std::string expected_finished_verify_data{};
 
 		// client
-		bool(*certchain_validator)(const Certchain&, const std::string& server_name);
-		Certchain certchain{};
+		bool(*certchain_validator)(const X509Certchain&, const std::string& server_name);
+		X509Certchain certchain{};
 		std::string server_name{};
 		std::string server_x25519_public_key{};
 		SocketTlsEncrypter pending_recv_encrypter;

@@ -96,9 +96,9 @@ namespace soup
 		bool setBlocking(bool blocking = true) noexcept;
 		bool setNonBlocking() noexcept;
 
-		static bool trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const Certchain&, const std::string&);
+		static bool trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const X509Certchain&, const std::string&);
 
-		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, bool(*certchain_validator)(const Certchain&, const std::string& server_name) = &trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
+		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, bool(*certchain_validator)(const X509Certchain&, const std::string& server_name) = &trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
 	protected:
 		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 

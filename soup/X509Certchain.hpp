@@ -7,7 +7,7 @@
 
 namespace soup
 {
-	struct Certchain
+	struct X509Certchain
 	{
 		std::vector<X509Certificate> certs{};
 

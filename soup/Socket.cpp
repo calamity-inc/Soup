@@ -239,7 +239,7 @@ namespace soup
 		return setBlocking(false);
 	}
 
-	bool Socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const Certchain&, const std::string&)
+	bool Socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const X509Certchain&, const std::string&)
 	{
 		// certchain is already decently implemented, but there's a few flaws:
 		// - no ECC support (big deal since cloudflare is basically ecc only now)
@@ -247,7 +247,7 @@ namespace soup
 		return true;
 	}
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap, bool(*certchain_validator)(const Certchain&, const std::string& server_name))
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap, bool(*certchain_validator)(const X509Certchain&, const std::string& server_name))
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
 			callback,

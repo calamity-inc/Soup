@@ -453,7 +453,7 @@
     <ClInclude Include="Callback.hpp" />
     <ClInclude Include="Canvas.hpp" />
     <ClInclude Include="Capture.hpp" />
-    <ClInclude Include="Certchain.hpp" />
+    <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
     <ClInclude Include="ChessCli.hpp" />
     <ClInclude Include="ChessCoordinate.hpp" />
@@ -709,7 +709,7 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
-    <ClCompile Include="Certchain.cpp" />
+    <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
     <ClCompile Include="ChessCli.cpp" />
     <ClCompile Include="ChessSquare.cpp" />

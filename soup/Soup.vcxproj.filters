@@ -308,7 +308,7 @@
     <ClInclude Include="Keystore.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
-    <ClInclude Include="Certchain.hpp">
+    <ClInclude Include="X509Certchain.hpp">
       <Filter>crypto\x509</Filter>
     </ClInclude>
     <ClInclude Include="Chessboard.hpp">
@@ -983,7 +983,7 @@
     <ClCompile Include="Keystore.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
-    <ClCompile Include="Certchain.cpp">
+    <ClCompile Include="X509Certchain.cpp">
       <Filter>crypto\x509</Filter>
     </ClCompile>
     <ClCompile Include="ChessCli.cpp">

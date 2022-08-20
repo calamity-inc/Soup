@@ -15,7 +15,7 @@ namespace soup
 	struct rsaKeypair;
 
 	// crypto.x509
-	struct Certchain;
+	struct X509Certchain;
 
 	// data
 	struct Oid;

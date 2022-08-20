@@ -32,7 +32,7 @@ namespace soup
 		void setPayload(std::string payload);
 
 		[[nodiscard]] std::optional<HttpResponse> execute() const; // blocking
-		[[nodiscard]] std::optional<HttpResponse> execute(bool(*certchain_validator)(const Certchain&, const std::string& server_name)) const; // blocking
+		[[nodiscard]] std::optional<HttpResponse> execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const; // blocking
 	private:
 		static void execute_tick(Socket& s, std::string* resp);
 	};

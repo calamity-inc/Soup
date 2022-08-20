@@ -65,7 +65,7 @@ namespace soup
 		return execute(&Socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
 	}
 
-	std::optional<HttpResponse> HttpRequest::execute(bool(*certchain_validator)(const Certchain&, const std::string& server_name)) const
+	std::optional<HttpResponse> HttpRequest::execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const
 	{
 		auto sock = make_unique<Socket>();
 		auto resp = make_unique<std::string>();
