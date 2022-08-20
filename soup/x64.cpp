@@ -26,24 +26,24 @@ namespace soup
 		"ip",
 	};
 
-	void x64::Operand::decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept
+	void x64Operand::decode(bool rex, uint8_t size, uint8_t reg, bool x) noexcept
 	{
 		reg |= (x << 3);
 
-		this->reg = (Register)reg;
-		access_type = (RegisterAccessType)size;
+		this->reg = (x64Register)reg;
+		access_type = (x64RegisterAccessType)size;
 
 		if (reg >= SP && reg <= DI
 			&& !rex
 			&& size != 64
 			)
 		{
-			this->reg = (Register)(this->reg - 4);
+			this->reg = (x64Register)(this->reg - 4);
 			access_type = ACCESS_8_H;
 		}
 	}
 
-	std::string x64::Operand::toString() const
+	std::string x64Operand::toString() const
 	{
 		if (reg == IMM)
 		{
@@ -124,34 +124,34 @@ namespace soup
 		return name;
 	}
 
-	static void decodeAccessType(x64::RegisterAccessType& typ, const char*& str)
+	static void decodeAccessType(x64RegisterAccessType& typ, const char*& str)
 	{
 		++str; // skip last char of register name
 		
-		if (typ == x64::ACCESS_64 || typ == x64::ACCESS_32)
+		if (typ == ACCESS_64 || typ == ACCESS_32)
 		{
 			++str; // skip 'x'
 		}
 		else if (*str == 'x')
 		{
-			typ = x64::ACCESS_16;
+			typ = ACCESS_16;
 			++str;
 		}
 		else if (*str == 'l')
 		{
-			typ = x64::ACCESS_8;
+			typ = ACCESS_8;
 			++str;
 		}
 		else if (*str == 'h')
 		{
-			typ = x64::ACCESS_8_H;
+			typ = ACCESS_8_H;
 			++str;
 		}
 	}
 
-	void x64::Operand::fromString(const char* str)
+	void x64Operand::fromString(const char* str)
 	{
-		access_type = (RegisterAccessType)-1;
+		access_type = (x64RegisterAccessType)-1;
 		
 		while (*str == ' ')
 		{
@@ -191,7 +191,7 @@ namespace soup
 		}
 	}
 
-	void x64::Instruction::reset() noexcept
+	void x64Instruction::reset() noexcept
 	{
 		operation = nullptr;
 		for (auto& opr : operands)
@@ -200,7 +200,7 @@ namespace soup
 		}
 	}
 
-	void x64::Instruction::fromString(const std::string& str)
+	void x64Instruction::fromString(const std::string& str)
 	{
 		reset();
 
@@ -258,7 +258,7 @@ namespace soup
 		}
 	}
 
-	std::string x64::Instruction::toString() const
+	std::string x64Instruction::toString() const
 	{
 		// This could be a bit cleverer and show e.g. "imul rax, 100" instead of "imul rax, rax, 100"
 		std::string res = operation->name;
@@ -280,7 +280,7 @@ namespace soup
 		return res;
 	}
 
-	std::string x64::Instruction::toBytecode() const
+	std::string x64Instruction::toBytecode() const
 	{
 		std::string res{};
 
@@ -322,7 +322,7 @@ namespace soup
 		code += (imm_bytes - 1);
 	}
 
-	x64::Instruction x64::disasm(const uint8_t*& code)
+	x64Instruction x64Disasm(const uint8_t*& code)
 	{
 		bool operand_size_override = false;
 		bool address_size_override = false;
@@ -357,7 +357,7 @@ namespace soup
 		}
 
 		// Opcode
-		Instruction res{};
+		x64Instruction res{};
 		for (const auto& op : operations)
 		{
 			if (op.matches(code))
@@ -398,7 +398,7 @@ namespace soup
 
 					for (uint8_t opr_enc; opr_enc = ((op.operand_encoding >> (opr_i * BITS_PER_OPERAND)) & OPERAND_MASK), opr_enc != ZO; )
 					{
-						Operand& opr = res.operands[opr_i];
+						x64Operand& opr = res.operands[opr_i];
 						if (opr_enc == O)
 						{
 							opr.decode(rex, operand_size, opcode & 0b111, rm_x);
@@ -479,23 +479,23 @@ namespace soup
 		return res;
 	}
 
-	uint8_t x64::getLength(const uint8_t* code)
+	uint8_t x64GetLength(const uint8_t* code)
 	{
 		auto start = code;
-		return disasm(code).isValid()
+		return x64Disasm(code).isValid()
 			? (uint8_t)(code - start)
 			: 0;
 	}
 
-	const uint8_t* x64::getPrev(const uint8_t* code)
+	const uint8_t* x64GetPrev(const uint8_t* code)
 	{
 		const auto present = code;
 		for (uint8_t i = 0; i != 100; ++i)
 		{
 			--code;
 			auto start = code;
-			if (isStartByte(code)
-				&& getNext(code) == present
+			if (x64IsStartByte(code)
+				&& x64GetNext(code) == present
 				)
 			{
 				return start;
@@ -504,15 +504,15 @@ namespace soup
 		return nullptr;
 	}
 
-	const uint8_t* x64::getNext(const uint8_t* code)
+	const uint8_t* x64GetNext(const uint8_t* code)
 	{
-		return disasm(code).isValid()
+		return x64Disasm(code).isValid()
 			? code
 			: nullptr
 			;
 	}
 
-	bool x64::isStartByte(const uint8_t* code)
+	bool x64IsStartByte(const uint8_t* code)
 	{
 		return *code == 0x0F // 2-byte opcode
 			|| (*code & 0xF0) == 0x40 // REX
