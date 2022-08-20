@@ -226,7 +226,7 @@ namespace soup
 #if DEBUG_ENG_DEC
 						std::cout << ": " << str;
 #endif
-				}
+					}
 					break;
 				}
 #if DEBUG_ENG_DEC
