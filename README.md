@@ -8,14 +8,7 @@ The recommended way to interact with this codebase is Visual Studio 2022.
 
 There are no external dependencies, so all you have to do is run a batch build for the Soup project, then you can use it in your own projects by adding a compiler and linker include, respectively.
 
-## Guides
-
-For some ideas as to what you can do with Soup:
-
-- [Programming a language](docs/Programming-a-language.md)
-- [RSA](docs/RSA.md)
-
-But there are obviously many more possibilites, just take a look around the codebase.
+If you want some ideas as to what you can do with Soup, check out [the cookbook](cookbook).
 
 ## License
 
