@@ -1,10 +1,10 @@
 #pragma once
 
-#include "RandomDevice.hpp"
+#include "algRng.hpp"
 
 namespace soup
 {
-	struct MtRandomDevice : public RandomDevice
+	struct algMtRng : public algRng
 	{
 		[[nodiscard]] uint64_t generate() final;
 	};

@@ -1,6 +1,6 @@
 #include "MazeGeneratorDepthFirst.hpp"
 
-#include "RandomDevice.hpp"
+#include "algRng.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
 
@@ -20,7 +20,7 @@ namespace soup
 		return backtrace.empty();
 	}
 
-	void MazeGeneratorDepthFirst::tick(RandomDevice& rd)
+	void MazeGeneratorDepthFirst::tick(algRng& rng)
 	{
 		if (isFinished())
 		{
@@ -67,7 +67,7 @@ namespace soup
 			return;
 		}
 
-		std::pair<uint8_t, size_t> neighbour = neighbours.at(rd.generate() % neighbours.size());
+		std::pair<uint8_t, size_t> neighbour = neighbours.at(rng.generate() % neighbours.size());
 		cells.at(backtrace.top()) |= neighbour.first;
 		cells.at(neighbour.second) |= VISITED;
 		switch (neighbour.first)

@@ -1,20 +1,20 @@
 #pragma once
 
-#include "RandomDevice.hpp"
+#include "algRng.hpp"
 
 namespace soup
 {
 	// Linear congruential generator (LCG)
-	struct LcgRandomDevice : public RandomDevice
+	struct algLcgRng : public algRng
 	{
 		uint64_t state;
 		// modulus 2^64 (aka. overflowing a 64-bit integer)
 		uint64_t multiplier = 6364136223846793005ull;
 		uint64_t increment = 1442695040888963407ull;
 
-		LcgRandomDevice();
+		algLcgRng();
 
-		LcgRandomDevice(uint64_t seed)
+		algLcgRng(uint64_t seed)
 			: state(seed)
 		{
 		}

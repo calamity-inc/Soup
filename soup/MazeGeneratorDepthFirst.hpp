@@ -26,7 +26,7 @@ namespace soup
 		MazeGeneratorDepthFirst(size_t width, size_t height);
 
 		[[nodiscard]] bool isFinished() final;
-		void tick(RandomDevice& rd) final;
+		void tick(algRng& rng) final;
 
 		std::pair<size_t, size_t> getRenderSize() const;
 		void render(RenderTarget& rt) const;

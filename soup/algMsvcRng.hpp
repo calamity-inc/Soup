@@ -1,15 +1,15 @@
 #pragma once
 
-#include "RandomDevice.hpp"
+#include "algRng.hpp"
 
 namespace soup
 {
 	// Not meant for usage, just for demonstration purposes.
-	struct MsvcLcgRandomDevice : public RandomDevice
+	struct algMsvcRng : public algRng
 	{
 		uint32_t state;
 
-		MsvcLcgRandomDevice(uint32_t seed) // = srand
+		algMsvcRng(uint32_t seed) // = srand
 			: state(seed)
 		{
 		}

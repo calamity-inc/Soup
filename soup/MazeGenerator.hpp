@@ -6,15 +6,15 @@ namespace soup
 {
 	struct MazeGenerator
 	{
-		void generate(RandomDevice& rd)
+		void generate(algRng& rng)
 		{
 			while (!isFinished())
 			{
-				tick(rd);
+				tick(rng);
 			}
 		}
 
 		[[nodiscard]] virtual bool isFinished() = 0;
-		virtual void tick(RandomDevice& rd) = 0;
+		virtual void tick(algRng& rng) = 0;
 	};
 }

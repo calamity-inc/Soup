@@ -4,7 +4,7 @@
 
 #include <Canvas.hpp>
 #include <console.hpp>
-#include <LcgRandomDevice.hpp>
+#include <algLcgRng.hpp>
 #include <MazeGeneratorDepthFirst.hpp>
 #include <RenderTargetCanvas.hpp>
 
@@ -21,11 +21,11 @@ void cli_maze()
 			return;
 		}
 		once = true;
-		LcgRandomDevice rd{};
+		algLcgRng rng{};
 		height *= 2;
 		height -= 3;
 		MazeGeneratorDepthFirst mg((width + 1) / 3, (height + 1) / 3);
-		for (bool last = true; (mg.isFinished() ? (last ? (last = false, true) : false) : true); mg.tick(rd))
+		for (bool last = true; (mg.isFinished() ? (last ? (last = false, true) : false) : true); mg.tick(rng))
 		{
 			Canvas c(width, height);
 			RenderTargetCanvas rt(&c);

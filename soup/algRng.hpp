@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	struct RandomDevice
+	struct algRng
 	{
 		[[nodiscard]] virtual uint64_t generate() = 0;
 	};

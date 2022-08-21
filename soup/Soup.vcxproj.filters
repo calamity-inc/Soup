@@ -683,16 +683,16 @@
     <ClInclude Include="SceneRasterisingRenderer.hpp">
       <Filter>math\3d\scene</Filter>
     </ClInclude>
-    <ClInclude Include="RandomDevice.hpp">
+    <ClInclude Include="algRng.hpp">
       <Filter>algos\rand</Filter>
     </ClInclude>
-    <ClInclude Include="LcgRandomDevice.hpp">
+    <ClInclude Include="algLcgRng.hpp">
       <Filter>algos\rand</Filter>
     </ClInclude>
     <ClInclude Include="intutil.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="MtRandomDevice.hpp">
+    <ClInclude Include="algMtRng.hpp">
       <Filter>algos\rand</Filter>
     </ClInclude>
     <ClInclude Include="MazeGenerator.hpp">
@@ -764,7 +764,7 @@
     <ClInclude Include="WebSocketConnection.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
-    <ClInclude Include="MsvcLcgRandomDevice.hpp">
+    <ClInclude Include="algMsvcRng.hpp">
       <Filter>algos\rand</Filter>
     </ClInclude>
     <ClInclude Include="StringMatch.hpp">
@@ -1187,10 +1187,10 @@
     <ClCompile Include="SceneRasterisingRenderer.cpp">
       <Filter>math\3d\scene</Filter>
     </ClCompile>
-    <ClCompile Include="LcgRandomDevice.cpp">
+    <ClCompile Include="algLcgRng.cpp">
       <Filter>algos\rand</Filter>
     </ClCompile>
-    <ClCompile Include="MtRandomDevice.cpp">
+    <ClCompile Include="algMtRng.cpp">
       <Filter>algos\rand</Filter>
     </ClCompile>
     <ClCompile Include="MazeGeneratorDepthFirst.cpp">

@@ -1,16 +1,16 @@
-#include "LcgRandomDevice.hpp"
+#include "algLcgRng.hpp"
 
 #include "intutil.hpp"
 #include "time.hpp"
 
 namespace soup
 {
-	LcgRandomDevice::LcgRandomDevice()
-		: LcgRandomDevice(~time::nanos())
+	algLcgRng::algLcgRng()
+		: algLcgRng(~time::nanos())
 	{
 	}
 
-	uint64_t LcgRandomDevice::generate()
+	uint64_t algLcgRng::generate()
 	{
 		state *= multiplier;
 		state += increment;

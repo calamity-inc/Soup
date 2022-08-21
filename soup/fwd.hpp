@@ -5,7 +5,7 @@
 namespace soup
 {
 	// algos.rand
-	struct RandomDevice;
+	struct algRng;
 
 	// chess
 	struct ChessCoordinate;
