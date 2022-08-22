@@ -116,4 +116,9 @@ namespace soup
 			text_x += (g.width + 1);
 		}
 	}
+
+	Rgb RenderTarget::getPixel(unsigned int x, unsigned int y) const
+	{
+		throw 0;
+	}
 }
