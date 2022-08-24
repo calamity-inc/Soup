@@ -29,8 +29,8 @@ namespace soup
 		uint8_t baseline_glyph_height;
 		std::unordered_map<uint32_t, Glyph> glyphs;
 
-		[[nodiscard]] static RasterFont simple5(); // 5 pixels tall, not ideal for lowercase characters
-		[[nodiscard]] static RasterFont simple8(); // 8 pixels tall
+		[[nodiscard]] static const RasterFont& simple5(); // 5 pixels tall, not ideal for lowercase characters
+		[[nodiscard]] static const RasterFont& simple8(); // 8 pixels tall
 
 		[[nodiscard]] const Glyph& get(uint32_t c) const;
 		[[nodiscard]] uint32_t getFallback() const;

@@ -14,7 +14,7 @@ namespace soup
 		return Canvas(width, height, pixels);
 	}
 
-	RasterFont RasterFont::simple5()
+	[[nodiscard]] static RasterFont generateSimple5()
 	{
 		RasterFont f{};
 		f.baseline_glyph_height = 5;
@@ -527,7 +527,7 @@ namespace soup
 		return f;
 	}
 
-	RasterFont RasterFont::simple8()
+	[[nodiscard]] static RasterFont generateSimple8()
 	{
 		RasterFont f{};
 		f.baseline_glyph_height = 8;
@@ -1200,6 +1200,18 @@ namespace soup
 			1,1,1,1,1,
 		}, 7));
 		return f;
+	}
+
+	const RasterFont& RasterFont::simple5()
+	{
+		static RasterFont simple5_inst = generateSimple5();
+		return simple5_inst;
+	}
+
+	const RasterFont& RasterFont::simple8()
+	{
+		static RasterFont simple8_inst = generateSimple8();
+		return simple8_inst;
 	}
 
 	const Glyph& RasterFont::get(uint32_t c) const
