@@ -18,9 +18,13 @@ namespace soup
 
 	lyoElement* lyoContainer::querySelector(const std::string& selector)
 	{
+		if (matchesSelector(selector))
+		{
+			return this;
+		}
 		for(const auto& node : children)
 		{
-			if (node->tag_name == selector)
+			if (node->matchesSelector(selector))
 			{
 				return node.get();
 			}
@@ -28,13 +32,30 @@ namespace soup
 		return nullptr;
 	}
 
+	std::vector<lyoElement*> lyoContainer::querySelectorAll(const std::string& selector)
+	{
+		std::vector<lyoElement*> res{};
+		if (matchesSelector(selector))
+		{
+			res.emplace_back(this);
+		}
+		for (const auto& node : children)
+		{
+			if (node->matchesSelector(selector))
+			{
+				res.emplace_back(node.get());
+			}
+		}
+		return res;
+	}
+
 	void lyoContainer::flattenElement(lyoFlatDocument& flat)
 	{
 		auto og_x = flat_x;
 		auto og_y = flat_y;
 
-		flat_x += margin_left;
-		flat_y += margin_top;
+		flat_x += style.margin_left;
+		flat_y += style.margin_top;
 
 		flat.elms.emplace_back(this);
 		for (auto& elm : children)

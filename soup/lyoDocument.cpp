@@ -9,6 +9,29 @@
 
 namespace soup
 {
+	lyoDocument::lyoDocument()
+		: lyoContainer(nullptr)
+	{
+		tag_name = "body";
+
+		lyoStylesheet uas;
+		uas.name = "user-agent stylesheet";
+		{
+			lyoRule rule;
+			rule.selector = "body";
+			rule.style.setMargin(8);
+			uas.rules.emplace_back(std::move(rule));
+		}
+		{
+			lyoRule rule;
+			rule.selector = "span";
+			rule.style.display_inline = true;
+			rule.style.font_size = 16;
+			uas.rules.emplace_back(std::move(rule));
+		}
+		stylesheets.emplace_back(std::move(uas));
+	}
+
 	lyoDocument lyoDocument::fromMarkup(const std::string& markup)
 	{
 		lyoDocument doc;
@@ -24,11 +47,25 @@ namespace soup
 				{
 					auto txt = doc.addText(reinterpret_cast<XmlText*>(tag.children.at(0).get())->contents);
 					txt->tag_name = tag.name;
-					txt->scale = 2;
 				}
 			}
 		}
+		doc.propagateStyle();
 		return doc;
+	}
+
+	void lyoDocument::propagateStyle()
+	{
+		for (const auto& stylesheet : stylesheets)
+		{
+			for (const auto& rule : stylesheet.rules)
+			{
+				for (const auto& elm : querySelectorAll(rule.selector))
+				{
+					elm->style.overrideWith(rule.style);
+				}
+			}
+		}
 	}
 
 	lyoFlatDocument lyoDocument::flatten(int width, int height)

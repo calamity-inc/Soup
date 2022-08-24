@@ -875,6 +875,12 @@
     <ClInclude Include="elo.hpp">
       <Filter>algos</Filter>
     </ClInclude>
+    <ClInclude Include="lyoStylesheet.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="lyoStyle.hpp">
+      <Filter>vis\layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1300,6 +1306,9 @@
     </ClCompile>
     <ClCompile Include="szEnglishCompressor.cpp">
       <Filter>io\sip\compressor</Filter>
+    </ClCompile>
+    <ClCompile Include="lyoStyle.cpp">
+      <Filter>vis\layout</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

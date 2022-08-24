@@ -406,6 +406,8 @@
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
+    <ClInclude Include="lyoStyle.hpp" />
+    <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="netAs.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />
@@ -709,6 +711,7 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
     <ClCompile Include="ChessCli.cpp" />

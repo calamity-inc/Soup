@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "lyoStyle.hpp"
+
 namespace soup
 {
 	struct lyoElement : public TreeNode
@@ -18,13 +20,7 @@ namespace soup
 
 		std::string tag_name{};
 
-		bool display_inline = false;
-
-		uint8_t margin_left = 0;
-		uint8_t margin_right = 0;
-		// margin-top & margin-bottom seemingly ignored with `display: inline`
-		uint8_t margin_top = 0;
-		uint8_t margin_bottom = 0;
+		lyoStyle style;
 
 		void(*on_click)(lyoElement&, lyoDocument&) = nullptr;
 
@@ -35,13 +31,7 @@ namespace soup
 
 		[[nodiscard]] lyoDocument& getDocument() noexcept;
 
-		void setMargin(uint8_t margin)
-		{
-			margin_left = margin;
-			margin_right = margin;
-			margin_top = margin;
-			margin_bottom = margin;
-		}
+		[[nodiscard]] bool matchesSelector(const std::string& selector) const noexcept;
 
 		virtual void flattenElement(lyoFlatDocument& flat) = 0;
 

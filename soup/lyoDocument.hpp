@@ -6,17 +6,19 @@
 
 #include <string>
 
+#include "lyoStylesheet.hpp"
+
 namespace soup
 {
 	struct lyoDocument : public lyoContainer
 	{
-		lyoDocument()
-			: lyoContainer(nullptr)
-		{
-			setMargin(8);
-		}
+		std::vector<lyoStylesheet> stylesheets;
+
+		lyoDocument();
 
 		[[nodiscard]] static lyoDocument fromMarkup(const std::string& markup);
+
+		void propagateStyle();
 
 		[[nodiscard]] bool isValid() const noexcept
 		{

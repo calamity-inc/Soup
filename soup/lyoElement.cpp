@@ -11,4 +11,9 @@ namespace soup
 		}
 		return *reinterpret_cast<lyoDocument*>(this);
 	}
+
+	bool lyoElement::matchesSelector(const std::string& selector) const noexcept
+	{
+		return tag_name == selector;
+	}
 }
