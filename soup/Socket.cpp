@@ -695,7 +695,7 @@ namespace soup
 			std::string data(0x1000, '\0');
 
 			sockaddr_in6 sa;
-			int sal = sizeof(sa);
+			socklen_t sal = sizeof(sa);
 			data.resize(::recvfrom(reinterpret_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal));
 
 			IpAddr sender;
