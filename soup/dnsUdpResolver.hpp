@@ -2,11 +2,14 @@
 
 #include "dnsRawResolver.hpp"
 
+#include "SocketAddr.hpp"
+
 namespace soup
 {
-	struct dnsHttpResolver : public dnsRawResolver
+	struct dnsUdpResolver : public dnsRawResolver
 	{
-		std::string server = "1.1.1.1";
+		SocketAddr server{ IpAddr(0x01010101), 53 };
+		unsigned int timeout_ms = 3000;
 
 		[[nodiscard]] std::vector<dnsARecord> lookupA(const std::string& name) const final;
 		[[nodiscard]] std::vector<dnsAaaaRecord> lookupAAAA(const std::string& name) const final;

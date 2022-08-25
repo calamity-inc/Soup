@@ -405,6 +405,7 @@
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="dnsUdpResolver.hpp" />
     <ClInclude Include="dnsClass.hpp" />
     <ClInclude Include="dnsHeader.hpp" />
     <ClInclude Include="dnsHttpResolver.hpp" />
@@ -412,6 +413,7 @@
     <ClInclude Include="dnsNameDecompressor.hpp" />
     <ClInclude Include="dnsQType.hpp" />
     <ClInclude Include="dnsQuestion.hpp" />
+    <ClInclude Include="dnsRawResolver.hpp" />
     <ClInclude Include="dnsResolver.hpp" />
     <ClInclude Include="dnsResource.hpp" />
     <ClInclude Include="dnsType.hpp" />
@@ -725,7 +727,9 @@
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="dnsHttpResolver.cpp" />
+    <ClCompile Include="dnsRawResolver.cpp" />
     <ClCompile Include="dnsResolver.cpp" />
+    <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />

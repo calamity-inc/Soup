@@ -917,8 +917,14 @@
     <ClInclude Include="dnsHttpResolver.hpp">
       <Filter>net\dns\resolver</Filter>
     </ClInclude>
+    <ClInclude Include="dnsRawResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
     <ClInclude Include="ServerService.hpp">
       <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsUdpResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1353,6 +1359,12 @@
       <Filter>net\dns\resolver</Filter>
     </ClCompile>
     <ClCompile Include="dnsHttpResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsUdpResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsRawResolver.cpp">
       <Filter>net\dns\resolver</Filter>
     </ClCompile>
   </ItemGroup>

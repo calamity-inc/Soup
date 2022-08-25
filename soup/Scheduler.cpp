@@ -6,6 +6,7 @@
 
 #include "Promise.hpp"
 #include "Socket.hpp"
+#include "time.hpp"
 
 namespace soup
 {
@@ -23,66 +24,97 @@ namespace soup
 		{
 			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
-			for (auto i = workers.begin(); i != workers.end(); )
-			{
-				if ((*i)->holdup_type == Worker::NONE)
-				{
-					if (on_work_done)
-					{
-						on_work_done(*i->get(), *this);
-					}
-					i = workers.erase(i);
-					continue;
-				}
-				if ((*i)->holdup_type == Worker::SOCKET)
-				{
-					if (reinterpret_cast<Socket*>(i->get())->fd == -1)
-					{
-						onConnectionLoss(i);
-						continue;
-					}
-					pollfds.emplace_back(pollfd{
-						reinterpret_cast<Socket*>(i->get())->fd,
-						POLLIN
-					});
-				}
-				else
-				{
-					not_just_sockets = true;
-					pollfds.emplace_back(pollfd{
-						(Socket::fd_t)-1,
-						POLLIN
-					});
-
-					//if ((*i)->holdup_type == Worker::PROMISE)
-					{
-						if (!reinterpret_cast<PromiseBase*>((*i)->holdup_data)->isPending())
-						{
-							fireHoldupCallback(**i);
-						}
-					}
-				}
-				++i;
-			}
+			tick(pollfds, not_just_sockets);
 			if (not_just_sockets)
 			{
-				if (poll(pollfds, 0) > 0)
-				{
-					processPollResults(pollfds);
-				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				yieldBusyspin(pollfds);
 			}
 			else
 			{
-#if SOUP_LINUX
-				if (poll(pollfds, 1) > 0) // On Linux, poll does not detect closed sockets, even if shutdown is used.
-#else
-				if (poll(pollfds, -1) > 0)
-#endif
+				yieldKernel(pollfds);
+			}
+		}
+	}
+
+	void Scheduler::runFor(unsigned int ms)
+	{
+		time_t deadline = time::millis() + ms;
+		while (!workers.empty())
+		{
+			bool not_just_sockets = false;
+			std::vector<pollfd> pollfds{};
+			tick(pollfds, not_just_sockets);
+			yieldBusyspin(pollfds);
+			if (time::millis() > deadline)
+			{
+				break;
+			}
+		}
+	}
+
+	void Scheduler::tick(std::vector<pollfd>& pollfds, bool& not_just_sockets)
+	{
+		for (auto i = workers.begin(); i != workers.end(); )
+		{
+			if ((*i)->holdup_type == Worker::NONE)
+			{
+				if (on_work_done)
 				{
-					processPollResults(pollfds);
+					on_work_done(*i->get(), *this);
+				}
+				i = workers.erase(i);
+				continue;
+			}
+			if ((*i)->holdup_type == Worker::SOCKET)
+			{
+				if (reinterpret_cast<Socket*>(i->get())->fd == -1)
+				{
+					onConnectionLoss(i);
+					continue;
+				}
+				pollfds.emplace_back(pollfd{
+					reinterpret_cast<Socket*>(i->get())->fd,
+					POLLIN
+					});
+			}
+			else
+			{
+				not_just_sockets = true;
+				pollfds.emplace_back(pollfd{
+					(Socket::fd_t)-1,
+					POLLIN
+					});
+
+				//if ((*i)->holdup_type == Worker::PROMISE)
+				{
+					if (!reinterpret_cast<PromiseBase*>((*i)->holdup_data)->isPending())
+					{
+						fireHoldupCallback(**i);
+					}
 				}
 			}
+			++i;
+		}
+	}
+
+	void Scheduler::yieldBusyspin(std::vector<pollfd>& pollfds)
+	{
+		if (poll(pollfds, 0) > 0)
+		{
+			processPollResults(pollfds);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	void Scheduler::yieldKernel(std::vector<pollfd>& pollfds)
+	{
+#if SOUP_LINUX
+		if (poll(pollfds, 1) > 0) // On Linux, poll does not detect closed sockets, even if shutdown is used.
+#else
+		if (poll(pollfds, -1) > 0)
+#endif
+		{
+			processPollResults(pollfds);
 		}
 	}
 

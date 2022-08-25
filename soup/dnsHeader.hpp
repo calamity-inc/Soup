@@ -26,15 +26,26 @@ namespace soup
 				;
 		}
 
-		void setIsResponse(bool is_response) noexcept
+		void setIsResponse(bool b) noexcept
 		{
 			bitfield1 &= ~(1 << 7);
-			bitfield1 |= (is_response << 7);
+			bitfield1 |= (b << 7);
 		}
 
 		[[nodiscard]] bool isResponse() const noexcept
 		{
 			return (bitfield1 >> 7) & 1;
+		}
+
+		void setRecursionDesired(bool b) noexcept
+		{
+			bitfield1 &= ~(1 << 0);
+			bitfield1 |= (b << 0);
+		}
+
+		[[nodiscard]] bool isRecursionDesired() const noexcept
+		{
+			return (bitfield1 >> 0) & 1;
 		}
 	};
 }

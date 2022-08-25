@@ -19,9 +19,7 @@ namespace soup
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				if (i->wType == DNS_TYPE_A
-					&& name == i->pName
-					)
+				if (i->wType == DNS_TYPE_A)
 				{
 					res.emplace_back(i->dwTtl, i->Data.A.IpAddress);
 				}
@@ -55,9 +53,7 @@ namespace soup
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				if (i->wType == DNS_TYPE_AAAA
-					&& name == i->pName
-					)
+				if (i->wType == DNS_TYPE_AAAA)
 				{
 					res.emplace_back(i->dwTtl, i->Data.AAAA.Ip6Address.IP6Byte);
 				}
@@ -91,9 +87,7 @@ namespace soup
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				if (i->wType == DNS_TYPE_SRV
-					&& name == i->pName
-					)
+				if (i->wType == DNS_TYPE_SRV)
 				{
 					res.emplace_back(i->dwTtl, i->Data.SRV.wPriority, i->Data.SRV.wWeight, i->Data.SRV.pNameTarget, i->Data.SRV.wPort);
 				}
@@ -129,9 +123,7 @@ namespace soup
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
-				if (i->wType == DNS_TYPE_TEXT
-					&& name == i->pName
-					)
+				if (i->wType == DNS_TYPE_TEXT)
 				{
 					res.emplace_back(i->dwTtl, i->Data.TXT.pStringArray[0]);
 				}
