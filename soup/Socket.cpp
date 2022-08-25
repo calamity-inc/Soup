@@ -165,7 +165,8 @@ namespace soup
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
 			&& listen(fd, 100) != -1
-			&& setNonBlocking();
+			&& setNonBlocking()
+			;
 	}
 
 	bool Socket::bind4(uint16_t port) noexcept
@@ -182,7 +183,8 @@ namespace soup
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
 			&& listen(fd, 100) != -1
-			&& setNonBlocking();
+			&& setNonBlocking()
+			;
 	}
 
 #if SOUP_WINDOWS
