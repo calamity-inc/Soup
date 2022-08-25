@@ -38,5 +38,15 @@ namespace soup
 			str.append(std::to_string(port));
 			return str;
 		}
+
+		[[nodiscard]] bool operator==(const SocketAddr& b) const noexcept
+		{
+			return ip == b.ip && port == b.port;
+		}
+
+		[[nodiscard]] bool operator!=(const SocketAddr& b) const noexcept
+		{
+			return !operator==(b);
+		}
 	};
 }
