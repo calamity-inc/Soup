@@ -473,9 +473,6 @@
     <ClInclude Include="PointLight.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="dns.hpp">
-      <Filter>net</Filter>
-    </ClInclude>
     <ClInclude Include="ServerWebService.hpp">
       <Filter>net\web</Filter>
     </ClInclude>
@@ -881,6 +878,48 @@
     <ClInclude Include="lyoStyle.hpp">
       <Filter>vis\layout</Filter>
     </ClInclude>
+    <ClInclude Include="dnsHeader.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsQuestion.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsClass.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsType.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsTypeImpl.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsQType.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsResource.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsName.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsNameDecompressor.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="ioSizeMeasurer.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="dns_records.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsOsResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsHttpResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1087,9 +1126,6 @@
     </ClCompile>
     <ClCompile Include="PointLight.cpp">
       <Filter>math\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="dns.cpp">
-      <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="joaat.cpp">
       <Filter>data\hash</Filter>
@@ -1310,6 +1346,15 @@
     <ClCompile Include="lyoStyle.cpp">
       <Filter>vis\layout</Filter>
     </ClCompile>
+    <ClCompile Include="dnsResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsOsResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsHttpResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1461,6 +1506,12 @@
     </Filter>
     <Filter Include="io\sip\compressor">
       <UniqueIdentifier>{9f3701d9-0f6f-4d87-8ffe-48a0aa2cb91f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\dns">
+      <UniqueIdentifier>{5b858f22-62ff-4489-bc21-838a71ed20a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\dns\resolver">
+      <UniqueIdentifier>{80908fe7-bfd1-42cd-b12e-6c3be2fae56a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

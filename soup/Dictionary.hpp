@@ -25,7 +25,7 @@ namespace soup
 			{
 				return false;
 			}
-			if constexpr (T::isRead())
+			SOUP_IF_ISREAD
 			{
 				while (s.hasMore())
 				{
@@ -40,7 +40,7 @@ namespace soup
 					words.emplace(std::move(word), std::move(dw));
 				}
 			}
-			else if constexpr (T::isWrite())
+			SOUP_ELSEIF_ISWRITE
 			{
 				for (auto& e : words)
 				{

@@ -1,4 +1,4 @@
-#include "dns.hpp"
+#include "dnsOsResolver.hpp"
 
 #include "base.hpp"
 #if SOUP_WINDOWS
@@ -8,39 +8,19 @@
 #include <resolv.h>
 #endif
 
-namespace soup::dns
+namespace soup
 {
-	std::vector<IpAddr> lookupIPv4(const char* name) noexcept
+	std::vector<dnsARecord> dnsOsResolver::lookupA(const std::string& name) const
 	{
-		std::vector<IpAddr> res{};
-		for (const auto& r : lookupA(name))
-		{
-			res.emplace_back(r.data);
-		}
-		return res;
-	}
-
-	std::vector<IpAddr> lookupIPv6(const char* name) noexcept
-	{
-		std::vector<IpAddr> res{};
-		for (const auto& r : lookupAAAA(name))
-		{
-			res.emplace_back(r.data);
-		}
-		return res;
-	}
-
-	std::vector<ARecord> lookupA(const char* name) noexcept
-	{
-		std::vector<ARecord> res{};
+		std::vector<dnsARecord> res{};
 #if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
-		if (DnsQuery_UTF8(name, DNS_TYPE_A, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
+		if (DnsQuery_UTF8(name.c_str(), DNS_TYPE_A, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
 				if (i->wType == DNS_TYPE_A
-					&& strcmp(name, i->pName) == 0
+					&& name == i->pName
 					)
 				{
 					res.emplace_back(i->dwTtl, i->Data.A.IpAddress);
@@ -50,7 +30,7 @@ namespace soup::dns
 		}
 #else
 		unsigned char query_buffer[1024];
-		auto ret = res_query(name, C_IN, ns_t_a, query_buffer, sizeof(query_buffer));
+		auto ret = res_query(name.c_str(), C_IN, ns_t_a, query_buffer, sizeof(query_buffer));
 		if (ret > 0)
 		{
 			ns_msg nsMsg;
@@ -66,17 +46,17 @@ namespace soup::dns
 		return res;
 	}
 
-	std::vector<AaaaRecord> lookupAAAA(const char* name) noexcept
+	std::vector<dnsAaaaRecord> dnsOsResolver::lookupAAAA(const std::string& name) const
 	{
-		std::vector<AaaaRecord> res{};
+		std::vector<dnsAaaaRecord> res{};
 #if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
-		if (DnsQuery_UTF8(name, DNS_TYPE_AAAA, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
+		if (DnsQuery_UTF8(name.c_str(), DNS_TYPE_AAAA, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
 				if (i->wType == DNS_TYPE_AAAA
-					&& strcmp(name, i->pName) == 0
+					&& name == i->pName
 					)
 				{
 					res.emplace_back(i->dwTtl, i->Data.AAAA.Ip6Address.IP6Byte);
@@ -86,7 +66,7 @@ namespace soup::dns
 		}
 #else
 		unsigned char query_buffer[1024];
-		auto ret = res_query(name, C_IN, ns_t_aaaa, query_buffer, sizeof(query_buffer));
+		auto ret = res_query(name.c_str(), C_IN, ns_t_aaaa, query_buffer, sizeof(query_buffer));
 		if (ret > 0)
 		{
 			ns_msg nsMsg;
@@ -102,17 +82,17 @@ namespace soup::dns
 		return res;
 	}
 
-	std::vector<SrvRecord> lookupSRV(const char* name) noexcept
+	std::vector<dnsSrvRecord> dnsOsResolver::lookupSRV(const std::string& name) const
 	{
-		std::vector<SrvRecord> res{};
+		std::vector<dnsSrvRecord> res{};
 #if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
-		if (DnsQuery_UTF8(name, DNS_TYPE_SRV, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
+		if (DnsQuery_UTF8(name.c_str(), DNS_TYPE_SRV, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
 				if (i->wType == DNS_TYPE_SRV
-					&& strcmp(name, i->pName) == 0
+					&& name == i->pName
 					)
 				{
 					res.emplace_back(i->dwTtl, i->Data.SRV.wPriority, i->Data.SRV.wWeight, i->Data.SRV.pNameTarget, i->Data.SRV.wPort);
@@ -122,7 +102,7 @@ namespace soup::dns
 		}
 #else
 		unsigned char query_buffer[1024];
-		auto ret = res_query(name, C_IN, ns_t_srv, query_buffer, sizeof(query_buffer));
+		auto ret = res_query(name.c_str(), C_IN, ns_t_srv, query_buffer, sizeof(query_buffer));
 		if (ret > 0)
 		{
 			ns_msg nsMsg;
@@ -140,17 +120,17 @@ namespace soup::dns
 		return res;
 	}
 
-	std::vector<TxtRecord> lookupTXT(const char* name) noexcept
+	std::vector<dnsTxtRecord> dnsOsResolver::lookupTXT(const std::string& name) const
 	{
-		std::vector<TxtRecord> res{};
+		std::vector<dnsTxtRecord> res{};
 #if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
-		if (DnsQuery_UTF8(name, DNS_TYPE_TEXT, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
+		if (DnsQuery_UTF8(name.c_str(), DNS_TYPE_TEXT, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
 				if (i->wType == DNS_TYPE_TEXT
-					&& strcmp(name, i->pName) == 0
+					&& name == i->pName
 					)
 				{
 					res.emplace_back(i->dwTtl, i->Data.TXT.pStringArray[0]);
@@ -160,7 +140,7 @@ namespace soup::dns
 		}
 #else
 		unsigned char query_buffer[1024];
-		auto ret = res_query(name, C_IN, ns_t_txt, query_buffer, sizeof(query_buffer));
+		auto ret = res_query(name.c_str(), C_IN, ns_t_txt, query_buffer, sizeof(query_buffer));
 		if (ret > 0)
 		{
 			ns_msg nsMsg;

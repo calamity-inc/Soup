@@ -2,6 +2,8 @@
 
 #define SOUP_PACKET(name) struct name : public ::soup::Packet<name>
 #define SOUP_PACKET_IO(s) template <typename T> bool io(T& s)
+#define SOUP_IF_ISREAD if constexpr (T::isRead())
+#define SOUP_ELSEIF_ISWRITE else
 
 #include "IstreamReader.hpp"
 #include "OstreamWriter.hpp"

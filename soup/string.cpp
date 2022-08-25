@@ -6,6 +6,36 @@
 
 namespace soup
 {
+	std::string string::join(const std::vector<std::string>& arr, const char glue)
+	{
+		std::string res{};
+		if (!arr.empty())
+		{
+			res = arr.at(0);
+			for (size_t i = 1; i != arr.size(); ++i)
+			{
+				res.push_back(glue);
+				res.append(arr.at(i));
+			}
+		}
+		return res;
+	}
+	
+	std::string string::join(const std::vector<std::string>& arr, const std::string& glue)
+	{
+		std::string res{};
+		if (!arr.empty())
+		{
+			res = arr.at(0);
+			for (size_t i = 1; i != arr.size(); ++i)
+			{
+				res.append(glue);
+				res.append(arr.at(i));
+			}
+		}
+		return res;
+	}
+
 	void string::listAppend(std::string& str, std::string&& add)
 	{
 		if (str.empty())

@@ -383,6 +383,9 @@ namespace soup
 			return res;
 		}
 
+		[[nodiscard]] static std::string join(const std::vector<std::string>& arr, const char glue);
+		[[nodiscard]] static std::string join(const std::vector<std::string>& arr, const std::string& glue);
+
 		template <typename S, typename C>
 		static S lpad(S&& str, size_t desired_len, C pad_char)
 		{

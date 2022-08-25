@@ -10,7 +10,7 @@
 #endif
 
 #include "aes.hpp"
-#include "dns.hpp"
+#include "dnsOsResolver.hpp"
 #include "ec.hpp"
 #include "NamedCurves.hpp"
 #include "rand.hpp"
@@ -96,17 +96,13 @@ namespace soup
 
 	bool Socket::connect(const std::string& host, uint16_t port) noexcept
 	{
-		return connect(host.c_str(), port);
-	}
-
-	bool Socket::connect(const char* host, uint16_t port) noexcept
-	{
-		auto res = dns::lookupIPv4(host);
+		dnsOsResolver resolver;
+		auto res = resolver.lookupIPv4(host);
 		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;
 		}
-		res = dns::lookupIPv6(host);
+		res = resolver.lookupIPv6(host);
 		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;

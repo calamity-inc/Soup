@@ -405,6 +405,18 @@
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="dnsClass.hpp" />
+    <ClInclude Include="dnsHeader.hpp" />
+    <ClInclude Include="dnsHttpResolver.hpp" />
+    <ClInclude Include="dnsName.hpp" />
+    <ClInclude Include="dnsNameDecompressor.hpp" />
+    <ClInclude Include="dnsQType.hpp" />
+    <ClInclude Include="dnsQuestion.hpp" />
+    <ClInclude Include="dnsResolver.hpp" />
+    <ClInclude Include="dnsResource.hpp" />
+    <ClInclude Include="dnsType.hpp" />
+    <ClInclude Include="dnsTypeImpl.hpp" />
+    <ClInclude Include="dns_records.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
@@ -455,6 +467,7 @@
     <ClInclude Include="Callback.hpp" />
     <ClInclude Include="Canvas.hpp" />
     <ClInclude Include="Capture.hpp" />
+    <ClInclude Include="ioSizeMeasurer.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
     <ClInclude Include="ChessCli.hpp" />
@@ -475,7 +488,7 @@
     <ClInclude Include="DerivableMap.hpp" />
     <ClInclude Include="Dictionary.hpp" />
     <ClInclude Include="DictionaryWord.hpp" />
-    <ClInclude Include="dns.hpp" />
+    <ClInclude Include="dnsOsResolver.hpp" />
     <ClInclude Include="ec.hpp" />
     <ClInclude Include="Editor.hpp" />
     <ClInclude Include="EditorFile.hpp" />
@@ -711,6 +724,8 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="dnsHttpResolver.cpp" />
+    <ClCompile Include="dnsResolver.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
@@ -727,7 +742,7 @@
     <ClCompile Include="csv.cpp" />
     <ClCompile Include="deflate.cpp" />
     <ClCompile Include="Dictionary.cpp" />
-    <ClCompile Include="dns.cpp" />
+    <ClCompile Include="dnsOsResolver.cpp" />
     <ClCompile Include="ec.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorTab.cpp" />

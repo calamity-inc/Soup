@@ -347,5 +347,25 @@ namespace soup
 			}
 			return true;
 		}
+
+		// Null-terminated vector of str_lp_u8.
+		bool vec_nt_str_lp_u8(std::vector<std::string>& v)
+		{
+			v.clear();
+			while (true)
+			{
+				std::string entry;
+				if (!str_lp_u8(entry))
+				{
+					return false;
+				}
+				if (entry.empty())
+				{
+					break;
+				}
+				v.emplace_back(std::move(entry));
+			}
+			return true;
+		}
 	};
 }
