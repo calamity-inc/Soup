@@ -29,9 +29,9 @@ namespace soup
 
 			map.emplace(position, *nameptr);
 
-			ioSizeMeasurer wsm;
-			p.write(wsm);
-			position += wsm.size;
+			ioSizeMeasurer sm;
+			p.write(sm);
+			position += sm.size;
 
 			return *nameptr;
 		}
