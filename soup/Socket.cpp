@@ -87,10 +87,10 @@ namespace soup
 		b.fd = -1;
 	}
 
-	bool Socket::init(int af)
+	bool Socket::init(int af, int type)
 	{
 		close();
-		fd = ::socket(af, SOCK_STREAM, 0);
+		fd = ::socket(af, type, 0);
 		return fd != -1;
 	}
 
@@ -115,7 +115,7 @@ namespace soup
 		peer = addr;
 		if (addr.ip.isV4())
 		{
-			if (!init(AF_INET))
+			if (!init(AF_INET, SOCK_STREAM))
 			{
 				return false;
 			}
@@ -130,7 +130,7 @@ namespace soup
 		}
 		else
 		{
-			if (!init(AF_INET6))
+			if (!init(AF_INET6, SOCK_STREAM))
 			{
 				return false;
 			}
@@ -153,7 +153,27 @@ namespace soup
 
 	bool Socket::bind6(uint16_t port) noexcept
 	{
-		if (!init(AF_INET6))
+		return bind6(port, SOCK_STREAM);
+	}
+
+	bool Socket::bind4(uint16_t port) noexcept
+	{
+		return bind4(port, SOCK_STREAM);
+	}
+
+	bool Socket::udpBind6(uint16_t port) noexcept
+	{
+		return bind6(port, SOCK_DGRAM);
+	}
+
+	bool Socket::udpBind4(uint16_t port) noexcept
+	{
+		return bind4(port, SOCK_DGRAM);
+	}
+
+	bool Socket::bind6(uint16_t port, int type) noexcept
+	{
+		if (!init(AF_INET6, type))
 		{
 			return false;
 		}
@@ -164,14 +184,14 @@ namespace soup
 		addr.sin6_port = htons(port);
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
-			&& listen(fd, 100) != -1
+			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
 			;
 	}
 
-	bool Socket::bind4(uint16_t port) noexcept
+	bool Socket::bind4(uint16_t port, int type) noexcept
 	{
-		if (!init(AF_INET))
+		if (!init(AF_INET, type))
 		{
 			return false;
 		}
@@ -182,7 +202,7 @@ namespace soup
 		addr.sin_port = htons(port);
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
-			&& listen(fd, 100) != -1
+			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
 			;
 	}
@@ -591,6 +611,47 @@ namespace soup
 		return transport_send(data);
 	}
 
+	bool Socket::udpSend(const SocketAddr& addr, const std::string& data) noexcept
+	{
+		peer = addr;
+		if (addr.ip.isV4())
+		{
+			if (!init(AF_INET, SOCK_DGRAM))
+			{
+				return false;
+			}
+			sockaddr_in sa{};
+			sa.sin_family = AF_INET;
+			sa.sin_port = htons(addr.port);
+			sa.sin_addr.s_addr = addr.ip.getV4();
+			if (::sendto(fd, data.data(), data.size(), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if (!init(AF_INET6, SOCK_DGRAM))
+			{
+				return false;
+			}
+			sockaddr_in6 sa{};
+			sa.sin6_family = AF_INET6;
+			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
+			sa.sin6_port = htons(addr.port);
+			if (::sendto(fd, data.data(), data.size(), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool Socket::udpSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
+	{
+		return udpSend(SocketAddr(ip, port), data);
+	}
+
 	struct CaptureSocketRecv
 	{
 		void(*callback)(Socket&, std::string&&, Capture&&);
@@ -614,8 +675,41 @@ namespace soup
 		}
 		else
 		{
-			transport_recv(8192, inner_callback, std::move(inner_cap));
+			transport_recv(0x1000, inner_callback, std::move(inner_cap));
 		}
+	}
+
+	struct CaptureSocketUdpRecv
+	{
+		void(*callback)(Socket&, IpAddr&&, std::string&&, Capture&&);
+		Capture cap;
+	};
+
+	void Socket::udpRecv(void(*callback)(Socket&, IpAddr&&, std::string&&, Capture&&), Capture&& cap)
+	{
+		holdup_type = SOCKET;
+		holdup_callback.set([](Worker& w, Capture&& _cap)
+		{
+			auto& cap = _cap.get<CaptureSocketUdpRecv>();
+
+			std::string data(0x1000, '\0');
+
+			sockaddr_in6 sa;
+			int sal = sizeof(sa);
+			data.resize(::recvfrom(reinterpret_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal));
+
+			IpAddr sender;
+			if (sal == sizeof(sa))
+			{
+				sender = IpAddr(reinterpret_cast<uint8_t*>(&sa.sin6_addr));
+			}
+			else
+			{
+				sender = *reinterpret_cast<uint32_t*>(&reinterpret_cast<sockaddr_in*>(&sa)->sin_addr);
+			}
+
+			cap.callback(reinterpret_cast<Socket&>(w), std::move(sender), std::move(data), std::move(cap.cap));
+		}, CaptureSocketUdpRecv{ callback, std::move(cap) });
 	}
 
 	void Socket::close()

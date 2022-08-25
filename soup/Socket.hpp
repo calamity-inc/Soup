@@ -70,7 +70,7 @@ namespace soup
 			return fd != -1;
 		}
 
-		bool init(int af);
+		bool init(int af, int type);
 
 		bool connect(const std::string& host, uint16_t port) noexcept; // blocking
 		bool connect(const SocketAddr& addr) noexcept; // blocking
@@ -88,7 +88,13 @@ namespace soup
 
 		bool bind6(uint16_t port) noexcept;
 		bool bind4(uint16_t port) noexcept;
+		bool udpBind6(uint16_t port) noexcept;
+		bool udpBind4(uint16_t port) noexcept;
+	protected:
+		bool bind6(uint16_t port, int type) noexcept;
+		bool bind4(uint16_t port, int type) noexcept;
 
+	public:
 		[[nodiscard]] Socket accept6() noexcept;
 		[[nodiscard]] Socket accept4() noexcept;
 
@@ -110,7 +116,12 @@ namespace soup
 
 		bool send(const std::string& data);
 
+		bool udpSend(const SocketAddr& addr, const std::string& data) noexcept;
+		bool udpSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;
+
 		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
+
+		void udpRecv(void(*callback)(Socket&, IpAddr&&, std::string&&, Capture&&), Capture&& cap = {});
 
 		/*[[nodiscard]] std::string recvExact(int bytes) noexcept
 		{

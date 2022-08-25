@@ -107,6 +107,29 @@ namespace soup
 		return true;
 	}
 
+	bool Server::bindUdp(uint16_t port, udp_callback_t callback) noexcept
+	{
+		Socket sock6{};
+		if (!sock6.udpBind6(port))
+		{
+			return false;
+		}
+		setDataAvailableHandlerUdp(sock6, callback);
+		addSocket(std::move(sock6));
+
+#if SOUP_WINDOWS
+		Socket sock4{};
+		if (!sock4.udpBind4(port))
+		{
+			return false;
+		}
+		setDataAvailableHandlerUdp(sock4, callback);
+		addSocket(std::move(sock4));
+#endif
+
+		return true;
+	}
+
 	void Server::setDataAvailableHandler6(Socket& s)
 	{
 		s.holdup_type = Worker::SOCKET;
@@ -114,7 +137,6 @@ namespace soup
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
 			setDataAvailableHandler6(s);
-			//std::cout << "holdup_callback: " << (void*)cap.data << std::endl;
 			cap.get<CaptureServerPort>().processAccept(s.accept6(), s.peer.port);
 		};
 	}
@@ -126,7 +148,6 @@ namespace soup
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
 			setDataAvailableHandlerCrypto6(s);
-			//std::cout << "holdup_callback: " << (void*)cap.data << std::endl;
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept6(), s.peer.port);
 		};
 	}
@@ -139,7 +160,6 @@ namespace soup
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
 			setDataAvailableHandler4(s);
-			//std::cout << "holdup_callback: " << (void*)cap.data << std::endl;
 			cap.get<CaptureServerPort>().processAccept(s.accept4(), s.peer.port);
 		};
 	}
@@ -151,11 +171,19 @@ namespace soup
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
 			setDataAvailableHandlerCrypto4(s);
-			//std::cout << "holdup_callback: " << (void*)cap.data << std::endl;
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept4(), s.peer.port);
 		};
 	}
 #endif
+
+	void Server::setDataAvailableHandlerUdp(Socket& s, udp_callback_t callback)
+	{
+		s.udpRecv([](Socket& s, IpAddr&& sender, std::string&& data, Capture&& cap)
+		{
+			cap.get<udp_callback_t>()(std::move(sender), std::move(data));
+			setDataAvailableHandlerUdp(s, cap.get<udp_callback_t>());
+		}, callback);
+	}
 }
 
 #endif
