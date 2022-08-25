@@ -16,7 +16,7 @@ namespace soup
 	{
 		StringWriter sw(false);
 		{
-			dnsHeader dh;
+			dnsHeader dh{};
 			dh.qdcount = 1;
 			dh.write(sw);
 
