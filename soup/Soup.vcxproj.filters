@@ -488,9 +488,6 @@
     <ClInclude Include="type_traits.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="ServerService.hpp">
-      <Filter>net\web</Filter>
-    </ClInclude>
     <ClInclude Include="bcrypt.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
@@ -919,6 +916,9 @@
     </ClInclude>
     <ClInclude Include="dnsHttpResolver.hpp">
       <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerService.hpp">
+      <Filter>net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
