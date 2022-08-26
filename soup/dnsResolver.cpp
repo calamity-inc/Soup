@@ -5,9 +5,12 @@ namespace soup
 	std::vector<IpAddr> dnsResolver::lookupIPv4(const std::string& name) const
 	{
 		std::vector<IpAddr> res{};
-		for (const auto& r : lookupA(name))
+		for (const auto& r : lookup(DNS_A, name))
 		{
-			res.emplace_back(r.data);
+			if (r->type == DNS_A)
+			{
+				res.emplace_back(reinterpret_cast<dnsARecord*>(r.get())->data);
+			}
 		}
 		return res;
 	}
@@ -15,9 +18,12 @@ namespace soup
 	std::vector<IpAddr> dnsResolver::lookupIPv6(const std::string& name) const
 	{
 		std::vector<IpAddr> res{};
-		for (const auto& r : lookupAAAA(name))
+		for (const auto& r : lookup(DNS_AAAA, name))
 		{
-			res.emplace_back(r.data);
+			if (r->type == DNS_AAAA)
+			{
+				res.emplace_back(reinterpret_cast<dnsAaaaRecord*>(r.get())->data);
+			}
 		}
 		return res;
 	}

@@ -38,6 +38,12 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "dig")
+		{
+			cli_dig(argc - 2, &argv[2]);
+			return 0;
+		}
+
 		if (subcommand == "dvd")
 		{
 			cli_dvd();
@@ -134,6 +140,7 @@ int main(int argc, const char** argv)
 Available tools:
 - 3d
 - chess <FEN>
+- dig [domain] <type=A> <@<doh:>[server]>
 - dvd
 - edit [files...]
 - maze

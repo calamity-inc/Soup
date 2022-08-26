@@ -6,9 +6,7 @@ namespace soup
 {
 	struct dnsOsResolver : public dnsResolver
 	{
-		[[nodiscard]] std::vector<dnsARecord> lookupA(const std::string& name) const final;
-		[[nodiscard]] std::vector<dnsAaaaRecord> lookupAAAA(const std::string& name) const final;
-		[[nodiscard]] std::vector<dnsSrvRecord> lookupSRV(const std::string& name) const final;
-		[[nodiscard]] std::vector<dnsTxtRecord> lookupTXT(const std::string& name) const final;
+		// Note: Linux only returns records of matching type.
+		[[nodiscard]] std::vector<UniquePtr<dnsRecord>> lookup(dnsType qtype, const std::string& name) const final;
 	};
 }

@@ -9,6 +9,7 @@
     <ClCompile Include="cli_test.cpp" />
     <ClCompile Include="cli_websrv.cpp" />
     <ClCompile Include="cli_maze.cpp" />
+    <ClCompile Include="cli_dig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

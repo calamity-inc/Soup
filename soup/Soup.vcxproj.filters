@@ -887,19 +887,10 @@
     <ClInclude Include="dnsType.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
-    <ClInclude Include="dnsTypeImpl.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
-    <ClInclude Include="dnsQType.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
     <ClInclude Include="dnsResource.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
     <ClInclude Include="dnsName.hpp">
-      <Filter>net\dns</Filter>
-    </ClInclude>
-    <ClInclude Include="dnsNameDecompressor.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
     <ClInclude Include="ioSizeMeasurer.hpp">
@@ -917,14 +908,17 @@
     <ClInclude Include="dnsHttpResolver.hpp">
       <Filter>net\dns\resolver</Filter>
     </ClInclude>
-    <ClInclude Include="dnsRawResolver.hpp">
-      <Filter>net\dns\resolver</Filter>
-    </ClInclude>
     <ClInclude Include="ServerService.hpp">
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="dnsUdpResolver.hpp">
       <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsRawResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="StringPtrReader.hpp">
+      <Filter>io\stream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1366,6 +1360,15 @@
     </ClCompile>
     <ClCompile Include="dnsRawResolver.cpp">
       <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="dns_records.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsName.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsType.cpp">
+      <Filter>net\dns</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

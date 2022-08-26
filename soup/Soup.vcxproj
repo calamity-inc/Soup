@@ -410,14 +410,11 @@
     <ClInclude Include="dnsHeader.hpp" />
     <ClInclude Include="dnsHttpResolver.hpp" />
     <ClInclude Include="dnsName.hpp" />
-    <ClInclude Include="dnsNameDecompressor.hpp" />
-    <ClInclude Include="dnsQType.hpp" />
     <ClInclude Include="dnsQuestion.hpp" />
     <ClInclude Include="dnsRawResolver.hpp" />
     <ClInclude Include="dnsResolver.hpp" />
     <ClInclude Include="dnsResource.hpp" />
     <ClInclude Include="dnsType.hpp" />
-    <ClInclude Include="dnsTypeImpl.hpp" />
     <ClInclude Include="dns_records.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
@@ -470,6 +467,7 @@
     <ClInclude Include="Canvas.hpp" />
     <ClInclude Include="Capture.hpp" />
     <ClInclude Include="ioSizeMeasurer.hpp" />
+    <ClInclude Include="StringPtrReader.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
     <ClInclude Include="ChessCli.hpp" />
@@ -727,9 +725,12 @@
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="dnsHttpResolver.cpp" />
+    <ClCompile Include="dnsName.cpp" />
     <ClCompile Include="dnsRawResolver.cpp" />
     <ClCompile Include="dnsResolver.cpp" />
+    <ClCompile Include="dnsType.cpp" />
     <ClCompile Include="dnsUdpResolver.cpp" />
+    <ClCompile Include="dns_records.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />

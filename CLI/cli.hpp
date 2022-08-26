@@ -1,6 +1,7 @@
 #pragma once
 
 void cli_3d();
+void cli_dig(int argc, const char** argv);
 void cli_dvd();
 void cli_maze();
 void cli_repl();

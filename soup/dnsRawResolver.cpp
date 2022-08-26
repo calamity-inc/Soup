@@ -1,8 +1,6 @@
 #include "dnsRawResolver.hpp"
 
 #include "dnsHeader.hpp"
-#include "dnsNameDecompressor.hpp"
-#include "dnsQType.hpp"
 #include "dnsQuestion.hpp"
 #include "dnsResource.hpp"
 #include "string.hpp"
@@ -10,10 +8,10 @@
 
 namespace soup
 {
-	std::string dnsRawResolver::getQueryA(const std::string& name) const
+	std::string dnsRawResolver::getQuery(dnsType qtype, const std::string& name) const
 	{
 		StringWriter sw(false);
-			
+
 		dnsHeader dh{};
 		dh.setRecursionDesired(true);
 		dh.qdcount = 1;
@@ -21,38 +19,54 @@ namespace soup
 
 		dnsQuestion dq;
 		dq.name.name = string::explode(name, '.');
-		dq.qtype = DNS_A;
+		dq.qtype = qtype;
 		dq.write(sw);
 
 		return sw.str;
 	}
 
-	std::vector<dnsARecord> dnsRawResolver::parseResponseA(std::string&& data) const
+	std::vector<UniquePtr<dnsRecord>> dnsRawResolver::parseResponse(std::string&& data) const
 	{
 		StringReader sr(std::move(data), false);
 
 		dnsHeader dh;
 		dh.read(sr);
 
-		dnsNameDecompressor dd;
-
 		for (uint16_t i = 0; i != dh.qdcount; ++i)
 		{
 			dnsQuestion dq;
 			dq.read(sr);
-			dd.getString(dq);
 		}
 
-		std::vector<dnsARecord> res{};
+		std::vector<UniquePtr<dnsRecord>> res{};
 		for (uint16_t i = 0; i != dh.ancount; ++i)
 		{
 			dnsResource dr;
 			dr.read(sr);
-			if (dr.rtype == DNS_A
-				&& dr.rclass == DNS_IN
-				)
+
+			std::string name = string::join(dr.name.resolve(sr.data), '.');
+
+			if (dr.rclass != DNS_IN)
 			{
-				res.emplace_back(dr.ttl, *reinterpret_cast<uint32_t*>(dr.rdata.data()));
+				continue;
+			}
+
+			if (dr.rtype == DNS_A)
+			{
+				res.emplace_back(soup::make_unique<dnsARecord>(std::move(name), dr.ttl, *reinterpret_cast<uint32_t*>(dr.rdata.data())));
+			}
+			else if (dr.rtype == DNS_AAAA)
+			{
+				res.emplace_back(soup::make_unique<dnsAaaaRecord>(std::move(name), dr.ttl, reinterpret_cast<uint8_t*>(dr.rdata.data())));
+			}
+			else if (dr.rtype == DNS_CNAME)
+			{
+				StringReader rdata_sr(std::move(dr.rdata), false);
+
+				dnsName cname;
+				cname.read(rdata_sr);
+
+				res.emplace_back(soup::make_unique<dnsCnameRecord>(std::move(name), dr.ttl, string::join(cname.resolve(sr.data), '.')));
 			}
 		}
 		return res;

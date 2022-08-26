@@ -3,26 +3,31 @@
 #include <cstdint>
 #include <string>
 
+#include "dnsType.hpp"
 #include "IpAddr.hpp"
 
 namespace soup
 {
 	struct dnsRecord
 	{
+		const dnsType type;
+		std::string name;
 		uint32_t ttl;
 
-		constexpr dnsRecord(uint32_t ttl) noexcept
-			: ttl(ttl)
+		dnsRecord(dnsType type, std::string&& name, uint32_t ttl) noexcept
+			: type(type), name(std::move(name)), ttl(ttl)
 		{
 		}
+
+		[[nodiscard]] std::string getValueString() const;
 	};
 
 	struct dnsARecord : public dnsRecord
 	{
 		uint32_t data;
 
-		constexpr dnsARecord(uint32_t ttl, uint32_t data)
-			: dnsRecord(ttl), data(data)
+		dnsARecord(std::string&& name, uint32_t ttl, uint32_t data) noexcept
+			: dnsRecord(DNS_A, std::move(name), ttl), data(data)
 		{
 		}
 	};
@@ -31,8 +36,28 @@ namespace soup
 	{
 		IpAddr data;
 
-		dnsAaaaRecord(uint32_t ttl, const uint8_t* data)
-			: dnsRecord(ttl), data(data)
+		dnsAaaaRecord(std::string&& name, uint32_t ttl, const uint8_t* data)
+			: dnsRecord(DNS_AAAA, std::move(name), ttl), data(data)
+		{
+		}
+	};
+
+	struct dnsCnameRecord : public dnsRecord
+	{
+		std::string data;
+
+		dnsCnameRecord(std::string&& name, uint32_t ttl, std::string&& data)
+			: dnsRecord(DNS_CNAME, std::move(name), ttl), data(std::move(data))
+		{
+		}
+	};
+
+	struct dnsTxtRecord : public dnsRecord
+	{
+		std::string data;
+
+		dnsTxtRecord(std::string&& name, uint32_t ttl, std::string&& data)
+			: dnsRecord(DNS_TXT, std::move(name), ttl), data(std::move(data))
 		{
 		}
 	};
@@ -44,18 +69,8 @@ namespace soup
 		std::string target;
 		uint16_t port;
 
-		dnsSrvRecord(uint32_t ttl, uint16_t priority, uint16_t weight, std::string&& target, uint16_t port)
-			: dnsRecord(ttl), priority(priority), weight(weight), target(std::move(target)), port(port)
-		{
-		}
-	};
-
-	struct dnsTxtRecord : public dnsRecord
-	{
-		std::string data;
-
-		dnsTxtRecord(uint32_t ttl, std::string&& data)
-			: dnsRecord(ttl), data(std::move(data))
+		dnsSrvRecord(std::string&& name, uint32_t ttl, uint16_t priority, uint16_t weight, std::string&& target, uint16_t port)
+			: dnsRecord(DNS_SRV, std::move(name), ttl), priority(priority), weight(weight), target(std::move(target)), port(port)
 		{
 		}
 	};

@@ -41,7 +41,7 @@ namespace soup
 	protected:
 		bool str_impl(std::string& v, size_t len) final
 		{
-			if (offset + len > data.size())
+			if ((offset + len) > data.size())
 			{
 				return false;
 			}

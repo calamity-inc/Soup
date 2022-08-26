@@ -7,12 +7,7 @@ namespace soup
 	SOUP_PACKET(dnsName)
 	{
 		std::vector<std::string> name;
-		u16 ptr;
-
-		[[nodiscard]] bool isPointer() const noexcept
-		{
-			return name.empty();
-		}
+		u16 ptr = 0;
 
 		SOUP_PACKET_IO(s)
 		{
@@ -28,10 +23,6 @@ namespace soup
 					}
 					if ((len >> 6) & 0b11)
 					{
-						if (!name.empty())
-						{
-							return false;
-						}
 						ptr = (len & 0b111111);
 						ptr <<= 8;
 						if (!s.u8(len))
@@ -55,7 +46,14 @@ namespace soup
 			}
 			SOUP_ELSEIF_ISWRITE
 			{
-				if (isPointer())
+				for (const auto& entry : name)
+				{
+					if (!s.str_lp_u8(entry))
+					{
+						return false;
+					}
+				}
+				if (ptr != 0)
 				{
 					uint16_t data = ptr;
 					data |= 0xC000;
@@ -63,18 +61,13 @@ namespace soup
 				}
 				else
 				{
-					for (const auto& entry : name)
-					{
-						if (!s.str_lp_u8(entry))
-						{
-							return false;
-						}
-					}
 					uint8_t root = 0;
 					return s.u8(root);
 				}
 			}
 			return true;
 		}
+
+		[[nodiscard]] std::vector<std::string> resolve(const std::string& data) const;
 	};
 }
