@@ -7,7 +7,7 @@ namespace soup
 	class ioSizeMeasurer final : public Writer
 	{
 	public:
-		size_t size;
+		size_t size = 0;
 
 		ioSizeMeasurer()
 			: Writer(SOUP_LITTLE_ENDIAN)
