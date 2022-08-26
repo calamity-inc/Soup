@@ -116,8 +116,8 @@ namespace soup
 
 		bool send(const std::string& data);
 
-		bool udpSend(const SocketAddr& addr, const std::string& data) noexcept;
-		bool udpSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;
+		bool udpClientSend(const SocketAddr& addr, const std::string& data) noexcept;
+		bool udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;
 
 		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
 

@@ -611,7 +611,7 @@ namespace soup
 		return transport_send(data);
 	}
 
-	bool Socket::udpSend(const SocketAddr& addr, const std::string& data) noexcept
+	bool Socket::udpClientSend(const SocketAddr& addr, const std::string& data) noexcept
 	{
 		peer = addr;
 		if (addr.ip.isV4())
@@ -647,9 +647,9 @@ namespace soup
 		return true;
 	}
 
-	bool Socket::udpSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
+	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
 	{
-		return udpSend(SocketAddr(ip, port), data);
+		return udpClientSend(SocketAddr(ip, port), data);
 	}
 
 	struct CaptureSocketRecv

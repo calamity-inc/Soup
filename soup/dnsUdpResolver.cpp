@@ -8,7 +8,7 @@ namespace soup
 	std::vector<dnsARecord> dnsUdpResolver::lookupA(const std::string& name) const
 	{
 		Socket sock;
-		if (!sock.udpSend(server, getQueryA(name)))
+		if (!sock.udpClientSend(server, getQueryA(name)))
 		{
 			return {};
 		}
