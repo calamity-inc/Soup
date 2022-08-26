@@ -180,7 +180,7 @@ namespace soup
 	{
 		s.udpRecv([](Socket& s, SocketAddr&& sender, std::string&& data, Capture&& cap)
 		{
-			cap.get<udp_callback_t>()(std::move(sender), std::move(data));
+			cap.get<udp_callback_t>()(s, std::move(sender), std::move(data));
 			setDataAvailableHandlerUdp(s, cap.get<udp_callback_t>());
 		}, callback);
 	}

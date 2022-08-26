@@ -119,6 +119,9 @@ namespace soup
 		bool udpClientSend(const SocketAddr& addr, const std::string& data) noexcept;
 		bool udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;
 
+		bool udpServerSend(const SocketAddr& addr, const std::string& data) noexcept;
+		bool udpServerSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;
+
 		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
 
 		void udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap = {});

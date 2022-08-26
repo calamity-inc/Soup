@@ -620,6 +620,26 @@ namespace soup
 			{
 				return false;
 			}
+		}
+		else
+		{
+			if (!init(AF_INET6, SOCK_DGRAM))
+			{
+				return false;
+			}
+		}
+		return udpServerSend(addr, data);
+	}
+
+	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
+	{
+		return udpClientSend(SocketAddr(ip, port), data);
+	}
+
+	bool Socket::udpServerSend(const SocketAddr& addr, const std::string& data) noexcept
+	{
+		if (addr.ip.isV4())
+		{
 			sockaddr_in sa{};
 			sa.sin_family = AF_INET;
 			sa.sin_port = htons(addr.port);
@@ -631,10 +651,6 @@ namespace soup
 		}
 		else
 		{
-			if (!init(AF_INET6, SOCK_DGRAM))
-			{
-				return false;
-			}
 			sockaddr_in6 sa{};
 			sa.sin6_family = AF_INET6;
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
@@ -647,9 +663,9 @@ namespace soup
 		return true;
 	}
 
-	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
+	bool Socket::udpServerSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
 	{
-		return udpClientSend(SocketAddr(ip, port), data);
+		return udpServerSend(SocketAddr(ip, port), data);
 	}
 
 	struct CaptureSocketRecv
