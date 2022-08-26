@@ -3,6 +3,7 @@
 #include "Scheduler.hpp"
 #if !SOUP_WASM
 
+#include "fwd.hpp"
 #include "type.hpp"
 
 namespace soup
@@ -10,7 +11,7 @@ namespace soup
 	class Server : public Scheduler
 	{
 	public:
-		using udp_callback_t = void(*)(IpAddr&&, std::string&&);
+		using udp_callback_t = void(*)(SocketAddr&&, std::string&&);
 
 		bool bind(uint16_t port, ServerService* service) noexcept;
 		bool bindCrypto(uint16_t port, ServerService* service, tls_server_cert_selector_t cert_selector, tls_server_on_client_hello_t on_client_hello = nullptr) noexcept;

@@ -178,7 +178,7 @@ namespace soup
 
 	void Server::setDataAvailableHandlerUdp(Socket& s, udp_callback_t callback)
 	{
-		s.udpRecv([](Socket& s, IpAddr&& sender, std::string&& data, Capture&& cap)
+		s.udpRecv([](Socket& s, SocketAddr&& sender, std::string&& data, Capture&& cap)
 		{
 			cap.get<udp_callback_t>()(std::move(sender), std::move(data));
 			setDataAvailableHandlerUdp(s, cap.get<udp_callback_t>());

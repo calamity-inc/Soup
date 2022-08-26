@@ -681,11 +681,11 @@ namespace soup
 
 	struct CaptureSocketUdpRecv
 	{
-		void(*callback)(Socket&, IpAddr&&, std::string&&, Capture&&);
+		void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&);
 		Capture cap;
 	};
 
-	void Socket::udpRecv(void(*callback)(Socket&, IpAddr&&, std::string&&, Capture&&), Capture&& cap)
+	void Socket::udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap)
 	{
 		holdup_type = SOCKET;
 		holdup_callback.set([](Worker& w, Capture&& _cap)
@@ -698,14 +698,16 @@ namespace soup
 			socklen_t sal = sizeof(sa);
 			data.resize(::recvfrom(reinterpret_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal));
 
-			IpAddr sender;
+			SocketAddr sender;
 			if (sal == sizeof(sa))
 			{
-				sender = IpAddr(reinterpret_cast<uint8_t*>(&sa.sin6_addr));
+				sender.ip = IpAddr(reinterpret_cast<uint8_t*>(&sa.sin6_addr));
+				sender.port = ntohs(sa.sin6_port);
 			}
 			else
 			{
-				sender = *reinterpret_cast<uint32_t*>(&reinterpret_cast<sockaddr_in*>(&sa)->sin_addr);
+				sender.ip = *reinterpret_cast<uint32_t*>(&reinterpret_cast<sockaddr_in*>(&sa)->sin_addr);
+				sender.port = ntohs(reinterpret_cast<sockaddr_in*>(&sa)->sin_port);
 			}
 
 			cap.callback(reinterpret_cast<Socket&>(w), std::move(sender), std::move(data), std::move(cap.cap));

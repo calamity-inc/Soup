@@ -81,6 +81,7 @@ namespace soup
 	class Server;
 	struct ServerService;
 	class Socket;
+	struct SocketAddr;
 
 	// net.tls
 	class SocketTlsHandshaker;

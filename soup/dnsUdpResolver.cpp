@@ -14,7 +14,7 @@ namespace soup
 		}
 		Scheduler sched;
 		std::string res{};
-		sched.addSocket(std::move(sock)).udpRecv([](Socket&, IpAddr&&, std::string&& data, Capture&& cap)
+		sched.addSocket(std::move(sock)).udpRecv([](Socket&, SocketAddr&&, std::string&& data, Capture&& cap)
 		{
 			*cap.get<std::string*>() = std::move(data);
 		}, &res);

@@ -121,7 +121,7 @@ namespace soup
 
 		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
 
-		void udpRecv(void(*callback)(Socket&, IpAddr&&, std::string&&, Capture&&), Capture&& cap = {});
+		void udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap = {});
 
 		/*[[nodiscard]] std::string recvExact(int bytes) noexcept
 		{
