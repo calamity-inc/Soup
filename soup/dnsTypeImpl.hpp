@@ -1,4 +1,5 @@
-DNS_A = 1, // a host address
+DNS_A = 1, // ipv4
+DNS_AAAA = 28, // ipv6
 DNS_NS = 2, // an authoritative name server
 DNS_MD = 3, // a mail destination (Obsolete - use MX)
 DNS_MF = 4, // a mail forwarder (Obsolete - use MX)
