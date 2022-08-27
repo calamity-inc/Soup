@@ -41,6 +41,7 @@ namespace soup
 		args.emplace_back("-luser32");
 		args.emplace_back("-lgdi32");
 #else
+		args.emplace_back("-fuse-ld=lld");
 		args.emplace_back("-lm");
 		args.emplace_back("-lresolv");
 		args.emplace_back("-ldl");
