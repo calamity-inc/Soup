@@ -58,7 +58,7 @@ namespace soup
 			}
 		}
 		sb.endCopy(query, qi);
-		if (item.length() - sb.length() < ii || item.substr(item.length() - sb.length()) != sb)
+		if (item.length() < sb.length() || item.length() - sb.length() < ii || item.substr(item.length() - sb.length()) != sb)
 		{
 			return false;
 		}
