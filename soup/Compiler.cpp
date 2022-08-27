@@ -22,7 +22,7 @@ namespace soup
 #if SOUP_WINDOWS
 			"-D", "_CRT_SECURE_NO_WARNINGS",
 #else
-			"-lm", "-lstdc++", "-lstdc++fs", "-pthreads", "-Wno-unused-command-line-argument",
+			"-pthreads", "-Wno-unused-command-line-argument",
 #endif
 			"-std="
 		};
@@ -35,15 +35,19 @@ namespace soup
 		return args;
 	}
 
-	std::vector<std::string> Compiler::getLinkerArgs() const
+	void Compiler::addLinkerArgs(std::vector<std::string>& args) const
 	{
-		auto args = getArgs();
 #if SOUP_WINDOWS
 		args.emplace_back("-luser32");
 		args.emplace_back("-lgdi32");
+#else
+		args.emplace_back("-lm");
+		args.emplace_back("-lresolv");
+		args.emplace_back("-ldl");
+		args.emplace_back("-lstdc++");
+		args.emplace_back("-lstdc++fs");
 #endif
 		args.insert(args.end(), extra_linker_args.begin(), extra_linker_args.end());
-		return args;
 	}
 
 	std::string Compiler::makeObject(const std::string& in, const std::string& out) const
@@ -67,19 +71,21 @@ namespace soup
 
 	std::string Compiler::makeExecutable(const std::string& in, const std::string& out) const
 	{
-		auto args = getLinkerArgs();
+		auto args = getArgs();
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.emplace_back(in);
+		addLinkerArgs(args);
 		return os::execute("clang", std::move(args));
 	}
 
 	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out) const
 	{
-		auto args = getLinkerArgs();
+		auto args = getArgs();
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.insert(args.end(), objects.begin(), objects.end());
+		addLinkerArgs(args);
 		return os::execute("clang", std::move(args));
 	}
 
@@ -114,7 +120,7 @@ namespace soup
 
 	std::string Compiler::makeSharedLibrary(const std::string& in, const std::string& out) const
 	{
-		auto args = getLinkerArgs();
+		auto args = getArgs();
 #if !SOUP_WINDOWS
 		args.emplace_back("-fPIC");
 #endif
@@ -122,6 +128,7 @@ namespace soup
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.emplace_back(in);
+		addLinkerArgs(args);
 		return os::execute("clang", std::move(args));
 	}
 }

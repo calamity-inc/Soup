@@ -15,7 +15,7 @@ namespace soup
 		Compiler();
 
 		[[nodiscard]] std::vector<std::string> getArgs() const;
-		[[nodiscard]] std::vector<std::string> getLinkerArgs() const;
+		void addLinkerArgs(std::vector<std::string>& args) const;
 
 		// Intermediate objects (.o)
 		std::string makeObject(const std::string& in, const std::string& out) const;
