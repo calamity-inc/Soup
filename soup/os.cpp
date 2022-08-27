@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdio>
+#include <fstream>
 
 #if SOUP_WINDOWS
 #include <ShlObj.h> // CSIDL_COMMON_APPDATA
@@ -51,14 +52,49 @@ namespace soup
 	{
 		if (str.find(' ') != std::string::npos)
 		{
-			string::replace_all(str, "\\", "\\\\");
-			string::replace_all(str, "\"", "\\\"");
-			str.insert(0, 1, '"');
-			str.push_back('"');
+			escapeNoCheck(str);
 		}
 	}
 
+	void os::escapeNoCheck(std::string& str)
+	{
+		string::replace_all(str, "\\", "\\\\");
+		string::replace_all(str, "\"", "\\\"");
+		str.insert(0, 1, '"');
+		str.push_back('"');
+	}
+
 	std::string os::execute(std::string program, const std::vector<std::string>& args)
+	{
+		resolveProgram(program);
+		return executeInner(std::move(program), args);
+	}
+
+	std::string os::executeLong(std::string program, const std::vector<std::string>& args)
+	{
+		resolveProgram(program);
+		std::string flatargs;
+		for (auto i = args.begin(); i != args.end(); ++i)
+		{
+			std::string escaped = *i;
+			escapeNoCheck(escaped);
+			if (!flatargs.empty())
+			{
+				flatargs.push_back(' ');
+			}
+			flatargs.append(escaped);
+		}
+		auto args_file = os::tempfile();
+		{
+			std::ofstream argsof(args_file);
+			argsof << std::move(flatargs);
+		}
+		auto ret = executeInner(std::move(program), { std::move(std::string(1, '@').append(args_file.string())) });
+		std::filesystem::remove(args_file);
+		return ret;
+	}
+
+	void os::resolveProgram(std::string& program)
 	{
 #if SOUP_WINDOWS
 		if (program.find('\\') == std::string::npos
@@ -69,7 +105,6 @@ namespace soup
 			string::rtrim(program);
 		}
 #endif
-		return executeInner(std::move(program), args);
 	}
 
 	std::string os::executeInner(std::string cmd, const std::vector<std::string>& args)

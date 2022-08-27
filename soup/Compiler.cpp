@@ -57,7 +57,7 @@ namespace soup
 		args.emplace_back(out);
 		args.emplace_back("-c");
 		args.emplace_back(in);
-		return os::execute("clang", std::move(args));
+		return os::executeLong("clang", std::move(args));
 	}
 
 	const char* Compiler::getExecutableExtension() noexcept
@@ -76,7 +76,7 @@ namespace soup
 		args.emplace_back(out);
 		args.emplace_back(in);
 		addLinkerArgs(args);
-		return os::execute("clang", std::move(args));
+		return os::executeLong("clang", std::move(args));
 	}
 
 	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out) const
@@ -86,7 +86,7 @@ namespace soup
 		args.emplace_back(out);
 		args.insert(args.end(), objects.begin(), objects.end());
 		addLinkerArgs(args);
-		return os::execute("clang", std::move(args));
+		return os::executeLong("clang", std::move(args));
 	}
 
 	const char* Compiler::getStaticLibraryExtension() noexcept
@@ -103,9 +103,9 @@ namespace soup
 		std::vector<std::string> args = { "rc", out };
 		args.insert(args.end(), objects.begin(), objects.end());
 #if SOUP_WINDOWS
-		return os::execute("llvm-ar", std::move(args));
+		return os::executeLong("llvm-ar", std::move(args));
 #else
-		return os::execute("ar", std::move(args));
+		return os::executeLong("ar", std::move(args));
 #endif
 	}
 
@@ -129,6 +129,6 @@ namespace soup
 		args.emplace_back(out);
 		args.emplace_back(in);
 		addLinkerArgs(args);
-		return os::execute("clang", std::move(args));
+		return os::executeLong("clang", std::move(args));
 	}
 }

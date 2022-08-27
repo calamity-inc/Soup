@@ -20,8 +20,13 @@ namespace soup
 		[[nodiscard]] static std::filesystem::path getProgramData();
 
 		static void escape(std::string& str);
-		static std::string execute(std::string program, const std::vector<std::string>& args = {});
 	private:
+		static void escapeNoCheck(std::string& str);
+	public:
+		static std::string execute(std::string program, const std::vector<std::string>& args = {});
+		static std::string executeLong(std::string program, const std::vector<std::string>& args = {});
+	private:
+		static void resolveProgram(std::string& program);
 		static std::string executeInner(std::string program, const std::vector<std::string>& args);
 	public:
 
