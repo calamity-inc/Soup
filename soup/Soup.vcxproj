@@ -468,6 +468,7 @@
     <ClInclude Include="Capture.hpp" />
     <ClInclude Include="ioSizeMeasurer.hpp" />
     <ClInclude Include="StringPtrReader.hpp" />
+    <ClInclude Include="StringPtrWriter.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
     <ClInclude Include="ChessCli.hpp" />

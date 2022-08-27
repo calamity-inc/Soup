@@ -920,6 +920,9 @@
     <ClInclude Include="StringPtrReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
+    <ClInclude Include="StringPtrWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
