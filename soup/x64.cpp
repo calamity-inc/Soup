@@ -262,15 +262,15 @@ namespace soup
 	{
 		// This could be a bit cleverer and show e.g. "imul rax, 100" instead of "imul rax, rax, 100"
 		std::string res = operation->name;
-		if (operation->getOpr1Encoding() != ZO)
+		if (operation->getOprEncoding(0) != ZO)
 		{
 			res.push_back(' ');
 			res.append(operands[0].toString());
-			if (operation->getOpr2Encoding() != ZO)
+			if (operation->getOprEncoding(1) != ZO)
 			{
 				res.append(", ");
 				res.append(operands[1].toString());
-				if (operation->getOpr3Encoding() != ZO)
+				if (operation->getOprEncoding(2) != ZO)
 				{
 					res.append(", ");
 					res.append(operands[2].toString());

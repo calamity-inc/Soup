@@ -101,6 +101,8 @@ namespace soup
 		const uint8_t operand_size;
 		const uint8_t distinguish;
 
+		static constexpr uint8_t MAX_OPERANDS = 3;
+
 		x64Operation(const char* name, uint16_t opcode, x64OperandEncoding operand_encoding)
 			: x64Operation(name, opcode, operand_encoding, 0, 8)
 		{
@@ -133,7 +135,7 @@ namespace soup
 				b <<= 8;
 				b |= *code;
 			}
-			if (getOpr1Encoding() == O)
+			if (getOprEncoding(0) == O)
 			{
 				b &= ~0b111;
 			}
@@ -144,52 +146,35 @@ namespace soup
 				;
 		}
 
-		[[nodiscard]] x64OperandEncoding getOpr1Encoding() const noexcept
+		[[nodiscard]] x64OperandEncoding getOprEncoding(uint8_t i) const noexcept
 		{
-			return (x64OperandEncoding)(operand_encoding & OPERAND_MASK);
-		}
-
-		[[nodiscard]] x64OperandEncoding getOpr2Encoding() const noexcept
-		{
-			return (x64OperandEncoding)((operand_encoding >> BITS_PER_OPERAND) & OPERAND_MASK);
-		}
-
-		[[nodiscard]] x64OperandEncoding getOpr3Encoding() const noexcept
-		{
-			return (x64OperandEncoding)((operand_encoding >> (BITS_PER_OPERAND * 2)) & OPERAND_MASK);
+			return (x64OperandEncoding)((operand_encoding >> (BITS_PER_OPERAND * i)) & OPERAND_MASK);
 		}
 
 		[[nodiscard]] uint8_t getNumOperands() const noexcept
 		{
-			if (getOpr1Encoding() == ZO)
+			uint8_t i = 0;
+			while (i != MAX_OPERANDS)
 			{
-				return 0;
+				if (getOprEncoding(i) == ZO)
+				{
+					break;
+				}
+				++i;
 			}
-			if (getOpr2Encoding() == ZO)
-			{
-				return 1;
-			}
-			if (getOpr3Encoding() == ZO)
-			{
-				return 2;
-			}
-			return 3;
+			return i;
 		}
 
 		[[nodiscard]] uint8_t getNumModrmOperands() const noexcept
 		{
 			uint8_t count = 0;
-			if (getOpr1Encoding() == M || getOpr1Encoding() == R)
+			for (uint8_t i = 0; i != MAX_OPERANDS; ++i)
 			{
-				++count;
-			}
-			if (getOpr2Encoding() == M || getOpr2Encoding() == R)
-			{
-				++count;
-			}
-			if (getOpr3Encoding() == M || getOpr3Encoding() == R)
-			{
-				++count;
+				const auto enc = getOprEncoding(i);
+				if (enc == M || enc == R)
+				{
+					++count;
+				}
 			}
 			return count;
 		}
@@ -236,7 +221,7 @@ namespace soup
 	struct x64Instruction
 	{
 		const x64Operation* operation = nullptr;
-		x64Operand operands[3];
+		x64Operand operands[x64Operation::MAX_OPERANDS];
 
 		[[nodiscard]] bool isValid() const noexcept
 		{
