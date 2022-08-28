@@ -123,8 +123,16 @@ namespace soup
 			}
 			if (deref_offset != 0)
 			{
-				name.append("+0x");
-				name.append(string::hex(deref_offset));
+				if (deref_offset < 0)
+				{
+					name.append("-0x");
+					name.append(string::hex(deref_offset * -1));
+				}
+				else
+				{
+					name.append("+0x");
+					name.append(string::hex(deref_offset));
+				}
 			}
 			name.push_back(']');
 		}
@@ -432,7 +440,7 @@ namespace soup
 									}
 									if ((modrm >> 6) == 0b01)
 									{
-										opr.deref_offset = *++code;
+										opr.deref_offset = (int8_t)*++code;
 									}
 									else if ((modrm >> 6) == 0b10)
 									{
