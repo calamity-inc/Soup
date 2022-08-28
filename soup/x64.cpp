@@ -480,6 +480,10 @@ namespace soup
 						{
 							opr.reg = DIS;
 							getImmediate(opr.val, code, immediate_size / 8);
+							if (immediate_size == 32)
+							{
+								opr.displacement = (int64_t)(int32_t)(uint32_t)opr.val;
+							}
 						}
 						else if (opr_enc == A)
 						{
