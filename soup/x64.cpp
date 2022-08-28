@@ -51,8 +51,17 @@ namespace soup
 		}
 		if (reg == DIS)
 		{
-			std::string str = "[rip+0x";
-			str.append(string::hex(displacement));
+			std::string str;
+			if (displacement < 0)
+			{
+				str = "[rip-0x";
+				str.append(string::hex(displacement * -1));
+			}
+			else
+			{
+				str = "[rip+0x";
+				str.append(string::hex(displacement));
+			}
 			str.push_back(']');
 			return str;
 		}
