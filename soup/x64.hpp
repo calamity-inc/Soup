@@ -116,6 +116,14 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] uint16_t getUniqueId() const noexcept
+		{
+			return distinguish == 8
+				? opcode
+				: (opcode << 3) | distinguish
+				;
+		}
+
 		[[nodiscard]] bool matches(const uint8_t* code) const noexcept
 		{
 			uint16_t b = *code;
