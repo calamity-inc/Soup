@@ -484,6 +484,10 @@ namespace soup
 							{
 								opr.displacement = (int64_t)(int32_t)(uint32_t)opr.val;
 							}
+							else if (immediate_size == 8)
+							{
+								opr.displacement = (int64_t)(int8_t)(uint8_t)opr.val;
+							}
 						}
 						else if (opr_enc == A)
 						{
