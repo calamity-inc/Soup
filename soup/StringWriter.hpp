@@ -9,7 +9,12 @@ namespace soup
 	public:
 		std::string str{};
 
-		StringWriter(bool little_endian = true)
+		StringWriter(Endian endian = LITTLE_ENDIAN)
+			: Writer(endian)
+		{
+		}
+
+		StringWriter(bool little_endian)
 			: Writer(little_endian)
 		{
 		}

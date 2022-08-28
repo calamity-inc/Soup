@@ -2,7 +2,7 @@
 
 #include "Bitset.hpp"
 #include "branchless.hpp"
-#include "endianness.hpp"
+#include "Endian.hpp"
 #include "rand.hpp"
 #include "string.hpp"
 
@@ -794,7 +794,7 @@ namespace soup
 		const auto nc = getNumChunks();
 		for (size_t i = 0; i != nc; ++i)
 		{
-			if constexpr (SOUP_LITTLE_ENDIAN)
+			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 			{
 				chunk_t c[2];
 				c[0] = getChunkInbounds(i);
@@ -819,7 +819,7 @@ namespace soup
 
 	void Bigint::operator>>=(const size_t b)
 	{
-		if constexpr (SOUP_LITTLE_ENDIAN)
+		if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 		{
 			if (b <= getBitsPerChunk())
 			{

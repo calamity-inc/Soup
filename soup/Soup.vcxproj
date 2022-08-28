@@ -496,7 +496,7 @@
     <ClInclude Include="EditorTab.hpp" />
     <ClInclude Include="EditorText.hpp" />
     <ClInclude Include="elo.hpp" />
-    <ClInclude Include="endianness.hpp" />
+    <ClInclude Include="Endian.hpp" />
     <ClInclude Include="ffi.hpp" />
     <ClInclude Include="Fiber.hpp" />
     <ClInclude Include="FileWriter.hpp" />

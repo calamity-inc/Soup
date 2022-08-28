@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "endianness.hpp"
+#include "Endian.hpp"
 
 namespace soup
 {
@@ -13,8 +13,13 @@ namespace soup
 	protected:
 		const bool native_endianness;
 
+		IoVirtualBase(Endian endian)
+			: native_endianness(NATIVE_ENDIAN == endian)
+		{
+		}
+
 		IoVirtualBase(bool little_endian)
-			: native_endianness(SOUP_LITTLE_ENDIAN == little_endian)
+			: IoVirtualBase(little_endian ? LITTLE_ENDIAN : BIG_ENDIAN)
 		{
 		}
 
