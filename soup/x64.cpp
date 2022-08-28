@@ -49,6 +49,13 @@ namespace soup
 		{
 			return std::to_string(val);
 		}
+		if (reg == DIS)
+		{
+			std::string str = "[rip+0x";
+			str.append(string::hex(displacement));
+			str.push_back(']');
+			return str;
+		}
 
 		std::string name{};
 		if (reg < R8)
@@ -459,6 +466,11 @@ namespace soup
 						else if (opr_enc == I)
 						{
 							opr.reg = IMM;
+							getImmediate(opr.val, code, immediate_size / 8);
+						}
+						else if (opr_enc == D)
+						{
+							opr.reg = DIS;
 							getImmediate(opr.val, code, immediate_size / 8);
 						}
 						else if (opr_enc == A)

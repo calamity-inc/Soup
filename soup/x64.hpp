@@ -26,6 +26,7 @@ namespace soup
 		IP,
 
 		IMM,
+		DIS,
 	};
 
 	enum x64RegisterAccessType : uint8_t
@@ -55,6 +56,11 @@ namespace soup
 				/* 0 */ uint64_t val;
 				/* 8 */
 			};
+			struct // displacement
+			{
+				/* 0 */ int64_t displacement;
+				/* 8 */
+			};
 		};
 
 		void reset() noexcept
@@ -77,9 +83,8 @@ namespace soup
 		M = 0b010,
 		R = 0b011,
 		I = 0b100,
-		A = 0b101,
-
-		D = I,
+		D = 0b101,
+		A = 0b111,
 
 		OPERAND_MASK = 0b111,
 		BITS_PER_OPERAND = 3,
