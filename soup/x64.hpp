@@ -228,11 +228,6 @@ namespace soup
 			return operation != nullptr;
 		}
 
-		[[nodiscard]] uint8_t getNumOperands() const noexcept
-		{
-			return operation->getNumOperands();
-		}
-
 		void reset() noexcept;
 
 		void fromString(const std::string& str);
