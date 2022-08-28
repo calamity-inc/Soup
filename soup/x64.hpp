@@ -215,12 +215,14 @@ namespace soup
 		{ "jnz", 0x75, D, 8 },
 		{ "call", 0xE8, D, 32 },
 		{ "jmp", 0xEB, D, 8 },
+		{ "jmp", 0xE9, D, 32 },
 		{ "test", 0x84, MR, 8 },
 		{ "test", 0x85, MR },
 		{ "xor", 0x33, RM },
 		{ "movzx", 0x0FB6, RM, 8 },
 		{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
 		{ "imul", 0x69, RMI, 32 },
+		{ "nop", 0x90, ZO },
 	};
 
 	struct x64Instruction
