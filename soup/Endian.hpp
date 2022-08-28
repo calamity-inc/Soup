@@ -6,6 +6,9 @@
 #include <bit>
 #endif
 
+#undef LITTLE_ENDIAN
+#undef BIG_ENDIAN
+
 namespace soup
 {
 	enum Endian : bool
