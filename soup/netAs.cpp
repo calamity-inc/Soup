@@ -9,7 +9,6 @@ namespace soup
 		switch (number)
 		{
 		case 3214: // xTom GmbH
-		case 3462: // Asia Pacific Network Information Centre
 		case 4785: // xTom Limited
 		case 6233: // xTom
 		case 8100: // QuadraNet Enterprises LLC
@@ -22,10 +21,6 @@ namespace soup
 		case 12876: // ONLINE S.A.S.
 		case 13046: // ISKON INTERNET d.d. za informatiku i telekomunikacije
 		case 13213: // UK-2 Limited
-		case 13220: // Tencent Building Kejizhongyi Avenue
-		case 13689: // EnjoyVC Cloud Group Limited
-		case 14116: // AgotoZ HK Limited
-		case 14683: // XUNYOU SiChuan XunYou Network Technologe Limit Co
 		case 16247: // M247 Ltd
 		case 20278: // Nexeon Technologies, Inc.
 		case 20473: // The Constant Company, LLC
@@ -59,12 +54,16 @@ namespace soup
 		case 60068: // Datacamp Limited
 		case 62240: // Clouvider Limited
 		case 131199: // Nexeon Technologies, Inc.
+		case 132203: // Tencent Building Kejizhongyi Avenue
 		case 133480: // Intergrid Group Pty Ltd
 		case 133752: // Leaseweb Asia Pacific pte. ltd.
 		case 136787: // TEFINCOM S.A.
+		case 136897: // EnjoyVC Cloud Group Limited
 		case 137263: // NETEASE (HONG KONG) LIMITED
 		case 137409: // GSL Networks Pty LTD
 		case 141039: // TEFINCOM S.A.
+		case 141167: // AgotoZ HK Limited
+		case 146834: // XUNYOU SiChuan XunYou Network Technologe Limit Co
 		case 147049: // PacketHub S.A.
 		case 197706: // Keminet SHPK
 		case 198371: // NINET Company Nis d.o.o.
