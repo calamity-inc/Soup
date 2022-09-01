@@ -6,7 +6,8 @@ f(margin_left); \
 f(margin_right); \
 f(margin_top); \
 f(margin_bottom); \
-f(font_size);
+f(font_size); \
+f(color);
 
 namespace soup
 {

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
+
+#include "Rgb.hpp"
 
 namespace soup
 {
@@ -15,6 +18,7 @@ namespace soup
 		uint8_t margin_bottom = 0;
 
 		uint8_t font_size = 0;
+		std::optional<Rgb> color = {};
 
 		void setMargin(uint8_t margin) noexcept
 		{

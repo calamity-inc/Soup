@@ -43,6 +43,6 @@ namespace soup
 
 	void lyoTextElement::draw(RenderTarget& rt) const
 	{
-		rt.drawText(flat_x, flat_y, text, font, Rgb::WHITE, style.getFontScale());
+		rt.drawText(flat_x, flat_y, text, font, style.color.has_value() ? style.color.value() : Rgb::WHITE, style.getFontScale());
 	}
 }
