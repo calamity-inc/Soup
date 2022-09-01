@@ -5,8 +5,10 @@
 #include <Canvas.hpp>
 #include <ChessCli.hpp>
 #include <CompiledExecutable.hpp>
+#include <country_names.hpp>
 #include <console.hpp>
 #include <Editor.hpp>
+#include <netIntel.hpp>
 #include <os.hpp>
 #include <QrCode.hpp>
 #include <string.hpp>
@@ -67,6 +69,53 @@ int main(int argc, const char** argv)
 				}
 			}
 			edit.run();
+			return 0;
+		}
+
+		if (subcommand == "geoip")
+		{
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup geoip [ip]" << std::endl;
+				return 0;
+			}
+			IpAddr addr = argv[2];
+			if (addr.isV4())
+			{
+				std::cout << "Initialising netIntel for IPv4..." << std::endl;
+				netIntel::init(true, false);
+			}
+			else
+			{
+				std::cout << "Initialising netIntel for IPv6..." << std::endl;
+				netIntel::init(false, true);
+			}
+			if (auto loc = netIntel::getLocationByIp(addr))
+			{
+				if (loc->city)
+				{
+					std::cout << "City: " << loc->city << std::endl;
+				}
+				if (loc->state)
+				{
+					std::cout << "State: " << loc->state << std::endl;
+				}
+				if (auto cn = getCountryName(loc->country_code.c_str()))
+				{
+					std::cout << "Country: " << cn << std::endl;
+				}
+				else
+				{
+					std::cout << "Country: " << loc->country_code.c_str() << std::endl;
+				}
+			}
+			if (auto as = netIntel::getAsByIp(addr))
+			{
+				std::cout << "AS Number: " << as->number << "\n";
+				std::cout << "AS Handle: " << as->handle << "\n";
+				std::cout << "AS Name: " << as->name << "\n";
+				std::cout << "AS is hosting provider? " << (as->isHosting() ? "Yes" : "No") << "\n";
+			}
 			return 0;
 		}
 
@@ -143,6 +192,7 @@ Available tools:
 - dig [domain] <type=A> <@<doh:>[server]>
 - dvd
 - edit [files...]
+- geoip [ip]
 - maze
 - qr [contents]
 - repl
