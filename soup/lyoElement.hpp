@@ -33,7 +33,9 @@ namespace soup
 
 		[[nodiscard]] bool matchesSelector(const std::string& selector) const noexcept;
 
-		virtual void flattenElement(lyoFlatDocument& flat) = 0;
+		virtual void populateFlatDocument(lyoFlatDocument& fdoc) = 0;
+		virtual void updateFlatPos() = 0;
+		virtual void updateFlatSize() = 0;
 
 		virtual void draw(RenderTarget& rt) const
 		{

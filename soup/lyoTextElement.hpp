@@ -18,7 +18,9 @@ namespace soup
 		{
 		}
 
-		void flattenElement(lyoFlatDocument& flat) final;
+		void populateFlatDocument(lyoFlatDocument& fdoc) final;
+		void updateFlatPos() final;
+		void updateFlatSize() final;
 
 		void draw(RenderTarget& rt) const final;
 	};

@@ -49,7 +49,16 @@ namespace soup
 		return res;
 	}
 
-	void lyoContainer::flattenElement(lyoFlatDocument& flat)
+	void lyoContainer::populateFlatDocument(lyoFlatDocument& fdoc)
+	{
+		fdoc.elms.emplace_back(this);
+		for (auto& elm : children)
+		{
+			elm->populateFlatDocument(fdoc);
+		}
+	}
+
+	void lyoContainer::updateFlatPos()
 	{
 		auto og_x = flat_x;
 		auto og_y = flat_y;
@@ -57,13 +66,20 @@ namespace soup
 		flat_x += style.margin_left;
 		flat_y += style.margin_top;
 
-		flat.elms.emplace_back(this);
 		for (auto& elm : children)
 		{
-			elm->flattenElement(flat);
+			elm->updateFlatPos();
 		}
 
 		flat_x = og_x;
 		flat_y = og_y;
+	}
+
+	void lyoContainer::updateFlatSize()
+	{
+		for (auto& elm : children)
+		{
+			elm->updateFlatSize();
+		}
 	}
 }

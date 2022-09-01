@@ -76,7 +76,9 @@ namespace soup
 		flat_height = height;
 
 		lyoFlatDocument flat;
-		flattenElement(flat);
+		populateFlatDocument(flat);
+		updateFlatSize();
+		updateFlatPos();
 		return flat;
 	}
 
