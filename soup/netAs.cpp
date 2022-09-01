@@ -48,6 +48,7 @@ namespace soup
 		case 51747: // Internet Vikings International AB
 		case 52423: // Data Miners S.A. ( Racknation.cr )
 		case 53013: // W I X NET DO BRASIL LTDA - ME
+		case 53667: // FranTech Solutions
 		case 55664: // PT Inovasi Global Mumpuni
 		case 58065: // Packet Exchange Limited
 		case 58073: // YISP B.V.
