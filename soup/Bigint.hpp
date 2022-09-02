@@ -9,6 +9,8 @@
 #include <vector>
 #endif
 
+#include "fwd.hpp"
+
 #if SOUP_WINDOWS
 #include "IntVector.hpp"
 #endif
@@ -47,7 +49,9 @@ namespace soup
 
 	public:
 		[[nodiscard]] static Bigint random(size_t bits);
+		[[nodiscard]] static Bigint random(algRng& rng, size_t bits);
 		[[nodiscard]] static Bigint randomProbablePrime(const size_t bits, const int miller_rabin_iterations = 1);
+		[[nodiscard]] static Bigint randomProbablePrime(algRng& rng, const size_t bits, const int miller_rabin_iterations = 1);
 
 		[[nodiscard]] static constexpr uint8_t getBitsPerChunk() noexcept
 		{
