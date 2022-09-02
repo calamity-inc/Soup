@@ -68,6 +68,8 @@ namespace soup
 		case 147049: // PacketHub S.A.
 		case 197706: // Keminet SHPK
 		case 198371: // NINET Company Nis d.o.o.
+		case 198605: // AVAST Software s.r.o.
+		case 198621: // AVAST Software s.r.o.
 		case 199524: // G-Core Labs S.A.
 		case 205053: // Asimia Damaskou
 		case 205119: // TELEKS DOOEL Skopje
