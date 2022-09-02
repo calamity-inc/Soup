@@ -416,6 +416,7 @@
     <ClInclude Include="dnsResource.hpp" />
     <ClInclude Include="dnsType.hpp" />
     <ClInclude Include="dns_records.hpp" />
+    <ClInclude Include="FactoriseProofOfWork.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
@@ -467,6 +468,7 @@
     <ClInclude Include="Canvas.hpp" />
     <ClInclude Include="Capture.hpp" />
     <ClInclude Include="ioSizeMeasurer.hpp" />
+    <ClInclude Include="HashProofOfWork.hpp" />
     <ClInclude Include="StringPtrReader.hpp" />
     <ClInclude Include="StringPtrWriter.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
@@ -732,6 +734,7 @@
     <ClCompile Include="dnsType.cpp" />
     <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="dns_records.cpp" />
+    <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />

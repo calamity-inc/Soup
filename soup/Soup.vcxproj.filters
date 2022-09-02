@@ -923,6 +923,12 @@
     <ClInclude Include="StringPtrWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
+    <ClInclude Include="HashProofOfWork.hpp">
+      <Filter>crypto\proof_of_work</Filter>
+    </ClInclude>
+    <ClInclude Include="FactoriseProofOfWork.hpp">
+      <Filter>crypto\proof_of_work</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1373,6 +1379,9 @@
     <ClCompile Include="dnsType.cpp">
       <Filter>net\dns</Filter>
     </ClCompile>
+    <ClCompile Include="FactoriseProofOfWork.cpp">
+      <Filter>crypto\proof_of_work</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1530,6 +1539,9 @@
     </Filter>
     <Filter Include="net\dns\resolver">
       <UniqueIdentifier>{80908fe7-bfd1-42cd-b12e-6c3be2fae56a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crypto\proof_of_work">
+      <UniqueIdentifier>{cc6c3a53-3611-43fc-b49e-801934a47954}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
