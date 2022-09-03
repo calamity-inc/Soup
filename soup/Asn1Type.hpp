@@ -11,6 +11,7 @@ namespace soup
 		STRING_OCTET = 4,
 		_NULL = 5,
 		OID = 6,
+		UTF8STRING = 12,
 		SEQUENCE = 16,
 		SET = 17,
 		STRING_PRINTABLE = 19,

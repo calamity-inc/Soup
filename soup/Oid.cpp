@@ -4,9 +4,14 @@
 #include <sstream>
 
 #include "IstreamReader.hpp"
+#include "StringPtrWriter.hpp"
 
 namespace soup
 {
+	Oid Oid::COMMON_NAME = { 2, 5, 4, 3 };
+	Oid Oid::RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 1 };
+	Oid Oid::SHA256_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 11 };
+
 	Oid Oid::fromBinary(const std::string& str)
 	{
 		std::istringstream s{ str };
@@ -51,6 +56,18 @@ namespace soup
 	bool Oid::operator!=(const Oid& b) const noexcept
 	{
 		return !operator==(b);
+	}
+
+	std::string Oid::toDer() const
+	{
+		std::string res;
+		res.push_back((char)((path.at(0) * 40) | path.at(1)));
+		StringPtrWriter w(&res);
+		for (auto i = path.begin() + 2; i != path.end(); ++i)
+		{
+			w.om<uint32_t>(*i);
+		}
+		return res;
 	}
 
 	std::string Oid::toString() const

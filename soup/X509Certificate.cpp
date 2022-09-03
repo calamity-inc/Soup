@@ -27,7 +27,10 @@ namespace soup
 			auto pubInfo = tbsCert.getSeq(6);
 			auto oid_bin = pubInfo.getString(0);
 
-			const unsigned char rsa_oid[] = { 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, 0x05, 0x00 };
+			const unsigned char rsa_oid[] = {
+				0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01,
+				0x05, 0x00
+			};
 			if (oid_bin.size() == sizeof(rsa_oid) && memcmp(oid_bin.data(), rsa_oid, sizeof(rsa_oid)) == 0)
 			{
 				std::string pubKeyStr = pubInfo.getString(1);

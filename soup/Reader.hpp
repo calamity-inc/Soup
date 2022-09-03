@@ -99,7 +99,7 @@ namespace soup
 			return true;
 		}
 
-		// An integer where every byte's most significant bit is used to indicate if another byte follows. This is identical to unsigned LEB128.
+		// An integer where every byte's most significant bit is used to indicate if another byte follows.
 		template <typename Int>
 		bool om(Int& v)
 		{

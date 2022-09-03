@@ -24,7 +24,7 @@ namespace soup
 
 		[[nodiscard]] std::string getCommonName() const
 		{
-			return get({ 2, 5, 4, 3 });
+			return get(Oid::COMMON_NAME);
 		}
 
 		[[nodiscard]] std::string getCountry() const

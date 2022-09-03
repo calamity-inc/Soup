@@ -8,6 +8,8 @@
 #include "pem.hpp"
 #include "Promise.hpp"
 #include "rand.hpp"
+#include "sha256.hpp"
+#include "X509RelativeDistinguishedName.hpp"
 
 namespace soup
 {
@@ -86,6 +88,16 @@ namespace soup
 		obj->add("n", base64::urlEncode(n.toBinary()));
 		obj->add("e", base64::urlEncode(e.toBinary()));
 		return obj;
+	}
+
+	std::string RsaMod::publicGetJwkThumbprint(const Bigint& e) const
+	{
+		auto jwk = publicToJwk(e);
+		std::sort(jwk->children.begin(), jwk->children.end(), [](const std::pair<UniquePtr<JsonNode>, UniquePtr<JsonNode>>& a, const std::pair<UniquePtr<JsonNode>, UniquePtr<JsonNode>>& b)
+		{
+			return *a.first < *b.first;
+		});
+		return sha256::hash(jwk->encode());
 	}
 
 	// KeyMontgomeryData
@@ -232,6 +244,54 @@ namespace soup
 	Bigint RsaPrivateKey::getD() const
 	{
 		return getE().modMulInv((p - 1_b).lcm(q - 1_b));
+	}
+
+	Asn1Sequence RsaPrivateKey::createCsr(const std::vector<std::string>& common_names) const
+	{
+		Asn1Sequence certReq;
+		std::string tbs;
+		{
+			Asn1Sequence certReqInfo;
+			certReqInfo.addInt({}); // version (0)
+			{
+				X509RelativeDistinguishedName subject;
+				for (const auto& common_name : common_names)
+				{
+					subject.emplace_back(Oid::COMMON_NAME, common_name);
+				}
+				certReqInfo.addName(subject);
+			}
+			{
+				Asn1Sequence subjectPublicKeyInfo;
+				{
+					Asn1Sequence algorithm;
+					algorithm.addOid(Oid::RSA_ENCRYPTION);
+					algorithm.addNull();
+					subjectPublicKeyInfo.addSeq(algorithm);
+				}
+				{
+					Asn1Sequence subjectPublicKey;
+					subjectPublicKey.addInt(n);
+					subjectPublicKey.addInt(getE());
+					subjectPublicKeyInfo.addBitString(subjectPublicKey.toDer());
+				}
+				certReqInfo.addSeq(subjectPublicKeyInfo);
+			}
+			certReqInfo.emplace_back(Asn1Element{
+				Asn1Identifier{ 2, true, 0 },
+				{}
+			});
+			tbs = certReqInfo.toDer();
+			certReq.addSeq(certReqInfo);
+		}
+		{
+			Asn1Sequence signatureAlgorithm;
+			signatureAlgorithm.addOid(Oid::SHA256_WITH_RSA_ENCRYPTION);
+			signatureAlgorithm.addNull();
+			certReq.addSeq(signatureAlgorithm);
+		}
+		certReq.addBitString(sign<sha256>(tbs).toBinary());
+		return certReq;
 	}
 
 	// Keypair

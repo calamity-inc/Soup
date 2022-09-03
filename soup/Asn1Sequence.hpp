@@ -26,8 +26,18 @@ namespace soup
 		[[nodiscard]] Oid getOid(const size_t child_idx) const;
 
 		void addInt(const Bigint& val);
+		void addOid(const Oid& val);
+		void addNull();
+		void addBitString(std::string val);
+		void addUtf8String(std::string val);
+		void addSeq(const Asn1Sequence& seq);
+		void addSet(const Asn1Sequence& seq);
+		void addName(const std::vector<std::pair<Oid, std::string>>& name);
 
 		[[nodiscard]] std::string toDer() const;
+	protected:
+		[[nodiscard]] std::string toDerNoPrefix() const;
+	public:
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const;
 
 		static Asn1Identifier readIdentifier(std::istream& s);

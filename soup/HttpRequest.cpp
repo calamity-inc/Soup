@@ -13,7 +13,7 @@
 
 namespace soup
 {
-	HttpRequest::HttpRequest(std::string&& method, std::string&& host, std::string&& path)
+	HttpRequest::HttpRequest(std::string method, std::string host, std::string path)
 		: MimeMessage({
 			{ObfusString("Host"), std::move(host)},
 			{ObfusString("User-Agent"), ObfusString("Mozilla/5.0 (compatible; Soup Library; +https://soup.do)")},
@@ -24,7 +24,7 @@ namespace soup
 		fixPath();
 	}
 
-	HttpRequest::HttpRequest(std::string&& host, std::string&& path)
+	HttpRequest::HttpRequest(std::string host, std::string path)
 		: HttpRequest(ObfusString("GET"), std::move(host), std::move(path))
 	{
 	}

@@ -115,19 +115,32 @@ namespace soup
 			return true;
 		}
 
-		// An integer where every byte's most significant bit is used to indicate if another byte follows. This is identical to unsigned LEB128.
+		// An integer where every byte's most significant bit is used to indicate if another byte follows.
 		template <typename Int>
 		bool om(const Int& v)
 		{
-			Int val = v;
-			while (val > 0x7F)
+			auto chunks = 0;
 			{
-				uint8_t byte = ((unsigned char)val | 0x80);
-				u8(byte);
-				val >>= 7;
+				Int val = v;
+				while (true)
+				{
+					val >>= 7;
+					if (val == 0)
+					{
+						break;
+					}
+					++chunks;
+				}
 			}
-			uint8_t byte = (unsigned char)val;
-			u8(byte);
+			do
+			{
+				uint8_t byte = ((v >> (chunks * 7)) & 0x7F);
+				if (chunks != 0)
+				{
+					byte |= 0x80;
+				}
+				u8(byte);
+			} while (chunks--);
 			return true;
 		}
 

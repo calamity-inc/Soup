@@ -81,24 +81,101 @@ namespace soup
 		{
 			bin = std::string(1, '\0');
 		}
+		else if ((uint8_t)bin.at(0) & 0x80) // A proper decoder might think the value is negative :'(
+		{
+			bin.insert(0, 1, '\0');
+		}
 		emplace_back(Asn1Element{
 			Asn1Identifier{ 0, false, Asn1Type::INTEGER },
 			std::move(bin)
 		});
 	}
 
+	void Asn1Sequence::addOid(const Oid& val)
+	{
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, false, Asn1Type::OID },
+			val.toDer()
+		});
+	}
+
+	void Asn1Sequence::addNull()
+	{
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, false, Asn1Type::_NULL },
+			{}
+		});
+	}
+
+	void Asn1Sequence::addBitString(std::string val)
+	{
+		val.insert(0, 1, '\0'); // idk why there's a preceeding 0 but there is so I guess we just do the same...
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, false, Asn1Type::BITSTRING },
+			std::move(val)
+		});
+	}
+
+	void Asn1Sequence::addUtf8String(std::string val)
+	{
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, false, Asn1Type::UTF8STRING },
+			std::move(val)
+		});
+	}
+
+	void Asn1Sequence::addSeq(const Asn1Sequence& seq)
+	{
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, true, Asn1Type::SEQUENCE },
+			seq.toDerNoPrefix()
+		});
+	}
+
+	void Asn1Sequence::addSet(const Asn1Sequence& seq)
+	{
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, true, Asn1Type::SET },
+			seq.toDerNoPrefix()
+		});
+	}
+
+	void Asn1Sequence::addName(const std::vector<std::pair<Oid, std::string>>& name)
+	{
+		Asn1Sequence set;
+		for (const auto& e : name)
+		{
+			Asn1Sequence seq;
+			seq.addOid(e.first);
+			seq.addUtf8String(e.second);
+
+			set.addSeq(seq);
+		}
+
+		Asn1Sequence seq;
+		seq.addSet(set);
+
+		addSeq(seq);
+	}
+
 	std::string Asn1Sequence::toDer() const
 	{
-		std::string ret{};
+		std::string res = toDerNoPrefix();
+		res.insert(0, encodeLength(res.size()));
+		res.insert(0, Asn1Identifier{ 0, true, Asn1Type::SEQUENCE }.toDer());
+		return res;
+	}
+
+	std::string Asn1Sequence::toDerNoPrefix() const
+	{
+		std::string res{};
 		for (const auto& c : *this)
 		{
-			ret.append(c.identifier.toDer());
-			ret.append(encodeLength(c.data.size()));
-			ret.append(c.data);
+			res.append(c.identifier.toDer());
+			res.append(encodeLength(c.data.size()));
+			res.append(c.data);
 		}
-		ret.insert(0, encodeLength(ret.size()));
-		ret.insert(0, Asn1Identifier{ 0, true, Asn1Type::SEQUENCE }.toDer());
-		return ret;
+		return res;
 	}
 
 	std::string Asn1Sequence::toString(const std::string& prefix) const
@@ -135,6 +212,10 @@ namespace soup
 
 				case Asn1Type::STRING_OCTET:
 					ret.append("OCTET STRING");
+					break;
+
+				case Asn1Type::UTF8STRING:
+					ret.append("UTF8 STRING");
 					break;
 
 				case Asn1Type::_NULL:
@@ -202,7 +283,7 @@ namespace soup
 					break;
 
 				case Asn1Type::INTEGER:
-				case Asn1Type::BITSTRING:
+				//case Asn1Type::BITSTRING:
 					ret.append(Bigint::fromBinary(c.data).toString());
 					break;
 
@@ -210,6 +291,7 @@ namespace soup
 					ret.append(Oid::fromBinary(c.data).toString());
 					break;
 
+				case Asn1Type::UTF8STRING:
 				case Asn1Type::STRING_PRINTABLE:
 				case Asn1Type::STRING_IA5:
 				case Asn1Type::UTCTIME: // yyMMddHHmmssZ

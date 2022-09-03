@@ -20,8 +20,8 @@ namespace soup
 		bool path_is_encoded = false;
 
 		HttpRequest() = default;
-		HttpRequest(std::string&& method, std::string&& host, std::string&& path);
-		HttpRequest(std::string&& host, std::string&& path);
+		HttpRequest(std::string method, std::string host, std::string path);
+		HttpRequest(std::string host, std::string path);
 
 		[[nodiscard]] const std::string& getHost() const;
 

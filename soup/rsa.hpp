@@ -35,6 +35,7 @@ namespace soup
 		static bool unpad(std::string& str);
 
 		[[nodiscard]] UniquePtr<JsonObject> publicToJwk(const Bigint& e) const;
+		[[nodiscard]] std::string publicGetJwkThumbprint(const Bigint& e) const;
 	};
 
 	template <typename T>
@@ -89,6 +90,11 @@ namespace soup
 		[[nodiscard]] UniquePtr<JsonObject> toJwk() const
 		{
 			return RsaKey<T>::publicToJwk(e);
+		}
+
+		[[nodiscard]] std::string getJwkThumbprint() const
+		{
+			return RsaKey<T>::publicGetJwkThumbprint(e);
 		}
 	};
 
@@ -161,12 +167,14 @@ namespace soup
 
 		[[nodiscard]] RsaPublicKey derivePublic() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 
-		[[nodiscard]] Asn1Sequence toAsn1() const; // as per PKCS#1. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+		[[nodiscard]] Asn1Sequence toAsn1() const; // as per PKCS #1. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 		[[nodiscard]] std::string toPem() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 
 		[[nodiscard]] Bigint modPow(const Bigint& x) const;
 		[[nodiscard]] Bigint getE() const; // returns public exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 		[[nodiscard]] Bigint getD() const; // returns private exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
+
+		[[nodiscard]] Asn1Sequence createCsr(const std::vector<std::string>& common_names) const; // returns a Certificate Signing Request as per PKCS #10.
 	};
 
 	struct RsaKeypair : public RsaMod
