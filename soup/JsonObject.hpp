@@ -27,6 +27,10 @@ namespace soup
 		[[nodiscard]] bool contains(std::string k) const noexcept;
 		[[nodiscard]] JsonNode& at(const JsonNode& k) const;
 		[[nodiscard]] JsonNode& at(std::string k) const;
+		[[nodiscard]] auto begin() noexcept { return children.begin(); }
+		[[nodiscard]] auto end() noexcept { return children.end(); }
+		[[nodiscard]] auto begin() const noexcept { return children.begin(); }
+		[[nodiscard]] auto end() const noexcept { return children.end(); }
 
 		void add(UniquePtr<JsonNode>&& k, UniquePtr<JsonNode>&& v);
 		void add(std::string k, UniquePtr<JsonNode>&& v) = delete;

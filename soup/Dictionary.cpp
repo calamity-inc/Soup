@@ -38,7 +38,7 @@ namespace soup
 			DictionaryWord dw{};
 			dw.antonyms = processRelatedWords(word, data.at("ANTONYMS").asArr());
 			dw.synonyms = processRelatedWords(word, data.at("SYNONYMS").asArr());
-			for (const auto& e2 : data.at("MEANINGS").asObj().children)
+			for (const auto& e2 : data.at("MEANINGS").asObj())
 			{
 				JsonArray& mdata = e2.second->asArr();
 				WordMeaning m{};
@@ -60,13 +60,13 @@ namespace soup
 					m.type = ADVERB;
 				}
 				m.meaning = mdata.at(1).asStr().value;
-				for (const auto& ctx : mdata.at(2).asArr().children)
+				for (const auto& ctx : mdata.at(2).asArr())
 				{
-					m.context.emplace_back(ctx->asStr().value);
+					m.context.emplace_back(ctx.asStr().value);
 				}
-				for (const auto& ex : mdata.at(3).asArr().children)
+				for (const auto& ex : mdata.at(3).asArr())
 				{
-					m.example.emplace_back(ex->asStr().value);
+					m.example.emplace_back(ex.asStr().value);
 				}
 				dw.meanings.emplace_back(std::move(m));
 			}

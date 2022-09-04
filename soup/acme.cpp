@@ -109,9 +109,9 @@ namespace soup
 		JsonObject& jo = j->asObj();
 		AcmeAuthorisation authz;
 		authz.domain = jo.at("identifier").asObj().at("value").asStr().value;
-		for (const auto& challenge : jo.at("challenges").asArr().children)
+		for (const auto& challenge : jo.at("challenges").asArr())
 		{
-			const auto type = challenge->asObj().at("type").asStr().value;
+			const auto type = challenge.asObj().at("type").asStr().value;
 			const bool is_http = (type == "http-01");
 			if (!is_http
 				&& type != "dns-01"
@@ -120,8 +120,8 @@ namespace soup
 				continue;
 			}
 			authz.challenges.emplace_back(AcmeChallenge{
-				challenge->asObj().at("url").asStr().value,
-				challenge->asObj().at("token").asStr().value,
+				challenge.asObj().at("url").asStr().value,
+				challenge.asObj().at("token").asStr().value,
 				is_http
 			});
 		}
@@ -203,13 +203,13 @@ namespace soup
 			order.uri = e->second;
 		}
 		order.status = jo.at("status").asStr().value;
-		for (const auto& id : jo.at("identifiers").asArr().children)
+		for (const auto& id : jo.at("identifiers").asArr())
 		{
-			order.domains.emplace_back(id->asObj().at("value").asStr().value);
+			order.domains.emplace_back(id.asObj().at("value").asStr().value);
 		}
-		for (const auto& auth : jo.at("authorizations").asArr().children)
+		for (const auto& auth : jo.at("authorizations").asArr())
 		{
-			order.authorisations.emplace_back(auth->asStr().value);
+			order.authorisations.emplace_back(auth.asStr().value);
 		}
 		order.finalise = jo.at("finalize").asStr().value;
 		if (auto certificate = jo.find("certificate"))

@@ -6,6 +6,11 @@
 
 namespace soup
 {
+	JsonNode& JsonArrayIterator::operator*() const noexcept
+	{
+		return arr->at(i);
+	}
+
 	JsonArray::JsonArray() noexcept
 		: JsonNode(JSON_ARRAY)
 	{
@@ -105,8 +110,18 @@ namespace soup
 		return true;
 	}
 
-	JsonNode& JsonArray::at(size_t i)
+	JsonNode& JsonArray::at(size_t i) const
 	{
 		return *children.at(i);
+	}
+
+	JsonArrayIterator JsonArray::begin() const noexcept
+	{
+		return { this, 0 };
+	}
+
+	JsonArrayIterator JsonArray::end() const noexcept
+	{
+		return { this, children.size() };
 	}
 }
