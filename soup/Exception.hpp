@@ -3,18 +3,12 @@
 #include "base.hpp"
 
 #include <stdexcept>
-#include <string>
 
 namespace soup
 {
-	struct Exception : public std::exception
+	struct Exception : public std::runtime_error
 	{
-		using std::exception::exception;
-
-		Exception(const std::string& str)
-			: std::exception(str.c_str())
-		{
-		}
+		using std::runtime_error::runtime_error;
 
 		[[noreturn]] static SOUP_FORCEINLINE void purecall()
 		{

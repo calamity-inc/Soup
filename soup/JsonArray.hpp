@@ -19,6 +19,11 @@ namespace soup
 			return i == b.i;
 		}
 
+		[[nodiscard]] bool operator!=(const JsonArrayIterator& b) const noexcept
+		{
+			return i != b.i;
+		}
+
 		void operator++() noexcept
 		{
 			++i;
