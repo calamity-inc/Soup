@@ -12,7 +12,7 @@ namespace soup
 		std::vector<std::string> res{};
 		for (const auto& e : arr.children)
 		{
-			auto rel_word = e->asStr()->value;
+			auto rel_word = e->asStr().value;
 			if (rel_word.empty())
 			{
 				continue;
@@ -30,19 +30,19 @@ namespace soup
 	{
 		for (const auto& e : obj.children)
 		{
-			auto word = e.first->asStr()->value;
+			auto word = e.first->asStr().value;
 			string::lower(word);
 
-			JsonObject& data = *e.second->asObj();
+			JsonObject& data = e.second->asObj();
 
 			DictionaryWord dw{};
-			dw.antonyms = processRelatedWords(word, *data.at("ANTONYMS")->asArr());
-			dw.synonyms = processRelatedWords(word, *data.at("SYNONYMS")->asArr());
-			for (const auto& e2 : data.at("MEANINGS")->asObj()->children)
+			dw.antonyms = processRelatedWords(word, data.at("ANTONYMS").asArr());
+			dw.synonyms = processRelatedWords(word, data.at("SYNONYMS").asArr());
+			for (const auto& e2 : data.at("MEANINGS").asObj().children)
 			{
-				JsonArray& mdata = *e2.second->asArr();
+				JsonArray& mdata = e2.second->asArr();
 				WordMeaning m{};
-				auto type_str = mdata.at(0).asStr()->value;
+				auto type_str = mdata.at(0).asStr().value;
 				if (type_str == "Noun")
 				{
 					m.type = NOUN;
@@ -59,14 +59,14 @@ namespace soup
 				{
 					m.type = ADVERB;
 				}
-				m.meaning = mdata.at(1).asStr()->value;
-				for (const auto& ctx : mdata.at(2).asArr()->children)
+				m.meaning = mdata.at(1).asStr().value;
+				for (const auto& ctx : mdata.at(2).asArr().children)
 				{
-					m.context.emplace_back(ctx->asStr()->value);
+					m.context.emplace_back(ctx->asStr().value);
 				}
-				for (const auto& ex : mdata.at(3).asArr()->children)
+				for (const auto& ex : mdata.at(3).asArr().children)
 				{
-					m.example.emplace_back(ex->asStr()->value);
+					m.example.emplace_back(ex->asStr().value);
 				}
 				dw.meanings.emplace_back(std::move(m));
 			}

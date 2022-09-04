@@ -265,13 +265,13 @@ static void test_data()
 "spouse": null
 }
 )");
-		auto obj = tree->asObj();
-		assert(*obj->at("firstName")->asStr() == "John");
-		assert(*obj->at("lastName")->asStr() == "Smith");
-		assert(*obj->at("isAlive")->asBool() == true);
-		assert(*obj->at("age")->asInt() == 27);
-		assert(*obj->at("phoneNumbers")->asArr()->at(0).asObj()->at("type")->asStr() == "home");
-		assert(obj->at("spouse")->isNull());
+		JsonObject& obj = tree->asObj();
+		assert(obj.at("firstName").asStr() == "John");
+		assert(obj.at("lastName").asStr() == "Smith");
+		assert(obj.at("isAlive").asBool() == true);
+		assert(obj.at("age").asInt() == 27);
+		assert(obj.at("phoneNumbers").asArr().at(0).asObj().at("type").asStr() == "home");
+		assert(obj.at("spouse").isNull());
 	});
 
 	test("xml", []

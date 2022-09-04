@@ -188,12 +188,12 @@ namespace soup
 	{
 		// assuming that jwk["kty"] == "RSA"
 		return {
-			Bigint::fromBinary(base64::urlDecode(*jwk.at("n")->asStr())),
-			Bigint::fromBinary(base64::urlDecode(*jwk.at("p")->asStr())),
-			Bigint::fromBinary(base64::urlDecode(*jwk.at("q")->asStr())),
-			Bigint::fromBinary(base64::urlDecode(*jwk.at("dp")->asStr())),
-			Bigint::fromBinary(base64::urlDecode(*jwk.at("dq")->asStr())),
-			Bigint::fromBinary(base64::urlDecode(*jwk.at("qi")->asStr())),
+			Bigint::fromBinary(base64::urlDecode(jwk.at("n").asStr())),
+			Bigint::fromBinary(base64::urlDecode(jwk.at("p").asStr())),
+			Bigint::fromBinary(base64::urlDecode(jwk.at("q").asStr())),
+			Bigint::fromBinary(base64::urlDecode(jwk.at("dp").asStr())),
+			Bigint::fromBinary(base64::urlDecode(jwk.at("dq").asStr())),
+			Bigint::fromBinary(base64::urlDecode(jwk.at("qi").asStr())),
 		};
 	}
 

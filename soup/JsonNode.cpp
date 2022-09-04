@@ -1,6 +1,6 @@
 #include "JsonNode.hpp"
 
-#include "branchless.hpp"
+#include "Exception.hpp"
 #include "JsonArray.hpp"
 #include "JsonObject.hpp"
 
@@ -54,6 +54,114 @@ namespace soup
 		return false;
 	}
 
+	JsonArray& JsonNode::asArr()
+	{
+		if (!isArr())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsArr();
+	}
+
+	JsonBool& JsonNode::asBool()
+	{
+		if (!isBool())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsBool();
+	}
+
+	JsonFloat& JsonNode::asFloat()
+	{
+		if (!isFloat())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsFloat();
+	}
+
+	JsonInt& JsonNode::asInt()
+	{
+		if (!isInt())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsInt();
+	}
+
+	JsonObject& JsonNode::asObj()
+	{
+		if (!isObj())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsObj();
+	}
+
+	JsonString& JsonNode::asStr()
+	{
+		if (!isStr())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsStr();
+	}
+
+	const JsonArray& JsonNode::asArr() const
+	{
+		if (!isArr())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsArr();
+	}
+
+	const JsonBool& JsonNode::asBool() const
+	{
+		if (!isBool())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsBool();
+	}
+
+	const JsonFloat& JsonNode::asFloat() const
+	{
+		if (!isFloat())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsFloat();
+	}
+
+	const JsonInt& JsonNode::asInt() const
+	{
+		if (!isInt())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsInt();
+	}
+
+	const JsonObject& JsonNode::asObj() const
+	{
+		if (!isObj())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsObj();
+	}
+
+	const JsonString& JsonNode::asStr() const
+	{
+		if (!isStr())
+		{
+			throw Exception("JsonNode has unexpected type");
+		}
+		return reinterpretAsStr();
+	}
+
 	bool JsonNode::isArr() const noexcept
 	{
 		return type == JSON_ARRAY;
@@ -87,36 +195,6 @@ namespace soup
 	bool JsonNode::isStr() const noexcept
 	{
 		return type == JSON_STRING;
-	}
-
-	JsonArray* JsonNode::asArr() noexcept
-	{
-		return reinterpret_cast<JsonArray*>(branchless::trinary<JsonNode*>(isArr(), this, nullptr));
-	}
-
-	JsonBool* JsonNode::asBool() noexcept
-	{
-		return reinterpret_cast<JsonBool*>(branchless::trinary<JsonNode*>(isBool(), this, nullptr));
-	}
-
-	JsonFloat* JsonNode::asFloat() noexcept
-	{
-		return reinterpret_cast<JsonFloat*>(branchless::trinary<JsonNode*>(isFloat(), this, nullptr));
-	}
-
-	JsonInt* JsonNode::asInt() noexcept
-	{
-		return reinterpret_cast<JsonInt*>(branchless::trinary<JsonNode*>(isInt(), this, nullptr));
-	}
-
-	JsonObject* JsonNode::asObj() noexcept
-	{
-		return reinterpret_cast<JsonObject*>(branchless::trinary<JsonNode*>(isObj(), this, nullptr));
-	}
-
-	JsonString* JsonNode::asStr() noexcept
-	{
-		return reinterpret_cast<JsonString*>(branchless::trinary<JsonNode*>(isStr(), this, nullptr));
 	}
 
 	JsonArray& JsonNode::reinterpretAsArr() noexcept

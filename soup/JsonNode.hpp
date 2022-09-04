@@ -31,6 +31,21 @@ namespace soup
 
 		virtual bool binaryEncode(Writer& w) const; // specific to soup
 
+		// Type casts; will throw if node is of different type.
+		[[nodiscard]] JsonArray& asArr();
+		[[nodiscard]] JsonBool& asBool();
+		[[nodiscard]] JsonFloat& asFloat();
+		[[nodiscard]] JsonInt& asInt();
+		[[nodiscard]] JsonObject& asObj();
+		[[nodiscard]] JsonString& asStr();
+		[[nodiscard]] const JsonArray& asArr() const;
+		[[nodiscard]] const JsonBool& asBool() const;
+		[[nodiscard]] const JsonFloat& asFloat() const;
+		[[nodiscard]] const JsonInt& asInt() const;
+		[[nodiscard]] const JsonObject& asObj() const;
+		[[nodiscard]] const JsonString& asStr() const;
+
+		// Type checks.
 		[[nodiscard]] bool isArr() const noexcept;
 		[[nodiscard]] bool isBool() const noexcept;
 		[[nodiscard]] bool isFloat() const noexcept;
@@ -38,14 +53,6 @@ namespace soup
 		[[nodiscard]] bool isNull() const noexcept;
 		[[nodiscard]] bool isObj() const noexcept;
 		[[nodiscard]] bool isStr() const noexcept;
-
-		// Type casts; will return nullptr if *this is a different type.
-		[[nodiscard]] JsonArray* asArr() noexcept;
-		[[nodiscard]] JsonBool* asBool() noexcept;
-		[[nodiscard]] JsonFloat* asFloat() noexcept;
-		[[nodiscard]] JsonInt* asInt() noexcept;
-		[[nodiscard]] JsonObject* asObj() noexcept;
-		[[nodiscard]] JsonString* asStr() noexcept;
 
 		// Reinterpret casts; no error considerations.
 		[[nodiscard]] JsonArray& reinterpretAsArr() noexcept;

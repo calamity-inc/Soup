@@ -21,10 +21,12 @@ namespace soup
 
 		bool binaryEncode(Writer& w) const final;
 
+		[[nodiscard]] JsonNode* find(const JsonNode& k) const noexcept;
+		[[nodiscard]] JsonNode* find(std::string k) const noexcept;
 		[[nodiscard]] bool contains(const JsonNode& k) const noexcept;
 		[[nodiscard]] bool contains(std::string k) const noexcept;
-		[[nodiscard]] JsonNode* at(const JsonNode& k) const noexcept;
-		[[nodiscard]] JsonNode* at(std::string k) const noexcept;
+		[[nodiscard]] JsonNode& at(const JsonNode& k) const;
+		[[nodiscard]] JsonNode& at(std::string k) const;
 
 		void add(UniquePtr<JsonNode>&& k, UniquePtr<JsonNode>&& v);
 		void add(std::string k, UniquePtr<JsonNode>&& v) = delete;

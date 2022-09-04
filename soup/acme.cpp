@@ -31,10 +31,10 @@ namespace soup
 		HttpRequest req(domain, "/directory");
 		auto res = req.execute();
 		auto root = json::decodeForDedicatedVariable(res->body);
-		auto directory = root->asObj();
-		uri_newNonce = directory->at("newNonce")->asStr()->value;
-		uri_newAccount = directory->at("newAccount")->asStr()->value;
-		uri_newOrder = directory->at("newOrder")->asStr()->value;
+		JsonObject& directory = root->asObj();
+		uri_newNonce = directory.at("newNonce").asStr().value;
+		uri_newAccount = directory.at("newAccount").asStr().value;
+		uri_newOrder = directory.at("newOrder").asStr().value;
 	}
 
 	AcmeAccount AcmeClient::createAccount(const RsaKeypair& kp, std::string email)
@@ -106,12 +106,12 @@ namespace soup
 	{
 		auto res = executeRequest(acct, uri, {});
 		auto j = json::decodeForDedicatedVariable(res.body);
-		auto jo = j->asObj();
+		JsonObject& jo = j->asObj();
 		AcmeAuthorisation authz;
-		authz.domain = jo->at("identifier")->asObj()->at("value")->asStr()->value;
-		for (const auto& challenge : jo->at("challenges")->asArr()->children)
+		authz.domain = jo.at("identifier").asObj().at("value").asStr().value;
+		for (const auto& challenge : jo.at("challenges").asArr().children)
 		{
-			const auto type = challenge->asObj()->at("type")->asStr()->value;
+			const auto type = challenge->asObj().at("type").asStr().value;
 			const bool is_http = (type == "http-01");
 			if (!is_http
 				&& type != "dns-01"
@@ -120,8 +120,8 @@ namespace soup
 				continue;
 			}
 			authz.challenges.emplace_back(AcmeChallenge{
-				challenge->asObj()->at("url")->asStr()->value,
-				challenge->asObj()->at("token")->asStr()->value,
+				challenge->asObj().at("url").asStr().value,
+				challenge->asObj().at("token").asStr().value,
 				is_http
 			});
 		}
@@ -196,25 +196,25 @@ namespace soup
 	AcmeOrder AcmeClient::parseOrderResponse(const HttpResponse& res)
 	{
 		auto j = json::decodeForDedicatedVariable(res.body);
-		auto jo = j->asObj();
+		JsonObject& jo = j->asObj();
 		AcmeOrder order{};
 		if (auto e = res.header_fields.find("Location"); e != res.header_fields.end())
 		{
 			order.uri = e->second;
 		}
-		order.status = jo->at("status")->asStr()->value;
-		for (const auto& id : jo->at("identifiers")->asArr()->children)
+		order.status = jo.at("status").asStr().value;
+		for (const auto& id : jo.at("identifiers").asArr().children)
 		{
-			order.domains.emplace_back(id->asObj()->at("value")->asStr()->value);
+			order.domains.emplace_back(id->asObj().at("value").asStr().value);
 		}
-		for (const auto& auth : jo->at("authorizations")->asArr()->children)
+		for (const auto& auth : jo.at("authorizations").asArr().children)
 		{
-			order.authorisations.emplace_back(auth->asStr()->value);
+			order.authorisations.emplace_back(auth->asStr().value);
 		}
-		order.finalise = jo->at("finalize")->asStr()->value;
-		if (auto certificate = jo->at("certificate"))
+		order.finalise = jo.at("finalize").asStr().value;
+		if (auto certificate = jo.find("certificate"))
 		{
-			order.certificate = certificate->asStr()->value;
+			order.certificate = certificate->asStr().value;
 		}
 		return order;
 	}

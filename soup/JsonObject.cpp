@@ -1,5 +1,6 @@
 #include "JsonObject.hpp"
 
+#include "Exception.hpp"
 #include "json.hpp"
 #include "JsonBool.hpp"
 #include "JsonInt.hpp"
@@ -116,17 +117,7 @@ namespace soup
 		return true;
 	}
 
-	bool JsonObject::contains(const JsonNode& k) const noexcept
-	{
-		return at(k) != nullptr;
-	}
-
-	bool JsonObject::contains(std::string k) const noexcept
-	{
-		return contains(JsonString(std::move(k)));
-	}
-
-	JsonNode* JsonObject::at(const JsonNode& k) const noexcept
+	JsonNode* JsonObject::find(const JsonNode& k) const noexcept
 	{
 		for (const auto& child : children)
 		{
@@ -138,7 +129,33 @@ namespace soup
 		return nullptr;
 	}
 
-	JsonNode* JsonObject::at(std::string k) const noexcept
+	JsonNode* JsonObject::find(std::string k) const noexcept
+	{
+		return find(JsonString(std::move(k)));
+	}
+
+	bool JsonObject::contains(const JsonNode& k) const noexcept
+	{
+		return find(k) != nullptr;
+	}
+
+	bool JsonObject::contains(std::string k) const noexcept
+	{
+		return contains(JsonString(std::move(k)));
+	}
+
+	JsonNode& JsonObject::at(const JsonNode& k) const
+	{
+		if (auto e = find(k))
+		{
+			return *e;
+		}
+		std::string err = "JsonObject has no member with key ";
+		err.append(k.encode());
+		throw Exception(std::move(err));
+	}
+
+	JsonNode& JsonObject::at(std::string k) const
 	{
 		return at(JsonString(std::move(k)));
 	}
