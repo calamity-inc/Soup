@@ -52,6 +52,16 @@ namespace soup
 		}
 	};
 
+	struct dnsPtrRecord : public dnsRecord
+	{
+		std::string data;
+
+		dnsPtrRecord(std::string&& name, uint32_t ttl, std::string&& data)
+			: dnsRecord(DNS_PTR, std::move(name), ttl), data(std::move(data))
+		{
+		}
+	};
+
 	struct dnsTxtRecord : public dnsRecord
 	{
 		std::string data;

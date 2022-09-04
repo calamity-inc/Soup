@@ -31,6 +31,10 @@ namespace soup
 				{
 					res.emplace_back(soup::make_unique<dnsCnameRecord>(i->pName, i->dwTtl, i->Data.CNAME.pNameHost));
 				}
+				else if (i->wType == DNS_TYPE_PTR)
+				{
+					res.emplace_back(soup::make_unique<dnsPtrRecord>(i->pName, i->dwTtl, i->Data.PTR.pNameHost));
+				}
 				else if (i->wType == DNS_TYPE_TEXT)
 				{
 					res.emplace_back(soup::make_unique<dnsTxtRecord>(i->pName, i->dwTtl, i->Data.TXT.pStringArray[0]));
@@ -63,9 +67,15 @@ namespace soup
 				}
 				else if (ns_rr_type(rr) == ns_t_cname)
 				{
-					char cname[1024];
-					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr), cname, sizeof(cname));
-					res.emplace_back(soup::make_unique<dnsCnameRecord>(ns_rr_name(rr), ns_rr_ttl(rr), cname));
+					char hostname[1024];
+					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr), hostname, sizeof(hostname));
+					res.emplace_back(soup::make_unique<dnsCnameRecord>(ns_rr_name(rr), ns_rr_ttl(rr), hostname));
+				}
+				else if (ns_rr_type(rr) == ns_t_ptr)
+				{
+					char hostname[1024];
+					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr), hostname, sizeof(hostname));
+					res.emplace_back(soup::make_unique<dnsPtrRecord>(ns_rr_name(rr), ns_rr_ttl(rr), hostname));
 				}
 				else if (ns_rr_type(rr) == ns_t_txt)
 				{
@@ -73,9 +83,9 @@ namespace soup
 				}
 				else if (ns_rr_type(rr) == ns_t_srv)
 				{
-					char target[1024];
-					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr) + 6, target, sizeof(target));
-					res.emplace_back(soup::make_unique<dnsSrvRecord>(ns_rr_name(rr), ns_rr_ttl(rr), ntohs(*(unsigned short*)ns_rr_rdata(rr)), ntohs(*((unsigned short*)ns_rr_rdata(rr) + 1)), target, ntohs(*((unsigned short*)ns_rr_rdata(rr) + 2))));
+					char hostname[1024];
+					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr) + 6, hostname, sizeof(hostname));
+					res.emplace_back(soup::make_unique<dnsSrvRecord>(ns_rr_name(rr), ns_rr_ttl(rr), ntohs(*(unsigned short*)ns_rr_rdata(rr)), ntohs(*((unsigned short*)ns_rr_rdata(rr) + 1)), hostname, ntohs(*((unsigned short*)ns_rr_rdata(rr) + 2))));
 				}
 			}
 		}

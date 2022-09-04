@@ -43,6 +43,18 @@ void cli_dig(int argc, const char** argv)
 			{
 				t = DNS_AAAA;
 			}
+			else if (strcmp(argv[i], "CNAME") == 0)
+			{
+				t = DNS_CNAME;
+			}
+			else if (strcmp(argv[i], "PTR") == 0)
+			{
+				t = DNS_PTR;
+			}
+			else if (strcmp(argv[i], "TXT") == 0)
+			{
+				t = DNS_TXT;
+			}
 			else if (strcmp(argv[i], "A") != 0)
 			{
 				std::cout << "Unsupported type: " << argv[i] << "\n";
