@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ctime>
 #include <istream>
 #include <vector>
 
@@ -24,6 +25,7 @@ namespace soup
 		[[nodiscard]] Asn1Sequence getSeq(const size_t child_idx) const;
 		[[nodiscard]] Bigint getInt(const size_t child_idx) const;
 		[[nodiscard]] Oid getOid(const size_t child_idx) const;
+		[[nodiscard]] std::time_t getUtctime(const size_t child_idx) const;
 
 		void addInt(const Bigint& val);
 		void addOid(const Oid& val);

@@ -737,6 +737,7 @@
     <ClCompile Include="dns_records.cpp" />
     <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
+    <ClCompile Include="time.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
     <ClCompile Include="ChessCli.cpp" />

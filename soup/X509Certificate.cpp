@@ -46,6 +46,10 @@ namespace soup
 			issuer = readRelativeDistinguishedName(tbsCert.getSeq(3));
 			subject = readRelativeDistinguishedName(tbsCert.getSeq(5));
 
+			Asn1Sequence validityPeriod = tbsCert.getSeq(4);
+			valid_from = validityPeriod.getUtctime(0);
+			valid_to = validityPeriod.getUtctime(1);
+
 			return true;
 		}
 		catch (const std::out_of_range&)

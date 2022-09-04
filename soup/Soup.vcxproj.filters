@@ -1385,6 +1385,9 @@
     <ClCompile Include="FactoriseProofOfWork.cpp">
       <Filter>crypto\proof_of_work</Filter>
     </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

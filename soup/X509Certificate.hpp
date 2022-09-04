@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ctime>
+
 #include "Asn1Sequence.hpp"
 #include "rsa.hpp"
 #include "X509RelativeDistinguishedName.hpp"
@@ -16,6 +18,8 @@ namespace soup
 		X509RelativeDistinguishedName issuer;
 		X509RelativeDistinguishedName subject;
 		RsaPublicKey key;
+		std::time_t valid_from;
+		std::time_t valid_to;
 
 		bool fromBinary(const std::string& str);
 		bool fromBinary(std::istream& s);

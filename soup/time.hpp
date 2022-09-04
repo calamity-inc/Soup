@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <ctime>
 
 namespace soup
 {
@@ -20,5 +21,7 @@ namespace soup
 		{
 			return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		}
+
+		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);
 	};
 }

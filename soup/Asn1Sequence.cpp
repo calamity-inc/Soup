@@ -8,6 +8,7 @@
 #include "IstreamReader.hpp"
 #include "Oid.hpp"
 #include "string.hpp"
+#include "time.hpp"
 
 namespace soup
 {
@@ -81,6 +82,22 @@ namespace soup
 	Oid Asn1Sequence::getOid(const size_t child_idx) const
 	{
 		return Oid::fromBinary(getString(child_idx));
+	}
+
+	std::time_t Asn1Sequence::getUtctime(const size_t child_idx) const
+	{
+		auto utctime = getString(child_idx);
+		SOUP_IF_UNLIKELY (utctime.size() < 12)
+		{
+			return 0;
+		}
+		int year = std::stol(utctime.substr(0, 2)) + 2000; // what happens in 2100? probably something really funny. too bad I won't be around for that.
+		int month = std::stol(utctime.substr(2, 2));
+		int day = std::stol(utctime.substr(4, 2));
+		int hour = std::stol(utctime.substr(6, 2));
+		int minute = std::stol(utctime.substr(8, 2));
+		int second = std::stol(utctime.substr(10, 2));
+		return time::toUnix(year, month, day, hour, minute, second);
 	}
 
 	void Asn1Sequence::addInt(const Bigint& val)
