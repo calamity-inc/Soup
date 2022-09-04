@@ -83,6 +83,9 @@ namespace soup
 	class Socket;
 	struct SocketAddr;
 
+	// net.dns.resolver
+	struct dnsResolver;
+
 	// net.tls
 	class SocketTlsHandshaker;
 	struct TlsServerRsaData;

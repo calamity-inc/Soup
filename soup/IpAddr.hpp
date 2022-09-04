@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base.hpp"
+#include "fwd.hpp"
 
 #if SOUP_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
@@ -161,5 +162,9 @@ namespace soup
 			inet_ntop(AF_INET6, &data, buf, INET6_ADDRSTRLEN);
 			return buf;
 		}
+
+		[[nodiscard]] std::string getArpaName() const;
+		[[nodiscard]] std::string getReverseDns() const;
+		[[nodiscard]] std::string getReverseDns(dnsResolver& resolver) const;
 	};
 }
