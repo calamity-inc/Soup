@@ -5,6 +5,7 @@
 #include "AllocRaiiLocalBase.hpp"
 #include "AssemblyBuilder.hpp"
 #include "BuiltinOp.hpp"
+#include "Exception.hpp"
 #include "ParseError.hpp"
 #include "StringReader.hpp"
 #include "UniquePtr.hpp"
@@ -130,9 +131,9 @@ namespace soup
 
 	void LangVm::addOpcode(uint8_t opcode, LangVm::op_t op)
 	{
-		if (opcode != ops.size())
+		SOUP_IF_UNLIKELY (opcode != ops.size())
 		{
-			throw 0;
+			throw Exception("Opcode registered out of order");
 		}
 		ops.emplace_back(op);
 	}

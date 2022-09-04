@@ -1,5 +1,6 @@
 #include "x64.hpp"
 
+#include "Exception.hpp"
 #include "macros.hpp"
 #include "string.hpp"
 #include "StringBuilder.hpp"
@@ -278,7 +279,9 @@ namespace soup
 		}
 		if (operation == nullptr)
 		{
-			throw 0;
+			std::string err = "Unknown x64 instruction: ";
+			err.append(op);
+			throw Exception(std::move(err));
 		}
 	}
 

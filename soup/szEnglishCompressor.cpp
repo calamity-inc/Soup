@@ -50,7 +50,7 @@ namespace soup
 		});
 
 		const auto bits_per_word = bitutil::getBitsNeededToEncodeRange(english_words.size());
-		if (bits_per_word > 17)
+		SOUP_IF_UNLIKELY (bits_per_word > 17)
 		{
 			throw 0;
 		}

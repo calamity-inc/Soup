@@ -24,7 +24,7 @@ namespace soup
 		{
 			auto id = readIdentifier(s);
 			auto len = readLength(s);
-			SOUP_IF_UNLIKELY(len > 10000)
+			SOUP_IF_UNLIKELY (len > 10000)
 			{
 				throw Exception("Asn1Sequence is unreasonably long");
 			}
@@ -44,7 +44,7 @@ namespace soup
 	{
 		readIdentifier(s);
 		auto len = readLength(s);
-		SOUP_IF_UNLIKELY(len > 10000)
+		SOUP_IF_UNLIKELY (len > 10000)
 		{
 			throw Exception("Asn1Sequence is unreasonably long");
 		}

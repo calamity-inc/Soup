@@ -2,6 +2,7 @@
 
 #include <map>
 
+#include "Exception.hpp"
 #include "math.hpp"
 #include "RasterFont.hpp"
 #include "Rgb.hpp"
@@ -119,6 +120,6 @@ namespace soup
 
 	Rgb RenderTarget::getPixel(unsigned int x, unsigned int y) const
 	{
-		throw 0;
+		Exception::purecall();
 	}
 }

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "alpha2decodetbl.hpp"
+#include "Exception.hpp"
 
 namespace soup
 {
@@ -29,7 +30,7 @@ namespace soup
 			int carry = mapBase58[(uint8_t)*psz];
 			if (carry == 0xFF)
 			{
-				throw 0; // Invalid b58 character
+				throw Exception("Invalid base58 character");
 			}
 			int i = 0;
 			for (std::vector<uint8_t>::reverse_iterator it = b256.rbegin(); (carry != 0 || i < length) && (it != b256.rend()); ++it, ++i) {
