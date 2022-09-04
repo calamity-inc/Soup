@@ -54,7 +54,7 @@
 #define SOUP_CODE_INSPECTOR false
 #endif
 
-// === Misc. macros for cross-platform goodness
+// === Platform abstraction macros
 
 #define SOUP_CEXPORT extern "C" SOUP_EXPORT
 
@@ -65,6 +65,8 @@
 	#define SOUP_FORCEINLINE __attribute__((always_inline))
 	#define SOUP_NOINLINE __attribute__((noinline))
 #endif
+
+// C++ version abstraction macros
 
 #if !defined(_MSC_VER) && (__cplusplus < 202002L)
 #define SOUP_CPP20 false
