@@ -4,6 +4,7 @@
 
 #include "Asn1Type.hpp"
 #include "Bigint.hpp"
+#include "Exception.hpp"
 #include "IstreamReader.hpp"
 #include "Oid.hpp"
 #include "string.hpp"
@@ -23,6 +24,10 @@ namespace soup
 		{
 			auto id = readIdentifier(s);
 			auto len = readLength(s);
+			SOUP_IF_UNLIKELY(len > 10000)
+			{
+				throw Exception("Asn1Sequence is unreasonably long");
+			}
 			std::string buf(len, '\0');
 			s.read(buf.data(), len);
 			emplace_back(Asn1Element{ std::move(id), std::move(buf) });
@@ -39,6 +44,10 @@ namespace soup
 	{
 		readIdentifier(s);
 		auto len = readLength(s);
+		SOUP_IF_UNLIKELY(len > 10000)
+		{
+			throw Exception("Asn1Sequence is unreasonably long");
+		}
 		std::string buf(len, '\0');
 		s.read(buf.data(), len);
 		return Asn1Sequence{ std::move(buf) };
