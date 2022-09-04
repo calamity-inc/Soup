@@ -63,6 +63,8 @@ namespace soup
 			operator =(ipv4);
 		}
 
+		bool fromString(const std::string& str);
+
 		void operator = (const uint32_t ipv4) noexcept
 		{
 			setV4();

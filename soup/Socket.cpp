@@ -96,6 +96,10 @@ namespace soup
 
 	bool Socket::connect(const std::string& host, uint16_t port) noexcept
 	{
+		if (IpAddr hostaddr; hostaddr.fromString(host))
+		{
+			return connect(hostaddr, port);
+		}
 		dnsOsResolver resolver;
 		auto res = resolver.lookupIPv4(host);
 		if (!res.empty() && connect(rand(res), port))
