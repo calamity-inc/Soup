@@ -416,6 +416,7 @@
     <ClInclude Include="dnsResource.hpp" />
     <ClInclude Include="dnsType.hpp" />
     <ClInclude Include="dns_records.hpp" />
+    <ClInclude Include="Exception.hpp" />
     <ClInclude Include="FactoriseProofOfWork.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="lyoStyle.hpp" />

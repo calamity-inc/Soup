@@ -929,6 +929,9 @@
     <ClInclude Include="FactoriseProofOfWork.hpp">
       <Filter>crypto\proof_of_work</Filter>
     </ClInclude>
+    <ClInclude Include="Exception.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
