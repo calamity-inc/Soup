@@ -14,16 +14,19 @@ namespace soup
 
 	std::string Rgb::toHex() const
 	{
-		if ((r | g | b) & 0xF0)
+		if (((r >> 4) == (r & 0xF))
+			&& ((g >> 4) == (g & 0xF))
+			&& ((b >> 4) == (b & 0xF))
+			)
 		{
-			std::string str = string::lpad(string::hex(r), 2, '0');
-			str.append(string::lpad(string::hex(g), 2, '0'));
-			str.append(string::lpad(string::hex(b), 2, '0'));
+			std::string str = string::hex(r & 0xF);
+			str.append(string::hex(g & 0xF));
+			str.append(string::hex(b & 0xF));
 			return str;
 		}
-		std::string str = string::hex(r);
-		str.append(string::hex(g));
-		str.append(string::hex(b));
+		std::string str = string::lpad(string::hex(r), 2, '0');
+		str.append(string::lpad(string::hex(g), 2, '0'));
+		str.append(string::lpad(string::hex(b), 2, '0'));
 		return str;
 	}
 }

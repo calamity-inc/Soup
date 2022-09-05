@@ -37,6 +37,8 @@
 #include <string.hpp>
 #include <intutil.hpp>
 
+#include <Rgb.hpp>
+
 using namespace soup;
 using namespace soup::literals;
 
@@ -558,6 +560,17 @@ static void test_util()
 	});
 }
 
+static void test_vis()
+{
+	test("Rgb", []
+	{
+		assert(Rgb(0x00, 0x00, 0x00).toHex() == "000");
+		assert(Rgb(0xFF, 0x00, 0xFF).toHex() == "F0F");
+		assert(Rgb(0xFF, 0xFF, 0xFF).toHex() == "FFF");
+		assert(Rgb(0x12, 0x34, 0x56).toHex() == "123456");
+	});
+}
+
 void cli_test()
 {
 	unit("soup")
@@ -596,6 +609,10 @@ void cli_test()
 				test_util_string();
 			}
 			test_util();
+		}
+		unit("vis")
+		{
+			test_vis();
 		}
 	}
 }
