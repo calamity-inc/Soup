@@ -1,8 +1,8 @@
 #include "Mixed.hpp"
 
 #include <ostream>
-#include <typeinfo> // bad_cast
 
+#include "Exception.hpp"
 #include "parse_tree.hpp"
 
 namespace soup
@@ -129,7 +129,7 @@ namespace soup
 	{
 		if (type != INT)
 		{
-			throw std::bad_cast();
+			throw Exception("Mixed has unexpected type");
 		}
 		return (int64_t)val;
 	}
@@ -138,7 +138,7 @@ namespace soup
 	{
 		if (type != UINT)
 		{
-			throw std::bad_cast();
+			throw Exception("Mixed has unexpected type");
 		}
 		return val;
 	}
@@ -147,7 +147,7 @@ namespace soup
 	{
 		if (type != STRING)
 		{
-			throw std::bad_cast();
+			throw Exception("Mixed has unexpected type");
 		}
 		return *reinterpret_cast<std::string*>(val);
 	}
@@ -156,7 +156,7 @@ namespace soup
 	{
 		if (type != FUNC)
 		{
-			throw std::bad_cast();
+			throw Exception("Mixed has unexpected type");
 		}
 		return *reinterpret_cast<std::string*>(val);
 	}
@@ -165,7 +165,7 @@ namespace soup
 	{
 		if (type != VAR_NAME)
 		{
-			throw std::bad_cast();
+			throw Exception("Mixed has unexpected type");
 		}
 		return *reinterpret_cast<std::string*>(val);
 	}
@@ -174,7 +174,7 @@ namespace soup
 	{
 		if (type != MIXED_SP_MIXED_MAP)
 		{
-			throw std::bad_cast();
+			throw Exception("Mixed has unexpected type");
 		}
 		return *reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
 	}
@@ -183,7 +183,7 @@ namespace soup
 	{
 		if (type != AST_BLOCK)
 		{
-			throw std::bad_cast();
+			throw Exception("Mixed has unexpected type");
 		}
 		return *reinterpret_cast<astBlock*>(val);
 	}
