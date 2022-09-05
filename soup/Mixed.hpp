@@ -46,6 +46,11 @@ namespace soup
 			: type(INT), val((uint64_t)val)
 		{
 		}
+
+		Mixed(uint32_t val)
+			: type(UINT), val((uint64_t)val)
+		{
+		}
 		
 		Mixed(uint64_t val)
 			: type(UINT), val(val)
