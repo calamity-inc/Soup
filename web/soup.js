@@ -14,61 +14,10 @@
 	{
 		libsoup().then(function(soup)
 		{
-			soup.asn1_sequence = {
-				new: soup.cwrap("asn1_sequence_new", "number", ["number"]),
-				free: soup.cwrap("asn1_sequence_free", "void", ["number"]),
-				toDer: soup.cwrap("asn1_sequence_toDer", "number", ["number"]),
-				toString: soup.cwrap("asn1_sequence_toString", "string", ["number"]),
-			};
-			soup.base64 = {
-				encode: soup.cwrap("base64_encode", "string", ["number"]),
-				decode: soup.cwrap("base64_decode", "number", ["string"]),
-			};
-			soup.bigint = {
-				newFromString: soup.cwrap("bigint_newFromString", "number", ["string"]),
-				random: soup.cwrap("bigint_random", "number", ["number"]),
-				randomProbablePrime: soup.cwrap("bigint_randomProbablePrime", "number", ["number"]),
-				newCopy: soup.cwrap("bigint_newCopy", "number", ["number"]),
-				free: soup.cwrap("bigint_free", "void", ["number"]),
-				plus: soup.cwrap("bigint_plus", "number", ["number", "number"]),
-				plusEq: soup.cwrap("bigint_plusEq", "void", ["number", "number"]),
-				toString: soup.cwrap("bigint_toString", "string", ["number"]),
-			};
-			soup.pem = {
-				decode: soup.cwrap("pem_decode", "number", ["string"]),
-			};
-			soup.qr_code = {
-				encodeText: soup.cwrap("qr_code_encodeText", "number", ["string"]),
-				free: soup.cwrap("qr_code_free", "number", ["number"]),
-				toSvg: soup.cwrap("qr_code_toSvg", "string", ["number", "number", "bool", "number"]),
-			};
-			soup.rsa = {
-				keypair: {
-					random: bits => new Promise(r => {
-						bits /= 2;
-						let pp = new Promise(r => {
-							r(soup.bigint.randomProbablePrime(bits))
-						});
-						let pq = new Promise(r => {
-							r(soup.bigint.randomProbablePrime(bits))
-						});
-						pp.then(p => pq.then(q => {
-							r(soup.rsa.keypair.new(p, q));
-						}));
-					}),
-					new: soup.cwrap("rsa_keypair_new", "number", ["number", "number"]),
-					free: soup.cwrap("rsa_keypair_free", "void", ["number"]),
-					getPrivate: soup.cwrap("rsa_keypair_getPrivate", "number", ["number"]),
-				},
-				key_private: {
-					free: soup.cwrap("rsa_key_private_free", "void", ["number"]),
-					toAsn1: soup.cwrap("rsa_key_private_toAsn1", "number", ["number"]),
-					toPem: soup.cwrap("rsa_key_private_toPem", "string", ["number"]),
-				},
-			};
-			soup.string = {
-				val: soup.cwrap("string_val", "string", ["number"]),
-				free: soup.cwrap("string_free", "void", ["number"]),
+			soup.QrCode = {
+				encodeText: soup.cwrap("QrCode_encodeText", "number", ["string"]),
+				free: soup.cwrap("QrCode_free", "number", ["number"]),
+				toSvg: soup.cwrap("QrCode_toSvg", "string", ["number", "number", "bool", "number"]),
 			};
 			delete soup.cwrap;
 			soup.ready = true;
@@ -128,11 +77,11 @@
 			let text = elm.textContent;
 			if(svg === null || svg.getAttribute("alt") != text)
 			{
-				let qr = soup.qr_code.encodeText(text);
+				let qr = soup.QrCode.encodeText(text);
 				elm.style.display = "none";
 				pruneContainer(div);
-				div.innerHTML += soup.qr_code.toSvg(qr, 4, elm.hasAttribute("inverted"), 4);
-				soup.qr_code.free(qr);
+				div.innerHTML += soup.QrCode.toSvg(qr, 4, elm.hasAttribute("inverted"), 4);
+				soup.QrCode.free(qr);
 				div.querySelector("svg").setAttribute("alt", text);
 			}
 		});

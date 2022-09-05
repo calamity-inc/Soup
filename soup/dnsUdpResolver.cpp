@@ -1,5 +1,7 @@
 #include "dnsUdpResolver.hpp"
 
+#if !SOUP_WASM
+
 #include "Scheduler.hpp"
 #include "Socket.hpp"
 
@@ -22,3 +24,5 @@ namespace soup
 		return parseResponse(std::move(res));
 	}
 }
+
+#endif

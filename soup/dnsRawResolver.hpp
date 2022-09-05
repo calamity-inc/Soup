@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "dnsResolver.hpp"
 
 namespace soup
@@ -10,3 +13,5 @@ namespace soup
 		[[nodiscard]] std::vector<UniquePtr<dnsRecord>> parseResponse(std::string&& data) const;
 	};
 }
+
+#endif

@@ -1,5 +1,7 @@
 #include "dnsHttpResolver.hpp"
 
+#if !SOUP_WASM
+
 #include "base64.hpp"
 #include "HttpRequest.hpp"
 
@@ -16,3 +18,5 @@ namespace soup
 		return parseResponse(std::move(hres->body));
 	}
 }
+
+#endif

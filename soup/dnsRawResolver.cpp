@@ -1,5 +1,7 @@
 #include "dnsRawResolver.hpp"
 
+#if !SOUP_WASM
+
 #include "dnsHeader.hpp"
 #include "dnsQuestion.hpp"
 #include "dnsResource.hpp"
@@ -85,3 +87,5 @@ namespace soup
 		return res;
 	}
 }
+
+#endif

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <optional>
 #include <string>
 
@@ -71,3 +74,5 @@ namespace soup
 		[[nodiscard]] AcmeOrder parseOrderResponse(const HttpResponse& res);
 	};
 }
+
+#endif

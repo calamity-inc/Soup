@@ -1,5 +1,7 @@
 #include "acme.hpp"
 
+#if !SOUP_WASM
+
 #include "Asn1Sequence.hpp"
 #include "base64.hpp"
 #include "HttpRequest.hpp"
@@ -219,3 +221,5 @@ namespace soup
 		return order;
 	}
 }
+
+#endif

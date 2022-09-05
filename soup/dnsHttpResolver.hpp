@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "dnsRawResolver.hpp"
 
 namespace soup
@@ -11,3 +14,5 @@ namespace soup
 		[[nodiscard]] std::vector<UniquePtr<dnsRecord>> lookup(dnsType qtype, const std::string& name) const final;
 	};
 }
+
+#endif
