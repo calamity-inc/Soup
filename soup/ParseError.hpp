@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stdexcept>
+#include "Exception.hpp"
 
 namespace soup
 {
-	struct ParseError : public std::runtime_error
+	struct ParseError : public Exception
 	{
-		using std::runtime_error::runtime_error;
+		using Exception::Exception;
 	};
 }
