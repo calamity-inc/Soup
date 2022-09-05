@@ -20,6 +20,8 @@ namespace soup
 		void consumeLefthandValue();
 		void consumeRighthandValue();
 
+		[[noreturn]] void throwExpectedRighthandValue(const UniquePtr<astNode>& node);
+
 		void pushArg(Mixed&& val);
 		void pushArgNode(UniquePtr<astNode>&& node);
 		void setArgs(std::vector<UniquePtr<astNode>>&& args);

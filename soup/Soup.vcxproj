@@ -419,6 +419,7 @@
     <ClInclude Include="Exception.hpp" />
     <ClInclude Include="FactoriseProofOfWork.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
+    <ClInclude Include="InquiryLang.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="netAs.hpp" />
@@ -736,6 +737,7 @@
     <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="dns_records.cpp" />
     <ClCompile Include="FactoriseProofOfWork.cpp" />
+    <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="X509Certchain.cpp" />

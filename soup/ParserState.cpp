@@ -38,15 +38,20 @@ namespace soup
 		auto node = popRighthand();
 		if (!node->isValue())
 		{
-			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
-			err.append(" expected righthand value, found ");
-			err.append(node->toString());
-			throw ParseError(std::move(err));
+			throwExpectedRighthandValue(node);
 		}
 		pushArgNode(std::move(node));
 #if ENSURE_SANITY
 		ensureValidIterator();
 #endif
+	}
+
+	void ParserState::throwExpectedRighthandValue(const UniquePtr<astNode>& node)
+	{
+		std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
+		err.append(" expected righthand value, found ");
+		err.append(node->toString());
+		throw ParseError(std::move(err));
 	}
 
 	void ParserState::pushArg(Mixed&& val)

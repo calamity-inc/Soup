@@ -932,6 +932,9 @@
     <ClInclude Include="Exception.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="InquiryLang.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1387,6 +1390,9 @@
     </ClCompile>
     <ClCompile Include="time.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="InquiryLang.cpp">
+      <Filter>lang</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

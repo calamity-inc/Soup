@@ -8,6 +8,7 @@
 #include <country_names.hpp>
 #include <console.hpp>
 #include <Editor.hpp>
+#include <InquiryLang.hpp>
 #include <netIntel.hpp>
 #include <os.hpp>
 #include <QrCode.hpp>
@@ -119,6 +120,29 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "inquire")
+		{
+			std::cout << "Soup Inquiry Language REPL" << std::endl;
+			while (true)
+			{
+				std::cout << "> ";
+				std::string line;
+				if (!std::getline(std::cin, line))
+				{
+					break;
+				}
+				try
+				{
+					std::cout << InquiryLang::formatResult(InquiryLang::execute(line)) << std::endl;
+				}
+				catch (std::exception& e)
+				{
+					std::cout << "Error: " << e.what() << std::endl;
+				}
+			}
+			return 0;
+		}
+
 		if (subcommand == "maze")
 		{
 			cli_maze();
@@ -193,6 +217,7 @@ Available tools:
 - dvd
 - edit [files...]
 - geoip [ip]
+- inquire
 - maze
 - qr [contents]
 - repl
