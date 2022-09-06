@@ -2,7 +2,9 @@
 
 #include "base.hpp"
 
-#include <intrin.h>
+#if SOUP_X86
+#include <x86intrin.h>
+#endif
 
 #include "CpuInfo.hpp"
 #include "Endian.hpp"
