@@ -49,9 +49,9 @@
 // === Determine if code inspector
 
 #ifdef __INTELLISENSE__
-#define SOUP_CODE_INSPECTOR true
+	#define SOUP_CODE_INSPECTOR true
 #else
-#define SOUP_CODE_INSPECTOR false
+	#define SOUP_CODE_INSPECTOR false
 #endif
 
 // === Platform abstraction macros
@@ -69,18 +69,18 @@
 // C++ version abstraction macros
 
 #if !defined(_MSC_VER) && (__cplusplus < 202002L)
-#define SOUP_CPP20 false
-#define consteval constexpr
+	#define SOUP_CPP20 false
+	#define consteval constexpr
 #else
-#define SOUP_CPP20 true
+	#define SOUP_CPP20 true
 #endif
 
 #if SOUP_CPP20
-#define SOUP_IF_LIKELY(cond) if (cond) [[likely]]
-#define SOUP_IF_UNLIKELY(cond) if (cond) [[unlikely]]
+	#define SOUP_IF_LIKELY(cond) if (cond) [[likely]]
+	#define SOUP_IF_UNLIKELY(cond) if (cond) [[unlikely]]
 #else
-#define SOUP_IF_LIKELY(cond) if (cond)
-#define SOUP_IF_UNLIKELY(cond) if (cond)
+	#define SOUP_IF_LIKELY(cond) if (cond)
+	#define SOUP_IF_UNLIKELY(cond) if (cond)
 #endif
 
 // === Platform-specific types
