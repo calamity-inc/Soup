@@ -7,22 +7,19 @@
 
 namespace soup
 {
-	class AssemblyBuilder
+	struct AssemblyBuilder
 	{
-	private:
 		std::vector<uint8_t> m_data;
 
 		template <size_t S>
 		void addBytes(const uint8_t(&bytes)[S])
 		{
-			m_data.reserve(S);
 			for (const auto& byte : bytes)
 			{
 				m_data.emplace_back(byte);
 			}
 		}
 
-	public:
 		void funcBegin();
 		void funcEnd();
 		void retn();
