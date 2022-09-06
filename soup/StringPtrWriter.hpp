@@ -16,7 +16,6 @@ namespace soup
 
 		~StringPtrWriter() final = default;
 
-	protected:
 		void write(const char* data, size_t size) final
 		{
 			str->append(data, size);

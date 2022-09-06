@@ -16,7 +16,6 @@ namespace soup
 
 		~OstreamWriter() final = default;
 
-	protected:
 		void write(const char* data, size_t size) final
 		{
 			os->write(data, size);

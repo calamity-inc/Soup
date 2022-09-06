@@ -16,7 +16,6 @@ namespace soup
 
 		~ioSizeMeasurer() final = default;
 
-	protected:
 		void write(const char* data, size_t size) final
 		{
 			this->size += size;

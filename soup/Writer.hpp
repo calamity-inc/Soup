@@ -9,10 +9,8 @@ namespace soup
 	public:
 		using IoBase::IoBase;
 
-	protected:
 		virtual void write(const char* data, size_t size) = 0;
 
-	public:
 		bool ignore(size_t len)
 		{
 			uint8_t v = 0;

@@ -21,7 +21,6 @@ namespace soup
 
 		~StringWriter() final = default;
 
-	protected:
 		void write(const char* data, size_t size) final
 		{
 			str.append(data, size);

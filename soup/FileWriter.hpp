@@ -34,7 +34,6 @@ namespace soup
 
 		~FileWriter() final = default;
 
-	protected:
 		void write(const char* data, size_t size) final
 		{
 			s.write(data, size);
