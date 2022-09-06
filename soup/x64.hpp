@@ -216,6 +216,8 @@ namespace soup
 		{ "jmp", 0xE9, D, 32 },
 		{ "test", 0x84, MR, 8 },
 		{ "test", 0x85, MR },
+		{ "test", 0xF6, MI, 8, 0 },
+		{ "test", 0xF7, MI, 32, 0 },
 		{ "xor", 0x33, RM },
 		{ "movzx", 0x0FB6, RM, 8 },
 		{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
