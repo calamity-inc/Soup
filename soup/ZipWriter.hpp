@@ -10,9 +10,9 @@ namespace soup
 	class ZipWriter
 	{
 	public:
-		std::ostream* os;
+		std::ostream& os;
 
-		ZipWriter(std::ostream* os)
+		ZipWriter(std::ostream& os)
 			: os(os)
 		{
 		}

@@ -28,7 +28,7 @@ void cli_maze()
 		for (bool last = true; (mg.isFinished() ? (last ? (last = false, true) : false) : true); mg.tick(rng))
 		{
 			Canvas c(width, height);
-			RenderTargetCanvas rt(&c);
+			RenderTargetCanvas rt(c);
 			mg.render(rt);
 			console.clearScreen();
 			console << c.toStringDownsampledDoublewidth(true);

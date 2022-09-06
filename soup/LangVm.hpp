@@ -14,7 +14,7 @@ namespace soup
 	class LangVm
 	{
 	public:
-		Reader* r;
+		Reader& r;
 		std::stack<std::shared_ptr<Mixed>> stack;
 		std::unordered_map<std::string, std::shared_ptr<Mixed>> vars{};
 		Capture cap;
@@ -22,7 +22,7 @@ namespace soup
 		uint8_t current_op;
 
 	public:
-		explicit LangVm(Reader* r, std::stack<std::shared_ptr<Mixed>>&& stack = {}) noexcept;
+		explicit LangVm(Reader& r, std::stack<std::shared_ptr<Mixed>>&& stack = {}) noexcept;
 		~LangVm() noexcept;
 
 		// for-loop paradigm

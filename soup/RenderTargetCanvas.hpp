@@ -6,9 +6,9 @@ namespace soup
 {
 	struct RenderTargetCanvas : public RenderTarget
 	{
-		Canvas* canvas;
+		Canvas& canvas;
 
-		RenderTargetCanvas(Canvas* canvas);
+		RenderTargetCanvas(Canvas& canvas);
 
 		void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) final;
 

@@ -79,7 +79,7 @@ namespace soup
 		StringWriter sw;
 		ast.compile(sw);
 		StringReader sr(std::move(sw.str));
-		LangVm vm{ &sr };
+		LangVm vm{ sr };
 		for (uint8_t op; vm.getNextOp(op); )
 		{
 			switch (op)

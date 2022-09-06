@@ -123,7 +123,7 @@ All that's left to do now is writing a virtual machine using `soup::LangVm` so w
 ```C++
 static void myVm(soup::Reader& r)
 {
-    soup::LangVm vm{ &r };
+    soup::LangVm vm{ r };
     for (uint8_t op; vm.getNextOp(op); )
     {
         switch (op)

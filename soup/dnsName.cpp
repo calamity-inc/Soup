@@ -1,6 +1,6 @@
 #include "dnsName.hpp"
 
-#include "StringPtrReader.hpp"
+#include "StringRefReader.hpp"
 
 namespace soup
 {
@@ -9,7 +9,7 @@ namespace soup
 		std::vector<std::string> res = name;
 		if (ptr != 0)
 		{
-			StringPtrReader sr(&data, false);
+			StringRefReader sr(data, false);
 			sr.offset = ptr;
 
 			dnsName cont;

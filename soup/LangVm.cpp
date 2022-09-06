@@ -18,7 +18,7 @@
 
 namespace soup
 {
-	LangVm::LangVm(Reader* r, std::stack<std::shared_ptr<Mixed>>&& stack) noexcept
+	LangVm::LangVm(Reader& r, std::stack<std::shared_ptr<Mixed>>&& stack) noexcept
 		: r(r), stack(std::move(stack))
 #if DEBUG_VM
 		, current_op(OP_PUSH_STR)
@@ -41,7 +41,7 @@ namespace soup
 
 	bool LangVm::getNextOp(uint8_t& op)
 	{
-		while (r->u8(op))
+		while (r.u8(op))
 		{
 			current_op = op;
 			if (op == OP_PUSH_STR)
@@ -50,7 +50,7 @@ namespace soup
 				std::cout << "OP_PUSH_STR" << std::endl;
 #endif
 				std::string str;
-				r->str_lp_u64_dyn(str);
+				r.str_lp_u64_dyn(str);
 				push(std::move(str));
 			}
 			else if (op == OP_PUSH_INT)
@@ -59,7 +59,7 @@ namespace soup
 				std::cout << "OP_PUSH_INT" << std::endl;
 #endif
 				int64_t val;
-				r->i64_dyn(val);
+				r.i64_dyn(val);
 				push(std::make_shared<Mixed>(val));
 			}
 			else if (op == OP_PUSH_UINT)
@@ -68,7 +68,7 @@ namespace soup
 				std::cout << "OP_PUSH_UINT" << std::endl;
 #endif
 				uint64_t val;
-				r->u64_dyn(val);
+				r.u64_dyn(val);
 				push(std::make_shared<Mixed>(val));
 			}
 			else if (op == OP_PUSH_FUN)
@@ -77,7 +77,7 @@ namespace soup
 				std::cout << "OP_PUSH_FUN" << std::endl;
 #endif
 				auto str = new std::string();
-				r->str_lp_u64_dyn(*str);
+				r.str_lp_u64_dyn(*str);
 				auto val = std::make_shared<Mixed>(str);
 				val->type = Mixed::FUNC;
 				push(std::move(val));
@@ -88,7 +88,7 @@ namespace soup
 				std::cout << "OP_PUSH_VAR" << std::endl;
 #endif
 				auto str = new std::string();
-				r->str_lp_u64_dyn(*str);
+				r.str_lp_u64_dyn(*str);
 				auto val = std::make_shared<Mixed>(str);
 				val->type = Mixed::VAR_NAME;
 				push(std::move(val));
@@ -99,7 +99,7 @@ namespace soup
 				std::cout << "OP_POP_ARGS" << std::endl;
 #endif
 				uint64_t num_args;
-				r->u64_dyn(num_args);
+				r.u64_dyn(num_args);
 				std::vector<std::string> var_names{};
 				var_names.reserve(num_args);
 				while (num_args--)
@@ -166,7 +166,7 @@ namespace soup
 		AssemblyBuilder b;
 		b.funcBegin();
 		b.set12toC(); // LangVm& is in RCX, moving to nonvolatile R12
-		for (uint8_t op; r->u8(op); )
+		for (uint8_t op; r.u8(op); )
 		{
 			switch (op)
 			{
@@ -179,7 +179,7 @@ namespace soup
 			case OP_PUSH_INT:
 			{
 				int64_t val;
-				r->i64_dyn(val);
+				r.i64_dyn(val);
 				b.setCto12();
 				b.setD((uint64_t)val);
 				b.setA((uint64_t)&asmvm_pushInt);
@@ -190,7 +190,7 @@ namespace soup
 			case OP_PUSH_UINT:
 			{
 				uint64_t val;
-				r->u64_dyn(val);
+				r.u64_dyn(val);
 				b.setCto12();
 				b.setD(val);
 				b.setA((uint64_t)&asmvm_pushUint);

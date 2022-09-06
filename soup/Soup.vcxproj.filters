@@ -917,10 +917,10 @@
     <ClInclude Include="dnsRawResolver.hpp">
       <Filter>net\dns\resolver</Filter>
     </ClInclude>
-    <ClInclude Include="StringPtrReader.hpp">
+    <ClInclude Include="StringRefReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="StringPtrWriter.hpp">
+    <ClInclude Include="StringRefWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
     <ClInclude Include="HashProofOfWork.hpp">

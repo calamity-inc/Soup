@@ -119,7 +119,7 @@ static void updateScene()
 
 static void renderOnto(Canvas& c)
 {
-	RenderTargetCanvas rt{ &c };
+	RenderTargetCanvas rt{ c };
 	sr.render(s, rt, fov);
 }
 

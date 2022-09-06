@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include "IstreamReader.hpp"
-#include "StringPtrWriter.hpp"
+#include "StringRefWriter.hpp"
 
 namespace soup
 {
@@ -62,7 +62,7 @@ namespace soup
 	{
 		std::string res;
 		res.push_back((char)((path.at(0) * 40) | path.at(1)));
-		StringPtrWriter w(&res);
+		StringRefWriter w(res);
 		for (auto i = path.begin() + 2; i != path.end(); ++i)
 		{
 			w.om<uint32_t>(*i);

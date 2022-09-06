@@ -365,15 +365,15 @@ namespace soup
 
 	struct CapturePhpVm
 	{
-		const PhpState* state;
-		std::string* output;
+		const PhpState& state;
+		std::string& output;
 		unsigned int max_require_depth;
 	};
 
 	void PhpState::execute(std::string& output, Reader& r, unsigned int max_require_depth, std::stack<std::shared_ptr<Mixed>>&& stack) const
 	{
-		LangVm vm(&r, std::move(stack));
-		vm.cap = CapturePhpVm{ this, &output, max_require_depth };
+		LangVm vm(r, std::move(stack));
+		vm.cap = CapturePhpVm{ *this, output, max_require_depth };
 
 		// Setup variables
 		std::unordered_map<Mixed, std::shared_ptr<Mixed>> _SERVER{};
@@ -419,7 +419,7 @@ namespace soup
 			if (cond_val)
 			{
 				auto& cap = vm.cap.get<CapturePhpVm>();
-				cap.state->execute(*cap.output, true_sr, cap.max_require_depth);
+				cap.state.execute(cap.output, true_sr, cap.max_require_depth);
 			}
 		});
 		vm.addOpcode(OP_IF_ELSE, [](LangVm& vm)
@@ -430,11 +430,11 @@ namespace soup
 			auto& cap = vm.cap.get<CapturePhpVm>();
 			if (cond_val)
 			{
-				cap.state->execute(*cap.output, true_sr, cap.max_require_depth);
+				cap.state.execute(cap.output, true_sr, cap.max_require_depth);
 			}
 			else
 			{
-				cap.state->execute(*cap.output, false_sr, cap.max_require_depth);
+				cap.state.execute(cap.output, false_sr, cap.max_require_depth);
 			}
 		});
 		vm.addOpcode(OP_CALL, [](LangVm& vm)
@@ -447,7 +447,7 @@ namespace soup
 				handover_stack.emplace(vm.pop());
 			}
 			auto& cap = vm.cap.get<CapturePhpVm>();
-			cap.state->execute(*cap.output, sr, cap.max_require_depth, std::move(handover_stack));
+			cap.state.execute(cap.output, sr, cap.max_require_depth, std::move(handover_stack));
 		});
 		vm.addOpcode(OP_REQUIRE, [](LangVm& vm)
 		{
@@ -456,7 +456,7 @@ namespace soup
 			{
 				throw std::runtime_error("Max require depth exceeded");
 			}
-			std::filesystem::path file = cap.state->cwd;
+			std::filesystem::path file = cap.state.cwd;
 			file /= vm.popString();
 			if (!std::filesystem::exists(file))
 			{
@@ -464,12 +464,12 @@ namespace soup
 				err.append(file.string());
 				throw std::runtime_error(std::move(err));
 			}
-			cap.output->append(cap.state->evaluate(string::fromFile(file.string()), cap.max_require_depth - 1));
+			cap.output.append(cap.state.evaluate(string::fromFile(file.string()), cap.max_require_depth - 1));
 		});
 		vm.addOpcode(OP_ECHO, [](LangVm& vm)
 		{
 			auto& cap = vm.cap.get<CapturePhpVm>();
-			cap.output->append(vm.pop()->toString());
+			cap.output.append(vm.pop()->toString());
 		});
 
 		// Let's do this

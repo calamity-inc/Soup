@@ -14,7 +14,7 @@ namespace soup
 		zif.uncompressed_data_crc32 = crc32::hash(contents_uncompressed);
 		zif.compressed_size = contents_compressed.size();
 		zif.uncompressed_size = contents_uncompressed.size();
-		zif.disk_offset = os->tellp();
+		zif.disk_offset = os.tellp();
 		zif.name = std::move(name);
 
 		ZipLocalFileHeader lfh{};
@@ -23,10 +23,10 @@ namespace soup
 		lfh.common.compressed_size = zif.compressed_size;
 		lfh.common.uncompressed_size = zif.uncompressed_size;
 		lfh.name = zif.name;
-		os->write("\x50\x4b\x03\x04", 4);
-		lfh.writeLE(*os);
+		os.write("\x50\x4b\x03\x04", 4);
+		lfh.writeLE(os);
 
-		os->write(contents_compressed.data(), contents_compressed.size());
+		os.write(contents_compressed.data(), contents_compressed.size());
 
 		return zif;
 	}
@@ -58,12 +58,12 @@ namespace soup
 
 	void ZipWriter::finalise(const std::vector<ZipIndexedFile>& files) const
 	{
-		os->seekp(0, std::ios::end);
+		os.seekp(0, std::ios::end);
 
 		ZipEndOfCentralDirectory eocd{};
 		eocd.central_directories_on_this_disk = 1;
 		eocd.central_directories_in_total = 1;
-		eocd.central_directory_offset = os->tellp();
+		eocd.central_directory_offset = os.tellp();
 
 		for (const auto& file : files)
 		{
@@ -75,12 +75,12 @@ namespace soup
 			cdf.name = file.name;
 			cdf.disk_offset = file.disk_offset;
 			//cdf.external_attributes = 2;
-			os->write("\x50\x4b\x01\x02", 4);
-			cdf.writeLE(*os);
+			os.write("\x50\x4b\x01\x02", 4);
+			cdf.writeLE(os);
 		}
 
-		eocd.central_directory_size = ((uint32_t)os->tellp() - eocd.central_directory_offset);
-		os->write("\x50\x4b\x05\x06", 4);
-		eocd.writeLE(*os);
+		eocd.central_directory_size = ((uint32_t)os.tellp() - eocd.central_directory_offset);
+		os.write("\x50\x4b\x05\x06", 4);
+		eocd.writeLE(os);
 	}
 }

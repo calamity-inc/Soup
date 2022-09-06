@@ -12,8 +12,8 @@ namespace soup
 	{
 		std::vector<ZipIndexedFile> ret{};
 
-		is->seekg(0, std::ios::end);
-		const size_t length = is->tellg();
+		is.seekg(0, std::ios::end);
+		const size_t length = is.tellg();
 		if (length <= 22 || length == -1)
 		{
 			return 0;
@@ -21,9 +21,9 @@ namespace soup
 		size_t eocd_offset = (length - 22);
 		for (; eocd_offset != 0; --eocd_offset)
 		{
-			is->seekg(eocd_offset);
+			is.seekg(eocd_offset);
 			char bytes[4];
-			is->read(bytes, 4);
+			is.read(bytes, 4);
 			if (memcmp(bytes, "\x50\x4b\x05\x06", 4) == 0)
 			{
 				break;
@@ -32,11 +32,11 @@ namespace soup
 		if (eocd_offset != 0)
 		{
 			ZipEndOfCentralDirectory eocd;
-			if (!eocd.readLE(*is))
+			if (!eocd.readLE(is))
 			{
 				return 0;
 			}
-			is->seekg(eocd.central_directory_offset);
+			is.seekg(eocd.central_directory_offset);
 		}
 
 		return eocd_offset;
@@ -51,13 +51,13 @@ namespace soup
 			do
 			{
 				char bytes[4];
-				is->read(bytes, 4);
+				is.read(bytes, 4);
 				if (memcmp(bytes, "\x50\x4b\x01\x02", 4) != 0)
 				{
 					break;
 				}
 				ZipCentralDirectoryFile cdf;
-				if (!cdf.readLE(*is))
+				if (!cdf.readLE(is))
 				{
 					break;
 				}
@@ -69,25 +69,25 @@ namespace soup
 					std::move(cdf.name),
 					cdf.disk_offset,
 				});
-			} while (is->tellg() < eocd_offset);
+			} while (is.tellg() < eocd_offset);
 		}
 		else
 		{
-			is->seekg(0);
+			is.seekg(0);
 			while (true)
 			{
 				ZipIndexedFile zif;
-				zif.disk_offset = is->tellg();
+				zif.disk_offset = is.tellg();
 
 				char bytes[4] = { 0 };
-				is->read(bytes, 4);
+				is.read(bytes, 4);
 				if (memcmp(bytes, "\x50\x4b\x03\x04", 4) != 0)
 				{
 					break;
 				}
 
 				ZipLocalFileHeader lfh;
-				if (!lfh.readLE(*is))
+				if (!lfh.readLE(is))
 				{
 					break;
 				}
@@ -109,17 +109,17 @@ namespace soup
 	{
 		std::string ret{};
 
-		is->clear();
-		is->seekg(file.disk_offset);
+		is.clear();
+		is.seekg(file.disk_offset);
 		char bytes[4];
-		is->read(bytes, 4);
+		is.read(bytes, 4);
 		if (memcmp(bytes, "\x50\x4b\x03\x04", 4) == 0)
 		{
 			ZipLocalFileHeader lfh;
-			if (lfh.readLE(*is))
+			if (lfh.readLE(is))
 			{
 				ret = std::string(lfh.common.compressed_size, 0);
-				is->read(ret.data(), lfh.common.compressed_size);
+				is.read(ret.data(), lfh.common.compressed_size);
 			}
 		}
 
