@@ -36,7 +36,7 @@ namespace soup
 
 		if (reg >= SP && reg <= DI
 			&& !rex
-			&& size != 64
+			&& size == 8
 			)
 		{
 			this->reg = (x64Register)(this->reg - 4);
@@ -176,10 +176,16 @@ namespace soup
 
 	void x64Operand::fromString(const char* str)
 	{
-		access_type = (x64RegisterAccessType)-1;
-		
+		access_type = ACCESS_16;
+
 		while (*str == ' ')
 		{
+			++str;
+		}
+
+		if (*str == '[')
+		{
+			deref_size = 32;
 			++str;
 		}
 
@@ -213,6 +219,22 @@ namespace soup
 		{
 			reg = RD;
 			decodeAccessType(access_type, str);
+			++str;
+		}
+		else if (*str == 's' && *++str == 'i')
+		{
+			reg = SI;
+			++str;
+		}
+
+		if (*str == '+')
+		{
+			deref_offset = 0;
+			while (string::isNumberChar(*++str))
+			{
+				deref_offset *= 10;
+				deref_offset += ((*str) - '0');
+			}
 		}
 	}
 
@@ -264,13 +286,16 @@ namespace soup
 				break;
 			}
 		}
+		if (op.empty())
+		{
+			op.endCopy(str, it);
+		}
 
 		for (const auto& opinfo : operations)
 		{
 			if (opinfo.name == op
-				&& opinfo.operand_size == 0
 				&& opinfo.getNumOperands() == opr_i
-				&& opinfo.getNumModrmOperands() != 0
+				&& opinfo.operand_size != 8
 				)
 			{
 				operation = &opinfo;
@@ -311,24 +336,61 @@ namespace soup
 	{
 		std::string res{};
 
+		if (operands[0].access_type == ACCESS_16)
+		{
+			res.push_back('\x66');
+		}
+
+		uint8_t rex = 0;
 		if (operands[0].access_type == ACCESS_64)
 		{
-			res.push_back('\x48'); // REX.W
+			rex |= (1 << 3);
+		}
+		if (operation->getOprEncoding(0) == R && (operands[0].reg & 0x8))
+		{
+			rex |= (1 << 2);
+		}
+		if (operation->getOprEncoding(1) == M && (operands[1].reg & 0x8))
+		{
+			rex |= (1 << 0);
+		}
+		if (rex != 0)
+		{
+			rex |= 0x40;
+			res.push_back(rex);
 		}
 
 		if ((operation->opcode >> 8) & 0xFF)
 		{
 			res.push_back((operation->opcode >> 8) & 0xFF);
 		}
-		res.push_back(operation->opcode & 0xFF);
+		uint8_t opcode = (operation->opcode & 0xFF);
+		if (operation->getOprEncoding(0) == O)
+		{
+			opcode |= (operands[0].reg & 0b111);
+		}
+		res.push_back(opcode);
 
 		if (operation->getNumModrmOperands() != 0)
 		{
 			uint8_t modrm = 0;
-			modrm |= (0b11 << 6); // direct
-			modrm |= (operands[1].reg << 3); // reg
-			modrm |= operands[0].reg; // r/m
+			if (operands[0].deref_size == 0)
+			{
+				modrm |= (0b11 << 6); // direct
+			}
+			else if (operands[0].deref_offset != 0)
+			{
+				modrm |= (0b01 << 6);
+			}
+			modrm |= ((operands[1].reg & 0b111) << 3); // reg
+			modrm |= (operands[0].reg & 0b111); // r/m
 			res.push_back(modrm);
+			if (operands[0].deref_size != 0
+				&& operands[0].deref_offset != 0
+				)
+			{
+				res.push_back(operands[0].deref_offset);
+			}
 		}
 
 		return res;
@@ -347,6 +409,23 @@ namespace soup
 			val |= code[i];
 		}
 		code += (imm_bytes - 1);
+	}
+
+	std::string x64Asm(const std::string& code)
+	{
+		std::string bytecode;
+		for (auto& line : string::explode(code, '\n'))
+		{
+			string::trim(line);
+			if (line.empty())
+			{
+				continue;
+			}
+			x64Instruction ins;
+			ins.fromString(line);
+			bytecode.append(ins.toBytecode());
+		}
+		return bytecode;
 	}
 
 	x64Instruction x64Disasm(const uint8_t*& code)

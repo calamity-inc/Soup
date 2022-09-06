@@ -404,6 +404,7 @@
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="country_names.hpp" />
+    <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="dnsUdpResolver.hpp" />
     <ClInclude Include="dnsClass.hpp" />
@@ -729,6 +730,7 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="CpuInfo.cpp" />
     <ClCompile Include="dnsHttpResolver.cpp" />
     <ClCompile Include="dnsName.cpp" />
     <ClCompile Include="dnsRawResolver.cpp" />

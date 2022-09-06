@@ -9,8 +9,8 @@ namespace soup
 	{
 		RA = 0,
 		RC,
-		RB,
 		RD,
+		RB,
 		SP,
 		BP,
 		SI,
@@ -223,6 +223,7 @@ namespace soup
 		{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
 		{ "imul", 0x69, RMI, 32 },
 		{ "nop", 0x90, ZO },
+		{ "cpuid", 0x0FA2, ZO },
 	};
 
 	struct x64Instruction
@@ -243,6 +244,7 @@ namespace soup
 		[[nodiscard]] std::string toBytecode() const;
 	};
 
+	[[nodiscard]] extern std::string x64Asm(const std::string& code);
 	extern x64Instruction x64Disasm(const uint8_t*& code);
 
 	[[nodiscard]] extern uint8_t x64GetLength(const uint8_t* code);
