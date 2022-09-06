@@ -11,7 +11,7 @@ namespace soup
 		static constexpr uint32_t INITIAL = 1;
 
 		[[nodiscard]] static uint32_t hash(const std::string& data);
-		[[nodiscard]] static uint32_t hash(const char* buf, size_t len);
-		[[nodiscard]] static uint32_t hash(const uint8_t* buf, size_t len, uint32_t init = INITIAL);
+		[[nodiscard]] static uint32_t hash(const char* data, size_t size);
+		[[nodiscard]] static uint32_t hash(const uint8_t* data, size_t size, uint32_t init = INITIAL);
 	};
 }

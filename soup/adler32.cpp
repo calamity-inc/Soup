@@ -19,21 +19,21 @@ namespace soup
 		return hash(data.data(), data.size());
 	}
 
-	uint32_t adler32::hash(const char* buf, size_t len)
+	uint32_t adler32::hash(const char* data, size_t size)
 	{
-		return hash((const uint8_t*)buf, len);
+		return hash((const uint8_t*)data, size);
 	}
 
-	uint32_t adler32::hash(const uint8_t* buf, size_t len, uint32_t init)
+	uint32_t adler32::hash(const uint8_t* data, size_t size, uint32_t init)
 	{
 		/* split Adler-32 into component sums */
 		uint32_t sum2 = ((init >> 16) & 0xffff);
 		uint32_t adler = (init & 0xffff);
 
 		/* in case user likes doing a byte at a time, keep it fast */
-		if (len == 1)
+		if (size == 1)
 		{
-			adler += buf[0];
+			adler += data[0];
 			if (adler >= BASE)
 			{
 				adler -= BASE;
@@ -47,11 +47,11 @@ namespace soup
 		}
 
 		/* in case short lengths are provided, keep it somewhat fast */
-		if (len < 16)
+		if (size < 16)
 		{
-			while (len--)
+			while (size--)
 			{
-				adler += *buf++;
+				adler += *data++;
 				sum2 += adler;
 			}
 			if (adler >= BASE)
@@ -63,31 +63,31 @@ namespace soup
 		}
 
 		/* do length NMAX blocks -- requires just one modulo operation */
-		while (len >= NMAX)
+		while (size >= NMAX)
 		{
-			len -= NMAX;
+			size -= NMAX;
 			uint32_t n = NMAX / 16;          /* NMAX is divisible by 16 */
 			do
 			{
-				DO16(buf);          /* 16 sums unrolled */
-				buf += 16;
+				DO16(data);          /* 16 sums unrolled */
+				data += 16;
 			} while (--n);
 			MOD(adler);
 			MOD(sum2);
 		}
 
 		/* do remaining bytes (less than NMAX, still just one modulo) */
-		if (len) /* avoid modulos if none remaining */
+		if (size) /* avoid modulos if none remaining */
 		{
-			while (len >= 16)
+			while (size >= 16)
 			{
-				len -= 16;
-				DO16(buf);
-				buf += 16;
+				size -= 16;
+				DO16(data);
+				data += 16;
 			}
-			while (len--)
+			while (size--)
 			{
-				adler += *buf++;
+				adler += *data++;
 				sum2 += adler;
 			}
 			MOD(adler);
