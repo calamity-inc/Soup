@@ -6,8 +6,8 @@ namespace soup
 {
 	struct HttpResponse : public MimeMessage
 	{
-		using MimeMessage::MimeMessage;
+		uint16_t status_code;
 
-		//std::string status_code;
+		using MimeMessage::MimeMessage;
 	};
 }

@@ -93,18 +93,31 @@ namespace soup
 		}
 		if (!resp->empty())
 		{
-			HttpResponse res = std::move(*resp);
-			if (auto enc = res.header_fields.find(ObfusString("Content-Encoding")); enc != res.header_fields.end())
+			auto i = resp->find("\r\n");
+			if (i != std::string::npos)
 			{
-				auto enc_joaat = joaat::hash(enc->second);
-				if (enc_joaat == joaat::hash("gzip")
-					|| enc_joaat == joaat::hash("deflate")
-					)
+				auto arr = string::explode(resp->substr(0, i), ' ');
+				if (arr.size() >= 2)
 				{
-					res.body = deflate::decompress(res.body).decompressed;
+					resp->erase(0, i + 2);
+
+					HttpResponse res = std::move(*resp);
+					res.status_code = string::toInt<uint16_t>(arr.at(1), 0);
+
+					if (auto enc = res.header_fields.find(ObfusString("Content-Encoding")); enc != res.header_fields.end())
+					{
+						auto enc_joaat = joaat::hash(enc->second);
+						if (enc_joaat == joaat::hash("gzip")
+							|| enc_joaat == joaat::hash("deflate")
+							)
+						{
+							res.body = deflate::decompress(res.body).decompressed;
+						}
+					}
+
+					return std::optional<HttpResponse>(std::move(res));
 				}
 			}
-			return std::optional<HttpResponse>(std::move(res));
 		}
 		return {};
 	}
