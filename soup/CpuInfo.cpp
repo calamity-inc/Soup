@@ -43,6 +43,12 @@ namespace soup
 		}
 	}
 
+	const CpuInfo& CpuInfo::get()
+	{
+		static CpuInfo inst;
+		return inst;
+	}
+
 	std::string CpuInfo::toString() const
 	{
 		std::string str = "CPUID Support Level: ";

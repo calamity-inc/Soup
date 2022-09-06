@@ -1,7 +1,10 @@
 #include "crc32.hpp"
 
-#include <array>
+#include "base.hpp"
 
+#include <intrin.h>
+
+#include "CpuInfo.hpp"
 #include "Endian.hpp"
 #include "intutil.hpp"
 #include "Reader.hpp"
@@ -59,7 +62,7 @@ namespace soup
 		return hash((const uint8_t*)data.data(), data.size(), INITIAL);
 	}
 
-	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init)
+	static uint32_t crc32_slice_by_4(const uint8_t* data, size_t size, uint32_t init)
 	{
 		uint32_t checksum = ~init;
 		const uint32_t* data32 = reinterpret_cast<const uint32_t*>(data);
@@ -82,5 +85,58 @@ namespace soup
 			checksum = (checksum >> 8) ^ crc32_lookup4[0][(checksum & 0xFF) ^ *data8++];
 
 		return ~checksum;
+	}
+
+#if SOUP_X86
+	static uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc)
+	{
+#ifdef _MSC_VER
+		static const uint64_t __declspec(align(16))
+#else
+		static const uint64_t __attribute__((aligned(16)))
+#endif
+			s_u[2] = { 0x1DB710641, 0x1F7011641 }, s_k5k0[2] = { 0x163CD6124, 0 }, s_k3k4[2] = { 0x1751997D0, 0xCCAA009E };
+
+		// Load first 16 bytes, apply initial CRC32
+		__m128i b = _mm_xor_si128(_mm_cvtsi32_si128(~crc), _mm_loadu_si128(reinterpret_cast<const __m128i*>(p)));
+
+		// We're skipping directly to Step 2 page 12 - iteratively folding by 1 (by 4 is overkill for our needs)
+		const __m128i k3k4 = _mm_load_si128(reinterpret_cast<const __m128i*>(s_k3k4));
+
+		for (size -= 16, p += 16; size >= 16; size -= 16, p += 16)
+			b = _mm_xor_si128(_mm_xor_si128(_mm_clmulepi64_si128(b, k3k4, 17), _mm_loadu_si128(reinterpret_cast<const __m128i*>(p))), _mm_clmulepi64_si128(b, k3k4, 0));
+
+		// Final stages: fold to 64-bits, 32-bit Barrett reduction
+		const __m128i z = _mm_set_epi32(0, ~0, 0, ~0), u = _mm_load_si128(reinterpret_cast<const __m128i*>(s_u));
+		b = _mm_xor_si128(_mm_srli_si128(b, 8), _mm_clmulepi64_si128(b, k3k4, 16));
+		b = _mm_xor_si128(_mm_clmulepi64_si128(_mm_and_si128(b, z), _mm_loadl_epi64(reinterpret_cast<const __m128i*>(s_k5k0)), 0), _mm_srli_si128(b, 4));
+		return ~_mm_extract_epi32(_mm_xor_si128(b, _mm_clmulepi64_si128(_mm_and_si128(_mm_clmulepi64_si128(_mm_and_si128(b, z), u, 16), z), u, 0)), 1);
+	}
+
+	static uint32_t crc32_sse41_simd(const uint8_t* data, size_t size, uint32_t init)
+	{
+		if (size < 16)
+		{
+			return crc32_slice_by_4(data, size, init);
+		}
+
+		uint32_t simd_len = size & ~15;
+		uint32_t c = crc32_pclmul(data, simd_len, init);
+		return crc32_slice_by_4(data + simd_len, size - simd_len, c);
+	}
+#endif
+
+	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init)
+	{
+#if SOUP_X86
+		const CpuInfo& cpu_info = CpuInfo::get();
+		if (cpu_info.supportsPCLMULQDQ()
+			&& cpu_info.supportsSSE4_1()
+			)
+		{
+			return crc32_sse41_simd(data, size, init);
+		}
+#endif
+		return crc32_slice_by_4(data, size, init);
 	}
 }

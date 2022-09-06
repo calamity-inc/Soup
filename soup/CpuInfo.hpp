@@ -5,8 +5,9 @@
 
 namespace soup
 {
-	struct CpuInfo
+	class CpuInfo
 	{
+	public:
 		uint32_t cpuid_max_eax;
 		std::string vendor_id;
 
@@ -20,7 +21,21 @@ namespace soup
 		uint16_t max_frequency;
 		uint16_t bus_frequency;
 
+	private:
 		CpuInfo();
+
+	public:
+		[[nodiscard]] static const CpuInfo& get();
+
+		[[nodiscard]] bool supportsPCLMULQDQ() const noexcept
+		{
+			return (feature_flags_ecx >> 1) & 1;
+		}
+
+		[[nodiscard]] bool supportsSSE4_1() const noexcept
+		{
+			return (feature_flags_ecx >> 19) & 1;
+		}
 
 		[[nodiscard]] std::string toString() const;
 
