@@ -24,7 +24,8 @@ namespace soup
 
 		constexpr Rgb() noexcept = default;
 
-		constexpr Rgb(uint8_t r, uint8_t g, uint8_t b) noexcept
+		template <typename TR, typename TG, typename TB>
+		constexpr Rgb(TR r, TG g, TB b) noexcept
 			: r(r), g(g), b(b)
 		{
 		}
