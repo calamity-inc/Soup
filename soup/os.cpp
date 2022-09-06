@@ -2,15 +2,21 @@
 
 #include <array>
 #include <cstdio>
+#include <cstring> // memcpy
 #include <fstream>
 
 #if SOUP_WINDOWS
 #include <ShlObj.h> // CSIDL_COMMON_APPDATA
 
+#include "AllocRaiiVirtual.hpp"
 #include "ObfusString.hpp"
+#else
+#include "AllocRaii.hpp"
 #endif
+
 #include "rand.hpp"
 #include "string.hpp"
+#include "UniquePtr.hpp"
 
 namespace soup
 {
@@ -136,6 +142,28 @@ namespace soup
 		pclose(pipe);
 #endif
 		return result;
+	}
+
+	UniquePtr<AllocRaiiLocalBase> os::allocateExecutable(const std::string& bytecode)
+	{
+#if SOUP_WINDOWS
+		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
+#else
+		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaii>(bytecode.size());
+#endif
+		memcpy(alloc->addr, bytecode.data(), bytecode.size());
+		return alloc;
+	}
+
+	UniquePtr<AllocRaiiLocalBase> os::allocateExecutable(const std::vector<uint8_t>& bytecode)
+	{
+#if SOUP_WINDOWS
+		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
+#else
+		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaii>(bytecode.size());
+#endif
+		memcpy(alloc->addr, bytecode.data(), bytecode.size());
+		return alloc;
 	}
 
 #if SOUP_WINDOWS

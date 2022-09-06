@@ -1,15 +1,7 @@
 #include "AssemblyBuilder.hpp"
 
-#include <cstring> // memcpy
-
-#include "base.hpp"
-
-#if SOUP_WINDOWS
-#include "AllocRaiiVirtual.hpp"
-#else
-#include "AllocRaii.hpp"
-#endif
-
+#include "AllocRaiiLocalBase.hpp"
+#include "os.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
@@ -153,12 +145,6 @@ namespace soup
 
 	UniquePtr<AllocRaiiLocalBase> AssemblyBuilder::allocate() const
 	{
-#if SOUP_WINDOWS
-		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaiiVirtual>(size());
-#else
-		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaii>(size());
-#endif
-		memcpy(alloc->addr, data(), size());
-		return alloc;
+		return os::allocateExecutable(m_data);
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#include "fwd.hpp"
 
 #include <filesystem>
 #include <string>
@@ -29,6 +30,9 @@ namespace soup
 		static void resolveProgram(std::string& program);
 		static std::string executeInner(std::string program, const std::vector<std::string>& args);
 	public:
+
+		[[nodiscard]] static UniquePtr<AllocRaiiLocalBase> allocateExecutable(const std::string& bytecode);
+		[[nodiscard]] static UniquePtr<AllocRaiiLocalBase> allocateExecutable(const std::vector<uint8_t>& bytecode);
 
 #if SOUP_WINDOWS
 		[[nodiscard]] static PEB* getCurrentPeb();
