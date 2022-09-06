@@ -2,6 +2,8 @@
 
 #include "console.hpp"
 #include "RasterFont.hpp"
+#include "StringWriter.hpp"
+#include "TinyPngOut.hpp"
 #include "unicode.hpp"
 
 namespace soup
@@ -348,6 +350,19 @@ namespace soup
 		}
 		str.append("</svg>");
 		return str;
+	}
+
+	std::string Canvas::toPng() const
+	{
+		StringWriter sw;
+		toPng(sw);
+		return sw.str;
+	}
+
+	void Canvas::toPng(Writer& w) const
+	{
+		TinyPngOut po(width, height, w);
+		po.write(pixels.data(), pixels.size());
 	}
 
 	std::string Canvas::toPpm() const

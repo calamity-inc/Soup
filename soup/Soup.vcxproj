@@ -482,6 +482,7 @@
     <ClInclude Include="HashProofOfWork.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
     <ClInclude Include="StringRefWriter.hpp" />
+    <ClInclude Include="TinyPngOut.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
     <ClInclude Include="ChessCli.hpp" />
@@ -750,6 +751,7 @@
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="time.cpp" />
+    <ClCompile Include="TinyPngOut.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
     <ClCompile Include="ChessCli.cpp" />

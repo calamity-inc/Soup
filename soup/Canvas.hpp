@@ -63,6 +63,8 @@ namespace soup
 
 	public:
 		[[nodiscard]] std::string toSvg(unsigned int scale = 1) const;
+		[[nodiscard]] std::string toPng() const;
+		void toPng(Writer& w) const;
 		[[nodiscard]] std::string toPpm() const; // Bit of a niche format, but dead simple to write. You can load images of this type with GIMP.
 	};
 }
