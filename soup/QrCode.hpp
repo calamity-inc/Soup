@@ -9,6 +9,8 @@
 
 namespace soup
 {
+	// Based on https://www.nayuki.io/page/qr-code-generator-library
+
 	/*
 	 * A QR Code symbol, which is a type of two-dimension barcode.
 	 * Invented by Denso Wave and described in the ISO/IEC 18004 standard.
