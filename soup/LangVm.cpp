@@ -18,7 +18,7 @@
 
 namespace soup
 {
-	LangVm::LangVm(Reader& r, std::stack<std::shared_ptr<Mixed>>&& stack) noexcept
+	LangVm::LangVm(Reader& r, std::stack<SharedPtr<Mixed>>&& stack) noexcept
 		: r(r), stack(std::move(stack))
 #if DEBUG_VM
 		, current_op(OP_PUSH_STR)
@@ -60,7 +60,7 @@ namespace soup
 #endif
 				int64_t val;
 				r.i64_dyn(val);
-				push(std::make_shared<Mixed>(val));
+				push(soup::make_shared<Mixed>(val));
 			}
 			else if (op == OP_PUSH_UINT)
 			{
@@ -69,7 +69,7 @@ namespace soup
 #endif
 				uint64_t val;
 				r.u64_dyn(val);
-				push(std::make_shared<Mixed>(val));
+				push(soup::make_shared<Mixed>(val));
 			}
 			else if (op == OP_PUSH_FUN)
 			{
@@ -78,7 +78,7 @@ namespace soup
 #endif
 				auto str = new std::string();
 				r.str_lp_u64_dyn(*str);
-				auto val = std::make_shared<Mixed>(str);
+				auto val = soup::make_shared<Mixed>(str);
 				val->type = Mixed::FUNC;
 				push(std::move(val));
 			}
@@ -89,7 +89,7 @@ namespace soup
 #endif
 				auto str = new std::string();
 				r.str_lp_u64_dyn(*str);
-				auto val = std::make_shared<Mixed>(str);
+				auto val = soup::make_shared<Mixed>(str);
 				val->type = Mixed::VAR_NAME;
 				push(std::move(val));
 			}
@@ -140,7 +140,7 @@ namespace soup
 
 	void LangVm::push(Mixed&& val)
 	{
-		push(std::make_shared<Mixed>(val));
+		push(soup::make_shared<Mixed>(val));
 	}
 
 	void LangVm::execute()
@@ -153,12 +153,12 @@ namespace soup
 
 	static void asmvm_pushInt(LangVm& rcx, int64_t rdx)
 	{
-		rcx.push(std::make_shared<Mixed>(rdx));
+		rcx.push(soup::make_shared<Mixed>(rdx));
 	}
 
 	static void asmvm_pushUint(LangVm& rcx, uint64_t rdx)
 	{
-		rcx.push(std::make_shared<Mixed>(rdx));
+		rcx.push(soup::make_shared<Mixed>(rdx));
 	}
 
 	void LangVm::assembleAndExecute()
@@ -211,7 +211,7 @@ namespace soup
 		((ft)f->addr)(*this);
 	}
 
-	void LangVm::push(std::shared_ptr<Mixed> val)
+	void LangVm::push(SharedPtr<Mixed> val)
 	{
 #if DEBUG_VM
 		std::cout << "> Push " << val->getTypeName() << std::endl;
@@ -219,7 +219,7 @@ namespace soup
 		stack.emplace(std::move(val));
 	}
 
-	std::shared_ptr<Mixed> LangVm::popRaw()
+	SharedPtr<Mixed> LangVm::popRaw()
 	{
 		if (stack.empty())
 		{
@@ -231,7 +231,7 @@ namespace soup
 			err.append(" failed to pop a value because the stack is empty");
 			throw ParseError(std::move(err));
 		}
-		std::shared_ptr<Mixed> val = std::move(stack.top());
+		SharedPtr<Mixed> val = std::move(stack.top());
 #if DEBUG_VM
 		std::cout << "> Pop " << val->getTypeName() << std::endl;
 #endif
@@ -239,7 +239,7 @@ namespace soup
 		return val;
 	}
 
-	std::shared_ptr<Mixed> LangVm::pop()
+	SharedPtr<Mixed> LangVm::pop()
 	{
 		auto val = popRaw();
 		if (val->isVarName())
@@ -257,14 +257,14 @@ namespace soup
 		return val;
 	}
 
-	std::shared_ptr<Mixed>& LangVm::popVarRef()
+	SharedPtr<Mixed>& LangVm::popVarRef()
 	{
 		auto name = popVarName();
 		if (auto e = vars.find(name); e != vars.end())
 		{
 			return e->second;
 		}
-		return vars.emplace(std::move(name), std::make_shared<Mixed>()).first->second;
+		return vars.emplace(std::move(name), soup::make_shared<Mixed>()).first->second;
 	}
 
 	std::string LangVm::popVarName()

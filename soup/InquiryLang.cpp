@@ -67,7 +67,7 @@ namespace soup
 		keywordConsume(ps);
 	}
 
-	std::shared_ptr<Mixed> InquiryLang::execute(const std::string& q)
+	SharedPtr<Mixed> InquiryLang::execute(const std::string& q)
 	{
 		LangDesc ld;
 
@@ -149,25 +149,30 @@ namespace soup
 		return {};
 	}
 
-	std::string InquiryLang::formatResult(std::shared_ptr<Mixed> res)
+	std::string InquiryLang::formatResult(SharedPtr<Mixed> res)
 	{
 		if (!res)
 		{
 			return "[no result]";
 		}
-		if (res->isInquiryObject())
+		return formatResult(*res);
+	}
+
+	std::string InquiryLang::formatResult(const Mixed& res)
+	{
+		if (res.isInquiryObject())
 		{
-			InquiryObject& obj = res->getInquiryObject();
+			InquiryObject& obj = res.getInquiryObject();
 			if (obj.type == InquiryObject::CANVAS)
 			{
 				return unicode::utf16_to_utf8(obj.cap.get<Canvas>().toStringDownsampledDoublewidth(true));
 			}
 		}
-		std::string str = res->toStringWithFallback();
-		if (res->isUInt())
+		std::string str = res.toStringWithFallback();
+		if (res.isUInt())
 		{
 			str.append(" / 0x");
-			str.append(string::hex(res->getUInt()));
+			str.append(string::hex(res.getUInt()));
 		}
 		str.push_back('\n');
 		return str;

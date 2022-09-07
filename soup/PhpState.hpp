@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "Mixed.hpp"
+#include "SharedPtr.hpp"
+
 namespace soup
 {
 	struct PhpState
@@ -20,6 +23,6 @@ namespace soup
 
 		[[nodiscard]] std::string evaluate(const std::string& code, unsigned int max_require_depth = 10) const;
 
-		void execute(std::string& output, Reader& r, unsigned int max_require_depth = 10, std::stack<std::shared_ptr<Mixed>>&& stack = {}) const;
+		void execute(std::string& output, Reader& r, unsigned int max_require_depth = 10, std::stack<SharedPtr<Mixed>>&& stack = {}) const;
 	};
 }

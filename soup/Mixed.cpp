@@ -5,6 +5,7 @@
 #include "Exception.hpp"
 #include "InquiryObject.hpp"
 #include "parse_tree.hpp"
+#include "SharedPtr.hpp"
 
 namespace soup
 {
@@ -28,7 +29,7 @@ namespace soup
 			break;
 
 		case MIXED_SP_MIXED_MAP:
-			val = (uint64_t)new std::unordered_map<Mixed, std::shared_ptr<Mixed>>(b.getMixedSpMixedMap());
+			val = (uint64_t)new std::unordered_map<Mixed, SharedPtr<Mixed>>(b.getMixedSpMixedMap());
 			break;
 
 		case AST_BLOCK:
@@ -40,8 +41,8 @@ namespace soup
 		}
 	}
 
-	Mixed::Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val)
-		: type(MIXED_SP_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, std::shared_ptr<Mixed>>(std::move(val)))
+	Mixed::Mixed(std::unordered_map<Mixed, SharedPtr<Mixed>>&& val)
+		: type(MIXED_SP_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, SharedPtr<Mixed>>(std::move(val)))
 	{
 	}
 
@@ -71,7 +72,7 @@ namespace soup
 			break;
 
 		case MIXED_SP_MIXED_MAP:
-			delete reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
+			delete reinterpret_cast<std::unordered_map<Mixed, SharedPtr<Mixed>>*>(val);
 			break;
 
 		case AST_BLOCK:
@@ -201,10 +202,10 @@ namespace soup
 		return *reinterpret_cast<std::string*>(val);
 	}
 
-	std::unordered_map<Mixed, std::shared_ptr<Mixed>>& Mixed::getMixedSpMixedMap() const
+	std::unordered_map<Mixed, SharedPtr<Mixed>>& Mixed::getMixedSpMixedMap() const
 	{
 		assertType(MIXED_SP_MIXED_MAP);
-		return *reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
+		return *reinterpret_cast<std::unordered_map<Mixed, SharedPtr<Mixed>>*>(val);
 	}
 
 	astBlock& Mixed::getAstBlock() const

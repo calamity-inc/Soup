@@ -370,16 +370,16 @@ namespace soup
 		unsigned int max_require_depth;
 	};
 
-	void PhpState::execute(std::string& output, Reader& r, unsigned int max_require_depth, std::stack<std::shared_ptr<Mixed>>&& stack) const
+	void PhpState::execute(std::string& output, Reader& r, unsigned int max_require_depth, std::stack<SharedPtr<Mixed>>&& stack) const
 	{
 		LangVm vm(r, std::move(stack));
 		vm.cap = CapturePhpVm{ *this, output, max_require_depth };
 
 		// Setup variables
-		std::unordered_map<Mixed, std::shared_ptr<Mixed>> _SERVER{};
-		_SERVER.emplace("REQUEST_URI", std::make_shared<Mixed>(request_uri));
+		std::unordered_map<Mixed, SharedPtr<Mixed>> _SERVER{};
+		_SERVER.emplace("REQUEST_URI", soup::make_shared<Mixed>(request_uri));
 
-		vm.vars.emplace("$_SERVER", std::make_shared<Mixed>(std::move(_SERVER)));
+		vm.vars.emplace("$_SERVER", soup::make_shared<Mixed>(std::move(_SERVER)));
 
 		// Setup opcodes
 		vm.addOpcode(OP_CONCAT, [](LangVm& vm)
@@ -441,7 +441,7 @@ namespace soup
 		{
 			auto sr = vm.popFunc();
 			auto num_args = vm.popRaw()->getUInt();
-			std::stack<std::shared_ptr<Mixed>> handover_stack{};
+			std::stack<SharedPtr<Mixed>> handover_stack{};
 			while (num_args--)
 			{
 				handover_stack.emplace(vm.pop());

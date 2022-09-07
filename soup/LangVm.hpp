@@ -2,12 +2,12 @@
 
 #include "fwd.hpp"
 
-#include <memory>
 #include <stack>
 #include <vector>
 
 #include "Capture.hpp"
 #include "Mixed.hpp"
+#include "SharedPtr.hpp"
 
 namespace soup
 {
@@ -15,14 +15,14 @@ namespace soup
 	{
 	public:
 		Reader& r;
-		std::stack<std::shared_ptr<Mixed>> stack;
-		std::unordered_map<std::string, std::shared_ptr<Mixed>> vars{};
+		std::stack<SharedPtr<Mixed>> stack;
+		std::unordered_map<std::string, SharedPtr<Mixed>> vars{};
 		Capture cap;
 	protected:
 		uint8_t current_op;
 
 	public:
-		explicit LangVm(Reader& r, std::stack<std::shared_ptr<Mixed>>&& stack = {}) noexcept;
+		explicit LangVm(Reader& r, std::stack<SharedPtr<Mixed>>&& stack = {}) noexcept;
 		~LangVm() noexcept;
 
 		// for-loop paradigm
@@ -42,10 +42,10 @@ namespace soup
 		// Stack manipulation
 
 		void push(Mixed&& val);
-		void push(std::shared_ptr<Mixed> val);
-		[[nodiscard]] std::shared_ptr<Mixed> popRaw();
-		[[nodiscard]] std::shared_ptr<Mixed> pop();
-		[[nodiscard]] std::shared_ptr<Mixed>& popVarRef();
+		void push(SharedPtr<Mixed> val);
+		[[nodiscard]] SharedPtr<Mixed> popRaw();
+		[[nodiscard]] SharedPtr<Mixed> pop();
+		[[nodiscard]] SharedPtr<Mixed>& popVarRef();
 		[[nodiscard]] std::string popVarName();
 		[[nodiscard]] std::string popString();
 		[[nodiscard]] StringReader popFunc();

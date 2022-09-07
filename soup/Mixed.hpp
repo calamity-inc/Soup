@@ -3,7 +3,6 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -78,7 +77,7 @@ namespace soup
 		{
 		}
 
-		Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val);
+		Mixed(std::unordered_map<Mixed, SharedPtr<Mixed>>&& val);
 
 		Mixed(astBlock* val); // takes ownership
 
@@ -224,7 +223,7 @@ namespace soup
 		[[nodiscard]] std::string& getString() const;
 		[[nodiscard]] std::string& getFunc() const;
 		[[nodiscard]] std::string& getVarName() const;
-		[[nodiscard]] std::unordered_map<Mixed, std::shared_ptr<Mixed>>& getMixedSpMixedMap() const;
+		[[nodiscard]] std::unordered_map<Mixed, SharedPtr<Mixed>>& getMixedSpMixedMap() const;
 		[[nodiscard]] astBlock& getAstBlock() const;
 		[[nodiscard]] InquiryObject& getInquiryObject() const;
 	};
