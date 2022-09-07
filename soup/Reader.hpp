@@ -1,13 +1,13 @@
 #pragma once
 
-#include "IoBase.hpp"
+#include "ioBase.hpp"
 
 namespace soup
 {
-	class Reader : public IoBase<true>
+	class Reader : public ioBase<true>
 	{
 	public:
-		using IoBase::IoBase;
+		using ioBase::ioBase;
 
 	protected:
 		virtual bool str_impl(std::string& v, size_t len) = 0;
@@ -169,7 +169,7 @@ namespace soup
 			while (true)
 			{
 				char c;
-				if (!IoBase::c(c))
+				if (!ioBase::c(c))
 				{
 					return false;
 				}
@@ -207,28 +207,28 @@ namespace soup
 		bool str_lp_u16(std::string& v, const uint16_t max_len = 0xFFFF)
 		{
 			uint16_t len;
-			return IoBase::u16(len) && len <= max_len && str_impl(v, len);
+			return ioBase::u16(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u24 for the length prefix.
 		bool str_lp_u24(std::string& v, const uint32_t max_len = 0xFFFFFF)
 		{
 			uint32_t len;
-			return IoBase::u24(len) && len <= max_len && str_impl(v, len);
+			return ioBase::u24(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
 		bool str_lp_u32(std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
 			uint32_t len;
-			return IoBase::u32(len) && len <= max_len && str_impl(v, len);
+			return ioBase::u32(len) && len <= max_len && str_impl(v, len);
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.
 		bool str_lp_u64(std::string& v)
 		{
 			uint64_t len;
-			return IoBase::u64(len) && str_impl(v, len);
+			return ioBase::u64(len) && str_impl(v, len);
 		}
 
 		// String with known length.
@@ -263,7 +263,7 @@ namespace soup
 		bool vec_u16_u16(std::vector<uint16_t>& v)
 		{
 			uint16_t len;
-			if (!IoBase::u16(len))
+			if (!ioBase::u16(len))
 			{
 				return false;
 			}
@@ -272,7 +272,7 @@ namespace soup
 			for (; len; --len)
 			{
 				uint16_t entry;
-				if (!IoBase::u16(entry))
+				if (!ioBase::u16(entry))
 				{
 					return false;
 				}
@@ -285,7 +285,7 @@ namespace soup
 		bool vec_u16_bl_u16(std::vector<uint16_t>& v)
 		{
 			uint16_t len;
-			if (!IoBase::u16(len))
+			if (!ioBase::u16(len))
 			{
 				return false;
 			}
@@ -294,7 +294,7 @@ namespace soup
 			for (; len >= sizeof(uint16_t); len -= sizeof(uint16_t))
 			{
 				uint16_t entry;
-				if (!IoBase::u16(entry))
+				if (!ioBase::u16(entry))
 				{
 					return false;
 				}
@@ -329,7 +329,7 @@ namespace soup
 		bool vec_str_lp_u24_bl_u24(std::vector<std::string>& v)
 		{
 			uint32_t len;
-			if (!IoBase::u24(len))
+			if (!ioBase::u24(len))
 			{
 				return false;
 			}

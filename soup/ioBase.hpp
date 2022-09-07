@@ -8,23 +8,23 @@
 
 namespace soup
 {
-	class IoVirtualBase
+	class ioVirtualBase
 	{
 	protected:
 		const bool native_endianness;
 
-		IoVirtualBase(Endian endian)
+		ioVirtualBase(Endian endian)
 			: native_endianness(NATIVE_ENDIAN == endian)
 		{
 		}
 
-		IoVirtualBase(bool little_endian)
-			: IoVirtualBase(little_endian ? LITTLE_ENDIAN : BIG_ENDIAN)
+		ioVirtualBase(bool little_endian)
+			: ioVirtualBase(little_endian ? LITTLE_ENDIAN : BIG_ENDIAN)
 		{
 		}
 
 	public:
-		virtual ~IoVirtualBase() = default;
+		virtual ~ioVirtualBase() = default;
 
 		[[nodiscard]] virtual bool hasMore()
 		{
@@ -123,10 +123,10 @@ namespace soup
 	};
 
 	template <bool is_read>
-	class IoBase : public IoVirtualBase
+	class ioBase : public ioVirtualBase
 	{
 	protected:
-		using IoVirtualBase::IoVirtualBase;
+		using ioVirtualBase::ioVirtualBase;
 
 	public:
 		[[nodiscard]] static constexpr bool isRead()

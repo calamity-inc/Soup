@@ -1,13 +1,13 @@
 #pragma once
 
-#include "IoBase.hpp"
+#include "ioBase.hpp"
 
 namespace soup
 {
-	class Writer : public IoBase<false>
+	class Writer : public ioBase<false>
 	{
 	public:
-		using IoBase::IoBase;
+		using ioBase::ioBase;
 
 		virtual void write(const char* data, size_t size) = 0;
 
@@ -212,7 +212,7 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint16_t)len;
-				if (IoBase::u16(tl))
+				if (ioBase::u16(tl))
 				{
 					write(v.data(), v.size());
 					return true;
@@ -228,7 +228,7 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint32_t)len;
-				if (IoBase::u24(tl))
+				if (ioBase::u24(tl))
 				{
 					write(v.data(), v.size());
 					return true;
@@ -244,7 +244,7 @@ namespace soup
 			if (len <= max_len)
 			{
 				auto tl = (uint32_t)len;
-				if (IoBase::u32(tl))
+				if (ioBase::u32(tl))
 				{
 					write(v.data(), v.size());
 					return true;
@@ -257,7 +257,7 @@ namespace soup
 		bool str_lp_u64(const std::string& v)
 		{
 			uint64_t len = v.size();
-			if (IoBase::u64(len))
+			if (ioBase::u64(len))
 			{
 				write(v.data(), v.size());
 				return true;
@@ -302,13 +302,13 @@ namespace soup
 				return false;
 			}
 			auto len = (uint16_t)v.size();
-			if (!IoBase::u16(len))
+			if (!ioBase::u16(len))
 			{
 				return false;
 			}
 			for (auto& entry : v)
 			{
-				if (!IoBase::u16(entry))
+				if (!ioBase::u16(entry))
 				{
 					return false;
 				}
@@ -325,13 +325,13 @@ namespace soup
 				return false;
 			}
 			auto bl_u16 = (uint16_t)bl;
-			if (!IoBase::u16(bl_u16))
+			if (!ioBase::u16(bl_u16))
 			{
 				return false;
 			}
 			for (auto& entry : v)
 			{
-				if (!IoBase::u16(entry))
+				if (!ioBase::u16(entry))
 				{
 					return false;
 				}
@@ -370,7 +370,7 @@ namespace soup
 				return false;
 			}
 			auto bl_u32 = (uint32_t)bl;
-			if (!IoBase::u24(bl_u32))
+			if (!ioBase::u24(bl_u32))
 			{
 				return false;
 			}

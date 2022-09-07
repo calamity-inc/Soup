@@ -518,7 +518,7 @@
     <ClInclude Include="HttpRequest.hpp" />
     <ClInclude Include="HttpResponse.hpp" />
     <ClInclude Include="IntVector.hpp" />
-    <ClInclude Include="IoBase.hpp" />
+    <ClInclude Include="ioBase.hpp" />
     <ClInclude Include="IstreamReader.hpp" />
     <ClInclude Include="joaat.hpp" />
     <ClInclude Include="JsonBool.hpp" />

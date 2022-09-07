@@ -374,7 +374,7 @@
     <ClInclude Include="StringReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="IoBase.hpp">
+    <ClInclude Include="ioBase.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
     <ClInclude Include="IstreamReader.hpp">
