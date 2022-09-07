@@ -83,7 +83,7 @@ keyword("crc32", OP_CRC32); \
 keyword("joaat", OP_JOAAT); \
 keyword("ripemd160", OP_RIPEMD160); \
 keyword("sha1", OP_SHA1); \
-keyword("sha256", OP_SHA1); \
+keyword("sha256", OP_SHA256); \
 region("vis"); \
 keyword("qrcode", OP_QRCODE); \
 
