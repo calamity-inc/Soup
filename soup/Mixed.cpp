@@ -109,7 +109,7 @@ namespace soup
 		return getTypeName(type);
 	}
 
-	std::string Mixed::toString(const std::string& prefix) const noexcept
+	std::string Mixed::toString(const std::string& ast_block_prefix) const noexcept
 	{
 		if (type == INT)
 		{
@@ -125,9 +125,21 @@ namespace soup
 		}
 		if (type == AST_BLOCK)
 		{
-			return reinterpret_cast<astBlock*>(val)->toString(prefix);
+			return reinterpret_cast<astBlock*>(val)->toString(ast_block_prefix);
 		}
 		return {};
+	}
+
+	std::string Mixed::toStringWithFallback() const noexcept
+	{
+		if (auto str = toString(); !str.empty())
+		{
+			return str;
+		}
+		std::string str(1, '[');
+		str.append(getTypeName());
+		str.push_back(']');
+		return str;
 	}
 
 	void Mixed::assertType(Type e) const

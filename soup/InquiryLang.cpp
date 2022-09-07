@@ -138,7 +138,7 @@ namespace soup
 		{
 			return "[no result]";
 		}
-		std::string str = res->toString();
+		std::string str = res->toStringWithFallback();
 		if (res->isUInt())
 		{
 			str.append(" / 0x");

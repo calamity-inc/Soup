@@ -204,7 +204,8 @@ namespace soup
 		[[nodiscard]] static const char* getTypeName(Type t) noexcept;
 		[[nodiscard]] const char* getTypeName() const noexcept;
 
-		[[nodiscard]] std::string toString(const std::string& prefix = {}) const noexcept;
+		[[nodiscard]] std::string toString(const std::string& ast_block_prefix = {}) const noexcept;
+		[[nodiscard]] std::string toStringWithFallback() const noexcept;
 
 		friend std::ostream& operator<<(std::ostream& os, const Mixed& v);
 
