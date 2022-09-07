@@ -21,25 +21,25 @@ namespace soup
 
 	public:
 		explicit constexpr Bytepatch() = default;
-		~Bytepatch();
+		~Bytepatch() noexcept;
 
-		Bytepatch(Bytepatch&& b);
-		void operator =(Bytepatch&& b);
+		Bytepatch(Bytepatch&& b) noexcept;
+		void operator =(Bytepatch&& b) noexcept;
 	private:
-		void patchFrom(Bytepatch&& b);
+		void patchFrom(Bytepatch&& b) noexcept;
 
 	public:
-		[[nodiscard]] bool isPatched() const;
+		[[nodiscard]] bool isPatched() const noexcept;
 	private:
-		void forget();
-		void store();
-		void store(uint8_t* area, size_t size);
+		void forget() noexcept;
+		void store() noexcept;
+		void store(uint8_t* area, size_t size) noexcept;
 	public:
-		void initPatch(uint8_t* area, const uint8_t* patch, size_t size);
-		bool initPatchNOP(uint8_t* area, size_t size);
-		void initPatchZero(uint8_t* area, size_t size);
-		void initPatchZero();
-		void restore();
-		void dispose();
+		void initPatch(uint8_t* area, const uint8_t* patch, size_t size) noexcept;
+		bool initPatchNOP(uint8_t* area, size_t size) noexcept;
+		void initPatchZero(uint8_t* area, size_t size) noexcept;
+		void initPatchZero() noexcept;
+		void restore() noexcept;
+		void dispose() noexcept;
 	};
 }

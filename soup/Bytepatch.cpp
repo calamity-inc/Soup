@@ -9,23 +9,23 @@
 
 namespace soup
 {
-	Bytepatch::~Bytepatch()
+	Bytepatch::~Bytepatch() noexcept
 	{
 		restore();
 	}
 
-	Bytepatch::Bytepatch(Bytepatch&& b)
+	Bytepatch::Bytepatch(Bytepatch&& b) noexcept
 	{
 		patchFrom(std::move(b));
 	}
 
-	void Bytepatch::operator=(Bytepatch&& b)
+	void Bytepatch::operator=(Bytepatch&& b) noexcept
 	{
 		restore();
 		patchFrom(std::move(b));
 	}
 
-	void Bytepatch::patchFrom(Bytepatch&& b)
+	void Bytepatch::patchFrom(Bytepatch&& b) noexcept
 	{
 		if (b.isPatched())
 		{
@@ -37,23 +37,23 @@ namespace soup
 		}
 	}
 
-	bool Bytepatch::isPatched() const
+	bool Bytepatch::isPatched() const noexcept
 	{
 		return og_area != nullptr;
 	}
 
-	void Bytepatch::forget()
+	void Bytepatch::forget() noexcept
 	{
 		og_area = nullptr;
 	}
 
-	void Bytepatch::store()
+	void Bytepatch::store() noexcept
 	{
 		og_area = (uint8_t*)malloc(size);
 		memcpy(og_area, area, size);
 	}
 
-	void Bytepatch::store(uint8_t* area, size_t size)
+	void Bytepatch::store(uint8_t* area, size_t size) noexcept
 	{
 		restore();
 		this->area = area;
@@ -61,13 +61,13 @@ namespace soup
 		store();
 	}
 
-	void Bytepatch::initPatch(uint8_t* area, const uint8_t* patch, size_t size)
+	void Bytepatch::initPatch(uint8_t* area, const uint8_t* patch, size_t size) noexcept
 	{
 		store(area, size);
 		memcpy(area, patch, size);
 	}
 
-	bool Bytepatch::initPatchNOP(uint8_t* area, size_t size)
+	bool Bytepatch::initPatchNOP(uint8_t* area, size_t size) noexcept
 	{
 		if (size == 1)
 		{
@@ -95,7 +95,7 @@ namespace soup
 		return true;
 	}
 
-	void Bytepatch::initPatchZero(uint8_t* area, size_t size)
+	void Bytepatch::initPatchZero(uint8_t* area, size_t size) noexcept
 	{
 		restore();
 		this->area = area;
@@ -103,14 +103,14 @@ namespace soup
 		initPatchZero();
 	}
 
-	void Bytepatch::initPatchZero()
+	void Bytepatch::initPatchZero() noexcept
 	{
 		restore();
 		store();
 		memset(area, 0, size);
 	}
 
-	void Bytepatch::restore()
+	void Bytepatch::restore() noexcept
 	{
 		if (isPatched())
 		{
@@ -120,7 +120,7 @@ namespace soup
 		}
 	}
 
-	void Bytepatch::dispose()
+	void Bytepatch::dispose() noexcept
 	{
 		if (isPatched())
 		{
