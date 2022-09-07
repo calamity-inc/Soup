@@ -932,14 +932,14 @@
     <ClInclude Include="Exception.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="InquiryLang.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
     <ClInclude Include="CpuInfo.hpp">
       <Filter>cpu\x64</Filter>
     </ClInclude>
     <ClInclude Include="TinyPngOut.hpp">
       <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="InquiryLang.hpp">
+      <Filter>lang\inquiry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1397,14 +1397,14 @@
     <ClCompile Include="time.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="InquiryLang.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
     <ClCompile Include="CpuInfo.cpp">
       <Filter>cpu\x64</Filter>
     </ClCompile>
     <ClCompile Include="TinyPngOut.cpp">
       <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="InquiryLang.cpp">
+      <Filter>lang\inquiry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1566,6 +1566,9 @@
     </Filter>
     <Filter Include="crypto\proof_of_work">
       <UniqueIdentifier>{cc6c3a53-3611-43fc-b49e-801934a47954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\inquiry">
+      <UniqueIdentifier>{61df207c-2f95-45f7-8729-6453723815e5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
