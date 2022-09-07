@@ -5,6 +5,16 @@
 
 namespace soup
 {
+	struct Datetime
+	{
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		int second;
+	};
+
 	struct time
 	{
 		[[nodiscard]] static std::time_t unixSeconds() noexcept
@@ -22,6 +32,7 @@ namespace soup
 			return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		}
 
+		[[nodiscard]] static std::time_t toUnix(const Datetime& dt);
 		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);
 	};
 }

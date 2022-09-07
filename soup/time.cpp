@@ -8,6 +8,11 @@
 
 namespace soup
 {
+	std::time_t time::toUnix(const Datetime& dt)
+	{
+		return toUnix(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
+	}
+
 	std::time_t time::toUnix(int year, int month, int day, int hour, int minute, int second)
 	{
 		/*time_t t = (year - 1970);
