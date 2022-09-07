@@ -25,19 +25,23 @@
 
 namespace soup
 {
-	enum InquiryOps
+	enum InquiryOp
 	{
 		OP_BASE32_ENCODE,
 		OP_BASE32_DECODE,
 		OP_BASE64_ENCODE,
 		OP_BASE64_DECODE,
+
 		OP_ADLER32,
 		OP_CRC32,
 		OP_JOAAT,
 		OP_RIPEMD160,
 		OP_SHA1,
 		OP_SHA256,
+
 		OP_QRCODE,
+
+		OP_HELP,
 	};
 
 	static void keywordConsume(ParserState& ps)
@@ -67,25 +71,36 @@ namespace soup
 		keywordConsume(ps);
 	}
 
+#define FOR_EACH_KEYWORD(region, keyword) \
+region("data.enc"); \
+keyword("base32_encode", OP_BASE32_ENCODE); \
+keyword("base32_decode", OP_BASE32_DECODE); \
+keyword("base64_encode", OP_BASE64_ENCODE); \
+keyword("base64_decode", OP_BASE64_DECODE); \
+region("data.hash"); \
+keyword("adler32", OP_ADLER32); \
+keyword("crc32", OP_CRC32); \
+keyword("joaat", OP_JOAAT); \
+keyword("ripemd160", OP_RIPEMD160); \
+keyword("sha1", OP_SHA1); \
+keyword("sha256", OP_SHA1); \
+region("vis"); \
+keyword("qrcode", OP_QRCODE); \
+
+#define REGISTER_REGION(region)
+#define REGISTER_KEYWORD(keyword, op) ld.addToken(keyword, &keywordParse<op>);
+
+#define HELP_REGION(region) help.append(region).push_back('\n');
+#define HELP_KEYWORD(keyword, op) help.append("- ").append(keyword).push_back('\n');
+
 	SharedPtr<Mixed> InquiryLang::execute(const std::string& q)
 	{
 		LangDesc ld;
-
-		// data.enc
-		ld.addToken("base32_encode", &keywordParse<OP_BASE32_ENCODE>);
-		ld.addToken("base32_decode", &keywordParse<OP_BASE32_DECODE>);
-		ld.addToken("base64_encode", &keywordParse<OP_BASE64_ENCODE>);
-		ld.addToken("base64_decode", &keywordParse<OP_BASE64_DECODE>);
-		// data.hash
-		ld.addToken("adler32", &keywordParse<OP_ADLER32>);
-		ld.addToken("crc32", &keywordParse<OP_CRC32>);
-		ld.addToken("joaat", &keywordParse<OP_JOAAT>);
-		ld.addToken("ripemd160", &keywordParse<OP_RIPEMD160>);
-		ld.addToken("sha1", &keywordParse<OP_SHA1>);
-		ld.addToken("sha256", &keywordParse<OP_SHA1>);
-		// vis
-		ld.addToken("qrcode", &keywordParse<OP_QRCODE>);
-
+		FOR_EACH_KEYWORD(REGISTER_REGION, REGISTER_KEYWORD);
+		ld.addToken("help", [](ParserState& ps)
+		{
+			ps.setOp(OP_HELP);
+		});
 		auto tks = ld.tokenise(q);
 		auto ast = ld.parse(tks);
 		//std::cout << ast.toString() << std::endl;
@@ -139,6 +154,15 @@ namespace soup
 
 			case OP_QRCODE:
 				vm.push(InquiryObject(QrCode::encodeText(vm.pop()->getString()).toCanvas(4, true)));
+				break;
+
+			case OP_HELP:
+				{
+					std::string help;
+					FOR_EACH_KEYWORD(HELP_REGION, HELP_KEYWORD);
+					help.erase(help.size() - 1);
+					vm.push(std::move(help));
+				}
 				break;
 			}
 		}
