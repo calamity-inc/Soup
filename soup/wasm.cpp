@@ -122,6 +122,13 @@ SOUP_CEXPORT Canvas* QrCode_toNewCanvas(QrCode* x, unsigned int border, bool bla
 	return new Canvas(x->toCanvas(border, black_bg));
 }
 
+// std::exception
+
+SOUP_CEXPORT const char* exception_what(std::exception* x)
+{
+	returnString(x->what());
+}
+
 // std::string
 
 SOUP_CEXPORT void string_free(std::string* x)

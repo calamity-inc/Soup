@@ -50,8 +50,11 @@
 				newFromText: soup.cwrap("QrCode_newFromText", "number", ["string"]),
 				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "bool"]),
 			};
+			soup.exception = {
+				what: soup.cwrap("exception_what", "string", ["number"]),
+			};
 			soup.string = {
-				free: soup.cwrap("string_free", "void", ["number"]),	
+				free: soup.cwrap("string_free", "void", ["number"]),
 			};
 			delete soup.cwrap;
 			soup.ready = true;
