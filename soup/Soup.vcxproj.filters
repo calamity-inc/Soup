@@ -515,9 +515,6 @@
     <ClInclude Include="deleter_impl.hpp">
       <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="UniquePtr.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
     <ClInclude Include="Endian.hpp">
       <Filter>data</Filter>
     </ClInclude>
@@ -943,6 +940,9 @@
     </ClInclude>
     <ClInclude Include="InquiryObject.hpp">
       <Filter>lang\inquiry</Filter>
+    </ClInclude>
+    <ClInclude Include="UniquePtr.hpp">
+      <Filter>mem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
