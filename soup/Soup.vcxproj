@@ -481,6 +481,7 @@
     <ClInclude Include="Capture.hpp" />
     <ClInclude Include="ioSizeMeasurer.hpp" />
     <ClInclude Include="HashProofOfWork.hpp" />
+    <ClInclude Include="SharedPtr.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
     <ClInclude Include="StringRefWriter.hpp" />
     <ClInclude Include="TinyPngOut.hpp" />

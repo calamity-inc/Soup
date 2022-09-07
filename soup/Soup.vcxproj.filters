@@ -944,6 +944,9 @@
     <ClInclude Include="UniquePtr.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="SharedPtr.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

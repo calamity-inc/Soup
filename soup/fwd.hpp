@@ -72,6 +72,7 @@ namespace soup
 	struct CompiletimePatternWithOptBytesBase;
 	class Pointer;
 	class Range;
+	template <typename T> class SharedPtr;
 	template <typename T> class UniquePtr;
 	struct VirtualRegion;
 	

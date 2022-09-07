@@ -4,7 +4,9 @@
 
 namespace soup
 {
-	// Why not std::unique_ptr? RTTI.
+	// Why not std::unique_ptr?
+	// - Stores a deleter despite being templated
+	// - Produces RTTI even with RTTI off
 	template <typename T>
 	class UniquePtr
 	{
@@ -70,7 +72,7 @@ namespace soup
 
 		[[nodiscard]] operator T*() const noexcept
 		{
-			return data;
+			return get();
 		}
 
 		[[nodiscard]] T* get() const noexcept
@@ -80,12 +82,12 @@ namespace soup
 
 		[[nodiscard]] T& operator*() const noexcept
 		{
-			return *data;
+			return *get();
 		}
 
 		[[nodiscard]] T* operator->() const noexcept
 		{
-			return data;
+			return get();
 		}
 
 		[[nodiscard]] T* release() noexcept
