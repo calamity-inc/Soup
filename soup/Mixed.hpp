@@ -201,11 +201,14 @@ namespace soup
 			return type == AST_BLOCK;
 		}
 
+		[[nodiscard]] static const char* getTypeName(Type t) noexcept;
 		[[nodiscard]] const char* getTypeName() const noexcept;
 
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const noexcept;
 
 		friend std::ostream& operator<<(std::ostream& os, const Mixed& v);
+
+		void assertType(Type e) const;
 
 		[[nodiscard]] int64_t getInt() const;
 		[[nodiscard]] uint64_t getUInt() const;

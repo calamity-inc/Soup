@@ -76,9 +76,9 @@ namespace soup
 		return os;
 	}
 
-	const char* Mixed::getTypeName() const noexcept
+	const char* Mixed::getTypeName(Type t) noexcept
 	{
-		switch (type)
+		switch (t)
 		{
 		default:
 			break;
@@ -104,6 +104,11 @@ namespace soup
 		return "complex type";
 	}
 
+	const char* Mixed::getTypeName() const noexcept
+	{
+		return getTypeName(type);
+	}
+
 	std::string Mixed::toString(const std::string& prefix) const noexcept
 	{
 		if (type == INT)
@@ -125,66 +130,57 @@ namespace soup
 		return {};
 	}
 
+	void Mixed::assertType(Type e) const
+	{
+		SOUP_IF_UNLIKELY (type != e)
+		{
+			std::string str = "Expected Mixed to hold ";
+			str.append(getTypeName(e));
+			str.append(", found ");
+			str.append(getTypeName());
+			throw Exception(std::move(str));
+		}
+	}
+
 	int64_t Mixed::getInt() const
 	{
-		if (type != INT)
-		{
-			throw Exception("Mixed has unexpected type");
-		}
+		assertType(INT);
 		return (int64_t)val;
 	}
 
 	uint64_t Mixed::getUInt() const
 	{
-		if (type != UINT)
-		{
-			throw Exception("Mixed has unexpected type");
-		}
+		assertType(UINT);
 		return val;
 	}
 
 	std::string& Mixed::getString() const
 	{
-		if (type != STRING)
-		{
-			throw Exception("Mixed has unexpected type");
-		}
+		assertType(STRING);
 		return *reinterpret_cast<std::string*>(val);
 	}
 
 	std::string& Mixed::getFunc() const
 	{
-		if (type != FUNC)
-		{
-			throw Exception("Mixed has unexpected type");
-		}
+		assertType(FUNC);
 		return *reinterpret_cast<std::string*>(val);
 	}
 
 	std::string& Mixed::getVarName() const
 	{
-		if (type != VAR_NAME)
-		{
-			throw Exception("Mixed has unexpected type");
-		}
+		assertType(VAR_NAME);
 		return *reinterpret_cast<std::string*>(val);
 	}
 
 	std::unordered_map<Mixed, std::shared_ptr<Mixed>>& Mixed::getMixedSpMixedMap() const
 	{
-		if (type != MIXED_SP_MIXED_MAP)
-		{
-			throw Exception("Mixed has unexpected type");
-		}
+		assertType(MIXED_SP_MIXED_MAP);
 		return *reinterpret_cast<std::unordered_map<Mixed, std::shared_ptr<Mixed>>*>(val);
 	}
 
 	astBlock& Mixed::getAstBlock() const
 	{
-		if (type != AST_BLOCK)
-		{
-			throw Exception("Mixed has unexpected type");
-		}
+		assertType(AST_BLOCK);
 		return *reinterpret_cast<astBlock*>(val);
 	}
 }
