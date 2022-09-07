@@ -119,4 +119,13 @@ namespace soup
 			forget();
 		}
 	}
+
+	void Bytepatch::dispose()
+	{
+		if (isPatched())
+		{
+			free(og_area);
+			forget();
+		}
+	}
 }

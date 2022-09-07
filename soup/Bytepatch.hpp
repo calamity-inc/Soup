@@ -40,5 +40,6 @@ namespace soup
 		void initPatchZero(uint8_t* area, size_t size);
 		void initPatchZero();
 		void restore();
+		void dispose();
 	};
 }
