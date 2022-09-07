@@ -30,9 +30,8 @@ namespace soup
 
 	public:
 		[[nodiscard]] bool isPatched() const;
-		void forget();
-
 	private:
+		void forget();
 		void store();
 		void store(uint8_t* area, size_t size);
 	public:
