@@ -19,7 +19,7 @@
 
 namespace soup
 {
-	enum InquireOps
+	enum InquiryOps
 	{
 		OP_BASE32_ENCODE,
 		OP_BASE32_DECODE,
