@@ -31,7 +31,7 @@ namespace soup
 			break;
 
 		case AST_BLOCK:
-			throw std::runtime_error("Can't copy this type");
+			throw Exception("Can't copy this type");
 		}
 	}
 
