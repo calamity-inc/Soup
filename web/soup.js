@@ -24,14 +24,34 @@
 				resizeNearestNeighbour: soup.cwrap("Canvas_resizeNearestNeighbour", "number", ["number", "number", "number"]),
 				toSvg: soup.cwrap("Canvas_toSvg", "string", ["number", "number"]),
 				toNewPngString: soup.cwrap("Canvas_toNewPngString", "number", ["number"]),
+
+				upscaleMultiply: function(c, f)
+				{
+					let w = soup.Canvas.getWidth(c);
+					let h = soup.Canvas.getWidth(c);
+					soup.Canvas.resizeNearestNeighbour(c, w * f, h * f);
+				}
+			};
+			soup.InquiryLang = {
+				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
+				formatResultLine: soup.cwrap("InquiryLang_formatResultLine", "string", ["number"]),
+			};
+			soup.InquiryObject = {
+				isCanvas: soup.cwrap("InquiryObject_isCanvas", "bool", ["number"]),
+				getCanvas: soup.cwrap("InquiryObject_getCanvas", "number", ["number"]),
+			};
+			soup.Mixed = {
+				free: soup.cwrap("Mixed_free", "void", ["number"]),
+				isInquiryObject: soup.cwrap("Mixed_isInquiryObject", "bool", ["number"]),
+				getInquiryObject: soup.cwrap("Mixed_getInquiryObject", "number", ["number"]),
 			};
 			soup.QrCode = {
-				free: soup.cwrap("QrCode_free", "number", ["number"]),
+				free: soup.cwrap("QrCode_free", "void", ["number"]),
 				newFromText: soup.cwrap("QrCode_newFromText", "number", ["string"]),
 				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "bool"]),
 			};
 			soup.string = {
-				free: soup.cwrap("string_free", "number", ["number"]),	
+				free: soup.cwrap("string_free", "void", ["number"]),	
 			};
 			delete soup.cwrap;
 			soup.ready = true;
@@ -93,9 +113,7 @@
 			{
 				let qr = soup.QrCode.newFromText(text);
 				let c = soup.QrCode.toNewCanvas(qr, 4, elm.hasAttribute("inverted"));
-				let w = soup.Canvas.getWidth(c);
-				let h = soup.Canvas.getWidth(c);
-				soup.Canvas.resizeNearestNeighbour(c, w * 4, h * 4);
+				soup.Canvas.upscaleMultiply(c, 4);
 				let ps = soup.Canvas.toNewPngString(c);
 				let pb = soup.base64.encode(ps);
 

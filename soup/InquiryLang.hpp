@@ -13,5 +13,6 @@ namespace soup
 		[[nodiscard]] static SharedPtr<Mixed> execute(const std::string& q);
 		[[nodiscard]] static std::string formatResult(SharedPtr<Mixed> res);
 		[[nodiscard]] static std::string formatResult(const Mixed& res);
+		[[nodiscard]] static std::string formatResultLine(const Mixed& res);
 	};
 }

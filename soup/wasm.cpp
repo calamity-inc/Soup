@@ -4,6 +4,9 @@
 
 #include "base64.hpp"
 #include "Canvas.hpp"
+#include "InquiryLang.hpp"
+#include "InquiryObject.hpp"
+#include "Mixed.hpp"
 #include "QrCode.hpp"
 
 using namespace soup;
@@ -55,6 +58,51 @@ SOUP_CEXPORT const char* Canvas_toSvg(Canvas* x, unsigned int scale)
 SOUP_CEXPORT std::string* Canvas_toNewPngString(Canvas* x)
 {
 	return new std::string(x->toPng());
+}
+
+// InquiryLang
+
+SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x)
+{
+	if (auto res = InquiryLang::execute(x))
+	{
+		return res.release();
+	}
+	return nullptr;
+}
+
+SOUP_CEXPORT const char* InquiryLang_formatResultLine(Mixed* x)
+{
+	returnString(InquiryLang::formatResultLine(*x));
+}
+
+// InquiryObject
+
+SOUP_CEXPORT bool InquiryObject_isCanvas(InquiryObject* x)
+{
+	return x->type == InquiryObject::CANVAS;
+}
+
+SOUP_CEXPORT Canvas* InquiryObject_getCanvas(InquiryObject* x)
+{
+	return &x->cap.get<Canvas>();
+}
+
+// Mixed
+
+SOUP_CEXPORT void Mixed_free(Mixed* x)
+{
+	delete x;
+}
+
+SOUP_CEXPORT bool Mixed_isInquiryObject(Mixed* x)
+{
+	return x->isInquiryObject();
+}
+
+SOUP_CEXPORT InquiryObject* Mixed_getInquiryObject(Mixed* x)
+{
+	return &x->getInquiryObject();
 }
 
 // QrCode

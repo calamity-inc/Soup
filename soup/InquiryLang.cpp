@@ -151,7 +151,7 @@ namespace soup
 
 	std::string InquiryLang::formatResult(SharedPtr<Mixed> res)
 	{
-		if (!res)
+		SOUP_IF_UNLIKELY (!res)
 		{
 			return "[no result]";
 		}
@@ -168,13 +168,19 @@ namespace soup
 				return unicode::utf16_to_utf8(obj.cap.get<Canvas>().toStringDownsampledDoublewidth(true));
 			}
 		}
+		auto str = formatResultLine(res);
+		str.push_back('\n');
+		return str;
+	}
+
+	std::string InquiryLang::formatResultLine(const Mixed& res)
+	{
 		std::string str = res.toStringWithFallback();
 		if (res.isUInt())
 		{
 			str.append(" / 0x");
 			str.append(string::hex(res.getUInt()));
 		}
-		str.push_back('\n');
 		return str;
 	}
 }
