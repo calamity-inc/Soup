@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "SharedPtr.hpp"
+
 namespace soup
 {
 	class Mixed
