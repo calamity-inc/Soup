@@ -22,6 +22,7 @@ namespace soup
 			VAR_NAME,
 			MIXED_SP_MIXED_MAP,
 			AST_BLOCK,
+			INQUIRY_OBJECT,
 		};
 
 		Type type = NONE;
@@ -80,6 +81,8 @@ namespace soup
 		Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val);
 
 		Mixed(astBlock* val); // takes ownership
+
+		Mixed(InquiryObject&& val);
 
 		~Mixed() noexcept
 		{
@@ -201,6 +204,11 @@ namespace soup
 			return type == AST_BLOCK;
 		}
 
+		[[nodiscard]] constexpr bool isInquiryObject() const noexcept
+		{
+			return type == INQUIRY_OBJECT;
+		}
+
 		[[nodiscard]] static const char* getTypeName(Type t) noexcept;
 		[[nodiscard]] const char* getTypeName() const noexcept;
 
@@ -218,6 +226,7 @@ namespace soup
 		[[nodiscard]] std::string& getVarName() const;
 		[[nodiscard]] std::unordered_map<Mixed, std::shared_ptr<Mixed>>& getMixedSpMixedMap() const;
 		[[nodiscard]] astBlock& getAstBlock() const;
+		[[nodiscard]] InquiryObject& getInquiryObject() const;
 	};
 }
 

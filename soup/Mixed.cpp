@@ -3,6 +3,7 @@
 #include <ostream>
 
 #include "Exception.hpp"
+#include "InquiryObject.hpp"
 #include "parse_tree.hpp"
 
 namespace soup
@@ -32,7 +33,16 @@ namespace soup
 
 		case AST_BLOCK:
 			throw Exception("Can't copy this type");
+
+		case INQUIRY_OBJECT:
+			val = (uint64_t)new InquiryObject(b.getInquiryObject());
+			break;
 		}
+	}
+
+	Mixed::Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val)
+		: type(MIXED_SP_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, std::shared_ptr<Mixed>>(std::move(val)))
+	{
 	}
 
 	Mixed::Mixed(astBlock* val)
@@ -40,8 +50,8 @@ namespace soup
 	{
 	}
 
-	Mixed::Mixed(std::unordered_map<Mixed, std::shared_ptr<Mixed>>&& val)
-		: type(MIXED_SP_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, std::shared_ptr<Mixed>>(std::move(val)))
+	Mixed::Mixed(InquiryObject&& val)
+		: type(INQUIRY_OBJECT), val((uint64_t)new InquiryObject(std::move(val)))
 	{
 	}
 
@@ -66,6 +76,10 @@ namespace soup
 
 		case AST_BLOCK:
 			delete reinterpret_cast<astBlock*>(val);
+			break;
+
+		case INQUIRY_OBJECT:
+			delete reinterpret_cast<InquiryObject*>(val);
 			break;
 		}
 	}
@@ -99,7 +113,10 @@ namespace soup
 			return "var name";
 
 		case AST_BLOCK:
-			return "ast block";
+			return "astBlock";
+
+		case INQUIRY_OBJECT:
+			return "InquiryObject";
 		}
 		return "complex type";
 	}
@@ -194,5 +211,11 @@ namespace soup
 	{
 		assertType(AST_BLOCK);
 		return *reinterpret_cast<astBlock*>(val);
+	}
+
+	InquiryObject& Mixed::getInquiryObject() const
+	{
+		assertType(INQUIRY_OBJECT);
+		return *reinterpret_cast<InquiryObject*>(val);
 	}
 }

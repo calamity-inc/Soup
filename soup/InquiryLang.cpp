@@ -1,5 +1,7 @@
 #include "InquiryLang.hpp"
 
+#include "Canvas.hpp"
+#include "InquiryObject.hpp"
 #include "LangDesc.hpp"
 #include "LangVm.hpp"
 #include "Lexeme.hpp"
@@ -7,15 +9,19 @@
 #include "parse_tree.hpp"
 #include "StringReader.hpp"
 #include "StringWriter.hpp"
+#include "unicode.hpp"
 
 #include "base32.hpp"
 #include "base64.hpp"
+
 #include "adler32.hpp"
 #include "crc32.hpp"
 #include "joaat.hpp"
 #include "ripemd160.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
+
+#include "QrCode.hpp"
 
 namespace soup
 {
@@ -31,6 +37,7 @@ namespace soup
 		OP_RIPEMD160,
 		OP_SHA1,
 		OP_SHA256,
+		OP_QRCODE,
 	};
 
 	static void keywordConsume(ParserState& ps)
@@ -63,16 +70,22 @@ namespace soup
 	std::shared_ptr<Mixed> InquiryLang::execute(const std::string& q)
 	{
 		LangDesc ld;
+
+		// data.enc
 		ld.addToken("base32_encode", &keywordParse<OP_BASE32_ENCODE>);
 		ld.addToken("base32_decode", &keywordParse<OP_BASE32_DECODE>);
 		ld.addToken("base64_encode", &keywordParse<OP_BASE64_ENCODE>);
 		ld.addToken("base64_decode", &keywordParse<OP_BASE64_DECODE>);
+		// data.hash
 		ld.addToken("adler32", &keywordParse<OP_ADLER32>);
 		ld.addToken("crc32", &keywordParse<OP_CRC32>);
 		ld.addToken("joaat", &keywordParse<OP_JOAAT>);
 		ld.addToken("ripemd160", &keywordParse<OP_RIPEMD160>);
 		ld.addToken("sha1", &keywordParse<OP_SHA1>);
 		ld.addToken("sha256", &keywordParse<OP_SHA1>);
+		// vis
+		ld.addToken("qrcode", &keywordParse<OP_QRCODE>);
+
 		auto tks = ld.tokenise(q);
 		auto ast = ld.parse(tks);
 		//std::cout << ast.toString() << std::endl;
@@ -123,6 +136,10 @@ namespace soup
 			case OP_SHA256:
 				vm.push(string::bin2hex(sha256::hash(vm.pop()->getString())));
 				break;
+
+			case OP_QRCODE:
+				vm.push(InquiryObject(QrCode::encodeText(vm.pop()->getString()).toCanvas(4, true)));
+				break;
 			}
 		}
 		if (!vm.stack.empty())
@@ -138,12 +155,21 @@ namespace soup
 		{
 			return "[no result]";
 		}
+		if (res->isInquiryObject())
+		{
+			InquiryObject& obj = res->getInquiryObject();
+			if (obj.type == InquiryObject::CANVAS)
+			{
+				return unicode::utf16_to_utf8(obj.cap.get<Canvas>().toStringDownsampledDoublewidth(true));
+			}
+		}
 		std::string str = res->toStringWithFallback();
 		if (res->isUInt())
 		{
 			str.append(" / 0x");
 			str.append(string::hex(res->getUInt()));
 		}
+		str.push_back('\n');
 		return str;
 	}
 }

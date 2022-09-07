@@ -941,6 +941,9 @@
     <ClInclude Include="InquiryLang.hpp">
       <Filter>lang\inquiry</Filter>
     </ClInclude>
+    <ClInclude Include="InquiryObject.hpp">
+      <Filter>lang\inquiry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1404,6 +1407,9 @@
       <Filter>vis</Filter>
     </ClCompile>
     <ClCompile Include="InquiryLang.cpp">
+      <Filter>lang\inquiry</Filter>
+    </ClCompile>
+    <ClCompile Include="InquiryObject.cpp">
       <Filter>lang\inquiry</Filter>
     </ClCompile>
   </ItemGroup>

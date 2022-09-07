@@ -49,6 +49,9 @@ namespace soup
 	class ParserState;
 	struct Token;
 
+	// lang.inquiry
+	struct InquiryObject;
+
 	// math
 	class Bigint;
 	struct Vector2;
@@ -118,6 +121,7 @@ namespace soup
 	// vis
 	class Canvas;
 	struct FormattedText;
+	class QrCode;
 	struct RasterFont;
 	struct Rgb;
 

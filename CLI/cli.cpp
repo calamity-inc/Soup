@@ -122,6 +122,7 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "inquire")
 		{
+			console.init(false);
 			std::cout << "Soup Inquiry Language REPL" << std::endl;
 			while (true)
 			{
@@ -133,7 +134,7 @@ int main(int argc, const char** argv)
 				}
 				try
 				{
-					std::cout << InquiryLang::formatResult(InquiryLang::execute(line)) << std::endl;
+					std::cout << InquiryLang::formatResult(InquiryLang::execute(line));
 				}
 				catch (std::exception& e)
 				{
