@@ -14,10 +14,24 @@
 	{
 		libsoup().then(function(soup)
 		{
+			soup.base64 = {
+				encode: soup.cwrap("base64_encode", "string", ["number"]),
+			};
+			soup.Canvas = {
+				free: soup.cwrap("Canvas_free", "void", ["number"]),
+				getWidth: soup.cwrap("Canvas_getWidth", "number", ["number"]),
+				getHeight: soup.cwrap("Canvas_getHeight", "number", ["number"]),
+				resizeNearestNeighbour: soup.cwrap("Canvas_resizeNearestNeighbour", "number", ["number", "number", "number"]),
+				toSvg: soup.cwrap("Canvas_toSvg", "string", ["number", "number"]),
+				toNewPngString: soup.cwrap("Canvas_toNewPngString", "number", ["number"]),
+			};
 			soup.QrCode = {
-				encodeText: soup.cwrap("QrCode_encodeText", "number", ["string"]),
 				free: soup.cwrap("QrCode_free", "number", ["number"]),
-				toSvg: soup.cwrap("QrCode_toSvg", "string", ["number", "number", "bool", "number"]),
+				newFromText: soup.cwrap("QrCode_newFromText", "number", ["string"]),
+				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "bool"]),
+			};
+			soup.string = {
+				free: soup.cwrap("string_free", "number", ["number"]),	
 			};
 			delete soup.cwrap;
 			soup.ready = true;
@@ -77,12 +91,24 @@
 			let text = elm.textContent;
 			if(svg === null || svg.getAttribute("alt") != text)
 			{
-				let qr = soup.QrCode.encodeText(text);
+				let qr = soup.QrCode.newFromText(text);
+				let c = soup.QrCode.toNewCanvas(qr, 4, elm.hasAttribute("inverted"));
+				let w = soup.Canvas.getWidth(c);
+				let h = soup.Canvas.getWidth(c);
+				soup.Canvas.resizeNearestNeighbour(c, w * 4, h * 4);
+				let ps = soup.Canvas.toNewPngString(c);
+				let pb = soup.base64.encode(ps);
+
 				elm.style.display = "none";
 				pruneContainer(div);
-				div.innerHTML += soup.QrCode.toSvg(qr, 4, elm.hasAttribute("inverted"), 4);
+				let img = document.createElement("img");
+				img.src = "data:image/png;base64," + pb;
+				img.setAttribute("alt", text);
+				div.appendChild(img);
+
+				soup.string.free(ps);
+				soup.Canvas.free(c);
 				soup.QrCode.free(qr);
-				div.querySelector("svg").setAttribute("alt", text);
 			}
 		});
 	}
