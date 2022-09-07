@@ -30,7 +30,7 @@ namespace soup
 
 	public:
 		[[nodiscard]] bool isPatched() const;
-		void dispose();
+		void forget();
 
 	private:
 		void store();

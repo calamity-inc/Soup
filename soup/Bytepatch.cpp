@@ -33,7 +33,7 @@ namespace soup
 			size = b.size;
 			area = b.area;
 
-			b.dispose();
+			b.forget();
 		}
 	}
 
@@ -42,7 +42,7 @@ namespace soup
 		return og_area != nullptr;
 	}
 
-	void Bytepatch::dispose()
+	void Bytepatch::forget()
 	{
 		og_area = nullptr;
 	}
@@ -116,7 +116,7 @@ namespace soup
 		{
 			memcpy(area, og_area, size);
 			free(og_area);
-			dispose();
+			forget();
 		}
 	}
 }
