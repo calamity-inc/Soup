@@ -1,6 +1,6 @@
 #include "Hotp.hpp"
 
-#include "intutil.hpp"
+#include "math.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
 #include "StringWriter.hpp"
@@ -25,7 +25,7 @@ namespace soup
 
 	int Hotp::getValue(uint64_t counter, uint8_t digits) const
 	{
-		return getValueRaw(counter) % intutil::pow<int>(10, digits);
+		return getValueRaw(counter) % soup::pow<int>(10, digits);
 	}
 
 	int Hotp::getValueRaw(uint64_t counter) const

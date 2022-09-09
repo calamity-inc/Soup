@@ -15,4 +15,15 @@ namespace soup
 	{
 		return (T)(a + (b - a) * t);
 	}
+
+	template <typename T>
+	[[nodiscard]] constexpr T pow(T a, T b) // b must be > 0
+	{
+		T res = a;
+		while (--b)
+		{
+			res *= a;
+		}
+		return res;
+	}
 }

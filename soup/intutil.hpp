@@ -34,16 +34,5 @@ namespace soup
 				;
 #endif
 		}
-
-		template <typename T>
-		[[nodiscard]] static constexpr T pow(T a, T b) // b must be > 0
-		{
-			T res = a;
-			while (--b)
-			{
-				res *= a;
-			}
-			return res;
-		}
 	};
 }

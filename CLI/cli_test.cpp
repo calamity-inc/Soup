@@ -30,6 +30,8 @@
 
 #include <PhpState.hpp>
 
+#include <math.hpp>
+
 #include <Uri.hpp>
 
 #include <StringMatch.hpp>
@@ -439,6 +441,14 @@ endif;)") == "");
 	}
 }
 
+void test_math()
+{
+	test("pow", []
+	{
+		assert(soup::pow(10, 6) == 1000000);
+	});
+}
+
 static void test_uri()
 {
 	std::string str;
@@ -554,10 +564,6 @@ static void test_util()
 		assert(intutil::invertEndianness((uint64_t)0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
 		assert(intutil::invertEndianness((uint64_t)0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
 	});
-	test("pow", []
-	{
-		assert(intutil::pow(10, 6) == 1000000);
-	});
 }
 
 static void test_vis()
@@ -594,6 +600,10 @@ void cli_test()
 		unit("lang")
 		{
 			test_lang();
+		}
+		unit("math")
+		{
+			test_math();
 		}
 		unit("net")
 		{
