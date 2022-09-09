@@ -24,9 +24,9 @@ namespace soup
 
 	struct dnsARecord : public dnsRecord
 	{
-		uint32_t data;
+		network_u32_t data;
 
-		dnsARecord(std::string&& name, uint32_t ttl, uint32_t data) noexcept
+		dnsARecord(std::string&& name, uint32_t ttl, network_u32_t data) noexcept
 			: dnsRecord(DNS_A, std::move(name), ttl), data(data)
 		{
 		}

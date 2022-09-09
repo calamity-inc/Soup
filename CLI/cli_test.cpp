@@ -293,6 +293,8 @@ static void test_data()
 
 	test("Endianness", []
 	{
+		assert(Endianness::invert((uint16_t)0x1234u) == 0x3412u);
+		assert(Endianness::invert((uint16_t)0x3412u) == 0x1234u);
 		assert(Endianness::invert((uint32_t)0x12345678u) == 0x78563412u);
 		assert(Endianness::invert((uint32_t)0x78563412u) == 0x12345678u);
 		assert(Endianness::invert((uint64_t)0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);

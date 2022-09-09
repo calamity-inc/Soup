@@ -6,6 +6,8 @@
 #include <bit>
 #endif
 
+#include "IntStruct.hpp"
+
 #undef LITTLE_ENDIAN
 #undef BIG_ENDIAN
 
@@ -22,10 +24,24 @@ namespace soup
 #endif
 	};
 
+	SOUP_INT_STRUCT(native_u16_t, uint16_t);
+	SOUP_INT_STRUCT(native_u32_t, uint32_t);
+	SOUP_INT_STRUCT(network_u16_t, uint16_t);
+	SOUP_INT_STRUCT(network_u32_t, uint32_t);
+
 	struct Endianness
 	{
 		// C++23 will add std::byteswap
 
+		[[nodiscard]] static constexpr uint16_t invert(uint16_t val)
+		{
+#if defined(__GNUC__) || defined(__clang__)
+			return __builtin_bswap16(val);
+#else
+			return (val << 8) | (val >> 8);
+#endif
+		}
+		
 		[[nodiscard]] static constexpr uint32_t invert(uint32_t val)
 		{
 #if defined(__GNUC__) || defined(__clang__)
@@ -54,6 +70,42 @@ namespace soup
 				| ((val >> 56) & 0xFF)
 				;
 #endif
+		}
+
+		[[nodiscard]] static network_u16_t toNetwork(native_u16_t val)
+		{
+			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			{
+				return invert(val);
+			}
+			return network_u16_t(val);
+		}
+
+		[[nodiscard]] static network_u32_t toNetwork(native_u32_t val)
+		{
+			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			{
+				return invert(val);
+			}
+			return network_u32_t(val);
+		}
+
+		[[nodiscard]] static native_u16_t toNative(network_u16_t val)
+		{
+			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			{
+				return invert(val);
+			}
+			return native_u16_t(val);
+		}
+
+		[[nodiscard]] static native_u32_t toNative(network_u32_t val)
+		{
+			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			{
+				return invert(val);
+			}
+			return native_u32_t(val);
 		}
 	};
 }

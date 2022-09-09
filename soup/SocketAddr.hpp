@@ -7,17 +7,17 @@ namespace soup
 	struct SocketAddr
 	{
 		IpAddr ip;
-		uint16_t port;
+		network_u16_t port;
 
 		SocketAddr() noexcept = default;
 
-		explicit SocketAddr(const IpAddr& ip, uint16_t port)
+		explicit SocketAddr(const IpAddr& ip, network_u16_t port)
 			: ip(ip), port(port)
 		{
 		}
 
-		explicit SocketAddr(const std::string& ip, uint16_t port)
-			: ip(ip), port(port)
+		explicit SocketAddr(const IpAddr& ip, native_u16_t port)
+			: ip(ip), port(Endianness::toNetwork(port))
 		{
 		}
 

@@ -19,14 +19,9 @@ namespace soup
 		}
 	}
 
-	uint32_t IpAddr::getV4NativeEndian() const noexcept
+	native_u32_t IpAddr::getV4NativeEndian() const noexcept
 	{
-		auto v4 = getV4();
-		if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
-		{
-			v4 = Endianness::invert(getV4());
-		}
-		return v4;
+		return Endianness::toNative(getV4());
 	}
 
 	std::string IpAddr::getArpaName() const

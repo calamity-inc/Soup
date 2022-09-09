@@ -125,7 +125,7 @@ namespace soup
 			}
 			sockaddr_in sa{};
 			sa.sin_family = AF_INET;
-			sa.sin_port = htons(addr.port);
+			sa.sin_port = addr.port;
 			sa.sin_addr.s_addr = addr.ip.getV4();
 			if (::connect(fd, (sockaddr*)&sa, sizeof(sa)) == -1)
 			{
@@ -141,7 +141,7 @@ namespace soup
 			sockaddr_in6 sa{};
 			sa.sin6_family = AF_INET6;
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
-			sa.sin6_port = htons(addr.port);
+			sa.sin6_port = addr.port;
 			if (::connect(fd, (sockaddr*)&sa, sizeof(sa)) == -1)
 			{
 				return false;
@@ -152,7 +152,7 @@ namespace soup
 
 	bool Socket::connect(const IpAddr& ip, uint16_t port) noexcept
 	{
-		return connect(SocketAddr(ip, port));
+		return connect(SocketAddr(ip, native_u16_t(port)));
 	}
 
 	bool Socket::bind6(uint16_t port) noexcept
@@ -237,7 +237,7 @@ namespace soup
 		res.fd = ::accept(fd, (sockaddr*)&addr, &addrlen);
 		if (res.hasConnection())
 		{
-			res.peer.ip = addr.sin_addr.s_addr;
+			res.peer.ip = network_u32_t(addr.sin_addr.s_addr);
 			res.peer.port = addr.sin_port;
 		}
 		return res;
@@ -637,7 +637,7 @@ namespace soup
 
 	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
 	{
-		return udpClientSend(SocketAddr(ip, port), data);
+		return udpClientSend(SocketAddr(ip, native_u16_t(port)), data);
 	}
 
 	bool Socket::udpServerSend(const SocketAddr& addr, const std::string& data) noexcept
@@ -646,7 +646,7 @@ namespace soup
 		{
 			sockaddr_in sa{};
 			sa.sin_family = AF_INET;
-			sa.sin_port = htons(addr.port);
+			sa.sin_port = addr.port;
 			sa.sin_addr.s_addr = addr.ip.getV4();
 			if (::sendto(fd, data.data(), data.size(), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
 			{
@@ -658,7 +658,7 @@ namespace soup
 			sockaddr_in6 sa{};
 			sa.sin6_family = AF_INET6;
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
-			sa.sin6_port = htons(addr.port);
+			sa.sin6_port = addr.port;
 			if (::sendto(fd, data.data(), data.size(), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
 			{
 				return false;
@@ -669,7 +669,7 @@ namespace soup
 
 	bool Socket::udpServerSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
 	{
-		return udpServerSend(SocketAddr(ip, port), data);
+		return udpServerSend(SocketAddr(ip, native_u16_t(port)), data);
 	}
 
 	struct CaptureSocketRecv
@@ -722,12 +722,12 @@ namespace soup
 			if (sal == sizeof(sa))
 			{
 				sender.ip = IpAddr(reinterpret_cast<uint8_t*>(&sa.sin6_addr));
-				sender.port = ntohs(sa.sin6_port);
+				sender.port = network_u16_t(sa.sin6_port);
 			}
 			else
 			{
-				sender.ip = *reinterpret_cast<uint32_t*>(&reinterpret_cast<sockaddr_in*>(&sa)->sin_addr);
-				sender.port = ntohs(reinterpret_cast<sockaddr_in*>(&sa)->sin_port);
+				sender.ip = network_u32_t(*reinterpret_cast<uint32_t*>(&reinterpret_cast<sockaddr_in*>(&sa)->sin_addr));
+				sender.port = network_u16_t(reinterpret_cast<sockaddr_in*>(&sa)->sin_port);
 			}
 
 			cap.callback(reinterpret_cast<Socket&>(w), std::move(sender), std::move(data), std::move(cap.cap));

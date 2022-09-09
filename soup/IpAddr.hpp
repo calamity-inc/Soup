@@ -14,6 +14,8 @@
 #include <arpa/inet.h>
 #endif
 
+#include "Endian.hpp"
+
 namespace soup
 {
 	class IpAddr
@@ -59,17 +61,27 @@ namespace soup
 			memcpy(&data, bytes, sizeof(data));
 		}
 
-		explicit IpAddr(const uint32_t ipv4) noexcept // network byte order
+		explicit IpAddr(const network_u32_t ipv4) noexcept
+		{
+			operator =(ipv4);
+		}
+
+		explicit IpAddr(const native_u32_t ipv4) noexcept
 		{
 			operator =(ipv4);
 		}
 
 		bool fromString(const std::string& str);
 
-		void operator = (const uint32_t ipv4) noexcept // network byte order
+		void operator = (const network_u32_t ipv4) noexcept
 		{
 			maskToV4();
 			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
+		}
+
+		void operator = (const native_u32_t ipv4) noexcept
+		{
+			operator = (Endianness::toNetwork(ipv4));
 		}
 
 		[[nodiscard]] bool operator ==(const IpAddr& b) const noexcept
@@ -112,12 +124,12 @@ namespace soup
 			return IN6_IS_ADDR_V4MAPPED(&data);
 		}
 
-		[[nodiscard]] uint32_t getV4() const noexcept // network byte order
+		[[nodiscard]] network_u32_t getV4() const noexcept
 		{
-			return *reinterpret_cast<const uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
+			return *reinterpret_cast<const network_u32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
 
-		[[nodiscard]] uint32_t getV4NativeEndian() const noexcept;
+		[[nodiscard]] native_u32_t getV4NativeEndian() const noexcept;
 
 	private:
 		void maskToV4()
