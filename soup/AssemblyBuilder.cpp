@@ -20,7 +20,7 @@ namespace soup
 	{
 		uint8_t bytes[] = {
 			0x48, 0x83, 0xC4, 0x20, // add rsp, 20h
-			0x5D, // pop rsb
+			0x5D, // pop rbp
 		};
 		addBytes(bytes);
 		retn();
