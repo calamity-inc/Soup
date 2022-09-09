@@ -89,7 +89,11 @@ namespace soup
 		return ~checksum;
 	}
 
-#if SOUP_X86
+// Unfortunately, to use these intrinsics, we need to set the appropriate compiler flags.
+// However, setting these compiler flags tells the optimiser that it can go ahead and use these instructions
+// without first checking if the CPU supports them, like we do here, causing low-end users to be unable to our software at all.
+// So, this optimisation is not used by default, but you can define SOUP_I_RUN_THIS_SHIT_ON_GOOD_HARDWARE if you need it.
+#if SOUP_X86 && defined(SOUP_I_RUN_THIS_SHIT_ON_GOOD_HARDWARE)
 	static uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc)
 	{
 #ifdef _MSC_VER
@@ -130,7 +134,7 @@ namespace soup
 
 	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init)
 	{
-#if SOUP_X86
+#if SOUP_X86 && defined(SOUP_I_RUN_THIS_SHIT_ON_GOOD_HARDWARE)
 		const CpuInfo& cpu_info = CpuInfo::get();
 		if (cpu_info.supportsPCLMULQDQ()
 			&& cpu_info.supportsSSE4_1()
