@@ -2,6 +2,7 @@
 
 #include <map>
 
+#include "Canvas.hpp"
 #include "Exception.hpp"
 #include "math.hpp"
 #include "RasterFont.hpp"
@@ -115,6 +116,17 @@ namespace soup
 				}
 			}
 			text_x += (g.width + 1);
+		}
+	}
+
+	void RenderTarget::drawCanvas(unsigned int x, unsigned int y, Canvas& c)
+	{
+		for (unsigned int canvas_y = 0; canvas_y != c.height; ++canvas_y)
+		{
+			for (unsigned int canvas_x = 0; canvas_x != c.width; ++canvas_x)
+			{
+				drawPixel(x + canvas_x, y + canvas_y, c.get(canvas_x, canvas_y));
+			}
 		}
 	}
 
