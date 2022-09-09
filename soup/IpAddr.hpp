@@ -31,7 +31,7 @@ namespace soup
 			}
 			else
 			{
-				setV4();
+				maskToV4();
 				inet_pton(AF_INET, str, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
 			}
 		}
@@ -44,7 +44,7 @@ namespace soup
 			}
 			else
 			{
-				setV4();
+				maskToV4();
 				inet_pton(AF_INET, str.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
 			}
 		}
@@ -68,7 +68,7 @@ namespace soup
 
 		void operator = (const uint32_t ipv4) noexcept
 		{
-			setV4();
+			maskToV4();
 			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
 		}
 
@@ -120,7 +120,7 @@ namespace soup
 		[[nodiscard]] uint32_t getV4NativeEndian() const noexcept;
 
 	private:
-		void setV4()
+		void maskToV4()
 		{
 #if SOUP_WINDOWS
 			data.s6_words[0] = 0;

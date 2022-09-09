@@ -15,7 +15,7 @@ namespace soup
 		}
 		else
 		{
-			setV4();
+			maskToV4();
 			return inet_pton(AF_INET, str.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12)) == 1;
 		}
 	}
