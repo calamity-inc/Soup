@@ -8,7 +8,6 @@
 
 #include "CpuInfo.hpp"
 #include "Endian.hpp"
-#include "intutil.hpp"
 #include "Reader.hpp"
 
 namespace soup
@@ -78,7 +77,7 @@ namespace soup
 			}
 			else
 			{
-				v ^= intutil::invertEndianness(*data32);
+				v ^= Endianness::invert(*data32);
 			}
 			checksum = crc32_lookup4[0][v >> 24] ^ crc32_lookup4[1][(v >> 16) & 0xFF] ^ crc32_lookup4[2][(v >> 8) & 0xFF] ^ crc32_lookup4[3][v & 0xFF];
 		}

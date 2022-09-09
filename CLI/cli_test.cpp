@@ -37,7 +37,6 @@
 #include <StringMatch.hpp>
 
 #include <string.hpp>
-#include <intutil.hpp>
 
 #include <Rgb.hpp>
 
@@ -290,6 +289,14 @@ static void test_data()
 		tag = xml::parse(R"(<html lang="en">Hello</html>)"); assert(tag->encode() == R"(<html lang="en">Hello</html>)");
 		tag = xml::parse(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
 		tag = xml::parse(R"(<html><body><h1></body>test)"); assert(tag->encode() == R"(<html><body><h1></h1></body>test</html>)");
+	});
+
+	test("Endianness", []
+	{
+		assert(Endianness::invert((uint32_t)0x12345678u) == 0x78563412u);
+		assert(Endianness::invert((uint32_t)0x78563412u) == 0x12345678u);
+		assert(Endianness::invert((uint64_t)0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
+		assert(Endianness::invert((uint64_t)0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
 	});
 }
 
@@ -556,13 +563,6 @@ static void test_util()
 	test("bin2hex", []
 	{
 		assert(string::bin2hex("\x1\x2\x3") == "010203");
-	});
-	test("invertEndianness", []
-	{
-		assert(intutil::invertEndianness((uint32_t)0x12345678u) == 0x78563412u);
-		assert(intutil::invertEndianness((uint32_t)0x78563412u) == 0x12345678u);
-		assert(intutil::invertEndianness((uint64_t)0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
-		assert(intutil::invertEndianness((uint64_t)0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
 	});
 }
 

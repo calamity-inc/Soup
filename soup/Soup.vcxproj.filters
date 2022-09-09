@@ -680,9 +680,6 @@
     <ClInclude Include="algLcgRng.hpp">
       <Filter>algos\rand</Filter>
     </ClInclude>
-    <ClInclude Include="intutil.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="algMtRng.hpp">
       <Filter>algos\rand</Filter>
     </ClInclude>

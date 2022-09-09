@@ -437,7 +437,6 @@
     <ClInclude Include="Compiler.hpp" />
     <ClInclude Include="netIntel.hpp" />
     <ClInclude Include="Hotp.hpp" />
-    <ClInclude Include="intutil.hpp" />
     <ClInclude Include="JitModule.hpp" />
     <ClInclude Include="algLcgRng.hpp" />
     <ClInclude Include="lyoContainer.hpp" />

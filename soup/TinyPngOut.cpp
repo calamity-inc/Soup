@@ -8,7 +8,6 @@
 #include "adler32.hpp"
 #include "crc32.hpp"
 #include "Endian.hpp"
-#include "intutil.hpp"
 
 namespace soup
 {
@@ -203,7 +202,7 @@ namespace soup
 	{
 		if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 		{
-			*reinterpret_cast<uint32_t*>(&arr[0]) = intutil::invertEndianness(val);
+			*reinterpret_cast<uint32_t*>(&arr[0]) = Endianness::invert(val);
 		}
 		else
 		{

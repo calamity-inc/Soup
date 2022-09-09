@@ -1,6 +1,6 @@
 #include "algLcgRng.hpp"
 
-#include "intutil.hpp"
+#include "Endian.hpp"
 #include "time.hpp"
 
 namespace soup
@@ -16,6 +16,6 @@ namespace soup
 		state += increment;
 
 		// invert byte order since the higher-order bits have longer periods
-		return intutil::invertEndianness(state);
+		return Endianness::invert(state);
 	}
 }
