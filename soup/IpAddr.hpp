@@ -59,14 +59,14 @@ namespace soup
 			memcpy(&data, bytes, sizeof(data));
 		}
 
-		explicit IpAddr(const uint32_t ipv4) noexcept
+		explicit IpAddr(const uint32_t ipv4) noexcept // network byte order
 		{
 			operator =(ipv4);
 		}
 
 		bool fromString(const std::string& str);
 
-		void operator = (const uint32_t ipv4) noexcept
+		void operator = (const uint32_t ipv4) noexcept // network byte order
 		{
 			maskToV4();
 			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
