@@ -26,7 +26,7 @@ namespace soup
 
 		template <typename TR, typename TG, typename TB>
 		constexpr Rgb(TR r, TG g, TB b) noexcept
-			: r(r), g(g), b(b)
+			: r((uint8_t)r), g((uint8_t)g), b((uint8_t)b)
 		{
 		}
 
