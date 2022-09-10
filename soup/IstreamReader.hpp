@@ -16,11 +16,6 @@ namespace soup
 		{
 		}
 
-		IstreamReader(std::istream& is, bool little_endian)
-			: Reader(little_endian), is(is)
-		{
-		}
-
 		~IstreamReader() final = default;
 
 		bool hasMore() final

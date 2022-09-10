@@ -14,11 +14,6 @@ namespace soup
 		{
 		}
 
-		OstreamWriter(std::ostream& os, bool little_endian)
-			: Writer(little_endian), os(os)
-		{
-		}
-
 		~OstreamWriter() final = default;
 
 		void write(const char* data, size_t size) final
