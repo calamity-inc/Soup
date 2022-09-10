@@ -203,9 +203,6 @@
     <ClInclude Include="SocketTlsHandshaker.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="time.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="ec.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
@@ -725,9 +722,6 @@
     <ClInclude Include="StringBuilder.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
-    <ClInclude Include="Stopwatch.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="alpha2decodetbl.hpp">
       <Filter>algos</Filter>
     </ClInclude>
@@ -946,6 +940,12 @@
     </ClInclude>
     <ClInclude Include="deleter_impl.hpp">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="time.hpp">
+      <Filter>util\time</Filter>
+    </ClInclude>
+    <ClInclude Include="Stopwatch.hpp">
+      <Filter>util\time</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1400,9 +1400,6 @@
     <ClCompile Include="FactoriseProofOfWork.cpp">
       <Filter>crypto\proof_of_work</Filter>
     </ClCompile>
-    <ClCompile Include="time.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="CpuInfo.cpp">
       <Filter>cpu\x64</Filter>
     </ClCompile>
@@ -1414,6 +1411,9 @@
     </ClCompile>
     <ClCompile Include="InquiryObject.cpp">
       <Filter>lang\inquiry</Filter>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>util\time</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1581,6 +1581,9 @@
     </Filter>
     <Filter Include="bit">
       <UniqueIdentifier>{ac847a74-1be1-4a22-85b0-0868b78cd418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\time">
+      <UniqueIdentifier>{37497716-d60c-41ab-a70e-892939e68678}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
