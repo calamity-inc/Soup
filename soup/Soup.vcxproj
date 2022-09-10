@@ -602,7 +602,7 @@
     <ClInclude Include="szStoreCompressor.hpp" />
     <ClInclude Include="szUnicodeCompressor.hpp" />
     <ClInclude Include="Tempfile.hpp" />
-    <ClInclude Include="Timer.hpp" />
+    <ClInclude Include="Stopwatch.hpp" />
     <ClInclude Include="TlsServerRsaData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="console.hpp" />

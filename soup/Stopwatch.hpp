@@ -4,13 +4,13 @@
 
 namespace soup
 {
-	class Timer
+	class Stopwatch
 	{
 	private:
 		std::time_t started_at;
 
 	public:
-		inline Timer() noexcept
+		inline Stopwatch() noexcept
 		{
 			start();
 		}

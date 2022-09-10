@@ -737,7 +737,7 @@
     <ClInclude Include="StringBuilder.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.hpp">
+    <ClInclude Include="Stopwatch.hpp">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="alpha2decodetbl.hpp">
