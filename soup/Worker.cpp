@@ -6,6 +6,7 @@ namespace soup
 {
 	void Worker::operator=(Worker&& b) noexcept
 	{
+		is_socket = b.is_socket;
 		holdup_type = b.holdup_type;
 		holdup_callback = std::move(b.holdup_callback);
 		holdup_data = b.holdup_data;

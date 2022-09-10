@@ -38,6 +38,7 @@ namespace soup
 #endif
 
 	Socket::Socket() noexcept
+		: Worker(true)
 	{
 		onConstruct();
 	}

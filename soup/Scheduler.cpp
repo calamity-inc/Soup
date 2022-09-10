@@ -56,6 +56,13 @@ namespace soup
 	{
 		for (auto i = workers.begin(); i != workers.end(); )
 		{
+			if ((*i)->is_socket
+				&& reinterpret_cast<Socket*>(i->get())->fd == -1
+				)
+			{
+				onConnectionLoss(i);
+				continue;
+			}
 			if ((*i)->holdup_type == Worker::NONE)
 			{
 				if (on_work_done)
@@ -67,11 +74,6 @@ namespace soup
 			}
 			if ((*i)->holdup_type == Worker::SOCKET)
 			{
-				if (reinterpret_cast<Socket*>(i->get())->fd == -1)
-				{
-					onConnectionLoss(i);
-					continue;
-				}
 				pollfds.emplace_back(pollfd{
 					reinterpret_cast<Socket*>(i->get())->fd,
 					POLLIN

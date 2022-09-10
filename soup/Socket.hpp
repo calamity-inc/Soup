@@ -50,6 +50,7 @@ namespace soup
 		Socket(const Socket&) = delete;
 
 		Socket(Socket&& b) noexcept
+			: Worker(true)
 		{
 			onConstruct();
 			operator =(std::move(b));

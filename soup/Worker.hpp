@@ -19,10 +19,16 @@ namespace soup
 			PROMISE,
 		};
 
+		bool is_socket;
 		uint8_t recursions = 0;
 		HoldupType holdup_type = NONE;
 		Callback<void(Worker&)> holdup_callback;
 		void* holdup_data;
+
+		Worker(bool is_socket = false) noexcept
+			: is_socket(is_socket)
+		{
+		}
 
 		virtual ~Worker() = default;
 
