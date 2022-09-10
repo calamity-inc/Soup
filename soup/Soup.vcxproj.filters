@@ -503,18 +503,6 @@
     <ClInclude Include="RenderTargetWindow.hpp">
       <Filter>vis\render</Filter>
     </ClInclude>
-    <ClInclude Include="BigBitset.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="Bitset.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="bitmask.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="deleter_impl.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
     <ClInclude Include="base64.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
@@ -945,6 +933,18 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="Endian.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="BigBitset.hpp">
+      <Filter>bit</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmask.hpp">
+      <Filter>bit</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitset.hpp">
+      <Filter>bit</Filter>
+    </ClInclude>
+    <ClInclude Include="deleter_impl.hpp">
       <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1578,6 +1578,9 @@
     </Filter>
     <Filter Include="lang\inquiry">
       <UniqueIdentifier>{61df207c-2f95-45f7-8729-6453723815e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bit">
+      <UniqueIdentifier>{ac847a74-1be1-4a22-85b0-0868b78cd418}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
