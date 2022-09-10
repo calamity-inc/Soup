@@ -27,6 +27,7 @@ namespace soup
 		case 25369: // Hydra Communications Ltd
 		case 29485: // A1 Hrvatska d.o.o.
 		case 30083: // GoDaddy.com, LLC
+		case 26496: // GoDaddy.com, LLC
 		case 30736: // ASERGO Scandinavia ApS
 		case 34594: // OT - OPTIMA TELEKOM d.d.
 		case 35758: // Rachamim Aviel Twito trading as A.B INTERNET SOLUTIONS
@@ -48,6 +49,7 @@ namespace soup
 		case 51747: // Internet Vikings International AB
 		case 52423: // Data Miners S.A. ( Racknation.cr )
 		case 53013: // W I X NET DO BRASIL LTDA - ME
+		case 58182: // Wix.com Ltd.
 		case 53667: // FranTech Solutions
 		case 55664: // PT Inovasi Global Mumpuni
 		case 58065: // Packet Exchange Limited
@@ -78,6 +80,16 @@ namespace soup
 		case 213277: // ALMOUROLTEC SERVICOS DE INFORMATICA E INTERNET LDA
 		case 263702: // GRUPO ZGH SPA
 		case 268581: // QNAX LTDA
+		case 22612: // Namecheap, Inc.
+		case 8560: // IONOS SE
+		case 47846: // SEDO GmbH
+		case 46606: // Unified Layer
+		case 35916: // MULTACOM CORPORATION
+		case 3900: // SWITCH, LTD
+		case 53831: // Squarespace, Inc.
+		case 6724: // Strato AG
+		case 18779: // EGIHosting
+		case 32751: // Nuclearfallout Enterprises, Inc (NFO)
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
@@ -130,6 +142,15 @@ namespace soup
 			|| slug.find("contabo") != std::string::npos
 			|| slug.find("digitalocean") != std::string::npos
 			|| slug.find("amazon") != std::string::npos
+			|| slug.find("google") != std::string::npos
+			|| slug.find("akamai") != std::string::npos
+			|| slug.find("microsoft") != std::string::npos
+			|| slug.find("alibaba") != std::string::npos
+			|| slug.find("fastly") != std::string::npos
+			|| slug.find("linode") != std::string::npos
+			|| slug.find("aruba") != std::string::npos
+			|| slug.find("godaddy") != std::string::npos
+			|| slug.find("oracle") != std::string::npos
 			)
 		{
 			return true;
