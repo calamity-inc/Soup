@@ -16,6 +16,7 @@ namespace soup
 		{
 			NONE,
 			SOCKET,
+			IDLE, // call holdup callback whenever the scheduler has some idle time
 			PROMISE,
 		};
 

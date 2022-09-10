@@ -87,7 +87,11 @@ namespace soup
 					POLLIN
 				});
 
-				//if ((*i)->holdup_type == Worker::PROMISE)
+				if ((*i)->holdup_type == Worker::IDLE)
+				{
+					fireHoldupCallback(**i);
+				}
+				else // if ((*i)->holdup_type == Worker::PROMISE)
 				{
 					if (!reinterpret_cast<PromiseBase*>((*i)->holdup_data)->isPending())
 					{
