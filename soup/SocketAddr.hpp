@@ -35,7 +35,7 @@ namespace soup
 				str.push_back(']');
 			}
 			str.push_back(':');
-			str.append(std::to_string(port));
+			str.append(std::to_string(Endianness::toNative(port)));
 			return str;
 		}
 
