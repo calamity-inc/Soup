@@ -15,7 +15,7 @@ namespace soup
 			: Reader(endian), is(is)
 		{
 		}
-		
+
 		IstreamReader(std::istream* is, bool little_endian)
 			: Reader(little_endian), is(is)
 		{
