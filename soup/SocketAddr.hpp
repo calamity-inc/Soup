@@ -21,6 +21,11 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] native_u16_t getPort() const noexcept
+		{
+			return Endianness::toNative(port);
+		}
+
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			std::string str;
@@ -35,7 +40,7 @@ namespace soup
 				str.push_back(']');
 			}
 			str.push_back(':');
-			str.append(std::to_string(Endianness::toNative(port)));
+			str.append(std::to_string(getPort()));
 			return str;
 		}
 
