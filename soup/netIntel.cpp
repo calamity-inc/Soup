@@ -225,22 +225,20 @@ namespace soup
 
 	netAs* netIntel::getAsByIpv4(native_u32_t ip)
 	{
-		auto e = ipv4toas.find(ip);
-		if (e == nullptr)
+		if (auto e = ipv4toas.find(ip))
 		{
-			return nullptr;
+			return *e;
 		}
-		return *e;
+		return nullptr;
 	}
 
 	netAs* netIntel::getAsByIpv6(const IpAddr& addr)
 	{
-		auto e = ipv6toas.find(addr);
-		if (e == nullptr)
+		if (auto e = ipv6toas.find(addr))
 		{
-			return nullptr;
+			return *e;
 		}
-		return *e;
+		return nullptr;
 	}
 
 	netIntelLocationData* netIntel::getLocationByIp(const IpAddr& addr)
