@@ -7,14 +7,14 @@ namespace soup
 	class OstreamWriter final : public Writer
 	{
 	public:
-		std::ostream* os;
+		std::ostream& os;
 
-		OstreamWriter(std::ostream* os, Endian endian = LITTLE_ENDIAN)
+		OstreamWriter(std::ostream& os, Endian endian = LITTLE_ENDIAN)
 			: Writer(endian), os(os)
 		{
 		}
 
-		OstreamWriter(std::ostream* os, bool little_endian)
+		OstreamWriter(std::ostream& os, bool little_endian)
 			: Writer(little_endian), os(os)
 		{
 		}
@@ -23,7 +23,7 @@ namespace soup
 
 		void write(const char* data, size_t size) final
 		{
-			os->write(data, size);
+			os.write(data, size);
 		}
 	};
 }

@@ -39,7 +39,7 @@ namespace soup
 
 		bool read(std::istream& is, Endian endian = BIG_ENDIAN)
 		{
-			IstreamReader r(&is, endian);
+			IstreamReader r(is, endian);
 			return read(r);
 		}
 
@@ -68,7 +68,7 @@ namespace soup
 
 		bool write(std::ostream& os, Endian endian = BIG_ENDIAN)
 		{
-			OstreamWriter w(&os, endian);
+			OstreamWriter w(os, endian);
 			return write(w);
 		}
 

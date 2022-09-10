@@ -26,7 +26,7 @@ namespace soup
 			ret.path.reserve(2);
 			ret.path.push_back(first / 40);
 			ret.path.push_back(first % 40);
-			IstreamReader r(&s);
+			IstreamReader r(s);
 			while (r.hasMore())
 			{
 				uint32_t comp;

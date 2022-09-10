@@ -349,7 +349,7 @@ namespace soup
 		ret.type = (first & 0b11111);
 		if (ret.type > 30)
 		{
-			IstreamReader r(&s);
+			IstreamReader r(s);
 			r.om<uint32_t>(ret.type);
 		}
 		return ret;
