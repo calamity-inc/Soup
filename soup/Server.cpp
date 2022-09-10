@@ -136,7 +136,6 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
-			setDataAvailableHandler6(s);
 			cap.get<CaptureServerPort>().processAccept(s.accept6(), s.peer.port);
 		};
 	}
@@ -147,7 +146,6 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
-			setDataAvailableHandlerCrypto6(s);
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept6(), s.peer.port);
 		};
 	}
@@ -159,7 +157,6 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
-			setDataAvailableHandler4(s);
 			cap.get<CaptureServerPort>().processAccept(s.accept4(), s.peer.port);
 		};
 	}
@@ -170,7 +167,6 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
 			auto& s = reinterpret_cast<Socket&>(w);
-			setDataAvailableHandlerCrypto4(s);
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept4(), s.peer.port);
 		};
 	}

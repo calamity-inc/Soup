@@ -15,7 +15,6 @@ namespace soup
 	void Worker::fireHoldupCallback()
 	{
 		recursions = 0;
-		holdup_type = NONE;
 		holdup_callback(*this);
 	}
 
