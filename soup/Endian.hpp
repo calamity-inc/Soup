@@ -18,10 +18,11 @@ namespace soup
 		LITTLE_ENDIAN = true,
 		BIG_ENDIAN = false,
 #if SOUP_CPP20
-		NATIVE_ENDIAN = (std::endian::native == std::endian::little)
+		NATIVE_ENDIAN = (std::endian::native == std::endian::little),
 #else
-		NATIVE_ENDIAN = true
+		NATIVE_ENDIAN = true,
 #endif
+		NETWORK_ENDIAN = BIG_ENDIAN,
 	};
 
 	SOUP_INT_STRUCT(native_u16_t, uint16_t);
