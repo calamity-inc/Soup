@@ -44,11 +44,11 @@ namespace soup
 		[[nodiscard]] static netAs* getAsByNumber(uint32_t number) noexcept;
 
 		[[nodiscard]] static netAs* getAsByIp(const IpAddr& addr);
-		[[nodiscard]] static netAs* getAsByIpv4(uint32_t ip);
+		[[nodiscard]] static netAs* getAsByIpv4(native_u32_t ip);
 		[[nodiscard]] static netAs* getAsByIpv6(const IpAddr& addr);
 
 		[[nodiscard]] static netIntelLocationData* getLocationByIp(const IpAddr& addr);
-		[[nodiscard]] static netIntelLocationData* getLocationByIpv4(uint32_t ip);
+		[[nodiscard]] static netIntelLocationData* getLocationByIpv4(native_u32_t ip);
 		[[nodiscard]] static netIntelLocationData* getLocationByIpv6(const IpAddr& addr);
 	};
 }

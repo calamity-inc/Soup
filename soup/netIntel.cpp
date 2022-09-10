@@ -223,7 +223,7 @@ namespace soup
 			;
 	}
 
-	netAs* netIntel::getAsByIpv4(uint32_t ip)
+	netAs* netIntel::getAsByIpv4(native_u32_t ip)
 	{
 		auto e = ipv4toas.find(ip);
 		if (e == nullptr)
@@ -251,7 +251,7 @@ namespace soup
 			;
 	}
 	
-	netIntelLocationData* netIntel::getLocationByIpv4(uint32_t ip)
+	netIntelLocationData* netIntel::getLocationByIpv4(native_u32_t ip)
 	{
 		return ipv4tolocation.find(ip);
 	}
