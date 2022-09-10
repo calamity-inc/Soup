@@ -77,7 +77,7 @@ namespace soup
 				pollfds.emplace_back(pollfd{
 					reinterpret_cast<Socket*>(i->get())->fd,
 					POLLIN
-					});
+				});
 			}
 			else
 			{
@@ -85,7 +85,7 @@ namespace soup
 				pollfds.emplace_back(pollfd{
 					(Socket::fd_t)-1,
 					POLLIN
-					});
+				});
 
 				//if ((*i)->holdup_type == Worker::PROMISE)
 				{
