@@ -15,6 +15,9 @@
 #endif
 
 #include "Endian.hpp"
+#include "string.hpp"
+#include <regex>
+#include <iostream>
 
 namespace soup
 {
@@ -27,6 +30,8 @@ namespace soup
 
 		IpAddr(const char* str)
 		{
+			if (strcmp(str, "localhost") == 0) str = "127.0.0.1";
+
 			if (strstr(str, ".") == nullptr)
 			{
 				inet_pton(AF_INET6, str, &data);
@@ -38,8 +43,10 @@ namespace soup
 			}
 		}
 
-		IpAddr(const std::string& str)
+		IpAddr(std::string& str)
 		{
+			if (str == "localhost") str = std::string("127.0.0.1");
+
 			if (str.find('.') == std::string::npos)
 			{
 				inet_pton(AF_INET6, str.data(), &data);
@@ -173,6 +180,17 @@ namespace soup
 			char buf[INET6_ADDRSTRLEN] = { '\0' };
 			inet_ntop(AF_INET6, &data, buf, INET6_ADDRSTRLEN);
 			return buf;
+		}
+
+		[[nodiscard]] bool isPrivateIp() const noexcept
+		{
+			if (isV4())
+			{
+				auto v4 = toString4();
+				std::regex privateRangeRegexV4("^(127\\.)|(192\\.168\\.)|(10\\.)|(172\\.1[6-9]\\.)|(172\\.2[0-9]\\.)|(172\\.3[0-1]\\.)|(::1$)");
+				return regex_search(v4, privateRangeRegexV4);
+			}
+			return false;
 		}
 
 		[[nodiscard]] std::string getArpaName() const;
