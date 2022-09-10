@@ -10,7 +10,12 @@ namespace soup
 		std::string data;
 		size_t offset = 0;
 
-		StringReader(std::string data, bool little_endian = true)
+		StringReader(std::string data, Endian endian = LITTLE_ENDIAN)
+			: Reader(endian), data(std::move(data))
+		{
+		}
+		
+		StringReader(std::string data, bool little_endian)
 			: Reader(little_endian), data(std::move(data))
 		{
 		}

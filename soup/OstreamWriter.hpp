@@ -9,7 +9,12 @@ namespace soup
 	public:
 		std::ostream* os;
 
-		OstreamWriter(std::ostream* os, bool little_endian = true)
+		OstreamWriter(std::ostream* os, Endian endian = LITTLE_ENDIAN)
+			: Writer(endian), os(os)
+		{
+		}
+
+		OstreamWriter(std::ostream* os, bool little_endian)
 			: Writer(little_endian), os(os)
 		{
 		}
