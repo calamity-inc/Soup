@@ -125,6 +125,11 @@ namespace soup
 			|| slug.find("scale") != std::string::npos
 			|| slug.find("server") != std::string::npos
 			|| slug.find("vps") != std::string::npos
+			|| slug.find("hetzner") != std::string::npos
+			|| slug.find("ovh") != std::string::npos
+			|| slug.find("contabo") != std::string::npos
+			|| slug.find("digitalocean") != std::string::npos
+			|| slug.find("amazon") != std::string::npos
 			)
 		{
 			return true;
