@@ -45,29 +45,18 @@ namespace soup
 
 		IpAddr(const std::string& str)
 		{
-			std::string localhost;
-
-			if (str == "localhost")
+			std::string value = str;
+			
+			if (str == "localhost") value = "127.0.0.1";
+			
+			if (value.find('.') == std::string::npos)
 			{
-				std::string localhost = "127.0.0.1";
-				if (localhost.find('.') == std::string::npos)
-				{
-					inet_pton(AF_INET6, localhost.data(), &data);
-				}
-				else
-				{
-					maskToV4();
-					inet_pton(AF_INET, localhost.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
-				}
-			}
-			if (str.find('.') == std::string::npos)
-			{
-				inet_pton(AF_INET6, str.data(), &data);
+				inet_pton(AF_INET6, value.data(), &data);
 			}
 			else
 			{
 				maskToV4();
-				inet_pton(AF_INET, str.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
+				inet_pton(AF_INET, value.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
 			}
 		}
 
