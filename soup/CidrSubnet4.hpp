@@ -21,7 +21,7 @@ namespace soup
 		{
 		}
 
-		constexpr CidrSubnet4(const IpAddr& addr, uint8_t size) noexcept
+		CidrSubnet4(const IpAddr& addr, uint8_t size) noexcept
 			: CidrSubnet4(addr.getV4NativeEndian(), size)
 		{
 		}
