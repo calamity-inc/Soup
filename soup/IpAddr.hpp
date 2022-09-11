@@ -16,14 +16,26 @@
 
 #include "Endian.hpp"
 
+#define SOUP_IPV4(a, b, c, d) ::soup::native_u32_t((a << 24) | (b << 16) | (c << 8) | d)
+
 namespace soup
 {
 	class IpAddr
 	{
 	public:
-		in6_addr data;
+		union
+		{
+			in6_addr data;
+			uint64_t longs[2];
+			uint32_t ints[4];
+			uint16_t shorts[8]; // <- constexpr
+			uint8_t bytes[16];
+		};
 
-		IpAddr() noexcept = default;
+		constexpr IpAddr() noexcept
+			: shorts{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		{
+		}
 
 		IpAddr(const char* str)
 		{
@@ -51,14 +63,76 @@ namespace soup
 			}
 		}
 
-		IpAddr(const IpAddr& b) noexcept
+		constexpr IpAddr(const IpAddr& b) noexcept
+			: IpAddr(b.shorts)
 		{
-			memcpy(&data, &b.data, sizeof(data));
+		}
+
+		explicit IpAddr(const uint32_t* ints) noexcept
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				this->ints[i] = ints[i];
+			}
+		}
+
+		explicit constexpr IpAddr(const uint16_t* shorts) noexcept
+			: shorts{ shorts[0], shorts[1], shorts[2], shorts[3], shorts[4], shorts[5], shorts[6], shorts[7] }
+		{
 		}
 
 		explicit IpAddr(const uint8_t* bytes) noexcept
 		{
-			memcpy(&data, bytes, sizeof(data));
+			for (auto i = 0; i != 16; ++i)
+			{
+				this->bytes[i] = bytes[i];
+			}
+		}
+
+		explicit constexpr IpAddr(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f, uint8_t g, uint8_t h, uint8_t i, uint8_t j, uint8_t k, uint8_t l, uint8_t m, uint8_t n, uint8_t o, uint8_t p)
+			: IpAddr(
+				native_u16_t(((uint16_t)a << 8) | b),
+				native_u16_t(((uint16_t)c << 8) | d),
+				native_u16_t(((uint16_t)e << 8) | f),
+				native_u16_t(((uint16_t)g << 8) | h),
+				native_u16_t(((uint16_t)i << 8) | j),
+				native_u16_t(((uint16_t)k << 8) | l),
+				native_u16_t(((uint16_t)m << 8) | n),
+				native_u16_t(((uint16_t)o << 8) | p)
+			)
+		{
+		}
+
+		explicit constexpr IpAddr(native_u16_t a, native_u16_t b, native_u16_t c, native_u16_t d, native_u16_t e, native_u16_t f, native_u16_t g, native_u16_t h)
+			: shorts{
+				Endianness::toNetwork(a).data,
+				Endianness::toNetwork(b).data,
+				Endianness::toNetwork(c).data,
+				Endianness::toNetwork(d).data,
+				Endianness::toNetwork(e).data,
+				Endianness::toNetwork(f).data,
+				Endianness::toNetwork(g).data,
+				Endianness::toNetwork(h).data
+			}
+		{
+		}
+
+		explicit constexpr IpAddr(native_u32_t a, native_u32_t b, native_u32_t c, native_u32_t d)
+			: IpAddr(
+				native_u16_t(a), native_u16_t(a >> 16),
+				native_u16_t(b), native_u16_t(b >> 16),
+				native_u16_t(c), native_u16_t(c >> 16),
+				native_u16_t(d), native_u16_t(d >> 16)
+			)
+		{
+		}
+
+		explicit constexpr IpAddr(native_u64_t hi, native_u64_t lo)
+			: IpAddr(
+				native_u32_t((uint32_t)hi), native_u32_t(hi >> 32),
+				native_u32_t((uint32_t)lo), native_u32_t(lo >> 32)
+			)
+		{
 		}
 
 		explicit IpAddr(const network_u32_t ipv4) noexcept
@@ -119,6 +193,10 @@ namespace soup
 			memset(&data, 0, sizeof(data));
 		}
 
+		[[nodiscard]] bool isLoopback() const noexcept;
+		[[nodiscard]] bool isPrivate() const noexcept;
+		[[nodiscard]] bool isLocalnet() const noexcept; // Loopback or private network?
+
 		[[nodiscard]] bool isV4() const noexcept
 		{
 			return IN6_IS_ADDR_V4MAPPED(&data);
@@ -134,21 +212,12 @@ namespace soup
 	private:
 		void maskToV4()
 		{
-#if SOUP_WINDOWS
-			data.s6_words[0] = 0;
-			data.s6_words[1] = 0;
-			data.s6_words[2] = 0;
-			data.s6_words[3] = 0;
-			data.s6_words[4] = 0;
-			data.s6_words[5] = 0xffff;
-#else
-			data.s6_addr16[0] = 0;
-			data.s6_addr16[1] = 0;
-			data.s6_addr16[2] = 0;
-			data.s6_addr16[3] = 0;
-			data.s6_addr16[4] = 0;
-			data.s6_addr16[5] = 0xffff;
-#endif
+			shorts[0] = 0;
+			shorts[1] = 0;
+			shorts[2] = 0;
+			shorts[3] = 0;
+			shorts[4] = 0;
+			shorts[5] = 0xffff;
 		}
 
 	public:
@@ -179,4 +248,5 @@ namespace soup
 		[[nodiscard]] std::string getReverseDns() const;
 		[[nodiscard]] std::string getReverseDns(dnsResolver& resolver) const;
 	};
+	static_assert(sizeof(IpAddr) == 16);
 }

@@ -2,6 +2,7 @@
 
 #include "dnsOsResolver.hpp"
 #include "Endian.hpp"
+#include "IpGroups.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -17,6 +18,24 @@ namespace soup
 			maskToV4();
 			return inet_pton(AF_INET, str.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12)) == 1;
 		}
+	}
+
+	bool IpAddr::isLoopback() const noexcept
+	{
+		return isV4()
+			? IpGroups::v4_loopback.contains(*this)
+			: IpGroups::v6_loopback.contains(*this)
+			;
+	}
+
+	bool IpAddr::isPrivate() const noexcept
+	{
+		return isV4() && IpGroups::v4_private_network.contains(*this);
+	}
+
+	bool IpAddr::isLocalnet() const noexcept
+	{
+		return isLoopback() || isPrivate();
 	}
 
 	native_u32_t IpAddr::getV4NativeEndian() const noexcept

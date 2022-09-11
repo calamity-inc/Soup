@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cstdint>
+
 namespace soup
 {
 	struct bitmask
 	{
 		template <typename T>
-		[[nodiscard]] static constexpr T generateLo(uint8_t width)
+		[[nodiscard]] static constexpr T generateLo(uint8_t width) noexcept
 		{
 			constexpr auto T_width = (sizeof(T) * 8);
 			if (width == T_width)
@@ -21,8 +23,12 @@ namespace soup
 		}
 
 		template <typename T>
-		[[nodiscard]] static constexpr T generateHi(uint8_t width)
+		[[nodiscard]] static constexpr T generateHi(uint8_t width) noexcept
 		{
+			if (width == 0)
+			{
+				return 0;
+			}
 			constexpr auto T_width = (sizeof(T) * 8);
 			if (width == T_width)
 			{
@@ -37,8 +43,10 @@ namespace soup
 		}
 	};
 
+	static_assert(bitmask::generateLo<uint32_t>(0) == 0);
 	static_assert(bitmask::generateLo<uint32_t>(22) == 0b1111111111111111111111);
 	static_assert(bitmask::generateLo<uint64_t>(22) == 0b1111111111111111111111);
 
+	static_assert(bitmask::generateHi<uint32_t>(0) == 0);
 	static_assert(bitmask::generateHi<uint32_t>(22) == 0b11111111111111111111110000000000);
 }

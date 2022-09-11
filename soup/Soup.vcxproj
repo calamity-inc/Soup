@@ -403,6 +403,9 @@
     <ClInclude Include="alpha2decodetbl.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
+    <ClInclude Include="CidrSubnet4.hpp" />
+    <ClInclude Include="CidrSubnet6.hpp" />
+    <ClInclude Include="CidrSupernet.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
@@ -423,6 +426,8 @@
     <ClInclude Include="InquiryLang.hpp" />
     <ClInclude Include="InquiryObject.hpp" />
     <ClInclude Include="IntStruct.hpp" />
+    <ClInclude Include="IpGroups.hpp" />
+    <ClInclude Include="Ipv6Maths.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="netAs.hpp" />
@@ -733,6 +738,7 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="CidrSubnet6.cpp" />
     <ClCompile Include="CpuInfo.cpp" />
     <ClCompile Include="dnsHttpResolver.cpp" />
     <ClCompile Include="dnsName.cpp" />

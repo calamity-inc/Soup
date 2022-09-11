@@ -14,6 +14,11 @@ namespace soup
 		{
 		}
 
+		constexpr IntStruct(const IntStruct& b) noexcept
+			: data(b.data)
+		{
+		}
+
 		constexpr void operator =(IntT val) noexcept
 		{
 			data = val;

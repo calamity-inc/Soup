@@ -947,6 +947,21 @@
     <ClInclude Include="Stopwatch.hpp">
       <Filter>util\time</Filter>
     </ClInclude>
+    <ClInclude Include="CidrSubnet6.hpp">
+      <Filter>net\cidr</Filter>
+    </ClInclude>
+    <ClInclude Include="Ipv6Maths.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnet4.hpp">
+      <Filter>net\cidr</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSupernet.hpp">
+      <Filter>net\cidr</Filter>
+    </ClInclude>
+    <ClInclude Include="IpGroups.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1415,6 +1430,9 @@
     <ClCompile Include="time.cpp">
       <Filter>util\time</Filter>
     </ClCompile>
+    <ClCompile Include="CidrSubnet6.cpp">
+      <Filter>net\cidr</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1584,6 +1602,9 @@
     </Filter>
     <Filter Include="util\time">
       <UniqueIdentifier>{37497716-d60c-41ab-a70e-892939e68678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\cidr">
+      <UniqueIdentifier>{b4da67f7-29fa-47e4-817e-f7158a905b69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

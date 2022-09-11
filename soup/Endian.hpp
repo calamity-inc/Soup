@@ -27,14 +27,16 @@ namespace soup
 
 	SOUP_INT_STRUCT(native_u16_t, uint16_t);
 	SOUP_INT_STRUCT(native_u32_t, uint32_t);
+	SOUP_INT_STRUCT(native_u64_t, uint64_t);
 	SOUP_INT_STRUCT(network_u16_t, uint16_t);
 	SOUP_INT_STRUCT(network_u32_t, uint32_t);
+	SOUP_INT_STRUCT(network_u64_t, uint64_t);
 
 	struct Endianness
 	{
 		// C++23 will add std::byteswap
 
-		[[nodiscard]] static constexpr uint16_t invert(uint16_t val)
+		[[nodiscard]] static constexpr uint16_t invert(uint16_t val) noexcept
 		{
 #if defined(__GNUC__) || defined(__clang__)
 			return __builtin_bswap16(val);
@@ -43,7 +45,7 @@ namespace soup
 #endif
 		}
 		
-		[[nodiscard]] static constexpr uint32_t invert(uint32_t val)
+		[[nodiscard]] static constexpr uint32_t invert(uint32_t val) noexcept
 		{
 #if defined(__GNUC__) || defined(__clang__)
 			return __builtin_bswap32(val);
@@ -56,7 +58,7 @@ namespace soup
 #endif
 		}
 
-		[[nodiscard]] static constexpr uint64_t invert(uint64_t val)
+		[[nodiscard]] static constexpr uint64_t invert(uint64_t val) noexcept
 		{
 #if defined(__GNUC__) || defined(__clang__)
 			return __builtin_bswap64(val);
@@ -73,40 +75,58 @@ namespace soup
 #endif
 		}
 
-		[[nodiscard]] static network_u16_t toNetwork(native_u16_t val)
+		[[nodiscard]] static constexpr network_u16_t toNetwork(native_u16_t val) noexcept
 		{
 			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 			{
-				return invert(val);
+				return invert(val.data);
 			}
-			return network_u16_t(val);
+			return network_u16_t(val.data);
 		}
 
-		[[nodiscard]] static network_u32_t toNetwork(native_u32_t val)
+		[[nodiscard]] static constexpr network_u32_t toNetwork(native_u32_t val) noexcept
 		{
 			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 			{
-				return invert(val);
+				return invert(val.data);
 			}
-			return network_u32_t(val);
+			return network_u32_t(val.data);
 		}
 
-		[[nodiscard]] static native_u16_t toNative(network_u16_t val)
+		[[nodiscard]] static constexpr network_u64_t toNetwork(native_u64_t val) noexcept
 		{
 			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 			{
-				return invert(val);
+				return invert(val.data);
 			}
-			return native_u16_t(val);
+			return network_u64_t(val.data);
 		}
 
-		[[nodiscard]] static native_u32_t toNative(network_u32_t val)
+		[[nodiscard]] static constexpr native_u16_t toNative(network_u16_t val) noexcept
 		{
 			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 			{
-				return invert(val);
+				return invert(val.data);
 			}
-			return native_u32_t(val);
+			return native_u16_t(val.data);
+		}
+
+		[[nodiscard]] static constexpr native_u32_t toNative(network_u32_t val) noexcept
+		{
+			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			{
+				return invert(val.data);
+			}
+			return native_u32_t(val.data);
+		}
+
+		[[nodiscard]] static constexpr native_u64_t toNative(network_u64_t val) noexcept
+		{
+			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			{
+				return invert(val.data);
+			}
+			return native_u64_t(val.data);
 		}
 	};
 }
