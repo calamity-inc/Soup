@@ -90,6 +90,7 @@ namespace soup
 		case 6724: // Strato AG
 		case 18779: // EGIHosting
 		case 32751: // Nuclearfallout Enterprises, Inc (NFO)
+		case 206092: // IPXO Limited (Bandito Networks Inc)	
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
