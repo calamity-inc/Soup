@@ -91,6 +91,7 @@ namespace soup
 		case 18779: // EGIHosting
 		case 32751: // Nuclearfallout Enterprises, Inc (NFO)
 		case 206092: // IPXO Limited (Bandito Networks Inc), related to Express VPN
+		case 36352: // ColoCrossing
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
@@ -126,7 +127,8 @@ namespace soup
 		slug.append(name);
 		string::lower(slug);
 		if (slug.find("cdn") != std::string::npos
-			|| slug.find("colo") != std::string::npos // AS36352 ColoCrossing, AS48950 GLOBAL COLOCATION LIMITED
+			|| slug.find("colocation") != std::string::npos // AS48950 GLOBAL COLOCATION LIMITED
+			// Note: Not "colo" because "Telmex Colombia S.A."
 			|| slug.find("cloud") != std::string::npos // AS39845 2 Cloud Ltd.
 			|| slug.find("datacenter") != std::string::npos
 			|| slug.find("data center") != std::string::npos
