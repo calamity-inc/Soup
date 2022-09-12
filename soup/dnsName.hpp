@@ -68,6 +68,6 @@ namespace soup
 			return true;
 		}
 
-		[[nodiscard]] std::vector<std::string> resolve(const std::string& data) const;
+		[[nodiscard]] std::vector<std::string> resolve(const std::string& data, unsigned int max_recursions = 20) const;
 	};
 }
