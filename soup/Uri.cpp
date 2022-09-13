@@ -26,6 +26,10 @@ namespace soup
 			if (authority_ends == std::string::npos)
 			{
 				authority_ends = uri.find('?');
+				if (authority_ends == std::string::npos)
+				{
+					authority_ends = uri.find('#');
+				}
 			}
 
 			auto userinfo_sep = uri.find('@');

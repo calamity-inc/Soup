@@ -546,6 +546,18 @@ static void test_uri()
 	assert(uri.query == "q=Soup");
 	assert(uri.fragment == "");
 	assert(uri.toString() == str);
+
+	str = "https://google.com#q=Soup";
+	uri = Uri(str);
+	assert(uri.scheme == "https");
+	assert(uri.host == "google.com");
+	assert(uri.port == 0);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "");
+	assert(uri.query == "");
+	assert(uri.fragment == "q=Soup");
+	assert(uri.toString() == str);
 }
 
 static void test_util_string()
