@@ -17,8 +17,12 @@ namespace soup
 	}
 
 	template <typename T>
-	[[nodiscard]] constexpr T pow(T a, T b) // b must be > 0
+	[[nodiscard]] constexpr T pow(T a, T b) // b must be >= 0
 	{
+		if (b == 0)
+		{
+			return 1;
+		}
 		T res = a;
 		while (--b)
 		{
