@@ -1,6 +1,6 @@
 # Soup
 
-For when one standard library is not enough.
+The swiss army knife for C++ programmers with a focus on being compatible & bindable.
 
 ## Getting Started
 
