@@ -522,6 +522,18 @@ static void test_uri()
 	assert(uri.query == "arg=value");
 	assert(uri.fragment == "anchor");
 	assert(uri.toString() == str);
+
+	str = "https://web-safety.net/..;@www.google.com:%3443/";
+	uri = Uri(str);
+	assert(uri.scheme == "https");
+	assert(uri.host == "web-safety.net");
+	assert(uri.port == 0);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "/..;@www.google.com:%3443/");
+	assert(uri.query == "");
+	assert(uri.fragment == "");
+	assert(uri.toString() == str);
 }
 
 static void test_util_string()

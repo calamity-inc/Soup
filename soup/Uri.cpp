@@ -22,11 +22,17 @@ namespace soup
 		{
 			uri.erase(0, 2);
 
+			size_t authority_ends = uri.find('/');
+			if (authority_ends == std::string::npos)
+			{
+				authority_ends = uri.find('?');
+			}
+
 			auto userinfo_sep = uri.find('@');
-			if (userinfo_sep != std::string::npos)
+			if (userinfo_sep < authority_ends)
 			{
 				auto pass_sep = uri.find(':');
-				if (pass_sep != std::string::npos)
+				if (pass_sep < authority_ends)
 				{
 					user = uri.substr(0, pass_sep);
 					pass = uri.substr((pass_sep + 1), userinfo_sep - (pass_sep + 1));
@@ -40,7 +46,7 @@ namespace soup
 			}
 
 			auto port_sep = uri.find(':');
-			if (port_sep != std::string::npos)
+			if (port_sep < authority_ends)
 			{
 				host = uri.substr(0, port_sep);
 				const char* pPort = &uri.at(port_sep + 1);
