@@ -57,18 +57,9 @@ namespace soup
 			}
 			else
 			{
-				auto path_sep = uri.find('/');
-				if (path_sep != std::string::npos)
-				{
-					host = uri.substr(0, path_sep);
+				host = uri.substr(0, authority_ends);
 
-					uri.erase(0, path_sep);
-				}
-				else
-				{
-					host = std::move(uri);
-					return;
-				}
+				uri.erase(0, authority_ends);
 			}
 		}
 
