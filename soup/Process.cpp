@@ -4,8 +4,8 @@
 
 #include <TlHelp32.h>
 
-#include "Module.hpp"
 #include "HandleRaii.hpp"
+#include "Module.hpp"
 
 namespace soup
 {
