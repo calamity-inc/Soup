@@ -10,6 +10,11 @@ namespace soup
 {
 	struct StructMap : public std::unordered_map<uint32_t, Capture>
 	{
+		[[nodiscard]] bool containsImpl(uint32_t id) const noexcept
+		{
+			return find(id) != end();
+		}
+
 		template <typename T>
 		[[nodiscard]] T& getImpl(uint32_t id)
 		{
@@ -29,6 +34,7 @@ namespace soup
 			}
 		}
 
+#define isStructInMap(T) containsImpl(::soup::joaat::hash(#T))
 #define addStructToMap(T, inst) emplace(::soup::joaat::hash(#T), inst); static_assert(std::is_same_v<T, decltype(inst)>)
 #define getStructFromMap(T) getImpl<T>(::soup::joaat::hash(#T))
 #define getStructFromMapConst(T) at(::soup::joaat::hash(#T)).get<T>()
