@@ -112,7 +112,10 @@ namespace soup
 	size_t Module::externalWrite(Pointer p, const void* data, size_t size) const noexcept
 	{
 		SIZE_T written = 0;
+		DWORD oldprotect;
+		VirtualProtectEx(*h, p.as<void*>(), size, PAGE_EXECUTE_READWRITE, &oldprotect);
 		WriteProcessMemory(*h, p.as<void*>(), data, size, &written);
+		VirtualProtectEx(*h, p.as<void*>(), size, oldprotect, &oldprotect);
 		return written;
 	}
 
