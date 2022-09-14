@@ -61,7 +61,7 @@ namespace soup
 
 	size_t Module::externalRead(Pointer p, void* out, size_t size) const noexcept
 	{
-		SIZE_T read;
+		SIZE_T read = 0;
 		ReadProcessMemory(*h, p.as<void*>(), out, size, &read);
 		return read;
 	}
@@ -111,7 +111,7 @@ namespace soup
 
 	size_t Module::externalWrite(Pointer p, const void* data, size_t size) const noexcept
 	{
-		SIZE_T written;
+		SIZE_T written = 0;
 		WriteProcessMemory(*h, p.as<void*>(), data, size, &written);
 		return written;
 	}
