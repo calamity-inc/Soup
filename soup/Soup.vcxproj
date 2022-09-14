@@ -481,6 +481,7 @@
     <ClInclude Include="SharedPtr.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
     <ClInclude Include="StringRefWriter.hpp" />
+    <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TinyPngOut.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
