@@ -67,7 +67,7 @@ namespace soup
 			{
 				do
 				{
-					if (this->name == entry.szModule)
+					if (this->id == entry.th32ProcessID)
 					{
 						return std::make_shared<Module>(make_unique<HandleRaii>(OpenProcess(desired_access, FALSE, id)), Range(entry.modBaseAddr, entry.modBaseSize));
 					}
