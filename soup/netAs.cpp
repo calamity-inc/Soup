@@ -146,7 +146,7 @@ namespace soup
 			|| slug.find("contabo") != std::string::npos
 			|| slug.find("digitalocean") != std::string::npos
 			|| slug.find("amazon") != std::string::npos
-			|| slug.find("google") != std::string::npos
+			|| slug.find("google llc") != std::string::npos // added LLC to prevent detection of "Google Fiber Inc"
 			|| slug.find("akamai") != std::string::npos
 			|| slug.find("microsoft") != std::string::npos
 			|| slug.find("alibaba") != std::string::npos
