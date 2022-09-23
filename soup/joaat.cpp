@@ -29,6 +29,18 @@ namespace soup
 		return best_c;
 	}
 
+	uint32_t joaat::deriveInitial(uint32_t val, const std::string& str)
+	{
+		undo_finalise(val);
+		for (auto i = str.crbegin(); i != str.crend(); ++i)
+		{
+			undo_partial(val);
+			val -= *i;
+		}
+		finalise(val);
+		return val;
+	}
+
 	std::optional<std::string> joaat::reverse_short_key(uint32_t val)
 	{
 		undo_finalise(val);
