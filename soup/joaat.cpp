@@ -13,6 +13,12 @@ namespace soup
 		return val;
 	}
 
+	uint32_t joaat::concat(uint32_t val, const std::string& str) noexcept
+	{
+		undo_finalise(val);
+		return hash(str, val);
+	}
+
 	[[nodiscard]] static char joaat_find_last_char(uint32_t val)
 	{
 		char best_c = 0;

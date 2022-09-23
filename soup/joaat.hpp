@@ -9,6 +9,7 @@ namespace soup
 	struct joaat
 	{
 		[[nodiscard]] static uint32_t hash(const std::string& str, uint32_t initial = 0) noexcept;
+		[[nodiscard]] static uint32_t concat(uint32_t val, const std::string& str) noexcept;
 
 		[[nodiscard]] static constexpr uint32_t hash(const char* str) noexcept
 		{
