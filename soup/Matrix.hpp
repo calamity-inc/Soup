@@ -10,7 +10,18 @@ namespace soup
 	class Matrix
 	{
 	public:
-		float mf[16];
+		union
+		{
+			float mf[16];
+			struct
+			{
+				float rotation[12];
+				float x;
+				float y;
+				float z;
+				float w;
+			};
+		};
 
 		Matrix() noexcept;
 		Matrix(const Vector3& pos, const Vector3& rot) noexcept;
@@ -21,6 +32,9 @@ namespace soup
 
 		void reset() noexcept; // set to identity
 		void null() noexcept; // set to all-zero
+
+		[[nodiscard]] bool operator==(const Matrix& b) const noexcept;
+		[[nodiscard]] bool operator!=(const Matrix& b) const noexcept;
 
 		[[nodiscard]] Matrix operator* (const Matrix& InM) const noexcept;
 		void operator*= (const Matrix& InM) noexcept;
@@ -39,9 +53,10 @@ namespace soup
 		void setRotationY(float angle) noexcept;
 		void setRotationZ(float angle) noexcept;
 
+	public:
+		void scale(float f) noexcept;
 		void scale(float sx, float sy, float sz) noexcept;
 
-	public:
 		void translate(const Vector3& test);
 		[[nodiscard]] Vector3 getTranslate() const noexcept;
 		void setTranslate(const Vector3& b) noexcept;

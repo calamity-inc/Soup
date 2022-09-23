@@ -1,5 +1,7 @@
 #include "Matrix.hpp"
 
+#include <cstring> // memcmp
+
 #include "Quaternion.hpp"
 #include "math.hpp"
 #include "Vector3.hpp"
@@ -54,6 +56,16 @@ namespace soup
 		mf[4] = 0.0f;	mf[5] = 0.0f;	mf[6] = 0.0f;	mf[7] = 0.0f;
 		mf[8] = 0.0f;	mf[9] = 0.0f;	mf[10] = 0.0f;	mf[11] = 0.0f;
 		mf[12] = 0.0f;	mf[13] = 0.0f;	mf[14] = 0.0f;	mf[15] = 0.0f;
+	}
+
+	bool Matrix::operator==(const Matrix& b) const noexcept
+	{
+		return memcmp(mf, b.mf, sizeof(mf)) == 0;
+	}
+
+	bool Matrix::operator!=(const Matrix& b) const noexcept
+	{
+		return !operator==(b);
 	}
 
 	Matrix Matrix::operator*(const Matrix& InM) const noexcept
@@ -163,17 +175,25 @@ namespace soup
 		mf[5] = cosf(DEG_TO_RAD(angle));
 	}
 
+	void Matrix::scale(float f) noexcept
+	{
+		for (int x = 0; x != 12; ++x)
+		{
+			mf[x] *= f;
+		}
+	}
+
 	void Matrix::scale(float sx, float sy, float sz) noexcept
 	{
-		for (int x = 0; x < 4; x++)
+		for (int x = 0; x != 4; ++x)
 		{
 			mf[x] *= sx;
 		}
-		for (int x = 4; x < 8; x++)
+		for (int x = 4; x != 8; ++x)
 		{
 			mf[x] *= sy;
 		}
-		for (int x = 8; x < 12; x++)
+		for (int x = 8; x != 12; ++x)
 		{
 			mf[x] *= sz;
 		}
