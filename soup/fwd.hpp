@@ -75,10 +75,17 @@ namespace soup
 	template <typename T> class SharedPtr;
 	template <typename T> class UniquePtr;
 	struct VirtualRegion;
-	
+
 	// mem.alloc
 	struct AllocRaiiLocalBase;
 	struct AllocRaiiRemote;
+
+	// mem.vft
+	struct memVft;
+	namespace rtti
+	{
+		struct object;
+	}
 
 	// net
 	class IpAddr;

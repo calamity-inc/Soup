@@ -430,6 +430,8 @@
     <ClInclude Include="Ipv6Maths.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
+    <ClInclude Include="memObject.hpp" />
+    <ClInclude Include="memVft.hpp" />
     <ClInclude Include="netAs.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />
@@ -752,6 +754,8 @@
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="InquiryObject.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
+    <ClCompile Include="memObject.cpp" />
+    <ClCompile Include="memVft.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
     <ClCompile Include="X509Certchain.cpp" />

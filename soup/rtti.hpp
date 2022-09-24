@@ -55,7 +55,7 @@ namespace soup::rtti
 		uint32_t hierarchy_info_rva;
 		uint32_t this_rva;
 
-		[[nodiscard]] static object* fromVftable(void** vftable) noexcept;
+		[[nodiscard]] static object* fromVft(void** vftable) noexcept;
 		[[nodiscard]] static object* fromInstance(const void* inst) noexcept;
 
 		[[nodiscard]] uintptr_t getImageBase() const noexcept;

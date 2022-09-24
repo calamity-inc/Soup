@@ -108,9 +108,6 @@
     <ClInclude Include="BitPointer.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="rtti.hpp">
-      <Filter>mem</Filter>
-    </ClInclude>
     <ClInclude Include="sha1.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
@@ -965,6 +962,15 @@
     <ClInclude Include="Timer.hpp">
       <Filter>util\time</Filter>
     </ClInclude>
+    <ClInclude Include="memObject.hpp">
+      <Filter>mem\vft</Filter>
+    </ClInclude>
+    <ClInclude Include="memVft.hpp">
+      <Filter>mem\vft</Filter>
+    </ClInclude>
+    <ClInclude Include="rtti.hpp">
+      <Filter>mem\vft</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -999,9 +1005,6 @@
     </ClCompile>
     <ClCompile Include="rsa.cpp">
       <Filter>crypto</Filter>
-    </ClCompile>
-    <ClCompile Include="rtti.cpp">
-      <Filter>mem</Filter>
     </ClCompile>
     <ClCompile Include="sha1.cpp">
       <Filter>data\hash</Filter>
@@ -1436,6 +1439,15 @@
     <ClCompile Include="CidrSubnet6.cpp">
       <Filter>net\cidr</Filter>
     </ClCompile>
+    <ClCompile Include="rtti.cpp">
+      <Filter>mem\vft</Filter>
+    </ClCompile>
+    <ClCompile Include="memObject.cpp">
+      <Filter>mem\vft</Filter>
+    </ClCompile>
+    <ClCompile Include="memVft.cpp">
+      <Filter>mem\vft</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1608,6 +1620,9 @@
     </Filter>
     <Filter Include="net\cidr">
       <UniqueIdentifier>{b4da67f7-29fa-47e4-817e-f7158a905b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem\vft">
+      <UniqueIdentifier>{fcfb25bb-fc65-4ad8-8817-385319ff3bca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

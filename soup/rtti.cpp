@@ -117,14 +117,14 @@ if (*c == '\0') \
 		return std::string(start, c - start - 1);
 	}
 
-	object* object::fromVftable(void** vftable) noexcept
+	object* object::fromVft(void** vftable) noexcept
 	{
 		return reinterpret_cast<object*>(vftable[-1]);
 	}
 
 	object* object::fromInstance(const void* inst) noexcept
 	{
-		return fromVftable(*reinterpret_cast<void** const*>(inst));
+		return fromVft(*reinterpret_cast<void** const*>(inst));
 	}
 
 	uintptr_t object::getImageBase() const noexcept

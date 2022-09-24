@@ -15,6 +15,23 @@ namespace soup
 		return add(mod.externalRead<int32_t>(*this)).add(sizeof(int32_t));
 	}
 
+	bool Pointer::isInModule() const noexcept
+	{
+		return isInModule(nullptr);
+	}
+
+	bool Pointer::isInModule(const Module& mod) const noexcept
+	{
+		return *this >= mod.base()
+			&& *this < mod.base().add(mod.size())
+			;
+	}
+
+	Pointer Pointer::rva() const noexcept
+	{
+		return rva(nullptr);
+	}
+
 	Pointer Pointer::rva(const Module& mod) const noexcept
 	{
 		return Pointer(as<int32_t&>()).add(mod.base().as<uintptr_t>());
