@@ -62,7 +62,6 @@ namespace soup
 		case 133752: // Leaseweb Asia Pacific pte. ltd.
 		case 136787: // TEFINCOM S.A.
 		case 136897: // EnjoyVC Cloud Group Limited
-		case 137263: // NETEASE (HONG KONG) LIMITED
 		case 137409: // GSL Networks Pty LTD
 		case 141039: // TEFINCOM S.A.
 		case 141167: // AgotoZ HK Limited
