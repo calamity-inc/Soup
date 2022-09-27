@@ -212,6 +212,8 @@ namespace soup
 		{ "jz", 0x74, D, 8 },
 		{ "jnz", 0x75, D, 8 },
 		{ "call", 0xE8, D, 32 },
+		{ "call", 0xFF, M, 32, 2 },
+		{ "call", 0xFF, M, 32, 3 },
 		{ "jmp", 0xEB, D, 8 },
 		{ "jmp", 0xE9, D, 32 },
 		{ "test", 0x84, MR, 8 },
