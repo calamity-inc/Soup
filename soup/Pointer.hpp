@@ -91,6 +91,7 @@ namespace soup
 
 		[[nodiscard]] bool isInModule() const noexcept;
 		[[nodiscard]] bool isInModule(const Module& mod) const noexcept;
+		[[nodiscard]] bool isInRange(const Range& range) const noexcept;
 
 		Pointer rva() const noexcept;
 		Pointer rva(const Module& mod) const noexcept;

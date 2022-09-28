@@ -22,8 +22,13 @@ namespace soup
 
 	bool Pointer::isInModule(const Module& mod) const noexcept
 	{
-		return *this >= mod.base()
-			&& *this < mod.base().add(mod.size())
+		return isInRange(mod.range);
+	}
+
+	bool Pointer::isInRange(const Range& range) const noexcept
+	{
+		return *this >= range.base
+			&& *this < range.base.add(range.size)
 			;
 	}
 
