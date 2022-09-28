@@ -92,6 +92,7 @@ namespace soup
 		}
 
 		[[nodiscard]] static uint32_t deriveInitial(uint32_t val, const std::string& str); // deriveInitial(hash("ab"), "b") == hash("a")
+		[[nodiscard]] static uint32_t deriveInitialNoFinalise(uint32_t val, const std::string& str);
 
 		[[nodiscard]] static std::optional<std::string> reverse_short_key(uint32_t val); // If the input to joaat is 0..3 characters, this will reverse the hash.
 

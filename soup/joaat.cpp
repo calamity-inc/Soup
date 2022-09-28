@@ -37,13 +37,19 @@ namespace soup
 
 	uint32_t joaat::deriveInitial(uint32_t val, const std::string& str)
 	{
+		val = deriveInitialNoFinalise(val, str);
+		finalise(val);
+		return val;
+	}
+
+	uint32_t joaat::deriveInitialNoFinalise(uint32_t val, const std::string& str)
+	{
 		undo_finalise(val);
 		for (auto i = str.crbegin(); i != str.crend(); ++i)
 		{
 			undo_partial(val);
 			val -= *i;
 		}
-		finalise(val);
 		return val;
 	}
 
