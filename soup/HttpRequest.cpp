@@ -115,7 +115,10 @@ namespace soup
 						}
 					}
 
-					return std::optional<HttpResponse>(std::move(res));
+					if (res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) == std::string::npos)
+					{
+						return std::optional<HttpResponse>(std::move(res));
+					}
 				}
 			}
 		}
