@@ -177,7 +177,7 @@ namespace soup
 		{
 			for (size_t i = 0; i != bits; ++i)
 			{
-				if (rand.coinflip())
+				if (rng.coinflip())
 				{
 					res.enableBit(i);
 				}
@@ -195,7 +195,7 @@ namespace soup
 
 	Bigint Bigint::randomProbablePrime(algRng& rng, const size_t bits, const int miller_rabin_iterations)
 	{
-		Bigint i = random(bits);
+		Bigint i = random(rng, bits);
 		for (; i.enableBitInbounds(0), !i.isProbablePrime(miller_rabin_iterations); i = random(rng, bits));
 		return i;
 	}
