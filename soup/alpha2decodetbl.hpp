@@ -9,9 +9,11 @@ namespace soup
 {
 	[[nodiscard]]
 #if SOUP_CPP20
-		consteval
+	consteval
+#else
+	inline
 #endif
-		std::array<uint8_t, 256> alpha2decodetbl(const char* tbl)
+	std::array<uint8_t, 256> alpha2decodetbl(const char* tbl)
 	{
 		std::array<uint8_t, 256> out;
 		out.fill(0xFF);

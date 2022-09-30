@@ -34,5 +34,27 @@ namespace soup
 	//
 	// ADEFHJKLMNPQRTWYabdefghikmnpqrtuwy123479
 
+#if SOUP_CPP20
 	using base40 = CustomEncoding<"ADEFHJKLMNPQRTWYabdefghikmnpqrtuwy123479">;
+#else
+	struct base40
+	{
+		[[nodiscard]] static std::string encode(const std::string& msg)
+		{
+			return encode(Bigint::fromBinary(msg));
+		}
+
+		[[nodiscard]] static std::string encode(const Bigint& msg)
+		{
+			CustomEncoding enc("ADEFHJKLMNPQRTWYabdefghikmnpqrtuwy123479");
+			return enc.encode(msg);
+		}
+
+		[[nodiscard]] static std::string decode(const std::string& msg)
+		{
+			CustomEncoding enc("ADEFHJKLMNPQRTWYabdefghikmnpqrtuwy123479");
+			return enc.decode(msg);
+		}
+	};
+#endif
 }
