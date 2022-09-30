@@ -81,7 +81,14 @@ namespace soup
 			}
 			else if (dr.rtype == DNS_TXT)
 			{
-				res.emplace_back(soup::make_unique<dnsTxtRecord>(std::move(name), dr.ttl, dr.rdata.substr(1)));
+				std::string data;
+				for (size_t i = 0; i != dr.rdata.size(); )
+				{
+					auto chunk_size = (uint8_t)dr.rdata.at(i++);
+					data.append(dr.rdata.substr(i, chunk_size));
+					i += chunk_size;
+				}
+				res.emplace_back(soup::make_unique<dnsTxtRecord>(std::move(name), dr.ttl, std::move(data)));
 			}
 		}
 		return res;
