@@ -974,6 +974,12 @@
     <ClInclude Include="KeyGenId.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="CustomEncoding.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
+    <ClInclude Include="base40.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

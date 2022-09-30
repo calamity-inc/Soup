@@ -401,6 +401,7 @@
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="base40.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
@@ -409,6 +410,7 @@
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="CustomEncoding.hpp" />
     <ClInclude Include="dnsUdpResolver.hpp" />
     <ClInclude Include="dnsClass.hpp" />
     <ClInclude Include="dnsHeader.hpp" />
