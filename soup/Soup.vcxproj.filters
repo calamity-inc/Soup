@@ -689,9 +689,6 @@
     <ClInclude Include="BitReader.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
-    <ClInclude Include="bitutil.hpp">
-      <Filter>io\bits</Filter>
-    </ClInclude>
     <ClInclude Include="base58.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
@@ -982,6 +979,9 @@
     </ClInclude>
     <ClInclude Include="HammingCode.hpp">
       <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="bitutil.hpp">
+      <Filter>bit</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1462,6 +1462,9 @@
     </ClCompile>
     <ClCompile Include="HammingCode.cpp">
       <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="bitutil.cpp">
+      <Filter>bit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

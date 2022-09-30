@@ -2,6 +2,8 @@
 
 #include "base.hpp"
 
+#include <vector>
+
 namespace soup
 {
 	struct bitutil
@@ -50,5 +52,7 @@ namespace soup
 			}
 			return bits;
 		}
+
+		static std::vector<bool> interleave(const std::vector<std::vector<bool>>& data); // assumes that all inner vectors have the same size
 	};
 }

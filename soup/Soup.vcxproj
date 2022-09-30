@@ -739,6 +739,7 @@
     <ClCompile Include="Bigfloat.cpp" />
     <ClCompile Include="Bigint.cpp" />
     <ClCompile Include="BitReader.cpp" />
+    <ClCompile Include="bitutil.cpp" />
     <ClCompile Include="BitWriter.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="BoxAxisAligned.cpp" />
