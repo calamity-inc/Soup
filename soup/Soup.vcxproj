@@ -428,6 +428,7 @@
     <ClInclude Include="IntStruct.hpp" />
     <ClInclude Include="IpGroups.hpp" />
     <ClInclude Include="Ipv6Maths.hpp" />
+    <ClInclude Include="KeyGenId.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="memObject.hpp" />

@@ -363,6 +363,65 @@ namespace soup
 		}
 	}
 
+	struct CaptureGenerateRng
+	{
+		algRng& rng;
+		unsigned int bits;
+	};
+
+	[[nodiscard]] static Bigint gen(algRng& rng, unsigned int bits)
+	{
+		return Bigint::randomProbablePrime(rng, bits, 3);
+	}
+
+	RsaKeypair RsaKeypair::generate(algRng& rng, algRng& aux_rng, unsigned int bits)
+	{
+		auto gen_promise = [](Capture&& _cap, PromiseBase*) -> Bigint
+		{
+			CaptureGenerateRng& cap = _cap.get<CaptureGenerateRng>();
+			return gen(cap.rng, cap.bits);
+		};
+
+		std::vector<Bigint> primes{};
+		{
+			Promise<Bigint> p{ gen_promise, CaptureGenerateRng{ rng, ((bits / 2u) - 2u) } };
+			Promise<Bigint> q{ gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) } };
+			p.awaitCompletion();
+			q.awaitCompletion();
+			primes.emplace_back(p.getResult());
+			primes.emplace_back(q.getResult());
+		}
+
+		bool use_aux = false;
+		while (true)
+		{
+			for (const auto& p : primes)
+			{
+				for (const auto& q : primes)
+				{
+					if (p != q)
+					{
+						RsaKeypair kp(p, q);
+						if (kp.n.getBitLength() == bits)
+						{
+							return kp;
+						}
+					}
+				}
+			}
+
+			if (!use_aux)
+			{
+				primes.emplace_back(gen(rng, bits / 2u));
+			}
+			else
+			{
+				primes.emplace_back(gen(aux_rng, bits / 2u));
+			}
+			use_aux = !use_aux;
+		}
+	}
+
 	RsaPublicKey RsaKeypair::getPublic() const
 	{
 		return RsaPublicKey(n, e);
