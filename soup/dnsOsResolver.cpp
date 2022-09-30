@@ -37,7 +37,12 @@ namespace soup
 				}
 				else if (i->wType == DNS_TYPE_TEXT)
 				{
-					res.emplace_back(soup::make_unique<dnsTxtRecord>(i->pName, i->dwTtl, i->Data.TXT.pStringArray[0]));
+					std::string data;
+					for (DWORD j = 0; j != i->Data.TXT.dwStringCount; ++j)
+					{
+						data.append(i->Data.TXT.pStringArray[j]);
+					}
+					res.emplace_back(soup::make_unique<dnsTxtRecord>(i->pName, i->dwTtl, std::move(data)));
 				}
 				else if (i->wType == DNS_TYPE_SRV)
 				{
