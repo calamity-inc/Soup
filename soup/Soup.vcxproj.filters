@@ -980,6 +980,9 @@
     <ClInclude Include="base40.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
+    <ClInclude Include="HammingCode.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1456,6 +1459,9 @@
     </ClCompile>
     <ClCompile Include="memVft.cpp">
       <Filter>mem\vft</Filter>
+    </ClCompile>
+    <ClCompile Include="HammingCode.cpp">
+      <Filter>data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -424,6 +424,7 @@
     <ClInclude Include="dns_records.hpp" />
     <ClInclude Include="Exception.hpp" />
     <ClInclude Include="FactoriseProofOfWork.hpp" />
+    <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="InquiryLang.hpp" />
     <ClInclude Include="InquiryObject.hpp" />
@@ -754,6 +755,7 @@
     <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="dns_records.cpp" />
     <ClCompile Include="FactoriseProofOfWork.cpp" />
+    <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="InquiryObject.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
