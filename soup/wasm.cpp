@@ -56,6 +56,11 @@ SOUP_CEXPORT const char* base40_encode(std::string* x)
 	returnString(base40::encode(*x));
 }
 
+SOUP_CEXPORT std::string* base40_decode(const char* x)
+{
+	return heap.add(new std::string(base40::decode(x)));
+}
+
 // base64
 
 SOUP_CEXPORT const char* base64_encode(std::string* x)
@@ -126,6 +131,11 @@ SOUP_CEXPORT Canvas* InquiryObject_getCanvas(InquiryObject* x)
 }
 
 // KeyGenId
+
+SOUP_CEXPORT KeyGenId* KeyGenId_newFromBinary(std::string* str)
+{
+	return heap.add(new KeyGenId(*str));
+}
 
 SOUP_CEXPORT KeyGenId* KeyGenId_generate()
 {

@@ -51,6 +51,7 @@
 			}
 			soup.base40 = {
 				encode: soup.cwrap("base40_encode", "string", ["number"]),
+				decode: soup.cwrap("base40_decode", "number", ["string"]),
 			};
 			soup.base64 = {
 				encode: soup.cwrap("base64_encode", "string", ["number"]),
@@ -83,6 +84,7 @@
 			};
 			soup.KeyGenId = {
 				free: soup.free,
+				newFromBinary: soup.cwrap("KeyGenId_newFromBinary", "number", ["number"]),
 				generate: soup.cwrap("KeyGenId_generate", "number", []),
 				toBinary: soup.cwrap("KeyGenId_toBinary", "number", ["number"]),
 				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number", "number"]),
