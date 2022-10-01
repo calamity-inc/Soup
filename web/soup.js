@@ -20,10 +20,32 @@
 				soup.broadenScope = soup.cwrap("broadenScope", "void", ["number"]);
 				soup.free = soup.cwrap("endLifetime", "void", ["number"]);
 
+				soup.CppException = class CppException extends Error
+				{
+				};
+				soup.fixErrorType = function(e)
+				{
+					if (typeof e == "number")
+					{
+						return new soup.CppException(soup.exception.what(e));
+					}	
+					return e;
+				}
+				soup.tryCatch = function(f)
+				{
+					try
+					{
+						f();
+					}
+					catch (e)
+					{
+						throw soup.fixErrorType(e);
+					}
+				};
 				soup.scope = function(f)
 				{
 					soup.beginScope();
-					f();
+					soup.tryCatch(f);
 					soup.endScope();
 				};
 			}
