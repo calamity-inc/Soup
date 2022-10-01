@@ -325,7 +325,7 @@ namespace soup
 		return Bigint::randomProbablePrime(bits, 3);
 	}
 
-	RsaKeypair RsaKeypair::generate(unsigned int bits)
+	RsaKeypair RsaKeypair::generate(unsigned int bits, bool lax_length_requirement)
 	{
 		auto gen_promise = [](Capture&& cap, PromiseBase*) -> Bigint
 		{
@@ -351,7 +351,7 @@ namespace soup
 					if (p != q)
 					{
 						RsaKeypair kp(p, q);
-						if (kp.n.getBitLength() == bits)
+						if (kp.n.getBitLength() == bits || lax_length_requirement)
 						{
 							return kp;
 						}
@@ -374,7 +374,7 @@ namespace soup
 		return Bigint::randomProbablePrime(rng, bits, 3);
 	}
 
-	RsaKeypair RsaKeypair::generate(algRng& rng, algRng& aux_rng, unsigned int bits)
+	RsaKeypair RsaKeypair::generate(algRng& rng, algRng& aux_rng, unsigned int bits, bool lax_length_requirement)
 	{
 		auto gen_promise = [](Capture&& _cap, PromiseBase*) -> Bigint
 		{
@@ -407,7 +407,7 @@ namespace soup
 					if (p != q)
 					{
 						RsaKeypair kp(p, q);
-						if (kp.n.getBitLength() == bits)
+						if (kp.n.getBitLength() == bits || lax_length_requirement)
 						{
 							return kp;
 						}

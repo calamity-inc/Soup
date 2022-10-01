@@ -66,11 +66,11 @@ namespace soup
 			};
 		}
 
-		[[nodiscard]] RsaKeypair getKeypair(unsigned int bits) const
+		[[nodiscard]] RsaKeypair getKeypair(unsigned int bits, bool lax_length_requirement = false) const
 		{
 			algLcgRng rng(seed);
 			algLcgRng aux_rng(aux_seed);
-			return RsaKeypair::generate(rng, aux_rng, bits);
+			return RsaKeypair::generate(rng, aux_rng, bits, lax_length_requirement);
 		}
 	};
 }

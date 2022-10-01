@@ -189,8 +189,8 @@ namespace soup
 		RsaKeypair() = default;
 		RsaKeypair(Bigint _p, Bigint _q);
 
-		[[nodiscard]] static RsaKeypair generate(unsigned int bits);
-		[[nodiscard]] static RsaKeypair generate(algRng& rng, algRng& aux_rng, unsigned int bits);
+		[[nodiscard]] static RsaKeypair generate(unsigned int bits, bool lax_length_requirement = false);
+		[[nodiscard]] static RsaKeypair generate(algRng& rng, algRng& aux_rng, unsigned int bits, bool lax_length_requirement = false);
 
 		[[nodiscard]] RsaPublicKey getPublic() const;
 		[[nodiscard]] RsaPrivateKey getPrivate() const;
