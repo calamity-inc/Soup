@@ -14,8 +14,14 @@
 	{
 		libsoup().then(function(soup)
 		{
+			soup.base40 = {
+				encode: soup.cwrap("base40_encode", "string", ["number"]),
+			};
 			soup.base64 = {
 				encode: soup.cwrap("base64_encode", "string", ["number"]),
+			};
+			soup.Bigint = {
+				toString: soup.cwrap("Bigint_toString", "string", ["number"]),
 			};
 			soup.Canvas = {
 				free: soup.cwrap("Canvas_free", "void", ["number"]),
@@ -40,6 +46,12 @@
 				isCanvas: soup.cwrap("InquiryObject_isCanvas", "bool", ["number"]),
 				getCanvas: soup.cwrap("InquiryObject_getCanvas", "number", ["number"]),
 			};
+			soup.KeyGenId = {
+				free: soup.cwrap("KeyGenId_free", "void", ["number"]),
+				generate: soup.cwrap("KeyGenId_generate", "number", []),
+				toBinary: soup.cwrap("KeyGenId_toBinary", "number", ["number"]),
+				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number", "number"]),
+			};
 			soup.Mixed = {
 				free: soup.cwrap("Mixed_free", "void", ["number"]),
 				isInquiryObject: soup.cwrap("Mixed_isInquiryObject", "bool", ["number"]),
@@ -55,6 +67,11 @@
 			};
 			soup.string = {
 				free: soup.cwrap("string_free", "void", ["number"]),
+			};
+			soup.RsaKeypair = {
+				getN: soup.cwrap("RsaKeypair_getN", "number", ["number"]),
+				getP: soup.cwrap("RsaKeypair_getP", "number", ["number"]),
+				getQ: soup.cwrap("RsaKeypair_getQ", "number", ["number"]),
 			};
 			delete soup.cwrap;
 			soup.ready = true;

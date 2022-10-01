@@ -384,12 +384,17 @@ namespace soup
 
 		std::vector<Bigint> primes{};
 		{
+#if SOUP_WASM
+			primes.emplace_back(gen(rng, ((bits / 2u) - 2u)));
+			primes.emplace_back(gen(aux_rng, ((bits / 2u) + 2u)));
+#else
 			Promise<Bigint> p{ gen_promise, CaptureGenerateRng{ rng, ((bits / 2u) - 2u) } };
 			Promise<Bigint> q{ gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) } };
 			p.awaitCompletion();
 			q.awaitCompletion();
 			primes.emplace_back(p.getResult());
 			primes.emplace_back(q.getResult());
+#endif
 		}
 
 		bool use_aux = false;
