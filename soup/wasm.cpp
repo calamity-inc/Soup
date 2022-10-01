@@ -2,6 +2,8 @@
 
 #if SOUP_WASM || SOUP_CODE_INSPECTOR
 
+#include "RaiiEmulator.hpp"
+
 #include "base40.hpp"
 #include "base64.hpp"
 #include "Canvas.hpp"
@@ -14,6 +16,7 @@
 
 using namespace soup;
 
+static RaiiEmulator heap{};
 static std::string ret_str_buf{};
 
 [[nodiscard]] static const char* ret_str(std::string&& str)
@@ -23,6 +26,28 @@ static std::string ret_str_buf{};
 }
 
 #define returnString(x) return ret_str(x);
+
+// [global namespace]
+
+SOUP_CEXPORT void beginScope()
+{
+	heap.beginScope();
+}
+
+SOUP_CEXPORT void endScope()
+{
+	heap.endScope();
+}
+
+SOUP_CEXPORT void broadenScope(void* inst)
+{
+	heap.broadenScope(inst);
+}
+
+SOUP_CEXPORT void endLifetime(void* inst)
+{
+	heap.free(inst);
+}
 
 // base40
 
@@ -47,11 +72,6 @@ SOUP_CEXPORT const char* Bigint_toString(Bigint* x)
 
 // Canvas
 
-SOUP_CEXPORT void Canvas_free(Canvas* x)
-{
-	delete x;
-}
-
 SOUP_CEXPORT unsigned int Canvas_getWidth(Canvas* x)
 {
 	return x->width;
@@ -74,7 +94,7 @@ SOUP_CEXPORT const char* Canvas_toSvg(Canvas* x, unsigned int scale)
 
 SOUP_CEXPORT std::string* Canvas_toNewPngString(Canvas* x)
 {
-	return new std::string(x->toPng());
+	return heap.add(x->toPng());
 }
 
 // InquiryLang
@@ -107,32 +127,22 @@ SOUP_CEXPORT Canvas* InquiryObject_getCanvas(InquiryObject* x)
 
 // KeyGenId
 
-SOUP_CEXPORT void KeyGenId_free(KeyGenId* x)
-{
-	delete x;
-}
-
 SOUP_CEXPORT KeyGenId* KeyGenId_generate()
 {
-	return new KeyGenId(KeyGenId::generate());
+	return heap.add(KeyGenId::generate());
 }
 
 SOUP_CEXPORT std::string* KeyGenId_toBinary(KeyGenId* x)
 {
-	return new std::string(x->toBinary());
+	return heap.add(x->toBinary());
 }
 
 SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(KeyGenId* x, unsigned int bits)
 {
-	return new RsaKeypair(x->getKeypair(bits));
+	return heap.add(x->getKeypair(bits));
 }
 
 // Mixed
-
-SOUP_CEXPORT void Mixed_free(Mixed* x)
-{
-	delete x;
-}
 
 SOUP_CEXPORT bool Mixed_isInquiryObject(Mixed* x)
 {
@@ -146,27 +156,17 @@ SOUP_CEXPORT InquiryObject* Mixed_getInquiryObject(Mixed* x)
 
 // QrCode
 
-SOUP_CEXPORT void QrCode_free(QrCode* x)
-{
-	delete x;
-}
-
 SOUP_CEXPORT QrCode* QrCode_newFromText(const char* x)
 {
-	return new QrCode(QrCode::encodeText(x));
+	return heap.add(QrCode::encodeText(x));
 }
 
 SOUP_CEXPORT Canvas* QrCode_toNewCanvas(QrCode* x, unsigned int border, bool black_bg)
 {
-	return new Canvas(x->toCanvas(border, black_bg));
+	return heap.add(x->toCanvas(border, black_bg));
 }
 
 // RsaKeypair
-
-SOUP_CEXPORT void RsaKeypair_free(RsaKeypair* x)
-{
-	delete x;
-}
 
 SOUP_CEXPORT const Bigint* RsaKeypair_getN(const RsaKeypair* x)
 {
@@ -188,13 +188,6 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x)
 SOUP_CEXPORT const char* exception_what(std::exception* x)
 {
 	returnString(x->what());
-}
-
-// std::string
-
-SOUP_CEXPORT void string_free(std::string* x)
-{
-	delete x;
 }
 
 #endif

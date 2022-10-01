@@ -14,6 +14,19 @@
 	{
 		libsoup().then(function(soup)
 		{
+			{
+				soup.beginScope = soup.cwrap("beginScope", "void", []);
+				soup.endScope = soup.cwrap("endScope", "void", []);
+				soup.broadenScope = soup.cwrap("broadenScope", "void", ["number"]);
+				soup.free = soup.cwrap("endLifetime", "void", ["number"]);
+
+				soup.scope = function(f)
+				{
+					soup.beginScope();
+					f();
+					soup.endScope();
+				};
+			}
 			soup.base40 = {
 				encode: soup.cwrap("base40_encode", "string", ["number"]),
 			};
@@ -24,7 +37,7 @@
 				toString: soup.cwrap("Bigint_toString", "string", ["number"]),
 			};
 			soup.Canvas = {
-				free: soup.cwrap("Canvas_free", "void", ["number"]),
+				free: soup.free,
 				getWidth: soup.cwrap("Canvas_getWidth", "number", ["number"]),
 				getHeight: soup.cwrap("Canvas_getHeight", "number", ["number"]),
 				resizeNearestNeighbour: soup.cwrap("Canvas_resizeNearestNeighbour", "number", ["number", "number", "number"]),
@@ -47,18 +60,18 @@
 				getCanvas: soup.cwrap("InquiryObject_getCanvas", "number", ["number"]),
 			};
 			soup.KeyGenId = {
-				free: soup.cwrap("KeyGenId_free", "void", ["number"]),
+				free: soup.free,
 				generate: soup.cwrap("KeyGenId_generate", "number", []),
 				toBinary: soup.cwrap("KeyGenId_toBinary", "number", ["number"]),
 				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number", "number"]),
 			};
 			soup.Mixed = {
-				free: soup.cwrap("Mixed_free", "void", ["number"]),
+				free: soup.free,
 				isInquiryObject: soup.cwrap("Mixed_isInquiryObject", "bool", ["number"]),
 				getInquiryObject: soup.cwrap("Mixed_getInquiryObject", "number", ["number"]),
 			};
 			soup.QrCode = {
-				free: soup.cwrap("QrCode_free", "void", ["number"]),
+				free: soup.free,
 				newFromText: soup.cwrap("QrCode_newFromText", "number", ["string"]),
 				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "bool"]),
 			};
@@ -66,7 +79,7 @@
 				what: soup.cwrap("exception_what", "string", ["number"]),
 			};
 			soup.string = {
-				free: soup.cwrap("string_free", "void", ["number"]),
+				free: soup.free,
 			};
 			soup.RsaKeypair = {
 				getN: soup.cwrap("RsaKeypair_getN", "number", ["number"]),

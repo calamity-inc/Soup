@@ -484,6 +484,7 @@
     <ClInclude Include="Capture.hpp" />
     <ClInclude Include="ioSizeMeasurer.hpp" />
     <ClInclude Include="HashProofOfWork.hpp" />
+    <ClInclude Include="RaiiEmulator.hpp" />
     <ClInclude Include="SharedPtr.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
     <ClInclude Include="StringRefWriter.hpp" />

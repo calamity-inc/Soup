@@ -983,6 +983,9 @@
     <ClInclude Include="bitutil.hpp">
       <Filter>bit</Filter>
     </ClInclude>
+    <ClInclude Include="RaiiEmulator.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
