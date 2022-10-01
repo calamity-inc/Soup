@@ -1,12 +1,13 @@
 #include "algLcgRng.hpp"
 
 #include "Endian.hpp"
+#include "rand.hpp"
 #include "time.hpp"
 
 namespace soup
 {
 	algLcgRng::algLcgRng()
-		: algLcgRng(~time::nanos())
+		: algLcgRng(rand.getSeed())
 	{
 	}
 

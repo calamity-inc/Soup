@@ -10,11 +10,18 @@ namespace soup
 {
 	class rand_impl
 	{
+	public:
+		[[nodiscard]] static uint64_t getSeed() noexcept
+		{
+			std::random_device rd{};
+			static_assert(sizeof(std::random_device::result_type) == 4);
+			return ((uint64_t)rd() << 32) | rd();
+		}
+
 	private:
 		[[nodiscard]] static std::mt19937_64 getMersenneTwisterImpl() noexcept
 		{
-			std::random_device rd{};
-			return std::mt19937_64{ rd() };
+			return std::mt19937_64{ getSeed() };
 		}
 
 	public:
