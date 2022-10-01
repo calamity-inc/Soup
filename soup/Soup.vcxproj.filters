@@ -986,6 +986,9 @@
     <ClInclude Include="RaiiEmulator.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="BigintId.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1468,6 +1471,12 @@
     </ClCompile>
     <ClCompile Include="bitutil.cpp">
       <Filter>bit</Filter>
+    </ClCompile>
+    <ClCompile Include="BigintId.cpp">
+      <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyGenId.cpp">
+      <Filter>crypto</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

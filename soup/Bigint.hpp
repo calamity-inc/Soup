@@ -103,13 +103,11 @@ namespace soup
 		void disableBit(const size_t i);
 		[[nodiscard]] size_t getBitLength() const noexcept;
 		[[nodiscard]] size_t getLowestSetBit() const noexcept;
-	private:
 		[[nodiscard]] bool getBitInbounds(const size_t i) const noexcept;
 		void setBitInbounds(const size_t i, const bool v);
 		void enableBitInbounds(const size_t i);
 		void disableBitInbounds(const size_t i);
 
-	public:
 		void reset() noexcept;
 		[[nodiscard]] bool isZero() const noexcept;
 		[[nodiscard]] operator bool() const noexcept;

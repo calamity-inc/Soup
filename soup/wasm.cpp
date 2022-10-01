@@ -132,24 +132,24 @@ SOUP_CEXPORT Canvas* InquiryObject_getCanvas(InquiryObject* x)
 
 // KeyGenId
 
-SOUP_CEXPORT KeyGenId* KeyGenId_newFromBinary(std::string* str)
+SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, std::string* str)
 {
-	return heap.add(new KeyGenId(*str));
+	return heap.add(new KeyGenId(bits, *str));
 }
 
-SOUP_CEXPORT KeyGenId* KeyGenId_generate()
+SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits)
 {
-	return heap.add(KeyGenId::generate());
+	return heap.add(KeyGenId::generate(bits));
 }
 
-SOUP_CEXPORT std::string* KeyGenId_toBinary(KeyGenId* x)
+SOUP_CEXPORT std::string* KeyGenId_toSeedsExport(KeyGenId* x)
 {
-	return heap.add(x->toBinary());
+	return heap.add(x->toSeedsExport());
 }
 
-SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(KeyGenId* x, unsigned int bits)
+SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(KeyGenId* x)
 {
-	return heap.add(x->getKeypair(bits));
+	return heap.add(x->getKeypair());
 }
 
 // Mixed

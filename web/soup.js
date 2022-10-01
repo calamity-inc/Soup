@@ -84,10 +84,10 @@
 			};
 			soup.KeyGenId = {
 				free: soup.free,
-				newFromBinary: soup.cwrap("KeyGenId_newFromBinary", "number", ["number"]),
-				generate: soup.cwrap("KeyGenId_generate", "number", []),
-				toBinary: soup.cwrap("KeyGenId_toBinary", "number", ["number"]),
-				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number", "number"]),
+				newFromSeedsExport: soup.cwrap("KeyGenId_newFromSeedsExport", "number", ["number", "number"]),
+				generate: soup.cwrap("KeyGenId_generate", "number", ["number"]),
+				toSeedsExport: soup.cwrap("KeyGenId_toSeedsExport", "number", ["number"]),
+				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number"]),
 			};
 			soup.Mixed = {
 				free: soup.free,

@@ -402,6 +402,7 @@
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
     <ClInclude Include="base40.hpp" />
+    <ClInclude Include="BigintId.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
@@ -739,6 +740,7 @@
     <ClCompile Include="bech32.cpp" />
     <ClCompile Include="Bigfloat.cpp" />
     <ClCompile Include="Bigint.cpp" />
+    <ClCompile Include="BigintId.cpp" />
     <ClCompile Include="BitReader.cpp" />
     <ClCompile Include="bitutil.cpp" />
     <ClCompile Include="BitWriter.cpp" />
@@ -760,6 +762,7 @@
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="InquiryObject.cpp" />
+    <ClCompile Include="KeyGenId.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />

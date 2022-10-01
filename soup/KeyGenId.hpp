@@ -1,11 +1,8 @@
 #pragma once
 
-#include <cstring> // memcpy
-#include <random>
 #include <string>
 
-#include "algLcgRng.hpp"
-#include "rsa.hpp"
+#include "BigintId.hpp"
 
 namespace soup
 {
@@ -29,48 +26,17 @@ namespace soup
 	// What "a good part of the seed" means exactly is hard to define, but it's at most 50% and approaching 0% with increasing complexity.
 	struct KeyGenId
 	{
-		uint64_t seed;
-		uint64_t aux_seed;
+		unsigned int bits;
+		BigintId p;
+		BigintId q;
 
-		KeyGenId(uint64_t seed, uint64_t aux_seed)
-			: seed(seed), aux_seed(aux_seed)
-		{
-		}
+		KeyGenId() {}
+		KeyGenId(unsigned int bits, const std::string& seeds_export);
 
-		KeyGenId(const std::string& bin)
-		{
-			if (bin.size() != sizeof(*this))
-			{
-				throw 0;
-			}
-			memcpy(this, bin.data(), sizeof(*this));
-		}
+		[[nodiscard]] static KeyGenId generate(unsigned int bits);
 
-		[[nodiscard]] std::string toBinary() const
-		{
-			return std::string(reinterpret_cast<const char*>(this), sizeof(*this));
-		}
+		[[nodiscard]] std::string toSeedsExport() const;
 
-		[[nodiscard]] static KeyGenId generate()
-		{
-			std::random_device rd{};
-
-			uint32_t a = rd();
-			uint32_t b = rd();
-			uint32_t c = rd();
-			uint32_t d = rd();
-
-			return KeyGenId{
-				((uint64_t)a << 32) | b,
-				((uint64_t)c << 32) | d
-			};
-		}
-
-		[[nodiscard]] RsaKeypair getKeypair(unsigned int bits, bool lax_length_requirement = false) const
-		{
-			algLcgRng rng(seed);
-			algLcgRng aux_rng(aux_seed);
-			return RsaKeypair::generate(rng, aux_rng, bits, lax_length_requirement);
-		}
+		[[nodiscard]] RsaKeypair getKeypair() const;
 	};
 }
