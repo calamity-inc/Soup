@@ -20,9 +20,6 @@ namespace soup
 		[[nodiscard]] static Quaternion fromEulerXYZ(const Vector3& rot) noexcept;
 		[[nodiscard]] static Quaternion fromEulerXYZ(float rx, float ry, float rz) noexcept;
 
-	public:
-		[[nodiscard]] Vector3 toEulerXYZ() const noexcept; // highly inaccurate
-
 		[[nodiscard]] Quaternion invert() const noexcept;
 
 		[[nodiscard]] Quaternion operator+ (const Quaternion& b) const noexcept;
