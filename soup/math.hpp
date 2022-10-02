@@ -8,6 +8,8 @@
 #define DEG_TO_RAD(deg) ((deg) * (float(M_PI) / 180.0f))
 #define DEG_TO_HALF_RAD(deg) ((deg) * (float(M_PI) / 360.0f))
 
+#define RAD_TO_DEG(rad) ((rad) / (float(M_PI) / 180.0f))
+
 namespace soup
 {
 	template <typename T = float>

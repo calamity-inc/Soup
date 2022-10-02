@@ -40,7 +40,18 @@ namespace soup
 		void operator*= (const Matrix& InM) noexcept;
 		[[nodiscard]] Vector3 operator* (const Vector3& Point) const noexcept;
 
+		[[nodiscard]] float& at(int row, int coloumn) noexcept
+		{
+			return mf[row + (coloumn * 4)];
+		}
+
+		[[nodiscard]] const float& at(int row, int coloumn) const noexcept
+		{
+			return mf[row + (coloumn * 4)];
+		}
+
 		void resetRotation() noexcept;
+		[[nodiscard]] Vector3 getRotationXYZ() noexcept;
 		void setRotation(const Vector3& rot) noexcept;
 		void setRotationXYZ(const Vector3& rot) noexcept;
 		void rotate(const Vector3& rot) noexcept;
