@@ -135,7 +135,8 @@ namespace soup
 			|| slug.find("data-center") != std::string::npos
 			|| slug.find("ddos") != std::string::npos
 			|| slug.find("dedi") != std::string::npos // AS35913 DediPath, AS42831 UK Dedicated Servers Limited
-			|| slug.find("host") != std::string::npos // AS45382 EHOSTICT, AS51430 AltusHost B.V., AS55720 Gigabit Hosting Sdn Bhd, AS61493 InterBS S.R.L. (BAEHOST), AS64200 VIVID-HOSTING LLC, AS136557 Host Universal Pty Ltd, AS200698 Globalhost d.o.o., AS203020 HostRoyale Technologies Pvt Ltd, AS262287 Maxihost LTDA, AS396356 Maxihost LLC
+			|| (slug.find("host") && ~slug.find("afrihost")) != std::string::npos // AS45382 EHOSTICT, AS51430 AltusHost B.V., AS55720 Gigabit Hosting Sdn Bhd, AS61493 InterBS S.R.L. (BAEHOST), AS64200 VIVID-HOSTING LLC, AS136557 Host Universal Pty Ltd, AS200698 Globalhost d.o.o., AS203020 HostRoyale Technologies Pvt Ltd, AS262287 Maxihost LTDA, AS396356 Maxihost LLC
+			// Note: Added checks for "afrihost" as it isn't actually a hosting, we don't have to flag it!
 			|| slug.find("layer") != std::string::npos // AS49453, AS57172 Global Layer B.V.
 			|| slug.find("scale") != std::string::npos
 			|| slug.find("server") != std::string::npos
