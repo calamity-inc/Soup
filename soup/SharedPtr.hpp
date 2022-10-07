@@ -2,14 +2,25 @@
 
 #include <atomic>
 
+#include "base.hpp"
 #include "Exception.hpp"
 #include "type_traits.hpp"
 
-#define DEBUG_SHAREDPTR false
+#ifndef SOUP_DEBUG_SHAREDPTR 
+#define SOUP_DEBUG_SHAREDPTR false
+#endif
 
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 #include <iostream>
 #include <unordered_set>
+#endif
+
+#ifndef SOUP_OPTIMISE_MAKE_SHARED
+#define SOUP_OPTIMISE_MAKE_SHARED SOUP_CPP20
+#endif
+
+#if SOUP_OPTIMISE_MAKE_SHARED
+#include <memory> // construct_at
 #endif
 
 namespace soup
@@ -22,7 +33,7 @@ namespace soup
 	class SharedPtr
 	{
 	public:
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 		inline static std::unordered_set<T*> managed_instances{};
 #endif
 
@@ -38,7 +49,7 @@ namespace soup
 
 			void incref()
 			{
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 				const auto preinc = refcount.load();
 				if (preinc == 0)
 				{
@@ -46,26 +57,44 @@ namespace soup
 				}
 #endif
 				++refcount;
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 				std::cout << (void*)inst << " :: Increment to " << refcount.load() << " from " << preinc << "\n";
 #endif
 			}
 
+#if SOUP_OPTIMISE_MAKE_SHARED
+			[[nodiscard]] bool wasCreatedWithMakeShared() const noexcept
+			{
+				return (reinterpret_cast<uintptr_t>(this) + sizeof(*this)) == reinterpret_cast<uintptr_t>(inst);
+			}
+#endif
+
 			void decref()
 			{
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 				const auto predec = refcount.load();
 #endif
 				if (--refcount == 0)
 				{
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 					std::cout << (void*)inst << " :: No more references\n";
 					managed_instances.erase(inst);
 #endif
-					delete inst;
-					delete this;
+#if SOUP_OPTIMISE_MAKE_SHARED
+					if (wasCreatedWithMakeShared())
+					{
+						std::destroy_at<>(this);
+						std::destroy_at<>(inst);
+						operator delete(reinterpret_cast<void*>(this), sizeof(typename SharedPtr<T>::Data) + sizeof(T));
+					}
+					else
+#endif
+					{
+						delete inst;
+						delete this;
+					}
 				}
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 				else
 				{
 					std::cout << (void*)inst << " :: Decrement to " << refcount.load() << " from " << predec << "\n";
@@ -81,10 +110,15 @@ namespace soup
 		{
 		}
 
+		SharedPtr(Data* data)
+			: data(data)
+		{
+		}
+
 		SharedPtr(T* inst)
 			: data(new Data(inst))
 		{
-#if DEBUG_SHAREDPTR
+#if SOUP_DEBUG_SHAREDPTR
 			if (managed_instances.contains(data->inst))
 			{
 				__debugbreak(); // Already managed by another SharedPtr instance
@@ -183,6 +217,13 @@ namespace soup
 	template <typename T, typename...Args, SOUP_RESTRICT(!std::is_array_v<T>)>
 	[[nodiscard]] SharedPtr<T> make_shared(Args&&...args)
 	{
+#if SOUP_OPTIMISE_MAKE_SHARED
+		auto b = operator new(sizeof(typename SharedPtr<T>::Data) + sizeof(T));
+		auto inst = std::construct_at<>(reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(b) + sizeof(typename SharedPtr<T>::Data)), std::forward<Args>(args)...);
+		auto data = std::construct_at<>(reinterpret_cast<typename SharedPtr<T>::Data*>(b), inst);
+		return SharedPtr<T>(data);
+#else
 		return SharedPtr<T>(new T(std::forward<Args>(args)...));
+#endif
 	}
 }
