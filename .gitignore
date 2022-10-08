@@ -5,3 +5,4 @@ web/libsoup.js
 web/libsoup.wasm
 *.exe
 *.lib
+*.pdb

@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Soup", "soup\Soup.vcxproj", "{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207} = {A2AE8CDF-6079-4D8E-B69E-76B445DE0207}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple Server", "examples\Simple Server\Simple Server.vcxproj", "{A645BD73-2DE4-4EED-914A-4575EFC2164B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -14,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLI", "CLI\CLI.vcxproj", "{
 	ProjectSection(ProjectDependencies) = postProject
 		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA} = {84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASM x86_64", "ASM x86_64\ASM x86_64.vcxproj", "{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +80,18 @@ Global
 		{D46C3146-541A-4879-837E-A1596BB99185}.ReleaseEXE|x64.Build.0 = Release|x64
 		{D46C3146-541A-4879-837E-A1596BB99185}.ReleaseEXE|x86.ActiveCfg = Release|Win32
 		{D46C3146-541A-4879-837E-A1596BB99185}.ReleaseEXE|x86.Build.0 = Release|Win32
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.DebugDLL|x64.ActiveCfg = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.DebugDLL|x64.Build.0 = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.DebugDLL|x86.ActiveCfg = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.DebugEXE|x64.ActiveCfg = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.DebugEXE|x64.Build.0 = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.DebugEXE|x86.ActiveCfg = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.ReleaseDLL|x64.ActiveCfg = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.ReleaseDLL|x64.Build.0 = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.ReleaseDLL|x86.ActiveCfg = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.ReleaseEXE|x64.ActiveCfg = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.ReleaseEXE|x64.Build.0 = Release|x64
+		{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}.ReleaseEXE|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

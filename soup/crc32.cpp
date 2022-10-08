@@ -1,12 +1,9 @@
 #include "crc32.hpp"
 
 #include "base.hpp"
-
-#if SOUP_X86
-#include <x86intrin.h>
-#endif
-
+#if SOUP_X86 && SOUP_BITS == 64
 #include "CpuInfo.hpp"
+#endif
 #include "Endian.hpp"
 #include "Reader.hpp"
 
@@ -88,12 +85,16 @@ namespace soup
 		return ~checksum;
 	}
 
-// Unfortunately, to use these intrinsics, we need to set the appropriate compiler flags.
-// However, setting these compiler flags tells the optimiser that it can go ahead and use these instructions
-// without first checking if the CPU supports them, like we do here, causing low-end users to be unable to our software at all.
-// So, this optimisation is not used by default, but you can define SOUP_I_RUN_THIS_SHIT_ON_GOOD_HARDWARE if you need it.
-#if SOUP_X86 && defined(SOUP_I_RUN_THIS_SHIT_ON_GOOD_HARDWARE)
-	static uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc)
+	// Unfortunately, to use these intrinsics, we need to set the appropriate compiler flags.
+	// However, setting these compiler flags tells the optimiser that it can go ahead and use these instructions without first checking
+	// if the CPU supports them, like we do here, causing low-end users to be unable to use our software at all.
+	// So, we have .asm files to use these instructions with intent. If you have an assembler and want to link against the them, define SOUP_USE_ASM.
+	// With the Visual Studio solution, this "just works."
+
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+	extern "C" uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc);
+
+	/*static __declspec(noinline) uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc)
 	{
 #ifdef _MSC_VER
 		static const uint64_t __declspec(align(16))
@@ -116,7 +117,7 @@ namespace soup
 		b = _mm_xor_si128(_mm_srli_si128(b, 8), _mm_clmulepi64_si128(b, k3k4, 16));
 		b = _mm_xor_si128(_mm_clmulepi64_si128(_mm_and_si128(b, z), _mm_loadl_epi64(reinterpret_cast<const __m128i*>(s_k5k0)), 0), _mm_srli_si128(b, 4));
 		return ~_mm_extract_epi32(_mm_xor_si128(b, _mm_clmulepi64_si128(_mm_and_si128(_mm_clmulepi64_si128(_mm_and_si128(b, z), u, 16), z), u, 0)), 1);
-	}
+	}*/
 
 	static uint32_t crc32_sse41_simd(const uint8_t* data, size_t size, uint32_t init)
 	{
@@ -133,7 +134,7 @@ namespace soup
 
 	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init)
 	{
-#if SOUP_X86 && defined(SOUP_I_RUN_THIS_SHIT_ON_GOOD_HARDWARE)
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
 		const CpuInfo& cpu_info = CpuInfo::get();
 		if (cpu_info.supportsPCLMULQDQ()
 			&& cpu_info.supportsSSE4_1()
