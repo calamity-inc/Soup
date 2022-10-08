@@ -1,20 +1,20 @@
 #pragma once
 
-#include "algRng.hpp"
+#include "RngInterface.hpp"
 
 namespace soup
 {
 	// Not meant for usage, just for demonstration purposes.
-	struct algMsvcRng : public algRng
+	struct MsvcRng
 	{
 		uint32_t state;
 
-		algMsvcRng(uint32_t seed) // = srand
+		MsvcRngInterface(uint32_t seed) // = srand
 			: state(seed)
 		{
 		}
 
-		[[nodiscard]] uint64_t generate() final // = rand
+		[[nodiscard]] uint32_t generate() // = rand
 		{
 			state *= 214013u;
 			state += 2531011u;

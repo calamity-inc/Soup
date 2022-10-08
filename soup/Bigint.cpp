@@ -1,6 +1,6 @@
 #include "Bigint.hpp"
 
-#include "algRng.hpp"
+#include "RngInterface.hpp"
 #include "Bitset.hpp"
 #include "branchless.hpp"
 #include "Endian.hpp"
@@ -162,7 +162,7 @@ namespace soup
 		return res;
 	}
 
-	Bigint Bigint::random(algRng& rng, size_t bits)
+	Bigint Bigint::random(RngInterface& rng, size_t bits)
 	{
 		Bigint res{};
 		if ((bits % getBitsPerChunk()) == 0)
@@ -193,7 +193,7 @@ namespace soup
 		return i;
 	}
 
-	Bigint Bigint::randomProbablePrime(algRng& rng, const size_t bits, const int miller_rabin_iterations)
+	Bigint Bigint::randomProbablePrime(RngInterface& rng, const size_t bits, const int miller_rabin_iterations)
 	{
 		Bigint i = random(rng, bits);
 		for (; i.enableBitInbounds(0), !i.isProbablePrime(miller_rabin_iterations); i = random(rng, bits));

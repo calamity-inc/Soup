@@ -6,7 +6,7 @@ namespace soup
 {
 	struct MazeGenerator
 	{
-		void generate(algRng& rng)
+		void generate(RngInterface& rng)
 		{
 			while (!isFinished())
 			{
@@ -15,6 +15,6 @@ namespace soup
 		}
 
 		[[nodiscard]] virtual bool isFinished() = 0;
-		virtual void tick(algRng& rng) = 0;
+		virtual void tick(RngInterface& rng) = 0;
 	};
 }

@@ -4,7 +4,7 @@
 
 #include <Canvas.hpp>
 #include <console.hpp>
-#include <algLcgRng.hpp>
+#include <LcgRngInterface.hpp>
 #include <MazeGeneratorDepthFirst.hpp>
 #include <RenderTargetCanvas.hpp>
 
@@ -21,7 +21,7 @@ void cli_maze()
 			return;
 		}
 		once = true;
-		algLcgRng rng{};
+		LcgRngInterface rng{};
 		height *= 2;
 		height -= 3;
 		MazeGeneratorDepthFirst mg((width + 1) / 3, (height + 1) / 3);

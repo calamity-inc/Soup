@@ -653,15 +653,6 @@
     <ClInclude Include="SceneRasterisingRenderer.hpp">
       <Filter>math\3d\scene</Filter>
     </ClInclude>
-    <ClInclude Include="algRng.hpp">
-      <Filter>algos\rand</Filter>
-    </ClInclude>
-    <ClInclude Include="algLcgRng.hpp">
-      <Filter>algos\rand</Filter>
-    </ClInclude>
-    <ClInclude Include="algMtRng.hpp">
-      <Filter>algos\rand</Filter>
-    </ClInclude>
     <ClInclude Include="MazeGenerator.hpp">
       <Filter>algos\maze</Filter>
     </ClInclude>
@@ -724,9 +715,6 @@
     </ClInclude>
     <ClInclude Include="WebSocketConnection.hpp">
       <Filter>net\web\websocket</Filter>
-    </ClInclude>
-    <ClInclude Include="algMsvcRng.hpp">
-      <Filter>algos\rand</Filter>
     </ClInclude>
     <ClInclude Include="StringMatch.hpp">
       <Filter>util\string</Filter>
@@ -988,6 +976,21 @@
     </ClInclude>
     <ClInclude Include="BigintId.hpp">
       <Filter>crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="LcgRngInterface.hpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultRngInterface.hpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="RngInterface.hpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="MsvcRng.hpp">
+      <Filter>algos\rng</Filter>
+    </ClInclude>
+    <ClInclude Include="LcgRng.hpp">
+      <Filter>algos\rng</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1295,12 +1298,6 @@
     <ClCompile Include="SceneRasterisingRenderer.cpp">
       <Filter>math\3d\scene</Filter>
     </ClCompile>
-    <ClCompile Include="algLcgRng.cpp">
-      <Filter>algos\rand</Filter>
-    </ClCompile>
-    <ClCompile Include="algMtRng.cpp">
-      <Filter>algos\rand</Filter>
-    </ClCompile>
     <ClCompile Include="MazeGeneratorDepthFirst.cpp">
       <Filter>algos\maze</Filter>
     </ClCompile>
@@ -1478,6 +1475,12 @@
     <ClCompile Include="KeyGenId.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
+    <ClCompile Include="DefaultRngInterface.cpp">
+      <Filter>algos\rng\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="LcgRng.cpp">
+      <Filter>algos\rng</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1591,9 +1594,6 @@
     <Filter Include="algos">
       <UniqueIdentifier>{039cce06-0529-4573-b017-965ff1ca2670}</UniqueIdentifier>
     </Filter>
-    <Filter Include="algos\rand">
-      <UniqueIdentifier>{bd18ff21-d179-48f9-9f75-aac83f019e2b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="algos\maze">
       <UniqueIdentifier>{16b78dc5-8998-48bd-b278-3bcd7be2a396}</UniqueIdentifier>
     </Filter>
@@ -1653,6 +1653,12 @@
     </Filter>
     <Filter Include="mem\vft">
       <UniqueIdentifier>{fcfb25bb-fc65-4ad8-8817-385319ff3bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos\rng">
+      <UniqueIdentifier>{bd18ff21-d179-48f9-9f75-aac83f019e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algos\rng\interface">
+      <UniqueIdentifier>{915ef795-feb7-4250-86db-669eca6e99fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

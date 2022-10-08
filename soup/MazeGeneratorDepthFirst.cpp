@@ -1,6 +1,6 @@
 #include "MazeGeneratorDepthFirst.hpp"
 
-#include "algRng.hpp"
+#include "RngInterface.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
 
@@ -20,7 +20,7 @@ namespace soup
 		return backtrace.empty();
 	}
 
-	void MazeGeneratorDepthFirst::tick(algRng& rng)
+	void MazeGeneratorDepthFirst::tick(RngInterface& rng)
 	{
 		if (isFinished())
 		{

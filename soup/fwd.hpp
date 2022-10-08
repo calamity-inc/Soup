@@ -4,8 +4,8 @@
 
 namespace soup
 {
-	// algos.rand
-	struct algRng;
+	// algos.rng.interface
+	struct RngInterface;
 
 	// chess
 	struct ChessCoordinate;

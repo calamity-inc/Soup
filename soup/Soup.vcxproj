@@ -433,6 +433,7 @@
     <ClInclude Include="IpGroups.hpp" />
     <ClInclude Include="Ipv6Maths.hpp" />
     <ClInclude Include="KeyGenId.hpp" />
+    <ClInclude Include="LcgRng.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="memObject.hpp" />
@@ -451,15 +452,15 @@
     <ClInclude Include="netIntel.hpp" />
     <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="JitModule.hpp" />
-    <ClInclude Include="algLcgRng.hpp" />
+    <ClInclude Include="LcgRngInterface.hpp" />
     <ClInclude Include="lyoContainer.hpp" />
     <ClInclude Include="lyoDocument.hpp" />
     <ClInclude Include="lyoElement.hpp" />
     <ClInclude Include="lyoFlatDocument.hpp" />
     <ClInclude Include="lyoTextElement.hpp" />
     <ClInclude Include="MazeGeneratorDepthFirst.hpp" />
-    <ClInclude Include="algMsvcRng.hpp" />
-    <ClInclude Include="algMtRng.hpp" />
+    <ClInclude Include="MsvcRng.hpp" />
+    <ClInclude Include="DefaultRngInterface.hpp" />
     <ClInclude Include="MazeGenerator.hpp" />
     <ClInclude Include="netIntelLocationData.hpp" />
     <ClInclude Include="Op.hpp" />
@@ -564,7 +565,7 @@
     <ClInclude Include="PolyVector.hpp" />
     <ClInclude Include="PoppedNode.hpp" />
     <ClInclude Include="QrCode.hpp" />
-    <ClInclude Include="algRng.hpp" />
+    <ClInclude Include="RngInterface.hpp" />
     <ClInclude Include="RangeMap.hpp" />
     <ClInclude Include="RasterFont.hpp" />
     <ClInclude Include="Reader.hpp" />
@@ -763,6 +764,7 @@
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="InquiryObject.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
+    <ClCompile Include="LcgRng.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />
@@ -811,7 +813,6 @@
     <ClCompile Include="Keystore.cpp" />
     <ClCompile Include="LangDesc.cpp" />
     <ClCompile Include="LangVm.cpp" />
-    <ClCompile Include="algLcgRng.cpp" />
     <ClCompile Include="lyoContainer.cpp" />
     <ClCompile Include="lyoDocument.cpp" />
     <ClCompile Include="lyoElement.cpp" />
@@ -826,7 +827,7 @@
     <ClCompile Include="Mixed.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="ModuleHider.cpp" />
-    <ClCompile Include="algMtRng.cpp" />
+    <ClCompile Include="DefaultRngInterface.cpp" />
     <ClCompile Include="MysqlConnection.cpp" />
     <ClCompile Include="Oid.cpp" />
     <ClCompile Include="OpaqueString.cpp" />

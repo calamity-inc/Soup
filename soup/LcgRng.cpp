@@ -1,17 +1,16 @@
-#include "algLcgRng.hpp"
+#include "LcgRng.hpp"
 
 #include "Endian.hpp"
 #include "rand.hpp"
-#include "time.hpp"
 
 namespace soup
 {
-	algLcgRng::algLcgRng()
-		: algLcgRng(rand.getSeed())
+	LcgRng::LcgRng()
+		: LcgRng(rand.getSeed())
 	{
 	}
 
-	uint64_t algLcgRng::generate()
+	uint64_t LcgRng::generate()
 	{
 		state *= multiplier;
 		state += increment;

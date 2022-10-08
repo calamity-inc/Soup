@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	struct algRng
+	struct RngInterface
 	{
 		[[nodiscard]] virtual uint64_t generate() = 0;
 

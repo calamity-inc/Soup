@@ -365,16 +365,16 @@ namespace soup
 
 	struct CaptureGenerateRng
 	{
-		algRng& rng;
+		RngInterface& rng;
 		unsigned int bits;
 	};
 
-	[[nodiscard]] static Bigint gen(algRng& rng, unsigned int bits)
+	[[nodiscard]] static Bigint gen(RngInterface& rng, unsigned int bits)
 	{
 		return Bigint::randomProbablePrime(rng, bits, 3);
 	}
 
-	RsaKeypair RsaKeypair::generate(algRng& rng, algRng& aux_rng, unsigned int bits, bool lax_length_requirement)
+	RsaKeypair RsaKeypair::generate(RngInterface& rng, RngInterface& aux_rng, unsigned int bits, bool lax_length_requirement)
 	{
 		auto gen_promise = [](Capture&& _cap, PromiseBase*) -> Bigint
 		{

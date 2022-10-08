@@ -1,10 +1,10 @@
 #pragma once
 
-#include "algRng.hpp"
+#include "RngInterface.hpp"
 
 namespace soup
 {
-	struct algMtRng : public algRng
+	struct DefaultRngInterface : public RngInterface
 	{
 		[[nodiscard]] uint64_t generate() final;
 	};
