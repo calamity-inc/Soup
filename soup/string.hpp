@@ -1,7 +1,8 @@
 #pragma once
 
-#include <algorithm> // std::transform
-#include <cctype> // std::tolower
+#include <algorithm> // transform
+#include <cctype> // tolower
+#include <cmath> // fmod
 #include <cstdint>
 #include <cstring> // strlen
 #include <optional>
@@ -59,6 +60,26 @@ namespace soup
 		[[nodiscard]] static Str decimal(Int i) // prefer std::to_string if possible as it's more optimsed
 		{
 			return from_int_impl_ascii<Str, Int, 10>(i);
+		}
+
+		template <typename Float>
+		[[nodiscard]] static std::string fdecimal(Float f)
+		{
+			if (std::fmod(f, 1) == 0)
+			{
+				std::string str = std::to_string((long long)f);
+				str.append(".0");
+				return str;
+			}
+			else
+			{
+				std::string str = std::to_string(f);
+				while (str.at(str.size() - 1) == '0')
+				{
+					str.erase(str.size() - 1);
+				}
+				return str;
+			}
 		}
 
 		template <typename Str = std::string, typename Int>

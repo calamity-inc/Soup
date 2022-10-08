@@ -1,7 +1,6 @@
 #include "JsonFloat.hpp"
 
-#include <string>
-
+#include "string.hpp"
 #include "Writer.hpp"
 
 namespace soup
@@ -13,7 +12,7 @@ namespace soup
 
 	std::string JsonFloat::encode() const
 	{
-		return std::to_string(value);
+		return string::fdecimal(value);
 	}
 
 	bool JsonFloat::binaryEncode(Writer& w) const
