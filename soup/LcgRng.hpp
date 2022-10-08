@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "Endian.hpp"
+
 namespace soup
 {
 	// Linear congruential generator (LCG)
@@ -14,11 +16,27 @@ namespace soup
 
 		LcgRng();
 
-		LcgRng(uint64_t seed)
+		constexpr LcgRng(uint64_t seed)
 			: state(seed)
 		{
 		}
 
-		[[nodiscard]] uint64_t generate();
+		constexpr void skip() noexcept
+		{
+			state *= multiplier;
+			state += increment;
+		}
+
+		constexpr uint64_t generate() noexcept
+		{
+			skip();
+			return Endianness::invert(state); // invert byte order since the higher-order bits have longer periods
+		}
+
+		constexpr uint8_t generateByte() noexcept
+		{
+			skip();
+			return state >> (8 * 7); // use highest byte for better entropy
+		}
 	};
 }

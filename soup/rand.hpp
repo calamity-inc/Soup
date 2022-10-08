@@ -18,6 +18,28 @@ namespace soup
 			return ((uint64_t)rd() << 32) | rd();
 		}
 
+		[[nodiscard]] static constexpr uint32_t getConstexprSeed() noexcept
+		{
+			uint32_t seed = (__TIME__[7] - '0');
+			seed *= 10;
+			seed += (__TIME__[6] - '0');
+			seed *= 10;
+			seed += (__TIME__[4] - '0');
+			seed *= 10;
+			seed += (__TIME__[3] - '0');
+			seed *= 10;
+			seed += (__TIME__[1] - '0');
+			seed *= 10;
+			seed += (__TIME__[0] - '0');
+
+			seed *= 10;
+			seed += __COUNTER__; // I don't think this does a whole lot for us in a constexpr context. This function might need to be a macro.
+
+			seed *= 22695477u; // LCG-esque multiplication for "better-looking" numbers since `seed` is basically just a timestamp at this point
+
+			return seed;
+		}
+
 	private:
 		[[nodiscard]] static std::mt19937_64 getMersenneTwisterImpl() noexcept
 		{

@@ -4,6 +4,8 @@
 #include <string>
 
 #include "base.hpp"
+#include "LcgRng.hpp"
+#include "rand.hpp"
 #include "string.hpp"
 #include "StringLiteral.hpp"
 
@@ -16,12 +18,15 @@ namespace soup
 		static constexpr size_t Len = Size - 1;
 
 	private:
+		uint32_t seed;
 		char data[Size];
-		bool runtime_once = false;
 
 	public:
 		consteval ObfusString(const char(&in)[Size])
 		{
+			seed = rand.getConstexprSeed();
+			LcgRng rng(seed);
+
 			// rot13
 			for (size_t i = 0; i != Size; ++i)
 			{
@@ -31,7 +36,7 @@ namespace soup
 			// flip bits
 			for (size_t i = 0; i != Size; ++i)
 			{
-				data[i] ^= 96u;
+				data[i] ^= rng.generateByte();
 			}
 
 			// mirror
@@ -44,11 +49,12 @@ namespace soup
 	private:
 		SOUP_NOINLINE void runtime_access() noexcept
 		{
-			if (runtime_once)
+			if (seed == 0)
 			{
 				return;
 			}
-			runtime_once = true;
+			LcgRng rng(seed);
+			seed = 0;
 
 			// mirror
 			for (size_t i = 0, j = Len; i != Size; ++i, --j)
@@ -59,7 +65,7 @@ namespace soup
 			// flip bits
 			for (size_t i = 0; i != Size; ++i)
 			{
-				data[i] ^= 96u;
+				data[i] ^= rng.generateByte();
 			}
 
 			// rot13
