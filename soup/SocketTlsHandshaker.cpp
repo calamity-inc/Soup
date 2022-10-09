@@ -54,7 +54,7 @@ namespace soup
 		return master_secret;
 	}
 
-	void SocketTlsHandshaker::getKeys(std::string& client_write_mac, std::string& server_write_mac, std::string& client_write_key, std::string& server_write_key)
+	void SocketTlsHandshaker::getKeys(std::string& client_write_mac, std::string& server_write_mac, std::vector<uint8_t>& client_write_key, std::vector<uint8_t>& server_write_key)
 	{
 		auto mac_key_length = 20; // SHA1 = 20, SHA256 = 32
 		switch (cipher_suite)
@@ -85,8 +85,12 @@ namespace soup
 
 		client_write_mac = key_block.substr(0, mac_key_length);
 		server_write_mac = key_block.substr(mac_key_length, mac_key_length);
-		client_write_key = key_block.substr(mac_key_length * 2, enc_key_length);
-		server_write_key = key_block.substr((mac_key_length * 2) + enc_key_length);
+
+		auto client_write_key_str = key_block.substr(mac_key_length * 2, enc_key_length);
+		auto server_write_key_str = key_block.substr((mac_key_length * 2) + enc_key_length);
+
+		client_write_key = std::vector<uint8_t>(client_write_key_str.begin(), client_write_key_str.end());
+		server_write_key = std::vector<uint8_t>(server_write_key_str.begin(), server_write_key_str.end());
 	}
 
 	std::string SocketTlsHandshaker::getClientFinishVerifyData()

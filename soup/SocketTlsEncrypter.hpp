@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "type.hpp"
 
@@ -9,7 +10,7 @@ namespace soup
 	struct SocketTlsEncrypter
 	{
 		uint64_t seq_num = 0;
-		std::string cipher_key;
+		std::vector<uint8_t> cipher_key;
 		std::string mac_key;
 
 		[[nodiscard]] constexpr bool isActive() const noexcept

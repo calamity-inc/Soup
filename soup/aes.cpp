@@ -322,6 +322,14 @@ namespace soup
 		return encryptCFB(in, key, iv); // Symmetricality go brr
 	}
 
+	std::string aes::decryptCBC(const std::string& in, const std::vector<uint8_t>& key, const std::string& iv)
+	{
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
+		auto out = decryptCBC(v_in, key, v_iv);
+		return std::string(out.begin(), out.end());
+	}
+
 	void aes::EncryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
 	{
 		uint8_t state_0[4 * Nb];

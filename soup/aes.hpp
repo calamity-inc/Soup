@@ -26,6 +26,8 @@ namespace soup
 		[[nodiscard]] static std::string encryptCFB(const std::string& in, const std::string& key, const std::string& iv);
 		[[nodiscard]] static std::string decryptCFB(const std::string& in, const std::string& key, const std::string& iv);
 
+		[[nodiscard]] static std::string decryptCBC(const std::string& in, const std::vector<uint8_t>& key, const std::string& iv);
+
 	private:
 		[[nodiscard]] static std::vector<uint8_t> KeyExpansion(const std::vector<uint8_t>& key);
 		[[nodiscard]] static int getNk(const std::vector<uint8_t>& key);
