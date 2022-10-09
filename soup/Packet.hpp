@@ -9,6 +9,7 @@
 #include "OstreamWriter.hpp"
 #include "StringReader.hpp"
 #include "StringWriter.hpp"
+#include "VectorWriter.hpp"
 
 #include <sstream>
 
@@ -52,6 +53,13 @@ namespace soup
 		bool read(Reader& r)
 		{
 			return reinterpret_cast<T*>(this)->template io<Reader>(r);
+		}
+
+		[[nodiscard]] std::vector<uint8_t> toBinary(Endian endian = BIG_ENDIAN)
+		{
+			VectorWriter w(endian);
+			write(w);
+			return w.vec;
 		}
 
 		[[nodiscard]] std::string toBinaryString(Endian endian = BIG_ENDIAN)
