@@ -37,6 +37,11 @@ namespace soup
 			return (feature_flags_ecx >> 19) & 1;
 		}
 
+		[[nodiscard]] bool supportsAESNI() const noexcept
+		{
+			return (feature_flags_ecx >> 25) & 1;
+		}
+
 		[[nodiscard]] std::string toString() const;
 
 		static void invokeCpuid(void* out, uint32_t eax);
