@@ -13,7 +13,7 @@ namespace soup
 		TlsProtocolVersion version{};
 		uint16_t length;
 
-		SOUP_PACKET_IO(s)
+		SOUP_PACKET_IO(s) // 5 bytes
 		{
 			return s.u8(content_type)
 				&& version.io(s)

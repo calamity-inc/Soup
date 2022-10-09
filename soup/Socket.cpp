@@ -10,6 +10,8 @@
 #endif
 
 #include "aes.hpp"
+#include "Buffer.hpp"
+#include "BufferRefWriter.hpp"
 #include "dnsOsResolver.hpp"
 #include "ec.hpp"
 #include "NamedCurves.hpp"
@@ -778,9 +780,14 @@ namespace soup
 		TlsRecord record{};
 		record.content_type = content_type;
 		record.length = body.size();
-		auto data = record.toBinary();
-		data.insert(data.end(), body.begin(), body.end());
-		return transport_send(data);
+
+		Buffer buf(5 + body.size());
+		BufferRefWriter bw(buf, BIG_ENDIAN);
+		record.write(bw);
+
+		buf.append(body.data(), body.size());
+
+		return transport_send(buf);
 	}
 
 	struct CaptureSocketTlsRecvHandshake
@@ -1001,9 +1008,9 @@ namespace soup
 		return ::recv(fd, &buf, 1, MSG_PEEK) == 1;
 	}
 
-	bool Socket::transport_send(const std::vector<uint8_t>& data) const noexcept
+	bool Socket::transport_send(const Buffer& buf) const noexcept
 	{
-		return transport_send(data.data(), data.size());
+		return transport_send(buf.data, buf.size);
 	}
 
 	bool Socket::transport_send(const std::string& data) const noexcept

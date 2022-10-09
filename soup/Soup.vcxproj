@@ -436,6 +436,9 @@
     <ClInclude Include="BigintId.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
+    <ClInclude Include="Buffer.hpp" />
+    <ClInclude Include="BufferRefWriter.hpp" />
+    <ClInclude Include="BufferWriter.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
     <ClInclude Include="CidrSubnet6.hpp" />
     <ClInclude Include="CidrSupernet.hpp" />

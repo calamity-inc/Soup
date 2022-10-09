@@ -5,11 +5,11 @@
 #define SOUP_IF_ISREAD if constexpr (T::isRead())
 #define SOUP_ELSEIF_ISWRITE else
 
+#include "BufferWriter.hpp"
 #include "IstreamReader.hpp"
 #include "OstreamWriter.hpp"
 #include "StringReader.hpp"
 #include "StringWriter.hpp"
-#include "VectorWriter.hpp"
 
 #include <sstream>
 
@@ -55,11 +55,11 @@ namespace soup
 			return reinterpret_cast<T*>(this)->template io<Reader>(r);
 		}
 
-		[[nodiscard]] std::vector<uint8_t> toBinary(Endian endian = BIG_ENDIAN)
+		[[nodiscard]] Buffer toBinary(Endian endian = BIG_ENDIAN)
 		{
-			VectorWriter w(endian);
+			BufferWriter w(endian);
 			write(w);
-			return w.vec;
+			return w.buf;
 		}
 
 		[[nodiscard]] std::string toBinaryString(Endian endian = BIG_ENDIAN)

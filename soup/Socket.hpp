@@ -160,7 +160,7 @@ namespace soup
 
 		// Transport Layer
 
-		bool transport_send(const std::vector<uint8_t>& data) const noexcept;
+		bool transport_send(const Buffer& buf) const noexcept;
 		bool transport_send(const std::string& data) const noexcept;
 		bool transport_send(const void* data, int size) const noexcept;
 

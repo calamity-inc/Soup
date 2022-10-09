@@ -23,6 +23,9 @@ namespace soup
 	// data.asn1
 	struct Asn1Sequence;
 
+	// data.container
+	class Buffer;
+
 	// data.json
 	struct JsonArray;
 	struct JsonBool;
