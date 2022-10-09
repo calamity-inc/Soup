@@ -7,17 +7,17 @@ namespace soup
 	class VectorReader final : public Reader
 	{
 	public:
-		std::vector<char> data;
+		std::vector<uint8_t> data;
 		size_t offset = 0;
 
-		VectorReader(std::vector<char> data, Endian endian = LITTLE_ENDIAN)
+		VectorReader(std::vector<uint8_t> data, Endian endian = LITTLE_ENDIAN)
 			: Reader(endian), data(std::move(data))
 		{
 		}
 
 		~VectorReader() final = default;
 
-		void operator =(std::vector<char> new_data) noexcept
+		void operator =(std::vector<uint8_t> new_data) noexcept
 		{
 			data = std::move(new_data);
 			offset = 0;
@@ -34,7 +34,7 @@ namespace soup
 			{
 				return false;
 			}
-			v = (uint8_t)data.at(offset++);
+			v = data.at(offset++);
 			return true;
 		}
 
@@ -47,7 +47,7 @@ namespace soup
 			}
 			while (len--)
 			{
-				v.push_back(data.at(offset++));
+				v.push_back(static_cast<char>(data.at(offset++)));
 			}
 			return true;
 		}

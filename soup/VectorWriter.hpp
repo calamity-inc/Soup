@@ -7,7 +7,7 @@ namespace soup
 	class VectorWriter final : public Writer
 	{
 	public:
-		std::vector<char> vec{};
+		std::vector<uint8_t> vec{};
 
 		VectorWriter(Endian endian = LITTLE_ENDIAN)
 			: Writer(endian)
@@ -25,7 +25,7 @@ namespace soup
 		{
 			while (size--)
 			{
-				vec.emplace_back(*data++);
+				vec.emplace_back(static_cast<uint8_t>(*data++));
 			}
 		}
 	};
