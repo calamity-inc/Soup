@@ -1,7 +1,14 @@
 #include "crc32.hpp"
 
 #include "base.hpp"
-#if SOUP_X86 && SOUP_BITS == 64
+
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#define CRC32_USE_ASM true
+#else
+#define CRC32_USE_ASM false
+#endif
+
+#if CRC32_USE_ASM
 #include "CpuInfo.hpp"
 #endif
 #include "Endian.hpp"
@@ -91,7 +98,7 @@ namespace soup
 	// So, we have .asm files to use these instructions with intent. If you have an assembler and want to link against the them, define SOUP_USE_ASM.
 	// With the Visual Studio solution, this "just works."
 
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#if CRC32_USE_ASM
 	extern "C" uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc);
 
 	/*static __declspec(noinline) uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc)
@@ -134,7 +141,7 @@ namespace soup
 
 	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init)
 	{
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#if CRC32_USE_ASM
 		const CpuInfo& cpu_info = CpuInfo::get();
 		if (cpu_info.supportsPCLMULQDQ()
 			&& cpu_info.supportsSSE4_1()
