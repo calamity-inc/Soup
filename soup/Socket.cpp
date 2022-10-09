@@ -282,7 +282,7 @@ namespace soup
 		TlsClientHello hello;
 		hello.random.time = time::unixSeconds();
 		rand.fill(hello.random.random);
-		handshaker->client_random = hello.random.toBinary();
+		handshaker->client_random = hello.random.toBinaryString();
 		hello.cipher_suites = {
 			TLS_RSA_WITH_AES_256_CBC_SHA256,
 			TLS_RSA_WITH_AES_128_CBC_SHA256,
@@ -310,7 +310,7 @@ namespace soup
 			hello.extensions.add(TlsExtensionType::elliptic_curves, ext_elliptic_curves);
 		}
 
-		if (tls_sendHandshake(handshaker, TlsHandshake::client_hello, hello.toBinary()))
+		if (tls_sendHandshake(handshaker, TlsHandshake::client_hello, hello.toBinaryString()))
 		{
 			tls_recvHandshake(std::move(handshaker), TlsHandshake::server_hello, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)
 			{
@@ -321,7 +321,7 @@ namespace soup
 					return;
 				}
 				handshaker->cipher_suite = shello.cipher_suite;
-				handshaker->server_random = shello.random.toBinary();
+				handshaker->server_random = shello.random.toBinaryString();
 
 				s.tls_recvHandshake(std::move(handshaker), TlsHandshake::certificate, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)
 				{
@@ -393,7 +393,7 @@ namespace soup
 
 				TlsEncryptedPreMasterSecret epms{};
 				epms.data = handshaker->certchain.certs.at(0).key.encryptPkcs1(pms).toBinary();
-				cke = epms.toBinary();
+				cke = epms.toBinaryString();
 
 				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(pms));
 			}
@@ -510,7 +510,7 @@ namespace soup
 					return;
 				}
 
-				handshaker->client_random = hello.random.toBinary();
+				handshaker->client_random = hello.random.toBinaryString();
 
 				if (handshaker->on_client_hello)
 				{
@@ -522,10 +522,10 @@ namespace soup
 				TlsServerHello shello{};
 				shello.random.time = time::unixSeconds();
 				rand.fill(shello.random.random);
-				handshaker->server_random = shello.random.toBinary();
+				handshaker->server_random = shello.random.toBinaryString();
 				shello.cipher_suite = handshaker->cipher_suite;
 				shello.compression_method = 0;
-				if (!s.tls_sendHandshake(handshaker, TlsHandshake::server_hello, shello.toBinary()))
+				if (!s.tls_sendHandshake(handshaker, TlsHandshake::server_hello, shello.toBinaryString()))
 				{
 					return;
 				}
@@ -534,7 +534,7 @@ namespace soup
 			{
 				TlsCertificate tcert;
 				tcert.asn1_certs = std::move(handshaker->rsa_data.der_encoded_certchain);
-				if (!s.tls_sendHandshake(handshaker, TlsHandshake::certificate, tcert.toBinary()))
+				if (!s.tls_sendHandshake(handshaker, TlsHandshake::certificate, tcert.toBinaryString()))
 				{
 					return;
 				}
@@ -763,7 +763,7 @@ namespace soup
 			TlsRecord record{};
 			record.content_type = content_type;
 			record.length = content.size();
-			auto data = record.toBinary();
+			auto data = record.toBinaryString();
 			data.append(content);
 			return transport_send(data);
 		}
@@ -778,7 +778,7 @@ namespace soup
 		TlsRecord record{};
 		record.content_type = content_type;
 		record.length = body.size();
-		auto data = record.toBinary();
+		auto data = record.toBinaryString();
 		data.append(body);
 		return transport_send(data);
 	}

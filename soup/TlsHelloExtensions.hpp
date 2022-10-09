@@ -52,7 +52,7 @@ namespace soup
 					std::string ext_data{};
 					for (auto& ext : extensions)
 					{
-						ext_data.append(ext.toBinary());
+						ext_data.append(ext.toBinaryString());
 					}
 					s.str_lp_u16(ext_data);
 				}
@@ -63,7 +63,7 @@ namespace soup
 		template <typename T>
 		void add(uint16_t ext_id, Packet<T>& ext_packet)
 		{
-			return add(ext_id, ext_packet.toBinary());
+			return add(ext_id, ext_packet.toBinaryString());
 		}
 
 		void add(uint16_t ext_id, std::string&& ext_data) noexcept

@@ -567,7 +567,7 @@ namespace soup
 		MysqlFrame frame{};
 		frame.length = data.size();
 		frame.seq_id = next_send_seq_id++;
-		data.insert(0, frame.toBinaryLE());
+		data.insert(0, frame.toBinaryStringLE());
 		send(data);
 	}
 }

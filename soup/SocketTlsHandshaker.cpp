@@ -18,7 +18,7 @@ namespace soup
 		TlsHandshake hs{};
 		hs.handshake_type = handshake_type;
 		hs.length = content.size();
-		auto data = hs.toBinary();
+		auto data = hs.toBinaryString();
 		data.append(content);
 
 		layer_bytes.append(data);

@@ -54,16 +54,16 @@ namespace soup
 			return reinterpret_cast<T*>(this)->template io<Reader>(r);
 		}
 
-		[[nodiscard]] std::string toBinary(Endian endian = BIG_ENDIAN)
+		[[nodiscard]] std::string toBinaryString(Endian endian = BIG_ENDIAN)
 		{
 			StringWriter w(endian);
 			write(w);
 			return w.str;
 		}
 
-		[[nodiscard]] std::string toBinaryLE()
+		[[nodiscard]] std::string toBinaryStringLE()
 		{
-			return toBinary(LITTLE_ENDIAN);
+			return toBinaryString(LITTLE_ENDIAN);
 		}
 
 		bool write(std::ostream& os, Endian endian = BIG_ENDIAN)

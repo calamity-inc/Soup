@@ -19,7 +19,7 @@ namespace soup
 		mac.seq_num = seq_num++;
 		mac.record.content_type = content_type;
 		mac.record.length = content.size();
-		auto msg = mac.toBinary();
+		auto msg = mac.toBinaryString();
 		msg.append(content);
 
 		if (mac_key.size() == 20)

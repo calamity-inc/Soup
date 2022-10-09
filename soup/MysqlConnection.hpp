@@ -50,7 +50,7 @@ namespace soup
 		template <typename T>
 		void mysqlSend(T& packet)
 		{
-			return mysqlSend(packet.toBinaryLE());
+			return mysqlSend(packet.toBinaryStringLE());
 		}
 
 		void mysqlSend(std::string data);
