@@ -998,6 +998,9 @@
     <ClInclude Include="VectorReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
+    <ClInclude Include="TaskGuard.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

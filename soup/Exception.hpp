@@ -14,5 +14,10 @@ namespace soup
 		{
 			throw Exception("Call to virtual function that was not implemented by specialisation");
 		}
+
+		[[noreturn]] static SOUP_FORCEINLINE void raiseLogicError()
+		{
+			throw Exception("Logic error");
+		}
 	};
 }
