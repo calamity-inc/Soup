@@ -5,9 +5,9 @@
 namespace soup
 {
 	static constexpr int Nb = 4;
-	static constexpr unsigned int blockBytesLen = 4 * Nb * sizeof(unsigned char);
+	static constexpr unsigned int blockBytesLen = 4 * Nb * sizeof(uint8_t);
 
-	static const unsigned char sbox[16][16] = {
+	static const uint8_t sbox[16][16] = {
 		{0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76},
 		{0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0},
 		{0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15},
@@ -26,7 +26,7 @@ namespace soup
 		{0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16}
 	};
 
-	static const unsigned char inv_sbox[16][16] = {
+	static const uint8_t inv_sbox[16][16] = {
 		{0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb},
 		{0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb},
 		{0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e},
@@ -46,7 +46,7 @@ namespace soup
 	};
 
 	/// Galois Multiplication lookup tables
-	static const unsigned char GF_MUL_TABLE[15][256] =
+	static const uint8_t GF_MUL_TABLE[15][256] =
 	{
 		{},{},
 
@@ -178,7 +178,7 @@ namespace soup
 	};
 
 	/// circulant MDS matrix
-	static const unsigned char CMDS[4][4] =
+	static const uint8_t CMDS[4][4] =
 	{
 		{2,3,1,1},
 		{1,2,3,1},
@@ -187,7 +187,7 @@ namespace soup
 	};
 
 	/// Inverse circulant MDS matrix
-	static const unsigned char INV_CMDS[4][4] =
+	static const uint8_t INV_CMDS[4][4] =
 	{
 		{14,11,13,9},
 		{9,14,11,13},
@@ -195,9 +195,9 @@ namespace soup
 		{11,13,9,14}
 	};
 
-	std::vector<unsigned char> aes::encryptECB(const std::vector<unsigned char>& in, const std::vector<unsigned char>& key)
+	std::vector<uint8_t> aes::encryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key)
 	{
-		std::vector<unsigned char> out(in.size(), 0);
+		std::vector<uint8_t> out(in.size(), 0);
 		const auto Nr = getNr(key);
 		auto roundKeys = KeyExpansion(key);
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
@@ -207,9 +207,9 @@ namespace soup
 		return out;
 	}
 
-	std::vector<unsigned char> aes::decryptECB(const std::vector<unsigned char>& in, const std::vector<unsigned char>& key)
+	std::vector<uint8_t> aes::decryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key)
 	{
-		std::vector<unsigned char> out(in.size(), 0);
+		std::vector<uint8_t> out(in.size(), 0);
 		const auto Nr = getNr(key);
 		auto roundKeys = KeyExpansion(key);
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
@@ -220,10 +220,10 @@ namespace soup
 		return out;
 	}
 
-	std::vector<unsigned char> aes::encryptCBC(const std::vector<unsigned char>& in, const std::vector<unsigned char>& key, const std::vector<unsigned char>& iv)
+	std::vector<uint8_t> aes::encryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
-		std::vector<unsigned char> out(in.size(), 0);
-		std::vector<unsigned char> block(blockBytesLen, 0);
+		std::vector<uint8_t> out(in.size(), 0);
+		std::vector<uint8_t> block(blockBytesLen, 0);
 		const auto Nr = getNr(key);
 		auto roundKeys = KeyExpansion(key);
 		memcpy(block.data(), iv.data(), blockBytesLen);
@@ -236,10 +236,10 @@ namespace soup
 		return out;
 	}
 
-	std::vector<unsigned char> aes::decryptCBC(const std::vector<unsigned char>& in, const std::vector<unsigned char>& key, const std::vector<unsigned char>& iv)
+	std::vector<uint8_t> aes::decryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
-		std::vector<unsigned char> out(in.size(), 0);
-		std::vector<unsigned char> block(blockBytesLen, 0);
+		std::vector<uint8_t> out(in.size(), 0);
+		std::vector<uint8_t> block(blockBytesLen, 0);
 		const auto Nr = getNr(key);
 		auto roundKeys = KeyExpansion(key);
 		memcpy(block.data(), iv.data(), blockBytesLen);
@@ -252,11 +252,11 @@ namespace soup
 		return out;
 	}
 
-	std::vector<unsigned char> aes::encryptCFB(const std::vector<unsigned char>& in, const std::vector<unsigned char>& key, const std::vector<unsigned char>& iv)
+	std::vector<uint8_t> aes::encryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
-		std::vector<unsigned char> out(in.size(), 0);
-		std::vector<unsigned char> block(blockBytesLen, 0);
-		std::vector<unsigned char> encryptedBlock(blockBytesLen, 0);
+		std::vector<uint8_t> out(in.size(), 0);
+		std::vector<uint8_t> block(blockBytesLen, 0);
+		std::vector<uint8_t> encryptedBlock(blockBytesLen, 0);
 		const auto Nr = getNr(key);
 		auto roundKeys = KeyExpansion(key);
 		memcpy(block.data(), iv.data(), blockBytesLen);
@@ -269,50 +269,50 @@ namespace soup
 		return out;
 	}
 
-	std::vector<unsigned char> aes::decryptCFB(const std::vector<unsigned char>& in, const std::vector<unsigned char>& key, const std::vector<unsigned char>& iv)
+	std::vector<uint8_t> aes::decryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
 		return encryptCFB(in, key, iv); // Symmetricality go brr
 	}
 
 	std::string aes::encryptECB(const std::string& in, const std::string& key)
 	{
-		std::vector<unsigned char> v_in(in.begin(), in.end());
-		std::vector<unsigned char> v_key(key.begin(), key.end());
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
 		auto out = encryptECB(v_in, v_key);
 		return std::string(out.begin(), out.end());
 	}
 
 	std::string aes::decryptECB(const std::string& in, const std::string& key)
 	{
-		std::vector<unsigned char> v_in(in.begin(), in.end());
-		std::vector<unsigned char> v_key(key.begin(), key.end());
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
 		auto out = decryptECB(v_in, v_key);
 		return std::string(out.begin(), out.end());
 	}
 
 	std::string aes::encryptCBC(const std::string& in, const std::string& key, const std::string& iv)
 	{
-		std::vector<unsigned char> v_in(in.begin(), in.end());
-		std::vector<unsigned char> v_key(key.begin(), key.end());
-		std::vector<unsigned char> v_iv(iv.begin(), iv.end());
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
+		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
 		auto out = encryptCBC(v_in, v_key, v_iv);
 		return std::string(out.begin(), out.end());
 	}
 
 	std::string aes::decryptCBC(const std::string& in, const std::string& key, const std::string& iv)
 	{
-		std::vector<unsigned char> v_in(in.begin(), in.end());
-		std::vector<unsigned char> v_key(key.begin(), key.end());
-		std::vector<unsigned char> v_iv(iv.begin(), iv.end());
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
+		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
 		auto out = decryptCBC(v_in, v_key, v_iv);
 		return std::string(out.begin(), out.end());
 	}
 
 	std::string aes::encryptCFB(const std::string& in, const std::string& key, const std::string& iv)
 	{
-		std::vector<unsigned char> v_in(in.begin(), in.end());
-		std::vector<unsigned char> v_key(key.begin(), key.end());
-		std::vector<unsigned char> v_iv(iv.begin(), iv.end());
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
+		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
 		auto out = encryptCFB(v_in, v_key, v_iv);
 		return std::string(out.begin(), out.end());
 	}
@@ -322,10 +322,10 @@ namespace soup
 		return encryptCFB(in, key, iv); // Symmetricality go brr
 	}
 
-	void aes::EncryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, const int Nr)
+	void aes::EncryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
 	{
-		unsigned char state_0[4 * Nb];
-		unsigned char* state[4];
+		uint8_t state_0[4 * Nb];
+		uint8_t* state[4];
 		state[0] = state_0;
 
 		int i, j, round;
@@ -365,10 +365,10 @@ namespace soup
 		}
 	}
 
-	void aes::DecryptBlock(const unsigned char in[], unsigned char out[], unsigned char* roundKeys, const int Nr)
+	void aes::DecryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
 	{
-		unsigned char state_0[4 * Nb];
-		unsigned char* state[4];
+		uint8_t state_0[4 * Nb];
+		uint8_t* state[4];
 		state[0] = state_0;
 
 		int i, j, round;
@@ -406,15 +406,15 @@ namespace soup
 		}
 	}
 
-	std::vector<unsigned char> aes::KeyExpansion(const std::vector<unsigned char>& key)
+	std::vector<uint8_t> aes::KeyExpansion(const std::vector<uint8_t>& key)
 	{
 		const auto Nk = getNk(key);
 		const auto Nr = getNr(Nk);
 
-		std::vector<unsigned char> w(4 * Nb * (Nr + 1), 0);
+		std::vector<uint8_t> w(4 * Nb * (Nr + 1), 0);
 
-		unsigned char temp[4];
-		unsigned char rcon[4];
+		uint8_t temp[4];
+		uint8_t rcon[4];
 
 		int i = 0;
 		while (i < 4 * Nk)
@@ -453,12 +453,12 @@ namespace soup
 		return w;
 	}
 
-	int aes::getNk(const std::vector<unsigned char>& key)
+	int aes::getNk(const std::vector<uint8_t>& key)
 	{
 		return key.size() / 4;
 	}
 
-	int aes::getNr(const std::vector<unsigned char>& key)
+	int aes::getNr(const std::vector<uint8_t>& key)
 	{
 		return getNr(getNk(key));
 	}
@@ -468,10 +468,10 @@ namespace soup
 		return Nk + 6;
 	}
 
-	void aes::SubBytes(unsigned char** state)
+	void aes::SubBytes(uint8_t** state)
 	{
 		int i, j;
-		unsigned char t;
+		uint8_t t;
 		for (i = 0; i < 4; i++)
 		{
 			for (j = 0; j < Nb; j++)
@@ -482,31 +482,31 @@ namespace soup
 		}
 	}
 
-	void aes::ShiftRow(unsigned char** state, int i, int n)    // shift row i on n positions
+	void aes::ShiftRow(uint8_t** state, int i, int n)    // shift row i on n positions
 	{
-		unsigned char tmp[Nb];
+		uint8_t tmp[Nb];
 		for (int j = 0; j < Nb; j++)
 		{
 			tmp[j] = state[i][(j + n) % Nb];
 		}
-		memcpy(state[i], tmp, Nb * sizeof(unsigned char));
+		memcpy(state[i], tmp, Nb * sizeof(uint8_t));
 	}
 
-	void aes::ShiftRows(unsigned char** state)
+	void aes::ShiftRows(uint8_t** state)
 	{
 		ShiftRow(state, 1, 1);
 		ShiftRow(state, 2, 2);
 		ShiftRow(state, 3, 3);
 	}
 
-	unsigned char aes::xtime(unsigned char b)    // multiply on x
+	uint8_t aes::xtime(uint8_t b)    // multiply on x
 	{
 		return (b << 1) ^ (((b >> 7) & 1) * 0x1b);
 	}
 
-	void aes::MixColumns(unsigned char** state)
+	void aes::MixColumns(uint8_t** state)
 	{
-		unsigned char temp_state[4][4];
+		uint8_t temp_state[4][4];
 
 		for (size_t i = 0; i < 4; ++i)
 		{
@@ -533,7 +533,7 @@ namespace soup
 		}
 	}
 
-	void aes::AddRoundKey(unsigned char** state, unsigned char* key)
+	void aes::AddRoundKey(uint8_t** state, uint8_t* key)
 	{
 		int i, j;
 		for (i = 0; i < 4; i++)
@@ -545,7 +545,7 @@ namespace soup
 		}
 	}
 
-	void aes::SubWord(unsigned char* a)
+	void aes::SubWord(uint8_t* a)
 	{
 		int i;
 		for (i = 0; i < 4; i++)
@@ -554,16 +554,16 @@ namespace soup
 		}
 	}
 
-	void aes::RotWord(unsigned char* a)
+	void aes::RotWord(uint8_t* a)
 	{
-		unsigned char c = a[0];
+		uint8_t c = a[0];
 		a[0] = a[1];
 		a[1] = a[2];
 		a[2] = a[3];
 		a[3] = c;
 	}
 
-	void aes::XorWords(unsigned char* a, unsigned char* b, unsigned char* c)
+	void aes::XorWords(uint8_t* a, uint8_t* b, uint8_t* c)
 	{
 		int i;
 		for (i = 0; i < 4; i++)
@@ -572,10 +572,10 @@ namespace soup
 		}
 	}
 
-	void aes::Rcon(unsigned char* a, int n)
+	void aes::Rcon(uint8_t* a, int n)
 	{
 		int i;
-		unsigned char c = 1;
+		uint8_t c = 1;
 		for (i = 0; i < n - 1; i++)
 		{
 			c = xtime(c);
@@ -585,10 +585,10 @@ namespace soup
 		a[1] = a[2] = a[3] = 0;
 	}
 
-	void aes::InvSubBytes(unsigned char** state)
+	void aes::InvSubBytes(uint8_t** state)
 	{
 		int i, j;
-		unsigned char t;
+		uint8_t t;
 		for (i = 0; i < 4; i++)
 		{
 			for (j = 0; j < Nb; j++)
@@ -599,9 +599,9 @@ namespace soup
 		}
 	}
 
-	void aes::InvMixColumns(unsigned char** state)
+	void aes::InvMixColumns(uint8_t** state)
 	{
-		unsigned char temp_state[4][4];
+		uint8_t temp_state[4][4];
 
 		for (size_t i = 0; i < 4; ++i)
 		{
@@ -625,14 +625,14 @@ namespace soup
 		}
 	}
 
-	void aes::InvShiftRows(unsigned char** state)
+	void aes::InvShiftRows(uint8_t** state)
 	{
 		ShiftRow(state, 1, Nb - 1);
 		ShiftRow(state, 2, Nb - 2);
 		ShiftRow(state, 3, Nb - 3);
 	}
 
-	void aes::XorBlocks(const unsigned char* a, const unsigned char* b, unsigned char* c, unsigned int len)
+	void aes::XorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len)
 	{
 		for (unsigned int i = 0; i < len; i++)
 		{

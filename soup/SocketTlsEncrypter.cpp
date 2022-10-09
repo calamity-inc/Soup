@@ -41,14 +41,14 @@ namespace soup
 		auto aligned_in_len = ((((cont_with_mac_size + 1) / cipher_bytes) + 1) * cipher_bytes);
 		char pad_len = (aligned_in_len - cont_with_mac_size);
 
-		std::vector<unsigned char> in{};
+		std::vector<uint8_t> in{};
 		in.reserve(content.size() + mac.size() + pad_len);
 		in.insert(in.end(), content.begin(), content.end());
 		in.insert(in.end(), mac.begin(), mac.end());
 		in.insert(in.end(), (size_t)pad_len, (pad_len - 1));
 
 		auto iv = rand.vec_u8(cipher_bytes);
-		std::vector<unsigned char> key(cipher_key.begin(), cipher_key.end());
+		std::vector<uint8_t> key(cipher_key.begin(), cipher_key.end());
 		auto out = aes::encryptCBC(in, key, iv);
 
 		std::string res(iv.begin(), iv.end());
