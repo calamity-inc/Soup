@@ -992,6 +992,12 @@
     <ClInclude Include="LcgRng.hpp">
       <Filter>algos\rng</Filter>
     </ClInclude>
+    <ClInclude Include="VectorWriter.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorReader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
