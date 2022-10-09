@@ -773,13 +773,13 @@ namespace soup
 
 	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content)
 	{
-		std::string body = tls_encrypter_send.encrypt(content_type, content);
+		auto body = tls_encrypter_send.encrypt(content_type, content);
 
 		TlsRecord record{};
 		record.content_type = content_type;
 		record.length = body.size();
-		auto data = record.toBinaryString();
-		data.append(body);
+		auto data = record.toBinary();
+		data.insert(data.end(), body.begin(), body.end());
 		return transport_send(data);
 	}
 
@@ -999,6 +999,11 @@ namespace soup
 	{
 		char buf;
 		return ::recv(fd, &buf, 1, MSG_PEEK) == 1;
+	}
+
+	bool Socket::transport_send(const std::vector<uint8_t>& data) const noexcept
+	{
+		return transport_send(data.data(), data.size());
 	}
 
 	bool Socket::transport_send(const std::string& data) const noexcept

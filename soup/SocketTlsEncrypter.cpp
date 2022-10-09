@@ -32,7 +32,7 @@ namespace soup
 		}
 	}
 
-	std::string SocketTlsEncrypter::encrypt(TlsContentType_t content_type, const std::string& content)
+	std::vector<uint8_t> SocketTlsEncrypter::encrypt(TlsContentType_t content_type, const std::string& content)
 	{
 		constexpr auto cipher_bytes = 16;
 
@@ -51,9 +51,8 @@ namespace soup
 		std::vector<uint8_t> key(cipher_key.begin(), cipher_key.end());
 		auto out = aes::encryptCBC(in, key, iv);
 
-		std::string res(iv.begin(), iv.end());
-		res.append(out.begin(), out.end());
-		return res;
+		iv.insert(iv.end(), out.begin(), out.end());
+		return iv;
 	}
 
 	void SocketTlsEncrypter::reset() noexcept
