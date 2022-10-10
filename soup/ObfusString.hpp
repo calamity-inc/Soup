@@ -24,7 +24,7 @@ namespace soup
 	public:
 		consteval ObfusString(const char(&in)[Size])
 		{
-			seed = rand.getConstexprSeed();
+			seed = rand.getConstexprSeed(Len);
 			LcgRng rng(seed);
 
 			// rot13

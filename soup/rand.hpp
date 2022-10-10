@@ -18,24 +18,18 @@ namespace soup
 			return ((uint64_t)rd() << 32) | rd();
 		}
 
-		[[nodiscard]] static constexpr uint32_t getConstexprSeed() noexcept
+//#define getConstexprSeedCounted() getConstexprSeed(__COUNTER__ + 1)
+
+		[[nodiscard]] static constexpr uint32_t getConstexprSeed(unsigned int lcg_iterations = 1) noexcept
 		{
-			uint32_t seed = (__TIME__[7] - '0');
-			seed *= 10;
-			seed += (__TIME__[6] - '0');
-			seed *= 10;
-			seed += (__TIME__[4] - '0');
-			seed *= 10;
-			seed += (__TIME__[3] - '0');
-			seed *= 10;
-			seed += (__TIME__[1] - '0');
-			seed *= 10;
-			seed += (__TIME__[0] - '0');
+			uint32_t seed = (((((((((((__TIME__[7] - '0') * 10) + (__TIME__[6] - '0')) * 10) + (__TIME__[4] - '0')) * 10) + (__TIME__[3] - '0')) * 10) + (__TIME__[1] - '0')) * 10) + (__TIME__[0] - '0'));
 
-			seed *= 10;
-			seed += __COUNTER__; // I don't think this does a whole lot for us in a constexpr context. This function might need to be a macro.
-
-			seed *= 22695477u; // LCG-esque multiplication for "better-looking" numbers since `seed` is basically just a timestamp at this point
+			// Performing at least 1 iteration of LCG for "better-looking" numbers since `seed` is basically just a timestamp at this point
+			while (lcg_iterations--)
+			{
+				seed *= 22695477u;
+				seed += 1;
+			}
 
 			return seed;
 		}
