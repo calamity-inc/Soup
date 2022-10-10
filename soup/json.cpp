@@ -51,7 +51,7 @@ namespace soup
 		std::string buf{};
 		bool is_int = true;
 		bool is_float = false;
-		for (; *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != 0; ++c)
+		for (; *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != ':' && *c != 0; ++c)
 		{
 			buf.push_back(*c);
 
