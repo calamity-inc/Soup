@@ -324,11 +324,8 @@ namespace soup
 		{
 			if (l.isNewLine())
 			{
-				if (!line.empty())
-				{
-					ft.lines.emplace_back(std::move(line));
-					line.clear();
-				}
+				ft.lines.emplace_back(std::move(line));
+				line.clear();
 			}
 			else
 			{
