@@ -21,6 +21,7 @@ namespace soup
 
 		bool binaryEncode(Writer& w) const final;
 
+		[[nodiscard]] UniquePtr<JsonNode>* findUp(const JsonNode& k) noexcept;
 		[[nodiscard]] JsonNode* find(const JsonNode& k) const noexcept;
 		[[nodiscard]] JsonNode* find(std::string k) const noexcept;
 		[[nodiscard]] bool contains(const JsonNode& k) const noexcept;

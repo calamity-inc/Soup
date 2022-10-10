@@ -117,6 +117,18 @@ namespace soup
 		return true;
 	}
 
+	UniquePtr<JsonNode>* JsonObject::findUp(const JsonNode& k) noexcept
+	{
+		for (auto& child : children)
+		{
+			if (*child.first == k)
+			{
+				return &child.second;
+			}
+		}
+		return nullptr;
+	}
+
 	JsonNode* JsonObject::find(const JsonNode& k) const noexcept
 	{
 		for (const auto& child : children)
