@@ -226,6 +226,7 @@ namespace soup
 		{ "imul", 0x69, RMI, 32 },
 		{ "nop", 0x90, ZO },
 		{ "cpuid", 0x0FA2, ZO },
+		{ "div", 0xF7, M, 32, 6 },
 	};
 
 	struct x64Instruction
