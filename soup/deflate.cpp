@@ -506,7 +506,7 @@ namespace soup
 			return -1;
 		}
 
-		std::memcpy(out + out_offset, bit_reader.getInBlock(), stored_length);
+		memcpy(out + out_offset, bit_reader.getInBlock(), stored_length);
 		bit_reader.modifyInBlock(stored_length);
 
 		return stored_length;
@@ -620,69 +620,79 @@ namespace soup
 			unsigned int literals_code_word = literals_decoder.readValue(literals_rev_sym_table, br);
 			if (literals_code_word < 256)
 			{
-				if (current_out < out_end)
-				{
-					*current_out++ = literals_code_word;
-				}
-				else
+				if (current_out >= out_end)
 				{
 					return -1;
 				}
+				*current_out++ = literals_code_word;
 			}
 			else
 			{
 				if (literals_code_word == kEODMarkerSym)
+				{
 					break;
+				}
+
 				if (literals_code_word == -1)
+				{
 					return -1;
+				}
 
 				unsigned int match_length = br.getBits((literals_code_word >> 16) & 15);
 				if (match_length == -1)
+				{
 					return -1;
+				}
 
 				match_length += (literals_code_word & 0x7fff);
 
 				unsigned int offset_code_word = offset_decoder.readValue(offset_rev_sym_table, br);
 				if (offset_code_word == -1)
+				{
 					return -1;
+				}
 
 				unsigned int match_offset = br.getBits((offset_code_word >> 16) & 15);
 				if (match_offset == -1)
+				{
 					return -1;
+				}
 
 				match_offset += (offset_code_word & 0x7fff);
 
 				const unsigned char* src = current_out - match_offset;
-				if (src >= out)
+				if (src < out)
 				{
-					if (match_offset >= 16 && (current_out + match_length) <= out_fast_end)
+					return -1;
+				}
+
+				if (match_offset >= 16 && (current_out + match_length) <= out_fast_end)
+				{
+					const unsigned char* copy_src = src;
+					unsigned char* copy_dst = current_out;
+					const unsigned char* copy_end_dst = current_out + match_length;
+
+					do
 					{
-						const unsigned char* copy_src = src;
-						unsigned char* copy_dst = current_out;
-						const unsigned char* copy_end_dst = current_out + match_length;
+						memcpy(copy_dst, copy_src, 16);
+						copy_src += 16;
+						copy_dst += 16;
+					} while (copy_dst < copy_end_dst);
 
-						do
-						{
-							std::memcpy(copy_dst, copy_src, 16);
-							copy_src += 16;
-							copy_dst += 16;
-						} while (copy_dst < copy_end_dst);
-
-						current_out += match_length;
-					}
-					else
-					{
-						if ((current_out + match_length) > out_end)
-							return -1;
-
-						while
-							(match_length--) {
-							*current_out++ = *src++;
-						}
-					}
+					current_out += match_length;
 				}
 				else
-					return -1;
+				{
+					if ((current_out + match_length) > out_end)
+					{
+						return -1;
+					}
+
+					while (match_length--)
+					{
+						*current_out++ = *src++;
+					}
+				}
 			}
 		}
 
