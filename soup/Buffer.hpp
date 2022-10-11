@@ -12,7 +12,7 @@
 
 namespace soup
 {
-	// This extremely simple implementation outperforms std::vector & std::string, barring magic optimsations, e.g. clang with std::string::push_back.
+	// This extremely simple implementation outperforms std::vector & std::string, barring magic optimisations, e.g. clang with std::string::push_back.
 	class Buffer
 	{
 	public:
