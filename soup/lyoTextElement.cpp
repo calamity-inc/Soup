@@ -17,7 +17,7 @@ namespace soup
 		flat_x = parent->flat_x + style.margin_left;
 		flat_y = parent->flat_y;
 
-		if (flat_x + flat_width >= parent->flat_width
+		if ((flat_x + flat_width >= parent->flat_width || !style.display_inline)
 			&& flat_x != parent->style.margin_left
 			)
 		{

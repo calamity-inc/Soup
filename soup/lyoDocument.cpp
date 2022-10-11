@@ -29,6 +29,13 @@ namespace soup
 			rule.style.font_size = 16;
 			uas.rules.emplace_back(std::move(rule));
 		}
+		{
+			lyoRule rule;
+			rule.selector = "p";
+			rule.style.display_inline = false;
+			rule.style.font_size = 16;
+			uas.rules.emplace_back(std::move(rule));
+		}
 		stylesheets.emplace_back(std::move(uas));
 	}
 
