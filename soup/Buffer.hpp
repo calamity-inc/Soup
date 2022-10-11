@@ -52,6 +52,15 @@ namespace soup
 			reset();
 		}
 
+		void resize(size_t desired_size) noexcept
+		{
+			if (size > desired_size)
+			{
+				size = desired_size;
+			}
+			resizeInner(desired_size);
+		}
+
 	private:
 		void ensureSpace(size_t desired_size) noexcept
 		{
@@ -61,15 +70,20 @@ namespace soup
 				throw Exception("soup::Buffer constructed with specific size, but it did not suffice!");
 #endif
 				auto new_capacity = desired_size + (desired_size >> 1); // 1.5x
-				auto new_data = malloc(new_capacity);
-				SOUP_IF_LIKELY (data != nullptr)
-				{
-					memcpy(new_data, data, size);
-					free(data);
-				}
-				data = reinterpret_cast<uint8_t*>(new_data);
-				capacity = new_capacity;
+				resizeInner(new_capacity);
 			}
+		}
+
+		void resizeInner(size_t new_capacity) noexcept
+		{
+			auto new_data = malloc(new_capacity);
+			if (data != nullptr)
+			{
+				memcpy(new_data, data, size);
+				free(data);
+			}
+			data = reinterpret_cast<uint8_t*>(new_data);
+			capacity = new_capacity;
 		}
 
 	public:
