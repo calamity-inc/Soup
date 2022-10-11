@@ -9,6 +9,7 @@
 
 namespace soup
 {
+	// Note that per JSON spec, object keys must be strings, but for convenience, Soup allows any JSON type as a valid object key type.
 	struct JsonObject : public JsonNode
 	{
 		std::vector<std::pair<UniquePtr<JsonNode>, UniquePtr<JsonNode>>> children{};
