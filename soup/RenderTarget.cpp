@@ -99,6 +99,11 @@ namespace soup
 
 	void RenderTarget::drawText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
+		if (scale == 0)
+		{
+			return;
+		}
+
 		unsigned int text_x = (x / scale);
 		for (const auto& c : text)
 		{
