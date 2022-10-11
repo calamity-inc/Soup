@@ -42,7 +42,7 @@ namespace soup
 		Buffer(Buffer&& b) noexcept
 			: data(b.data), size(b.size), capacity(b.capacity)
 		{
-			b.reset();
+			b.data = nullptr;
 			b.size = 0;
 			b.capacity = 0;
 		}
