@@ -8,6 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="crc32_pclmul.asm" />
+    <MASM Include="invoke_cpuid.asm" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

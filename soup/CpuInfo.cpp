@@ -2,6 +2,12 @@
 
 #include "base.hpp"
 
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#define CPUINFO_USE_ASM true
+#else
+#define CPUINFO_USE_ASM false
+#endif
+
 #include "AllocRaiiLocalBase.hpp"
 #include "os.hpp"
 #include "string.hpp"
@@ -81,8 +87,15 @@ namespace soup
 		return str;
 	}
 
+#if CPUINFO_USE_ASM
+	extern "C" void invoke_cpuid(void* out, uint32_t eax);
+#endif
+
 	void CpuInfo::invokeCpuid(void* out, uint32_t eax)
 	{
+#if CPUINFO_USE_ASM
+		invoke_cpuid(out, eax);
+#else
 		static UniquePtr<AllocRaiiLocalBase> invoke_asm = os::allocateExecutable(x64Asm(
 			"push esi\n"
 #if SOUP_BITS == 64
@@ -104,5 +117,6 @@ namespace soup
 			"ret\n"
 		));
 		((void(*)(void*, uint32_t))invoke_asm->addr)(out, eax);
+#endif
 	}
 }

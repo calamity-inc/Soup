@@ -2,5 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <MASM Include="crc32_pclmul.asm" />
+    <MASM Include="invoke_cpuid.asm" />
   </ItemGroup>
 </Project>
