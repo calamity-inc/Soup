@@ -13,12 +13,12 @@ namespace soup
 	protected:
 		const bool native_endianness;
 
-		ioVirtualBase(Endian endian)
+		ioVirtualBase(Endian endian) noexcept
 			: native_endianness(NATIVE_ENDIAN == endian)
 		{
 		}
 
-		ioVirtualBase(bool little_endian)
+		ioVirtualBase(bool little_endian) noexcept
 			: ioVirtualBase(little_endian ? LITTLE_ENDIAN : BIG_ENDIAN)
 		{
 		}

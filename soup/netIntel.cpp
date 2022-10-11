@@ -1,10 +1,9 @@
 #include "netIntel.hpp"
 
-#include <sstream>
-
 #include "csv.hpp"
 #include "deflate.hpp"
 #include "string.hpp"
+#include "StringReader.hpp"
 #include "WebResource.hpp"
 
 namespace soup
@@ -67,15 +66,15 @@ namespace soup
 
 	void netIntel::initAsList()
 	{
-		std::stringstream aslistcsv{};
+		StringReader aslistcsv;
 		{
 			WebResource rsc("raw.githubusercontent.com", "/ipverse/asn-info/master/as.csv");
 			rsc.downloadWithCaching();
-			aslistcsv << std::move(rsc.data);
+			aslistcsv = std::move(rsc.data);
 		}
 		std::string line;
-		std::getline(aslistcsv, line); // skip field names
-		while (std::getline(aslistcsv, line))
+		aslistcsv.getLine(line); // skip field names
+		while (aslistcsv.getLine(line))
 		{
 			auto asn_sep = line.find(',');
 			SOUP_IF_UNLIKELY(asn_sep == std::string::npos)
@@ -94,16 +93,16 @@ namespace soup
 
 	void netIntel::initIpv4ToAs()
 	{
-		std::stringstream ipv4toasntsv{};
+		StringReader ipv4toasntsv;
 		{
 			WebResource rsc("iptoasn.com", "/data/ip2asn-v4-u32.tsv.gz");
 			rsc.downloadWithCaching();
-			ipv4toasntsv << deflate::decompress(std::move(rsc.data)).decompressed;
+			ipv4toasntsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
-		for (std::string line; std::getline(ipv4toasntsv, line); )
+		for (std::string line; ipv4toasntsv.getLine(line); )
 		{
 			auto arr = string::explode(line, '\t');
-			SOUP_IF_UNLIKELY(arr.size() < 5)
+			SOUP_IF_UNLIKELY (arr.size() < 5)
 			{
 				continue;
 			}
@@ -125,13 +124,13 @@ namespace soup
 
 	void netIntel::initIpv6ToAs()
 	{
-		std::stringstream ipv6toasntsv{};
+		StringReader ipv6toasntsv;
 		{
 			WebResource rsc("iptoasn.com", "/data/ip2asn-v6.tsv.gz");
 			rsc.downloadWithCaching();
-			ipv6toasntsv << deflate::decompress(std::move(rsc.data)).decompressed;
+			ipv6toasntsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
-		for (std::string line; std::getline(ipv6toasntsv, line); )
+		for (std::string line; ipv6toasntsv.getLine(line); )
 		{
 			auto arr = string::explode(line, '\t');
 			SOUP_IF_UNLIKELY(arr.size() < 5)
@@ -156,14 +155,14 @@ namespace soup
 
 	void netIntel::initIpv4ToLocation()
 	{
-		std::stringstream ipv4tolocationcsv{};
+		StringReader ipv4tolocationcsv;
 		{
 			WebResource rsc("github.com", "/sapics/ip-location-db/raw/master/dbip-city/dbip-city-ipv4-num.csv.gz");
 			rsc.downloadWithCaching();
-			ipv4tolocationcsv << deflate::decompress(std::move(rsc.data)).decompressed;
+			ipv4tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
 		ipv4tolocation.reserve(3000000);
-		for (std::string line; std::getline(ipv4tolocationcsv, line); )
+		for (std::string line; ipv4tolocationcsv.getLine(line); )
 		{
 			auto arr = csv::parseLine(line);
 			SOUP_IF_UNLIKELY(arr.size() < 6)
@@ -184,14 +183,14 @@ namespace soup
 
 	void netIntel::initIpv6ToLocation()
 	{
-		std::stringstream ipv6tolocationcsv{};
+		StringReader ipv6tolocationcsv;
 		{
 			WebResource rsc("github.com", "/sapics/ip-location-db/raw/master/dbip-city/dbip-city-ipv6.csv.gz");
 			rsc.downloadWithCaching();
-			ipv6tolocationcsv << deflate::decompress(std::move(rsc.data)).decompressed;
+			ipv6tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
 		ipv6tolocation.reserve(3000000);
-		for (std::string line; std::getline(ipv6tolocationcsv, line); )
+		for (std::string line; ipv6tolocationcsv.getLine(line); )
 		{
 			auto arr = csv::parseLine(line);
 			SOUP_IF_UNLIKELY(arr.size() < 6)
