@@ -115,6 +115,7 @@ namespace soup
 			size = 0;
 		}
 
+	private:
 		void reset() noexcept
 		{
 			if (data != nullptr)
