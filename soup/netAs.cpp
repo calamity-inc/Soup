@@ -93,6 +93,7 @@ namespace soup
 		case 206092: // IPXO Limited (Bandito Networks Inc), related to Express VPN
 		case 36352: // ColoCrossing
 		case 60087: // Netsons s.r.l. (Uania Cloud Service)
+		case 8075: // Microsoft / Azure
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
