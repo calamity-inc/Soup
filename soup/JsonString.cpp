@@ -35,6 +35,10 @@ namespace soup
 				case 'r':
 					value.push_back('\r');
 					break;
+
+				case 't':
+					value.push_back('\t');
+					break;
 				}
 				continue;
 			}
