@@ -468,6 +468,9 @@
     <ClInclude Include="Ipv6Maths.hpp" />
     <ClInclude Include="KeyGenId.hpp" />
     <ClInclude Include="LcgRng.hpp" />
+    <ClInclude Include="log.hpp" />
+    <ClInclude Include="logSink.hpp" />
+    <ClInclude Include="logStdSink.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="memObject.hpp" />
@@ -802,6 +805,7 @@
     <ClCompile Include="InquiryObject.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
     <ClCompile Include="LcgRng.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />

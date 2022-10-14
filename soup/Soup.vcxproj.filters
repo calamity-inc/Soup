@@ -1010,6 +1010,15 @@
     <ClInclude Include="BufferWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
+    <ClInclude Include="logSink.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="logStdSink.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="log.hpp">
+      <Filter>log</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1499,6 +1508,9 @@
     <ClCompile Include="LcgRng.cpp">
       <Filter>algos\rng</Filter>
     </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1677,6 +1689,9 @@
     </Filter>
     <Filter Include="algos\rng\interface">
       <UniqueIdentifier>{915ef795-feb7-4250-86db-669eca6e99fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{4c970a96-ef10-46fc-a11b-19d57ae6ff4d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
