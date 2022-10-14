@@ -124,11 +124,26 @@ namespace soup
 		auto args = getArgs();
 #if !SOUP_WINDOWS
 		args.emplace_back("-fPIC");
+		args.emplace_back("-fvisibility=hidden");
 #endif
 		args.emplace_back("--shared");
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.emplace_back(in);
+		addLinkerArgs(args);
+		return os::executeLong("clang", std::move(args));
+	}
+
+	std::string Compiler::makeDynamicLibrary(const std::vector<std::string>& objects, const std::string& out) const
+	{
+		auto args = getArgs();
+#if !SOUP_WINDOWS
+		// -fPIC and -fvisibility=hidden need to be set per object
+#endif
+		args.emplace_back("--shared");
+		args.emplace_back("-o");
+		args.emplace_back(out);
+		args.insert(args.end(), objects.begin(), objects.end());
 		addLinkerArgs(args);
 		return os::executeLong("clang", std::move(args));
 	}

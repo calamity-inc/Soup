@@ -32,5 +32,6 @@ namespace soup
 		// Dynamic / shared libraries
 		[[nodiscard]] static const char* getDynamicLibraryExtension() noexcept; // ".dll" or ".so"
 		std::string makeDynamicLibrary(const std::string& in, const std::string& out) const;
+		std::string makeDynamicLibrary(const std::vector<std::string>& objects, const std::string& out) const;
 	};
 }
