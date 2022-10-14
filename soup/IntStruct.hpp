@@ -24,12 +24,12 @@ namespace soup
 			data = val;
 		}
 
-		operator IntT& () noexcept
+		constexpr operator IntT& () noexcept
 		{
 			return data;
 		}
 
-		operator const IntT& () const noexcept
+		constexpr operator const IntT& () const noexcept
 		{
 			return data;
 		}
