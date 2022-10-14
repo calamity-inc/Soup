@@ -96,7 +96,8 @@ namespace soup
 			argsof << std::move(flatargs);
 		}
 		auto ret = executeInner(std::move(program), { std::move(std::string(1, '@').append(args_file.string())) });
-		std::filesystem::remove(args_file);
+		std::error_code ec;
+		std::filesystem::remove(args_file, ec);
 		return ret;
 	}
 
