@@ -110,7 +110,7 @@ namespace soup
 #endif
 	}
 
-	const char* Compiler::getSharedLibraryExtension() noexcept
+	const char* Compiler::getDynamicLibraryExtension() noexcept
 	{
 #if SOUP_WINDOWS
 		return ".dll";
@@ -119,7 +119,7 @@ namespace soup
 #endif
 	}
 
-	std::string Compiler::makeSharedLibrary(const std::string& in, const std::string& out) const
+	std::string Compiler::makeDynamicLibrary(const std::string& in, const std::string& out) const
 	{
 		auto args = getArgs();
 #if !SOUP_WINDOWS

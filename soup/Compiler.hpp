@@ -29,8 +29,8 @@ namespace soup
 		[[nodiscard]] static const char* getStaticLibraryExtension() noexcept; // ".lib" or ".a"
 		std::string makeStaticLibrary(const std::vector<std::string>& objects, const std::string& out) const;
 
-		// Shared / dynamic link libraries
-		[[nodiscard]] static const char* getSharedLibraryExtension() noexcept; // ".dll" or ".so"
-		std::string makeSharedLibrary(const std::string& in, const std::string& out) const;
+		// Dynamic / shared libraries
+		[[nodiscard]] static const char* getDynamicLibraryExtension() noexcept; // ".dll" or ".so"
+		std::string makeDynamicLibrary(const std::string& in, const std::string& out) const;
 	};
 }
