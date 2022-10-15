@@ -9,6 +9,7 @@
 #include <ShlObj.h> // CSIDL_COMMON_APPDATA
 
 #include "AllocRaiiVirtual.hpp"
+#include "Exception.hpp"
 #include "ObfusString.hpp"
 #else
 #include "AllocRaii.hpp"
@@ -108,7 +109,15 @@ namespace soup
 			&& program.find('/') == std::string::npos
 			)
 		{
+			std::string program_og = program;
 			program = executeInner("where", { program });
+			if (program.substr(0, 6) == "INFO: ")
+			{
+				std::string msg = "Failed to find program \"";
+				msg.append(program_og);
+				msg.push_back('"');
+				throw Exception(std::move(msg));
+			}
 			string::rtrim(program);
 		}
 #endif
