@@ -17,6 +17,7 @@ namespace soup
 	public:
 		std::string method{};
 		std::string path{};
+		uint16_t port = 443;
 		bool path_is_encoded = false;
 
 		HttpRequest() = default;

@@ -32,6 +32,10 @@ namespace soup
 	HttpRequest::HttpRequest(const Uri& uri)
 		: HttpRequest(uri.host, uri.getRequestPath())
 	{
+		if (uri.port != 0)
+		{
+			port = uri.port;
+		}
 	}
 
 	const std::string& HttpRequest::getHost() const
@@ -75,7 +79,7 @@ namespace soup
 		auto sock = make_unique<Socket>();
 		auto resp = make_unique<std::string>();
 		const auto& host = getHost();
-		if (sock->connect(host, 443))
+		if (sock->connect(host, port))
 		{
 			Scheduler sched{};
 			sched.addSocket(std::move(sock)).enableCryptoClient(host, [](Socket& s, Capture&& _cap)
