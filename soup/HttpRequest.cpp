@@ -42,7 +42,7 @@ namespace soup
 
 	void HttpRequest::fixPath()
 	{
-		if (auto it = path.cbegin(); it == path.cend() || *it != '/')
+		if (path.c_str()[0] != '/')
 		{
 			path.insert(0, 1, '/');
 		}
