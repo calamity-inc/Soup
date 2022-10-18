@@ -20,6 +20,8 @@ namespace soup
 
 		[[nodiscard]] std::string toString() const;
 
+		[[nodiscard]] std::string getRequestPath() const;
+
 		[[nodiscard]] static std::string data(const char* mime_type, const std::string& contents);
 	};
 }

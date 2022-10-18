@@ -134,16 +134,22 @@ namespace soup
 				str.append(std::to_string(port));
 			}
 		}
-		str.append(path);
-		if (!query.empty())
-		{
-			str.push_back('?');
-			str.append(query);
-		}
+		str.append(getRequestPath());
 		if (!fragment.empty())
 		{
 			str.push_back('#');
 			str.append(fragment);
+		}
+		return str;
+	}
+
+	std::string Uri::getRequestPath() const
+	{
+		auto str = path;
+		if (!query.empty())
+		{
+			str.push_back('?');
+			str.append(query);
 		}
 		return str;
 	}
