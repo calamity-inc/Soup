@@ -11,7 +11,9 @@ namespace soup
 	Uri::Uri(std::string uri)
 	{
 		auto scheme_sep = uri.find(':');
-		if (scheme_sep != std::string::npos)
+		if (scheme_sep != std::string::npos
+			&& uri.find("//") > scheme_sep
+			)
 		{
 			scheme = uri.substr(0, scheme_sep);
 

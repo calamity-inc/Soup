@@ -558,6 +558,18 @@ static void test_uri()
 	assert(uri.query == "");
 	assert(uri.fragment == "q=Soup");
 	assert(uri.toString() == str);
+
+	str = "//example.com:443";
+	uri = Uri(str);
+	assert(uri.scheme == "");
+	assert(uri.host == "example.com");
+	assert(uri.port == 443);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "");
+	assert(uri.query == "");
+	assert(uri.fragment == "");
+	assert(uri.toString() == str);
 }
 
 static void test_util_string()
