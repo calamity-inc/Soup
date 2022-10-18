@@ -2,14 +2,14 @@
 
 #if !SOUP_WASM
 
+#include "deflate.hpp"
+#include "joaat.hpp"
 #include "ObfusString.hpp"
 #include "Scheduler.hpp"
 #include "Socket.hpp"
 #include "UniquePtr.hpp"
+#include "Uri.hpp"
 #include "urlenc.hpp"
-
-#include "deflate.hpp"
-#include "joaat.hpp"
 
 namespace soup
 {
@@ -26,6 +26,11 @@ namespace soup
 
 	HttpRequest::HttpRequest(std::string host, std::string path)
 		: HttpRequest(ObfusString("GET"), std::move(host), std::move(path))
+	{
+	}
+
+	HttpRequest::HttpRequest(const Uri& uri)
+		: HttpRequest(uri.host, uri.getRequestPath())
 	{
 	}
 

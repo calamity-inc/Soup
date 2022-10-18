@@ -22,6 +22,7 @@ namespace soup
 		HttpRequest() = default;
 		HttpRequest(std::string method, std::string host, std::string path);
 		HttpRequest(std::string host, std::string path);
+		HttpRequest(const Uri& uri);
 
 		[[nodiscard]] const std::string& getHost() const;
 

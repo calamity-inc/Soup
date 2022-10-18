@@ -108,6 +108,7 @@ namespace soup
 	// net.web
 	class HttpRequest;
 	struct HttpResponse;
+	struct Uri;
 
 	// net.web.websocket
 	struct WebSocketMessage;
