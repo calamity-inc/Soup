@@ -8,7 +8,7 @@ namespace soup
 	{
 		std::string scheme{};
 		std::string host{};
-		int16_t port{};
+		uint16_t port{};
 		std::string user{};
 		std::string pass{};
 		std::string path{};
