@@ -1,19 +1,28 @@
 #include "ZipReader.hpp"
 
-#include <cstring> // memcmp
-
+#include "Exception.hpp"
+#include "ioSeekableReader.hpp"
 #include "ZipCentralDirectoryFile.hpp"
 #include "ZipEndOfCentralDirectory.hpp"
 #include "ZipLocalFileHeader.hpp"
 
 namespace soup
 {
+	ZipReader::ZipReader(ioSeekableReader& is)
+		: is(is)
+	{
+		if (!is.isLittleEndian())
+		{
+			throw Exception("ZipReader expected underlying stream to be little endian");
+		}
+	}
+
 	size_t ZipReader::seekCentralDirectory() const
 	{
 		std::vector<ZipIndexedFile> ret{};
 
-		is.seekg(0, std::ios::end);
-		const size_t length = is.tellg();
+		is.seekEnd();
+		const size_t length = is.getPosition();
 		if (length <= 22 || length == -1)
 		{
 			return 0;
@@ -21,10 +30,10 @@ namespace soup
 		size_t eocd_offset = (length - 22);
 		for (; eocd_offset != 0; --eocd_offset)
 		{
-			is.seekg(eocd_offset);
-			char bytes[4];
-			is.read(bytes, 4);
-			if (memcmp(bytes, "\x50\x4b\x05\x06", 4) == 0)
+			is.seek(eocd_offset);
+			std::string bytes;
+			is.str(4, bytes);
+			if (bytes == "\x50\x4b\x05\x06")
 			{
 				break;
 			}
@@ -32,11 +41,11 @@ namespace soup
 		if (eocd_offset != 0)
 		{
 			ZipEndOfCentralDirectory eocd;
-			if (!eocd.readLE(is))
+			if (!eocd.read(is))
 			{
 				return 0;
 			}
-			is.seekg(eocd.central_directory_offset);
+			is.seek(eocd.central_directory_offset);
 		}
 
 		return eocd_offset;
@@ -50,14 +59,14 @@ namespace soup
 		{
 			do
 			{
-				char bytes[4];
-				is.read(bytes, 4);
-				if (memcmp(bytes, "\x50\x4b\x01\x02", 4) != 0)
+				std::string bytes;
+				is.str(4, bytes);
+				if (bytes != "\x50\x4b\x01\x02")
 				{
 					break;
 				}
 				ZipCentralDirectoryFile cdf;
-				if (!cdf.readLE(is))
+				if (!cdf.read(is))
 				{
 					break;
 				}
@@ -69,25 +78,25 @@ namespace soup
 					std::move(cdf.name),
 					cdf.disk_offset,
 				});
-			} while (is.tellg() < eocd_offset);
+			} while (is.getPosition() < eocd_offset);
 		}
 		else
 		{
-			is.seekg(0);
+			is.seek(0);
 			while (true)
 			{
 				ZipIndexedFile zif;
-				zif.disk_offset = is.tellg();
+				zif.disk_offset = is.getPosition();
 
-				char bytes[4] = { 0 };
-				is.read(bytes, 4);
-				if (memcmp(bytes, "\x50\x4b\x03\x04", 4) != 0)
+				std::string bytes;
+				is.str(4, bytes);
+				if (bytes != "\x50\x4b\x03\x04")
 				{
 					break;
 				}
 
 				ZipLocalFileHeader lfh;
-				if (!lfh.readLE(is))
+				if (!lfh.read(is))
 				{
 					break;
 				}
@@ -109,17 +118,15 @@ namespace soup
 	{
 		std::string ret{};
 
-		is.clear();
-		is.seekg(file.disk_offset);
-		char bytes[4];
-		is.read(bytes, 4);
-		if (memcmp(bytes, "\x50\x4b\x03\x04", 4) == 0)
+		is.seek(file.disk_offset);
+		std::string bytes;
+		is.str(4, bytes);
+		if (bytes == "\x50\x4b\x03\x04")
 		{
 			ZipLocalFileHeader lfh;
-			if (lfh.readLE(is))
+			if (lfh.read(is))
 			{
-				ret = std::string(lfh.common.compressed_size, 0);
-				is.read(ret.data(), lfh.common.compressed_size);
+				is.str(lfh.common.compressed_size, ret);
 			}
 		}
 

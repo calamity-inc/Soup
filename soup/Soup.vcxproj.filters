@@ -1019,6 +1019,9 @@
     <ClInclude Include="log.hpp">
       <Filter>log</Filter>
     </ClInclude>
+    <ClInclude Include="ioSeekableReader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

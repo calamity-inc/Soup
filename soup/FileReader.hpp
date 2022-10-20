@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Reader.hpp"
+#include "ioSeekableReader.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -9,26 +9,26 @@
 
 namespace soup
 {
-	class FileReader final : public Reader
+	class FileReader final : public ioSeekableReader
 	{
 	public:
 		std::ifstream s;
 
 		FileReader(const std::string& path, bool little_endian = true)
-			: Reader(little_endian), s(path, std::ios::binary)
+			: ioSeekableReader(little_endian), s(path, std::ios::binary)
 		{
 		}
 
 #if SOUP_WINDOWS
 		FileReader(const std::wstring& path, bool little_endian = true)
-			: Reader(little_endian), s(path, std::ios::binary)
+			: ioSeekableReader(little_endian), s(path, std::ios::binary)
 		{
 		}
 #endif
 
 		template <class T, SOUP_RESTRICT(std::is_same_v<T, std::filesystem::path>)>
 		FileReader(const T& path, bool little_endian = true)
-			: Reader(little_endian), s(path, std::ios::binary)
+			: ioSeekableReader(little_endian), s(path, std::ios::binary)
 		{
 		}
 
@@ -50,6 +50,22 @@ namespace soup
 			v = std::string(len, 0);
 			s.read(v.data(), len);
 			return !s.bad();
+		}
+
+	public:
+		[[nodiscard]] size_t getPosition() final
+		{
+			return s.tellg();
+		}
+
+		void seek(size_t pos) final
+		{
+			s.seekg(pos);
+		}
+
+		void seekEnd() final
+		{
+			s.seekg(0, std::ios::end);
 		}
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <istream>
+#include "fwd.hpp"
+
 #include <vector>
 
 #include "ZipIndexedFile.hpp"
@@ -9,14 +10,11 @@ namespace soup
 {
 	struct ZipReader
 	{
-		std::istream& is;
+		ioSeekableReader& is;
 
-		ZipReader(std::istream& is)
-			: is(is)
-		{
-		}
+		ZipReader(ioSeekableReader& is);
 
-		[[nodiscard]] size_t seekCentralDirectory() const;
+		[[nodiscard]] size_t seekCentralDirectory() const; // returns 0 on failure
 
 		[[nodiscard]] std::vector<ZipIndexedFile> getFileList() const;
 

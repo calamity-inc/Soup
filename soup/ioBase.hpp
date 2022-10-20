@@ -24,6 +24,16 @@ namespace soup
 		}
 
 	public:
+		[[nodiscard]] bool isBigEndian() const noexcept
+		{
+			return (BIG_ENDIAN == NATIVE_ENDIAN) == native_endianness;
+		}
+
+		[[nodiscard]] bool isLittleEndian() const noexcept
+		{
+			return (LITTLE_ENDIAN == NATIVE_ENDIAN) == native_endianness;
+		}
+
 		virtual ~ioVirtualBase() = default;
 
 		[[nodiscard]] virtual bool hasMore()
