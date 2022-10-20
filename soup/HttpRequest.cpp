@@ -116,11 +116,12 @@ namespace soup
 					if (auto enc = res.header_fields.find(ObfusString("Content-Encoding")); enc != res.header_fields.end())
 					{
 						auto enc_joaat = joaat::hash(enc->second);
-						if (enc_joaat == joaat::hash("gzip")
-							|| enc_joaat == joaat::hash("deflate")
-							)
+						switch (enc_joaat)
 						{
+						case joaat::hash("gzip"):
+						case joaat::hash("deflate"):
 							res.body = deflate::decompress(res.body).decompressed;
+							break;
 						}
 					}
 
