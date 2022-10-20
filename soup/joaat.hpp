@@ -41,6 +41,13 @@ namespace soup
 			return val;
 		}
 
+		[[nodiscard]] static constexpr uint32_t hashRange(const char* data, size_t size, uint32_t initial = 0) noexcept
+		{
+			uint32_t val = partial(data, size, initial);
+			finalise(val);
+			return val;
+		}
+
 		[[nodiscard]] static constexpr uint32_t partial(const char* data, size_t size, uint32_t initial = 0) noexcept
 		{
 			/*uint32_t val = initial;
@@ -62,7 +69,7 @@ namespace soup
 			return result;
 		}
 
-		static void finalise(uint32_t& val) noexcept
+		static constexpr void finalise(uint32_t& val) noexcept
 		{
 			/*val += (val << 3);
 			val ^= (val >> 11);
