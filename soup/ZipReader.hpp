@@ -18,8 +18,7 @@ namespace soup
 
 		[[nodiscard]] std::vector<ZipIndexedFile> getFileList() const;
 
-		// Note that no decompression will be performed, the file will be returned in the way it is stored.
-		// So you might want to check if uncompressed_size == compressed_size.
 		[[nodiscard]] std::string getFileContents(const ZipIndexedFile& file) const;
+		[[nodiscard]] std::string getFileContents(uint32_t offset) const;
 	};
 }

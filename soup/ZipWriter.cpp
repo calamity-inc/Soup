@@ -14,7 +14,7 @@ namespace soup
 		zif.uncompressed_data_crc32 = crc32::hash(contents_uncompressed);
 		zif.compressed_size = contents_compressed.size();
 		zif.uncompressed_size = contents_uncompressed.size();
-		zif.disk_offset = os.tellp();
+		zif.offset = os.tellp();
 		zif.name = std::move(name);
 
 		ZipLocalFileHeader lfh{};
@@ -73,7 +73,7 @@ namespace soup
 			cdf.common.compressed_size = file.compressed_size;
 			cdf.common.uncompressed_size = file.uncompressed_size;
 			cdf.name = file.name;
-			cdf.disk_offset = file.disk_offset;
+			cdf.disk_offset = file.offset;
 			//cdf.external_attributes = 2;
 			os.write("\x50\x4b\x01\x02", 4);
 			cdf.writeLE(os);

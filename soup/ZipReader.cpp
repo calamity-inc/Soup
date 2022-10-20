@@ -1,5 +1,6 @@
 #include "ZipReader.hpp"
 
+#include "deflate.hpp"
 #include "Exception.hpp"
 #include "ioSeekableReader.hpp"
 #include "ZipCentralDirectoryFile.hpp"
@@ -86,7 +87,7 @@ namespace soup
 			while (true)
 			{
 				ZipIndexedFile zif;
-				zif.disk_offset = is.getPosition();
+				zif.offset = is.getPosition();
 
 				std::string bytes;
 				is.str(4, bytes);
@@ -116,9 +117,14 @@ namespace soup
 
 	std::string ZipReader::getFileContents(const ZipIndexedFile& file) const
 	{
+		return getFileContents(file.offset);
+	}
+
+	std::string ZipReader::getFileContents(uint32_t offset) const
+	{
 		std::string ret{};
 
-		is.seek(file.disk_offset);
+		is.seek(offset);
 		std::string bytes;
 		is.str(4, bytes);
 		if (bytes == "\x50\x4b\x03\x04")
@@ -126,7 +132,25 @@ namespace soup
 			ZipLocalFileHeader lfh;
 			if (lfh.read(is))
 			{
-				is.str(lfh.common.compressed_size, ret);
+				if (lfh.common.compression_method == 0)
+				{
+					// Store
+					is.str(lfh.common.compressed_size, ret);
+				}
+				else if (lfh.common.compression_method == 8)
+				{
+					// Deflate
+					is.str(lfh.common.compressed_size, ret);
+					ret = deflate::decompress(ret, lfh.common.uncompressed_size).decompressed;
+					if (ret.length() != lfh.common.uncompressed_size)
+					{
+						throw Exception("Size after decompression doesn't match uncompressed_size");
+					}
+				}
+				else
+				{
+					throw Exception("Unsupported compression method");
+				}
 			}
 		}
 

@@ -12,6 +12,6 @@ namespace soup
 		uint32_t compressed_size;
 		uint32_t uncompressed_size;
 		std::string name;
-		uint32_t disk_offset;
+		uint32_t offset;
 	};
 }
