@@ -1,27 +1,27 @@
 #pragma once
 
-#include "Reader.hpp"
+#include "ioSeekableReader.hpp"
 
 namespace soup
 {
-	class StringReader final : public Reader
+	class StringReader final : public ioSeekableReader
 	{
 	public:
 		std::string data;
 		size_t offset = 0;
 
 		StringReader(Endian endian = LITTLE_ENDIAN) noexcept
-			: Reader(endian)
+			: ioSeekableReader(endian)
 		{
 		}
 
 		StringReader(std::string data, Endian endian = LITTLE_ENDIAN)
-			: Reader(endian), data(std::move(data))
+			: ioSeekableReader(endian), data(std::move(data))
 		{
 		}
 		
 		StringReader(std::string data, bool little_endian)
-			: Reader(little_endian), data(std::move(data))
+			: ioSeekableReader(little_endian), data(std::move(data))
 		{
 		}
 
@@ -61,6 +61,21 @@ namespace soup
 		}
 
 	public:
+		[[nodiscard]] size_t getPosition() final
+		{
+			return offset;
+		}
+
+		void seek(size_t pos) final
+		{
+			offset = pos;
+		}
+
+		void seekEnd() final
+		{
+			offset = data.size();
+		}
+
 		// Faster alternative to std::stringstream + std::getline
 		bool getLine(std::string& line) noexcept
 		{
