@@ -257,7 +257,8 @@ static void test_data()
 "phoneNumbers": [
 {
 	"type": "home",
-	"number": "212 555-1234"
+	"number": "212 555-1234",
+	"emptyobject": {}
 },
 {
 	"type": "office",

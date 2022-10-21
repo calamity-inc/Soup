@@ -24,6 +24,10 @@ namespace soup
 			{
 				++c;
 			}
+			if (*c == '}' || *c == 0)
+			{
+				break;
+			}
 			auto key = json::decodeForDedicatedVariable(c);
 			while (string::isSpace(*++c));
 			auto val = json::decodeForDedicatedVariable(c);
@@ -35,10 +39,6 @@ namespace soup
 			while (*c == ',' || string::isSpace(*c))
 			{
 				++c;
-			}
-			if (*c == '}' || *c == 0)
-			{
-				break;
 			}
 		}
 		++c;
