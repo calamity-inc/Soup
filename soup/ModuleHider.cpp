@@ -31,7 +31,8 @@ namespace soup
 		{
 			if (entry->base_addr == base_addr)
 			{
-				ldr_data_table_entry = entry;
+				hidden_entry = entry;
+				hidden_pNext = entry_ptr;
 				*entry_ptr = entry->next;
 			}
 			entry_ptr = &entry->next;
@@ -41,21 +42,12 @@ namespace soup
 
 	void ModuleHider::disable()
 	{
-		if (ldr_data_table_entry != nullptr)
+		if (hidden_entry != nullptr)
 		{
-			LdrDataTableEntry* entry = reinterpret_cast<LdrDataTableEntry*>(os::getCurrentPeb()->Ldr->InMemoryOrderModuleList.Flink);
-			while (true)
-			{
-				LdrDataTableEntry* next = entry->next;
-				if (next == nullptr || next->name == nullptr)
-				{
-					entry->next = (LdrDataTableEntry*)ldr_data_table_entry;
-					entry->next->next = next;
-					break;
-				}
-				entry = next;
-			}
-			ldr_data_table_entry = nullptr;
+			reinterpret_cast<LdrDataTableEntry*>(hidden_entry)->next = *reinterpret_cast<LdrDataTableEntry**>(hidden_pNext);
+			*reinterpret_cast<LdrDataTableEntry**>(hidden_pNext) = reinterpret_cast<LdrDataTableEntry*>(hidden_entry);
+
+			hidden_entry = nullptr;
 		}
 	}
 }

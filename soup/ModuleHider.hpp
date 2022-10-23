@@ -10,7 +10,8 @@ namespace soup
 	class ModuleHider
 	{
 	private:
-		void* ldr_data_table_entry = nullptr;
+		void* hidden_entry = nullptr;
+		void* hidden_pNext = nullptr;
 
 	public:
 		void enable(HMODULE mod);
