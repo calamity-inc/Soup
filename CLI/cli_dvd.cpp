@@ -33,11 +33,11 @@ void cli_dvd()
 					c.fill(Rgb::BLACK);
 					pos_x += vel_x;
 					pos_y += vel_y;
-					if (pos_x == 0)
+					if (pos_x <= 0)
 					{
 						vel_x = 1;
 					}
-					if (pos_y == 0)
+					if (pos_y <= 0)
 					{
 						vel_y = 1;
 					}
