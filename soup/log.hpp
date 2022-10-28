@@ -7,12 +7,12 @@ namespace soup
 {
 	extern UniquePtr<logSink> g_logSink;
 
-	inline void logWriteLine(std::string&& message)
+	inline void logWriteLine(std::string message)
 	{
 		g_logSink->writeLine(std::move(message));
 	}
 
-	inline void logWrite(std::string&& message)
+	inline void logWrite(std::string message)
 	{
 		g_logSink->write(std::move(message));
 	}
