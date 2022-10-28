@@ -9,7 +9,7 @@ namespace soup
 	{
 		uint32_t state;
 
-		MsvcRngInterface(uint32_t seed) // = srand
+		MsvcRng(uint32_t seed) // = srand
 			: state(seed)
 		{
 		}
