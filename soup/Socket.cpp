@@ -31,6 +31,12 @@
 #include "TlsServerHello.hpp"
 #include "TlsServerKeyExchange.hpp"
 
+#define LOGGING false
+
+#if LOGGING
+#include "log.hpp"
+#endif
+
 namespace soup
 {
 #if !SOUP_WINDOWS
@@ -812,6 +818,26 @@ namespace soup
 		{
 			if (content_type != TlsContentType::handshake)
 			{
+#if LOGGING
+				if (content_type == TlsContentType::alert)
+				{
+					std::string msg = "Remote closing connection with ";
+					if (data.at(0) == 2)
+					{
+						msg.append("fatal ");
+					}
+					msg.append("alert, description ");
+					msg.append(std::to_string((int)data.at(1)));
+					msg.append(". See TlsAlertDescription for details.");
+					logWriteLine(std::move(msg));
+				}
+				else
+				{
+					std::string msg = "Unexpected content type; expected handshake, found ";
+					msg.append(std::to_string((int)content_type));
+					logWriteLine(std::move(msg));
+				}
+#endif
 				s.tls_close(TlsAlertDescription::unexpected_message);
 				return;
 			}
