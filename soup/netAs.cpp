@@ -94,6 +94,7 @@ namespace soup
 		case 36352: // ColoCrossing
 		case 60087: // Netsons s.r.l. (Uania Cloud Service)
 		case 8075: // Microsoft / Azure
+		case 47674: // related to BLAZINGFAST
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
