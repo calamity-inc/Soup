@@ -127,11 +127,11 @@ namespace soup
 
 		void free(void* inst)
 		{
-			for (size_t i = 0; i != scopes.size(); ++i)
+			for (auto& scope : scopes)
 			{
-				if (auto e = scopes.at(i).find(inst); e != scopes.at(i).objects.end())
+				if (auto e = scope.find(inst); e != scope.objects.end())
 				{
-					scopes.at(i).objects.erase(e);
+					scope.objects.erase(e);
 					return;
 				}
 			}
