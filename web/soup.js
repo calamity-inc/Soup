@@ -45,7 +45,15 @@
 				soup.scope = function(f)
 				{
 					soup.beginScope();
-					soup.tryCatch(f);
+					try
+					{
+						f();
+					}
+					catch (e)
+					{
+						soup.endScope();
+						throw soup.fixErrorType(e);
+					}
 					soup.endScope();
 				};
 			}
