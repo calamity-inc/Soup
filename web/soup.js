@@ -70,7 +70,7 @@
 				upscaleMultiply: function(c, f)
 				{
 					let w = soup.Canvas.getWidth(c);
-					let h = soup.Canvas.getWidth(c);
+					let h = soup.Canvas.getHeight(c);
 					soup.Canvas.resizeNearestNeighbour(c, w * f, h * f);
 				}
 			};
