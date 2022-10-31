@@ -3,11 +3,19 @@
 #include <cstdint>
 #include <vector>
 
+#include "Exception.hpp"
+
 #undef CDECL
 
 namespace soup
 {
-	struct BadCall { };
+	struct BadCall : public Exception
+	{
+		BadCall()
+			: Exception("Bad call")
+		{
+		}
+	};
 
 	struct ffi
 	{
