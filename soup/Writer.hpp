@@ -266,8 +266,12 @@ namespace soup
 		}
 
 		// String with known length.
-		bool str(size_t len, const std::string& v)
+		bool str(size_t len, std::string v)
 		{
+			SOUP_IF_UNLIKELY (v.size() != len)
+			{
+				v.append(len - v.size(), '\0');
+			}
 			write(v.data(), v.size());
 			return true;
 		}
