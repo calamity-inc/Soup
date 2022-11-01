@@ -1022,6 +1022,9 @@
     <ClInclude Include="ioSeekableReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
+    <ClInclude Include="DiskDbReader.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

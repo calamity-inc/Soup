@@ -446,6 +446,7 @@
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
+    <ClInclude Include="DiskDbReader.hpp" />
     <ClInclude Include="dnsUdpResolver.hpp" />
     <ClInclude Include="dnsClass.hpp" />
     <ClInclude Include="dnsHeader.hpp" />
