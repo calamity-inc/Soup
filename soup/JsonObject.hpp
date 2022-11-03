@@ -29,6 +29,8 @@ namespace soup
 		[[nodiscard]] bool contains(std::string k) const noexcept;
 		[[nodiscard]] JsonNode& at(const JsonNode& k) const;
 		[[nodiscard]] JsonNode& at(std::string k) const;
+		void erase(const JsonNode& k) noexcept;
+		void erase(std::string k) noexcept;
 		[[nodiscard]] auto begin() noexcept { return children.begin(); }
 		[[nodiscard]] auto end() noexcept { return children.end(); }
 		[[nodiscard]] auto begin() const noexcept { return children.begin(); }

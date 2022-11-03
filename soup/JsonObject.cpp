@@ -172,6 +172,23 @@ namespace soup
 		return at(JsonString(std::move(k)));
 	}
 
+	void JsonObject::erase(const JsonNode& k) noexcept
+	{
+		for (auto i = children.begin(); i != children.end(); ++i)
+		{
+			if (*i->first == k)
+			{
+				children.erase(i);
+				break;
+			}
+		}
+	}
+
+	void JsonObject::erase(std::string k) noexcept
+	{
+		return erase(JsonString(std::move(k)));
+	}
+
 	void JsonObject::add(UniquePtr<JsonNode>&& k, UniquePtr<JsonNode>&& v)
 	{
 		children.emplace_back(std::move(k), std::move(v));
