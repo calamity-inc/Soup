@@ -6,7 +6,6 @@
 
 #if SOUP_LINUX
 #include <ucontext.h>
-#include <signal.h>
 #endif
 
 namespace soup
@@ -25,7 +24,7 @@ namespace soup
 #else
 		ucontext_t ctx;
 		ucontext_t ret_ctx;
-		char stack[SIGSTKSZ];
+		char stack[1000000];
 
 		inline static thread_local Fiber* _current;
 #endif

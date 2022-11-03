@@ -2,6 +2,7 @@
 
 #include "MazeGenerator.hpp"
 
+#include <cstddef> // size_t
 #include <stack>
 #include <vector>
 
