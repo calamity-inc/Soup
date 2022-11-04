@@ -3,6 +3,7 @@
 #include "base.hpp"
 #if !SOUP_WASM
 
+#include <filesystem>
 #include <optional>
 #include <string>
 
@@ -91,6 +92,10 @@ namespace soup
 		HttpResponse executeRequest(const Uri& uri, std::string payload);
 		HttpResponse executeRequest(const AcmeAccount& acct, const Uri& uri, const std::string& payload);
 		[[nodiscard]] AcmeOrder parseOrderResponse(const HttpResponse& res);
+
+		[[nodiscard]] std::filesystem::path getAccountPath() const;
+		[[nodiscard]] std::optional<AcmeAccount> discoverAccount() const;
+		[[nodiscard]] AcmeAccount discoverOrCreateAccount();
 	};
 }
 

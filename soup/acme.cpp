@@ -4,11 +4,14 @@
 
 #include "Asn1Sequence.hpp"
 #include "base64.hpp"
+#include "FileReader.hpp"
+#include "FileWriter.hpp"
 #include "HttpRequest.hpp"
 #include "json.hpp"
 #include "JsonArray.hpp"
 #include "JsonObject.hpp"
 #include "JsonString.hpp"
+#include "os.hpp"
 #include "rsa.hpp"
 #include "sha256.hpp"
 
@@ -219,6 +222,46 @@ namespace soup
 			order.certificate = certificate->asStr().value;
 		}
 		return order;
+	}
+
+	std::filesystem::path AcmeClient::getAccountPath() const
+	{
+		auto path = os::getProgramData();
+		path /= "Calamity, Inc";
+		path /= "Soup";
+		path /= "AcmeAccount";
+		std::filesystem::create_directories(path);
+
+		std::string filename = domain;
+		filename.append(".bin");
+		path /= filename;
+
+		return path;
+	}
+
+	std::optional<AcmeAccount> AcmeClient::discoverAccount() const
+	{
+		auto path = getAccountPath();
+		if (std::filesystem::exists(path))
+		{
+			AcmeAccount acct;
+			FileReader fr(path);
+			acct.read(fr);
+			return std::optional<AcmeAccount>(std::move(acct));
+		}
+		return std::nullopt;
+	}
+
+	AcmeAccount AcmeClient::discoverOrCreateAccount()
+	{
+		if (auto acct = discoverAccount(); acct.has_value())
+		{
+			return *acct;
+		}
+		auto acct = createAccount(RsaKeypair::generate(2048));
+		FileWriter fw(getAccountPath());
+		acct.write(fw);
+		return acct;
 	}
 }
 
