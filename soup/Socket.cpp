@@ -149,8 +149,8 @@ namespace soup
 			}
 			sockaddr_in6 sa{};
 			sa.sin6_family = AF_INET6;
-			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
 			sa.sin6_port = addr.port;
+			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
 			if (::connect(fd, (sockaddr*)&sa, sizeof(sa)) == -1)
 			{
 				return false;
