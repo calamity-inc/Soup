@@ -110,10 +110,7 @@ namespace soup
 		file /= "Calamity, Inc";
 		file /= "Soup";
 		file /= "WebResource";
-		if (!std::filesystem::exists(file))
-		{
-			std::filesystem::create_directories(file);
-		}
+		std::filesystem::create_directories(file);
 		file /= string::bin2hex(sha1::hash(std::string(host).append(path)));
 		return file;
 	}
