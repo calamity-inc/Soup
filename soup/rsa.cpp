@@ -162,6 +162,11 @@ namespace soup
 	{
 	}
 
+	RsaPrivateKey RsaPrivateKey::fromPrimes(Bigint p, Bigint q)
+	{
+		return RsaKeypair(std::move(p), std::move(q)).getPrivate();
+	}
+
 	RsaPrivateKey RsaPrivateKey::fromBinary(const std::string& bin)
 	{
 		return fromAsn1(Asn1Sequence::fromBinary(bin));
