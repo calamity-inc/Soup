@@ -6,15 +6,30 @@
 #include <optional>
 #include <string>
 
+#include "Packet.hpp"
 #include "rsa.hpp"
 #include "Uri.hpp"
 
 namespace soup
 {
-	struct AcmeAccount
+	SOUP_PACKET(AcmeAccount)
 	{
 		std::string url;
 		RsaPrivateKey priv;
+
+		AcmeAccount() = default;
+
+		AcmeAccount(std::string url, RsaPrivateKey priv)
+			: url(std::move(url)), priv(std::move(priv))
+		{
+		}
+
+		SOUP_PACKET_IO(s)
+		{
+			return s.str_nt(url)
+				&& priv.io(s)
+				;
+		}
 	};
 
 	struct AcmeOrder

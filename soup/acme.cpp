@@ -73,10 +73,7 @@ namespace soup
 		obj->add("signature", base64::urlEncode(kp.getPrivate().sign<sha256>(protected_str).toBinary()));
 
 		auto res = executeRequest(uri_newAccount, obj->encode());
-		AcmeAccount acct;
-		acct.url = res.header_fields.at("Location");
-		acct.priv = kp.getPrivate();
-		return acct;
+		return AcmeAccount(res.header_fields.at("Location"), kp.getPrivate());
 	}
 
 	AcmeOrder AcmeClient::createOrder(const AcmeAccount& acct, const std::vector<std::string>& domains)
