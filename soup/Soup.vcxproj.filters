@@ -1523,6 +1523,12 @@
     <ClCompile Include="netInfo.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="Writer.cpp">
+      <Filter>io\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="Reader.cpp">
+      <Filter>io\stream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

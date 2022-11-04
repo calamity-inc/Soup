@@ -813,8 +813,10 @@
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />
     <ClCompile Include="netInfo.cpp" />
+    <ClCompile Include="Reader.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
+    <ClCompile Include="Writer.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
     <ClCompile Include="ChessCli.cpp" />

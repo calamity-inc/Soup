@@ -2,6 +2,8 @@
 
 #include "ioBase.hpp"
 
+#include "fwd.hpp"
+
 namespace soup
 {
 	class Reader : public ioBase<true>
@@ -119,6 +121,9 @@ namespace soup
 			return true;
 		}
 
+		// Specialisation of the above for Bigint.
+		bool om_bigint(Bigint& v);
+
 		bool mysql_lenenc(uint64_t& v)
 		{
 			uint8_t first;
@@ -188,6 +193,8 @@ namespace soup
 			uint64_t len;
 			return u64_dyn(len) && str_impl(v, len);
 		}
+
+		bool bigint_lp_u64_dyn(Bigint& v);
 
 		// Length-prefixed string, using mysql_lenenc for the length prefix.
 		bool str_lp_mysql(std::string& v)

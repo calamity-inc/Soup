@@ -2,6 +2,8 @@
 
 #include "ioBase.hpp"
 
+#include "fwd.hpp"
+
 namespace soup
 {
 	class Writer : public ioBase<false>
@@ -123,7 +125,7 @@ namespace soup
 				while (true)
 				{
 					val >>= 7;
-					if (val == 0)
+					if (!val)
 					{
 						break;
 					}
@@ -141,6 +143,10 @@ namespace soup
 			} while (chunks--);
 			return true;
 		}
+
+		// Specialisation of the above for Bigint.
+		// There are better ways to encode Bigints, tho, such as bigint_lp_u64_dyn.
+		bool om_bigint(const Bigint& v);
 
 		bool mysql_lenenc(const uint64_t& v)
 		{
@@ -182,6 +188,8 @@ namespace soup
 			write(v.data(), v.size());
 			return true;
 		}
+
+		bool bigint_lp_u64_dyn(Bigint& v);
 
 		// Length-prefixed string, using mysql_lenenc for the length prefix.
 		bool str_lp_mysql(const std::string& v)
