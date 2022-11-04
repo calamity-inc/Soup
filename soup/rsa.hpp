@@ -177,6 +177,22 @@ namespace soup
 		[[nodiscard]] Bigint getD() const; // returns private exponent. assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 
 		[[nodiscard]] Asn1Sequence createCsr(const std::vector<std::string>& common_names) const; // returns a Certificate Signing Request as per PKCS #10.
+
+		template <typename T>
+		bool io(T& s)
+		{
+			if (s.bigint_lp_u64_dyn(p)
+				&& s.bigint_lp_u64_dyn(q)
+				)
+			{
+				if constexpr (T::isRead())
+				{
+					*this = fromPrimes(p, q);
+				}
+				return true;
+			}
+			return false;
+		}
 	};
 
 	struct RsaKeypair : public RsaMod
