@@ -488,6 +488,7 @@
     <ClInclude Include="bitutil.hpp" />
     <ClInclude Include="CompiledExecutable.hpp" />
     <ClInclude Include="Compiler.hpp" />
+    <ClInclude Include="netInfo.hpp" />
     <ClInclude Include="netIntel.hpp" />
     <ClInclude Include="Hotp.hpp" />
     <ClInclude Include="JitModule.hpp" />
@@ -811,6 +812,7 @@
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />
+    <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
     <ClCompile Include="X509Certchain.cpp" />

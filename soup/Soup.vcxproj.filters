@@ -1025,6 +1025,9 @@
     <ClInclude Include="DiskDbReader.hpp">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="netInfo.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1516,6 +1519,9 @@
     </ClCompile>
     <ClCompile Include="log.cpp">
       <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="netInfo.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
