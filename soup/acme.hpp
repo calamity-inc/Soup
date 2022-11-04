@@ -60,7 +60,11 @@ namespace soup
 
 		AcmeClient(std::string _domain);
 
-		[[nodiscard]] AcmeAccount createAccount(const RsaKeypair& kp, std::string email); // ACME accounts are bound to the key, so if you call this with a registered key, the existing account is returned.
+		// ACME accounts are bound to the key, so if you call this with a registered key, the existing account is returned.
+		// Let's Encrypt requires a 2048-bit or 4096-bit keypair.
+		// Email address is optional to get expiry notifications.
+		[[nodiscard]] AcmeAccount createAccount(const RsaKeypair& kp, std::string email = {});
+
 		[[nodiscard]] AcmeOrder createOrder(const AcmeAccount& acct, const std::vector<std::string>& domains);
 		[[nodiscard]] AcmeOrder getOrder(const AcmeAccount& acct, const Uri& uri);
 		[[nodiscard]] AcmeAuthorisation getAuthorisation(const AcmeAccount& acct, const Uri& uri);

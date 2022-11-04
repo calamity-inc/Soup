@@ -57,8 +57,11 @@ namespace soup
 		{
 			payload_obj->add("termsOfServiceAgreed", true);
 			auto contact_arr = soup::make_unique<JsonArray>();
-			email.insert(0, "mailto:");
-			contact_arr->children.emplace_back(soup::make_unique<JsonString>(std::move(email)));
+			if (!email.empty())
+			{
+				email.insert(0, "mailto:");
+				contact_arr->children.emplace_back(soup::make_unique<JsonString>(std::move(email)));
+			}
 			payload_obj->add(soup::make_unique<JsonString>("contact"), std::move(contact_arr));
 		}
 		auto payload_str = base64::urlEncode(payload_obj->encode());
