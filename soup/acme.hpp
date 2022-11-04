@@ -66,6 +66,9 @@ namespace soup
 
 	struct AcmeClient
 	{
+		inline static std::string LETS_ENCRYPT = "acme-v02.api.letsencrypt.org";
+		inline static std::string LETS_ENCRYPT_STAGING = "acme-staging-v02.api.letsencrypt.org";
+
 		std::string domain;
 
 		Uri uri_newNonce;
