@@ -289,7 +289,7 @@ namespace soup
 					std::string domain = "_acme-challenge.";
 					domain.append(authz.domain);
 					std::cout << "Deploy a TXT record at " << domain << " with the following content: " << challenge.getDnsValue(acct) << "\n";
-					std::cout << "Press enter to continue.\n";
+					std::cout << "Press enter to continue.";
 					{ std::string line; std::getline(std::cin, line); }
 					requestChallengeValidation(acct, challenge.uri);
 				}
