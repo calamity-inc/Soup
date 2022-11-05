@@ -2,6 +2,9 @@
 
 #if !SOUP_WASM
 
+#include <iostream>
+#include <thread>
+
 #include "Asn1Sequence.hpp"
 #include "base64.hpp"
 #include "FileReader.hpp"
@@ -256,12 +259,65 @@ namespace soup
 	{
 		if (auto acct = discoverAccount(); acct.has_value())
 		{
-			return *acct;
+			return std::move(*acct);
 		}
+		return createAndSaveAccount();
+	}
+
+	AcmeAccount AcmeClient::createAndSaveAccount()
+	{
 		auto acct = createAccount(RsaKeypair::generate(2048));
 		FileWriter fw(getAccountPath());
 		acct.write(fw);
 		return acct;
+	}
+
+	std::string AcmeClient::cliCreateCertificate(const AcmeAccount& acct, const RsaPrivateKey& priv, const std::vector<std::string>& domains)
+	{
+		std::cout << "Creating order...\n";
+		auto order = createOrder(acct, domains);
+		std::cout << "Order created at " << order.uri.toString() << "\n";
+		for (const auto& auth : order.authorisations)
+		{
+			auto authz = getAuthorisation(acct, auth);
+			bool had_challenge = false;
+			for (const auto& challenge : authz.challenges)
+			{
+				if (challenge.isDns())
+				{
+					had_challenge = true;
+					std::string domain = "_acme-challenge.";
+					domain.append(authz.domain);
+					std::cout << "Deploy a TXT record at " << domain << " with the following content: " << challenge.getDnsValue(acct) << "\n";
+					std::cout << "Press enter to continue.\n";
+					{ std::string line; std::getline(std::cin, line); }
+					requestChallengeValidation(acct, challenge.uri);
+				}
+			}
+			if (!had_challenge)
+			{
+				std::cout << "No DNS challenge available for " << authz.domain << "\n";
+				return {};
+			}
+		}
+		std::cout << "Waiting until order is ready...\n";
+		while (true)
+		{
+			order = getOrder(acct, order.uri);
+			std::cout << "Order status: " << order.status << "\n";
+			if (order.status != "pending")
+			{
+				break;
+			}
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+		}
+		if (order.status == "ready")
+		{
+			std::cout << "Finalising order...\n";
+			finaliseOrder(acct, order, priv);
+			return getCertchain(acct, order);
+		}
+		return {};
 	}
 }
 

@@ -99,6 +99,12 @@ namespace soup
 		[[nodiscard]] std::filesystem::path getAccountPath() const;
 		[[nodiscard]] std::optional<AcmeAccount> discoverAccount() const;
 		[[nodiscard]] AcmeAccount discoverOrCreateAccount();
+		[[nodiscard]] AcmeAccount createAndSaveAccount();
+
+		// Prompts the user to solve the needed DNS challenges.
+		// Returns pem-encoded certchain on success. Empty string on failure.
+		// Note that the certificate key must differ from ACME account key.
+		[[nodiscard]] std::string cliCreateCertificate(const AcmeAccount& acct, const RsaPrivateKey& priv, const std::vector<std::string>& domains);
 	};
 }
 
