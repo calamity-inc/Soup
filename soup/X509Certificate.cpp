@@ -6,14 +6,14 @@
 
 namespace soup
 {
-	bool X509Certificate::fromBinary(const std::string& str)
+	bool X509Certificate::fromDer(const std::string& str)
 	{
-		return load(Asn1Sequence::fromBinary(str));
+		return load(Asn1Sequence::fromDer(str));
 	}
 
-	bool X509Certificate::fromBinary(std::istream& s)
+	bool X509Certificate::fromDer(std::istream& s)
 	{
-		return load(Asn1Sequence::fromBinary(s));
+		return load(Asn1Sequence::fromDer(s));
 	}
 
 	bool X509Certificate::load(const Asn1Sequence& cert)
@@ -38,7 +38,7 @@ namespace soup
 				{
 					pubKeyStr.erase(0, 1);
 				}
-				auto pubKey = Asn1Sequence::fromBinary(pubKeyStr);
+				auto pubKey = Asn1Sequence::fromDer(pubKeyStr);
 				key.n = pubKey.getInt(0);
 				key.e = pubKey.getInt(1);
 			}

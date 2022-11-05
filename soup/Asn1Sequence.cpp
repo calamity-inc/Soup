@@ -35,13 +35,13 @@ namespace soup
 		}
 	}
 
-	Asn1Sequence Asn1Sequence::fromBinary(const std::string& str)
+	Asn1Sequence Asn1Sequence::fromDer(const std::string& str)
 	{
 		std::istringstream s{ str };
-		return fromBinary(s);
+		return fromDer(s);
 	}
 
-	Asn1Sequence Asn1Sequence::fromBinary(std::istream& s)
+	Asn1Sequence Asn1Sequence::fromDer(std::istream& s)
 	{
 		readIdentifier(s);
 		auto len = readLength(s);

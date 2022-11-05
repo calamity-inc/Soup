@@ -13,7 +13,7 @@ namespace soup
 		for (auto& cert : vec)
 		{
 			X509Certificate xcert{};
-			if (!xcert.fromBinary(cert))
+			if (!xcert.fromDer(cert))
 			{
 				return false;
 			}
@@ -27,7 +27,7 @@ namespace soup
 		for (const auto& der : pem::decodeChain(str))
 		{
 			X509Certificate xcert{};
-			if (!xcert.fromBinary(der))
+			if (!xcert.fromDer(der))
 			{
 				return false;
 			}

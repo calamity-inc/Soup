@@ -155,7 +155,7 @@ namespace soup
 
 		[[nodiscard]] static RsaPrivateKey fromPrimes(Bigint p, Bigint q);
 
-		[[nodiscard]] static RsaPrivateKey fromBinary(const std::string& bin);
+		[[nodiscard]] static RsaPrivateKey fromDer(const std::string& bin);
 		[[nodiscard]] static RsaPrivateKey fromAsn1(const Asn1Sequence& seq);
 		[[nodiscard]] static RsaPrivateKey fromJwk(const JsonObject& jwk);
 

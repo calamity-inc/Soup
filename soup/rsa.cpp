@@ -167,9 +167,9 @@ namespace soup
 		return RsaKeypair(std::move(p), std::move(q)).getPrivate();
 	}
 
-	RsaPrivateKey RsaPrivateKey::fromBinary(const std::string& bin)
+	RsaPrivateKey RsaPrivateKey::fromDer(const std::string& bin)
 	{
-		return fromAsn1(Asn1Sequence::fromBinary(bin));
+		return fromAsn1(Asn1Sequence::fromDer(bin));
 	}
 
 	RsaPrivateKey RsaPrivateKey::fromAsn1(const Asn1Sequence& seq)
@@ -177,7 +177,7 @@ namespace soup
 		if (seq.getChildType(1).type != Asn1Type::INTEGER)
 		{
 			// assuming that seq[1] is sequence containing OID 1.2.840.113549.1.1.1
-			return fromAsn1(Asn1Sequence::fromBinary(seq.getString(2)));
+			return fromAsn1(Asn1Sequence::fromDer(seq.getString(2)));
 		}
 		return {
 			seq.getInt(1),

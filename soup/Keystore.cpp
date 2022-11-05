@@ -43,7 +43,7 @@ namespace soup
 	void Keystore::addCa(std::string&& common_name, std::string&& pem)
 	{
 		X509Certificate xcert;
-		if (xcert.fromBinary(pem::decode(std::move(pem)))
+		if (xcert.fromDer(pem::decode(std::move(pem)))
 			&& !xcert.key.n.isZero()
 			)
 		{
