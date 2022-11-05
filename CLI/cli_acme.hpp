@@ -53,12 +53,16 @@ int cli_acme()
 		}
 	}
 	std::cout << "Waiting until order is ready...\n";
-	do
+	while (true)
 	{
 		order = ac.getOrder(acct, order.uri);
 		std::cout << "Order status: " << order.status << "\n";
+		if (order.status != "pending")
+		{
+			break;
+		}
 		std::this_thread::sleep_for(std::chrono::seconds(5));
-	} while (order.status == "pending");
+	}
 	if (order.status == "ready")
 	{
 		std::cout << "Finalising order...\n";
