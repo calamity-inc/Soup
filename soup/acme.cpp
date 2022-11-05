@@ -54,7 +54,7 @@ namespace soup
 			protected_obj->add("alg", "RS256");
 			protected_obj->add(soup::make_unique<JsonString>("jwk"), kp.getPublic().toJwk());
 			protected_obj->add("nonce", getNonce());
-			protected_obj->add("url", "https://acme-staging-v02.api.letsencrypt.org/acme/new-acct");
+			protected_obj->add("url", uri_newAccount.toString());
 		}
 		auto protected_str = base64::urlEncode(protected_obj->encode());
 		obj->add("protected", protected_str);
