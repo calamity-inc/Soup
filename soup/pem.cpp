@@ -47,4 +47,28 @@ namespace soup
 		string::erase<std::string>(in, " ");
 		return base64::decode(in);
 	}
+
+	std::vector<std::string> pem::decodeChain(const std::string& str)
+	{
+		std::vector<std::string> res{};
+		std::string tmp{};
+		for (const auto& line : string::explode(str, "\n"))
+		{
+			if (line.empty())
+			{
+				continue;
+			}
+			if (line.at(0) == '-')
+			{
+				if (!tmp.empty())
+				{
+					res.emplace_back(pem::decodeUnpacked(tmp));
+					tmp.clear();
+				}
+				continue;
+			}
+			tmp.append(line);
+		}
+		return res;
+	}
 }

@@ -22,30 +22,16 @@ namespace soup
 		return !certs.empty();
 	}
 
-	bool X509Certchain::fromPem(std::string str)
+	bool X509Certchain::fromPem(const std::string& str)
 	{
-		std::string cert{};
-		for (const auto& line : string::explode(str, "\n"))
+		for (const auto& der : pem::decodeChain(str))
 		{
-			if (line.empty())
+			X509Certificate xcert{};
+			if (!xcert.fromBinary(der))
 			{
-				continue;
+				return false;
 			}
-			if (line.at(0) == '-')
-			{
-				if (!cert.empty())
-				{
-					X509Certificate xcert{};
-					if (!xcert.fromBinary(pem::decodeUnpacked(cert)))
-					{
-						return false;
-					}
-					certs.emplace_back(std::move(xcert));
-					cert.clear();
-				}
-				continue;
-			}
-			cert.append(line);
+			certs.emplace_back(std::move(xcert));
 		}
 		return !certs.empty();
 	}

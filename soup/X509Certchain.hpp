@@ -12,7 +12,7 @@ namespace soup
 		std::vector<X509Certificate> certs{};
 
 		bool fromDer(const std::vector<std::string>& vec);
-		bool fromPem(std::string str);
+		bool fromPem(const std::string& str);
 
 		[[nodiscard]] bool verify(const std::string& domain, const Keystore& ks) const;
 		[[nodiscard]] bool isValidForDomain(const std::string& domain) const;
