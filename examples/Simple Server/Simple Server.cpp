@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <Asn1Sequence.hpp>
 #include <crc32.hpp>
 #include <HttpRequest.hpp>
 #include <pem.hpp>
@@ -200,7 +199,7 @@ nLRbwHOoq7hHwg==
 -----END CERTIFICATE-----
 )EOC"),
 	};
-	server_rsa_data.private_key = soup::RsaPrivateKey::fromAsn1(soup::Asn1Sequence::fromDer(soup::pem::decode(R"EOC(
+	server_rsa_data.private_key = soup::RsaPrivateKey::fromPem(R"EOC(
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYbeJly69Nd+bP
 EnzCEAJZzqp/xsGr2YTgisYGyBKqp0ubWfl4ItRx7a50siEVy57oNBc4AGhQ6/A1
@@ -229,7 +228,7 @@ AA3w0djptVzPMBF7JFE72qgIYiErviEf2X5aFwTLQJNtpLBNDFGhlsyM0B3vQMG6
 IWTRPUZRNojVvK1dQ+xPN/9HsFVUb6JWyU4e3gocnYoe2zGdyT9p9u0Pr3JikgAC
 QJg24g1I/Zb4EUJmo2WNBzGS
 -----END PRIVATE KEY-----
-)EOC")));
+)EOC");
 
 	soup::Server serv{};
 	serv.on_work_done = [](soup::Worker& w, soup::Scheduler&)

@@ -167,6 +167,11 @@ namespace soup
 		return RsaKeypair(std::move(p), std::move(q)).getPrivate();
 	}
 
+	RsaPrivateKey RsaPrivateKey::fromPem(const std::string& data)
+	{
+		return fromDer(pem::decode(data));
+	}
+
 	RsaPrivateKey RsaPrivateKey::fromDer(const std::string& bin)
 	{
 		return fromAsn1(Asn1Sequence::fromDer(bin));
