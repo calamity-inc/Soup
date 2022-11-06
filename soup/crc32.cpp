@@ -2,7 +2,7 @@
 
 #include "base.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS && defined(SOUP_USE_ASM)
 #define CRC32_USE_ASM true
 #else
 #define CRC32_USE_ASM false

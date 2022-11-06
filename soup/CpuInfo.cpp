@@ -2,7 +2,7 @@
 
 #include "base.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS && defined(SOUP_USE_ASM)
 #define CPUINFO_USE_ASM true
 #else
 #define CPUINFO_USE_ASM false
@@ -87,6 +87,10 @@ namespace soup
 		return str;
 	}
 
+	// Windows and Linux have entirely different calling conventions.
+	// And it seems the compiler doesn't care when I tell it to use __fastcall.
+	// This is all such fucking horrible garbage.
+
 #if CPUINFO_USE_ASM
 	extern "C" void __fastcall invoke_cpuid(void* out, uint32_t eax);
 #endif
@@ -95,7 +99,7 @@ namespace soup
 	{
 #if CPUINFO_USE_ASM
 		invoke_cpuid(out, eax);
-#else
+#elif SOUP_WINDOWS
 		static UniquePtr<AllocRaiiVirtual> invoke_asm = os::allocateExecutable(x64Asm(
 			"push esi\n"
 #if SOUP_BITS == 64
@@ -117,6 +121,19 @@ namespace soup
 			"ret\n"
 		));
 		((void(__fastcall*)(void*, uint32_t))invoke_asm->addr)(out, eax);
+#else
+		static UniquePtr<AllocRaiiVirtual> invoke_asm = os::allocateExecutable(x64Asm(
+			"mov eax, esi\n"
+			//"xor ecx, ecx\n"
+			"cpuid\n"
+
+			"mov [rdi], eax\n"
+			"mov [rdi+4], ebx\n"
+			"mov [rdi+8], edx\n"
+			"mov [rdi+12], ecx\n"
+			"ret\n"
+		));
+		((void(*)(void*, uint32_t))invoke_asm->addr)(out, eax);
 #endif
 	}
 }
