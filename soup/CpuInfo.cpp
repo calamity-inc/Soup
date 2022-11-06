@@ -88,7 +88,7 @@ namespace soup
 	}
 
 #if CPUINFO_USE_ASM
-	extern "C" void invoke_cpuid(void* out, uint32_t eax);
+	extern "C" void __fastcall invoke_cpuid(void* out, uint32_t eax);
 #endif
 
 	void CpuInfo::invokeCpuid(void* out, uint32_t eax)
@@ -116,7 +116,7 @@ namespace soup
 			"pop esi\n"
 			"ret\n"
 		));
-		((void(*)(void*, uint32_t))invoke_asm->addr)(out, eax);
+		((void(__fastcall*)(void*, uint32_t))invoke_asm->addr)(out, eax);
 #endif
 	}
 }

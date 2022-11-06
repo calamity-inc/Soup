@@ -99,7 +99,7 @@ namespace soup
 	// With the Visual Studio solution, this "just works."
 
 #if CRC32_USE_ASM
-	extern "C" uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc);
+	extern "C" __fastcall uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc);
 
 	/*static __declspec(noinline) uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc)
 	{
