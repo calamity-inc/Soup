@@ -217,9 +217,17 @@ namespace soup
 		}
 		else if (*str == 'd')
 		{
-			reg = RD;
-			decodeAccessType(access_type, str);
-			++str;
+			if (str[1] == 'i')
+			{
+				reg = DI;
+				str += 2;
+			}
+			else
+			{
+				reg = RD;
+				decodeAccessType(access_type, str);
+				++str;
+			}
 		}
 		else if (*str == 's' && *++str == 'i')
 		{
