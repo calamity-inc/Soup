@@ -1,6 +1,6 @@
 #include "AssemblyBuilder.hpp"
 
-#include "AllocRaiiLocalBase.hpp"
+#include "AllocRaiiVirtual.hpp"
 #include "os.hpp"
 #include "UniquePtr.hpp"
 
@@ -143,7 +143,7 @@ namespace soup
 		return m_data.size();
 	}
 
-	UniquePtr<AllocRaiiLocalBase> AssemblyBuilder::allocate() const
+	UniquePtr<AllocRaiiVirtual> AssemblyBuilder::allocate() const
 	{
 		return os::allocateExecutable(m_data);
 	}

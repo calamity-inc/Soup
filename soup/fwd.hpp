@@ -83,6 +83,7 @@ namespace soup
 	// mem.alloc
 	struct AllocRaiiLocalBase;
 	struct AllocRaiiRemote;
+	struct AllocRaiiVirtual;
 
 	// mem.vft
 	struct memVft;

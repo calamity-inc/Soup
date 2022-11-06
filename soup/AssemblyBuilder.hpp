@@ -47,6 +47,6 @@ namespace soup
 		const uint8_t* data() const;
 		size_t size() const noexcept;
 
-		[[nodiscard]] UniquePtr<AllocRaiiLocalBase> allocate() const;
+		[[nodiscard]] UniquePtr<AllocRaiiVirtual> allocate() const;
 	};
 }

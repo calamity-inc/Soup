@@ -2,7 +2,7 @@
 
 #include <typeinfo> // bad_cast
 
-#include "AllocRaiiLocalBase.hpp"
+#include "AllocRaiiVirtual.hpp"
 #include "AssemblyBuilder.hpp"
 #include "BuiltinOp.hpp"
 #include "Exception.hpp"

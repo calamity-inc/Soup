@@ -8,13 +8,13 @@
 #if SOUP_WINDOWS
 #include <ShlObj.h> // CSIDL_COMMON_APPDATA
 
-#include "AllocRaiiVirtual.hpp"
 #include "Exception.hpp"
 #include "ObfusString.hpp"
 #else
-#include "AllocRaii.hpp"
+#include <sys/mman.h>
 #endif
 
+#include "AllocRaiiVirtual.hpp"
 #include "rand.hpp"
 #include "string.hpp"
 #include "UniquePtr.hpp"
@@ -154,24 +154,16 @@ namespace soup
 		return result;
 	}
 
-	UniquePtr<AllocRaiiLocalBase> os::allocateExecutable(const std::string& bytecode)
+	UniquePtr<AllocRaiiVirtual> os::allocateExecutable(const std::string& bytecode)
 	{
-#if SOUP_WINDOWS
-		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
-#else
-		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaii>(bytecode.size());
-#endif
+		auto alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
 		memcpy(alloc->addr, bytecode.data(), bytecode.size());
 		return alloc;
 	}
 
-	UniquePtr<AllocRaiiLocalBase> os::allocateExecutable(const std::vector<uint8_t>& bytecode)
+	UniquePtr<AllocRaiiVirtual> os::allocateExecutable(const std::vector<uint8_t>& bytecode)
 	{
-#if SOUP_WINDOWS
-		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
-#else
-		UniquePtr<AllocRaiiLocalBase> alloc = soup::make_unique<AllocRaii>(bytecode.size());
-#endif
+		auto alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
 		memcpy(alloc->addr, bytecode.data(), bytecode.size());
 		return alloc;
 	}

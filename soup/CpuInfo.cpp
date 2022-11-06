@@ -8,7 +8,7 @@
 #define CPUINFO_USE_ASM false
 #endif
 
-#include "AllocRaiiLocalBase.hpp"
+#include "AllocRaiiVirtual.hpp"
 #include "os.hpp"
 #include "string.hpp"
 #include "UniquePtr.hpp"
@@ -96,7 +96,7 @@ namespace soup
 #if CPUINFO_USE_ASM
 		invoke_cpuid(out, eax);
 #else
-		static UniquePtr<AllocRaiiLocalBase> invoke_asm = os::allocateExecutable(x64Asm(
+		static UniquePtr<AllocRaiiVirtual> invoke_asm = os::allocateExecutable(x64Asm(
 			"push esi\n"
 #if SOUP_BITS == 64
 			"mov rsi, rcx\n"
