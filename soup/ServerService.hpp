@@ -17,7 +17,7 @@ namespace soup
 		const callback_t srv_on_tunnel_established;
 		callback_t on_tunnel_established = nullptr;
 
-		explicit ServerService(callback_t srv_on_tunnel_established)
+		ServerService(callback_t srv_on_tunnel_established = nullptr)
 			: srv_on_tunnel_established(srv_on_tunnel_established)
 		{
 		}
