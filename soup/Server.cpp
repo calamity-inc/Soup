@@ -130,6 +130,18 @@ namespace soup
 		return true;
 	}
 
+	bool Server::bindUdp(const IpAddr& addr, uint16_t port, udp_callback_t callback) noexcept
+	{
+		Socket sock{};
+		if (!sock.udpBind(addr, port))
+		{
+			return false;
+		}
+		setDataAvailableHandlerUdp(sock, callback);
+		addSocket(std::move(sock));
+		return true;
+	}
+
 	void Server::setDataAvailableHandler6(Socket& s)
 	{
 		s.holdup_type = Worker::SOCKET;

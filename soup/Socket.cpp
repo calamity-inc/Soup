@@ -166,25 +166,33 @@ namespace soup
 
 	bool Socket::bind6(uint16_t port) noexcept
 	{
-		return bind6(port, SOCK_STREAM);
+		return bind6(SOCK_STREAM, port);
 	}
 
 	bool Socket::bind4(uint16_t port) noexcept
 	{
-		return bind4(port, SOCK_STREAM);
+		return bind4(SOCK_STREAM, port);
 	}
 
 	bool Socket::udpBind6(uint16_t port) noexcept
 	{
-		return bind6(port, SOCK_DGRAM);
+		return bind6(SOCK_DGRAM, port);
 	}
 
 	bool Socket::udpBind4(uint16_t port) noexcept
 	{
-		return bind4(port, SOCK_DGRAM);
+		return bind4(SOCK_DGRAM, port);
 	}
 
-	bool Socket::bind6(uint16_t port, int type) noexcept
+	bool Socket::udpBind(const IpAddr& addr, uint16_t port) noexcept
+	{
+		return addr.isV4()
+			? bind4(SOCK_DGRAM, port, addr)
+			: bind6(SOCK_DGRAM, port, addr)
+			;
+	}
+
+	bool Socket::bind6(int type, uint16_t port, const IpAddr& addr) noexcept
 	{
 		if (!init(AF_INET6, type))
 		{
@@ -192,17 +200,18 @@ namespace soup
 		}
 		peer.ip.reset();
 		peer.port = port;
-		sockaddr_in6 addr{};
-		addr.sin6_family = AF_INET6;
-		addr.sin6_port = htons(port);
+		sockaddr_in6 sa{};
+		sa.sin6_family = AF_INET6;
+		sa.sin6_port = htons(port);
+		memcpy(&sa.sin6_addr, &addr.data, sizeof(in6_addr));
 		return setOpt<int>(SO_REUSEADDR, 1)
-			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
+			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
 			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
 			;
 	}
 
-	bool Socket::bind4(uint16_t port, int type) noexcept
+	bool Socket::bind4(int type, uint16_t port, const IpAddr& addr) noexcept
 	{
 		if (!init(AF_INET, type))
 		{
@@ -210,11 +219,12 @@ namespace soup
 		}
 		peer.ip.reset();
 		peer.port = port;
-		sockaddr_in addr{};
-		addr.sin_family = AF_INET;
-		addr.sin_port = htons(port);
+		sockaddr_in sa{};
+		sa.sin_family = AF_INET;
+		sa.sin_port = htons(port);
+		sa.sin_addr.s_addr = addr.getV4();
 		return setOpt<int>(SO_REUSEADDR, 1)
-			&& bind(fd, (sockaddr*)&addr, sizeof(addr)) != -1
+			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
 			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
 			;

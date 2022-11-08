@@ -91,9 +91,10 @@ namespace soup
 		bool bind4(uint16_t port) noexcept;
 		bool udpBind6(uint16_t port) noexcept;
 		bool udpBind4(uint16_t port) noexcept;
+		bool udpBind(const IpAddr& addr, uint16_t port) noexcept;
 	protected:
-		bool bind6(uint16_t port, int type) noexcept;
-		bool bind4(uint16_t port, int type) noexcept;
+		bool bind6(int type, uint16_t port, const IpAddr& addr = {}) noexcept;
+		bool bind4(int type, uint16_t port, const IpAddr& addr = {}) noexcept;
 
 	public:
 		[[nodiscard]] Socket accept6() noexcept;
