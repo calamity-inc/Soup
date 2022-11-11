@@ -89,13 +89,15 @@ namespace soup
 		case 53831: // Squarespace, Inc.
 		case 6724: // Strato AG
 		case 18779: // EGIHosting
-		case 32751: // Nuclearfallout Enterprises, Inc (NFO)
 		case 206092: // IPXO Limited (Bandito Networks Inc), related to Express VPN
 		case 36352: // ColoCrossing
 		case 60087: // Netsons s.r.l. (Uania Cloud Service)
 		case 8075: // Microsoft / Azure
 		case 47674: // related to BLAZINGFAST
 		case 206444: // KUBBUR
+			// Nuclearfallout Enterprises, Inc (NFO)
+		case 14586:
+		case 32751:
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
