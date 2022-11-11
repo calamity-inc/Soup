@@ -96,6 +96,7 @@ namespace soup
 		case 8075: // Microsoft / Azure
 		case 47674: // related to BLAZINGFAST
 		case 206444: // KUBBUR
+		case 14586: // Nuclearfallout Enterprises, Inc. (NFO)
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
