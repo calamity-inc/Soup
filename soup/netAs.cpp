@@ -98,6 +98,9 @@ namespace soup
 			// Nuclearfallout Enterprises, Inc (NFO)
 		case 14586:
 		case 32751:
+			// GleSYS AB
+		case 42708:
+		case 43948:
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
