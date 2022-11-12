@@ -100,7 +100,8 @@ namespace soup
 		case 32751:
 			// GleSYS AB
 		case 42708:  
-		case 43948:		
+		case 43948:
+		case 40622: // Green Floid LLC
 			// Leaseweb USA, Inc.
 		case 7203:
 		case 19148:
