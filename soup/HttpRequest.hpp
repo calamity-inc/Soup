@@ -15,9 +15,10 @@ namespace soup
 	class HttpRequest : public MimeMessage
 	{
 	public:
+		bool use_tls = true;
+		uint16_t port = 443;
 		std::string method{};
 		std::string path{};
-		uint16_t port = 443;
 		bool path_is_encoded = false;
 
 		HttpRequest() = default;
@@ -36,6 +37,7 @@ namespace soup
 		[[nodiscard]] std::optional<HttpResponse> execute() const; // blocking
 		[[nodiscard]] std::optional<HttpResponse> execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const; // blocking
 	private:
+		void execute_send(Socket& s) const;
 		static void execute_tick(Socket& s, std::string* resp);
 	};
 }

@@ -32,6 +32,12 @@ namespace soup
 	HttpRequest::HttpRequest(const Uri& uri)
 		: HttpRequest(uri.host, uri.getRequestPath())
 	{
+		if (joaat::hash(uri.scheme) == joaat::hash("http"))
+		{
+			use_tls = false;
+			port = 80;
+		}
+
 		if (uri.port != 0)
 		{
 			port = uri.port;
@@ -82,22 +88,21 @@ namespace soup
 		if (sock->connect(host, port))
 		{
 			Scheduler sched{};
-			sched.addSocket(std::move(sock)).enableCryptoClient(host, [](Socket& s, Capture&& _cap)
+			Socket& s = sched.addSocket(std::move(sock));
+			if (use_tls)
 			{
-				auto& cap = _cap.get<CaptureHttpRequestExecute>();
-
-				std::string data{};
-				data.append(cap.req->method);
-				data.push_back(' ');
-				data.append(cap.req->path_is_encoded ? cap.req->path : urlenc::encodePathWithQuery(cap.req->path));
-				data.append(ObfusString(" HTTP/1.0").str());
-				data.append("\r\n");
-				data.append(cap.req->toString());
-
-				s.send(data);
-
-				execute_tick(s, cap.resp);
-			}, CaptureHttpRequestExecute{ this, resp.get() }, certchain_validator);
+				s.enableCryptoClient(host, [](Socket& s, Capture&& _cap)
+				{
+					auto& cap = _cap.get<CaptureHttpRequestExecute>();
+					cap.req->execute_send(s);
+					execute_tick(s, cap.resp);
+				}, CaptureHttpRequestExecute{ this, resp.get() }, certchain_validator);
+			}
+			else
+			{
+				execute_send(s);
+				execute_tick(s, resp.get());
+			}
 			sched.run();
 		}
 		if (!resp->empty())
@@ -133,6 +138,18 @@ namespace soup
 			}
 		}
 		return {};
+	}
+
+	void HttpRequest::execute_send(Socket& s) const
+	{
+		std::string data{};
+		data.append(method);
+		data.push_back(' ');
+		data.append(path_is_encoded ? path : urlenc::encodePathWithQuery(path));
+		data.append(ObfusString(" HTTP/1.0").str());
+		data.append("\r\n");
+		data.append(toString());
+		s.send(data);
 	}
 
 	void HttpRequest::execute_tick(Socket& s, std::string* resp)
