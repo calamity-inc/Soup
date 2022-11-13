@@ -95,7 +95,9 @@ namespace soup
 		case 8075: // Microsoft / Azure
 		case 47674: // related to BLAZINGFAST
 		case 206444: // KUBBUR
-		case 40622: // Green Floid LLC
+			// Green Floid LLC
+		case 40622:
+		case 204957:
 			// Nuclearfallout Enterprises, Inc (NFO)
 		case 14586:
 		case 32751:
