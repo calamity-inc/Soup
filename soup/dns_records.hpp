@@ -8,6 +8,10 @@
 
 namespace soup
 {
+	struct dnsRecord;
+
+	using dnsRecordFactory = UniquePtr<dnsRecord>(*)(std::string&& name, uint32_t ttl, std::string&& human_readable_data);
+
 	struct dnsRecord
 	{
 		const dnsType type;
@@ -18,6 +22,8 @@ namespace soup
 			: type(type), name(std::move(name)), ttl(ttl)
 		{
 		}
+
+		[[nodiscard]] static dnsRecordFactory getFactory(dnsType type);
 
 		[[nodiscard]] std::string getValueString() const;
 	};
