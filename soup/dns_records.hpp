@@ -40,6 +40,11 @@ namespace soup
 			: dnsRecord(DNS_AAAA, std::move(name), ttl), data(data)
 		{
 		}
+
+		dnsAaaaRecord(std::string&& name, uint32_t ttl, const IpAddr& data)
+			: dnsRecord(DNS_AAAA, std::move(name), ttl), data(data)
+		{
+		}
 	};
 
 	struct dnsCnameRecord : public dnsRecord
