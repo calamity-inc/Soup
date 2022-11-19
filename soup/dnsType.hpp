@@ -99,4 +99,5 @@ namespace soup
 	};
 	
 	[[nodiscard]] extern std::string dnsTypeToString(dnsType type);
+	[[nodiscard]] extern dnsType dnsTypeFromString(const std::string& str);
 }
