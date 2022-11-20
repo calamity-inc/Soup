@@ -536,6 +536,7 @@
     <ClInclude Include="TinyPngOut.hpp" />
     <ClInclude Include="VectorReader.hpp" />
     <ClInclude Include="VectorWriter.hpp" />
+    <ClInclude Include="version_compare.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
     <ClInclude Include="ChessCli.hpp" />
@@ -818,6 +819,7 @@
     <ClCompile Include="spaceship.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
+    <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="Writer.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />

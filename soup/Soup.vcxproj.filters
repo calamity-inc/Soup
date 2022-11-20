@@ -1031,6 +1031,9 @@
     <ClInclude Include="spaceship.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="version_compare.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1533,6 +1536,9 @@
       <Filter>io\stream</Filter>
     </ClCompile>
     <ClCompile Include="spaceship.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="version_compare.cpp">
       <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>

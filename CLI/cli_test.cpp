@@ -37,6 +37,7 @@
 #include <StringMatch.hpp>
 
 #include <string.hpp>
+#include <version_compare.hpp>
 
 #include <Rgb.hpp>
 
@@ -614,6 +615,11 @@ static void test_util()
 	test("bin2hex", []
 	{
 		assert(string::bin2hex("\x1\x2\x3") == "010203");
+	});
+	test("version_compare", []
+	{
+		assert(version_compare("1.0", "0.1") > 0);
+		assert(version_compare("0.1", "0") > 0);
 	});
 }
 
