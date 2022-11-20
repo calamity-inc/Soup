@@ -1028,6 +1028,9 @@
     <ClInclude Include="netInfo.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="spaceship.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1528,6 +1531,9 @@
     </ClCompile>
     <ClCompile Include="Reader.cpp">
       <Filter>io\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="spaceship.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

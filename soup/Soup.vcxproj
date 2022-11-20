@@ -528,6 +528,7 @@
     <ClInclude Include="HashProofOfWork.hpp" />
     <ClInclude Include="RaiiEmulator.hpp" />
     <ClInclude Include="SharedPtr.hpp" />
+    <ClInclude Include="spaceship.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
     <ClInclude Include="StringRefWriter.hpp" />
     <ClInclude Include="TaskGuard.hpp" />
@@ -814,6 +815,7 @@
     <ClCompile Include="memVft.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="spaceship.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
     <ClCompile Include="Writer.cpp" />
