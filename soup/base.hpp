@@ -74,7 +74,7 @@
 	#define SOUP_NOINLINE __attribute__((noinline))
 #endif
 
-// C++ version abstraction macros
+// === C++ version abstraction macros
 
 #if !defined(_MSC_VER) && (__cplusplus < 202002L)
 	#define SOUP_CPP20 false
