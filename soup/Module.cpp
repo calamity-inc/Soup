@@ -2,6 +2,7 @@
 
 #if SOUP_WINDOWS
 
+#include "Exception.hpp"
 #include "HandlePlain.hpp"
 #include "HandleRaii.hpp"
 #include "MemoryBuffer.hpp"
@@ -19,6 +20,10 @@ namespace soup
 	Module::Module(UniquePtr<HandleBase>&& h)
 		: h(std::move(h)), range(*this->h, 0)
 	{
+		SOUP_IF_UNLIKELY (range.base.as<void*>() == nullptr)
+		{
+			throw Exception("Module not found");
+		}
 		auto dosHeader = range.base.as<IMAGE_DOS_HEADER*>();
 		auto ntHeader = range.base.add(dosHeader->e_lfanew).as<IMAGE_NT_HEADERS*>();
 		range.size = ntHeader->OptionalHeader.SizeOfImage;
