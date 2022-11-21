@@ -40,7 +40,8 @@ namespace soup
 		void operator=(Worker&& b) noexcept;
 
 		void fireHoldupCallback();
-		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap);
+		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap = {});
+		void awaitPromiseCompletion(UniquePtr<PromiseBase>&& p, void(*f)(Worker&, PromiseBase&, Capture&&), Capture&& cap = {});
 		void setWorkDone() noexcept;
 
 		[[nodiscard]] bool canRecurse() noexcept;
