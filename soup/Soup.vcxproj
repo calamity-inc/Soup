@@ -460,6 +460,7 @@
     <ClInclude Include="dns_records.hpp" />
     <ClInclude Include="Exception.hpp" />
     <ClInclude Include="FactoriseProofOfWork.hpp" />
+    <ClInclude Include="format.hpp" />
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="InquiryLang.hpp" />

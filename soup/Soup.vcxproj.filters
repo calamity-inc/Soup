@@ -1055,6 +1055,9 @@
     <ClInclude Include="stringifyable.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="format.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
