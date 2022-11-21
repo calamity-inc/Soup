@@ -1626,11 +1626,6 @@ namespace soup
 		return str;
 	}
 
-	std::ostream& operator<<(std::ostream& os, const Bigint& v)
-	{
-		return os << v.toString();
-	}
-
 	Bigint Bigint::fromBinary(const std::string& msg)
 	{
 		Bigint res{};

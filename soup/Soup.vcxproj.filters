@@ -1052,6 +1052,9 @@
     <ClInclude Include="rflMember.hpp">
       <Filter>lang\reflection</Filter>
     </ClInclude>
+    <ClInclude Include="stringifyable.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

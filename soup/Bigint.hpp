@@ -2,7 +2,6 @@
 
 #include "base.hpp"
 
-#include <ostream>
 #include <string>
 #include <utility> // pair
 #if !SOUP_WINDOWS
@@ -14,6 +13,7 @@
 #if SOUP_WINDOWS
 #include "IntVector.hpp"
 #endif
+#include "stringifyable.hpp"
 
 namespace soup
 {
@@ -290,10 +290,10 @@ namespace soup
 		[[nodiscard]] std::string toStringHexImpl(bool prefix, const char* map) const;
 
 	public:
-		friend std::ostream& operator<<(std::ostream& os, const Bigint& v);
-
 		[[nodiscard]] static Bigint fromBinary(const std::string& msg);
 		[[nodiscard]] std::string toBinary() const;
+
+		SOUP_STRINGIFYABLE(Bigint)
 	};
 
 	namespace literals

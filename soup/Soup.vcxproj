@@ -534,6 +534,7 @@
     <ClInclude Include="rflVar.hpp" />
     <ClInclude Include="SharedPtr.hpp" />
     <ClInclude Include="spaceship.hpp" />
+    <ClInclude Include="stringifyable.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
     <ClInclude Include="StringRefWriter.hpp" />
     <ClInclude Include="Task.hpp" />
