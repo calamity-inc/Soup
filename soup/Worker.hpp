@@ -10,6 +10,10 @@
 
 namespace soup
 {
+	constexpr uint8_t WORKER_TYPE_UNSPECIFIED = 0;
+	constexpr uint8_t WORKER_TYPE_SOCKET = 1;
+	constexpr uint8_t WORKER_TYPE_USER = 2;
+
 	struct Worker
 	{
 		enum HoldupType : uint8_t
@@ -20,14 +24,14 @@ namespace soup
 			PROMISE,
 		};
 
-		bool is_socket;
+		uint8_t type;
 		uint8_t recursions = 0;
 		HoldupType holdup_type = NONE;
 		Callback<void(Worker&)> holdup_callback;
 		void* holdup_data;
 
-		Worker(bool is_socket = false) noexcept
-			: is_socket(is_socket)
+		Worker(uint8_t type = WORKER_TYPE_UNSPECIFIED) noexcept
+			: type(type)
 		{
 		}
 

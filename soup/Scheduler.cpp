@@ -56,7 +56,7 @@ namespace soup
 	{
 		for (auto i = workers.begin(); i != workers.end(); )
 		{
-			if ((*i)->is_socket
+			if ((*i)->type == WORKER_TYPE_SOCKET
 				&& reinterpret_cast<Socket*>(i->get())->fd == -1
 				)
 			{
