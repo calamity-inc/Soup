@@ -527,6 +527,11 @@
     <ClInclude Include="ioSizeMeasurer.hpp" />
     <ClInclude Include="HashProofOfWork.hpp" />
     <ClInclude Include="RaiiEmulator.hpp" />
+    <ClInclude Include="rflMember.hpp" />
+    <ClInclude Include="rflParser.hpp" />
+    <ClInclude Include="rflStruct.hpp" />
+    <ClInclude Include="rflType.hpp" />
+    <ClInclude Include="rflVar.hpp" />
     <ClInclude Include="SharedPtr.hpp" />
     <ClInclude Include="spaceship.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
@@ -817,6 +822,7 @@
     <ClCompile Include="memVft.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="rflParser.cpp" />
     <ClCompile Include="spaceship.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="time.cpp" />

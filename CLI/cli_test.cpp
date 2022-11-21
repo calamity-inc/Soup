@@ -30,6 +30,9 @@
 
 #include <PhpState.hpp>
 
+#include <rflParser.hpp>
+#include <rflStruct.hpp>
+
 #include <math.hpp>
 
 #include <Uri.hpp>
@@ -450,6 +453,20 @@ endif;)") == "");
 			assert(php.evaluate(R"(<?php echo "Request URI: ".$_SERVER["REQUEST_URI"];)") == "Request URI: /1337");
 		});
 	}
+
+	test("reflection", []
+	{
+		rflParser par(R"EOC(struct Person { const char* name; int age; })EOC");
+		auto t = par.readStruct();
+		assert(t.name == "Person");
+		assert(t.members.size() == 2);
+		assert(t.members.at(0).type.name == "const char");
+		assert(t.members.at(0).type.toString() == "const char*");
+		assert(t.members.at(0).name == "name");
+		assert(t.members.at(1).type.name == "int");
+		assert(t.members.at(1).type.toString() == "int");
+		assert(t.members.at(1).name == "age");
+	});
 }
 
 void test_math()

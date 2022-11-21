@@ -1037,6 +1037,21 @@
     <ClInclude Include="Task.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="rflType.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflParser.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflVar.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflStruct.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="rflMember.hpp">
+      <Filter>lang\reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1547,6 +1562,9 @@
     <ClCompile Include="Task.cpp">
       <Filter>task</Filter>
     </ClCompile>
+    <ClCompile Include="rflParser.cpp">
+      <Filter>lang\reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1728,6 +1746,9 @@
     </Filter>
     <Filter Include="log">
       <UniqueIdentifier>{4c970a96-ef10-46fc-a11b-19d57ae6ff4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\reflection">
+      <UniqueIdentifier>{9004d1b5-0669-4083-b4a5-aa132fc59a80}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

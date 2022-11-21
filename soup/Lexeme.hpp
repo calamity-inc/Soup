@@ -22,6 +22,16 @@ namespace soup
 				;
 		}
 
+		[[nodiscard]] bool isLiteral() const noexcept
+		{
+			return token_keyword == LITERAL;
+		}
+
+		[[nodiscard]] bool isSpace() const noexcept
+		{
+			return token_keyword == SPACE;
+		}
+
 		[[nodiscard]] std::string getSourceString() const noexcept
 		{
 			if (isBuiltin())
@@ -65,7 +75,7 @@ namespace soup
 
 		[[nodiscard]] bool isLiteral(const std::string& b) const noexcept
 		{
-			return token_keyword == LITERAL
+			return isLiteral()
 				&& val.getString() == b
 				;
 		}

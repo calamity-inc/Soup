@@ -55,6 +55,11 @@ namespace soup
 	// lang.inquiry
 	struct InquiryObject;
 
+	// lang.reflection
+	struct rflStruct;
+	struct rflType;
+	struct rflVar;
+
 	// math
 	class Bigint;
 	struct Vector2;
