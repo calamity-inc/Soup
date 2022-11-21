@@ -32,6 +32,11 @@ namespace soup
 		}
 	}
 
+	void Worker::setWorkDone() noexcept
+	{
+		holdup_type = NONE;
+	}
+
 	bool Worker::canRecurse() noexcept
 	{
 		return ++recursions != 20;
