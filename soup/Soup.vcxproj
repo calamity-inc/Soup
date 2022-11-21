@@ -818,6 +818,7 @@
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="spaceship.cpp" />
+    <ClCompile Include="Task.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
     <ClCompile Include="version_compare.cpp" />

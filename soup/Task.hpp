@@ -6,16 +6,10 @@ namespace soup
 {
 	struct Task : public Worker
 	{
-		explicit Task()
-			: Worker()
-		{
-			holdup_type = Worker::IDLE;
-			holdup_callback.set([](Worker& w, Capture&&)
-			{
-				reinterpret_cast<Task&>(w).tick();
-			});
-		}
+		explicit Task();
 
 		virtual void tick() = 0;
+
+		void awaitTaskCompletion(UniquePtr<Task>&& task);
 	};
 }

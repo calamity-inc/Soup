@@ -41,6 +41,7 @@ namespace soup
 		void runFor(unsigned int ms);
 	protected:
 		void tick(std::vector<pollfd>& pollfds, bool& not_just_sockets);
+		void tickWorker(std::vector<pollfd>& pollfds, bool& not_just_sockets, Worker& w);
 		void yieldBusyspin(std::vector<pollfd>& pollfds);
 		void yieldKernel(std::vector<pollfd>& pollfds);
 		int poll(std::vector<pollfd>& pollfds, int timeout);

@@ -22,6 +22,7 @@ namespace soup
 			SOCKET,
 			IDLE, // call holdup callback whenever the scheduler has some idle time
 			PROMISE,
+			TASK,
 		};
 
 		uint8_t type;

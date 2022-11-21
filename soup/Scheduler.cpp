@@ -6,6 +6,7 @@
 
 #include "Promise.hpp"
 #include "Socket.hpp"
+#include "Task.hpp"
 #include "time.hpp"
 
 namespace soup
@@ -72,34 +73,53 @@ namespace soup
 				i = workers.erase(i);
 				continue;
 			}
-			if ((*i)->holdup_type == Worker::SOCKET)
-			{
-				pollfds.emplace_back(pollfd{
-					reinterpret_cast<Socket*>(i->get())->fd,
-					POLLIN
-				});
-			}
-			else
-			{
-				not_just_sockets = true;
-				pollfds.emplace_back(pollfd{
-					(Socket::fd_t)-1,
-					POLLIN
-				});
-
-				if ((*i)->holdup_type == Worker::IDLE)
-				{
-					fireHoldupCallback(**i);
-				}
-				else // if ((*i)->holdup_type == Worker::PROMISE)
-				{
-					if (!reinterpret_cast<PromiseBase*>((*i)->holdup_data)->isPending())
-					{
-						fireHoldupCallback(**i);
-					}
-				}
-			}
+			tickWorker(pollfds, not_just_sockets, **i);
 			++i;
+		}
+	}
+
+	void Scheduler::tickWorker(std::vector<pollfd>& pollfds, bool& not_just_sockets, Worker& w)
+	{
+		if (w.holdup_type == Worker::SOCKET)
+		{
+			pollfds.emplace_back(pollfd{
+				reinterpret_cast<Socket&>(w).fd,
+				POLLIN
+			});
+		}
+		else
+		{
+			not_just_sockets = true;
+			pollfds.emplace_back(pollfd{
+				(Socket::fd_t)-1,
+				POLLIN
+			});
+
+			if (w.holdup_type == Worker::IDLE)
+			{
+				fireHoldupCallback(w);
+			}
+			else if (w.holdup_type == Worker::PROMISE)
+			{
+				if (!reinterpret_cast<PromiseBase*>(w.holdup_data)->isPending())
+				{
+					fireHoldupCallback(w);
+				}
+			}
+			else //if (w.holdup_type == Worker::TASK)
+			{
+				Task& subtask = *w.holdup_callback.cap.get<UniquePtr<Task>>();
+				if (subtask.holdup_type == Worker::NONE)
+				{
+					w.holdup_type = Worker::IDLE;
+					fireHoldupCallback(w);
+					w.holdup_callback.cap.reset();
+				}
+				else
+				{
+					tickWorker(pollfds, not_just_sockets, subtask);
+				}
+			}
 		}
 	}
 

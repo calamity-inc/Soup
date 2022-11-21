@@ -1544,6 +1544,9 @@
     <ClCompile Include="version_compare.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
