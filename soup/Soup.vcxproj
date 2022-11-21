@@ -531,6 +531,7 @@
     <ClInclude Include="spaceship.hpp" />
     <ClInclude Include="StringRefReader.hpp" />
     <ClInclude Include="StringRefWriter.hpp" />
+    <ClInclude Include="Task.hpp" />
     <ClInclude Include="TaskGuard.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TinyPngOut.hpp" />

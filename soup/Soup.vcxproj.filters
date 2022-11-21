@@ -1034,6 +1034,9 @@
     <ClInclude Include="version_compare.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="Task.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
