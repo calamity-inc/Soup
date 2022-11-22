@@ -25,7 +25,7 @@ namespace soup
 		return nullptr;
 	}
 
-	std::string dnsRecord::getValueString() const
+	std::string dnsRecord::getDataHumanReadable() const
 	{
 		switch (type)
 		{

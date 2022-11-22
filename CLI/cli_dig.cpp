@@ -52,6 +52,6 @@ void cli_dig(int argc, const char** argv)
 
 	for (const auto& rr : r->lookup(t, argv[0]))
 	{
-		std::cout << dnsTypeToString(rr->type) << "\t" << rr->name << "\tvalue=" << rr->getValueString() << ", ttl=" << rr->ttl << "\n";
+		std::cout << dnsTypeToString(rr->type) << "\t" << rr->name << "\tvalue=" << rr->getDataHumanReadable() << ", ttl=" << rr->ttl << "\n";
 	}
 }

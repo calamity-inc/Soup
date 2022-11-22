@@ -25,7 +25,7 @@ namespace soup
 
 		[[nodiscard]] static dnsRecordFactory getFactory(dnsType type);
 
-		[[nodiscard]] std::string getValueString() const;
+		[[nodiscard]] std::string getDataHumanReadable() const;
 	};
 
 	struct dnsARecord : public dnsRecord
