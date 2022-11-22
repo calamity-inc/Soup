@@ -9,6 +9,8 @@
 #define UTF8_IS_CONTINUATION(ch) ((ch & 0b11000000) == UTF8_CONTINUATION_FLAG)
 
 #if SOUP_WINDOWS
+#include <Windows.h>
+
 #define UTF16_CHAR_TYPE wchar_t
 #define UTF16_STRING_TYPE std::wstring
 #else
@@ -80,10 +82,21 @@ namespace soup
 			return utf32;
 		}
 
-		template <typename Str>
+		template <typename Str = UTF16_STRING_TYPE>
 		[[nodiscard]] static std::string utf16_to_utf8(const Str& utf16)
 		{
+#if SOUP_WINDOWS
+			std::string res;
+			const int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.c_str(), -1, NULL, 0, NULL, NULL);
+			SOUP_IF_LIKELY (sizeRequired != 0)
+			{
+				res = std::string(sizeRequired - 1, 0);
+				WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.c_str(), -1, res.data(), sizeRequired, NULL, NULL);
+			}
+			return res;
+#else
 			return utf32_to_utf8(utf16_to_utf32(utf16));
+#endif
 		}
 
 		[[nodiscard]] static size_t utf8_char_len(const std::string& str) noexcept;
