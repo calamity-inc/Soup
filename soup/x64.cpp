@@ -244,6 +244,11 @@ namespace soup
 				deref_offset += ((*str) - '0');
 			}
 		}
+
+		if (*str != '\0')
+		{
+			throw 0;
+		}
 	}
 
 	void x64Instruction::reset() noexcept
