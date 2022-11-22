@@ -1,5 +1,6 @@
 #include "JsonString.hpp"
 
+#include "unicode.hpp"
 #include "Writer.hpp"
 
 namespace soup
@@ -38,6 +39,55 @@ namespace soup
 
 				case 't':
 					value.push_back('\t');
+					break;
+
+				case 'u':
+					++c;
+					if (c[0] && c[1] && c[2] && c[3])
+					{
+						try
+						{
+							char32_t w1 = std::stol(std::string(c, 4), nullptr, 16);
+							c += 4;
+							if ((w1 >> 10) == 0x36) // Surrogate pair?
+							{
+								if (c[0] == '\\' && c[1] == 'u' && c[2] && c[3] && c[4] && c[5])
+								{
+									c += 2;
+									try
+									{
+										char32_t w2 = std::stol(std::string(c, 4), nullptr, 16);
+										c += 4;
+										value.append(unicode::utf32_to_utf8(unicode::utf16_to_utf32(w1, w2)));
+									}
+									catch (std::exception&)
+									{
+										c -= 2;
+										c -= 4;
+										value.push_back('u');
+									}
+								}
+								else
+								{
+									c -= 4;
+									value.push_back('u');
+								}
+							}
+							else
+							{
+								value.append(unicode::utf32_to_utf8(w1));
+							}
+						}
+						catch (std::exception&)
+						{
+							value.push_back('u');
+						}
+					}
+					else
+					{
+						value.push_back('u');
+					}
+					--c;
 					break;
 				}
 				continue;

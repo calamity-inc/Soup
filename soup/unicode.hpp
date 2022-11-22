@@ -39,17 +39,24 @@ namespace soup
 		template <typename Str = std::u16string>
 		[[nodiscard]] static char32_t utf16_to_utf32(typename Str::const_iterator& it, const typename Str::const_iterator end) noexcept
 		{
-			if ((*it & 0b1111110000000000) == 0b1101100000000000)
+			char32_t w1 = *it++;
+			if ((w1 >> 10) == 0x36) // Surrogate pair?
 			{
-				auto hi = (char32_t)(*it & 0b0000001111111111);
-				if (++it == end)
+				SOUP_IF_UNLIKELY (it == end)
 				{
 					return 0;
 				}
-				auto lo = (char32_t)(*it++ & 0b0000001111111111);
-				return (((hi * 0x400) + lo) + 0x10000);
+				char32_t w2 = *it++;
+				return utf16_to_utf32(w1, w2);
 			}
-			return (char32_t)*it++;
+			return w1;
+		}
+
+		[[nodiscard]] static char32_t utf16_to_utf32(char32_t hi, char32_t lo) noexcept
+		{
+			hi &= 0x3FF;
+			lo &= 0x3FF;
+			return (((hi * 0x400) + lo) + 0x10000);
 		}
 
 		template <typename Str>
