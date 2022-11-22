@@ -9,13 +9,13 @@
 #define UTF8_IS_CONTINUATION(ch) ((ch & 0b11000000) == UTF8_CONTINUATION_FLAG)
 
 #if SOUP_WINDOWS
-static_assert(sizeof(wchar_t) == 2);
 #define UTF16_CHAR_TYPE wchar_t
 #define UTF16_STRING_TYPE std::wstring
 #else
 #define UTF16_CHAR_TYPE char16_t
 #define UTF16_STRING_TYPE std::u16string
 #endif
+static_assert(sizeof(UTF16_CHAR_TYPE) == 2);
 
 namespace soup
 {
