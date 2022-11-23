@@ -21,6 +21,7 @@ namespace soup
 		static const Rgb GREEN;
 		static const Rgb BLUE;
 		static const Rgb MAGENTA;
+		static const Rgb GRAY;
 
 		constexpr Rgb() noexcept = default;
 
