@@ -1058,6 +1058,9 @@
     <ClInclude Include="format.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="Diff.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1570,6 +1573,9 @@
     </ClCompile>
     <ClCompile Include="rflParser.cpp">
       <Filter>lang\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="Diff.cpp">
+      <Filter>util\string</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
