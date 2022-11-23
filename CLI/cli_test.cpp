@@ -38,6 +38,7 @@
 #include <Uri.hpp>
 
 #include <StringMatch.hpp>
+#include <format.hpp>
 
 #include <string.hpp>
 #include <version_compare.hpp>
@@ -624,6 +625,13 @@ static void test_util_string()
 		assert(StringMatch::wildcard("lib*.so", "libsoup.so") == true);
 
 		assert(StringMatch::wildcard("lib*_ext*.cpp", "libsoup_extspoon.cpp") == true);
+	});
+	test("format", []
+	{
+		assert(format("{} has {}") == " has ");
+		assert(format("{} has {}", "John") == "John has ");
+		assert(format("{} has {}", "John", 10) == "John has 10");
+		assert(format("{} has {}", "John", 10, 20) == "John has 10");
 	});
 }
 
