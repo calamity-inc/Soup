@@ -20,6 +20,8 @@ namespace soup
 
 		std::vector<std::vector<Span>> lines{};
 
+		void addSpan(std::string text, Rgb colour);
+
 		[[nodiscard]] std::pair<size_t, size_t> measure(const RasterFont& font) const;
 
 		void draw(RenderTarget& rt, const RasterFont& font) const;

@@ -6,6 +6,15 @@
 
 namespace soup
 {
+	void FormattedText::addSpan(std::string text, Rgb colour)
+	{
+		if (lines.empty())
+		{
+			lines.emplace_back(std::vector<Span>{});
+		}
+		lines.back().emplace_back(Span{ std::move(text), std::move(colour) });
+	}
+
 	std::pair<size_t, size_t> FormattedText::measure(const RasterFont& font) const
 	{
 		size_t width = 0;
