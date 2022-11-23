@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -7,7 +8,6 @@
 
 namespace soup
 {
-#pragma pack(push, 1)
 	struct Rgb
 	{
 		uint8_t r = 0;
@@ -62,6 +62,5 @@ namespace soup
 			};
 		}
 	};
-	static_assert(sizeof(Rgb) == 3);
-#pragma pack(pop)
+	static_assert(sizeof(Rgb) <= sizeof(size_t));
 }
