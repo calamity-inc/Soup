@@ -20,9 +20,14 @@ namespace soup
 	{
 		if (lines.empty())
 		{
-			lines.emplace_back(std::vector<Span>{});
+			newLine();
 		}
 		lines.back().emplace_back(std::move(span));
+	}
+
+	void FormattedText::newLine()
+	{
+		lines.emplace_back(std::vector<Span>{});
 	}
 
 	std::pair<size_t, size_t> FormattedText::measure(const RasterFont& font) const

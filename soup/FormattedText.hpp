@@ -50,6 +50,7 @@ namespace soup
 		void addSpan(std::string text, Rgb fg);
 		void addSpan(std::string text, Rgb fg, Rgb bg);
 		void addSpan(Span&& span);
+		void newLine();
 
 		[[nodiscard]] std::pair<size_t, size_t> measure(const RasterFont& font) const;
 
