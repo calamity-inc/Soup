@@ -12,15 +12,44 @@ namespace soup
 {
 	struct FormattedText
 	{
+		struct Colour
+		{
+			bool reset = false;
+			Rgb rgb;
+
+			Colour(Rgb rgb)
+				: reset(false), rgb(rgb)
+			{
+			}
+
+			Colour(bool reset)
+				: reset(reset)
+			{
+			}
+		};
+
 		struct Span
 		{
 			std::string text;
-			Rgb colour;
+			Colour fg;
+			Colour bg;
+
+			Span(std::string text, Rgb fg)
+				: text(std::move(text)), fg(fg), bg(true)
+			{
+			}
+
+			Span(std::string text, Rgb fg, Rgb bg)
+				: text(std::move(text)), fg(fg), bg(bg)
+			{
+			}
 		};
 
 		std::vector<std::vector<Span>> lines{};
 
-		void addSpan(std::string text, Rgb colour);
+		void addSpan(std::string text, Rgb fg);
+		void addSpan(std::string text, Rgb fg, Rgb bg);
+		void addSpan(Span&& span);
 
 		[[nodiscard]] std::pair<size_t, size_t> measure(const RasterFont& font) const;
 

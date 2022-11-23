@@ -6,13 +6,23 @@
 
 namespace soup
 {
-	void FormattedText::addSpan(std::string text, Rgb colour)
+	void FormattedText::addSpan(std::string text, Rgb fg)
+	{
+		addSpan(Span{ std::move(text), std::move(fg) });
+	}
+
+	void FormattedText::addSpan(std::string text, Rgb fg, Rgb bg)
+	{
+		addSpan(Span{ std::move(text), std::move(fg), std::move(bg) });
+	}
+
+	void FormattedText::addSpan(Span&& span)
 	{
 		if (lines.empty())
 		{
 			lines.emplace_back(std::vector<Span>{});
 		}
-		lines.back().emplace_back(Span{ std::move(text), std::move(colour) });
+		lines.back().emplace_back(std::move(span));
 	}
 
 	std::pair<size_t, size_t> FormattedText::measure(const RasterFont& font) const
@@ -38,7 +48,7 @@ namespace soup
 		{
 			for (const auto& span : line)
 			{
-				rt.drawText(x, y, span.text, font, span.colour);
+				rt.drawText(x, y, span.text, font, span.fg.rgb);
 				x += font.measureWidth(span.text);
 			}
 			y += font.baseline_glyph_height;
@@ -52,9 +62,21 @@ namespace soup
 		{
 			for (const auto& span : *line)
 			{
-				str.append(console.strSetForegroundColour<std::string>(span.colour.r, span.colour.g, span.colour.b));
+				if (span.fg.reset || span.bg.reset)
+				{
+					str.append(console.strResetColour<std::string>());
+				}
+				if (!span.fg.reset)
+				{
+					str.append(console.strSetForegroundColour<std::string>(span.fg.rgb.r, span.fg.rgb.g, span.fg.rgb.b));
+				}
+				if (!span.bg.reset)
+				{
+					str.append(console.strSetBackgroundColour<std::string>(span.bg.rgb.r, span.bg.rgb.g, span.bg.rgb.b));
+				}
 				str.append(span.text);
 			}
+			str.append(console.strResetColour<std::string>());
 			if (++line == lines.end())
 			{
 				break;
