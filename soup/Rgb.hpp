@@ -14,13 +14,13 @@ namespace soup
 		uint8_t g = 0;
 		uint8_t b = 0;
 
-		static Rgb BLACK;
-		static Rgb WHITE;
-		static Rgb RED;
-		static Rgb YELLOW;
-		static Rgb GREEN;
-		static Rgb BLUE;
-		static Rgb MAGENTA;
+		static const Rgb BLACK;
+		static const Rgb WHITE;
+		static const Rgb RED;
+		static const Rgb YELLOW;
+		static const Rgb GREEN;
+		static const Rgb BLUE;
+		static const Rgb MAGENTA;
 
 		constexpr Rgb() noexcept = default;
 
