@@ -13,8 +13,12 @@ namespace soup
 
 		[[nodiscard]] std::string toString() const noexcept
 		{
-			std::string str = "struct ";
-			str.append(name);
+			std::string str = "struct";
+			if (!name.empty())
+			{
+				str.push_back(' ');
+				str.append(name);
+			}
 			str.append("\n{\n");
 			for (const auto& member : members)
 			{
