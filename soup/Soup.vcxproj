@@ -427,6 +427,11 @@
     <ClInclude Include="acme.hpp" />
     <ClInclude Include="adler32.hpp" />
     <ClInclude Include="aes.hpp" />
+    <ClInclude Include="aglStatEcho.hpp" />
+    <ClInclude Include="aglStat.hpp" />
+    <ClInclude Include="aglContent.hpp" />
+    <ClInclude Include="aglLang.hpp" />
+    <ClInclude Include="aglTranspiler.hpp" />
     <ClInclude Include="AllocRaii.hpp" />
     <ClInclude Include="AllocRaiiLocalBase.hpp" />
     <ClInclude Include="AllocRaiiRemote.hpp" />
@@ -785,6 +790,8 @@
     <ClCompile Include="acme.cpp" />
     <ClCompile Include="adler32.cpp" />
     <ClCompile Include="aes.cpp" />
+    <ClCompile Include="aglContent.cpp" />
+    <ClCompile Include="aglTranspiler.cpp" />
     <ClCompile Include="Asn1Identifier.cpp" />
     <ClCompile Include="Asn1Sequence.cpp" />
     <ClCompile Include="AssemblyBuilder.cpp" />

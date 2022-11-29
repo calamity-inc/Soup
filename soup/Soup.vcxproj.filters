@@ -1061,6 +1061,21 @@
     <ClInclude Include="Diff.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="aglContent.hpp">
+      <Filter>lang\agnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="aglLang.hpp">
+      <Filter>lang\agnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="aglStat.hpp">
+      <Filter>lang\agnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="aglStatEcho.hpp">
+      <Filter>lang\agnostic</Filter>
+    </ClInclude>
+    <ClInclude Include="aglTranspiler.hpp">
+      <Filter>lang\agnostic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1577,6 +1592,12 @@
     <ClCompile Include="Diff.cpp">
       <Filter>util\string</Filter>
     </ClCompile>
+    <ClCompile Include="aglTranspiler.cpp">
+      <Filter>lang\agnostic</Filter>
+    </ClCompile>
+    <ClCompile Include="aglContent.cpp">
+      <Filter>lang\agnostic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1761,6 +1782,9 @@
     </Filter>
     <Filter Include="lang\reflection">
       <UniqueIdentifier>{9004d1b5-0669-4083-b4a5-aa132fc59a80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\agnostic">
+      <UniqueIdentifier>{0e0d3a1f-48a7-430f-8958-a7e3e6db45ad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

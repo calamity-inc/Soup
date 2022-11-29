@@ -52,6 +52,9 @@ namespace soup
 	class ParserState;
 	struct Token;
 
+	// lang.agnostic
+	struct aglTranspiler;
+
 	// lang.inquiry
 	struct InquiryObject;
 
