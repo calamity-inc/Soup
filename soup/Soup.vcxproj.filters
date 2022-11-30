@@ -713,7 +713,7 @@
     <ClInclude Include="branchless.hpp">
       <Filter>algos</Filter>
     </ClInclude>
-    <ClInclude Include="WebSocketConnection.hpp">
+    <ClInclude Include="WebSocketConnectionEmscripten.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
     <ClInclude Include="StringMatch.hpp">
@@ -1427,7 +1427,7 @@
     <ClCompile Include="xml.cpp">
       <Filter>data</Filter>
     </ClCompile>
-    <ClCompile Include="WebSocketConnection.cpp">
+    <ClCompile Include="WebSocketConnectionEmscripten.cpp">
       <Filter>net\web\websocket</Filter>
     </ClCompile>
     <ClCompile Include="StringMatch.cpp">
