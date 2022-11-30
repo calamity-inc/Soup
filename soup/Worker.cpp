@@ -4,14 +4,6 @@
 
 namespace soup
 {
-	void Worker::operator=(Worker&& b) noexcept
-	{
-		type = b.type;
-		holdup_type = b.holdup_type;
-		holdup_callback = std::move(b.holdup_callback);
-		holdup_data = b.holdup_data;
-	}
-
 	void Worker::fireHoldupCallback()
 	{
 		recursions = 0;

@@ -1076,6 +1076,9 @@
     <ClInclude Include="aglTranspiler.hpp">
       <Filter>lang\agnostic</Filter>
     </ClInclude>
+    <ClInclude Include="PrimitiveRaii.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

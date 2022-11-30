@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #endif
 
+#include "PrimitiveRaii.hpp"
 #include "SocketAddr.hpp"
 #include "SocketTlsEncrypter.hpp"
 #include "StructMap.hpp"
@@ -35,7 +36,7 @@ namespace soup
 #else
 		using fd_t = int;
 #endif
-		fd_t fd = -1;
+		PrimitiveRaii<fd_t, (fd_t)-1> fd{};
 		SocketAddr peer;
 		StructMap custom_data;
 		bool remote_closed = false;
@@ -64,7 +65,7 @@ namespace soup
 
 		void operator =(const Socket&) = delete;
 
-		void operator =(Socket&& b) noexcept;
+		Socket& operator =(Socket&& b) noexcept = default;
 
 		[[nodiscard]] constexpr bool hasConnection() const noexcept
 		{

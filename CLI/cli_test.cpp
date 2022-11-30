@@ -37,6 +37,8 @@
 
 #include <Uri.hpp>
 
+#include <Socket.hpp>
+
 #include <StringMatch.hpp>
 #include <format.hpp>
 
@@ -592,6 +594,21 @@ static void test_uri()
 	assert(uri.toString() == str);
 }
 
+static void test_socket_raii_semantics()
+{
+	Socket s;
+	assert(!s.hasConnection());
+	s.fd = 1337;
+	assert(s.hasConnection());
+	Socket s2 = std::move(s);
+	assert(!s.hasConnection());
+	assert(s2.hasConnection());
+	Socket s3;
+	s3 = std::move(s2);
+	assert(!s2.hasConnection());
+	assert(s3.hasConnection());
+}
+
 static void test_util_string()
 {
 	test("StringMatch::search", []
@@ -691,8 +708,9 @@ void cli_test()
 		{
 			unit("web")
 			{
-				test("uri", test_uri);
+				test("uri", &test_uri);
 			}
+			test("socket raii semantics", &test_socket_raii_semantics);
 		}
 		unit("util")
 		{

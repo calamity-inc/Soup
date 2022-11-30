@@ -80,22 +80,6 @@ namespace soup
 #endif
 	}
 
-	void Socket::operator=(Socket&& b) noexcept
-	{
-		Worker::operator=(std::move(b));
-
-		fd = b.fd;
-		peer = std::move(b.peer);
-		custom_data = std::move(b.custom_data);
-		remote_closed = b.remote_closed;
-
-		tls_record_buf = std::move(b.tls_record_buf);
-		tls_encrypter_send = std::move(b.tls_encrypter_send);
-		tls_encrypter_recv = std::move(b.tls_encrypter_recv);
-
-		b.fd = -1;
-	}
-
 	bool Socket::init(int af, int type)
 	{
 		close();

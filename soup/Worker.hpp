@@ -38,7 +38,7 @@ namespace soup
 
 		virtual ~Worker() = default;
 
-		void operator=(Worker&& b) noexcept;
+		Worker& operator=(Worker&& b) noexcept = default;
 
 		void fireHoldupCallback();
 		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap = {});

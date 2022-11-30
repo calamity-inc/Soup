@@ -533,6 +533,7 @@
     <ClInclude Include="Capture.hpp" />
     <ClInclude Include="ioSizeMeasurer.hpp" />
     <ClInclude Include="HashProofOfWork.hpp" />
+    <ClInclude Include="PrimitiveRaii.hpp" />
     <ClInclude Include="RaiiEmulator.hpp" />
     <ClInclude Include="rflMember.hpp" />
     <ClInclude Include="rflParser.hpp" />
