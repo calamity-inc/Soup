@@ -1,6 +1,12 @@
 #include "base.hpp"
 
-#if SOUP_WASM || SOUP_CODE_INSPECTOR
+#if SOUP_STANDALONE || SOUP_CODE_INSPECTOR
+
+#include <stdexcept>
+#include <string>
+
+using stdexception = std::exception;
+using stdstring = std::string;
 
 #include "RaiiEmulator.hpp"
 
@@ -51,19 +57,19 @@ SOUP_CEXPORT void endLifetime(void* inst)
 
 // base40
 
-SOUP_CEXPORT const char* base40_encode(std::string* x)
+SOUP_CEXPORT const char* base40_encode(stdstring* x)
 {
 	returnString(base40::encode(*x));
 }
 
-SOUP_CEXPORT std::string* base40_decode(const char* x)
+SOUP_CEXPORT stdstring* base40_decode(const char* x)
 {
 	return heap.add(new std::string(base40::decode(x)));
 }
 
 // base64
 
-SOUP_CEXPORT const char* base64_encode(std::string* x)
+SOUP_CEXPORT const char* base64_encode(stdstring* x)
 {
 	returnString(base64::encode(*x));
 }
@@ -97,7 +103,7 @@ SOUP_CEXPORT const char* Canvas_toSvg(Canvas* x, unsigned int scale)
 	returnString(x->toSvg(scale));
 }
 
-SOUP_CEXPORT std::string* Canvas_toNewPngString(Canvas* x)
+SOUP_CEXPORT stdstring* Canvas_toNewPngString(Canvas* x)
 {
 	return heap.add(x->toPng());
 }
@@ -132,7 +138,7 @@ SOUP_CEXPORT Canvas* InquiryObject_getCanvas(InquiryObject* x)
 
 // KeyGenId
 
-SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, std::string* str)
+SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, stdstring* str)
 {
 	return heap.add(new KeyGenId(bits, *str));
 }
@@ -142,7 +148,7 @@ SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits)
 	return heap.add(KeyGenId::generate(bits));
 }
 
-SOUP_CEXPORT std::string* KeyGenId_toSeedsExport(KeyGenId* x)
+SOUP_CEXPORT stdstring* KeyGenId_toSeedsExport(KeyGenId* x)
 {
 	return heap.add(x->toSeedsExport());
 }
@@ -195,7 +201,7 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x)
 
 // std::exception
 
-SOUP_CEXPORT const char* exception_what(std::exception* x)
+SOUP_CEXPORT const char* exception_what(stdexception* x)
 {
 	returnString(x->what());
 }

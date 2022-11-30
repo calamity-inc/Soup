@@ -6,3 +6,5 @@ web/libsoup.wasm
 *.exe
 *.lib
 *.pdb
+*.dll
+*.exp

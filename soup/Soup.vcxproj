@@ -424,6 +424,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\bindings\soup.h" />
     <ClInclude Include="acme.hpp" />
     <ClInclude Include="adler32.hpp" />
     <ClInclude Include="aes.hpp" />
@@ -834,6 +835,7 @@
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="rflParser.cpp" />
+    <ClCompile Include="soup.cpp" />
     <ClCompile Include="spaceship.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="time.cpp" />
@@ -949,7 +951,6 @@
     <ClCompile Include="Uri.cpp" />
     <ClCompile Include="urlenc.cpp" />
     <ClCompile Include="UvSphere.cpp" />
-    <ClCompile Include="wasm.cpp" />
     <ClCompile Include="WebResource.cpp" />
     <ClCompile Include="ServerWebService.cpp" />
     <ClCompile Include="WebSocketConnectionEmscripten.cpp" />

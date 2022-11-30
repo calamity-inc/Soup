@@ -1076,6 +1076,7 @@
     <ClInclude Include="PrimitiveRaii.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="..\bindings\soup.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1120,7 +1121,6 @@
     <ClCompile Include="X509Certificate.cpp">
       <Filter>crypto\x509</Filter>
     </ClCompile>
-    <ClCompile Include="wasm.cpp" />
     <ClCompile Include="Asn1Sequence.cpp">
       <Filter>data\asn1</Filter>
     </ClCompile>
@@ -1598,6 +1598,7 @@
     <ClCompile Include="aglContent.cpp">
       <Filter>lang\agnostic</Filter>
     </ClCompile>
+    <ClCompile Include="soup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
