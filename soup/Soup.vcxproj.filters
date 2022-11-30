@@ -719,9 +719,6 @@
     <ClInclude Include="StringMatch.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
-    <ClInclude Include="VirtualDtorBase.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="AllocRaii.hpp">
       <Filter>mem\alloc</Filter>
     </ClInclude>

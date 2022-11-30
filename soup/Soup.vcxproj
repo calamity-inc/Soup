@@ -730,7 +730,6 @@
     <ClInclude Include="TreeNode.hpp" />
     <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="unit_testing.hpp" />
-    <ClInclude Include="VirtualDtorBase.hpp" />
     <ClInclude Include="VirtualRegion.hpp" />
     <ClInclude Include="time.hpp" />
     <ClInclude Include="TlsAlertDescription.hpp" />

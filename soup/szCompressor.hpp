@@ -1,15 +1,17 @@
 #pragma once
 
 #include "fwd.hpp"
+
 #include "szCompressResult.hpp"
 #include "szMethod.hpp"
-#include "VirtualDtorBase.hpp"
 
 namespace soup
 {
-	class szCompressor : public VirtualDtorBase
+	class szCompressor
 	{
 	public:
+		virtual ~szCompressor() = default;
+
 		[[nodiscard]] static UniquePtr<szCompressor> fromMethod(szMethod method);
 
 		[[nodiscard]] virtual szMethod getMethod() const noexcept = 0;

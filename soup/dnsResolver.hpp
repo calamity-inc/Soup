@@ -1,7 +1,5 @@
 #pragma once
 
-#include "VirtualDtorBase.hpp"
-
 #include <vector>
 
 #include "dns_records.hpp"
@@ -9,8 +7,10 @@
 
 namespace soup
 {
-	struct dnsResolver : public VirtualDtorBase
+	struct dnsResolver
 	{
+		virtual ~dnsResolver() = default;
+
 		[[nodiscard]] std::vector<IpAddr> lookupIPv4(const std::string& name) const;
 		[[nodiscard]] std::vector<IpAddr> lookupIPv6(const std::string& name) const;
 
