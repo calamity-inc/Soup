@@ -175,6 +175,24 @@ namespace soup
 			return true;
 		}
 
+		template <typename T>
+		[[nodiscard]] static bool containsWord(const T& haystack, const T& needle)
+		{
+			if (!needle.empty())
+			{
+				for (size_t i, off = 0; i = haystack.find(needle, off), i != T::npos; off = i + needle.size())
+				{
+					if ((i == 0 || !isLetter(haystack.at(i - 1)))
+						&& (i + needle.size() == haystack.size() || !isLetter(haystack.at(i + needle.size())))
+						)
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		// conversions
 
 		[[nodiscard]] static std::string bin2hex(const std::string& str)
