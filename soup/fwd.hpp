@@ -55,9 +55,6 @@ namespace soup
 	// lang.agnostic
 	struct aglTranspiler;
 
-	// lang.inquiry
-	struct InquiryObject;
-
 	// lang.reflection
 	struct rflStruct;
 	struct rflType;

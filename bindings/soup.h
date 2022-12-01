@@ -13,7 +13,6 @@
 
 	typedef void Bigint;
 	typedef void Canvas;
-	typedef void InquiryObject;
 	typedef void KeyGenId;
 	typedef void Mixed;
 	typedef void QrCode;
@@ -45,17 +44,14 @@ SOUP_CEXPORT stdstring* Canvas_toNewPngString(const Canvas* x);
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);
-// InquiryObject
-SOUP_CEXPORT bool InquiryObject_isCanvas(const InquiryObject* x);
-SOUP_CEXPORT Canvas* InquiryObject_getCanvas(const InquiryObject* x);
 // KeyGenId
 SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, const stdstring* str);
 SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits);
 SOUP_CEXPORT stdstring* KeyGenId_toSeedsExport(const KeyGenId* x);
 SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x);
 // Mixed
-SOUP_CEXPORT bool Mixed_isInquiryObject(const Mixed* x);
-SOUP_CEXPORT InquiryObject* Mixed_getInquiryObject(const Mixed* x);
+SOUP_CEXPORT bool Mixed_isCanvas(const Mixed* x);
+SOUP_CEXPORT Canvas* Mixed_getCanvas(const Mixed* x);
 // QrCode
 SOUP_CEXPORT QrCode* QrCode_newFromText(const char* x);
 SOUP_CEXPORT Canvas* QrCode_toNewCanvas(const QrCode* x, unsigned int border, bool black_bg);

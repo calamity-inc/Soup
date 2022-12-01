@@ -86,10 +86,6 @@
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
 				formatResultLine: soup.cwrap("InquiryLang_formatResultLine", "string", ["number"]),
 			};
-			soup.InquiryObject = {
-				isCanvas: soup.cwrap("InquiryObject_isCanvas", "bool", ["number"]),
-				getCanvas: soup.cwrap("InquiryObject_getCanvas", "number", ["number"]),
-			};
 			soup.KeyGenId = {
 				free: soup.free,
 				newFromSeedsExport: soup.cwrap("KeyGenId_newFromSeedsExport", "number", ["number", "number"]),
@@ -99,8 +95,8 @@
 			};
 			soup.Mixed = {
 				free: soup.free,
-				isInquiryObject: soup.cwrap("Mixed_isInquiryObject", "bool", ["number"]),
-				getInquiryObject: soup.cwrap("Mixed_getInquiryObject", "number", ["number"]),
+				isCanvas: soup.cwrap("Mixed_isCanvas", "bool", ["number"]),
+				getCanvas: soup.cwrap("Mixed_getCanvas", "number", ["number"]),
 			};
 			soup.QrCode = {
 				free: soup.free,

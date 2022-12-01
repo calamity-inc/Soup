@@ -18,7 +18,6 @@ using stdstring = std::string;
 #include "base64.hpp"
 #include "Canvas.hpp"
 #include "InquiryLang.hpp"
-#include "InquiryObject.hpp"
 #include "KeyGenId.hpp"
 #include "Mixed.hpp"
 #include "QrCode.hpp"
@@ -145,18 +144,6 @@ SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x)
 	returnString(InquiryLang::formatResultLine(*x));
 }
 
-// InquiryObject
-
-SOUP_CEXPORT bool InquiryObject_isCanvas(const InquiryObject* x)
-{
-	return x->type == InquiryObject::CANVAS;
-}
-
-SOUP_CEXPORT Canvas* InquiryObject_getCanvas(const InquiryObject* x)
-{
-	return &x->cap.get<Canvas>();
-}
-
 // KeyGenId
 
 SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, const stdstring* str)
@@ -181,14 +168,14 @@ SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x)
 
 // Mixed
 
-SOUP_CEXPORT bool Mixed_isInquiryObject(const Mixed* x)
+SOUP_CEXPORT bool Mixed_isCanvas(const Mixed* x)
 {
-	return x->isInquiryObject();
+	return x->isCanvas();
 }
 
-SOUP_CEXPORT InquiryObject* Mixed_getInquiryObject(const Mixed* x)
+SOUP_CEXPORT Canvas* Mixed_getCanvas(const Mixed* x)
 {
-	return &x->getInquiryObject();
+	return &x->getCanvas();
 }
 
 // QrCode

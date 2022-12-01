@@ -23,7 +23,8 @@ namespace soup
 			VAR_NAME,
 			MIXED_SP_MIXED_MAP,
 			AST_BLOCK,
-			INQUIRY_OBJECT,
+			QR_CODE,
+			CANVAS,
 		};
 
 		Type type = NONE;
@@ -83,7 +84,8 @@ namespace soup
 
 		Mixed(astBlock* val); // takes ownership
 
-		Mixed(InquiryObject&& val);
+		Mixed(QrCode&& val);
+		Mixed(Canvas&& val);
 
 		~Mixed() noexcept
 		{
@@ -205,9 +207,14 @@ namespace soup
 			return type == AST_BLOCK;
 		}
 
-		[[nodiscard]] constexpr bool isInquiryObject() const noexcept
+		[[nodiscard]] constexpr bool isQrCode() const noexcept
 		{
-			return type == INQUIRY_OBJECT;
+			return type == QR_CODE;
+		}
+
+		[[nodiscard]] constexpr bool isCanvas() const noexcept
+		{
+			return type == CANVAS;
 		}
 
 		[[nodiscard]] static const char* getTypeName(Type t) noexcept;
@@ -227,7 +234,8 @@ namespace soup
 		[[nodiscard]] std::string& getVarName() const;
 		[[nodiscard]] std::unordered_map<Mixed, SharedPtr<Mixed>>& getMixedSpMixedMap() const;
 		[[nodiscard]] astBlock& getAstBlock() const;
-		[[nodiscard]] InquiryObject& getInquiryObject() const;
+		[[nodiscard]] QrCode& getQrCode() const;
+		[[nodiscard]] Canvas& getCanvas() const;
 	};
 }
 

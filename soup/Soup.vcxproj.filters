@@ -890,12 +890,6 @@
     <ClInclude Include="TinyPngOut.hpp">
       <Filter>vis</Filter>
     </ClInclude>
-    <ClInclude Include="InquiryLang.hpp">
-      <Filter>lang\inquiry</Filter>
-    </ClInclude>
-    <ClInclude Include="InquiryObject.hpp">
-      <Filter>lang\inquiry</Filter>
-    </ClInclude>
     <ClInclude Include="UniquePtr.hpp">
       <Filter>mem</Filter>
     </ClInclude>
@@ -1077,6 +1071,9 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="..\bindings\soup.h" />
+    <ClInclude Include="InquiryLang.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1526,12 +1523,6 @@
     <ClCompile Include="TinyPngOut.cpp">
       <Filter>vis</Filter>
     </ClCompile>
-    <ClCompile Include="InquiryLang.cpp">
-      <Filter>lang\inquiry</Filter>
-    </ClCompile>
-    <ClCompile Include="InquiryObject.cpp">
-      <Filter>lang\inquiry</Filter>
-    </ClCompile>
     <ClCompile Include="time.cpp">
       <Filter>util\time</Filter>
     </ClCompile>
@@ -1599,6 +1590,9 @@
       <Filter>lang\agnostic</Filter>
     </ClCompile>
     <ClCompile Include="soup.cpp" />
+    <ClCompile Include="InquiryLang.cpp">
+      <Filter>lang</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1756,9 +1750,6 @@
     </Filter>
     <Filter Include="crypto\proof_of_work">
       <UniqueIdentifier>{cc6c3a53-3611-43fc-b49e-801934a47954}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lang\inquiry">
-      <UniqueIdentifier>{61df207c-2f95-45f7-8729-6453723815e5}</UniqueIdentifier>
     </Filter>
     <Filter Include="bit">
       <UniqueIdentifier>{ac847a74-1be1-4a22-85b0-0868b78cd418}</UniqueIdentifier>

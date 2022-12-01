@@ -119,6 +119,7 @@ namespace soup
 		*/
 		QrCode(uint8_t ver, ecc ecl, const std::vector<std::uint8_t>& dataCodewords, int8_t msk);
 
+		QrCode(const QrCode&) = default;
 		QrCode(QrCode&&) = default;
 
 		/*

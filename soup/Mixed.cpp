@@ -2,9 +2,10 @@
 
 #include <ostream>
 
+#include "Canvas.hpp"
 #include "Exception.hpp"
-#include "InquiryObject.hpp"
 #include "parse_tree.hpp"
+#include "QrCode.hpp"
 #include "SharedPtr.hpp"
 
 namespace soup
@@ -35,8 +36,12 @@ namespace soup
 			val = reinterpret_cast<uint64_t>(new std::unordered_map<Mixed, SharedPtr<Mixed>>(b.getMixedSpMixedMap()));
 			break;
 
-		case INQUIRY_OBJECT:
-			val = reinterpret_cast<uint64_t>(new InquiryObject(b.getInquiryObject()));
+		case QR_CODE:
+			val = reinterpret_cast<uint64_t>(new QrCode(*reinterpret_cast<QrCode*>(val)));
+			break;
+		
+		case CANVAS:
+			val = reinterpret_cast<uint64_t>(new Canvas(*reinterpret_cast<Canvas*>(val)));
 			break;
 		}
 	}
@@ -51,8 +56,13 @@ namespace soup
 	{
 	}
 
-	Mixed::Mixed(InquiryObject&& val)
-		: type(INQUIRY_OBJECT), val(reinterpret_cast<uint64_t>(new InquiryObject(std::move(val))))
+	Mixed::Mixed(QrCode&& val)
+		: type(QR_CODE), val(reinterpret_cast<uint64_t>(new QrCode(std::move(val))))
+	{
+	}
+
+	Mixed::Mixed(Canvas&& val)
+		: type(CANVAS), val(reinterpret_cast<uint64_t>(new Canvas(std::move(val))))
 	{
 	}
 
@@ -79,8 +89,12 @@ namespace soup
 			delete reinterpret_cast<astBlock*>(val);
 			break;
 
-		case INQUIRY_OBJECT:
-			delete reinterpret_cast<InquiryObject*>(val);
+		case QR_CODE:
+			delete reinterpret_cast<QrCode*>(val);
+			break;
+
+		case CANVAS:
+			delete reinterpret_cast<Canvas*>(val);
 			break;
 		}
 	}
@@ -115,9 +129,6 @@ namespace soup
 
 		case AST_BLOCK:
 			return "astBlock";
-
-		case INQUIRY_OBJECT:
-			return "InquiryObject";
 		}
 		return "complex type";
 	}
@@ -214,9 +225,15 @@ namespace soup
 		return *reinterpret_cast<astBlock*>(val);
 	}
 
-	InquiryObject& Mixed::getInquiryObject() const
+	QrCode& Mixed::getQrCode() const
 	{
-		assertType(INQUIRY_OBJECT);
-		return *reinterpret_cast<InquiryObject*>(val);
+		assertType(QR_CODE);
+		return *reinterpret_cast<QrCode*>(val);
+	}
+
+	Canvas& Mixed::getCanvas() const
+	{
+		assertType(CANVAS);
+		return *reinterpret_cast<Canvas*>(val);
 	}
 }

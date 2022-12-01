@@ -1,7 +1,6 @@
 #include "InquiryLang.hpp"
 
 #include "Canvas.hpp"
-#include "InquiryObject.hpp"
 #include "LangDesc.hpp"
 #include "LangVm.hpp"
 #include "Lexeme.hpp"
@@ -153,7 +152,7 @@ keyword("qrcode", OP_QRCODE); \
 				break;
 
 			case OP_QRCODE:
-				vm.push(InquiryObject(QrCode::encodeText(vm.pop()->getString()).toCanvas(4, true)));
+				vm.push(QrCode::encodeText(vm.pop()->getString()).toCanvas(4, true));
 				break;
 
 			case OP_HELP:
@@ -184,13 +183,9 @@ keyword("qrcode", OP_QRCODE); \
 
 	std::string InquiryLang::formatResult(const Mixed& res)
 	{
-		if (res.isInquiryObject())
+		if (res.isCanvas())
 		{
-			InquiryObject& obj = res.getInquiryObject();
-			if (obj.type == InquiryObject::CANVAS)
-			{
-				return unicode::utf16_to_utf8(obj.cap.get<Canvas>().toStringDownsampledDoublewidth(true));
-			}
+			return unicode::utf16_to_utf8(res.getCanvas().toStringDownsampledDoublewidth(true));
 		}
 		auto str = formatResultLine(res);
 		str.push_back('\n');
