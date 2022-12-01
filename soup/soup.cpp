@@ -59,6 +59,23 @@ SOUP_CEXPORT void endLifetime(void* inst)
 	heap.free(inst);
 }
 
+SOUP_CEXPORT const char* tryCatch(void(*f)())
+{
+	try
+	{
+		f();
+	}
+	catch (const std::exception& e)
+	{
+		returnString(e.what());
+	}
+	catch (...)
+	{
+		returnString("...");
+	}
+	return nullptr;
+}
+
 // base40
 
 SOUP_CEXPORT const char* base40_encode(stdstring* x)

@@ -28,6 +28,7 @@ SOUP_CEXPORT void beginScope();
 SOUP_CEXPORT void endScope();
 SOUP_CEXPORT void broadenScope(void* inst);
 SOUP_CEXPORT void endLifetime(void* inst);
+SOUP_CEXPORT const char* tryCatch(void(*f)());
 // base64
 SOUP_CEXPORT const char* base40_encode(stdstring* x);
 SOUP_CEXPORT stdstring* base40_decode(const char* x);
