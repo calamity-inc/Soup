@@ -6,11 +6,21 @@ $soup = FFI::cdef(
 	"soup"
 );
 
+function soup_scope($f)
+{
+	global $soup;
+	$soup->beginScope();
+	$f();
+	$soup->endScope();
+}
+
 /* An example:
-$soup->beginScope();
+soup_scope(function()
+{
+	global $soup;
 	$m = $soup->InquiryLang_execute("base64_encode Hello");
 	echo $soup->InquiryLang_formatResultLine($m);
-$soup->endScope();
+});
 */
 
 // Note: PHP-FFI doesn't catch C++ exceptions, which is understandable given that it lives in C land, but this does mean the PHP process just dies if Soup throws.
