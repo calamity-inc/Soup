@@ -25,6 +25,7 @@ namespace soup
 			{
 				return false;
 			}
+
 			SOUP_IF_ISREAD
 			{
 				while (s.hasMore())

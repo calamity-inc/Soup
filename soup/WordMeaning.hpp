@@ -16,7 +16,7 @@ namespace soup
 
 		SOUP_PACKET_IO(s)
 		{
-			if (s.isRead())
+			SOUP_IF_ISREAD
 			{
 				uint8_t this_is_why_you_dont_use_enums;
 				if (!s.u8(this_is_why_you_dont_use_enums))
@@ -25,7 +25,7 @@ namespace soup
 				}
 				type = (WordType)this_is_why_you_dont_use_enums;
 			}
-			else if (s.isWrite())
+			SOUP_ELSEIF_ISWRITE
 			{
 				uint8_t this_is_why_you_dont_use_enums = type;
 				if (!s.u8(this_is_why_you_dont_use_enums))

@@ -12,7 +12,7 @@ namespace soup
 
 		SOUP_PACKET_IO(s)
 		{
-			if (s.isRead())
+			SOUP_IF_ISREAD
 			{
 				u64 num_meanings;
 				if (!s.u64_dyn(num_meanings))
@@ -30,7 +30,7 @@ namespace soup
 					meanings.emplace_back(std::move(meaning));
 				}
 			}
-			else if (s.isWrite())
+			SOUP_ELSEIF_ISWRITE
 			{
 				uint64_t num_meanings = meanings.size();
 				if (!s.u64_dyn(num_meanings))
