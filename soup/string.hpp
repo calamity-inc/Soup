@@ -160,6 +160,12 @@ namespace soup
 			return c >= '0' && c <= '9';
 		}
 
+		template <typename T>
+		[[nodiscard]] static constexpr bool isAlphaNum(const T c) noexcept
+		{
+			return isLetter(c) || isNumberChar(c);
+		}
+
 		// string attributes
 
 		template <typename T>
