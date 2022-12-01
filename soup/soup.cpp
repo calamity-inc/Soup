@@ -8,6 +8,10 @@
 using stdexception = std::exception;
 using stdstring = std::string;
 
+#if SOUP_CODE_INSPECTOR
+#include "soup.h" // Dummy include, prevents IntelliSense from adding this
+#endif
+
 #include "RaiiEmulator.hpp"
 
 #include "base40.hpp"
