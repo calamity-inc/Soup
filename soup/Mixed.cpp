@@ -17,6 +17,9 @@ namespace soup
 		case NONE:
 			break;
 
+		case AST_BLOCK:
+			throw Exception("Can't copy this type");
+
 		case INT:
 		case UINT:
 			val = b.val;
@@ -25,34 +28,31 @@ namespace soup
 		case STRING:
 		case FUNC:
 		case VAR_NAME:
-			val = (uint64_t)new std::string(*reinterpret_cast<std::string*>(b.val));
+			val = reinterpret_cast<uint64_t>(new std::string(*reinterpret_cast<std::string*>(b.val)));
 			break;
 
 		case MIXED_SP_MIXED_MAP:
-			val = (uint64_t)new std::unordered_map<Mixed, SharedPtr<Mixed>>(b.getMixedSpMixedMap());
+			val = reinterpret_cast<uint64_t>(new std::unordered_map<Mixed, SharedPtr<Mixed>>(b.getMixedSpMixedMap()));
 			break;
 
-		case AST_BLOCK:
-			throw Exception("Can't copy this type");
-
 		case INQUIRY_OBJECT:
-			val = (uint64_t)new InquiryObject(b.getInquiryObject());
+			val = reinterpret_cast<uint64_t>(new InquiryObject(b.getInquiryObject()));
 			break;
 		}
 	}
 
 	Mixed::Mixed(std::unordered_map<Mixed, SharedPtr<Mixed>>&& val)
-		: type(MIXED_SP_MIXED_MAP), val((uint64_t)new std::unordered_map<Mixed, SharedPtr<Mixed>>(std::move(val)))
+		: type(MIXED_SP_MIXED_MAP), val(reinterpret_cast<uint64_t>(new std::unordered_map<Mixed, SharedPtr<Mixed>>(std::move(val))))
 	{
 	}
 
 	Mixed::Mixed(astBlock* val)
-		: type(AST_BLOCK), val((uint64_t)val)
+		: type(AST_BLOCK), val(reinterpret_cast<uint64_t>(val))
 	{
 	}
 
 	Mixed::Mixed(InquiryObject&& val)
-		: type(INQUIRY_OBJECT), val((uint64_t)new InquiryObject(std::move(val)))
+		: type(INQUIRY_OBJECT), val(reinterpret_cast<uint64_t>(new InquiryObject(std::move(val))))
 	{
 	}
 
