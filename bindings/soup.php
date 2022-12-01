@@ -1,5 +1,5 @@
 <?php
-$ffi = FFI::cdef(
+$soup = FFI::cdef(
 	str_replace("\nSOUP_CEXPORT ", "",
 		file_get_contents("soup.h")
 	),
@@ -7,10 +7,10 @@ $ffi = FFI::cdef(
 );
 
 /* An example:
-$ffi->beginScope();
-	$m = $ffi->InquiryLang_execute("base64_encode Hello");
-	echo $ffi->InquiryLang_formatResultLine($m);
-$ffi->endScope();
+$soup->beginScope();
+	$m = $soup->InquiryLang_execute("base64_encode Hello");
+	echo $soup->InquiryLang_formatResultLine($m);
+$soup->endScope();
 */
 
 // Note: PHP-FFI doesn't catch C++ exceptions, which is understandable given that it lives in C land, but this does mean the PHP process just dies if Soup throws.
