@@ -206,7 +206,7 @@ namespace soup
 			{
 				return false;
 			}
-			for (auto i = 0; i != a.size(); ++i)
+			for (size_t i = 0; i != a.size(); ++i)
 			{
 				if (std::tolower(a.at(i)) != std::tolower(b.at(i)))
 				{
