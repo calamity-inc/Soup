@@ -448,6 +448,7 @@
     <ClInclude Include="cbCmd.hpp" />
     <ClInclude Include="cbCmdCoinflip.hpp" />
     <ClInclude Include="cbCmdDefine.hpp" />
+    <ClInclude Include="cbCmdFarewell.hpp" />
     <ClInclude Include="cbCmdGreeting.hpp" />
     <ClInclude Include="cbParser.hpp" />
     <ClInclude Include="Chatbot.hpp" />

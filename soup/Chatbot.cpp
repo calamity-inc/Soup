@@ -7,6 +7,7 @@
 #include "cbCmdDefine.hpp"
 
 #include "cbCmdGreeting.hpp"
+#include "cbCmdFarewell.hpp"
 
 namespace soup
 {
@@ -20,6 +21,7 @@ namespace soup
 
 		// Conversational
 		cmds.emplace_back(soup::make_unique<cbCmdGreeting>());
+		cmds.emplace_back(soup::make_unique<cbCmdFarewell>());
 
 		return cmds;
 	}
