@@ -3,6 +3,7 @@
 #include "string.hpp"
 #include "UniquePtr.hpp"
 
+#include "cbCmdCoinflip.hpp"
 #include "cbCmdDefine.hpp"
 
 #include "cbCmdGreeting.hpp"
@@ -14,6 +15,7 @@ namespace soup
 		std::vector<UniquePtr<cbCmd>> cmds{};
 		
 		// Commands
+		cmds.emplace_back(soup::make_unique<cbCmdCoinflip>());
 		cmds.emplace_back(soup::make_unique<cbCmdDefine>());
 
 		// Conversational
