@@ -5,6 +5,7 @@
 
 #include "cbCmdCoinflip.hpp"
 #include "cbCmdDefine.hpp"
+#include "cbCmdArithmetic.hpp"
 
 #include "cbCmdGreeting.hpp"
 #include "cbCmdFarewell.hpp"
@@ -18,6 +19,7 @@ namespace soup
 		// Commands
 		cmds.emplace_back(soup::make_unique<cbCmdCoinflip>());
 		cmds.emplace_back(soup::make_unique<cbCmdDefine>());
+		cmds.emplace_back(soup::make_unique<cbCmdArithmetic>());
 
 		// Conversational
 		cmds.emplace_back(soup::make_unique<cbCmdGreeting>());

@@ -518,6 +518,10 @@ static void test_chatbot_triggers()
 	ASSERT_TRIGGER("Can you define autonomous?", "define");
 	ASSERT_TRIGGER("definition of autonomous", "definition of");
 	ASSERT_TRIGGER("flip a coin", "flip a coin");
+	ASSERT_TRIGGER("123 + 456", "+");
+	ASSERT_TRIGGER("123 - 456", "-");
+	ASSERT_TRIGGER("123 * 456", "*");
+	ASSERT_TRIGGER("123 / 456", "/");
 }
 
 static void test_chatbot_args()
@@ -527,6 +531,8 @@ static void test_chatbot_args()
 	ASSERT_ARG("define autonomous", "define", getArgWord, "autonomous");
 	ASSERT_ARG("Can you define autonomous?", "define", getArgWord, "autonomous");
 	ASSERT_ARG("definition of autonomous", "definition of", getArgWord, "autonomous");
+	ASSERT_ARG("123 + 456", "+", getArgNumericLefthand, "123");
+	ASSERT_ARG("123 + 456", "+", getArgNumeric, "456");
 }
 
 static void unit_math()

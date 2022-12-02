@@ -69,18 +69,54 @@ namespace soup
 		return false;
 	}
 
+	std::string cbParser::word2arg(std::vector<std::string>::iterator i) const noexcept
+	{
+		std::string arg = *i;
+		if ((i + 1) == words.end())
+		{
+			prunePunctuation(arg);
+		}
+		return arg;
+	}
+
 	std::string cbParser::getArgWord() const noexcept
 	{
 		// assuming hasCommand() is true
 		auto i = command_end;
 		if (++i != words.end())
 		{
-			std::string arg = *i;
-			if ((i + 1) == words.end())
+			return word2arg(i);
+		}
+		return {};
+	}
+
+	std::string cbParser::getArgNumeric() const noexcept
+	{
+		// assuming hasCommand() is true
+		for (auto i = command_end; ++i != words.end(); )
+		{
+			if (string::isNumeric(*i))
 			{
-				prunePunctuation(arg);
+				return word2arg(i);
 			}
-			return arg;
+		}
+		return {};
+	}
+
+	std::string cbParser::getArgNumericLefthand() const noexcept
+	{
+		// assuming hasCommand() is true
+		auto i = command_begin;
+		if (i != words.begin())
+		{
+			do
+			{
+				--i;
+				if (string::isNumeric(*i))
+				{
+					return word2arg(i);
+				}
+			} while (i != words.begin());
 		}
 		return {};
 	}

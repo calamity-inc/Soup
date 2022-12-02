@@ -19,12 +19,17 @@ namespace soup
 			return command_begin != words.end();
 		}
 
+	public:
 		bool checkTrigger(const std::string& trigger);
 	private:
 		bool checkTriggerWord(const std::string& trigger);
 		bool checkTriggerPhrase(const std::vector<std::string>& trigger);
 
+	private:
+		[[nodiscard]] std::string word2arg(std::vector<std::string>::iterator i) const noexcept;
 	public:
 		[[nodiscard]] std::string getArgWord() const noexcept;
+		[[nodiscard]] std::string getArgNumeric() const noexcept;
+		[[nodiscard]] std::string getArgNumericLefthand() const noexcept;
 	};
 }
