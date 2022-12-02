@@ -5,7 +5,7 @@
 namespace soup
 {
 	cbParser::cbParser(const std::string& text)
-		: words(string::explode(text, ' ')), command(words.end())
+		: words(string::explode(text, ' ')), command_begin(words.end())
 	{
 	}
 
@@ -25,12 +25,45 @@ namespace soup
 
 	bool cbParser::checkTrigger(const std::string& trigger)
 	{
+		auto words = string::explode(trigger, ' ');
+		return words.size() == 1
+			? checkTriggerWord(trigger)
+			: checkTriggerPhrase(words)
+			;
+	}
+
+	bool cbParser::checkTriggerWord(const std::string& trigger)
+	{
 		for (auto i = words.begin(); i != words.end(); ++i)
 		{
 			if (simplifyForTriggerMatch(*i) == trigger)
 			{
-				command = i;
+				command_begin = i;
+				command_end = i;
 				return true;
+			}
+		}
+		return false;
+	}
+
+	bool cbParser::checkTriggerPhrase(const std::vector<std::string>& trigger)
+	{
+		size_t trigger_i = 0;
+		std::vector<std::string>::iterator begin;
+		for (auto i = words.begin(); i != words.end(); ++i)
+		{
+			if (simplifyForTriggerMatch(*i) == trigger.at(trigger_i))
+			{
+				if (trigger_i == 0)
+				{
+					begin = i;
+				}
+				if (++trigger_i == trigger.size())
+				{
+					command_begin = begin;
+					command_end = i;
+					return true;
+				}
 			}
 		}
 		return false;
@@ -39,7 +72,7 @@ namespace soup
 	std::string cbParser::getArgWord() const noexcept
 	{
 		// assuming hasCommand() is true
-		auto i = command;
+		auto i = command_end;
 		if (++i != words.end())
 		{
 			std::string arg = *i;

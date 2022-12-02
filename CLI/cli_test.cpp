@@ -485,7 +485,22 @@ static bool test_chatbot_trigger(const std::string& text, const std::string& exp
 		{
 			if (p.checkTrigger(trigger))
 			{
-				return *p.command == expected_trigger;
+				std::string trigger_str = *p.command_begin;
+				if (p.command_begin != p.command_end)
+				{
+					auto i = p.command_begin + 1;
+					while (true)
+					{
+						trigger_str.push_back(' ');
+						trigger_str.append(*i);
+						if (i == p.command_end)
+						{
+							break;
+						}
+						++i;
+					}
+				}
+				return trigger_str == expected_trigger;
 			}
 		}
 	}
@@ -501,6 +516,8 @@ static void test_chatbot_triggers()
 	ASSERT_TRIGGER("define autonomous", "define");
 	ASSERT_TRIGGER("Define autonomous", "Define");
 	ASSERT_TRIGGER("Can you define autonomous?", "define");
+	ASSERT_TRIGGER("definition of autonomous", "definition of");
+	ASSERT_TRIGGER("flip a coin", "flip a coin");
 }
 
 static void test_chatbot_args()
@@ -509,6 +526,7 @@ static void test_chatbot_args()
 
 	ASSERT_ARG("define autonomous", "define", getArgWord, "autonomous");
 	ASSERT_ARG("Can you define autonomous?", "define", getArgWord, "autonomous");
+	ASSERT_ARG("definition of autonomous", "definition of", getArgWord, "autonomous");
 }
 
 static void unit_math()

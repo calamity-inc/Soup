@@ -10,7 +10,7 @@ namespace soup
 	{
 		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
 		{
-			return { "coinflip" };
+			return { "coinflip", "flip a coin" };
 		}
 
 		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final

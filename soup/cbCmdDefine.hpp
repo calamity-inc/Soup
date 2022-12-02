@@ -18,7 +18,7 @@ namespace soup
 
 		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
 		{
-			return { "define" };
+			return { "define", "definition of" };
 		}
 
 		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final
