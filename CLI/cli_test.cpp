@@ -33,6 +33,10 @@
 #include <rflParser.hpp>
 #include <rflStruct.hpp>
 
+#include <cbCmd.hpp>
+#include <cbParser.hpp>
+#include <Chatbot.hpp>
+
 #include <math.hpp>
 
 #include <Uri.hpp>
@@ -472,6 +476,39 @@ endif;)") == "");
 	});
 }
 
+static bool test_chatbot_triggerword(const std::string& text, const std::string& expected_triggerword)
+{
+	cbParser p(text);
+	for (const auto& cmd : Chatbot::getAllCommands())
+	{
+		for (const auto& triggerword : cmd->getTriggerwords())
+		{
+			if (p.checkTriggerword(triggerword))
+			{
+				return *p.command == expected_triggerword;
+			}
+		}
+	}
+	return false;
+}
+
+static void test_chatbot_triggerwords()
+{
+#define ASSERT_TRIGGERWORD(text, expected_triggerword) assert(test_chatbot_triggerword(text, expected_triggerword));
+
+	ASSERT_TRIGGERWORD("hi", "hi");
+	ASSERT_TRIGGERWORD("define autonomous", "define");
+	ASSERT_TRIGGERWORD("can you define autonomous", "define");
+}
+
+static void test_chatbot_args()
+{
+#define ASSERT_ARG(text, triggerword, getArg, arg) { cbParser p(text); p.checkTriggerword(triggerword); assert(p.getArg() == arg); }
+
+	ASSERT_ARG("define autonomous", "define", getArgWord, "autonomous");
+	ASSERT_ARG("can you define autonomous", "define", getArgWord, "autonomous");
+}
+
 static void unit_math()
 {
 	test("pow", []
@@ -699,6 +736,14 @@ void cli_test()
 		unit("lang")
 		{
 			unit_lang();
+		}
+		unit("ling")
+		{
+			unit("chatbot")
+			{
+				test("triggerwords", &test_chatbot_triggerwords);
+				test("arg", &test_chatbot_args);
+			}
 		}
 		unit("math")
 		{

@@ -60,6 +60,9 @@ namespace soup
 	struct rflType;
 	struct rflVar;
 
+	// ling.chatbot
+	struct cbCmd;
+
 	// math
 	class Bigint;
 	struct Vector2;

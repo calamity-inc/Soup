@@ -445,6 +445,11 @@
     <ClInclude Include="Buffer.hpp" />
     <ClInclude Include="BufferRefWriter.hpp" />
     <ClInclude Include="BufferWriter.hpp" />
+    <ClInclude Include="cbCmd.hpp" />
+    <ClInclude Include="cbCmdDefine.hpp" />
+    <ClInclude Include="cbCmdGreeting.hpp" />
+    <ClInclude Include="cbParser.hpp" />
+    <ClInclude Include="Chatbot.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
     <ClInclude Include="CidrSubnet6.hpp" />
     <ClInclude Include="CidrSupernet.hpp" />
@@ -811,6 +816,8 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="cbParser.cpp" />
+    <ClCompile Include="Chatbot.cpp" />
     <ClCompile Include="CidrSubnet6.cpp" />
     <ClCompile Include="CpuInfo.cpp" />
     <ClCompile Include="Diff.cpp" />

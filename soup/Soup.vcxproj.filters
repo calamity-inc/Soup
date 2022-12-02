@@ -1074,6 +1074,21 @@
     <ClInclude Include="InquiryLang.hpp">
       <Filter>lang</Filter>
     </ClInclude>
+    <ClInclude Include="cbCmd.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdGreeting.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="Chatbot.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbParser.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbCmdDefine.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1593,6 +1608,12 @@
     <ClCompile Include="InquiryLang.cpp">
       <Filter>lang</Filter>
     </ClCompile>
+    <ClCompile Include="Chatbot.cpp">
+      <Filter>ling\chatbot</Filter>
+    </ClCompile>
+    <ClCompile Include="cbParser.cpp">
+      <Filter>ling\chatbot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1777,6 +1798,9 @@
     </Filter>
     <Filter Include="lang\agnostic">
       <UniqueIdentifier>{0e0d3a1f-48a7-430f-8958-a7e3e6db45ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ling\chatbot">
+      <UniqueIdentifier>{fb1ff912-9766-484b-92a8-d22cd7b0ef54}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
