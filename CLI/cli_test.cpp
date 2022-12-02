@@ -497,6 +497,7 @@ static void test_chatbot_triggers()
 #define ASSERT_TRIGGER(text, expected_trigger) assert(test_chatbot_trigger(text, expected_trigger));
 
 	ASSERT_TRIGGER("hi", "hi");
+	ASSERT_TRIGGER("Hi!", "Hi!");
 	ASSERT_TRIGGER("define autonomous", "define");
 	ASSERT_TRIGGER("Define autonomous", "Define");
 	ASSERT_TRIGGER("Can you define autonomous?", "define");

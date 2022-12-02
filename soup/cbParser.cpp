@@ -9,11 +9,25 @@ namespace soup
 	{
 	}
 
+	static void prunePunctuation(std::string& str)
+	{
+		string::replace_all(str, ".", "");
+		string::replace_all(str, "?", "");
+		string::replace_all(str, "!", "");
+	}
+
+	[[nodiscard]] static std::string simplifyForTriggerMatch(std::string word)
+	{
+		prunePunctuation(word);
+		string::lower(word);
+		return word;
+	}
+
 	bool cbParser::checkTrigger(const std::string& trigger)
 	{
 		for (auto i = words.begin(); i != words.end(); ++i)
 		{
-			if (string::equalsIgnoreCase(*i, trigger))
+			if (simplifyForTriggerMatch(*i) == trigger)
 			{
 				command = i;
 				return true;
@@ -31,9 +45,7 @@ namespace soup
 			std::string arg = *i;
 			if ((i + 1) == words.end())
 			{
-				string::replace_all(arg, ".", "");
-				string::replace_all(arg, "?", "");
-				string::replace_all(arg, "!", "");
+				prunePunctuation(arg);
 			}
 			return arg;
 		}
