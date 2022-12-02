@@ -199,6 +199,23 @@ namespace soup
 			return false;
 		}
 
+		template <typename T>
+		[[nodiscard]] static bool equalsIgnoreCase(const T& a, const T& b)
+		{
+			if (a.size() != b.size())
+			{
+				return false;
+			}
+			for (auto i = 0; i != a.size(); ++i)
+			{
+				if (std::tolower(a.at(i)) != std::tolower(b.at(i)))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		// conversions
 
 		[[nodiscard]] static std::string bin2hex(const std::string& str)

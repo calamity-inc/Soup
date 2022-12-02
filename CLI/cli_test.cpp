@@ -648,6 +648,13 @@ static void test_socket_raii_semantics()
 
 static void unit_util_string()
 {
+	test("equalsIgnoreCase", []
+	{
+		assert(string::equalsIgnoreCase<std::string>("java", "java") == true);
+		assert(string::equalsIgnoreCase<std::string>("Java", "java") == true);
+		assert(string::equalsIgnoreCase<std::string>("Java", "Lava") == false);
+		assert(string::equalsIgnoreCase<std::string>("Java", "Javaa") == false);
+	});
 	test("StringMatch::search", []
 	{
 		assert(StringMatch::search("run program", "Run Script/Program") == true);
