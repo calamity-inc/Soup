@@ -25,7 +25,7 @@ namespace soup
 		{
 			if (!dict)
 			{
-				return "I'd love to help you with definitions, but soup::cbCmdDefine::dict is uninitialised, so I have no data.";
+				return "I'd love to help you with definitions, but soup::cbCmdDefine::dict is uninitialised, so I have no data. :|";
 			}
 			auto word = p.getArgWord();
 			if (!word.empty())
@@ -46,7 +46,7 @@ namespace soup
 				}
 				return word;
 			}
-			return "define what?";
+			return "Define what?";
 		}
 	};
 }

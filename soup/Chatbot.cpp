@@ -43,6 +43,6 @@ namespace soup
 				}
 			}
 		}
-		return "I'm sorry, I don't understand.";
+		return "I'm sorry, I don't understand. :/";
 	}
 }

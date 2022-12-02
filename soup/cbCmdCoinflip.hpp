@@ -15,7 +15,7 @@ namespace soup
 
 		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final
 		{
-			return soup::rand.coinflip() ? "Heads" : "Tails";
+			return soup::rand.coinflip() ? "Heads." : "Tails.";
 		}
 	};
 }
