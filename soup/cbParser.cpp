@@ -9,11 +9,11 @@ namespace soup
 	{
 	}
 
-	bool cbParser::checkTriggerword(const std::string& triggerword)
+	bool cbParser::checkTrigger(const std::string& trigger)
 	{
 		for (auto i = words.begin(); i != words.end(); ++i)
 		{
-			if (string::equalsIgnoreCase(*i, triggerword))
+			if (string::equalsIgnoreCase(*i, trigger))
 			{
 				command = i;
 				return true;

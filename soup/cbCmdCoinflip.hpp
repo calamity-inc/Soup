@@ -8,7 +8,7 @@ namespace soup
 {
 	struct cbCmdCoinflip : public cbCmd
 	{
-		[[nodiscard]] std::vector<std::string> getTriggerwords() const noexcept final
+		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
 		{
 			return { "coinflip" };
 		}

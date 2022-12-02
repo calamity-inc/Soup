@@ -17,7 +17,7 @@ namespace soup
 			return command != words.end();
 		}
 
-		bool checkTriggerword(const std::string& triggerword);
+		bool checkTrigger(const std::string& trigger);
 
 		[[nodiscard]] std::string getArgWord() const noexcept;
 	};

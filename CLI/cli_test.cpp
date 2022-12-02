@@ -476,35 +476,35 @@ endif;)") == "");
 	});
 }
 
-static bool test_chatbot_triggerword(const std::string& text, const std::string& expected_triggerword)
+static bool test_chatbot_trigger(const std::string& text, const std::string& expected_trigger)
 {
 	cbParser p(text);
 	for (const auto& cmd : Chatbot::getAllCommands())
 	{
-		for (const auto& triggerword : cmd->getTriggerwords())
+		for (const auto& trigger : cmd->getTriggers())
 		{
-			if (p.checkTriggerword(triggerword))
+			if (p.checkTrigger(trigger))
 			{
-				return *p.command == expected_triggerword;
+				return *p.command == expected_trigger;
 			}
 		}
 	}
 	return false;
 }
 
-static void test_chatbot_triggerwords()
+static void test_chatbot_triggers()
 {
-#define ASSERT_TRIGGERWORD(text, expected_triggerword) assert(test_chatbot_triggerword(text, expected_triggerword));
+#define ASSERT_TRIGGER(text, expected_trigger) assert(test_chatbot_trigger(text, expected_trigger));
 
-	ASSERT_TRIGGERWORD("hi", "hi");
-	ASSERT_TRIGGERWORD("define autonomous", "define");
-	ASSERT_TRIGGERWORD("Define autonomous", "Define");
-	ASSERT_TRIGGERWORD("Can you define autonomous?", "define");
+	ASSERT_TRIGGER("hi", "hi");
+	ASSERT_TRIGGER("define autonomous", "define");
+	ASSERT_TRIGGER("Define autonomous", "Define");
+	ASSERT_TRIGGER("Can you define autonomous?", "define");
 }
 
 static void test_chatbot_args()
 {
-#define ASSERT_ARG(text, triggerword, getArg, arg) { cbParser p(text); p.checkTriggerword(triggerword); assert(p.getArg() == arg); }
+#define ASSERT_ARG(text, trigger, getArg, arg) { cbParser p(text); p.checkTrigger(trigger); assert(p.getArg() == arg); }
 
 	ASSERT_ARG("define autonomous", "define", getArgWord, "autonomous");
 	ASSERT_ARG("Can you define autonomous?", "define", getArgWord, "autonomous");
@@ -749,8 +749,8 @@ void cli_test()
 		{
 			unit("chatbot")
 			{
-				test("triggerwords", &test_chatbot_triggerwords);
-				test("arg", &test_chatbot_args);
+				test("triggers", &test_chatbot_triggers);
+				test("args", &test_chatbot_args);
 			}
 		}
 		unit("math")

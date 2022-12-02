@@ -11,7 +11,7 @@ namespace soup
 	{
 		virtual ~cbCmd() = default;
 
-		[[nodiscard]] virtual std::vector<std::string> getTriggerwords() const noexcept = 0;
+		[[nodiscard]] virtual std::vector<std::string> getTriggers() const noexcept = 0;
 
 		[[nodiscard]] virtual std::string getResponse(cbParser& p) const noexcept = 0;
 	};

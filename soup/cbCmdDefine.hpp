@@ -16,7 +16,7 @@ namespace soup
 		* cbCmdDefine::dict->read(fr);
 		*/
 
-		[[nodiscard]] std::vector<std::string> getTriggerwords() const noexcept final
+		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
 		{
 			return { "define" };
 		}

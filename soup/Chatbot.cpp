@@ -35,9 +35,9 @@ namespace soup
 		cbParser p(text);
 		for (const auto& cmd : getAllCommands())
 		{
-			for (const auto& triggerword : cmd->getTriggerwords())
+			for (const auto& trigger : cmd->getTriggers())
 			{
-				if (p.checkTriggerword(triggerword))
+				if (p.checkTrigger(trigger))
 				{
 					return cmd->getResponse(p);
 				}
