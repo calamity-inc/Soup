@@ -499,7 +499,7 @@ static void test_chatbot_triggerwords()
 	ASSERT_TRIGGERWORD("hi", "hi");
 	ASSERT_TRIGGERWORD("define autonomous", "define");
 	ASSERT_TRIGGERWORD("Define autonomous", "Define");
-	ASSERT_TRIGGERWORD("can you define autonomous", "define");
+	ASSERT_TRIGGERWORD("Can you define autonomous?", "define");
 }
 
 static void test_chatbot_args()
@@ -507,7 +507,7 @@ static void test_chatbot_args()
 #define ASSERT_ARG(text, triggerword, getArg, arg) { cbParser p(text); p.checkTriggerword(triggerword); assert(p.getArg() == arg); }
 
 	ASSERT_ARG("define autonomous", "define", getArgWord, "autonomous");
-	ASSERT_ARG("can you define autonomous", "define", getArgWord, "autonomous");
+	ASSERT_ARG("Can you define autonomous?", "define", getArgWord, "autonomous");
 }
 
 static void unit_math()

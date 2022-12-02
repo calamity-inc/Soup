@@ -28,7 +28,14 @@ namespace soup
 		auto i = command;
 		if (++i != words.end())
 		{
-			return *i;
+			std::string arg = *i;
+			if ((i + 1) == words.end())
+			{
+				string::replace_all(arg, ".", "");
+				string::replace_all(arg, "?", "");
+				string::replace_all(arg, "!", "");
+			}
+			return arg;
 		}
 		return {};
 	}
