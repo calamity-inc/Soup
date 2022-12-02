@@ -498,6 +498,7 @@ static void test_chatbot_triggerwords()
 
 	ASSERT_TRIGGERWORD("hi", "hi");
 	ASSERT_TRIGGERWORD("define autonomous", "define");
+	ASSERT_TRIGGERWORD("Define autonomous", "Define");
 	ASSERT_TRIGGERWORD("can you define autonomous", "define");
 }
 

@@ -13,7 +13,7 @@ namespace soup
 	{
 		for (auto i = words.begin(); i != words.end(); ++i)
 		{
-			if (*i == triggerword)
+			if (string::equalsIgnoreCase(*i, triggerword))
 			{
 				command = i;
 				return true;
