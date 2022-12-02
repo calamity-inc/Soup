@@ -18,12 +18,19 @@ namespace soup
 
 	[[nodiscard]] static bool isNumericIgnorePunctuation(const std::string& str)
 	{
-		for (const auto& c : str)
+		auto i = str.begin();
+		if (i != str.end()
+			&& *i == '-'
+			)
 		{
-			if (!string::isNumberChar(c)
-				&& c != '.'
-				&& c != '?'
-				&& c != '!'
+			++i;
+		}
+		for (; i != str.end(); ++i)
+		{
+			if (!string::isNumberChar(*i)
+				&& *i != '.'
+				&& *i != '?'
+				&& *i != '!'
 				)
 			{
 				return false;
