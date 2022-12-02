@@ -16,6 +16,22 @@ namespace soup
 		string::replace_all(str, "!", "");
 	}
 
+	[[nodiscard]] static bool isNumericIgnorePunctuation(const std::string& str)
+	{
+		for (const auto& c : str)
+		{
+			if (!string::isNumberChar(c)
+				&& c != '.'
+				&& c != '?'
+				&& c != '!'
+				)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	[[nodiscard]] static std::string simplifyForTriggerMatch(std::string word)
 	{
 		prunePunctuation(word);
@@ -95,7 +111,7 @@ namespace soup
 		// assuming hasCommand() is true
 		for (auto i = command_end; ++i != words.end(); )
 		{
-			if (string::isNumeric(*i))
+			if (isNumericIgnorePunctuation(*i))
 			{
 				return word2arg(i);
 			}
@@ -114,7 +130,7 @@ namespace soup
 				--i;
 				if (string::isNumeric(*i))
 				{
-					return word2arg(i);
+					return *i;
 				}
 			} while (i != words.begin());
 		}
