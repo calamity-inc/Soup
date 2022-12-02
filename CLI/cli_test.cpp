@@ -50,7 +50,7 @@
 using namespace soup;
 using namespace soup::literals;
 
-static void test_cpu()
+static void unit_cpu()
 {
 	test("x64", []
 	{
@@ -121,7 +121,7 @@ static void test_cpu()
 	});
 }
 
-static void test_crypto()
+static void unit_crypto()
 {
 	test("SegWitAddress", []
 	{
@@ -157,7 +157,7 @@ static void test_crypto()
 	});
 }
 
-static void test_data()
+static void unit_data()
 {
 	unit("base32")
 	{
@@ -310,7 +310,7 @@ static void test_data()
 	});
 }
 
-static void test_io()
+static void unit_io()
 {
 	test("BitReader", []
 	{
@@ -356,7 +356,7 @@ static void test_io()
 	});
 }
 
-static void test_lang()
+static void unit_lang()
 {
 	unit("php")
 	{
@@ -472,7 +472,7 @@ endif;)") == "");
 	});
 }
 
-void test_math()
+static void unit_math()
 {
 	test("pow", []
 	{
@@ -609,7 +609,7 @@ static void test_socket_raii_semantics()
 	assert(s3.hasConnection());
 }
 
-static void test_util_string()
+static void unit_util_string()
 {
 	test("StringMatch::search", []
 	{
@@ -652,7 +652,7 @@ static void test_util_string()
 	});
 }
 
-static void test_util()
+static void unit_util()
 {
 	test("bin2hex", []
 	{
@@ -665,7 +665,7 @@ static void test_util()
 	});
 }
 
-static void test_vis()
+static void unit_vis()
 {
 	test("Rgb", []
 	{
@@ -682,27 +682,27 @@ void cli_test()
 	{
 		unit("cpu")
 		{
-			test_cpu();
+			unit_cpu();
 		}
 		unit("crypto")
 		{
-			test_crypto();
+			unit_crypto();
 		}
 		unit("data")
 		{
-			test_data();
+			unit_data();
 		}
 		unit("io")
 		{
-			test_io();
+			unit_io();
 		}
 		unit("lang")
 		{
-			test_lang();
+			unit_lang();
 		}
 		unit("math")
 		{
-			test_math();
+			unit_math();
 		}
 		unit("net")
 		{
@@ -716,13 +716,13 @@ void cli_test()
 		{
 			unit("string")
 			{
-				test_util_string();
+				unit_util_string();
 			}
-			test_util();
+			unit_util();
 		}
 		unit("vis")
 		{
-			test_vis();
+			unit_vis();
 		}
 	}
 }
