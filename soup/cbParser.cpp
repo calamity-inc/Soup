@@ -126,6 +126,24 @@ namespace soup
 		return {};
 	}
 
+	std::string cbParser::getArgNumericSecond() const noexcept
+	{
+		// assuming hasCommand() is true
+		bool next = false;
+		for (auto i = command_end; ++i != words.end(); )
+		{
+			if (isNumericIgnorePunctuation(*i))
+			{
+				if (next)
+				{
+					return word2arg(i);
+				}
+				next = true;
+			}
+		}
+		return {};
+	}
+
 	std::string cbParser::getArgNumericLefthand() const noexcept
 	{
 		// assuming hasCommand() is true

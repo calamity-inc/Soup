@@ -451,6 +451,7 @@
     <ClInclude Include="cbCmdDefine.hpp" />
     <ClInclude Include="cbCmdFarewell.hpp" />
     <ClInclude Include="cbCmdGreeting.hpp" />
+    <ClInclude Include="cbCmdRand.hpp" />
     <ClInclude Include="cbParser.hpp" />
     <ClInclude Include="Chatbot.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />

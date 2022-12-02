@@ -526,13 +526,15 @@ static void test_chatbot_triggers()
 
 static void test_chatbot_args()
 {
-#define ASSERT_ARG(text, trigger, getArg, arg) { cbParser p(text); p.checkTrigger(trigger); assert(p.getArg() == arg); }
+#define ASSERT_ARG(text, trigger, getArg, arg) { cbParser p(text); p.checkTrigger(trigger); assert(p.hasCommand()); assert(p.getArg() == arg); }
 
 	ASSERT_ARG("define autonomous", "define", getArgWord, "autonomous");
 	ASSERT_ARG("Can you define autonomous?", "define", getArgWord, "autonomous");
 	ASSERT_ARG("definition of autonomous", "definition of", getArgWord, "autonomous");
 	ASSERT_ARG("123 + 456", "+", getArgNumericLefthand, "123");
 	ASSERT_ARG("123 + 456", "+", getArgNumeric, "456");
+	ASSERT_ARG("Number between 1 and 10.", "number between", getArgNumeric, "1");
+	ASSERT_ARG("Number between 1 and 10.", "number between", getArgNumericSecond, "10");
 }
 
 static void unit_math()

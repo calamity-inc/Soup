@@ -30,6 +30,7 @@ namespace soup
 	public:
 		[[nodiscard]] std::string getArgWord() const noexcept;
 		[[nodiscard]] std::string getArgNumeric() const noexcept;
+		[[nodiscard]] std::string getArgNumericSecond() const noexcept;
 		[[nodiscard]] std::string getArgNumericLefthand() const noexcept;
 	};
 }

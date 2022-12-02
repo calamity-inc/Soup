@@ -4,6 +4,7 @@
 #include "UniquePtr.hpp"
 
 #include "cbCmdCoinflip.hpp"
+#include "cbCmdRand.hpp"
 #include "cbCmdDefine.hpp"
 #include "cbCmdArithmetic.hpp"
 
@@ -18,6 +19,7 @@ namespace soup
 		
 		// Commands
 		cmds.emplace_back(soup::make_unique<cbCmdCoinflip>());
+		cmds.emplace_back(soup::make_unique<cbCmdRand>());
 		cmds.emplace_back(soup::make_unique<cbCmdDefine>());
 		cmds.emplace_back(soup::make_unique<cbCmdArithmetic>());
 
