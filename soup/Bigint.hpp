@@ -40,6 +40,7 @@ namespace soup
 		Bigint(Bigint&& b);
 		Bigint(const Bigint& b);
 
+		[[nodiscard]] static Bigint fromString(const std::string& str);
 		[[nodiscard]] static Bigint fromString(const char* str, size_t len);
 		[[nodiscard]] static Bigint fromStringHex(const char* str, size_t len);
 	private:

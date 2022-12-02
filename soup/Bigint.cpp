@@ -46,6 +46,11 @@ namespace soup
 	{
 	}
 
+	Bigint Bigint::fromString(const std::string& str)
+	{
+		return fromString(str.data(), str.size());
+	}
+
 	Bigint Bigint::fromString(const char* str, size_t len)
 	{
 		Bigint res{};
