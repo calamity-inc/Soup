@@ -11,7 +11,7 @@ namespace soup
 			return { "bye", "goodbye", "farewell" };
 		}
 
-		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
 		{
 			return "Goodbye!";
 		}

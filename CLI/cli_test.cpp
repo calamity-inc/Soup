@@ -537,6 +537,15 @@ static void test_chatbot_args()
 	ASSERT_ARG("Number between 1 and 10.", "number between", getArgNumericSecond, "10");
 }
 
+static void test_chatbot_implementables()
+{
+	{
+		auto res = Chatbot::process("delete 10");
+		assert(res.type == CB_RES_DELETE);
+		assert(res.getDeleteArgs().num == 10);
+	}
+}
+
 static void unit_math()
 {
 	test("pow", []
@@ -778,6 +787,7 @@ void cli_test()
 			{
 				test("triggers", &test_chatbot_triggers);
 				test("args", &test_chatbot_args);
+				test("implementables", &test_chatbot_implementables);
 			}
 		}
 		unit("math")

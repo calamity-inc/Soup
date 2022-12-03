@@ -13,7 +13,7 @@ namespace soup
 			return { "coinflip", "flip a coin" };
 		}
 
-		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
 		{
 			return soup::rand.coinflip() ? "Heads." : "Tails.";
 		}

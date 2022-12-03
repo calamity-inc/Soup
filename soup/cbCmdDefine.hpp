@@ -21,7 +21,7 @@ namespace soup
 			return { "define", "definition of" };
 		}
 
-		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
 		{
 			if (!dict)
 			{
@@ -44,7 +44,7 @@ namespace soup
 				{
 					word.append(" is not in my dictionary");
 				}
-				return word;
+				return cbResult(std::move(word));
 			}
 			return "Define what?";
 		}

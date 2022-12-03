@@ -449,10 +449,12 @@
     <ClInclude Include="cbCmdArithmetic.hpp" />
     <ClInclude Include="cbCmdCoinflip.hpp" />
     <ClInclude Include="cbCmdDefine.hpp" />
+    <ClInclude Include="cbCmdDelete.hpp" />
     <ClInclude Include="cbCmdFarewell.hpp" />
     <ClInclude Include="cbCmdGreeting.hpp" />
     <ClInclude Include="cbCmdRand.hpp" />
     <ClInclude Include="cbParser.hpp" />
+    <ClInclude Include="cbResult.hpp" />
     <ClInclude Include="Chatbot.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
     <ClInclude Include="CidrSubnet6.hpp" />

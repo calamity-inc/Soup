@@ -13,7 +13,7 @@ namespace soup
 			return { "number between" };
 		}
 
-		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
 		{
 			auto as = p.getArgNumeric();
 			auto bs = p.getArgNumericSecond();
@@ -33,7 +33,7 @@ namespace soup
 			}
 			std::string msg = std::to_string(soup::rand.t<long long>(a, b));
 			msg.push_back('.');
-			return msg;
+			return cbResult(std::move(msg));
 		}
 	};
 }

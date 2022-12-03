@@ -8,6 +8,8 @@
 #include "cbCmdDefine.hpp"
 #include "cbCmdArithmetic.hpp"
 
+#include "cbCmdDelete.hpp"
+
 #include "cbCmdGreeting.hpp"
 #include "cbCmdFarewell.hpp"
 
@@ -23,6 +25,9 @@ namespace soup
 		cmds.emplace_back(soup::make_unique<cbCmdDefine>());
 		cmds.emplace_back(soup::make_unique<cbCmdArithmetic>());
 
+		// Implementables
+		cmds.emplace_back(soup::make_unique<cbCmdDelete>());
+
 		// Conversational
 		cmds.emplace_back(soup::make_unique<cbCmdGreeting>());
 		cmds.emplace_back(soup::make_unique<cbCmdFarewell>());
@@ -36,7 +41,7 @@ namespace soup
 		return cmds;
 	}
 
-	std::string Chatbot::getResponse(const std::string& text)
+	cbResult Chatbot::process(const std::string& text)
 	{
 		cbParser p(text);
 		for (const auto& cmd : getAllCommands())
@@ -45,10 +50,15 @@ namespace soup
 			{
 				if (p.checkTrigger(trigger))
 				{
-					return cmd->getResponse(p);
+					return cmd->process(p);
 				}
 			}
 		}
 		return "I'm sorry, I don't understand. :/";
+	}
+
+	std::string Chatbot::getResponse(const std::string& text)
+	{
+		return process(text).response;
 	}
 }

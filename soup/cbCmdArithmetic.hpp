@@ -13,7 +13,7 @@ namespace soup
 			return { "+", "-", "*", "/" };
 		}
 
-		[[nodiscard]] std::string getResponse(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
 		{
 			auto ls = p.getArgNumericLefthand();
 			auto rs = p.getArgNumeric();
@@ -35,7 +35,7 @@ namespace soup
 			std::string msg = "That expression evaluates to ";
 			msg.append(calculate(l, p.command_begin->at(0), r).toString());
 			msg.append(". :)");
-			return msg;
+			return cbResult(std::move(msg));
 		}
 
 		[[nodiscard]] static Bigint calculate(const Bigint& l, char op, const Bigint& r) noexcept
