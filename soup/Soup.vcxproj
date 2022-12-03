@@ -453,6 +453,7 @@
     <ClInclude Include="cbCmdDelete.hpp" />
     <ClInclude Include="cbCmdFarewell.hpp" />
     <ClInclude Include="cbCmdGreeting.hpp" />
+    <ClInclude Include="cbCmdHowAreYou.hpp" />
     <ClInclude Include="cbCmdJoke.hpp" />
     <ClInclude Include="cbCmdOpinion.hpp" />
     <ClInclude Include="cbCmdOpinionFollowup.hpp" />

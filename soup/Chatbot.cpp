@@ -14,6 +14,7 @@
 #include "cbCmdDelete.hpp"
 
 #include "cbCmdGreeting.hpp"
+#include "cbCmdHowAreYou.hpp"
 #include "cbCmdFarewell.hpp"
 #include "cbCmdOpinion.hpp"
 #include "cbCmdOpinionFollowup.hpp"
@@ -37,6 +38,7 @@ namespace soup
 
 		// Conversational
 		cmds.emplace_back(soup::make_unique<cbCmdGreeting>());
+		cmds.emplace_back(soup::make_unique<cbCmdHowAreYou>());
 		cmds.emplace_back(soup::make_unique<cbCmdFarewell>());
 		cmds.emplace_back(soup::make_unique<cbCmdOpinion>());
 		cmds.emplace_back(soup::make_unique<cbCmdOpinionFollowup>());
