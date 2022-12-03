@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring> // strlen
 #include <string>
 
 #include "base.hpp"
