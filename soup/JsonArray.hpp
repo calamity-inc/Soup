@@ -45,5 +45,10 @@ namespace soup
 		[[nodiscard]] JsonNode& at(size_t i) const;
 		[[nodiscard]] JsonArrayIterator begin() const noexcept;
 		[[nodiscard]] JsonArrayIterator end() const noexcept;
+
+		[[nodiscard]] size_t size() const noexcept
+		{
+			return children.size();
+		}
 	};
 }

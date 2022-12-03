@@ -486,6 +486,7 @@
     <ClInclude Include="ioSeekableReader.hpp" />
     <ClInclude Include="IpGroups.hpp" />
     <ClInclude Include="Ipv6Maths.hpp" />
+    <ClInclude Include="Jokebook.hpp" />
     <ClInclude Include="KeyGenId.hpp" />
     <ClInclude Include="LcgRng.hpp" />
     <ClInclude Include="log.hpp" />
@@ -837,6 +838,7 @@
     <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
+    <ClCompile Include="Jokebook.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
     <ClCompile Include="LcgRng.cpp" />
     <ClCompile Include="log.cpp" />

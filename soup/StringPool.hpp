@@ -25,6 +25,11 @@ namespace soup
 			return pool.empty();
 		}
 
+		[[nodiscard]] bool contains(const std::string& str) const
+		{
+			return pool.find(str) != pool.end();
+		}
+
 		void clear() noexcept
 		{
 			pool.clear();

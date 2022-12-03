@@ -60,7 +60,7 @@ namespace soup
 		}
 
 		template <typename T>
-		[[nodiscard]] T& operator()(std::vector<T>& vec) const
+		[[nodiscard]] const T& operator()(const std::vector<T>& vec) const
 		{
 			return vec.at(t<size_t>(0, vec.size() - 1));
 		}
