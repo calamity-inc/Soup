@@ -10,7 +10,7 @@ namespace soup
 	struct cbCmdDefine : public cbCmd
 	{
 		inline static SharedPtr<Dictionary> dict;
-		/*** An example of initialising this:
+		/*** To initialise this, use Chatbot::intialiseResources or:
 		* FileReader fr("Soup/resources/dictionary.bin");
 		* cbCmdDefine::dict = soup::make_shared<Dictionary>();
 		* cbCmdDefine::dict->read(fr);

@@ -1,5 +1,6 @@
 #include "Chatbot.hpp"
 
+#include "FileReader.hpp"
 #include "string.hpp"
 #include "UniquePtr.hpp"
 
@@ -41,6 +42,23 @@ namespace soup
 	{
 		static auto cmds = getAllCommandsImpl();
 		return cmds;
+	}
+
+	void Chatbot::intialiseResources(std::filesystem::path dir)
+	{
+		if (auto dictionary = dir / "dictionary.bin"; std::filesystem::is_regular_file(dictionary))
+		{
+			FileReader fr(dictionary);
+			cbCmdDefine::dict = soup::make_shared<Dictionary>();
+			cbCmdDefine::dict->read(fr);
+		}
+		
+		if (auto jokebook = dir / "jokebook.bin"; std::filesystem::is_regular_file(jokebook))
+		{
+			FileReader fr(jokebook);
+			cbCmdJoke::jb = soup::make_shared<Jokebook>();
+			cbCmdJoke::jb->read(fr);
+		}
 	}
 
 	cbResult Chatbot::process(const std::string& text)

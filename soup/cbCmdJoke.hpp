@@ -10,7 +10,7 @@ namespace soup
 	struct cbCmdJoke : public cbCmd
 	{
 		inline static SharedPtr<Jokebook> jb;
-		/*** An example of initialising this:
+		/*** To initialise this, use Chatbot::intialiseResources or:
 		* FileReader fr("Soup/resources/jokebook.bin");
 		* cbCmdJoke::jb = soup::make_shared<Jokebook>();
 		* cbCmdJoke::jb->read(fr);
