@@ -18,7 +18,7 @@ namespace soup
 		case CB_RODS: return "rods";
 		case CB_CHAINS: return "chains";
 		case CB_FURLONGS: return "furlongs";
-		case CB_MI: return "mi";
+		case CB_MI: return "miles";
 
 		case CB_G: return "g";
 		case CB_KG: return "kg";
@@ -26,9 +26,9 @@ namespace soup
 		case CB_POUNDS: return "pounds";
 		case CB_STONES: return "stones";
 		case CB_HUNDREDWEIGHTS: return "hundredweights";
-		case CB_USTONS: return "ustons";
-		case CB_METRICTONS: return "metrictons";
-		case CB_IMPERIALTONS: return "imperialtons";
+		case CB_USTONS: return "US tons";
+		case CB_METRICTONS: return "metric tons";
+		case CB_IMPERIALTONS: return "imperial tons";
 
 		case CB_NOUNIT: break;
 		}
