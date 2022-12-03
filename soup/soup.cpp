@@ -17,6 +17,8 @@ using stdstring = std::string;
 #include "base40.hpp"
 #include "base64.hpp"
 #include "Canvas.hpp"
+#include "cbResult.hpp"
+#include "Chatbot.hpp"
 #include "InquiryLang.hpp"
 #include "KeyGenId.hpp"
 #include "Mixed.hpp"
@@ -126,6 +128,30 @@ SOUP_CEXPORT const char* Canvas_toSvg(const Canvas* x, unsigned int scale)
 SOUP_CEXPORT stdstring* Canvas_toNewPngString(const Canvas* x)
 {
 	return heap.add(x->toPng());
+}
+
+// cbResult
+
+SOUP_CEXPORT const char* cbResult_getResponse(const cbResult* x)
+{
+	return x->response.c_str();
+}
+
+SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x)
+{
+	return x->isDelete();
+}
+
+SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x)
+{
+	return x->getDeleteNum();
+}
+
+// Chatbot
+
+SOUP_CEXPORT cbResult* Chatbot_process(const char* text)
+{
+	return heap.add(Chatbot::process(text));
 }
 
 // InquiryLang

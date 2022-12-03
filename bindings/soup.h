@@ -13,6 +13,7 @@
 
 	typedef void Bigint;
 	typedef void Canvas;
+	typedef void cbResult;
 	typedef void KeyGenId;
 	typedef void Mixed;
 	typedef void QrCode;
@@ -41,6 +42,12 @@ SOUP_CEXPORT unsigned int Canvas_getHeight(const Canvas* x);
 SOUP_CEXPORT void Canvas_resizeNearestNeighbour(Canvas* x, unsigned int desired_width, unsigned int desired_height);
 SOUP_CEXPORT const char* Canvas_toSvg(const Canvas* x, unsigned int scale);
 SOUP_CEXPORT stdstring* Canvas_toNewPngString(const Canvas* x);
+// cbResult
+SOUP_CEXPORT const char* cbResult_getResponse(const cbResult* x); // not in soup.js
+SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x); // not in soup.js
+SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x); // not in soup.js
+// Chatbot
+SOUP_CEXPORT cbResult* Chatbot_process(const char* text); // not in soup.js
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);

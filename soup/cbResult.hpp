@@ -45,13 +45,23 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] bool isDelete() const noexcept
+		{
+			return type == CB_RES_DELETE;
+		}
+
 		[[nodiscard]] const DeleteArgs& getDeleteArgs() const
 		{
-			if (type != CB_RES_DELETE)
+			SOUP_IF_UNLIKELY (!isDelete())
 			{
 				throw 0;
 			}
 			return delete_args;
+		}
+
+		[[nodiscard]] int getDeleteNum() const
+		{
+			return getDeleteArgs().num;
 		}
 	};
 }
