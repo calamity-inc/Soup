@@ -7,6 +7,7 @@ namespace soup
 	enum cbResultType : uint8_t
 	{
 		CB_RES_BUILTIN = 0,
+		CB_RES_CAPABILITIES, // "What can you do?"
 		CB_RES_DELETE,
 	};
 
@@ -36,6 +37,11 @@ namespace soup
 
 		cbResult(cbResultType type)
 			: type(type), response("This command is not implemented. :/")
+		{
+		}
+
+		cbResult(cbResultType type, std::string&& response)
+			: type(type), response(std::move(response))
 		{
 		}
 

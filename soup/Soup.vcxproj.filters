@@ -1131,6 +1131,9 @@
     <ClInclude Include="cbCmdThanks.hpp">
       <Filter>ling\chatbot</Filter>
     </ClInclude>
+    <ClInclude Include="cbCmdCapabilities.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
