@@ -1119,6 +1119,9 @@
     <ClInclude Include="cbMeasurement.hpp">
       <Filter>ling\chatbot</Filter>
     </ClInclude>
+    <ClInclude Include="cbCmdOpinion.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
