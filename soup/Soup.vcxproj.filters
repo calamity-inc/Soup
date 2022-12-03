@@ -1113,6 +1113,12 @@
     <ClInclude Include="cbCmdJoke.hpp">
       <Filter>ling\chatbot</Filter>
     </ClInclude>
+    <ClInclude Include="cbCmdConvert.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
+    <ClInclude Include="cbMeasurement.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1640,6 +1646,9 @@
     </ClCompile>
     <ClCompile Include="Jokebook.cpp">
       <Filter>ling</Filter>
+    </ClCompile>
+    <ClCompile Include="cbMeasurement.cpp">
+      <Filter>ling\chatbot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

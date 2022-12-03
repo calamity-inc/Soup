@@ -11,9 +11,13 @@ namespace soup
 
 	static void prunePunctuation(std::string& str)
 	{
-		string::replace_all(str, ".", "");
-		string::replace_all(str, "?", "");
-		string::replace_all(str, "!", "");
+		while (str.back() == '.'
+			|| str.back() == '?'
+			|| str.back() == '!'
+			)
+		{
+			str.pop_back();
+		}
 	}
 
 	[[nodiscard]] static bool isNumericIgnorePunctuation(const std::string& str)
@@ -187,5 +191,63 @@ namespace soup
 			} while (i != words.begin());
 		}
 		return {};
+	}
+
+	cbMeasurement cbParser::getArgMeasurement() const noexcept
+	{
+		try
+		{
+			cbMeasurement m;
+			for (auto i = command_end; ++i != words.end(); )
+			{
+				if (isNumericIgnorePunctuation(*i))
+				{
+					m.quantity = std::stod(word2arg(i));
+					if (++i != words.end())
+					{
+						m.unit = cbUnitFromString(word2arg(i));
+						return m;
+					}
+				}
+			}
+		}
+		catch (...)
+		{
+		}
+		return {};
+	}
+
+	cbMeasurement cbParser::getArgMeasurementLefthand() const noexcept
+	{
+		try
+		{
+			cbMeasurement m;
+			auto i = command_begin;
+			if (i != words.begin())
+			{
+				do
+				{
+					--i;
+					m.unit = cbUnitFromString(word2arg(i));
+					if (m.unit != CB_NOUNIT
+						&& i != words.begin()
+						)
+					{
+						--i;
+						m.quantity = std::stod(word2arg(i));
+						return m;
+					}
+				} while (i != words.begin());
+			}
+		}
+		catch (...)
+		{
+		}
+		return {};
+	}
+
+	cbUnit cbParser::getArgUnit() const noexcept
+	{
+		return cbUnitFromString(getArgWord());
 	}
 }

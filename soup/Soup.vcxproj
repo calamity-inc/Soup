@@ -448,6 +448,7 @@
     <ClInclude Include="cbCmd.hpp" />
     <ClInclude Include="cbCmdArithmetic.hpp" />
     <ClInclude Include="cbCmdCoinflip.hpp" />
+    <ClInclude Include="cbCmdConvert.hpp" />
     <ClInclude Include="cbCmdDefine.hpp" />
     <ClInclude Include="cbCmdDelete.hpp" />
     <ClInclude Include="cbCmdFarewell.hpp" />
@@ -456,6 +457,7 @@
     <ClInclude Include="cbCmdRand.hpp" />
     <ClInclude Include="cbParser.hpp" />
     <ClInclude Include="cbResult.hpp" />
+    <ClInclude Include="cbMeasurement.hpp" />
     <ClInclude Include="Chatbot.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
     <ClInclude Include="CidrSubnet6.hpp" />
@@ -824,6 +826,7 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="cbMeasurement.cpp" />
     <ClCompile Include="cbParser.cpp" />
     <ClCompile Include="Chatbot.cpp" />
     <ClCompile Include="CidrSubnet6.cpp" />

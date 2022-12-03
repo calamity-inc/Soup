@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "cbMeasurement.hpp"
+
 namespace soup
 {
 	class cbParser
@@ -30,9 +32,16 @@ namespace soup
 	public:
 		[[nodiscard]] std::string getArgWord() const noexcept;
 		[[nodiscard]] std::string getArgWordLefthand() const noexcept;
+
 		[[nodiscard]] std::string getArgModifier() const noexcept;
+
 		[[nodiscard]] std::string getArgNumeric() const noexcept;
 		[[nodiscard]] std::string getArgNumericSecond() const noexcept;
 		[[nodiscard]] std::string getArgNumericLefthand() const noexcept;
+
+		[[nodiscard]] cbMeasurement getArgMeasurement() const noexcept;
+		[[nodiscard]] cbMeasurement getArgMeasurementLefthand() const noexcept;
+
+		[[nodiscard]] cbUnit getArgUnit() const noexcept;
 	};
 }

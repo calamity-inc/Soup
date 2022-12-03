@@ -9,6 +9,7 @@
 #include "cbCmdDefine.hpp"
 #include "cbCmdJoke.hpp"
 #include "cbCmdArithmetic.hpp"
+#include "cbCmdConvert.hpp"
 
 #include "cbCmdDelete.hpp"
 
@@ -27,6 +28,7 @@ namespace soup
 		cmds.emplace_back(soup::make_unique<cbCmdDefine>());
 		cmds.emplace_back(soup::make_unique<cbCmdJoke>());
 		cmds.emplace_back(soup::make_unique<cbCmdArithmetic>());
+		cmds.emplace_back(soup::make_unique<cbCmdConvert>());
 
 		// Implementables
 		cmds.emplace_back(soup::make_unique<cbCmdDelete>());
