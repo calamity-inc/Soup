@@ -3,7 +3,7 @@ $soup = FFI::cdef(
 	str_replace("\nSOUP_CEXPORT ", "",
 		file_get_contents("soup.h")
 	),
-	"soup"
+	defined("PHP_WINDOWS_VERSION_MAJOR") ? __DIR__."/soup.dll" : __DIR__."/libsoup.so"
 );
 
 function soup_tryCatch($f)
