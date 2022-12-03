@@ -29,6 +29,8 @@ namespace soup
 		[[nodiscard]] std::string word2arg(std::vector<std::string>::iterator i) const noexcept;
 	public:
 		[[nodiscard]] std::string getArgWord() const noexcept;
+		[[nodiscard]] std::string getArgWordLefthand() const noexcept;
+		[[nodiscard]] std::string getArgModifier() const noexcept;
 		[[nodiscard]] std::string getArgNumeric() const noexcept;
 		[[nodiscard]] std::string getArgNumericSecond() const noexcept;
 		[[nodiscard]] std::string getArgNumericLefthand() const noexcept;

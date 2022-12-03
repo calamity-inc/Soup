@@ -6,6 +6,7 @@
 #include "cbCmdCoinflip.hpp"
 #include "cbCmdRand.hpp"
 #include "cbCmdDefine.hpp"
+#include "cbCmdJoke.hpp"
 #include "cbCmdArithmetic.hpp"
 
 #include "cbCmdDelete.hpp"
@@ -23,6 +24,7 @@ namespace soup
 		cmds.emplace_back(soup::make_unique<cbCmdCoinflip>());
 		cmds.emplace_back(soup::make_unique<cbCmdRand>());
 		cmds.emplace_back(soup::make_unique<cbCmdDefine>());
+		cmds.emplace_back(soup::make_unique<cbCmdJoke>());
 		cmds.emplace_back(soup::make_unique<cbCmdArithmetic>());
 
 		// Implementables

@@ -1110,6 +1110,9 @@
     <ClInclude Include="Jokebook.hpp">
       <Filter>ling</Filter>
     </ClInclude>
+    <ClInclude Include="cbCmdJoke.hpp">
+      <Filter>ling\chatbot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

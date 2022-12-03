@@ -113,6 +113,33 @@ namespace soup
 		return {};
 	}
 
+	std::string cbParser::getArgWordLefthand() const noexcept
+	{
+		// assuming hasCommand() is true
+		auto i = command_begin;
+		if (i != words.begin())
+		{
+			--i;
+			return word2arg(i);
+		}
+		return {};
+	}
+
+	std::string cbParser::getArgModifier() const noexcept
+	{
+		if (auto arg = getArgWordLefthand(); !arg.empty())
+		{
+			if (arg != "a"
+				&& arg != "an"
+				&& arg != "any"
+				)
+			{
+				return arg;
+			}
+		}
+		return {};
+	}
+
 	std::string cbParser::getArgNumeric() const noexcept
 	{
 		// assuming hasCommand() is true
