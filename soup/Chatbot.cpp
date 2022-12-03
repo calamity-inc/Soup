@@ -18,6 +18,7 @@
 #include "cbCmdFarewell.hpp"
 #include "cbCmdOpinion.hpp"
 #include "cbCmdOpinionFollowup.hpp"
+#include "cbCmdThanks.hpp"
 
 namespace soup
 {
@@ -42,6 +43,7 @@ namespace soup
 		cmds.emplace_back(soup::make_unique<cbCmdFarewell>());
 		cmds.emplace_back(soup::make_unique<cbCmdOpinion>());
 		cmds.emplace_back(soup::make_unique<cbCmdOpinionFollowup>());
+		cmds.emplace_back(soup::make_unique<cbCmdThanks>());
 
 		return cmds;
 	}
