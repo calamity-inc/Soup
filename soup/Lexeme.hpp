@@ -76,8 +76,13 @@ namespace soup
 		[[nodiscard]] bool isLiteral(const std::string& b) const noexcept
 		{
 			return isLiteral()
-				&& val.getString() == b
+				&& getLiteral() == b
 				;
+		}
+
+		[[nodiscard]] std::string getLiteral() const
+		{
+			return val.getString();
 		}
 	};
 }

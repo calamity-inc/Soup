@@ -98,8 +98,22 @@ namespace soup
 
 	void rflParser::align()
 	{
-		while (i->isSpace())
+		while (i->isSpace()
+			|| (
+				i->isLiteral()
+				&& (i->getLiteral() == "//"
+					|| i->getLiteral().at(0) == '#'
+					)
+				)
+			)
 		{
+			if (!i->isSpace())
+			{
+				do
+				{
+					advance();
+				} while (!i->isNewLine());
+			}
 			advance();
 		}
 	}
