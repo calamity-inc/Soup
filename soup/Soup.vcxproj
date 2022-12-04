@@ -445,6 +445,7 @@
     <ClInclude Include="Buffer.hpp" />
     <ClInclude Include="BufferRefWriter.hpp" />
     <ClInclude Include="BufferWriter.hpp" />
+    <ClInclude Include="CApiUtil.hpp" />
     <ClInclude Include="cbCmd.hpp" />
     <ClInclude Include="cbCmdArithmetic.hpp" />
     <ClInclude Include="cbCmdCapabilities.hpp" />

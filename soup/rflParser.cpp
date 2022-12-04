@@ -27,6 +27,11 @@ namespace soup
 			type.name.push_back(' ');
 			type.name.append(readLiteral());
 		}
+		if (type.name == "unsigned")
+		{
+			type.name.push_back(' ');
+			type.name.append(readLiteral());
+		}
 		type.at = rflType::DIRECT;
 		if (type.name.back() == '*')
 		{

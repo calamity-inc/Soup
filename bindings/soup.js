@@ -14,49 +14,11 @@
 	{
 		libsoup().then(function(soup)
 		{
-			{
-				soup.beginScope = soup.cwrap("beginScope", "void", []);
-				soup.endScope = soup.cwrap("endScope", "void", []);
-				soup.broadenScope = soup.cwrap("broadenScope", "void", ["number"]);
-				soup.free = soup.cwrap("endLifetime", "void", ["number"]);
-
-				soup.CppException = class CppException extends Error
-				{
-				};
-				soup.fixErrorType = function(e)
-				{
-					if (typeof e == "number")
-					{
-						return new soup.CppException(soup.exception.what(e));
-					}	
-					return e;
-				}
-				soup.tryCatch = function(f)
-				{
-					try
-					{
-						f();
-					}
-					catch (e)
-					{
-						throw soup.fixErrorType(e);
-					}
-				};
-				soup.scope = function(f)
-				{
-					soup.beginScope();
-					try
-					{
-						f();
-					}
-					catch (e)
-					{
-						soup.endScope();
-						throw soup.fixErrorType(e);
-					}
-					soup.endScope();
-				};
-			}
+			soup.beginScope = soup.cwrap("beginScope", "void", []);
+			soup.endScope = soup.cwrap("endScope", "void", []);
+			soup.broadenScope = soup.cwrap("broadenScope", "void", ["void"]);
+			soup.free = soup.cwrap("endLifetime", "void", ["void"]);
+			soup.tryCatch = soup.cwrap("tryCatch", "string", ["function"]);
 			soup.base40 = {
 				encode: soup.cwrap("base40_encode", "string", ["number"]),
 				decode: soup.cwrap("base40_decode", "number", ["string"]),
@@ -68,52 +30,91 @@
 				toString: soup.cwrap("Bigint_toString", "string", ["number"]),
 			};
 			soup.Canvas = {
-				free: soup.free,
 				getWidth: soup.cwrap("Canvas_getWidth", "number", ["number"]),
 				getHeight: soup.cwrap("Canvas_getHeight", "number", ["number"]),
-				resizeNearestNeighbour: soup.cwrap("Canvas_resizeNearestNeighbour", "number", ["number", "number", "number"]),
+				resizeNearestNeighbour: soup.cwrap("Canvas_resizeNearestNeighbour", "void", ["number", "number", "number"]),
 				toSvg: soup.cwrap("Canvas_toSvg", "string", ["number", "number"]),
 				toNewPngString: soup.cwrap("Canvas_toNewPngString", "number", ["number"]),
-
-				upscaleMultiply: function(c, f)
-				{
-					let w = soup.Canvas.getWidth(c);
-					let h = soup.Canvas.getHeight(c);
-					soup.Canvas.resizeNearestNeighbour(c, w * f, h * f);
-				}
+			};
+			soup.cbResult = {
+				getResponse: soup.cwrap("cbResult_getResponse", "string", ["number"]),
+				isDelete: soup.cwrap("cbResult_isDelete", "bool", ["number"]),
+				getDeleteNum: soup.cwrap("cbResult_getDeleteNum", "number", ["number"]),
+			};
+			soup.Chatbot = {
+				process: soup.cwrap("Chatbot_process", "number", ["string"]),
 			};
 			soup.InquiryLang = {
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
 				formatResultLine: soup.cwrap("InquiryLang_formatResultLine", "string", ["number"]),
 			};
 			soup.KeyGenId = {
-				free: soup.free,
 				newFromSeedsExport: soup.cwrap("KeyGenId_newFromSeedsExport", "number", ["number", "number"]),
 				generate: soup.cwrap("KeyGenId_generate", "number", ["number"]),
 				toSeedsExport: soup.cwrap("KeyGenId_toSeedsExport", "number", ["number"]),
 				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number"]),
 			};
 			soup.Mixed = {
-				free: soup.free,
 				isCanvas: soup.cwrap("Mixed_isCanvas", "bool", ["number"]),
 				getCanvas: soup.cwrap("Mixed_getCanvas", "number", ["number"]),
 			};
 			soup.QrCode = {
-				free: soup.free,
 				newFromText: soup.cwrap("QrCode_newFromText", "number", ["string"]),
 				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "bool"]),
-			};
-			soup.exception = {
-				what: soup.cwrap("exception_what", "string", ["number"]),
-			};
-			soup.string = {
-				free: soup.free,
 			};
 			soup.RsaKeypair = {
 				getN: soup.cwrap("RsaKeypair_getN", "number", ["number"]),
 				getP: soup.cwrap("RsaKeypair_getP", "number", ["number"]),
 				getQ: soup.cwrap("RsaKeypair_getQ", "number", ["number"]),
 			};
+			soup.exception = {
+				what: soup.cwrap("exception_what", "string", ["number"]),
+			};
+
+			soup.CppException = class CppException extends Error
+			{
+			};
+			soup.fixErrorType = function(e)
+			{
+				if (typeof e == "number")
+				{
+					return new soup.CppException(soup.exception.what(e));
+				}   
+				return e;
+			}
+			soup.tryCatch = function(f)
+			{
+				try
+				{
+					f();
+				}
+				catch (e)
+				{
+					throw soup.fixErrorType(e);
+				}
+			};
+			soup.scope = function(f)
+			{
+				soup.beginScope();
+				try
+				{
+					f();
+				}
+				catch (e)
+				{
+					soup.endScope();
+					throw soup.fixErrorType(e);
+				}
+				soup.endScope();
+			};
+
+			soup.Canvas.upscaleMultiply = function(c, f)
+			{
+				let w = soup.Canvas.getWidth(c);
+				let h = soup.Canvas.getHeight(c);
+				soup.Canvas.resizeNearestNeighbour(c, w * f, h * f);
+			};
+
 			delete soup.cwrap;
 			soup.ready = true;
 			soup.use = function(f)

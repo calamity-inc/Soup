@@ -1137,6 +1137,9 @@
     <ClInclude Include="rflFunc.hpp">
       <Filter>lang\reflection</Filter>
     </ClInclude>
+    <ClInclude Include="CApiUtil.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

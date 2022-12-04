@@ -10,6 +10,8 @@ using stdstring = std::string;
 
 #if SOUP_CODE_INSPECTOR
 #include "soup.h" // Dummy include, prevents IntelliSense from adding this
+#else
+typedef void (*void_func_t)();
 #endif
 
 #include "RaiiEmulator.hpp"
@@ -60,7 +62,7 @@ SOUP_CEXPORT void endLifetime(void* inst)
 	heap.free(inst);
 }
 
-SOUP_CEXPORT const char* tryCatch(void(*f)())
+SOUP_CEXPORT const char* tryCatch(void_func_t f)
 {
 	try
 	{

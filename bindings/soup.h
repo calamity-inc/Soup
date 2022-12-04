@@ -23,13 +23,15 @@
 	typedef void stdstring;
 #endif
 
+typedef void (*void_func_t)();
+
 // [global namespace]
 SOUP_CEXPORT void beginScope();
 SOUP_CEXPORT void endScope();
 SOUP_CEXPORT void broadenScope(void* inst);
 SOUP_CEXPORT void endLifetime(void* inst);
-SOUP_CEXPORT const char* tryCatch(void(*f)());
-// base64
+SOUP_CEXPORT const char* tryCatch(void_func_t f);
+// base40
 SOUP_CEXPORT const char* base40_encode(const stdstring* x);
 SOUP_CEXPORT stdstring* base40_decode(const char* x);
 // base64
@@ -43,11 +45,11 @@ SOUP_CEXPORT void Canvas_resizeNearestNeighbour(Canvas* x, unsigned int desired_
 SOUP_CEXPORT const char* Canvas_toSvg(const Canvas* x, unsigned int scale);
 SOUP_CEXPORT stdstring* Canvas_toNewPngString(const Canvas* x);
 // cbResult
-SOUP_CEXPORT const char* cbResult_getResponse(const cbResult* x); // not in soup.js
-SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x); // not in soup.js
-SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x); // not in soup.js
+SOUP_CEXPORT const char* cbResult_getResponse(const cbResult* x);
+SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x);
+SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x);
 // Chatbot
-SOUP_CEXPORT cbResult* Chatbot_process(const char* text); // not in soup.js
+SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);
