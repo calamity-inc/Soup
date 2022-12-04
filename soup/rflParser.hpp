@@ -18,6 +18,7 @@ namespace soup
 		[[nodiscard]] rflType readType();
 		[[nodiscard]] rflVar readVar();
 		void readVar(rflVar& var);
+		[[nodiscard]] rflFunc readFunc();
 		[[nodiscard]] rflStruct readStruct();
 
 		void align();

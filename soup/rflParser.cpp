@@ -1,6 +1,7 @@
 #include "rflParser.hpp"
 
 #include "LangDesc.hpp"
+#include "rflFunc.hpp"
 #include "rflStruct.hpp"
 #include "rflType.hpp"
 #include "rflVar.hpp"
@@ -59,6 +60,37 @@ namespace soup
 	{
 		var.type = readType();
 		var.name = readLiteral();
+	}
+
+	rflFunc rflParser::readFunc()
+	{
+		rflFunc f;
+		f.return_type = readType();
+		f.name = readLiteral();
+		if (readLiteral() != "(")
+		{
+			throw 0;
+		}
+		if (peekLiteral() != ")")
+		{
+			while (true)
+			{
+				readVar(f.parameters.emplace_back(rflVar{}));
+				if (peekLiteral() == ",") // More parameters?
+				{
+					advance();
+				}
+				else if (readLiteral() == ")") // End of parameters?
+				{
+					break;
+				}
+				else // Wat?
+				{
+					throw 0;
+				}
+			}
+		}
+		return f;
 	}
 
 	rflStruct rflParser::readStruct()

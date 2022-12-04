@@ -56,6 +56,7 @@ namespace soup
 	struct aglTranspiler;
 
 	// lang.reflection
+	struct rflFunc;
 	struct rflStruct;
 	struct rflType;
 	struct rflVar;

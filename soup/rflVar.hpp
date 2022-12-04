@@ -12,8 +12,11 @@ namespace soup
 		[[nodiscard]] std::string toString() const
 		{
 			std::string str = type.toString();
-			str.push_back(' ');
-			str.append(name);
+			if (!name.empty())
+			{
+				str.push_back(' ');
+				str.append(name);
+			}
 			return str;
 		}
 	};

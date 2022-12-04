@@ -555,6 +555,7 @@
     <ClInclude Include="HashProofOfWork.hpp" />
     <ClInclude Include="PrimitiveRaii.hpp" />
     <ClInclude Include="RaiiEmulator.hpp" />
+    <ClInclude Include="rflFunc.hpp" />
     <ClInclude Include="rflMember.hpp" />
     <ClInclude Include="rflParser.hpp" />
     <ClInclude Include="rflStruct.hpp" />
