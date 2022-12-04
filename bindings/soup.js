@@ -172,22 +172,21 @@
 			let text = elm.textContent;
 			if(svg === null || svg.getAttribute("alt") != text)
 			{
-				let qr = soup.QrCode.newFromText(text);
-				let c = soup.QrCode.toNewCanvas(qr, 4, elm.hasAttribute("inverted"));
-				soup.Canvas.upscaleMultiply(c, 4);
-				let ps = soup.Canvas.toNewPngString(c);
-				let pb = soup.base64.encode(ps);
+				soup.scope(function()
+				{
+					let qr = soup.QrCode.newFromText(text);
+					let c = soup.QrCode.toNewCanvas(qr, 4, elm.hasAttribute("inverted"));
+					soup.Canvas.upscaleMultiply(c, 4);
+					let ps = soup.Canvas.toNewPngString(c);
+					let pb = soup.base64.encode(ps);
 
-				elm.style.display = "none";
-				pruneContainer(div);
-				let img = document.createElement("img");
-				img.src = "data:image/png;base64," + pb;
-				img.setAttribute("alt", text);
-				div.appendChild(img);
-
-				soup.string.free(ps);
-				soup.Canvas.free(c);
-				soup.QrCode.free(qr);
+					elm.style.display = "none";
+					pruneContainer(div);
+					let img = document.createElement("img");
+					img.src = "data:image/png;base64," + pb;
+					img.setAttribute("alt", text);
+					div.appendChild(img);
+				});
 			}
 		});
 	}
