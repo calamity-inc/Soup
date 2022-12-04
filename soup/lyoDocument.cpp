@@ -39,24 +39,27 @@ namespace soup
 		stylesheets.emplace_back(std::move(uas));
 	}
 
+	static void loadMarkup(lyoDocument& doc, const XmlTag& tag)
+	{
+		for (const auto& node : tag.children)
+		{
+			if (node->is_text)
+			{
+				auto txt = doc.addText(static_cast<const XmlText*>(node.get())->contents);
+				txt->tag_name = tag.name;
+			}
+			else
+			{
+				loadMarkup(doc, *static_cast<const XmlTag*>(node.get()));
+			}
+		}
+	}
+
 	lyoDocument lyoDocument::fromMarkup(const std::string& markup)
 	{
 		lyoDocument doc;
 		auto root = xml::parse(markup);
-		for (const auto& node : root->children)
-		{
-			if (!node->is_text)
-			{
-				XmlTag& tag = *reinterpret_cast<XmlTag*>(node.get());
-				if (tag.children.size() == 1
-					&& tag.children.at(0)->is_text
-					)
-				{
-					auto txt = doc.addText(reinterpret_cast<XmlText*>(tag.children.at(0).get())->contents);
-					txt->tag_name = tag.name;
-				}
-			}
-		}
+		loadMarkup(doc, *root);
 		doc.propagateStyle();
 		return doc;
 	}
