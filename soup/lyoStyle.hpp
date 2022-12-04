@@ -19,6 +19,7 @@ namespace soup
 
 		uint8_t font_size = 0;
 		std::optional<Rgb> color = {};
+		std::optional<Rgb> background_color = {};
 
 		void setMargin(uint8_t margin) noexcept
 		{

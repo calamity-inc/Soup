@@ -37,8 +37,6 @@ namespace soup
 		virtual void updateFlatPos() = 0;
 		virtual void updateFlatSize() = 0;
 
-		virtual void draw(RenderTarget& rt) const
-		{
-		}
+		virtual void draw(RenderTarget& rt) const;
 	};
 }
