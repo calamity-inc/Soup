@@ -27,6 +27,11 @@ namespace soup
 			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		}
 
+		[[nodiscard]] static std::time_t millisSince(std::time_t since) noexcept
+		{
+			return millis() - since;
+		}
+
 		[[nodiscard]] static std::time_t nanos() noexcept
 		{
 			return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
