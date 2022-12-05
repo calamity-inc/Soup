@@ -122,6 +122,23 @@ namespace soup
 				}
 				return 0;
 
+			case WM_KEYUP:
+			case WM_SYSKEYUP:
+			case WM_KEYDOWN:
+			case WM_SYSKEYDOWN:
+				if (wc.key_callback != nullptr)
+				{
+					const UINT scancode = ((lParam >> 16) & 0b11111111);
+					unsigned int vk = MapVirtualKeyExA(scancode, MAPVK_VSC_TO_VK, GetKeyboardLayout(0));
+					if (vk < 0x80)
+					{
+						const bool prev_down = ((lParam >> 30) & 0b1);
+						const bool down = (message == WM_KEYDOWN || message == WM_SYSKEYDOWN);
+						wc.key_callback(Window{ hWnd }, vk, down, (down == prev_down));
+					}
+				}
+				return 0;
+
 			case WM_GETMINMAXINFO:
 				{
 					LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
@@ -218,6 +235,12 @@ namespace soup
 	Window& Window::setMouseInformer(mouse_informer_t mouse_informer)
 	{
 		getConfig().mouse_informer = mouse_informer;
+		return *this;
+	}
+
+	Window& Window::setKeyCallback(key_callback_t key_callback)
+	{
+		getConfig().key_callback = key_callback;
 		return *this;
 	}
 

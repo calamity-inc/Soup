@@ -19,6 +19,7 @@ namespace soup
 		using draw_func_t = void(*)(Window, RenderTarget&);
 		using on_click_t = void(*)(Window, unsigned int, unsigned int);
 		using mouse_informer_t = on_click_t(*)(Window, unsigned int, unsigned int);
+		using key_callback_t = void(*)(Window, char32_t, bool down, bool repeat);
 
 		struct Config
 		{
@@ -26,6 +27,7 @@ namespace soup
 			draw_func_t draw_func = nullptr;
 			bool resizable = false;
 			mouse_informer_t mouse_informer = nullptr;
+			key_callback_t key_callback = nullptr;
 			callback_t on_close = nullptr;
 			std::vector<callback_t> hotkey_callbacks{};
 		};
@@ -41,6 +43,7 @@ namespace soup
 		Capture& customData();
 		Window& setDrawFunc(draw_func_t draw_func);
 		Window& setMouseInformer(mouse_informer_t mouse_informer);
+		Window& setKeyCallback(key_callback_t key_callback);
 		Window& onClose(callback_t on_close);
 		Window& registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, callback_t callback);
 
