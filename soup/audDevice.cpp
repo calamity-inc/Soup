@@ -157,6 +157,14 @@ namespace soup
 		return unicode::utf16_to_utf8(name);
 	}
 
+	UniquePtr<audPlayback> audDevice::open() const
+	{
+		return open([](audPlayback&)
+		{
+			return 0.0;
+		});
+	}
+
 	UniquePtr<audPlayback> audDevice::open(audGetAmplitude src, void* user_data) const
 	{
 		return soup::make_unique<audPlayback>(*this, src, user_data);

@@ -9,6 +9,7 @@ namespace soup
 
 	// audio
 	class audPlayback;
+	struct audSound;
 
 	// chess
 	struct ChessCoordinate;
