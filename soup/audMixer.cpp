@@ -5,8 +5,6 @@
 #include "audPlayback.hpp"
 #include "audSound.hpp"
 
-#include <iostream>
-
 namespace soup
 {
 	void audMixer::setOutput(audPlayback& pb)
