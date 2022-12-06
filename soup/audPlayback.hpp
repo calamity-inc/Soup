@@ -9,7 +9,6 @@
 
 #include <atomic>
 
-#include "AllocRaii.hpp"
 #include "Thread.hpp"
 
 namespace soup
