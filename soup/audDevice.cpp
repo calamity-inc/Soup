@@ -26,6 +26,11 @@ namespace soup
 		};
 	}
 
+	audDevice audDevice::getDefault()
+	{
+		return get(0);
+	}
+
 	std::vector<audDevice> audDevice::getAll()
 	{
 		std::vector<audDevice> res;

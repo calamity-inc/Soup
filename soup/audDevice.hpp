@@ -32,6 +32,7 @@ namespace soup
 		}
 
 		[[nodiscard]] static audDevice get(int i);
+		[[nodiscard]] static audDevice getDefault();
 		[[nodiscard]] static std::vector<audDevice> getAll();
 
 		[[nodiscard]] std::string getName() const;
