@@ -15,6 +15,12 @@ namespace soup
 		{
 		}
 
+		AllocRaii(AllocRaiiLocalBase&& b) noexcept
+			: AllocRaiiLocalBase(b.addr)
+		{
+			b.addr = nullptr;
+		}
+
 		~AllocRaii() noexcept
 		{
 			release();

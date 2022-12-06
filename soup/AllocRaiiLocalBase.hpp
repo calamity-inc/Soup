@@ -16,6 +16,7 @@ namespace soup
 		{
 		}
 
+		AllocRaiiLocalBase(const AllocRaiiLocalBase&) = delete;
 		AllocRaiiLocalBase(AllocRaiiLocalBase&&) = delete;
 	};
 }
