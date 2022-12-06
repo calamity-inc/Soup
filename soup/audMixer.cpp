@@ -33,7 +33,7 @@ namespace soup
 				i->start = t;
 			}
 			double t_for_sound = (t - i->start);
-			if (t_for_sound >= i->sound->getDuration())
+			if (t_for_sound >= i->sound->getDurationSeconds())
 			{
 				if (!i->loop)
 				{
