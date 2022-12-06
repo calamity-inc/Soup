@@ -19,7 +19,7 @@ namespace soup
 	constexpr int BLOCK_BUFFER_BYTES = (BLOCK_SAMPLES * sizeof(sample_t));
 	constexpr int HEAP_SIZE = (NUM_BLOCKS * (sizeof(WAVEHDR) + BLOCK_BUFFER_BYTES));
 	constexpr double TIME_STEP = (1.0 / (double)SAMPLE_RATE);
-	constexpr sample_t MAX_SAMPLE = ((1 << ((sizeof(sample_t) * 8) - 1)) - 1);
+	constexpr sample_t MAX_SAMPLE = ((1ull << ((sizeof(sample_t) * 8) - 1)) - 1);
 
 	audPlayback::audPlayback(const audDevice& dev, audGetAmplitude src)
 		: heap(malloc(HEAP_SIZE)),
