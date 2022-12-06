@@ -2,6 +2,9 @@
 
 #include "base.hpp"
 
+// This is not impossible to port to Linux.
+// In fact, ALSA seems to provide a very similar API: https://github.com/Barracuda72/synth/blob/master/LinuxSoundSynthesizer/NoiseMaker.h#L60
+// But my Linux machines are either headless or glorified web browsers.
 #if SOUP_WINDOWS
 #pragma comment(lib, "winmm.lib")
 
