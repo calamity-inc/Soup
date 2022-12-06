@@ -442,6 +442,7 @@
     <ClInclude Include="audMixer.hpp" />
     <ClInclude Include="audPlayback.hpp" />
     <ClInclude Include="audSound.hpp" />
+    <ClInclude Include="aud_math.hpp" />
     <ClInclude Include="base40.hpp" />
     <ClInclude Include="BigintId.hpp" />
     <ClInclude Include="BitString.hpp" />
@@ -509,6 +510,7 @@
     <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="memObject.hpp" />
     <ClInclude Include="memVft.hpp" />
+    <ClInclude Include="morse.hpp" />
     <ClInclude Include="netAs.hpp" />
     <ClInclude Include="Asn1Element.hpp" />
     <ClInclude Include="Asn1Sequence.hpp" />
@@ -863,6 +865,7 @@
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />
+    <ClCompile Include="morse.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="rflParser.cpp" />

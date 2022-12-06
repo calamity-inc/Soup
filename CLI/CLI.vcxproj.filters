@@ -10,6 +10,7 @@
     <ClCompile Include="cli_websrv.cpp" />
     <ClCompile Include="cli_maze.cpp" />
     <ClCompile Include="cli_dig.cpp" />
+    <ClCompile Include="cli_morse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

@@ -150,6 +150,11 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "morse")
+		{
+			return cli_morse(argc - 2, &argv[2]);
+		}
+
 		if (subcommand == "qr")
 		{
 			if (argc != 3)
@@ -220,6 +225,7 @@ Available tools:
 - geoip [ip]
 - inquire
 - maze
+- morse [key|encode [text]] <--silent>
 - qr [contents]
 - repl
 - script [.cpp file]

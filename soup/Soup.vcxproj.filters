@@ -1152,6 +1152,12 @@
     <ClInclude Include="audSound.hpp">
       <Filter>audio</Filter>
     </ClInclude>
+    <ClInclude Include="morse.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="aud_math.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1691,6 +1697,9 @@
     </ClCompile>
     <ClCompile Include="audMixer.cpp">
       <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="morse.cpp">
+      <Filter>data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

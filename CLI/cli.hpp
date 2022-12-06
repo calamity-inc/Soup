@@ -4,6 +4,7 @@ void cli_3d();
 void cli_dig(int argc, const char** argv);
 void cli_dvd();
 void cli_maze();
+int cli_morse(int argc, const char** argv);
 void cli_repl();
 void cli_snake();
 void cli_test();
