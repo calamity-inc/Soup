@@ -50,6 +50,8 @@ namespace soup
 	audPlayback::~audPlayback()
 	{
 		free(heap);
+
+		waveOutClose(hWaveOut);
 	}
 
 	void audPlayback::awaitCompletion() noexcept
