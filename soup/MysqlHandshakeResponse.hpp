@@ -18,7 +18,7 @@ namespace soup
 			return s.u32(client_capabilities)
 				&& s.u32(max_packet)
 				&& s.u8(charset)
-				&& s.ignore(23)
+				&& s.skip(23)
 				&& s.str_nt(username)
 				&& s.str_lp_mysql(password)
 				&& s.str_nt(client_auth_plugin)

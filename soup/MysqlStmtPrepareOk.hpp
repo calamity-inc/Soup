@@ -16,7 +16,7 @@ namespace soup
 			return s.u32(stmt_id)
 				&& s.u16(num_columns)
 				&& s.u16(num_params)
-				&& s.ignore(1)
+				&& s.skip(1)
 				&& s.u16(num_warnings)
 				;
 		}

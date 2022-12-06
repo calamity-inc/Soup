@@ -17,7 +17,7 @@ namespace soup
 	public:
 		[[nodiscard]] virtual bool hasMore() = 0;
 
-		bool ignore(size_t len)
+		bool skip(size_t len)
 		{
 			std::string v;
 			return str(len, v);
