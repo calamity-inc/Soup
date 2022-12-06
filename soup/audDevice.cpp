@@ -22,7 +22,8 @@ namespace soup
 		}
 		return audDevice{
 			i,
-			woc.szPname
+			woc.szPname,
+			woc.wChannels
 		};
 	}
 

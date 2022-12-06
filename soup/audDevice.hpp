@@ -24,10 +24,11 @@ namespace soup
 		int i;
 	private:
 		std::wstring name;
-
 	public:
-		audDevice(int i, std::wstring&& name)
-			: i(i), name(std::move(name))
+		uint16_t max_channels;
+
+		audDevice(int i, std::wstring&& name, uint16_t max_channels)
+			: i(i), name(std::move(name)), max_channels(max_channels)
 		{
 		}
 
