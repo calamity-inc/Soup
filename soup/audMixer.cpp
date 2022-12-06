@@ -9,9 +9,12 @@ namespace soup
 {
 	void audMixer::setOutput(audPlayback& pb)
 	{
-		pb.src = [](audPlayback& pb)
+		pb.src = [](audPlayback& pb, audSample* block)
 		{
-			return reinterpret_cast<audMixer*>(pb.user_data)->getAmplitude(pb);
+			pb.fillBlockImpl(block, [](audPlayback& pb)
+			{
+				return reinterpret_cast<audMixer*>(pb.user_data)->getAmplitude(pb);
+			});
 		};
 		pb.user_data = this;
 	}

@@ -2,18 +2,23 @@
 
 #include <iostream>
 
+#include <audDevice.hpp>
+#include <audPlayback.hpp>
 #include <Canvas.hpp>
 #include <ChessCli.hpp>
 #include <CompiledExecutable.hpp>
 #include <country_names.hpp>
 #include <console.hpp>
 #include <Editor.hpp>
+#include <FileReader.hpp>
 #include <InquiryLang.hpp>
 #include <netIntel.hpp>
 #include <os.hpp>
 #include <QrCode.hpp>
+#include <riff.hpp>
 #include <string.hpp>
 #include <unicode.hpp>
+#include <WavFmtChunk.hpp>
 
 using namespace soup;
 
@@ -203,6 +208,43 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "wav")
+		{
+#if SOUP_WINDOWS
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup wav [file]" << std::endl;
+				return 0;
+			}
+			static FileReader fr(argv[2]);
+			RiffReader rr(fr);
+			if (rr.seekChunk("fmt ").isValid())
+			{
+				WavFmtChunk fmt;
+				fmt.read(fr);
+				if (fmt.isGoodForAudPlayback()
+					&& rr.seekChunk("data").isValid()
+					)
+				{
+					auto dev = audDevice::getDefault();
+					std::cout << "WAV is good, playing on " << dev.getName() << "\n";
+					auto pb = dev.open(fmt.channels, [](audPlayback&, audSample* block)
+					{
+						std::string data;
+						fr.str(AUD_BLOCK_BYTES, data);
+						memcpy(block, data.data(), data.size());
+					});
+					pb->awaitCompletion();
+					return 0;
+				}
+			}
+			std::cout << "WAV is bad.\n";
+#else
+			std::cout << "Sorry, this only works on Windows (for now).\n";
+#endif
+			return 0;
+		}
+
 		if (subcommand == "websrv")
 		{
 			if (argc != 3)
@@ -231,6 +273,7 @@ Available tools:
 - script [.cpp file]
 - snake
 - test
+- wav [file]
 - websrv [dir]
 
 Legend: [Required] <Optional>)EOC" << std::endl;

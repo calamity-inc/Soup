@@ -14,6 +14,10 @@
 
 namespace soup
 {
+	constexpr int AUD_SAMPLE_RATE = 44100;
+
+	constexpr double AUD_TIME_STEP = (1.0 / (double)AUD_SAMPLE_RATE);
+
 	class audPlayback
 	{
 	private:
@@ -24,17 +28,15 @@ namespace soup
 		double time = 0.0;
 
 	public:
-		using on_begin_writing_block_t = void(*)(audPlayback&);
-		on_begin_writing_block_t on_begin_writing_block = nullptr;
-
 		audDevice dev;
-		audGetAmplitude src;
+		const int channels;
+		audFillBlock src;
 		void* user_data;
 
 		Thread thrd;
 		HWAVEOUT hWaveOut;
 
-		audPlayback(const audDevice& dev, audGetAmplitude src, void* user_data);
+		audPlayback(const audDevice& dev, int channels, audFillBlock src, void* user_data);
 		audPlayback(audPlayback&&) = delete; // `this` pointer must stay the same
 		~audPlayback();
 
@@ -46,6 +48,8 @@ namespace soup
 
 		void awaitCompletion() noexcept;
 		void stop() noexcept;
+		
+		void fillBlockImpl(audSample* block, audGetAmplitude src);
 
 	private:
 		[[nodiscard]] WAVEHDR* heapGetHeader(int i) const noexcept;

@@ -1158,6 +1158,12 @@
     <ClInclude Include="aud_math.hpp">
       <Filter>audio</Filter>
     </ClInclude>
+    <ClInclude Include="riff.hpp">
+      <Filter>io\riff</Filter>
+    </ClInclude>
+    <ClInclude Include="WavFmtChunk.hpp">
+      <Filter>io\riff</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1891,6 +1897,9 @@
     </Filter>
     <Filter Include="audio">
       <UniqueIdentifier>{c3b27eb2-fb78-4ba6-a084-cc0a273361ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io\riff">
+      <UniqueIdentifier>{cc6120c7-1cc4-4e7a-8380-cee6f2fa3d6c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

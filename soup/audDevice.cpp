@@ -158,17 +158,22 @@ namespace soup
 		return unicode::utf16_to_utf8(name);
 	}
 
-	UniquePtr<audPlayback> audDevice::open() const
+	UniquePtr<audPlayback> audDevice::open(int channels) const
 	{
-		return open([](audPlayback&)
+		return open(channels, [](audPlayback&, audSample* block)
 		{
-			return 0.0;
+			memset(block, 0, AUD_BLOCK_SAMPLES);
 		});
 	}
 
-	UniquePtr<audPlayback> audDevice::open(audGetAmplitude src, void* user_data) const
+	UniquePtr<audPlayback> audDevice::open(audFillBlock src, void* user_data) const
 	{
-		return soup::make_unique<audPlayback>(*this, src, user_data);
+		return open(1, src, user_data);
+	}
+
+	UniquePtr<audPlayback> audDevice::open(int channels, audFillBlock src, void* user_data) const
+	{
+		return soup::make_unique<audPlayback>(*this, channels, src, user_data);
 	}
 }
 

@@ -9,21 +9,13 @@ namespace soup
 {
 	// Kudos to https://github.com/OneLoneCoder/synth and https://gist.github.com/seungin/4779216eada24a5077ca1c5e857239ce
 
-	using sample_t = int16_t;
-
-	constexpr int SAMPLE_RATE = 44100;
-	constexpr int CHANNELS = 1;
 	constexpr int NUM_BLOCKS = 8;
-	constexpr int BLOCK_SAMPLES = 512;
 
-	constexpr int BLOCK_BUFFER_BYTES = (BLOCK_SAMPLES * sizeof(sample_t));
-	constexpr int HEAP_SIZE = (NUM_BLOCKS * (sizeof(WAVEHDR) + BLOCK_BUFFER_BYTES));
-	constexpr double TIME_STEP = (1.0 / (double)SAMPLE_RATE);
-	constexpr sample_t MAX_SAMPLE = ((1ull << ((sizeof(sample_t) * 8) - 1)) - 1);
+	constexpr int HEAP_SIZE = (NUM_BLOCKS * (sizeof(WAVEHDR) + AUD_BLOCK_BYTES));
 
-	audPlayback::audPlayback(const audDevice& dev, audGetAmplitude src, void* user_data)
+	audPlayback::audPlayback(const audDevice& dev, int channels, audFillBlock src, void* user_data)
 		: heap(malloc(HEAP_SIZE)),
-		dev(dev), src(src), user_data(user_data),
+		dev(dev), channels(channels), src(src), user_data(user_data),
 		thrd(&threadFuncStatic, this)
 	{
 		ZeroMemory(heap, HEAP_SIZE);
@@ -31,16 +23,16 @@ namespace soup
 		for (auto i = 0; i != NUM_BLOCKS; ++i)
 		{
 			auto hdr = heapGetHeader(i);
-			hdr->dwBufferLength = BLOCK_BUFFER_BYTES;
+			hdr->dwBufferLength = AUD_BLOCK_BYTES;
 			hdr->lpData = reinterpret_cast<LPSTR>(heapGetBuffer(i));
 		}
 
 		WAVEFORMATEX wfx;
 		wfx.wFormatTag = WAVE_FORMAT_PCM;
-		wfx.nSamplesPerSec = SAMPLE_RATE;
-		wfx.wBitsPerSample = sizeof(sample_t) * 8;
-		wfx.nChannels = CHANNELS;
-		wfx.nBlockAlign = (wfx.wBitsPerSample * CHANNELS) >> 3;
+		wfx.nSamplesPerSec = AUD_SAMPLE_RATE;
+		wfx.wBitsPerSample = sizeof(audSample) * 8;
+		wfx.nChannels = channels;
+		wfx.nBlockAlign = sizeof(audSample) * channels;
 		wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
 		wfx.cbSize = 0;
 
@@ -64,6 +56,18 @@ namespace soup
 		thrd.stop();
 	}
 
+	void audPlayback::fillBlockImpl(audSample* block, audGetAmplitude src)
+	{
+		for (int i = 0; i != AUD_BLOCK_SAMPLES; i += channels)
+		{
+			for (int c = 0; c != channels; ++c)
+			{
+				block[i + c] = static_cast<audSample>(src(*this) * AUD_MAX_SAMPLE);
+			}
+			time += AUD_TIME_STEP;
+		}
+	}
+
 	WAVEHDR* audPlayback::heapGetHeader(int i) const noexcept
 	{
 		return reinterpret_cast<WAVEHDR*>(reinterpret_cast<uintptr_t>(heap) + (i * sizeof(WAVEHDR)));
@@ -71,7 +75,7 @@ namespace soup
 
 	void* audPlayback::heapGetBuffer(int i) const noexcept
 	{
-		return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(heap) + (NUM_BLOCKS * sizeof(WAVEHDR)) + (i * BLOCK_BUFFER_BYTES));
+		return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(heap) + (NUM_BLOCKS * sizeof(WAVEHDR)) + (i * AUD_BLOCK_BYTES));
 	}
 
 	void audPlayback::threadFuncStatic(Capture&& cap)
@@ -96,19 +100,7 @@ namespace soup
 				waveOutUnprepareHeader(hWaveOut, hdr, sizeof(WAVEHDR));
 			}
 
-			if (on_begin_writing_block)
-			{
-				on_begin_writing_block(*this);
-			}
-
-			for (int i = 0; i != BLOCK_SAMPLES; i += CHANNELS)
-			{
-				for (int c = 0; c != CHANNELS; ++c)
-				{
-					reinterpret_cast<sample_t*>(buf)[i + c] = static_cast<sample_t>(src(*this) * MAX_SAMPLE);
-				}
-				time += TIME_STEP;
-			}
+			src(*this, reinterpret_cast<audSample*>(buf));
 
 			waveOutPrepareHeader(hWaveOut, hdr, sizeof(WAVEHDR));
 			waveOutWrite(hWaveOut, hdr, sizeof(WAVEHDR));
