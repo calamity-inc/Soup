@@ -25,10 +25,12 @@ namespace soup
 	public:
 		audDevice dev;
 		audGetAmplitude src;
+		void* user_data;
+
 		Thread thrd;
 		HWAVEOUT hWaveOut;
 
-		audPlayback(const audDevice& dev, audGetAmplitude src);
+		audPlayback(const audDevice& dev, audGetAmplitude src, void* user_data);
 		audPlayback(audPlayback&&) = delete; // `this` pointer must stay the same
 		~audPlayback();
 

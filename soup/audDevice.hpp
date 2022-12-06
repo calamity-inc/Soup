@@ -36,7 +36,7 @@ namespace soup
 		[[nodiscard]] static std::vector<audDevice> getAll();
 
 		[[nodiscard]] std::string getName() const;
-		UniquePtr<audPlayback> open(audGetAmplitude src) const;
+		UniquePtr<audPlayback> open(audGetAmplitude src, void* user_data = nullptr) const;
 	};
 }
 

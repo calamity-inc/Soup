@@ -21,9 +21,10 @@ namespace soup
 	constexpr double TIME_STEP = (1.0 / (double)SAMPLE_RATE);
 	constexpr sample_t MAX_SAMPLE = ((1ull << ((sizeof(sample_t) * 8) - 1)) - 1);
 
-	audPlayback::audPlayback(const audDevice& dev, audGetAmplitude src)
+	audPlayback::audPlayback(const audDevice& dev, audGetAmplitude src, void* user_data)
 		: heap(malloc(HEAP_SIZE)),
-		dev(dev), src(src), thrd(&threadFuncStatic, this)
+		dev(dev), src(src), user_data(user_data),
+		thrd(&threadFuncStatic, this)
 	{
 		ZeroMemory(heap, HEAP_SIZE);
 
