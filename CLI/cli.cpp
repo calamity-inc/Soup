@@ -228,8 +228,13 @@ int main(int argc, const char** argv)
 				{
 					auto dev = audDevice::getDefault();
 					std::cout << "WAV is good, playing on " << dev.getName() << "\n";
-					auto pb = dev.open(fmt.channels, [](audPlayback&, audSample* block)
+					auto pb = dev.open(fmt.channels, [](audPlayback& pb, audSample* block)
 					{
+						if (!fr.hasMore())
+						{
+							pb.stop();
+							return;
+						}
 						std::string data;
 						fr.str(AUD_BLOCK_BYTES, data);
 						memcpy(block, data.data(), data.size());
