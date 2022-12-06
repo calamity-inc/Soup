@@ -438,6 +438,8 @@
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="audDevice.hpp" />
+    <ClInclude Include="audPlayback.hpp" />
     <ClInclude Include="base40.hpp" />
     <ClInclude Include="BigintId.hpp" />
     <ClInclude Include="BitString.hpp" />
@@ -817,6 +819,8 @@
     <ClCompile Include="Asn1Identifier.cpp" />
     <ClCompile Include="Asn1Sequence.cpp" />
     <ClCompile Include="AssemblyBuilder.cpp" />
+    <ClCompile Include="audDevice.cpp" />
+    <ClCompile Include="audPlayback.cpp" />
     <ClCompile Include="base32.cpp" />
     <ClCompile Include="base58.cpp" />
     <ClCompile Include="base64.cpp" />

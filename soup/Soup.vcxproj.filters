@@ -1140,6 +1140,12 @@
     <ClInclude Include="CApiUtil.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="audDevice.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="audPlayback.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1671,6 +1677,12 @@
     <ClCompile Include="cbMeasurement.cpp">
       <Filter>ling\chatbot</Filter>
     </ClCompile>
+    <ClCompile Include="audDevice.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="audPlayback.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1858,6 +1870,9 @@
     </Filter>
     <Filter Include="ling\chatbot">
       <UniqueIdentifier>{fb1ff912-9766-484b-92a8-d22cd7b0ef54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio">
+      <UniqueIdentifier>{c3b27eb2-fb78-4ba6-a084-cc0a273361ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

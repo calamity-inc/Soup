@@ -7,6 +7,9 @@ namespace soup
 	// algos.rng.interface
 	struct RngInterface;
 
+	// audio
+	class audPlayback;
+
 	// chess
 	struct ChessCoordinate;
 
