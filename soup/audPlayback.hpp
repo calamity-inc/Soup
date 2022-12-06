@@ -9,6 +9,7 @@
 
 #include <atomic>
 
+#include "Notifyable.hpp"
 #include "Thread.hpp"
 
 namespace soup
@@ -17,6 +18,7 @@ namespace soup
 	{
 	private:
 		std::atomic_int free_blocks = 0;
+		Notifyable block_available;
 		int current_block = 0;
 		void* const heap;
 		double time = 0.0;

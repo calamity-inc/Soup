@@ -83,7 +83,7 @@ namespace soup
 		{
 			while (free_blocks == 0)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				block_available.wait();
 			}
 
 			auto hdr = heapGetHeader(current_block);
@@ -124,10 +124,12 @@ namespace soup
 		if (msg == WOM_OPEN)
 		{
 			free_blocks = NUM_BLOCKS;
+			block_available.notify_one();
 		}
 		else if (msg == WOM_DONE)
 		{
 			++free_blocks;
+			block_available.notify_one();
 		}
 	}
 }
