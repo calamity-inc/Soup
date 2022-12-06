@@ -9,6 +9,12 @@ namespace soup
 	public:
 		using Reader::Reader;
 
+		bool skip(size_t len)
+		{
+			seek(getPosition() + len);
+			return true;
+		}
+
 		[[nodiscard]] virtual size_t getPosition() = 0;
 
 		virtual void seek(size_t pos) = 0;
