@@ -19,12 +19,14 @@ namespace soup
 		};
 		std::vector<PlayingSound> playing_sounds{};
 
+		bool stop_playback_when_no_sounds_are_playing = false;
+
 		void setOutput(audPlayback& pb);
 
 		void playSound(audSound* sound, bool loop = false);
 
 	protected:
-		[[nodiscard]] double getAmplitude(double t) noexcept;
+		[[nodiscard]] double getAmplitude(audPlayback& pb) noexcept;
 	};
 }
 #endif

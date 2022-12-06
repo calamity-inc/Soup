@@ -13,7 +13,7 @@ namespace soup
 	{
 		pb.src = [](audPlayback& pb)
 		{
-			return reinterpret_cast<audMixer*>(pb.user_data)->getAmplitude(pb.getTime());
+			return reinterpret_cast<audMixer*>(pb.user_data)->getAmplitude(pb);
 		};
 		pb.user_data = this;
 	}
@@ -23,8 +23,10 @@ namespace soup
 		playing_sounds.emplace_back(PlayingSound{ sound, loop });
 	}
 
-	double audMixer::getAmplitude(double t) noexcept
+	double audMixer::getAmplitude(audPlayback& pb) noexcept
 	{
+		const double t = pb.getTime();
+
 		double a = 0.0;
 		for (auto i = playing_sounds.begin(); i != playing_sounds.end(); )
 		{
@@ -38,6 +40,12 @@ namespace soup
 				if (!i->loop)
 				{
 					i = playing_sounds.erase(i);
+					if (stop_playback_when_no_sounds_are_playing
+						&& playing_sounds.empty()
+						)
+					{
+						pb.stop();
+					}
 					continue;
 				}
 				i->start = t;
