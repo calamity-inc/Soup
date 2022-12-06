@@ -99,9 +99,12 @@ namespace soup
 				on_begin_writing_block(*this);
 			}
 
-			for (int i = 0; i != BLOCK_SAMPLES; ++i)
+			for (int i = 0; i != BLOCK_SAMPLES; i += CHANNELS)
 			{
-				reinterpret_cast<sample_t*>(buf)[i] = static_cast<sample_t>(src(*this) * MAX_SAMPLE);
+				for (int c = 0; c != CHANNELS; ++c)
+				{
+					reinterpret_cast<sample_t*>(buf)[i + c] = static_cast<sample_t>(src(*this) * MAX_SAMPLE);
+				}
 				time += TIME_STEP;
 			}
 
