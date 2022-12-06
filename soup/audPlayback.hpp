@@ -23,6 +23,9 @@ namespace soup
 		double time = 0.0;
 
 	public:
+		using on_begin_writing_block_t = void(*)(audPlayback&);
+		on_begin_writing_block_t on_begin_writing_block = nullptr;
+
 		audDevice dev;
 		audGetAmplitude src;
 		void* user_data;

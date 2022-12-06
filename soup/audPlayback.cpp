@@ -94,6 +94,11 @@ namespace soup
 				waveOutUnprepareHeader(hWaveOut, hdr, sizeof(WAVEHDR));
 			}
 
+			if (on_begin_writing_block)
+			{
+				on_begin_writing_block(*this);
+			}
+
 			for (int i = 0; i != BLOCK_SAMPLES; ++i)
 			{
 				reinterpret_cast<sample_t*>(buf)[i] = static_cast<sample_t>(src(*this) * MAX_SAMPLE);
