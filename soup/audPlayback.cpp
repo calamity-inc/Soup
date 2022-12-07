@@ -13,10 +13,8 @@ namespace soup
 
 	constexpr int HEAP_SIZE = (NUM_BLOCKS * (sizeof(WAVEHDR) + AUD_BLOCK_BYTES));
 
-	audPlayback::audPlayback(const audDevice& dev, int channels, audFillBlock src, void* user_data)
-		: heap(malloc(HEAP_SIZE)),
-		dev(dev), channels(channels), src(src), user_data(user_data),
-		thrd(&threadFuncStatic, this)
+	audPlayback::audPlayback()
+		: heap(malloc(HEAP_SIZE)), thrd(&threadFuncStatic, this)
 	{
 		ZeroMemory(heap, HEAP_SIZE);
 
@@ -26,6 +24,31 @@ namespace soup
 			hdr->dwBufferLength = AUD_BLOCK_BYTES;
 			hdr->lpData = reinterpret_cast<LPSTR>(heapGetBuffer(i));
 		}
+	}
+
+	audPlayback::~audPlayback()
+	{
+		free(heap);
+
+		waveOutClose(hWaveOut);
+	}
+
+	void audPlayback::open(const audDevice& dev, int channels)
+	{
+		return open(dev, channels, &fillBlockSilenceSrc);
+	}
+	
+	void audPlayback::open(const audDevice& dev, audFillBlock src, void* user_data)
+	{
+		return open(dev, 1, src, user_data);
+	}
+
+	void audPlayback::open(const audDevice& dev, int channels, audFillBlock src, void* user_data)
+	{
+		this->dev = dev;
+		this->channels = channels;
+		this->src = src;
+		this->user_data = user_data;
 
 		WAVEFORMATEX wfx;
 		wfx.wFormatTag = WAVE_FORMAT_PCM;
@@ -35,15 +58,7 @@ namespace soup
 		wfx.nBlockAlign = sizeof(audSample) * channels;
 		wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
 		wfx.cbSize = 0;
-
 		waveOutOpen(&hWaveOut, dev.i, &wfx, reinterpret_cast<DWORD_PTR>(&waveCallbackStatic), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION);
-	}
-
-	audPlayback::~audPlayback()
-	{
-		free(heap);
-
-		waveOutClose(hWaveOut);
 	}
 
 	bool audPlayback::isRunning() const noexcept
@@ -59,6 +74,16 @@ namespace soup
 	void audPlayback::stop() noexcept
 	{
 		thrd.stop();
+	}
+
+	void audPlayback::fillBlockSilence(audSample* block)
+	{
+		memset(block, 0, AUD_BLOCK_BYTES);
+	}
+
+	void audPlayback::fillBlockSilenceSrc(audPlayback&, audSample* block)
+	{
+		fillBlockSilence(block);
 	}
 
 	void audPlayback::fillBlockImpl(audSample* block, audGetAmplitude src)

@@ -160,20 +160,23 @@ namespace soup
 
 	UniquePtr<audPlayback> audDevice::open(int channels) const
 	{
-		return open(channels, [](audPlayback&, audSample* block)
-		{
-			memset(block, 0, AUD_BLOCK_SAMPLES);
-		});
+		auto pb = soup::make_unique<audPlayback>();
+		pb->open(*this, channels);
+		return pb;
 	}
 
 	UniquePtr<audPlayback> audDevice::open(audFillBlock src, void* user_data) const
 	{
-		return open(1, src, user_data);
+		auto pb = soup::make_unique<audPlayback>();
+		pb->open(*this, src, user_data);
+		return pb;
 	}
 
 	UniquePtr<audPlayback> audDevice::open(int channels, audFillBlock src, void* user_data) const
 	{
-		return soup::make_unique<audPlayback>(*this, channels, src, user_data);
+		auto pb = soup::make_unique<audPlayback>();
+		pb->open(*this, channels, src, user_data);
+		return pb;
 	}
 }
 

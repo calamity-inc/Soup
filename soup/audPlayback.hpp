@@ -29,16 +29,20 @@ namespace soup
 
 	public:
 		audDevice dev;
-		const int channels;
-		audFillBlock src;
+		int channels;
+		audFillBlock src = &fillBlockSilenceSrc;
 		void* user_data;
 
 		Thread thrd;
 		HWAVEOUT hWaveOut;
 
-		audPlayback(const audDevice& dev, int channels, audFillBlock src, void* user_data);
+		audPlayback();
 		audPlayback(audPlayback&&) = delete; // `this` pointer must stay the same
 		~audPlayback();
+
+		void open(const audDevice& dev, int channels = 1);
+		void open(const audDevice& dev, audFillBlock src, void* user_data = nullptr);
+		void open(const audDevice& dev, int channels, audFillBlock src, void* user_data = nullptr);
 
 		// Returns time in seconds since playback began.
 		[[nodiscard]] constexpr double getTime() const noexcept
@@ -50,6 +54,8 @@ namespace soup
 		void awaitCompletion() noexcept;
 		void stop() noexcept;
 		
+		static void fillBlockSilence(audSample* block);
+		static void fillBlockSilenceSrc(audPlayback&, audSample* block);
 		void fillBlockImpl(audSample* block, audGetAmplitude src);
 
 	private:
