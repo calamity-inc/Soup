@@ -33,6 +33,11 @@ namespace soup
 		waveOutClose(hWaveOut);
 	}
 
+	static CALLBACK void waveCallbackStatic(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+	{
+		reinterpret_cast<audPlayback*>(dwInstance)->waveCallback(uMsg);
+	}
+
 	void audPlayback::open(const audDevice& dev, int channels)
 	{
 		return open(dev, channels, &fillBlockSilenceSrc);
@@ -143,11 +148,6 @@ namespace soup
 			current_block += 1;
 			current_block %= NUM_BLOCKS;
 		}
-	}
-
-	__stdcall void audPlayback::waveCallbackStatic(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
-	{
-		reinterpret_cast<audPlayback*>(dwInstance)->waveCallback(uMsg);
 	}
 
 	void audPlayback::waveCallback(UINT msg)

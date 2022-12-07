@@ -64,8 +64,8 @@ namespace soup
 
 		static void threadFuncStatic(Capture&& cap);
 		void threadFunc();
-
-		static __stdcall void waveCallbackStatic(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2);
+		
+	public:
 		void waveCallback(UINT msg);
 	};
 }
