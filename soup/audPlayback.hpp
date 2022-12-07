@@ -7,9 +7,6 @@
 #include <Windows.h>
 #include <mmeapi.h>
 
-#include <atomic>
-
-#include "Notifyable.hpp"
 #include "Thread.hpp"
 
 namespace soup
@@ -18,11 +15,12 @@ namespace soup
 
 	constexpr double AUD_TIME_STEP = (1.0 / (double)AUD_SAMPLE_RATE);
 
+	struct waveOutData;
+
 	class audPlayback
 	{
 	private:
-		std::atomic_int free_blocks = 0;
-		Notifyable block_available;
+		waveOutData* wod = nullptr;
 		int current_block = 0;
 		void* const heap;
 		double time = 0.0;
@@ -64,9 +62,6 @@ namespace soup
 
 		static void threadFuncStatic(Capture&& cap);
 		void threadFunc();
-		
-	public:
-		void waveCallback(UINT msg);
 	};
 }
 
