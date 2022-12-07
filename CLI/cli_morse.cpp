@@ -85,7 +85,7 @@ void cli_morse_encode(const char* arg, bool silent)
 		std::cout << "Playing on " << dev.getName() << "\n";
 		auto pb = dev.open();
 		audMixer mix;
-		mix.stop_playback_when_no_sounds_are_playing = true;
+		mix.stop_playback_when_done = true;
 		mix.setOutput(*pb);
 		mix.playSound(&seq);
 		pb->awaitCompletion();

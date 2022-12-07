@@ -46,7 +46,7 @@ namespace soup
 				if (!i->loop)
 				{
 					i = playing_sounds.erase(i);
-					if (stop_playback_when_no_sounds_are_playing
+					if (stop_playback_when_done
 						&& playing_sounds.empty()
 						)
 					{

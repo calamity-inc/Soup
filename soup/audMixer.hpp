@@ -19,7 +19,7 @@ namespace soup
 		};
 
 		std::vector<PlayingSound> playing_sounds{};
-		bool stop_playback_when_no_sounds_are_playing = false;
+		bool stop_playback_when_done = false;
 		bool kill_pb_on_next_block = false;
 
 		void setOutput(audPlayback& pb);
