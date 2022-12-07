@@ -66,9 +66,11 @@ namespace soup
 		waveOutOpen(&hWaveOut, dev.i, &wfx, reinterpret_cast<DWORD_PTR>(&waveCallbackStatic), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION);
 	}
 
-	bool audPlayback::isRunning() const noexcept
+	bool audPlayback::isPlaying() const noexcept
 	{
-		return thrd.isRunning();
+		return thrd.isRunning()
+			|| free_blocks != NUM_BLOCKS
+			;
 	}
 
 	void audPlayback::awaitCompletion() noexcept

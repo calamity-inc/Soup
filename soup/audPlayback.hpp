@@ -50,7 +50,7 @@ namespace soup
 			return time;
 		}
 
-		[[nodiscard]] bool isRunning() const noexcept;
+		[[nodiscard]] bool isPlaying() const noexcept;
 		void awaitCompletion() noexcept;
 		void stop() noexcept;
 
