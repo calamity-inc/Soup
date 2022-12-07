@@ -11,6 +11,11 @@ namespace soup
 	{
 		pb.src = [](audPlayback& pb, audSample* block)
 		{
+			if (reinterpret_cast<audMixer*>(pb.user_data)->kill_pb_on_next_block)
+			{
+				pb.stop();
+				return;
+			}
 			pb.fillBlockImpl(block, [](audPlayback& pb)
 			{
 				return reinterpret_cast<audMixer*>(pb.user_data)->getAmplitude(pb);
@@ -45,7 +50,7 @@ namespace soup
 						&& playing_sounds.empty()
 						)
 					{
-						pb.stop();
+						kill_pb_on_next_block = true;
 					}
 					continue;
 				}

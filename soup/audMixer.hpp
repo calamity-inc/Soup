@@ -17,9 +17,10 @@ namespace soup
 			bool loop;
 			double start = 0.0;
 		};
-		std::vector<PlayingSound> playing_sounds{};
 
+		std::vector<PlayingSound> playing_sounds{};
 		bool stop_playback_when_no_sounds_are_playing = false;
+		bool kill_pb_on_next_block = false;
 
 		void setOutput(audPlayback& pb);
 
