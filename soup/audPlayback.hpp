@@ -46,6 +46,7 @@ namespace soup
 			return time;
 		}
 
+		[[nodiscard]] bool isRunning() const noexcept;
 		void awaitCompletion() noexcept;
 		void stop() noexcept;
 		

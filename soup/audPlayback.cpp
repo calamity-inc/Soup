@@ -46,6 +46,11 @@ namespace soup
 		waveOutClose(hWaveOut);
 	}
 
+	bool audPlayback::isRunning() const noexcept
+	{
+		return thrd.isRunning();
+	}
+
 	void audPlayback::awaitCompletion() noexcept
 	{
 		thrd.awaitCompletion();
