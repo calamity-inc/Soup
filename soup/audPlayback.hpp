@@ -53,7 +53,7 @@ namespace soup
 		[[nodiscard]] bool isRunning() const noexcept;
 		void awaitCompletion() noexcept;
 		void stop() noexcept;
-		
+
 		static void fillBlockSilence(audSample* block);
 		static void fillBlockSilenceSrc(audPlayback&, audSample* block);
 		void fillBlockImpl(audSample* block, audGetAmplitude src);
