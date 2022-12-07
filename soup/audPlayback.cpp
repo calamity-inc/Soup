@@ -69,6 +69,10 @@ namespace soup
 	void audPlayback::awaitCompletion() noexcept
 	{
 		thrd.awaitCompletion();
+		while (free_blocks != NUM_BLOCKS)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
 	}
 
 	void audPlayback::stop() noexcept
