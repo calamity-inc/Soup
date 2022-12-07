@@ -67,7 +67,7 @@ namespace soup
 		[[nodiscard]] std::time_t getDuration() const noexcept;
 
 		// from audSound:
-		[[nodiscard]] double getAmplitude(double t) const noexcept final;
+		[[nodiscard]] double getAmplitude(double t) const final;
 		[[nodiscard]] double getDurationSeconds() const noexcept final;
 	};
 
@@ -113,6 +113,6 @@ namespace soup
 
 
 		// from audSound:
-		[[nodiscard]] double getAmplitude(double t) const noexcept final;
+		[[nodiscard]] double getAmplitude(double t) const final;
 	};
 }
