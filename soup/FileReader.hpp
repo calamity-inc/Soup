@@ -61,6 +61,7 @@ namespace soup
 		void seek(size_t pos) final
 		{
 			s.seekg(pos);
+			s.clear();
 		}
 
 		void seekEnd() final

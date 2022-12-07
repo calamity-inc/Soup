@@ -442,6 +442,7 @@
     <ClInclude Include="audMixer.hpp" />
     <ClInclude Include="audPlayback.hpp" />
     <ClInclude Include="audSound.hpp" />
+    <ClInclude Include="audWav.hpp" />
     <ClInclude Include="aud_math.hpp" />
     <ClInclude Include="base40.hpp" />
     <ClInclude Include="BigintId.hpp" />
@@ -828,6 +829,7 @@
     <ClCompile Include="audDevice.cpp" />
     <ClCompile Include="audMixer.cpp" />
     <ClCompile Include="audPlayback.cpp" />
+    <ClCompile Include="audWav.cpp" />
     <ClCompile Include="base32.cpp" />
     <ClCompile Include="base58.cpp" />
     <ClCompile Include="base64.cpp" />
