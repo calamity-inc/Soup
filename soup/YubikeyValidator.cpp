@@ -35,7 +35,7 @@ namespace soup
 			if (res.has_value())
 			{
 				std::map<std::string, std::string> kv_map{};
-				string::replace_all(res->body, "\r\n", "\n");
+				string::replaceAll(res->body, "\r\n", "\n");
 				for (const auto& line : string::explode(res->body, '\n'))
 				{
 					auto sep = line.find('=');

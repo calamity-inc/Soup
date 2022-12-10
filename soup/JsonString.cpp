@@ -109,10 +109,10 @@ namespace soup
 	std::string JsonString::encode() const
 	{
 		std::string str{ value };
-		string::replace_all(str, "\\", "\\\\");
-		string::replace_all(str, "\"", "\\\"");
-		string::replace_all(str, "\r", "\\r");
-		string::replace_all(str, "\n", "\\n");
+		string::replaceAll(str, "\\", "\\\\");
+		string::replaceAll(str, "\"", "\\\"");
+		string::replaceAll(str, "\r", "\\r");
+		string::replaceAll(str, "\n", "\\n");
 		str.insert(0, 1, '"');
 		str.push_back('"');
 		return str;

@@ -61,8 +61,8 @@ int main()
 		std::string line_name = code_file;
 		line_name.push_back(':');
 		line_name.append(std::to_string(state.line_offset));
-		soup::string::replace_all(compile_output, line_name, "[code]");
-		soup::string::replace_all(compile_output, code_file, "[repl]");
+		soup::string::replaceAll(compile_output, line_name, "[code]");
+		soup::string::replaceAll(compile_output, code_file, "[repl]");
 		std::cout << compile_output;
 	}
 	if (std::filesystem::is_regular_file(comp_res.exe_file))

@@ -22,7 +22,7 @@ namespace soup
 		std::string password_sha1_sha1 = sha1::hash(password_sha1);
 		salt.append(password_sha1_sha1);
 		salt = sha1::hash(std::move(salt));
-		return string::xor_same_length(password_sha1, salt);
+		return string::xorSameLength(password_sha1, salt);
 	}
 
 	[[nodiscard]] static std::string mysqlHumaniseErrPacket(std::string&& data)

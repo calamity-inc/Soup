@@ -65,8 +65,8 @@ namespace soup
 
 	void os::escapeNoCheck(std::string& str)
 	{
-		string::replace_all(str, "\\", "\\\\");
-		string::replace_all(str, "\"", "\\\"");
+		string::replaceAll(str, "\\", "\\\\");
+		string::replaceAll(str, "\"", "\\\"");
 		str.insert(0, 1, '"');
 		str.push_back('"');
 	}

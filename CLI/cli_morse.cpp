@@ -39,7 +39,7 @@ int cli_morse_key(bool silent)
 		rt.fill(Rgb::BLACK);
 		auto pattern = mk.seq.toPattern();
 		rt.drawText(5, 50, Morse::decode(pattern), RasterFont::simple5(), Rgb::WHITE, 5);
-		string::replace_all(pattern, "-", "_");
+		string::replaceAll(pattern, "-", "_");
 		rt.drawText(5, 5, pattern, RasterFont::simple5(), Rgb::WHITE, 5);
 	});
 	w.setKeyCallback([](Window w, char32_t c, bool down, bool repeat)

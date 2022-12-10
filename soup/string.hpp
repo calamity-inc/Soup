@@ -17,7 +17,7 @@ namespace soup
 
 	private:
 		template <typename Str, typename Int, uint8_t Base>
-		[[nodiscard]] static Str from_int_impl_ascii(Int _i)
+		[[nodiscard]] static Str fromIntImplAscii(Int _i)
 		{
 			if (_i == 0)
 			{
@@ -59,7 +59,7 @@ namespace soup
 		template <typename Str = std::string, typename Int>
 		[[nodiscard]] static Str decimal(Int i) // prefer std::to_string if possible as it's more optimsed
 		{
-			return from_int_impl_ascii<Str, Int, 10>(i);
+			return fromIntImplAscii<Str, Int, 10>(i);
 		}
 
 		template <typename Float>
@@ -85,7 +85,7 @@ namespace soup
 		template <typename Str = std::string, typename Int>
 		[[nodiscard]] static Str binary(Int i)
 		{
-			return from_int_impl_ascii<Str, Int, 2>(i);
+			return fromIntImplAscii<Str, Int, 2>(i);
 		}
 
 		template <typename Int>
@@ -95,7 +95,13 @@ namespace soup
 		}
 
 		template <typename Int>
-		[[nodiscard]] static std::string hex_lower(Int i)
+		[[deprecated]] static std::string hex_lower(Int i)
+		{
+			return hexLower(i);
+		}
+
+		template <typename Int>
+		[[nodiscard]] static std::string hexLower(Int i)
 		{
 			return fromIntWithMap<std::string, Int, 16>(i, charset_hex_lower);
 		}
@@ -370,7 +376,23 @@ namespace soup
 		// string mutation
 
 		template <class S>
-		static void replace_all(S& str, const S& from, const S& to) noexcept
+		[[deprecated]] static void replace_all(S& str, const S& from, const S& to) noexcept
+		{
+			replaceAll(str, from, to);
+		}
+
+		[[deprecated]] static void replace_all(std::string& str, const std::string& from, const std::string& to) noexcept
+		{
+			return replaceAll<std::string>(str, from, to);
+		}
+
+		[[deprecated]] static void replace_all(std::wstring& str, const std::wstring& from, const std::wstring& to) noexcept
+		{
+			return replaceAll<std::wstring>(str, from, to);
+		}
+
+		template <class S>
+		static void replaceAll(S& str, const S& from, const S& to) noexcept
 		{
 			size_t start_pos = 0;
 			while ((start_pos = str.find(from, start_pos)) != S::npos)
@@ -380,14 +402,32 @@ namespace soup
 			}
 		}
 
-		static void replace_all(std::string& str, const std::string& from, const std::string& to) noexcept
+		static void replaceAll(std::string& str, const std::string& from, const std::string& to) noexcept
 		{
-			return replace_all<std::string>(str, from, to);
+			return replaceAll<std::string>(str, from, to);
 		}
 
-		static void replace_all(std::wstring& str, const std::wstring& from, const std::wstring& to) noexcept
+		static void replaceAll(std::wstring& str, const std::wstring& from, const std::wstring& to) noexcept
 		{
-			return replace_all<std::wstring>(str, from, to);
+			return replaceAll<std::wstring>(str, from, to);
+		}
+
+		template <class S>
+		[[nodiscard]] static S replaceAll(const S& str, const S& from, const S& to) noexcept
+		{
+			S cpy(str);
+			replaceAll(cpy, from, to);
+			return cpy;
+		}
+
+		[[nodiscard]] static std::string replaceAll(const std::string& str, const std::string& from, const std::string& to) noexcept
+		{
+			return replaceAll<std::string>(str, from, to);
+		}
+
+		[[nodiscard]] static std::wstring replaceAll(const std::wstring& str, const std::wstring& from, const std::wstring& to) noexcept
+		{
+			return replaceAll<std::wstring>(str, from, to);
 		}
 
 		template <typename S>
@@ -511,7 +551,7 @@ namespace soup
 		// target = " "
 		// out str = "a b"
 		template <typename T>
-		static void limit_last(T& str, const T& target)
+		static void limitLast(T& str, const T& target)
 		{
 			if (size_t i = str.find_last_of(target); i != T::npos)
 			{
@@ -559,7 +599,7 @@ namespace soup
 		}
 
 		[[nodiscard]] static std::string _xor(const std::string& l, const std::string& r); // Did you know that "xor" was a C++ keyword?
-		[[nodiscard]] static std::string xor_same_length(const std::string& l, const std::string& r);
+		[[nodiscard]] static std::string xorSameLength(const std::string& l, const std::string& r);
 
 		// char mutation
 

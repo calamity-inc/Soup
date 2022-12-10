@@ -63,7 +63,7 @@ namespace soup
 		return res;
 	}
 
-	std::string string::xor_same_length(const std::string& l, const std::string& r)
+	std::string string::xorSameLength(const std::string& l, const std::string& r)
 	{
 		std::string res(l.size(), '\0');
 		for (size_t i = 0; i != l.size(); ++i)
