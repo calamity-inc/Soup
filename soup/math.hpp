@@ -24,16 +24,16 @@ namespace soup
 		// Stolen from https://stackoverflow.com/a/1505791
 		// Could be better: https://stackoverflow.com/a/101613 (also see comments)
 		// Tho this should still work for ints and floats.
-		if (p == 0)
+		if (p == T(0))
 		{
 			return 1;
 		}
-		if (p == 1)
+		if (p == T(1))
 		{
 			return x;
 		}
-		auto tmp = pow(x, p / 2);
-		if (p % 2 == 0)
+		auto tmp = pow(x, p / T(2));
+		if (p % T(2) == T(0))
 		{
 			return tmp * tmp;
 		}
