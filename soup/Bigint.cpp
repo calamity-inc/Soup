@@ -1078,6 +1078,8 @@ namespace soup
 		auto [high1, low1] = splitAt(half);
 		auto [high2, low2] = b.splitAt(half);
 
+		// Future consideration: Call into main multiply function and let it decide if karatsuba is still best to recurse further.
+		// Then could also remove base-case here.
 		Bigint p1 = high1.multiplyKaratsubaUnsigned(high2/*, recursions + 1*/);
 		Bigint p2 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
 		Bigint p3 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
