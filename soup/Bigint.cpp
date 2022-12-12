@@ -1072,7 +1072,7 @@ namespace soup
 			return multiplySimple(b);
 		}
 
-		size_t half = std::min<size_t>(getBitLength(), b.getBitLength()) >> 1;
+		size_t half = std::min<size_t>(getNumBits(), b.getNumBits()) >> 1;
 
 		auto [high1, low1] = splitAt(half);
 		auto [high2, low2] = b.splitAt(half);
