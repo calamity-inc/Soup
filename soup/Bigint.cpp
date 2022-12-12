@@ -1017,9 +1017,12 @@ namespace soup
 		Bigint product{};
 		if (!isZero() && !b.isZero())
 		{
-			product.negative = (negative ^ b.negative);
 			const auto nc = getNumChunks();
 			const auto b_nc = b.getNumChunks();
+#if !SOUP_BIGINT_USE_INTVECTOR
+			product.chunks.reserve(nc + b_nc);
+#endif
+			product.negative = (negative ^ b.negative);
 			for (size_t j = 0; j != b_nc; ++j)
 			{
 				chunk_t carry = 0;
