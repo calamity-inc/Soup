@@ -1072,7 +1072,8 @@ namespace soup
 			return multiplySimple(b);
 		}
 
-		size_t half = std::min<size_t>(getNumBits(), b.getNumBits()) >> 1;
+		size_t half = std::min<size_t>(getNumChunks(), b.getNumChunks()) >> 1;
+		size_t half_bits = (half * getBitsPerChunk());
 
 		auto [high1, low1] = splitAt(half);
 		auto [high2, low2] = b.splitAt(half);
@@ -1081,9 +1082,9 @@ namespace soup
 		Bigint p2 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
 		Bigint p3 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
 
-		Bigint res = (p1 << half);
+		Bigint res = (p1 << half_bits);
 		res += (p3 - p1 - p2);
-		res <<= half;
+		res <<= half_bits;
 		res += p2;
 		return res;
 	}
@@ -1506,12 +1507,20 @@ namespace soup
 		return y;
 	}
 
-	std::pair<Bigint, Bigint> Bigint::splitAt(size_t bit) const
+	std::pair<Bigint, Bigint> Bigint::splitAt(size_t chunk) const
 	{
-		auto hi = (*this >> bit);
+		Bigint hi, lo;
 
-		Bigint lo;
-		lo.copyFirstBits(*this, bit);
+		size_t i = 0;
+		for (; i != chunk; ++i)
+		{
+			lo.setChunk(i, getChunkInbounds(i));
+		}
+
+		for (size_t j = 0; i != getNumChunks(); ++i, ++j)
+		{
+			hi.setChunk(j, getChunkInbounds(i));
+		}
 
 		return { std::move(hi), std::move(lo) };
 	}

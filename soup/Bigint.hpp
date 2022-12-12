@@ -214,7 +214,7 @@ namespace soup
 		[[nodiscard]] std::pair<Bigint, Bigint> factorise() const;
 		[[nodiscard]] Bigint sqrtCeil() const;
 		[[nodiscard]] Bigint sqrtFloor() const;
-		[[nodiscard]] std::pair<Bigint, Bigint> splitAt(size_t bit) const;
+		[[nodiscard]] std::pair<Bigint, Bigint> splitAt(size_t chunk) const;
 
 		// Operations under a modulus
 		[[nodiscard]] Bigint modMulInv(const Bigint& m) const; // *this ^ -1 mod m
