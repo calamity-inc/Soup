@@ -1,10 +1,10 @@
 #include "Bigint.hpp"
 
-#include "RngInterface.hpp"
 #include "Bitset.hpp"
 #include "branchless.hpp"
 #include "Endian.hpp"
 #include "rand.hpp"
+#include "RngInterface.hpp"
 #include "string.hpp"
 
 namespace soup
