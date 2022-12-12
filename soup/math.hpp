@@ -19,17 +19,24 @@ namespace soup
 	}
 
 	template <typename T>
-	[[nodiscard]] constexpr T pow(T a, T b) // b must be >= 0
+	[[nodiscard]] constexpr T pow(T x, T p) // b must be >= 0
 	{
-		if (b == 0)
+		// Stolen from https://stackoverflow.com/a/1505791
+		// Could be better: https://stackoverflow.com/a/101613 (also see comments)
+		// Tho this should still work for ints and floats.
+		if (p == 0)
 		{
 			return 1;
 		}
-		T res = a;
-		while (--b)
+		if (p == 1)
 		{
-			res *= a;
+			return x;
 		}
-		return res;
+		auto tmp = pow(x, p / 2);
+		if (p % 2 == 0)
+		{
+			return tmp * tmp;
+		}
+		return x * tmp * tmp;
 	}
 }
