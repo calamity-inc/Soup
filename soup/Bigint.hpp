@@ -2,15 +2,19 @@
 
 #include "base.hpp"
 
+#ifndef SOUP_BIGINT_USE_INTVECTOR
+#define SOUP_BIGINT_USE_INTVECTOR SOUP_WINDOWS
+#endif
+
 #include <string>
 #include <utility> // pair
-#if !SOUP_WINDOWS
+#if !SOUP_BIGINT_USE_INTVECTOR
 #include <vector>
 #endif
 
 #include "fwd.hpp"
 
-#if SOUP_WINDOWS
+#if SOUP_BIGINT_USE_INTVECTOR
 #include "IntVector.hpp"
 #endif
 #include "stringifyable.hpp"
@@ -24,7 +28,7 @@ namespace soup
 		using chunk_signed_t = halfintmax_t;
 
 	private:
-#if SOUP_WINDOWS
+#if SOUP_BIGINT_USE_INTVECTOR
 		IntVector<chunk_t> chunks{};
 #else
 		std::vector<chunk_t> chunks{};

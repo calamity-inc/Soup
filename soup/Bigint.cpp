@@ -258,7 +258,7 @@ namespace soup
 			{
 				break;
 			}
-#if SOUP_WINDOWS
+#if SOUP_BIGINT_USE_INTVECTOR
 			chunks.erase(i);
 #else
 			chunks.erase(chunks.cbegin() + i);
@@ -570,7 +570,7 @@ namespace soup
 		}
 		else
 		{
-#if SOUP_WINDOWS
+#if SOUP_BIGINT_USE_INTVECTOR
 			chunks.clear();
 			chunks.emplace_back((chunk_t)v);
 			chunks.emplace_back(carry);
