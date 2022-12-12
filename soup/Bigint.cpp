@@ -1077,6 +1077,12 @@ namespace soup
 			+ (z1 - z2 - z0).multiplySimple(_2pow(m2))
 			+ z0
 			;
+
+		// Since we are multiplying by powers of two, another way to put it would be this, but that's surprisingly slower:
+		/*return (z2 << (m2 << 1))
+			+ ((z1 - z2 - z0) << m2)
+			+ z0
+			;*/
 	}
 
 	Bigint Bigint::operator/(const Bigint& b) const
