@@ -398,6 +398,22 @@ namespace soup
 		chunks[chunk_i] &= ~(1 << j);
 	}
 
+	void Bigint::copyFirstBits(const Bigint& b, size_t num)
+	{
+		const size_t num_chunks = (num / getBitsPerChunk());
+
+		size_t i = 0;
+		for (; i != num_chunks; ++i)
+		{
+			setChunk(i, b.getChunk(i));
+		}
+		i *= getBitsPerChunk();
+		for (; i != num; ++i)
+		{
+			setBit(i, b.getBit(i));
+		}
+	}
+
 	void Bigint::reset() noexcept
 	{
 		chunks.clear();
@@ -979,6 +995,15 @@ namespace soup
 
 	Bigint Bigint::operator*(const Bigint& b) const
 	{
+		/*if (getNumBits() >= 1024 && b.getNumBits() >= 1024)
+		{
+			return multiplyKaratsuba(b);
+		}*/
+		return multiplySimple(b);
+	}
+
+	Bigint Bigint::multiplySimple(const Bigint& b) const
+	{
 		Bigint product{};
 		if (!isZero() && !b.isZero())
 		{
@@ -1003,6 +1028,55 @@ namespace soup
 			}
 		}
 		return product;
+	}
+
+	Bigint Bigint::multiplyKaratsuba(const Bigint& b) const
+	{
+		if (negative)
+		{
+			Bigint cpy(*this);
+			cpy.negative = false;
+			auto product = cpy.multiplyKaratsuba(b);
+			product.negative ^= true;
+			return product;
+		}
+		if (b.negative)
+		{
+			Bigint cpy(b);
+			cpy.negative = false;
+			auto product = cpy.multiplyKaratsuba(*this);
+			product.negative ^= true;
+			return product;
+		}
+		return multiplyKaratsubaUnsigned(b);
+	}
+
+	Bigint Bigint::multiplyKaratsubaUnsigned(const Bigint& b/*, size_t recursions*/) const
+	{
+		//std::cout << std::string(recursions * 2, ' ') << toString() << " * " << b.toString() << "\n";
+
+		if (getNumChunks() < 2
+			|| b.getNumChunks() < 2
+			)
+		{
+			return multiplySimple(b);
+		}
+
+		size_t m = std::min<size_t>(getBitLength(), b.getBitLength());
+		size_t m2 = m >> 1; // floor(m / 2)
+
+		auto [high1, low1] = splitAt(m2);
+		auto [high2, low2] = b.splitAt(m2);
+
+		Bigint z0 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
+		Bigint z1 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
+		Bigint z2 = high1.multiplyKaratsubaUnsigned(high2/*, recursions + 1*/);
+
+		// Would stack overflow if these also used karatsuba
+		return z2.multiplySimple(_2pow(m2 << 1))
+			+ (z1 - z2 - z0).multiplySimple(_2pow(m2))
+			+ z0
+			;
 	}
 
 	Bigint Bigint::operator/(const Bigint& b) const
@@ -1421,6 +1495,16 @@ namespace soup
 		}
 
 		return y;
+	}
+
+	std::pair<Bigint, Bigint> Bigint::splitAt(size_t bit) const
+	{
+		auto hi = (*this >> bit);
+
+		Bigint lo;
+		lo.copyFirstBits(*this, bit);
+
+		return { std::move(hi), std::move(lo) };
 	}
 
 	Bigint Bigint::modMulInv(const Bigint& m) const

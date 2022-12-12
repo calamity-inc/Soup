@@ -112,6 +112,7 @@ namespace soup
 		void setBitInbounds(const size_t i, const bool v);
 		void enableBitInbounds(const size_t i);
 		void disableBitInbounds(const size_t i);
+		void copyFirstBits(const Bigint& b, size_t num);
 
 		void reset() noexcept;
 		[[nodiscard]] bool isZero() const noexcept;
@@ -172,6 +173,10 @@ namespace soup
 		Bigint& operator--();
 		[[nodiscard]] Bigint operator--(int);
 		[[nodiscard]] Bigint operator*(const Bigint& b) const;
+		[[nodiscard]] Bigint multiplySimple(const Bigint& b) const;
+		// Karatsuba's method is supposed to be faster for 1024-bit integers, tho it's exponentially slower here. Maybe if it relied less on recursions?
+		[[nodiscard]] Bigint multiplyKaratsuba(const Bigint& b) const;
+		[[nodiscard]] Bigint multiplyKaratsubaUnsigned(const Bigint& b/*, size_t recursions = 0*/) const;
 		[[nodiscard]] Bigint operator/(const Bigint& b) const;
 		[[nodiscard]] Bigint operator%(const Bigint& b) const;
 		[[nodiscard]] Bigint operator<<(size_t b) const;
@@ -209,6 +214,7 @@ namespace soup
 		[[nodiscard]] std::pair<Bigint, Bigint> factorise() const;
 		[[nodiscard]] Bigint sqrtCeil() const;
 		[[nodiscard]] Bigint sqrtFloor() const;
+		[[nodiscard]] std::pair<Bigint, Bigint> splitAt(size_t bit) const;
 
 		// Operations under a modulus
 		[[nodiscard]] Bigint modMulInv(const Bigint& m) const; // *this ^ -1 mod m
