@@ -1077,14 +1077,15 @@ namespace soup
 		auto [high1, low1] = splitAt(half);
 		auto [high2, low2] = b.splitAt(half);
 
-		Bigint z0 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
-		Bigint z1 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
-		Bigint z2 = high1.multiplyKaratsubaUnsigned(high2/*, recursions + 1*/);
+		Bigint p1 = high1.multiplyKaratsubaUnsigned(high2/*, recursions + 1*/);
+		Bigint p2 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
+		Bigint p3 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
 
-		return (z2 << (half << 1))
-			+ ((z1 - z2 - z0) << half)
-			+ z0
-			;
+		Bigint res = (p1 << half);
+		res += (p3 - p1 - p2);
+		res <<= half;
+		res += p2;
+		return res;
 	}
 
 	Bigint Bigint::operator/(const Bigint& b) const
