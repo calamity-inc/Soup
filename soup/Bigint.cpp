@@ -799,6 +799,16 @@ namespace soup
 
 	void Bigint::operator<<=(const size_t b)
 	{
+		if ((b % getBitsPerChunk()) == 0)
+		{
+#if SOUP_BIGINT_USE_INTVECTOR
+			chunks.emplaceZeroesFront(b / getBitsPerChunk());
+#else
+			chunks.insert(chunks.begin(), b / getBitsPerChunk(), 0);
+#endif
+			return;
+		}
+
 		if (b <= getBitsPerChunk())
 		{
 			return leftShiftSmall(b);
@@ -1072,17 +1082,10 @@ namespace soup
 		Bigint z1 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
 		Bigint z2 = high1.multiplyKaratsubaUnsigned(high2/*, recursions + 1*/);
 
-		// Would stack overflow if these also used karatsuba
-		return z2.multiplySimple(_2pow(m2 << 1))
-			+ (z1 - z2 - z0).multiplySimple(_2pow(m2))
-			+ z0
-			;
-
-		// Since we are multiplying by powers of two, another way to put it would be this, but that's surprisingly slower:
-		/*return (z2 << (m2 << 1))
+		return (z2 << (m2 << 1))
 			+ ((z1 - z2 - z0) << m2)
 			+ z0
-			;*/
+			;
 	}
 
 	Bigint Bigint::operator/(const Bigint& b) const

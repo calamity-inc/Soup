@@ -7,8 +7,9 @@
 namespace soup
 {
 	template <typename T>
-	struct IntVector
+	class IntVector
 	{
+	public:
 		size_t num_elms = 0;
 		size_t max_elms = 0;
 		T* data;
@@ -88,18 +89,27 @@ namespace soup
 			return data[idx];
 		}
 
+		void emplaceZeroesFront(size_t elms) noexcept
+		{
+			SOUP_IF_UNLIKELY (num_elms + elms > max_elms)
+			{
+				// not optimal for performance, we'd memcpy twice, luckily this path is pretty cold
+				makeSpaceForMoreElements();
+				if (num_elms + elms > max_elms)
+				{
+					// this is also a possibility if elms >= 0x1000, shit will hit the fan...
+				}
+			}
+			memmove(&data[elms], &data[0], num_elms * sizeof(T));
+			memset(&data[0], 0, elms * sizeof(T));
+			num_elms += elms;
+		}
+
 		void emplace_back(T val) noexcept
 		{
 			if (num_elms == max_elms)
 			{
-				const auto old_data = branchless::trinary<T*>(max_elms == 0, nullptr, data);
-				max_elms += (0x1000 / sizeof(T));
-				data = (T*)malloc(max_elms * sizeof(T));
-				memcpy(data, old_data, num_elms * sizeof(T));
-				if (old_data != nullptr)
-				{
-					::free(old_data);
-				}
+				makeSpaceForMoreElements();
 			}
 			data[num_elms] = val;
 			++num_elms;
@@ -129,7 +139,19 @@ namespace soup
 			}
 		}
 
-	private:
+	protected:
+		void makeSpaceForMoreElements() noexcept
+		{
+			const auto old_data = branchless::trinary<T*>(max_elms == 0, nullptr, data);
+			max_elms += (0x1000 / sizeof(T));
+			data = (T*)malloc(max_elms * sizeof(T));
+			memcpy(data, old_data, num_elms * sizeof(T));
+			if (old_data != nullptr)
+			{
+				::free(old_data);
+			}
+		}
+
 		void free() noexcept
 		{
 			if (max_elms != 0)
