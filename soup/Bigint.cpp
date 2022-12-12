@@ -1082,10 +1082,13 @@ namespace soup
 		Bigint p2 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
 		Bigint p3 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
 
+		p3.subUnsigned(p1);
+		p3.subUnsigned(p2);
+
 		Bigint res = (p1 << half_bits);
-		res += (p3 - p1 - p2);
+		res.addUnsigned(p3);
 		res <<= half_bits;
-		res += p2;
+		res.addUnsigned(p2);
 		return res;
 	}
 
