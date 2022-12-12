@@ -1072,18 +1072,17 @@ namespace soup
 			return multiplySimple(b);
 		}
 
-		size_t m = std::min<size_t>(getBitLength(), b.getBitLength());
-		size_t m2 = m >> 1; // floor(m / 2)
+		size_t half = std::min<size_t>(getBitLength(), b.getBitLength()) >> 1;
 
-		auto [high1, low1] = splitAt(m2);
-		auto [high2, low2] = b.splitAt(m2);
+		auto [high1, low1] = splitAt(half);
+		auto [high2, low2] = b.splitAt(half);
 
 		Bigint z0 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
 		Bigint z1 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
 		Bigint z2 = high1.multiplyKaratsubaUnsigned(high2/*, recursions + 1*/);
 
-		return (z2 << (m2 << 1))
-			+ ((z1 - z2 - z0) << m2)
+		return (z2 << (half << 1))
+			+ ((z1 - z2 - z0) << half)
 			+ z0
 			;
 	}
