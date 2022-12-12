@@ -113,6 +113,12 @@ namespace soup
 			}
 		}
 
+		void eraseFirst(size_t num) noexcept
+		{
+			num_elms -= num;
+			memcpy(&data[0], &data[num], num_elms * sizeof(T));
+		}
+
 		void clear() noexcept
 		{
 			num_elms = 0;

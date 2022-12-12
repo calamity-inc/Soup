@@ -53,7 +53,7 @@ namespace soup
 			return reinterpret_cast<const T*>(this)->modPow(enc).toBinary();
 		}
 
-		// With 2048-bit private key, OpenSSL takes ~0.001 ms. Soup takes 23.6-24.3 ms. What the fuck?
+		// With 2048-bit private key, OpenSSL takes ~0.001 ms. Soup takes ~12.4 ms. What the fuck?
 		[[nodiscard]] std::string decryptPkcs1(const Bigint& enc) const
 		{
 			auto msg = decryptUnpadded(enc);

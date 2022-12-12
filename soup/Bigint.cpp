@@ -879,18 +879,37 @@ namespace soup
 			}
 		}
 
-		size_t nb = getNumBits();
-		if (nb != 0)
+		if ((b % getBitsPerChunk()) == 0)
 		{
-			for (size_t i = 0; i != nb; ++i)
+			auto chunks_to_erase = b / getBitsPerChunk();
+			if (chunks_to_erase < getNumChunks())
 			{
-				setBitInbounds(i, getBit(i + b));
+#if SOUP_BIGINT_USE_INTVECTOR
+				chunks.eraseFirst(chunks_to_erase);
+#else
+				chunks.erase(chunks.begin(), chunks.begin() + chunks_to_erase);
+#endif
 			}
-			for (size_t i = nb, j = 0; --i, j != b; ++j)
+			else
 			{
-				disableBitInbounds(i);
+				reset();
 			}
-			shrink();
+		}
+		else
+		{
+			size_t nb = getNumBits();
+			if (nb != 0)
+			{
+				for (size_t i = 0; i != nb; ++i)
+				{
+					setBitInbounds(i, getBit(i + b));
+				}
+				for (size_t i = nb, j = 0; --i, j != b; ++j)
+				{
+					disableBitInbounds(i);
+				}
+				shrink();
+			}
 		}
 	}
 
