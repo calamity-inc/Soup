@@ -129,16 +129,6 @@ namespace soup
 			memcpy(&data[0], &data[num], num_elms * sizeof(T));
 		}
 
-		void clear() noexcept
-		{
-			num_elms = 0;
-			if (max_elms != 0)
-			{
-				max_elms = 0;
-				::free(data);
-			}
-		}
-
 		void preallocate() noexcept
 		{
 			if (max_elms == 0)
@@ -161,6 +151,23 @@ namespace soup
 			}
 		}
 
+	public:
+		void clear() noexcept
+		{
+			num_elms = 0;
+		}
+
+		void reset() noexcept
+		{
+			clear();
+			if (max_elms != 0)
+			{
+				max_elms = 0;
+				::free(data);
+			}
+		}
+
+	protected:
 		void free() noexcept
 		{
 			if (max_elms != 0)
