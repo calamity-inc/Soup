@@ -139,6 +139,15 @@ namespace soup
 			}
 		}
 
+		void preallocate() noexcept
+		{
+			if (max_elms == 0)
+			{
+				max_elms = (0x1000 / sizeof(T));
+				data = (T*)malloc(max_elms * sizeof(T));
+			}
+		}
+
 	protected:
 		void makeSpaceForMoreElements() noexcept
 		{

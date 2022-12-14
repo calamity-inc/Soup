@@ -1019,7 +1019,9 @@ namespace soup
 		{
 			const auto nc = getNumChunks();
 			const auto b_nc = b.getNumChunks();
-#if !SOUP_BIGINT_USE_INTVECTOR
+#if SOUP_BIGINT_USE_INTVECTOR
+			product.chunks.preallocate();
+#else
 			product.chunks.reserve(nc + b_nc);
 #endif
 			product.negative = (negative ^ b.negative);
