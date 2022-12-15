@@ -221,10 +221,10 @@ namespace soup
 		static void modMulInv2Coprimes(const Bigint& a, const Bigint& m, Bigint& x, Bigint& y);
 		[[nodiscard]] Bigint modMulUnsigned(const Bigint& b, const Bigint& m) const;
 		[[nodiscard]] Bigint modMulUnsignedNotpowerof2(const Bigint& b, const Bigint& m) const;
-		[[nodiscard]] Bigint modPow(Bigint e, const Bigint& m) const;
-		[[nodiscard]] Bigint modPowMontgomery(Bigint e, const Bigint& m) const;
-		[[nodiscard]] Bigint modPowMontgomery(Bigint e, size_t re, const Bigint& r, const Bigint& m, const Bigint& r_mod_mul_inv, const Bigint& m_mod_mul_inv, const Bigint& one_mont) const;
-		[[nodiscard]] Bigint modPowBasic(Bigint e, const Bigint& m) const;
+		[[nodiscard]] Bigint modPow(const Bigint& e, const Bigint& m) const;
+		[[nodiscard]] Bigint modPowMontgomery(const Bigint& e, const Bigint& m) const;
+		[[nodiscard]] Bigint modPowMontgomery(const Bigint& e, size_t re, const Bigint& r, const Bigint& m, const Bigint& r_mod_mul_inv, const Bigint& m_mod_mul_inv, const Bigint& one_mont) const;
+		[[nodiscard]] Bigint modPowBasic(const Bigint& e, const Bigint& m) const;
 
 		// Montgomery operations, assuming an odd modulus
 		[[nodiscard]] size_t montgomeryREFromM() const;

@@ -1569,7 +1569,7 @@ namespace soup
 		return (*this * b).modUnsignedNotpowerof2(m);
 	}
 
-	Bigint Bigint::modPow(Bigint e, const Bigint& m) const
+	Bigint Bigint::modPow(const Bigint& e, const Bigint& m) const
 	{
 		if (m.isOdd()
 			&& e.getNumBits() > 32 // arbitrary choice
@@ -1580,16 +1580,16 @@ namespace soup
 		return modPowBasic(e, m);
 	}
 
-	Bigint Bigint::modPowMontgomery(Bigint e, const Bigint& m) const
+	Bigint Bigint::modPowMontgomery(const Bigint& e, const Bigint& m) const
 	{
 		auto re = m.montgomeryREFromM();
 		auto r = montgomeryRFromRE(re);
 		Bigint m_mod_mul_inv, r_mod_mul_inv;
 		modMulInv2Coprimes(m, r, m_mod_mul_inv, r_mod_mul_inv);
-		return modPowMontgomery(std::move(e), re, r, m, r_mod_mul_inv, m_mod_mul_inv, r.modUnsignedNotpowerof2(m));
+		return modPowMontgomery(e, re, r, m, r_mod_mul_inv, m_mod_mul_inv, r.modUnsignedNotpowerof2(m));
 	}
 
-	Bigint Bigint::modPowMontgomery(Bigint e, size_t re, const Bigint& r, const Bigint& m, const Bigint& r_mod_mul_inv, const Bigint& m_mod_mul_inv, const Bigint& one_mont) const
+	Bigint Bigint::modPowMontgomery(const Bigint& e, size_t re, const Bigint& r, const Bigint& m, const Bigint& r_mod_mul_inv, const Bigint& m_mod_mul_inv, const Bigint& one_mont) const
 	{
 		Bigint res = one_mont;
 		Bigint base(*this);
@@ -1598,19 +1598,19 @@ namespace soup
 			base = base.modUnsigned(m);
 		}
 		base = base.enterMontgomerySpace(r, m);
-		while (!e.isZero())
+		const auto bl = e.getBitLength();
+		for (size_t i = 0; i != bl; ++i)
 		{
-			if (e.getBit(0))
+			if (e.getBitInbounds(i))
 			{
 				res = res.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
 			}
 			base = base.montgomeryMultiplyEfficient(base, r, re, m, m_mod_mul_inv);
-			e >>= 1u;
 		}
 		return res.leaveMontgomerySpaceEfficient(r_mod_mul_inv, m);
 	}
 
-	Bigint Bigint::modPowBasic(Bigint e, const Bigint& m) const
+	Bigint Bigint::modPowBasic(const Bigint& e, const Bigint& m) const
 	{
 		Bigint base(*this);
 		if (base >= m)
@@ -1618,14 +1618,15 @@ namespace soup
 			base = base.modUnsigned(m);
 		}
 		Bigint res = Bigint((chunk_t)1u);
-		while (!e.isZero())
+		const auto bl = e.getBitLength();
+		for (size_t i = 0; i != bl; ++i) // while (e)
 		{
-			if (e.getBit(0))
+			if (e.getBitInbounds(i)) // if (e & 1)
 			{
 				res = res.modMulUnsignedNotpowerof2(base, m);
 			}
 			base = base.modMulUnsignedNotpowerof2(base, m);
-			e >>= 1u;
+			// e >>= 1
 		}
 		return res;
 	}
