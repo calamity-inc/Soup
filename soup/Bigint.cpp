@@ -1592,13 +1592,12 @@ namespace soup
 	Bigint Bigint::modPowMontgomery(Bigint e, size_t re, const Bigint& r, const Bigint& m, const Bigint& r_mod_mul_inv, const Bigint& m_mod_mul_inv, const Bigint& one_mont) const
 	{
 		Bigint res = one_mont;
-		Bigint base = enterMontgomerySpace(r, m);
-		/*bigint base(*this);
+		Bigint base(*this);
 		if (base >= m)
 		{
 			base = base.modUnsigned(m);
 		}
-		base = base.enterMontgomerySpace(r, m);*/
+		base = base.enterMontgomerySpace(r, m);
 		while (!e.isZero())
 		{
 			if (e.getBit(0))
