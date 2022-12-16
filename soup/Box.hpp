@@ -28,9 +28,9 @@ namespace soup
 
 		Box() = default;
 
-		Box(const Matrix& M, const Vector3& Extent)
+		Box(const Matrix& m, const Vector3& extent)
+			: m(m), extent(extent)
 		{
-			set(M, Extent);
 		}
 
 		// BL = Low values corner point, BH = High values corner point
@@ -44,11 +44,12 @@ namespace soup
 		{
 		}
 
-		void set(const Matrix& m, const Vector3& Extent)
+		void set(const Matrix& m, const Vector3& extent)
 		{
 			this->m = m;
-			extent = Extent;
+			this->extent = extent;
 		}
+
 		void set(const Matrix& m, const Vector3& BL, const Vector3& BH)
 		{
 			this->m = m;

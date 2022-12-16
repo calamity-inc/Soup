@@ -1167,6 +1167,9 @@
     <ClInclude Include="audWav.hpp">
       <Filter>audio</Filter>
     </ClInclude>
+    <ClInclude Include="tridText.hpp">
+      <Filter>math\3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1712,6 +1715,9 @@
     </ClCompile>
     <ClCompile Include="audWav.cpp">
       <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="tridText.cpp">
+      <Filter>math\3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
