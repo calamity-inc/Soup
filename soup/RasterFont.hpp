@@ -24,6 +24,11 @@ namespace soup
 			}
 
 			[[nodiscard]] Canvas getCanvas() const;
+
+			[[nodiscard]] bool getPixel(uint8_t x, uint8_t y) const
+			{
+				return pixels.at(x + (y * width));
+			}
 		};
 
 		uint8_t baseline_glyph_height;
