@@ -24,6 +24,18 @@ namespace soup
 	public:
 		consteval ObfusString(const char(&in)[Size])
 		{
+			initialise(in);
+		}
+
+		template <typename T = char>
+		consteval ObfusString(const T* in)
+		{
+			initialise(in);
+		}
+
+	private:
+		consteval void initialise(const char* in)
+		{
 			seed = rand.getConstexprSeed(Len);
 			LcgRng rng(seed);
 
@@ -46,7 +58,6 @@ namespace soup
 			}
 		}
 
-	private:
 		SOUP_NOINLINE void runtime_access() noexcept
 		{
 			if (seed == 0)
