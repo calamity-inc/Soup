@@ -12,7 +12,6 @@ namespace soup
 		case 4785: // xTom Limited
 		case 6233: // xTom
 		case 8100: // QuadraNet Enterprises LLC
-		case 9009: // M247 Ltd
 		case 9304: // HGC Global Communications Limited
 		case 9312: // xTom Hong Kong Limited
 		case 9335: // CAT Telecom Public Company Limited
@@ -21,7 +20,6 @@ namespace soup
 		case 12876: // ONLINE S.A.S.
 		case 13046: // ISKON INTERNET d.d. za informatiku i telekomunikacije
 		case 13213: // UK-2 Limited
-		case 16247: // M247 Ltd
 		case 20278: // Nexeon Technologies, Inc.
 		case 20473: // The Constant Company, LLC
 		case 25369: // Hydra Communications Ltd
@@ -169,6 +167,7 @@ namespace soup
 			|| slug.find("aruba") != std::string::npos
 			|| slug.find("godaddy") != std::string::npos
 			|| slug.find("oracle") != std::string::npos
+			|| slug.find("m247") != std::string::npos
 			)
 		{
 			return true;
