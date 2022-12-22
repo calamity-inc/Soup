@@ -124,7 +124,7 @@ namespace soup
 		}
 	}
 
-	void RenderTarget::drawCanvas(unsigned int x, unsigned int y, Canvas& c)
+	void RenderTarget::drawCanvas(unsigned int x, unsigned int y, const Canvas& c)
 	{
 		for (unsigned int canvas_y = 0; canvas_y != c.height; ++canvas_y)
 		{
