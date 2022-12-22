@@ -504,6 +504,7 @@
     <ClInclude Include="Jokebook.hpp" />
     <ClInclude Include="KeyGenId.hpp" />
     <ClInclude Include="LcgRng.hpp" />
+    <ClInclude Include="LexemeParser.hpp" />
     <ClInclude Include="log.hpp" />
     <ClInclude Include="logSink.hpp" />
     <ClInclude Include="logStdSink.hpp" />
@@ -866,6 +867,7 @@
     <ClCompile Include="Jokebook.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
     <ClCompile Include="LcgRng.cpp" />
+    <ClCompile Include="LexemeParser.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="memObject.cpp" />

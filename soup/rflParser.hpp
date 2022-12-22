@@ -1,18 +1,13 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "LexemeParser.hpp"
 
 #include "fwd.hpp"
-#include "Lexeme.hpp"
 
 namespace soup
 {
-	struct rflParser
+	struct rflParser : public LexemeParser
 	{
-		std::vector<Lexeme> tks;
-		std::vector<Lexeme>::iterator i;
-
 		explicit rflParser(const std::string& code);
 
 		[[nodiscard]] rflType readType();
@@ -22,7 +17,6 @@ namespace soup
 		[[nodiscard]] rflStruct readStruct();
 
 		void align();
-		void advance();
 		[[nodiscard]] std::string readLiteral();
 		[[nodiscard]] std::string peekLiteral();
 	};

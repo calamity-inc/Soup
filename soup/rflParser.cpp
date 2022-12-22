@@ -9,13 +9,8 @@
 namespace soup
 {
 	rflParser::rflParser(const std::string& code)
+		: LexemeParser(LangDesc{}, code)
 	{
-		LangDesc ld;
-		/*ld.addToken("struct");
-		ld.addToken("class");
-		ld.addToken("*");*/
-		tks = ld.tokenise(code);
-		i = tks.begin();
 	}
 
 	rflType rflParser::readType()
@@ -153,11 +148,6 @@ namespace soup
 			}
 			advance();
 		}
-	}
-
-	void rflParser::advance()
-	{
-		++i;
 	}
 
 	std::string rflParser::readLiteral()

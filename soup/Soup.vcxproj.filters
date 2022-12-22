@@ -1170,6 +1170,9 @@
     <ClInclude Include="tridText.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
+    <ClInclude Include="LexemeParser.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1718,6 +1721,9 @@
     </ClCompile>
     <ClCompile Include="tridText.cpp">
       <Filter>math\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="LexemeParser.cpp">
+      <Filter>lang</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
