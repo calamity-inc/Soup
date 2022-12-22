@@ -111,3 +111,10 @@
 	using halfintmax_t = int16_t;
 	using halfsize_t = uint16_t;
 #endif
+
+// === Development helper macros
+
+#define SOUP_ASSERT(x) SOUP_IF_UNLIKELY (!(x)) { throw 0; }
+
+#define SOUP_ASSERT_ARG(x) SOUP_ASSERT(x)
+#define SOUP_ASSERT_LOGIC(x) SOUP_ASSERT(x)
