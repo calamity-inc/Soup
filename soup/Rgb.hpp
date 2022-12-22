@@ -10,9 +10,16 @@ namespace soup
 {
 	struct Rgb
 	{
-		uint8_t r = 0;
-		uint8_t g = 0;
-		uint8_t b = 0;
+		union
+		{
+			struct
+			{
+				uint8_t r;
+				uint8_t g;
+				uint8_t b;
+			};
+			uint8_t arr[3];
+		};
 
 		static const Rgb BLACK;
 		static const Rgb WHITE;
@@ -23,7 +30,10 @@ namespace soup
 		static const Rgb MAGENTA;
 		static const Rgb GRAY;
 
-		constexpr Rgb() noexcept = default;
+		constexpr Rgb() noexcept
+			: r(0), g(0), b(0)
+		{
+		}
 
 		template <typename TR, typename TG, typename TB>
 		constexpr Rgb(TR r, TG g, TB b) noexcept
@@ -60,6 +70,16 @@ namespace soup
 				soup::lerp<uint8_t>(a.g, b.g, t),
 				soup::lerp<uint8_t>(a.b, b.b, t),
 			};
+		}
+
+		[[nodiscard]] uint8_t& operator[](unsigned int i)
+		{
+			return arr[i];
+		}
+
+		[[nodiscard]] const uint8_t& operator[](unsigned int i) const
+		{
+			return arr[i];
 		}
 	};
 	static_assert(sizeof(Rgb) <= sizeof(size_t));
