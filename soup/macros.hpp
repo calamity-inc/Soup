@@ -13,3 +13,5 @@
 
 #define CONSUMER_CONTINUE return true;
 #define CONSUMER_BREAK return false;
+
+#define CONST_ASSIGN(a, b) *const_cast<std::add_pointer_t<std::remove_const_t<decltype(a)>>>(&a) = b;
