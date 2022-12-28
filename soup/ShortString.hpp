@@ -57,6 +57,11 @@ namespace soup
 			return S;
 		}
 
+		[[nodiscard]] bool empty() const noexcept
+		{
+			return m_data[0] == 0;
+		}
+		
 		[[nodiscard]] size_t size() const noexcept
 		{
 			return strlen(c_str());
