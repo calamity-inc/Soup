@@ -14,19 +14,7 @@ namespace soup
 
 	void lyoTextElement::updateFlatPos()
 	{
-		flat_x = parent->flat_x + style.margin_left;
-		flat_y = parent->flat_y;
-
-		if ((flat_x + flat_width >= parent->flat_width || !style.display_inline)
-			&& flat_x != parent->style.margin_left
-			)
-		{
-			flat_x = parent->style.margin_left;
-			flat_y += flat_height + 3;
-		}
-
-		parent->flat_x = flat_x;
-		parent->flat_y = flat_y;
+		lyoElement::updateFlatPos();
 
 		parent->flat_x += flat_width;
 		parent->flat_x += ((font.get(' ').width * style.getFontScale()) + 1);

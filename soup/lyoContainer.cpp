@@ -63,8 +63,7 @@ namespace soup
 		auto og_x = flat_x;
 		auto og_y = flat_y;
 
-		flat_x += style.margin_left;
-		flat_y += style.margin_top;
+		lyoElement::updateFlatPos();
 
 		for (auto& elm : children)
 		{
