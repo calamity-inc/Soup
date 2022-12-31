@@ -16,8 +16,8 @@ namespace soup
 
 		lyoDocument();
 
-		[[nodiscard]] static lyoDocument fromMarkup(const std::string& markup);
-		[[nodiscard]] static lyoDocument fromMarkup(const XmlTag& root);
+		[[nodiscard]] static UniquePtr<lyoDocument> fromMarkup(const std::string& markup);
+		[[nodiscard]] static UniquePtr<lyoDocument> fromMarkup(const XmlTag& root);
 
 		void propagateStyle();
 

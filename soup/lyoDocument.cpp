@@ -39,35 +39,35 @@ namespace soup
 		stylesheets.emplace_back(std::move(uas));
 	}
 
-	static void loadMarkup(lyoContainer& div, const XmlTag& tag)
+	static void loadMarkup(lyoContainer* div, const XmlTag& tag)
 	{
 		for (const auto& node : tag.children)
 		{
 			if (node->is_text)
 			{
-				auto txt = div.addText(static_cast<const XmlText*>(node.get())->contents);
+				auto txt = div->addText(static_cast<const XmlText*>(node.get())->contents);
 				txt->tag_name = tag.name;
 			}
 			else
 			{
-				auto inner_div = soup::make_unique<lyoContainer>(&div);
-				loadMarkup(*inner_div, *static_cast<const XmlTag*>(node.get()));
-				div.children.emplace_back(std::move(inner_div));
+				auto inner_div = soup::make_unique<lyoContainer>(div);
+				loadMarkup(inner_div.get(), *static_cast<const XmlTag*>(node.get()));
+				div->children.emplace_back(std::move(inner_div));
 			}
 		}
 	}
 
-	lyoDocument lyoDocument::fromMarkup(const std::string& markup)
+	UniquePtr<lyoDocument> lyoDocument::fromMarkup(const std::string& markup)
 	{
 		auto root = xml::parse(markup);
 		return fromMarkup(*root);
 	}
 
-	lyoDocument lyoDocument::fromMarkup(const XmlTag& root)
+	UniquePtr<lyoDocument> lyoDocument::fromMarkup(const XmlTag& root)
 	{
-		lyoDocument doc;
-		loadMarkup(doc, root);
-		doc.propagateStyle();
+		auto doc = soup::make_unique<lyoDocument>();
+		loadMarkup(doc.get(), root);
+		doc->propagateStyle();
 		return doc;
 	}
 
