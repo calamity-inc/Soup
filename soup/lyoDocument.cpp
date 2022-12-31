@@ -57,9 +57,14 @@ namespace soup
 
 	lyoDocument lyoDocument::fromMarkup(const std::string& markup)
 	{
-		lyoDocument doc;
 		auto root = xml::parse(markup);
-		loadMarkup(doc, *root);
+		return fromMarkup(*root);
+	}
+
+	lyoDocument lyoDocument::fromMarkup(const XmlTag& root)
+	{
+		lyoDocument doc;
+		loadMarkup(doc, root);
 		doc.propagateStyle();
 		return doc;
 	}
