@@ -39,18 +39,20 @@ namespace soup
 		stylesheets.emplace_back(std::move(uas));
 	}
 
-	static void loadMarkup(lyoDocument& doc, const XmlTag& tag)
+	static void loadMarkup(lyoContainer& div, const XmlTag& tag)
 	{
 		for (const auto& node : tag.children)
 		{
 			if (node->is_text)
 			{
-				auto txt = doc.addText(static_cast<const XmlText*>(node.get())->contents);
+				auto txt = div.addText(static_cast<const XmlText*>(node.get())->contents);
 				txt->tag_name = tag.name;
 			}
 			else
 			{
-				loadMarkup(doc, *static_cast<const XmlTag*>(node.get()));
+				auto inner_div = soup::make_unique<lyoContainer>(&div);
+				loadMarkup(*inner_div, *static_cast<const XmlTag*>(node.get()));
+				div.children.emplace_back(std::move(inner_div));
 			}
 		}
 	}
