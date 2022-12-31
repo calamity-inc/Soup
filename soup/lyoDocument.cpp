@@ -49,9 +49,20 @@ namespace soup
 			}
 			else
 			{
-				auto inner_div = soup::make_unique<lyoContainer>(div);
-				loadMarkup(inner_div.get(), *static_cast<const XmlTag*>(node.get()));
-				div->children.emplace_back(std::move(inner_div));
+				if (static_cast<const XmlTag*>(node.get())->children.size() == 1
+					&& static_cast<const XmlTag*>(node.get())->children.at(0)->is_text
+					)
+				{
+					// Text elements _should_ only ever be children of tag elements, but this currently confuses the layout engine,
+					// so we need this branch to avoid wacky positioning.
+					loadMarkup(div, *static_cast<const XmlTag*>(node.get()));
+				}
+				else
+				{
+					auto inner_div = soup::make_unique<lyoContainer>(div);
+					loadMarkup(inner_div.get(), *static_cast<const XmlTag*>(node.get()));
+					div->children.emplace_back(std::move(inner_div));
+				}
 			}
 		}
 	}
