@@ -47,7 +47,21 @@ namespace soup
 	UniquePtr<XmlTag> xml::parse(const std::string& xml)
 	{
 		auto i = xml.begin();
-		return parse(xml, i);
+		auto tag = parse(xml, i);
+		if (i == xml.end()
+			|| ++i == xml.end()
+			)
+		{
+			return tag;
+		}
+		auto body = soup::make_unique<XmlTag>();
+		body->name = "body";
+		body->children.emplace_back(std::move(tag));
+		do
+		{
+			body->children.emplace_back(parse(xml, i));
+		} while (i != xml.end() && ++i != xml.end());
+		return body;
 	}
 
 	UniquePtr<XmlTag> xml::parse(const std::string& xml, std::string::const_iterator& i)
