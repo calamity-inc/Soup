@@ -154,12 +154,16 @@ namespace soup
 				}
 				return 0;
 
-			case WM_DESTROY:
+			case WM_CLOSE:
 				if (wc.on_close)
 				{
 					wc.on_close(Window{ hWnd });
 				}
+				return 0;
+
+			case WM_DESTROY:
 				window_configs.erase(window_config_entry);
+				PostQuitMessage(0);
 				return 0;
 			}
 		}
@@ -199,7 +203,7 @@ namespace soup
 		w.show();
 		w.onClose([](Window w)
 		{
-			endMessageLoop();
+			w.close();
 		});
 		return w;
 	}
@@ -351,7 +355,7 @@ namespace soup
 		return *this;
 	}
 
-	int Window::runMessageLoop() noexcept
+	void Window::runMessageLoop() noexcept
 	{
 		MSG msg;
 		while (GetMessage(&msg, nullptr, 0, 0))
@@ -359,12 +363,12 @@ namespace soup
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		return (int)msg.wParam;
+		//return (int)msg.wParam;
 	}
 
-	void Window::endMessageLoop(int exit_code) noexcept
+	void Window::close() noexcept
 	{
-		PostQuitMessage(exit_code);
+		PostMessage(h, WM_DESTROY, 0, 0);
 	}
 }
 #endif

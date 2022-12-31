@@ -157,7 +157,8 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "morse")
 		{
-			return cli_morse(argc - 2, &argv[2]);
+			cli_morse(argc - 2, &argv[2]);
+			return 0;
 		}
 
 		if (subcommand == "qr")

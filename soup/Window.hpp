@@ -64,8 +64,8 @@ namespace soup
 		Window& setTransparency(int a) noexcept; // 0-100. 100 is fully invisible.
 		Window& setTopmost(bool on) noexcept;
 
-		static int runMessageLoop() noexcept;
-		static void endMessageLoop(int exit_code = 0) noexcept;
+		static void runMessageLoop() noexcept;
+		void close() noexcept;
 	};
 }
 #endif

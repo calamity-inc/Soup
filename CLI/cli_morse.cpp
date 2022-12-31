@@ -16,7 +16,7 @@
 
 using namespace soup;
 
-int cli_morse_key(bool silent)
+void cli_morse_key(bool silent)
 {
 #if SOUP_WINDOWS
 	static MorseKey mk;
@@ -60,10 +60,9 @@ int cli_morse_key(bool silent)
 			}
 		}
 	});
-	return w.runMessageLoop();
+	w.runMessageLoop();
 #else
 	std::cout << "Sorry, this only works on Windows (for now).\n";
-	return 0;
 #endif
 }
 
@@ -93,7 +92,7 @@ void cli_morse_encode(const char* arg, bool silent)
 #endif
 }
 
-int cli_morse(int argc, const char** argv)
+void cli_morse(int argc, const char** argv)
 {
 	if (argc > 0)
 	{
@@ -102,16 +101,14 @@ int cli_morse(int argc, const char** argv)
 
 		if (subcommand == "key")
 		{
-			return cli_morse_key(argc > 1 && strcmp(argv[1], "--silent") == 0);
+			cli_morse_key(argc > 1 && strcmp(argv[1], "--silent") == 0);
 		}
 
 		if (subcommand == "encode" && argc > 1)
 		{
 			cli_morse_encode(argv[1], (argc > 2 && strcmp(argv[2], "--silent") == 0));
-			return 0;
 		}
 	}
 
 	std::cout << "Syntax: soup morse [key|encode [text]] <--silent>\n";
-	return 0;
 }
