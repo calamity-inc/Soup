@@ -20,6 +20,11 @@ namespace soup
 		return tag_name == selector;
 	}
 
+	void lyoElement::propagateStyle()
+	{
+		style.propagateFromParent(parent->style);
+	}
+
 	void lyoElement::updateFlatPos()
 	{
 		if (parent != nullptr)

@@ -18,6 +18,13 @@ namespace soup
 		FOR_EACH_PROP(OVERRIDE)
 	}
 
+	void lyoStyle::propagateFromParent(const lyoStyle& b) noexcept
+	{
+#define OVERRIDE_FROM_PARENT(prop) if (!prop && b.prop) prop = b.prop;
+		OVERRIDE_FROM_PARENT(font_size);
+		OVERRIDE_FROM_PARENT(color);
+	}
+
 	void lyoStyle::reset() noexcept
 	{
 #define RESET(prop) prop = {};

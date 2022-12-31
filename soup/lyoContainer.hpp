@@ -21,6 +21,9 @@ namespace soup
 		[[nodiscard]] lyoElement* querySelector(const std::string& selector);
 		[[nodiscard]] std::vector<lyoElement*> querySelectorAll(const std::string& selector);
 
+		void propagateStyle() override;
+		void propagateStyleToChildren() const;
+
 		void populateFlatDocument(lyoFlatDocument& fdoc) final;
 		void updateFlatPos() final;
 		void updateFlatSize() final;

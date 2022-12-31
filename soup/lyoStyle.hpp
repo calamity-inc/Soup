@@ -35,6 +35,7 @@ namespace soup
 		}
 
 		void overrideWith(const lyoStyle& b) noexcept;
+		void propagateFromParent(const lyoStyle& b) noexcept;
 
 		void reset() noexcept;
 	};

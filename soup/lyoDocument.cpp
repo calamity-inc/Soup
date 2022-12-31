@@ -20,22 +20,21 @@ namespace soup
 			lyoRule rule;
 			rule.selector = "body";
 			rule.style.setMargin(8);
+			rule.style.font_size = 16;
 			uas.rules.emplace_back(std::move(rule));
 		}
 		{
 			lyoRule rule;
 			rule.selector = "span";
 			rule.style.display_inline = true;
-			rule.style.font_size = 16;
 			uas.rules.emplace_back(std::move(rule));
 		}
-		{
+		/*{
 			lyoRule rule;
 			rule.selector = "p";
 			rule.style.display_inline = false;
-			rule.style.font_size = 16;
 			uas.rules.emplace_back(std::move(rule));
-		}
+		}*/
 		stylesheets.emplace_back(std::move(uas));
 	}
 
@@ -83,6 +82,8 @@ namespace soup
 				}
 			}
 		}
+
+		propagateStyleToChildren();
 	}
 
 	lyoFlatDocument lyoDocument::flatten(int width, int height)

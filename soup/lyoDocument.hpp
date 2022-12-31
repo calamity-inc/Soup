@@ -19,7 +19,7 @@ namespace soup
 		[[nodiscard]] static UniquePtr<lyoDocument> fromMarkup(const std::string& markup);
 		[[nodiscard]] static UniquePtr<lyoDocument> fromMarkup(const XmlTag& root);
 
-		void propagateStyle();
+		void propagateStyle() final;
 
 		[[nodiscard]] bool isValid() const noexcept
 		{

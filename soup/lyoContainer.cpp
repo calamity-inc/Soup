@@ -49,6 +49,20 @@ namespace soup
 		return res;
 	}
 
+	void lyoContainer::propagateStyle()
+	{
+		lyoElement::propagateStyle();
+		propagateStyleToChildren();
+	}
+
+	void lyoContainer::propagateStyleToChildren() const
+	{
+		for (auto& elm : children)
+		{
+			elm->propagateStyle();
+		}
+	}
+
 	void lyoContainer::populateFlatDocument(lyoFlatDocument& fdoc)
 	{
 		fdoc.elms.emplace_back(this);

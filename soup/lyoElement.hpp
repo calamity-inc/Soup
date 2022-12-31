@@ -33,6 +33,8 @@ namespace soup
 
 		[[nodiscard]] bool matchesSelector(const std::string& selector) const noexcept;
 
+		virtual void propagateStyle();
+
 		virtual void populateFlatDocument(lyoFlatDocument& fdoc) = 0;
 		virtual void updateFlatPos();
 		virtual void updateFlatSize() = 0;
