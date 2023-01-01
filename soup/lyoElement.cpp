@@ -1,6 +1,7 @@
 #include "lyoElement.hpp"
 
 #include "lyoContainer.hpp"
+#include "lyoFlatDocument.hpp"
 #include "RenderTarget.hpp"
 
 namespace soup
@@ -23,6 +24,11 @@ namespace soup
 	void lyoElement::propagateStyle()
 	{
 		style.propagateFromParent(parent->style);
+	}
+
+	void lyoElement::populateFlatDocument(lyoFlatDocument& fdoc)
+	{
+		fdoc.elms.emplace_back(this);
 	}
 
 	void lyoElement::updateFlatPos()

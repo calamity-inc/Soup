@@ -1,17 +1,11 @@
 #include "lyoTextElement.hpp"
 
 #include "lyoContainer.hpp"
-#include "lyoFlatDocument.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
 
 namespace soup
 {
-	void lyoTextElement::populateFlatDocument(lyoFlatDocument& fdoc)
-	{
-		fdoc.elms.emplace_back(this);
-	}
-
 	void lyoTextElement::updateFlatPos()
 	{
 		lyoElement::updateFlatPos();

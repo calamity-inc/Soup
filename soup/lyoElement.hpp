@@ -35,7 +35,7 @@ namespace soup
 
 		virtual void propagateStyle();
 
-		virtual void populateFlatDocument(lyoFlatDocument& fdoc) = 0;
+		virtual void populateFlatDocument(lyoFlatDocument& fdoc);
 		virtual void updateFlatPos();
 		virtual void updateFlatSize() = 0;
 

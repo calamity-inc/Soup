@@ -18,7 +18,6 @@ namespace soup
 		{
 		}
 
-		void populateFlatDocument(lyoFlatDocument& fdoc) final;
 		void updateFlatPos() final;
 		void updateFlatSize() final;
 
