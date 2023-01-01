@@ -4,6 +4,11 @@
 #include "lyoTextElement.hpp"
 #include "unicode.hpp"
 
+#if LYO_DEBUG_POS
+#include "format.hpp"
+#include "log.hpp"
+#endif
+
 namespace soup
 {
 	lyoTextElement* lyoContainer::addText(const std::string& text)
@@ -35,18 +40,18 @@ namespace soup
 	std::vector<lyoElement*> lyoContainer::querySelectorAll(const std::string& selector)
 	{
 		std::vector<lyoElement*> res{};
-		if (matchesSelector(selector))
-		{
-			res.emplace_back(this);
-		}
+		querySelectorAll(res, selector);
+		return res;
+	}
+
+	void lyoContainer::querySelectorAll(std::vector<lyoElement*>& res, const std::string& selector)
+	{
+		lyoElement::querySelectorAll(res, selector);
+
 		for (const auto& node : children)
 		{
-			if (node->matchesSelector(selector))
-			{
-				res.emplace_back(node.get());
-			}
+			node->querySelectorAll(res, selector);
 		}
-		return res;
 	}
 
 	void lyoContainer::propagateStyle()
@@ -72,27 +77,87 @@ namespace soup
 		}
 	}
 
-	void lyoContainer::updateFlatPos()
-	{
-		auto og_x = flat_x;
-		auto og_y = flat_y;
-
-		lyoElement::updateFlatPos();
-
-		for (auto& elm : children)
-		{
-			elm->updateFlatPos();
-		}
-
-		flat_x = og_x;
-		flat_y = og_y;
-	}
-
 	void lyoContainer::updateFlatSize()
 	{
+		if (parent != nullptr)
+		{
+			flat_width = parent->flat_width;
+			flat_height = parent->flat_height;
+		}
+
 		for (auto& elm : children)
 		{
 			elm->updateFlatSize();
+		}
+	}
+
+	void lyoContainer::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
+	{
+#if LYO_DEBUG_POS
+		logWriteLine(format("lyoContainer({})::updateFlatPos - Start: {}, {}", tag_name, x, y));
+#endif
+
+		// Process margins
+		lyoElement::updateFlatPos(x, y, wrap_y);
+
+#if LYO_DEBUG_POS
+		logWriteLine(format("lyoContainer({})::updateFlatPos - Margin: {}, {}", tag_name, x, y));
+#endif
+
+		// Check line wrap
+		if (parent != nullptr
+			&& !style.display_inline
+			)
+		{
+			wrapLine(x, y, wrap_y);
+
+#if LYO_DEBUG_POS
+			logWriteLine(format("lyoContainer({})::updateFlatPos - Wrap: {}, {}", tag_name, x, y));
+#endif
+		}
+
+		// Done positioning this element
+		setFlatPos(x, y);
+
+		// Position children
+		for (auto& elm : children)
+		{
+			elm->updateFlatPos(x, y, wrap_y);
+		}
+
+#if LYO_DEBUG_POS
+		logWriteLine(format("lyoContainer({})::updateFlatPos - End: {}, {}", tag_name, x, y));
+#endif
+	}
+
+	void lyoContainer::narrowFlatSize()
+	{
+		for (auto& elm : children)
+		{
+			elm->narrowFlatSize();
+		}
+
+		if (parent != nullptr)
+		{
+			flat_width = 0;
+			flat_height = 0;
+			for (auto& elm : children)
+			{
+				auto width = (elm->flat_x - flat_x) + elm->flat_width;
+				auto height = (elm->flat_y - flat_y) + elm->flat_height;
+				if (width > flat_width
+					&& width <= parent->flat_width
+					)
+				{
+					flat_width = width;
+				}
+				if (height > flat_height
+					&& height <= parent->flat_width
+					)
+				{
+					flat_height = height;
+				}
+			}
 		}
 	}
 }

@@ -21,6 +21,14 @@ namespace soup
 		return tag_name == selector;
 	}
 
+	void lyoElement::querySelectorAll(std::vector<lyoElement*>& res, const std::string& selector)
+	{
+		if (matchesSelector(selector))
+		{
+			res.emplace_back(this);
+		}
+	}
+
 	void lyoElement::propagateStyle()
 	{
 		style.propagateFromParent(parent->style);
@@ -31,33 +39,32 @@ namespace soup
 		fdoc.elms.emplace_back(this);
 	}
 
-	void lyoElement::updateFlatPos()
+	void lyoElement::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
 	{
-		if (parent != nullptr)
-		{
-			flat_x = parent->flat_x;
-			flat_y = parent->flat_y;
-		}
-
-		flat_x += style.margin_left;
+		x += style.margin_left;
 		if (!style.display_inline)
 		{
-			flat_y += style.margin_top;
+			y += style.margin_top;
 		}
+	}
 
-		if (parent != nullptr)
+	void lyoElement::setFlatPos(unsigned int x, unsigned int y)
+	{
+		flat_x = x;
+		flat_y = y;
+	}
+
+	void lyoElement::wrapLine(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
+	{
+		if (x != parent->flat_x)
 		{
-			if ((flat_x + flat_width >= parent->flat_width || !style.display_inline)
-				&& flat_x != parent->style.margin_left
-				)
-			{
-				flat_x = parent->style.margin_left;
-				flat_y += flat_height + 3;
-			}
-
-			parent->flat_x = flat_x;
-			parent->flat_y = flat_y;
+			x = parent->flat_x;
+			y = wrap_y + 3;
 		}
+	}
+
+	void lyoElement::narrowFlatSize()
+	{
 	}
 
 	void lyoElement::draw(RenderTarget& rt) const

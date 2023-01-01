@@ -7,6 +7,11 @@
 #include "Window.hpp"
 #include "xml.hpp"
 
+#if LYO_DEBUG_STYLE
+#include "format.hpp"
+#include "log.hpp"
+#endif
+
 namespace soup
 {
 	lyoDocument::lyoDocument()
@@ -44,25 +49,14 @@ namespace soup
 		{
 			if (node->is_text)
 			{
-				auto txt = div->addText(static_cast<const XmlText*>(node.get())->contents);
-				txt->tag_name = tag.name;
+				div->addText(static_cast<const XmlText*>(node.get())->contents);
 			}
 			else
 			{
-				if (static_cast<const XmlTag*>(node.get())->children.size() == 1
-					&& static_cast<const XmlTag*>(node.get())->children.at(0)->is_text
-					)
-				{
-					// Text elements _should_ only ever be children of tag elements, but this currently confuses the layout engine,
-					// so we need this branch to avoid wacky positioning.
-					loadMarkup(div, *static_cast<const XmlTag*>(node.get()));
-				}
-				else
-				{
-					auto inner_div = soup::make_unique<lyoContainer>(div);
-					loadMarkup(inner_div.get(), *static_cast<const XmlTag*>(node.get()));
-					div->children.emplace_back(std::move(inner_div));
-				}
+				auto inner_div = soup::make_unique<lyoContainer>(div);
+				inner_div->tag_name = static_cast<const XmlTag*>(node.get())->name;
+				loadMarkup(inner_div.get(), *static_cast<const XmlTag*>(node.get()));
+				div->children.emplace_back(std::move(inner_div));
 			}
 		}
 	}
@@ -76,7 +70,16 @@ namespace soup
 	UniquePtr<lyoDocument> lyoDocument::fromMarkup(const XmlTag& root)
 	{
 		auto doc = soup::make_unique<lyoDocument>();
-		loadMarkup(doc.get(), root);
+		lyoContainer* import_root = doc.get();
+		
+		// The tag_name of a lyoDocument should be "body", so if that does not match with the xml, the import root needs to be child of the document, not the document itself.
+		if (root.name != "body")
+		{
+			import_root = static_cast<lyoContainer*>(doc->children.emplace_back(soup::make_unique<lyoContainer>(doc.get())).get());
+			import_root->tag_name = root.name;
+		}
+
+		loadMarkup(import_root, root);
 		doc->propagateStyle();
 		return doc;
 	}
@@ -87,7 +90,11 @@ namespace soup
 		{
 			for (const auto& rule : stylesheet.rules)
 			{
-				for (const auto& elm : querySelectorAll(rule.selector))
+				auto elms = querySelectorAll(rule.selector);
+#if LYO_DEBUG_STYLE
+				logWriteLine(format("{} matched {} elements", rule.selector, elms.size()));
+#endif
+				for (const auto& elm : elms)
 				{
 					elm->style.overrideWith(rule.style);
 				}
@@ -99,25 +106,30 @@ namespace soup
 
 	lyoFlatDocument lyoDocument::flatten(int width, int height)
 	{
-		flat_x = 0;
-		flat_y = 0;
-		flat_width = width;
-		flat_height = height;
-
 		lyoFlatDocument flat;
 		populateFlatDocument(flat);
+
+		flat_width = width;
+		flat_height = height;
 		updateFlatSize();
-		updateFlatPos();
+
+		unsigned int x = 0;
+		unsigned int y = 0;
+		unsigned int wrap_y = 0;
+		updateFlatPos(x, y, wrap_y);
+
+		narrowFlatSize();
+
 		return flat;
 	}
 
+#if SOUP_WINDOWS
 	struct lyoWindowCapture
 	{
 		lyoDocument* doc;
 		lyoFlatDocument flat;
 	};
 
-#if SOUP_WINDOWS
 	Window lyoDocument::createWindow(const std::string& title)
 	{
 		auto w = Window::create(title, 200, 200);

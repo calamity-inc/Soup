@@ -4,23 +4,60 @@
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
 
+#if LYO_DEBUG_POS
+#include "format.hpp"
+#include "log.hpp"
+#endif
+
 namespace soup
 {
-	void lyoTextElement::updateFlatPos()
-	{
-		lyoElement::updateFlatPos();
-
-		parent->flat_x += flat_width;
-		parent->flat_x += ((font.get(' ').width * style.getFontScale()) + 1);
-		parent->flat_x += style.margin_right;
-	}
-
 	void lyoTextElement::updateFlatSize()
 	{
 		auto [measured_width, measured_height] = font.measure(text);
 		const auto scale = style.getFontScale();
 		flat_width = measured_width * scale;
 		flat_height = measured_height * scale;
+	}
+
+	void lyoTextElement::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
+	{
+#if LYO_DEBUG_POS
+		logWriteLine(format("lyoTextElement::updateFlatPos - Start: {}, {}", x, y));
+#endif
+
+		// Update wrap_y
+		wrap_y = (y + flat_height);
+
+		// Check line wrap
+		if (x + flat_width >= parent->flat_width
+			|| !style.display_inline
+			)
+		{
+			wrapLine(x, y, wrap_y);
+
+#if LYO_DEBUG_POS
+			logWriteLine(format("lyoTextElement::updateFlatPos - Wrap: {}, {}", x, y));
+#endif
+		}
+
+		// Done positioning this text element
+		setFlatPos(x, y);
+
+		// Update x
+		x += flat_width;
+		x += style.margin_right;
+		if (parent->tag_name == "span")
+		{
+			x += (font.get(' ').width * style.getFontScale());
+		}
+		else
+		{
+			x += style.getFontScale();
+		}
+
+#if LYO_DEBUG_POS
+		logWriteLine(format("lyoTextElement::updateFlatPos - End: {}, {}", x, y));
+#endif
 	}
 
 	void lyoTextElement::draw(RenderTarget& rt) const
