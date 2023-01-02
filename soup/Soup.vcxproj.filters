@@ -1173,6 +1173,9 @@
     <ClInclude Include="LexemeParser.hpp">
       <Filter>lang</Filter>
     </ClInclude>
+    <ClInclude Include="TreeReader.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

@@ -580,6 +580,7 @@
     <ClInclude Include="TaskGuard.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TinyPngOut.hpp" />
+    <ClInclude Include="TreeReader.hpp" />
     <ClInclude Include="tridText.hpp" />
     <ClInclude Include="VectorReader.hpp" />
     <ClInclude Include="VectorWriter.hpp" />
