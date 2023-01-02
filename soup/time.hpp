@@ -40,7 +40,9 @@ namespace soup
 
 		[[nodiscard]] static std::time_t unixSeconds() noexcept
 		{
-			return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			return ::time(nullptr); // <-- ~0.0000006ms
+			//                           v ~0.000002ms
+			//return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		}
 
 		[[nodiscard]] static Datetime datetimeUtc(std::time_t ts) noexcept;
