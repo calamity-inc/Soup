@@ -13,14 +13,13 @@ namespace soup
 		int hour;
 		int minute;
 		int second;
+
+		[[nodiscard]] static Datetime fromTm(const struct tm& t);
 	};
 
 	struct time
 	{
-		[[nodiscard]] static std::time_t unixSeconds() noexcept
-		{
-			return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		}
+		// System-dependent time
 
 		[[nodiscard]] static std::time_t millis() noexcept
 		{
@@ -36,6 +35,16 @@ namespace soup
 		{
 			return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		}
+
+		// UNIX time (seconds since 00:00, Jan 1, 1970 UTC)
+
+		[[nodiscard]] static std::time_t unixSeconds() noexcept
+		{
+			return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		}
+
+		[[nodiscard]] static Datetime datetimeUtc(std::time_t ts) noexcept;
+		[[nodiscard]] static Datetime datetimeLocal(std::time_t ts) noexcept;
 
 		[[nodiscard]] static std::time_t toUnix(const Datetime& dt);
 		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);

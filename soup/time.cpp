@@ -8,6 +8,40 @@
 
 namespace soup
 {
+	Datetime Datetime::fromTm(const struct tm& t)
+	{
+		Datetime dt;
+		dt.year = t.tm_year + 1900;
+		dt.month = t.tm_mon + 1;
+		dt.day = t.tm_mday;
+		dt.hour = t.tm_hour;
+		dt.minute = t.tm_min;
+		dt.second = t.tm_sec;
+		return dt;
+	}
+
+	Datetime time::datetimeUtc(std::time_t ts) noexcept
+	{
+#if SOUP_WINDOWS
+		return Datetime::fromTm(*::gmtime(&ts));
+#else
+		struct tm t;
+		::gmtime_r(&ts, &t);
+		return Datetime::fromTm(t);
+#endif
+	}
+
+	Datetime time::datetimeLocal(std::time_t ts) noexcept
+	{
+#if SOUP_WINDOWS
+		return Datetime::fromTm(*::localtime(&ts));
+#else
+		struct tm t;
+		::localtime_r(&ts, &t);
+		return Datetime::fromTm(t);
+#endif
+	}
+
 	std::time_t time::toUnix(const Datetime& dt)
 	{
 		return toUnix(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
@@ -23,14 +57,14 @@ namespace soup
 		t *= 60; t += second;
 		return t;*/
 
-		struct tm timeinfo;
-		timeinfo.tm_year = year - 1900;
-		timeinfo.tm_mon = month - 1;
-		timeinfo.tm_mday = day;
-		timeinfo.tm_hour = hour;
-		timeinfo.tm_min = minute;
-		timeinfo.tm_sec = second;
-		return timegm(&timeinfo);
+		struct tm t;
+		t.tm_year = year - 1900;
+		t.tm_mon = month - 1;
+		t.tm_mday = day;
+		t.tm_hour = hour;
+		t.tm_min = minute;
+		t.tm_sec = second;
+		return timegm(&t);
 
 	}
 }
