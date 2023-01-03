@@ -452,6 +452,8 @@
     <ClInclude Include="BufferRefWriter.hpp" />
     <ClInclude Include="BufferWriter.hpp" />
     <ClInclude Include="CApiUtil.hpp" />
+    <ClInclude Include="cat.hpp" />
+    <ClInclude Include="catTreeReader.hpp" />
     <ClInclude Include="cbCmd.hpp" />
     <ClInclude Include="cbCmdArithmetic.hpp" />
     <ClInclude Include="cbCmdCapabilities.hpp" />
@@ -849,6 +851,7 @@
     <ClCompile Include="BoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="cat.cpp" />
     <ClCompile Include="cbMeasurement.cpp" />
     <ClCompile Include="cbParser.cpp" />
     <ClCompile Include="Chatbot.cpp" />

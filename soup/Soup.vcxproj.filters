@@ -1176,6 +1176,12 @@
     <ClInclude Include="TreeReader.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="cat.hpp">
+      <Filter>data\cat</Filter>
+    </ClInclude>
+    <ClInclude Include="catTreeReader.hpp">
+      <Filter>data\cat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1728,6 +1734,9 @@
     <ClCompile Include="LexemeParser.cpp">
       <Filter>lang</Filter>
     </ClCompile>
+    <ClCompile Include="cat.cpp">
+      <Filter>data\cat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1921,6 +1930,9 @@
     </Filter>
     <Filter Include="io\riff">
       <UniqueIdentifier>{cc6120c7-1cc4-4e7a-8380-cee6f2fa3d6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\cat">
+      <UniqueIdentifier>{4293b753-209b-4d22-97a7-c54e2f1e9384}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

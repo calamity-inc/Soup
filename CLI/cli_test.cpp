@@ -11,6 +11,7 @@
 #include <base32.hpp>
 #include <base58.hpp>
 #include <base64.hpp>
+#include <cat.hpp>
 #include <ripemd160.hpp>
 #include <sha1.hpp>
 #include <sha256.hpp>
@@ -218,6 +219,37 @@ static void unit_data()
 			assert(base64::urlDecode("8J-YgA==") == "😀");
 		});
 	}
+
+	test("cat", []
+	{
+		StringReader sr("Hello: World");
+		auto tree = catParse(sr);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "Hello");
+		assert(tree->children.at(0)->value == "World");
+
+		sr = (
+			"Hello: World\n"
+			"Name-only List\n"
+			"\tName-only value\n"
+			"List: With Value\n"
+			"\tChild: With Value\n"
+			"\tNesting\n"
+			"\t\tNesting\n"
+			"Final\n"
+			"\n"
+		);
+		tree = catParse(sr);
+		assert(tree->children.size() == 4);
+		assert(tree->children.at(0)->name == "Hello");
+		assert(tree->children.at(0)->value == "World");
+		assert(tree->children.at(1)->name == "Name-only List");
+		assert(tree->children.at(1)->value.empty());
+		assert(tree->children.at(2)->name == "List");
+		assert(tree->children.at(2)->value == "With Value");
+		assert(tree->children.at(3)->name == "Final");
+		assert(tree->children.at(3)->value.empty());
+	});
 
 	test("ripemd160", []
 	{

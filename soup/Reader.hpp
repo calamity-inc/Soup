@@ -374,5 +374,21 @@ namespace soup
 			}
 			return true;
 		}
+
+		// Reader-specific
+		virtual bool getLine(std::string& line) noexcept
+		{
+			line.clear();
+			char c;
+			while (ioBase::c(c))
+			{
+				SOUP_IF_UNLIKELY (c == '\n')
+				{
+					return true;
+				}
+				line.push_back(c);
+			}
+			return false;
+		}
 	};
 }
