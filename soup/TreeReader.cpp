@@ -42,6 +42,7 @@ namespace soup
 			str.append(getName(child));
 			if (auto val = getValue(child); !val.empty())
 			{
+				SOUP_ASSERT(val.find('\n') == std::string::npos);
 				str.append(": ");
 				str.append(val);
 			}
