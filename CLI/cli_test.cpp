@@ -255,6 +255,23 @@ static void unit_data()
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "Colon (:)");
 		assert(tree->children.at(0)->value == "Valid");
+
+		sr = (
+			"List: With Value\n"
+			"  Child: With Value\n"
+			"  Nesting\n"
+			"    Nesting\n"
+		);
+		tree = catParse(sr);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "List");
+		assert(tree->children.at(0)->value == "With Value");
+		assert(tree->children.at(0)->children.size() == 2);
+		assert(tree->children.at(0)->children.at(0)->name == "Child");
+		assert(tree->children.at(0)->children.at(0)->value == "With Value");
+		assert(tree->children.at(0)->children.at(1)->name == "Nesting");
+		assert(tree->children.at(0)->children.at(1)->value.empty());
+
 	});
 
 	test("ripemd160", []

@@ -7,7 +7,7 @@ namespace soup
 {
 	UniquePtr<catNode> catParse(Reader& r)
 	{
-		// TODO: Best-effort space-to-tabs conversion
+		std::string spaces;
 		auto root = soup::make_unique<catNode>(nullptr);
 		std::vector<catNode*> depths{ root.get() };
 		size_t depth = 0;
@@ -17,6 +17,39 @@ namespace soup
 			SOUP_IF_UNLIKELY (line.empty())
 			{
 				continue;
+			}
+
+			if (spaces.empty())
+			{
+				if (depth == 0
+					&& line.at(0) == ' '
+					)
+				{
+					// Since we're just at depth 0, spaces at the beginning of a line will tell us how many spaces are supposed to equal a tab in the user's view.
+					// We will then automatically convert that amount of spaces to tabs.
+					size_t num_spaces = 0;
+					for (const auto& c : line)
+					{
+						if (c != ' ')
+						{
+							break;
+						}
+						++num_spaces;
+					}
+					spaces = std::string(num_spaces, ' ');
+					goto _convert_spaces_to_tabs;
+				}
+			}
+			else
+			{
+			_convert_spaces_to_tabs:
+				size_t tabs = 0;
+				while (line.substr(0, spaces.length()) == spaces)
+				{
+					line.erase(0, spaces.length());
+					++tabs;
+				}
+				line.insert(0, tabs, '\t');
 			}
 
 			// Descend
