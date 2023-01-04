@@ -100,6 +100,7 @@ namespace soup
 			if (delim != std::string::npos)
 			{
 				node->name = line_trimmed.substr(0, delim);
+				SOUP_ASSERT(line_trimmed.at(delim + 1) == ' ');
 				node->value = line_trimmed.substr(delim + 2); // ": "
 			}
 			else
