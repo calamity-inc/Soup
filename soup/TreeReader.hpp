@@ -13,5 +13,6 @@ namespace soup
 		[[nodiscard]] virtual const void* getChild(const void* node, size_t i) const = 0;
 
 		[[nodiscard]] std::string toString(const void* root, const std::string& prefix = {}) const;
+		[[nodiscard]] std::string toCat(const void* root, const std::string& prefix = {}) const;
 	};
 }
