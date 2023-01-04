@@ -54,6 +54,21 @@ namespace soup
 		}
 
 	public:
+		bool getLine(std::string& line) noexcept final
+		{
+			if (ioSeekableReader::getLine(line))
+			{
+				if (!line.empty()
+					&& line.back() == '\r'
+					)
+				{
+					line.pop_back();
+				}
+				return true;
+			}
+			return false;
+		}
+
 		[[nodiscard]] size_t getPosition() final
 		{
 			return s.tellg();
