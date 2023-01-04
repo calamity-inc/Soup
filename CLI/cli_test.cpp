@@ -249,6 +249,12 @@ static void unit_data()
 		assert(tree->children.at(2)->value == "With Value");
 		assert(tree->children.at(3)->name == "Final");
 		assert(tree->children.at(3)->value.empty());
+
+		sr = ("Colon (\\:): Valid");
+		tree = catParse(sr);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "Colon (:)");
+		assert(tree->children.at(0)->value == "Valid");
 	});
 
 	test("ripemd160", []

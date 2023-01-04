@@ -1,6 +1,7 @@
 #include "TreeReader.hpp"
 
 #include "base.hpp"
+#include "string.hpp"
 
 namespace soup
 {
@@ -39,7 +40,13 @@ namespace soup
 		{
 			const void* const child = getChild(root, i);
 			str.append(prefix);
-			str.append(getName(child));
+			auto name = getName(child);
+			if (name.find(':') != std::string::npos)
+			{
+				SOUP_ASSERT(name.find("\\:") == std::string::npos);
+				string::replaceAll(name, ":", "\\:");
+			}
+			str.append(name);
 			if (auto val = getValue(child); !val.empty())
 			{
 				SOUP_ASSERT(val.find('\n') == std::string::npos);

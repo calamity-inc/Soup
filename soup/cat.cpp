@@ -1,6 +1,7 @@
 #include "cat.hpp"
 
 #include "Reader.hpp"
+#include "string.hpp"
 
 namespace soup
 {
@@ -48,7 +49,21 @@ namespace soup
 			// Content
 			auto node = depths.at(depth)->children.emplace_back(soup::make_unique<catNode>(depths.at(depth))).get();
 			auto line_trimmed = line.substr(depth);
-			auto delim = line_trimmed.find(':'); // TODO: Escaping
+			size_t delim = 0;
+			bool with_escaping = false;
+			while (true)
+			{
+				delim = line_trimmed.find(':', delim);
+				if (delim == std::string::npos
+					|| delim == 0
+					|| line_trimmed.at(delim - 1) != '\\'
+					)
+				{
+					break;
+				}
+				with_escaping = true;
+				++delim;
+			}
 			if (delim != std::string::npos)
 			{
 				node->name = line_trimmed.substr(0, delim);
@@ -57,6 +72,10 @@ namespace soup
 			else
 			{
 				node->name = line_trimmed;
+			}
+			if (with_escaping)
+			{
+				string::replaceAll(node->name, "\\:", ":");
 			}
 			SOUP_ASSERT(!node->name.empty());
 			SOUP_ASSERT(node->name.at(0) != '\t');
