@@ -17,8 +17,8 @@ namespace soup
 		[[nodiscard]] std::string toString(const void* root, const std::string& prefix = {}) const;
 		[[nodiscard]] std::string toCat(const void* root, const std::string& prefix = {}) const;
 
-		[[nodiscard]] std::unordered_map<std::string, std::string> toMap(const void* root) const;
+		[[nodiscard]] std::unordered_map<std::string, std::string> toMap(const void* root, bool disallow_empty_value = false) const;
 	private:
-		void toMap(std::unordered_map<std::string, std::string>& map, const void* root, const std::string& prefix = {}) const;
+		void toMap(std::unordered_map<std::string, std::string>& map, const void* root, bool disallow_empty_value, const std::string& prefix) const;
 	};
 }

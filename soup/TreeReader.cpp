@@ -64,14 +64,14 @@ namespace soup
 		return str;
 	}
 
-	std::unordered_map<std::string, std::string> TreeReader::toMap(const void* root) const
+	std::unordered_map<std::string, std::string> TreeReader::toMap(const void* root, bool disallow_empty_value) const
 	{
 		std::unordered_map<std::string, std::string> map;
-		toMap(map, root);
+		toMap(map, root, disallow_empty_value, {});
 		return map;
 	}
 
-	void TreeReader::toMap(std::unordered_map<std::string, std::string>& map, const void* root, const std::string& prefix) const
+	void TreeReader::toMap(std::unordered_map<std::string, std::string>& map, const void* root, bool disallow_empty_value, const std::string& prefix) const
 	{
 		SOUP_ASSERT(canHaveChildren(root));
 		const size_t num_children = getNumChildren(root);
@@ -84,9 +84,13 @@ namespace soup
 			{
 				std::string inner_prefix = name;
 				inner_prefix.push_back('>');
-				toMap(map, child, inner_prefix);
+				toMap(map, child, disallow_empty_value, inner_prefix);
 			}
-			map.emplace(std::move(name), getValue(child));
+			auto value = getValue(child);
+			if (!disallow_empty_value || !value.empty())
+			{
+				map.emplace(std::move(name), std::move(value));
+			}
 		}
 	}
 }
