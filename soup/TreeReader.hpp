@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 namespace soup
 {
-	struct TreeReader
+	class TreeReader
 	{
+	public:
 		[[nodiscard]] virtual std::string getName(const void* node) const = 0;
 		[[nodiscard]] virtual std::string getValue(const void* node) const = 0;
 		[[nodiscard]] virtual bool canHaveChildren(const void* node) const { return true; }
@@ -14,5 +16,9 @@ namespace soup
 
 		[[nodiscard]] std::string toString(const void* root, const std::string& prefix = {}) const;
 		[[nodiscard]] std::string toCat(const void* root, const std::string& prefix = {}) const;
+
+		[[nodiscard]] std::unordered_map<std::string, std::string> toMap(const void* root) const;
+	private:
+		void toMap(std::unordered_map<std::string, std::string>& map, const void* root, const std::string& prefix = {}) const;
 	};
 }
