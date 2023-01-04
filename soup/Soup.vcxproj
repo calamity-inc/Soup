@@ -885,6 +885,7 @@
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
+    <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="tridText.cpp" />
     <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="Writer.cpp" />

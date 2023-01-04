@@ -1737,6 +1737,9 @@
     <ClCompile Include="cat.cpp">
       <Filter>data\cat</Filter>
     </ClCompile>
+    <ClCompile Include="TreeReader.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
