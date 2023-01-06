@@ -42,7 +42,7 @@ namespace soup
 		bool u8(uint8_t& v) final
 		{
 			s.read((char*)&v, sizeof(uint8_t));
-			return !s.bad() && !s.eof();
+			return !s.bad() && !s.eof() && s.is_open();
 		}
 
 	protected:
