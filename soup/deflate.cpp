@@ -121,7 +121,7 @@ namespace soup
 		{
 			if (this->shifter_bit_count_ < n)
 			{
-				if (this->in_block_ < this->in_block_end_)
+				SOUP_IF_LIKELY (this->in_block_ < this->in_block_end_)
 				{
 					this->shifter_data_ |= (((shifter_t)(*this->in_block_++)) << this->shifter_bit_count_);
 					this->shifter_bit_count_ += 8;
@@ -480,12 +480,12 @@ namespace soup
 
 	unsigned int copyStored(BitReader& bit_reader, unsigned char* out, size_t out_offset, size_t block_size_max)
 	{
-		if (!bit_reader.alignToByte())
+		SOUP_IF_UNLIKELY (!bit_reader.alignToByte())
 		{
 			return -1;
 		}
 
-		if ((bit_reader.getInBlock() + 4) > bit_reader.getInBlockEnd())
+		SOUP_IF_UNLIKELY ((bit_reader.getInBlock() + 4) > bit_reader.getInBlockEnd())
 		{
 			return -1;
 		}
@@ -507,7 +507,7 @@ namespace soup
 			return -1;
 		}*/
 
-		if (stored_length > block_size_max)
+		SOUP_IF_UNLIKELY (stored_length > block_size_max)
 		{
 			// return -1;
 
@@ -536,38 +536,38 @@ namespace soup
 			unsigned int tables_rev_sym_table[kCodeLenSyms * 2];
 
 			unsigned int literal_syms = br.getBits(5);
-			if (literal_syms == -1)
+			SOUP_IF_UNLIKELY (literal_syms == -1)
 				return -1;
 			literal_syms += 257;
-			if (literal_syms > kLiteralSyms)
+			SOUP_IF_UNLIKELY (literal_syms > kLiteralSyms)
 				return -1;
 
 			unsigned int offset_syms = br.getBits(5);
-			if (offset_syms == -1)
+			SOUP_IF_UNLIKELY (offset_syms == -1)
 				return -1;
 			offset_syms += 1;
-			if (offset_syms > kOffsetSyms)
+			SOUP_IF_UNLIKELY (offset_syms > kOffsetSyms)
 				return -1;
 
 			unsigned int code_len_syms = br.getBits(4);
-			if (code_len_syms == -1)
+			SOUP_IF_UNLIKELY (code_len_syms == -1)
 				return -1;
 			code_len_syms += 4;
-			if (code_len_syms > kCodeLenSyms)
+			SOUP_IF_UNLIKELY (code_len_syms > kCodeLenSyms)
 				return -1;
 
-			if (!HuffmanDecoder::readRawLengths(kCodeLenBits, code_len_syms, kCodeLenSyms, code_length, br))
+			SOUP_IF_UNLIKELY (!HuffmanDecoder::readRawLengths(kCodeLenBits, code_len_syms, kCodeLenSyms, code_length, br))
 				return -1;
-			if (!tables_decoder.prepareTable(tables_rev_sym_table, kCodeLenSyms, kCodeLenSyms, code_length))
+			SOUP_IF_UNLIKELY (!tables_decoder.prepareTable(tables_rev_sym_table, kCodeLenSyms, kCodeLenSyms, code_length))
 				return -1;
-			if (!tables_decoder.finaliseTable(tables_rev_sym_table))
+			SOUP_IF_UNLIKELY (!tables_decoder.finaliseTable(tables_rev_sym_table))
 				return -1;
 
-			if (!tables_decoder.readLength(tables_rev_sym_table, literal_syms + offset_syms, kLiteralSyms + kOffsetSyms, code_length, br))
+			SOUP_IF_UNLIKELY (!tables_decoder.readLength(tables_rev_sym_table, literal_syms + offset_syms, kLiteralSyms + kOffsetSyms, code_length, br))
 				return -1;
-			if (!literals_decoder.prepareTable(literals_rev_sym_table, literal_syms, kLiteralSyms, code_length))
+			SOUP_IF_UNLIKELY (!literals_decoder.prepareTable(literals_rev_sym_table, literal_syms, kLiteralSyms, code_length))
 				return -1;
-			if (!offset_decoder.prepareTable(offset_rev_sym_table, offset_syms, kOffsetSyms, code_length + literal_syms))
+			SOUP_IF_UNLIKELY (!offset_decoder.prepareTable(offset_rev_sym_table, offset_syms, kOffsetSyms, code_length + literal_syms))
 				return -1;
 		}
 		else
@@ -587,9 +587,9 @@ namespace soup
 			for (i = 0; i < kOffsetSyms; i++)
 				fixed_offset_code_len[i] = 5;
 
-			if (!literals_decoder.prepareTable(literals_rev_sym_table, kLiteralSyms, kLiteralSyms, fixed_literal_code_len))
+			SOUP_IF_UNLIKELY (!literals_decoder.prepareTable(literals_rev_sym_table, kLiteralSyms, kLiteralSyms, fixed_literal_code_len))
 				return -1;
-			if (!offset_decoder.prepareTable(offset_rev_sym_table, kOffsetSyms, kOffsetSyms, fixed_offset_code_len))
+			SOUP_IF_UNLIKELY (!offset_decoder.prepareTable(offset_rev_sym_table, kOffsetSyms, kOffsetSyms, fixed_offset_code_len))
 				return -1;
 		}
 
@@ -611,7 +611,7 @@ namespace soup
 			}
 		}
 
-		if (!literals_decoder.finaliseTable(literals_rev_sym_table)
+		SOUP_IF_UNLIKELY (!literals_decoder.finaliseTable(literals_rev_sym_table)
 			|| !offset_decoder.finaliseTable(offset_rev_sym_table)
 			)
 		{
@@ -629,7 +629,7 @@ namespace soup
 			unsigned int literals_code_word = literals_decoder.readValue(literals_rev_sym_table, br);
 			if (literals_code_word < 256)
 			{
-				if (current_out >= out_end)
+				SOUP_IF_UNLIKELY (current_out >= out_end)
 				{
 					return -1;
 				}
@@ -642,13 +642,13 @@ namespace soup
 					break;
 				}
 
-				if (literals_code_word == -1)
+				SOUP_IF_UNLIKELY (literals_code_word == -1)
 				{
 					return -1;
 				}
 
 				unsigned int match_length = br.getBits((literals_code_word >> 16) & 15);
-				if (match_length == -1)
+				SOUP_IF_UNLIKELY (match_length == -1)
 				{
 					return -1;
 				}
@@ -656,13 +656,13 @@ namespace soup
 				match_length += (literals_code_word & 0x7fff);
 
 				unsigned int offset_code_word = offset_decoder.readValue(offset_rev_sym_table, br);
-				if (offset_code_word == -1)
+				SOUP_IF_UNLIKELY (offset_code_word == -1)
 				{
 					return -1;
 				}
 
 				unsigned int match_offset = br.getBits((offset_code_word >> 16) & 15);
-				if (match_offset == -1)
+				SOUP_IF_UNLIKELY (match_offset == -1)
 				{
 					return -1;
 				}
@@ -670,7 +670,7 @@ namespace soup
 				match_offset += (offset_code_word & 0x7fff);
 
 				const unsigned char* src = current_out - match_offset;
-				if (src < out)
+				SOUP_IF_UNLIKELY (src < out)
 				{
 					return -1;
 				}
@@ -692,7 +692,7 @@ namespace soup
 				}
 				else
 				{
-					if ((current_out + match_length) > out_end)
+					SOUP_IF_UNLIKELY ((current_out + match_length) > out_end)
 					{
 						return -1;
 					}
