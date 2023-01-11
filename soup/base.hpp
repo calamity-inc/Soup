@@ -118,3 +118,5 @@
 
 #define SOUP_ASSERT_ARG(x) SOUP_ASSERT(x)
 #define SOUP_ASSERT_LOGIC(x) SOUP_ASSERT(x)
+
+#define SOUP_UNUSED(x) ((void)x)
