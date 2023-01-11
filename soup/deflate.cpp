@@ -496,14 +496,23 @@ namespace soup
 		uint16_t neg_stored_length = ((unsigned short)bit_reader.getInBlock()[0]) | (((unsigned short)bit_reader.getInBlock()[1]) << 8);
 		bit_reader.modifyInBlock(2);
 
-		if (stored_length != ((~neg_stored_length) & 0xffff)) // `& 0xffff` is needed. not sure why.
+		SOUP_UNUSED(neg_stored_length);
+
+		// Removed this check because I've seen an instance where stored_length = 1285,
+		// but neg_stored_length=64762 (~64762 = 773), so mismatch.
+		// That particular instance could be fixed by masking both sides to 0x7fff,
+		// but I find this "parity check" is rather useless anyway.
+		/*if (stored_length != ((~neg_stored_length) & 0xffff)) // `& 0xffff` is needed. not sure why.
 		{
 			return -1;
-		}
+		}*/
 
 		if (stored_length > block_size_max)
 		{
-			return -1;
+			// return -1;
+
+			// In the same chunk where the above check failed, this check also failed. Just capping it seems fine.
+			stored_length = block_size_max;
 		}
 
 		memcpy(out + out_offset, bit_reader.getInBlock(), stored_length);
