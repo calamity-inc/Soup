@@ -57,7 +57,6 @@ namespace soup
 		case 131199: // Nexeon Technologies, Inc.
 		case 132203: // Tencent Building Kejizhongyi Avenue
 		case 133480: // Intergrid Group Pty Ltd
-		case 133752: // Leaseweb Asia Pacific pte. ltd.
 		case 136787: // TEFINCOM S.A.
 		case 136897: // EnjoyVC Cloud Group Limited
 		case 137263: // NETEASE (HONG KONG) LIMITED
@@ -96,7 +95,6 @@ namespace soup
 		case 140952: // Strong Technology, LLC
 		case 42473: // ANEXIA Internetdienstleistungs GmbH
 		case 59432: // GINERNET
-		case 28753: // Leaseweb Deutschland GmbH
 			// Green Floid LLC
 		case 40622:
 		case 204957:
@@ -106,16 +104,6 @@ namespace soup
 			// GleSYS AB
 		case 42708:
 		case 43948:
-			// Leaseweb USA, Inc.
-		case 7203:
-		case 19148:
-		case 27411:
-		case 30633:
-		case 393886:
-		case 394380:
-		case 395954:
-		case 396190:
-		case 396362:
 			// Cogent Communications
 		case 174:
 		case 2149:
@@ -171,6 +159,7 @@ namespace soup
 			|| slug.find("godaddy") != std::string::npos
 			|| slug.find("oracle") != std::string::npos
 			|| slug.find("m247") != std::string::npos
+			|| slug.find("leaseweb") != std::string::npos
 			)
 		{
 			return true;
