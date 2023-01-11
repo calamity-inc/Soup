@@ -95,7 +95,7 @@ namespace soup
 		case 206444: // KUBBUR
 		case 140952: // Strong Technology, LLC
 		case 42473: // ANEXIA Internetdienstleistungs GmbH
-		case 59432: // GINERNET 
+		case 59432: // GINERNET
 			// Green Floid LLC
 		case 40622:
 		case 204957:
