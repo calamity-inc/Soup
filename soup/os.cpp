@@ -8,6 +8,8 @@
 #if SOUP_WINDOWS
 #include <ShlObj.h> // CSIDL_COMMON_APPDATA
 
+#pragma comment(lib, "Shell32.lib") // SHGetFolderPathW
+
 #include "Exception.hpp"
 #include "ObfusString.hpp"
 #else

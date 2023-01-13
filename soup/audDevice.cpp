@@ -8,6 +8,8 @@
 #include <mmdeviceapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
 
+#pragma comment(lib, "Ole32.lib") // CoInitialize, CoCreateInstance, PropVariantClear
+
 #include "audPlayback.hpp"
 #include "unicode.hpp"
 
