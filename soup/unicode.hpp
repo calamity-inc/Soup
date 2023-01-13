@@ -87,11 +87,11 @@ namespace soup
 		{
 #if SOUP_WINDOWS
 			std::string res;
-			const int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.c_str(), -1, NULL, 0, NULL, NULL);
+			const int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.data(), (int)utf16.size(), NULL, 0, NULL, NULL);
 			SOUP_IF_LIKELY (sizeRequired != 0)
 			{
-				res = std::string(sizeRequired - 1, 0);
-				WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.c_str(), -1, res.data(), sizeRequired, NULL, NULL);
+				res = std::string(sizeRequired, 0);
+				WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.data(), (int)utf16.size(), res.data(), sizeRequired, NULL, NULL);
 			}
 			return res;
 #else
