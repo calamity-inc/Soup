@@ -252,6 +252,24 @@ namespace soup
 		return out;
 	}
 
+	void aes::decryptCBCInplace(std::vector<uint8_t>& data, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
+	{
+		const auto Nr = getNr(key);
+		auto roundKeys = KeyExpansion(key);
+
+		std::vector<uint8_t> last_block(blockBytesLen, 0);
+		memcpy(last_block.data(), iv.data(), blockBytesLen);
+
+		std::vector<uint8_t> this_block(blockBytesLen, 0);
+		for (unsigned int i = 0; i < data.size(); i += blockBytesLen)
+		{
+			memcpy(this_block.data(), &data[i], blockBytesLen);
+			DecryptBlock(&data[i], &data[i], roundKeys.data(), Nr);
+			XorBlocks(last_block.data(), &data[i], &data[i], blockBytesLen);
+			std::swap(this_block, last_block);
+		}
+	}
+
 	std::vector<uint8_t> aes::encryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
 		std::vector<uint8_t> out(in.size(), 0);
@@ -301,11 +319,11 @@ namespace soup
 
 	std::string aes::decryptCBC(const std::string& in, const std::string& key, const std::string& iv)
 	{
-		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> data(in.begin(), in.end());
 		std::vector<uint8_t> v_key(key.begin(), key.end());
 		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
-		auto out = decryptCBC(v_in, v_key, v_iv);
-		return std::string(out.begin(), out.end());
+		decryptCBCInplace(data, v_key, v_iv);
+		return std::string(data.begin(), data.end());
 	}
 
 	std::string aes::encryptCFB(const std::string& in, const std::string& key, const std::string& iv)
@@ -324,10 +342,10 @@ namespace soup
 
 	std::string aes::decryptCBC(const std::string& in, const std::vector<uint8_t>& key, const std::string& iv)
 	{
-		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> data(in.begin(), in.end());
 		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
-		auto out = decryptCBC(v_in, key, v_iv);
-		return std::string(out.begin(), out.end());
+		decryptCBCInplace(data, key, v_iv);
+		return std::string(data.begin(), data.end());
 	}
 
 	void aes::EncryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
