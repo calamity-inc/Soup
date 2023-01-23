@@ -498,6 +498,8 @@
     <ClInclude Include="format.hpp" />
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
+    <ClInclude Include="UsbHidScancode.hpp" />
+    <ClInclude Include="WootingAnalog.hpp" />
     <ClInclude Include="InquiryLang.hpp" />
     <ClInclude Include="IntStruct.hpp" />
     <ClInclude Include="ioSeekableReader.hpp" />
@@ -889,6 +891,7 @@
     <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="tridText.cpp" />
     <ClCompile Include="version_compare.cpp" />
+    <ClCompile Include="WootingAnalog.cpp" />
     <ClCompile Include="Writer.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />

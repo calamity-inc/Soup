@@ -1185,6 +1185,12 @@
     <ClInclude Include="Screen.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="WootingAnalog.hpp">
+      <Filter>os\input</Filter>
+    </ClInclude>
+    <ClInclude Include="UsbHidScancode.hpp">
+      <Filter>os\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1743,6 +1749,9 @@
     <ClCompile Include="TreeReader.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="WootingAnalog.cpp">
+      <Filter>os\input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -1939,6 +1948,9 @@
     </Filter>
     <Filter Include="data\cat">
       <UniqueIdentifier>{4293b753-209b-4d22-97a7-c54e2f1e9384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="os\input">
+      <UniqueIdentifier>{350adf99-141c-4765-8d24-9c61d0b5981c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
