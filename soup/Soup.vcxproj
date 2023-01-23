@@ -573,6 +573,7 @@
     <ClInclude Include="rflType.hpp" />
     <ClInclude Include="rflVar.hpp" />
     <ClInclude Include="riff.hpp" />
+    <ClInclude Include="Screen.hpp" />
     <ClInclude Include="SharedPtr.hpp" />
     <ClInclude Include="spaceship.hpp" />
     <ClInclude Include="stringifyable.hpp" />
