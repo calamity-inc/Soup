@@ -122,6 +122,13 @@ namespace soup
 				}
 				return 0;
 
+			case WM_CHAR:
+				if (wc.char_callback != nullptr)
+				{
+					wc.char_callback(Window{ hWnd }, wParam);
+				}
+				return 0;
+
 			case WM_KEYUP:
 			case WM_SYSKEYUP:
 			case WM_KEYDOWN:
@@ -239,6 +246,12 @@ namespace soup
 	Window& Window::setMouseInformer(mouse_informer_t mouse_informer)
 	{
 		getConfig().mouse_informer = mouse_informer;
+		return *this;
+	}
+
+	Window& Window::setCharCallback(char_callback_t char_callback)
+	{
+		getConfig().char_callback = char_callback;
 		return *this;
 	}
 
