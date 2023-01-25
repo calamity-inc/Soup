@@ -144,6 +144,10 @@ namespace soup
 					ret = deflate::decompress(ret, lfh.common.uncompressed_size).decompressed;
 					if (ret.length() != lfh.common.uncompressed_size)
 					{
+						if (ret.empty())
+						{
+							throw Exception("Decompression failed");
+						}
 						throw Exception("Size after decompression doesn't match uncompressed_size");
 					}
 				}
