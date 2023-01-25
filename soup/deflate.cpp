@@ -133,7 +133,9 @@ namespace soup
 					}
 				}
 				else
+				{
 					return -1;
+				}
 			}
 
 			unsigned int value = this->shifter_data_ & ((1 << n) - 1);
@@ -537,38 +539,62 @@ namespace soup
 
 			unsigned int literal_syms = br.getBits(5);
 			SOUP_IF_UNLIKELY (literal_syms == -1)
+			{
 				return -1;
+			}
 			literal_syms += 257;
 			SOUP_IF_UNLIKELY (literal_syms > kLiteralSyms)
+			{
 				return -1;
+			}
 
 			unsigned int offset_syms = br.getBits(5);
 			SOUP_IF_UNLIKELY (offset_syms == -1)
+			{
 				return -1;
+			}
 			offset_syms += 1;
 			SOUP_IF_UNLIKELY (offset_syms > kOffsetSyms)
+			{
 				return -1;
+			}
 
 			unsigned int code_len_syms = br.getBits(4);
 			SOUP_IF_UNLIKELY (code_len_syms == -1)
+			{
 				return -1;
+			}
 			code_len_syms += 4;
 			SOUP_IF_UNLIKELY (code_len_syms > kCodeLenSyms)
+			{
 				return -1;
+			}
 
 			SOUP_IF_UNLIKELY (!HuffmanDecoder::readRawLengths(kCodeLenBits, code_len_syms, kCodeLenSyms, code_length, br))
+			{
 				return -1;
+			}
 			SOUP_IF_UNLIKELY (!tables_decoder.prepareTable(tables_rev_sym_table, kCodeLenSyms, kCodeLenSyms, code_length))
+			{
 				return -1;
+			}
 			SOUP_IF_UNLIKELY (!tables_decoder.finaliseTable(tables_rev_sym_table))
+			{
 				return -1;
+			}
 
 			SOUP_IF_UNLIKELY (!tables_decoder.readLength(tables_rev_sym_table, literal_syms + offset_syms, kLiteralSyms + kOffsetSyms, code_length, br))
+			{
 				return -1;
+			}
 			SOUP_IF_UNLIKELY (!literals_decoder.prepareTable(literals_rev_sym_table, literal_syms, kLiteralSyms, code_length))
+			{
 				return -1;
+			}
 			SOUP_IF_UNLIKELY (!offset_decoder.prepareTable(offset_rev_sym_table, offset_syms, kOffsetSyms, code_length + literal_syms))
+			{
 				return -1;
+			}
 		}
 		else
 		{
