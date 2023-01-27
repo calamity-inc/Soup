@@ -161,6 +161,20 @@ namespace soup
 				}
 				return 0;
 
+			case WM_SETFOCUS:
+				if (wc.on_focus)
+				{
+					wc.on_focus(Window{ hWnd });
+				}
+				break;
+
+			case WM_KILLFOCUS:
+				if (wc.on_blur)
+				{
+					wc.on_blur(Window{ hWnd });
+				}
+				break;
+
 			case WM_CLOSE:
 				if (wc.on_close)
 				{
@@ -261,12 +275,6 @@ namespace soup
 		return *this;
 	}
 
-	Window& Window::onClose(callback_t on_close)
-	{
-		getConfig().on_close = on_close;
-		return *this;
-	}
-
 	Window& Window::registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, callback_t callback)
 	{
 		unsigned int mod = alt;
@@ -278,6 +286,24 @@ namespace soup
 		RegisterHotKey(h, (int)wc.hotkey_callbacks.size(), mod, key);
 		wc.hotkey_callbacks.emplace_back(callback);
 
+		return *this;
+	}
+
+	Window& Window::onFocus(callback_t on_focus)
+	{
+		getConfig().on_focus = on_focus;
+		return *this;
+	}
+
+	Window& Window::onBlur(callback_t on_blur)
+	{
+		getConfig().on_blur = on_blur;
+		return *this;
+	}
+
+	Window& Window::onClose(callback_t on_close)
+	{
+		getConfig().on_close = on_close;
 		return *this;
 	}
 

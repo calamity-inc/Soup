@@ -30,8 +30,10 @@ namespace soup
 			mouse_informer_t mouse_informer = nullptr;
 			char_callback_t char_callback = nullptr;
 			key_callback_t key_callback = nullptr;
-			callback_t on_close = nullptr;
 			std::vector<callback_t> hotkey_callbacks{};
+			callback_t on_focus = nullptr;
+			callback_t on_blur = nullptr;
+			callback_t on_close = nullptr;
 		};
 
 		HWND h;
@@ -47,8 +49,10 @@ namespace soup
 		Window& setMouseInformer(mouse_informer_t mouse_informer);
 		Window& setCharCallback(char_callback_t char_callback);
 		Window& setKeyCallback(key_callback_t key_callback);
-		Window& onClose(callback_t on_close);
 		Window& registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, callback_t callback);
+		Window& onFocus(callback_t on_focus);
+		Window& onBlur(callback_t on_blur);
+		Window& onClose(callback_t on_close);
 
 		[[nodiscard]] bool getIsVisible() noexcept;
 		Window& setIsVisible(bool visible) noexcept;
