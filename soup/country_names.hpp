@@ -11,11 +11,14 @@ namespace soup
 		const char* value;
 	};
 
-	extern CountryNamesEntry country_names[20169]; // = 249 countries * 81 languages
+#define COUNTRYNAMES_COUNTRIES 249
+#define COUNTRYNAMES_LANGUAGES 81
+
+	extern CountryNamesEntry country_names[COUNTRYNAMES_COUNTRIES * COUNTRYNAMES_LANGUAGES];
 
 	[[nodiscard]] inline const char* getCountryName(const std::string& country_code, const std::string& language_code = "EN")
 	{
-		for (CountryNamesEntry* i = &country_names[0]; i != &country_names[20169]; i += 81) // for each country, there is 81 entries, one for each supported language
+		for (CountryNamesEntry* i = &country_names[0]; i != &country_names[COUNTRYNAMES_COUNTRIES * COUNTRYNAMES_LANGUAGES]; i += COUNTRYNAMES_LANGUAGES)
 		{
 			if (country_code == i->country_code)
 			{
