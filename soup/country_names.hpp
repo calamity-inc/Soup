@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <iostream>
-
 namespace soup
 {
 	struct CountryNamesEntry
