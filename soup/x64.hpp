@@ -220,6 +220,9 @@ namespace soup
 		{ "test", 0x85, MR },
 		{ "test", 0xF6, MI, 8, 0 },
 		{ "test", 0xF7, MI, 32, 0 },
+		{ "xor", 0x30, MR, 8 },
+		{ "xor", 0x31, MR },
+		{ "xor", 0x32, RM, 8 },
 		{ "xor", 0x33, RM },
 		{ "movzx", 0x0FB6, RM, 8 },
 		{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
