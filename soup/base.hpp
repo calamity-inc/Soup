@@ -86,11 +86,16 @@
 
 // === C++ version abstraction macros
 
-#if !defined(_MSC_VER) && (__cplusplus < 202002L)
-	#define SOUP_CPP20 false
+#ifndef SOUP_CPP20
+	#if !defined(_MSC_VER) && (__cplusplus < 202002L)
+		#define SOUP_CPP20 false
+	#else
+		#define SOUP_CPP20 true
+	#endif
+#endif
+
+#if !SOUP_CPP20
 	#define consteval constexpr
-#else
-	#define SOUP_CPP20 true
 #endif
 
 #if SOUP_CPP20
