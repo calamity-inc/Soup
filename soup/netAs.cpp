@@ -95,6 +95,7 @@ namespace soup
 		case 140952: // Strong Technology, LLC
 		case 42473: // ANEXIA Internetdienstleistungs GmbH
 		case 59432: // GINERNET
+		case 209854: // Surfshark Ltd.
 			// Green Floid LLC
 		case 40622:
 		case 204957:
