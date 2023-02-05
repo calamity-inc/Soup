@@ -96,6 +96,9 @@ namespace soup
 		case 42473: // ANEXIA Internetdienstleistungs GmbH
 		case 59432: // GINERNET
 		case 209854: // Surfshark Ltd.
+			// Latitude.sh (formerly Maxihost)
+		case 262287:
+		case 396356:
 			// Green Floid LLC
 		case 40622:
 		case 204957:
@@ -138,7 +141,7 @@ namespace soup
 			|| slug.find("data-center") != std::string::npos
 			|| slug.find("ddos") != std::string::npos
 			|| slug.find("dedi") != std::string::npos // AS35913 DediPath, AS42831 UK Dedicated Servers Limited
-			|| (slug.find("host") != std::string::npos // AS45382 EHOSTICT, AS51430 AltusHost B.V., AS55720 Gigabit Hosting Sdn Bhd, AS61493 InterBS S.R.L. (BAEHOST), AS64200 VIVID-HOSTING LLC, AS136557 Host Universal Pty Ltd, AS200698 Globalhost d.o.o., AS203020 HostRoyale Technologies Pvt Ltd, AS262287 Maxihost LTDA, AS396356 Maxihost LLC
+			|| (slug.find("host") != std::string::npos // AS45382 EHOSTICT, AS51430 AltusHost B.V., AS55720 Gigabit Hosting Sdn Bhd, AS61493 InterBS S.R.L. (BAEHOST), AS64200 VIVID-HOSTING LLC, AS136557 Host Universal Pty Ltd, AS200698 Globalhost d.o.o., AS203020 HostRoyale Technologies Pvt Ltd
 				&& slug.find("afrihost") == std::string::npos
 				)
 			|| slug.find("layer") != std::string::npos // AS49453, AS57172 Global Layer B.V.
