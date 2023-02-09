@@ -13,8 +13,8 @@ namespace soup
 	class Canvas
 	{
 	public:
-		unsigned int width;
-		unsigned int height;
+		unsigned int width = 0;
+		unsigned int height = 0;
 		std::vector<Rgb> pixels{};
 
 		Canvas() noexcept = default;
