@@ -1,0 +1,94 @@
+#include "RgbaCanvas.hpp"
+
+#include "base.hpp"
+
+#include "Canvas.hpp"
+#include "Writer.hpp"
+
+namespace soup
+{
+	void RgbaCanvas::fill(const Rgba colour)
+	{
+		for (auto& p : pixels)
+		{
+			p = colour;
+		}
+	}
+
+	void RgbaCanvas::set(unsigned int x, unsigned int y, Rgba colour) noexcept
+	{
+		SOUP_IF_LIKELY (x < width && y < height)
+		{
+			pixels.at(x + (y * width)) = colour;
+		}
+	}
+
+	Rgba RgbaCanvas::get(unsigned int x, unsigned int y) const
+	{
+		return pixels.at(x + (y * width));
+	}
+
+	const Rgba& RgbaCanvas::ref(unsigned int x, unsigned int y) const
+	{
+		return pixels.at(x + (y * width));
+	}
+
+	RgbaCanvas RgbaCanvas::fromCanvas(const Canvas& solid, uint8_t alpha)
+	{
+		RgbaCanvas c;
+		c.width = solid.width;
+		c.height = solid.height;
+		c.pixels.resize(solid.pixels.size());
+		for (size_t i = 0; i != solid.pixels.size(); ++i)
+		{
+			c.pixels.at(i).rgb = solid.pixels.at(i);
+			c.pixels.at(i).a = alpha;
+		}
+		return c;
+	}
+
+	bool RgbaCanvas::toBmp(Writer& w) const
+	{
+		// Based on Canvas::toBmp + https://github.com/openfl/lime/blob/4adb7d638d15612e2542ae3a0ef581a786d21183/src/lime/_internal/format/BMP.hx
+		uint8_t b;
+		uint16_t s;
+		uint32_t i;
+		SOUP_IF_UNLIKELY (!(s = 0x4D42, w.u16(s))
+			|| !(i = (108 + (4 * pixels.size())), w.u32(i))
+			|| !w.skip(4)
+			|| !(i = (14 + 108), w.u32(i))
+			|| !(i = 108, w.u32(i))
+			|| !(i = width, w.u32(i))
+			|| !(i = height * -1, w.u32(i))
+			|| !(s = 1, w.u16(s))
+			|| !(s = 32, w.u16(s))
+			|| !(i = 3, w.u32(i))
+			|| !(i = (4 * pixels.size()), w.u32(i))
+			|| !w.skip(4 + 4 + 4 + 4)
+			|| !(i = 0x00FF0000, w.u32(i))
+			|| !(i = 0x0000FF00, w.u32(i))
+			|| !(i = 0x000000FF, w.u32(i))
+			|| !(i = 0xFF000000, w.u32(i))
+			|| !(b = 0x20, w.u8(b))
+			|| !(b = 0x6E, w.u8(b))
+			|| !(b = 0x69, w.u8(b))
+			|| !(b = 0x57, w.u8(b))
+			|| !w.skip(48)
+			)
+		{
+			return false;
+		}
+		for (const auto& p : pixels)
+		{
+			SOUP_IF_UNLIKELY (!w.u8(const_cast<uint8_t&>(p.r))
+				|| !w.u8(const_cast<uint8_t&>(p.g))
+				|| !w.u8(const_cast<uint8_t&>(p.b))
+				|| !w.u8(const_cast<uint8_t&>(p.a))
+				)
+			{
+				break;
+			}
+		}
+		return true;
+	}
+}

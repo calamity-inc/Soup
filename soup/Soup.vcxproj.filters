@@ -1200,6 +1200,9 @@
     <ClInclude Include="Rgba.hpp">
       <Filter>vis</Filter>
     </ClInclude>
+    <ClInclude Include="RgbaCanvas.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1763,6 +1766,9 @@
     </ClCompile>
     <ClCompile Include="TreeWriter.cpp">
       <Filter>util\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="RgbaCanvas.cpp">
+      <Filter>vis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

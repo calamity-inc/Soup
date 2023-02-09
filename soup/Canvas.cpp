@@ -1,5 +1,7 @@
 #include "Canvas.hpp"
 
+#include "base.hpp"
+
 #include "console.hpp"
 #include "ioSeekableReader.hpp"
 #include "RasterFont.hpp"
@@ -17,19 +19,9 @@ namespace soup
 		}
 	}
 
-	void Canvas::loadBlackWhiteData(const std::vector<bool>& black_white_data)
-	{
-		unsigned int i = 0;
-		for (const auto& px : black_white_data)
-		{
-			auto c = (uint8_t)(px * 255);
-			pixels.at(i++) = Rgb{ c, c, c };
-		}
-	}
-
 	void Canvas::set(unsigned int x, unsigned int y, Rgb colour) noexcept
 	{
-		if (x < width && y < height)
+		SOUP_IF_LIKELY (x < width && y < height)
 		{
 			pixels.at(x + (y * width)) = colour;
 		}
@@ -43,6 +35,16 @@ namespace soup
 	const Rgb& Canvas::ref(unsigned int x, unsigned int y) const
 	{
 		return pixels.at(x + (y * width));
+	}
+
+	void Canvas::loadBlackWhiteData(const std::vector<bool>& black_white_data)
+	{
+		unsigned int i = 0;
+		for (const auto& px : black_white_data)
+		{
+			auto c = (uint8_t)(px * 255);
+			pixels.at(i++) = Rgb{ c, c, c };
+		}
 	}
 
 	void Canvas::addText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font)
@@ -445,7 +447,7 @@ namespace soup
 			SOUP_IF_UNLIKELY (!w.u8(const_cast<uint8_t&>(p.r))
 				|| !w.u8(const_cast<uint8_t&>(p.g))
 				|| !w.u8(const_cast<uint8_t&>(p.b))
-			)
+				)
 			{
 				break;
 			}

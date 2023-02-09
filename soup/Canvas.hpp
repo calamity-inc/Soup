@@ -37,10 +37,11 @@ namespace soup
 		}
 
 		void fill(const Rgb colour);
-		void loadBlackWhiteData(const std::vector<bool>& black_white_data);
 		void set(unsigned int x, unsigned int y, Rgb colour) noexcept;
 		[[nodiscard]] Rgb get(unsigned int x, unsigned int y) const;
 		[[nodiscard]] const Rgb& ref(unsigned int x, unsigned int y) const;
+
+		void loadBlackWhiteData(const std::vector<bool>& black_white_data);
 
 		void addText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font);
 		void addText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font);

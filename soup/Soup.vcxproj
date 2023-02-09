@@ -500,6 +500,7 @@
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="Rgba.hpp" />
+    <ClInclude Include="RgbaCanvas.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
     <ClInclude Include="WootingAnalog.hpp" />
@@ -886,6 +887,7 @@
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="rflParser.cpp" />
+    <ClCompile Include="RgbaCanvas.cpp" />
     <ClCompile Include="soup.cpp" />
     <ClCompile Include="spaceship.cpp" />
     <ClCompile Include="Task.cpp" />
