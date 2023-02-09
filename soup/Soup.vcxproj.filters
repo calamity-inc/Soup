@@ -587,9 +587,6 @@
     <ClInclude Include="SourceLocation.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="TreeNode.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="Bigfloat.hpp">
       <Filter>math</Filter>
     </ClInclude>
@@ -1173,9 +1170,6 @@
     <ClInclude Include="LexemeParser.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="TreeReader.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="cat.hpp">
       <Filter>data\cat</Filter>
     </ClInclude>
@@ -1190,6 +1184,18 @@
     </ClInclude>
     <ClInclude Include="UsbHidScancode.hpp">
       <Filter>os\input</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeNode.hpp">
+      <Filter>util\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeReader.hpp">
+      <Filter>util\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeWriter.hpp">
+      <Filter>util\tree</Filter>
+    </ClInclude>
+    <ClInclude Include="catTreeWriter.hpp">
+      <Filter>data\cat</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1746,11 +1752,14 @@
     <ClCompile Include="cat.cpp">
       <Filter>data\cat</Filter>
     </ClCompile>
-    <ClCompile Include="TreeReader.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="WootingAnalog.cpp">
       <Filter>os\input</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeReader.cpp">
+      <Filter>util\tree</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeWriter.cpp">
+      <Filter>util\tree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1951,6 +1960,9 @@
     </Filter>
     <Filter Include="os\input">
       <UniqueIdentifier>{350adf99-141c-4765-8d24-9c61d0b5981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\tree">
+      <UniqueIdentifier>{d96d8487-d3a5-4b49-9ede-1ed0a920b12d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

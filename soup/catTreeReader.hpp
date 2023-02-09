@@ -1,7 +1,8 @@
 #pragma once
 
-#include "cat.hpp"
 #include "TreeReader.hpp"
+
+#include "cat.hpp"
 
 namespace soup
 {

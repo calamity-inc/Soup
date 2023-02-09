@@ -3,6 +3,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "fwd.hpp"
+
 namespace soup
 {
 	class TreeReader
@@ -20,5 +22,8 @@ namespace soup
 		[[nodiscard]] std::unordered_map<std::string, std::string> toMap(const void* root, bool disallow_empty_value = false) const;
 	private:
 		void toMap(std::unordered_map<std::string, std::string>& map, const void* root, bool disallow_empty_value, const std::string& prefix) const;
+
+	public:
+		void toBinary(BitWriter& w, const void* root) const;
 	};
 }

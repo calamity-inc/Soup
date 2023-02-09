@@ -29,6 +29,11 @@ namespace soup
 			: parent(parent)
 		{
 		}
+
+		catNode(catNode* parent, std::string name, std::string value)
+			: parent(parent), name(std::move(name)), value(std::move(value))
+		{
+		}
 	};
 
 	[[nodiscard]] UniquePtr<catNode> catParse(Reader& r);

@@ -454,6 +454,7 @@
     <ClInclude Include="CApiUtil.hpp" />
     <ClInclude Include="cat.hpp" />
     <ClInclude Include="catTreeReader.hpp" />
+    <ClInclude Include="catTreeWriter.hpp" />
     <ClInclude Include="cbCmd.hpp" />
     <ClInclude Include="cbCmdArithmetic.hpp" />
     <ClInclude Include="cbCmdCapabilities.hpp" />
@@ -498,6 +499,7 @@
     <ClInclude Include="format.hpp" />
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
+    <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
     <ClInclude Include="WootingAnalog.hpp" />
     <ClInclude Include="InquiryLang.hpp" />
@@ -889,6 +891,7 @@
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
     <ClCompile Include="TreeReader.cpp" />
+    <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="tridText.cpp" />
     <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="WootingAnalog.cpp" />
