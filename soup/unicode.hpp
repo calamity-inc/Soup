@@ -8,6 +8,9 @@
 #define UTF8_HAS_CONTINUATION(ch) (ch & 0b10000000)
 #define UTF8_IS_CONTINUATION(ch) ((ch & 0b11000000) == UTF8_CONTINUATION_FLAG)
 
+#define UTF16_IS_HIGH_SURROGATE(ch) ((ch >> 10) == 0x36)
+#define UTF16_IS_LOW_SURROGATE(ch) ((ch >> 10) == 0x37)
+
 #if SOUP_WINDOWS
 #include <Windows.h>
 
@@ -42,7 +45,7 @@ namespace soup
 		[[nodiscard]] static char32_t utf16_to_utf32(typename Str::const_iterator& it, const typename Str::const_iterator end) noexcept
 		{
 			char32_t w1 = *it++;
-			if ((w1 >> 10) == 0x36) // Surrogate pair?
+			if (UTF16_IS_HIGH_SURROGATE(w1))
 			{
 				SOUP_IF_UNLIKELY (it == end)
 				{
