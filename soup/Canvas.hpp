@@ -62,6 +62,8 @@ namespace soup
 		[[nodiscard]] static char16_t downsampleChunkToChar(uint8_t chunkset) noexcept;
 
 	public:
+		[[nodiscard]] static Canvas fromBmp(ioSeekableReader& r);
+
 		[[nodiscard]] std::string toSvg(unsigned int scale = 1) const;
 		[[nodiscard]] std::string toPng() const;
 		void toPng(Writer& w) const;

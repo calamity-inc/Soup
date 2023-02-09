@@ -1,6 +1,7 @@
 #include "Canvas.hpp"
 
 #include "console.hpp"
+#include "ioSeekableReader.hpp"
 #include "RasterFont.hpp"
 #include "StringWriter.hpp"
 #include "TinyPngOut.hpp"
@@ -321,6 +322,44 @@ namespace soup
 		return '-';
 	}
 
+
+	Canvas Canvas::fromBmp(ioSeekableReader& r)
+	{
+		Canvas c;
+
+		uint16_t sig;
+		SOUP_IF_LIKELY (r.u16(sig) && sig == 0x4D42)
+		{
+			uint32_t data_start, header_size;
+			int32_t width, height;
+			SOUP_IF_LIKELY ((r.seek(0x0A), r.u32(data_start))
+				&& r.u32(header_size)
+				&& header_size == 40
+				&& r.i32(width)
+				&& r.i32(height)
+				&& height < 0
+				)
+			{
+				height *= -1;
+
+				c.resize(width, height);
+				r.seek(data_start);
+
+				for (auto& p : c.pixels)
+				{
+					SOUP_IF_UNLIKELY (!r.u8(p.r)
+						|| !r.u8(p.g)
+						|| !r.u8(p.b)
+						)
+					{
+						break;
+					}
+				}
+			}
+		}
+
+		return c;
+	}
 
 	std::string Canvas::toSvg(unsigned int scale) const
 	{
