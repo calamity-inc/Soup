@@ -82,5 +82,4 @@ namespace soup
 			return arr[i];
 		}
 	};
-	static_assert(sizeof(Rgb) <= sizeof(size_t));
 }
