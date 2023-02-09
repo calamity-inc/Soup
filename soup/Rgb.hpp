@@ -8,18 +8,15 @@
 
 namespace soup
 {
-	struct Rgb
+	union Rgb
 	{
-		union
+		struct
 		{
-			struct
-			{
-				uint8_t r;
-				uint8_t g;
-				uint8_t b;
-			};
-			uint8_t arr[3];
+			uint8_t r;
+			uint8_t g;
+			uint8_t b;
 		};
+		uint8_t arr[3];
 
 		static const Rgb BLACK;
 		static const Rgb WHITE;

@@ -152,7 +152,7 @@ namespace soup
 	struct FormattedText;
 	class QrCode;
 	struct RasterFont;
-	struct Rgb;
+	union Rgb;
 
 	// vis.layout
 	struct lyoContainer;
