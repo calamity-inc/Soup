@@ -1197,6 +1197,9 @@
     <ClInclude Include="catTreeWriter.hpp">
       <Filter>data\cat</Filter>
     </ClInclude>
+    <ClInclude Include="Rgba.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

@@ -499,6 +499,7 @@
     <ClInclude Include="format.hpp" />
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
+    <ClInclude Include="Rgba.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
     <ClInclude Include="WootingAnalog.hpp" />
