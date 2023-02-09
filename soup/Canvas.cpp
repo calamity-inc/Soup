@@ -419,4 +419,37 @@ namespace soup
 		}
 		return res;
 	}
+
+	bool Canvas::toBmp(Writer& w) const
+	{
+		uint16_t s;
+		uint32_t i;
+		SOUP_IF_UNLIKELY (!(s = 0x4D42, w.u16(s))
+			|| !(i = (40 + (3 * pixels.size())), w.u32(i))
+			|| !w.skip(4)
+			|| !(i = (14 + 40), w.u32(i))
+			|| !(i = 40, w.u32(i))
+			|| !(i = width, w.u32(i))
+			|| !(i = height * -1, w.u32(i))
+			|| !(s = 1, w.u16(s))
+			|| !(s = 24, w.u16(s))
+			|| !(i = 0, w.u32(i))
+			|| !(i = (3 * pixels.size()), w.u32(i))
+			|| !w.skip(4 + 4 + 4 + 4)
+			)
+		{
+			return false;
+		}
+		for (const auto& p : pixels)
+		{
+			SOUP_IF_UNLIKELY (!w.u8(const_cast<uint8_t&>(p.r))
+				|| !w.u8(const_cast<uint8_t&>(p.g))
+				|| !w.u8(const_cast<uint8_t&>(p.b))
+			)
+			{
+				break;
+			}
+		}
+		return true;
+	}
 }
