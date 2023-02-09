@@ -18,6 +18,8 @@ namespace soup
 		[[nodiscard]] Rgba get(unsigned int x, unsigned int y) const;
 		[[nodiscard]] const Rgba& ref(unsigned int x, unsigned int y) const;
 
+		void subtractGreen();
+
 		[[nodiscard]] static RgbaCanvas fromCanvas(const Canvas& solid, uint8_t alpha = 0xFF);
 
 		bool toBmp(Writer& w) const;

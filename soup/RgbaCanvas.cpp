@@ -33,6 +33,23 @@ namespace soup
 		return pixels.at(x + (y * width));
 	}
 
+	void RgbaCanvas::subtractGreen()
+	{
+		for (auto& p : pixels)
+		{
+			if (p.g != 0)
+			{
+				const int rbavg = ((p.r + p.b) / 2);
+				if (p.g > rbavg)
+				{
+					const auto extra_green = (p.g - rbavg);
+					p.g -= extra_green;
+					p.a = (0xFF - extra_green);
+				}
+			}
+		}
+	}
+
 	RgbaCanvas RgbaCanvas::fromCanvas(const Canvas& solid, uint8_t alpha)
 	{
 		RgbaCanvas c;
