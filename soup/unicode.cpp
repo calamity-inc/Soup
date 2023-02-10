@@ -166,4 +166,17 @@ namespace soup
 		}
 		return char_len;
 	}
+
+	size_t unicode::utf16_char_len(const UTF16_STRING_TYPE& str) noexcept
+	{
+		size_t char_len = 0;
+		for (const auto& c : str)
+		{
+			SOUP_IF_LIKELY (!UTF16_IS_LOW_SURROGATE(c))
+			{
+				++char_len;
+			}
+		}
+		return char_len;
+	}
 }

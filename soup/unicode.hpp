@@ -103,5 +103,6 @@ namespace soup
 		}
 
 		[[nodiscard]] static size_t utf8_char_len(const std::string& str) noexcept;
+		[[nodiscard]] static size_t utf16_char_len(const UTF16_STRING_TYPE& str) noexcept;
 	};
 }
