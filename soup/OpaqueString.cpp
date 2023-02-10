@@ -66,22 +66,12 @@ namespace soup
 		return unicode::utf32_to_utf16(data);
 	}
 
-	OpaqueString::OpaqueString(const std::u32string& str) noexcept
-		: data(str)
-	{
-	}
-
-	OpaqueString::OpaqueString(std::u32string&& str) noexcept
+	OpaqueString::OpaqueString(std::u32string str) noexcept
 		: data(std::move(str))
 	{
 	}
 
-	void OpaqueString::operator=(const std::u32string& str) noexcept
-	{
-		data = str;
-	}
-
-	void OpaqueString::operator=(std::u32string&& str) noexcept
+	void OpaqueString::operator=(std::u32string str) noexcept
 	{
 		data = std::move(str);
 	}

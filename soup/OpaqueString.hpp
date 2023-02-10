@@ -34,10 +34,8 @@ namespace soup
 		void operator =(const UTF16_STRING_TYPE& str) noexcept;
 		operator UTF16_STRING_TYPE() const noexcept;
 
-		OpaqueString(const std::u32string& str) noexcept;
-		OpaqueString(std::u32string&& str) noexcept;
-		void operator =(const std::u32string& str) noexcept;
-		void operator =(std::u32string&& str) noexcept;
+		OpaqueString(std::u32string str) noexcept;
+		void operator =(std::u32string str) noexcept;
 		operator std::u32string&() noexcept;
 		operator const std::u32string&() const noexcept;
 
