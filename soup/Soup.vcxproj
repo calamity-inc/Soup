@@ -889,6 +889,7 @@
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="rflParser.cpp" />
+    <ClCompile Include="Rgba.cpp" />
     <ClCompile Include="RgbaCanvas.cpp" />
     <ClCompile Include="soup.cpp" />
     <ClCompile Include="spaceship.cpp" />

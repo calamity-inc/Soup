@@ -1776,6 +1776,9 @@
     <ClCompile Include="NativeString.cpp">
       <Filter>util\string</Filter>
     </ClCompile>
+    <ClCompile Include="Rgba.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

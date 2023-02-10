@@ -42,6 +42,8 @@ namespace soup
 			return !operator==(c);
 		}
 
+		[[nodiscard]] static Rgba fromHex(std::string hex);
+
 		[[nodiscard]] constexpr uint32_t toInt() const noexcept
 		{
 			return (r << 24) | (g << 16) | (b << 8) | a;

@@ -13,6 +13,25 @@ namespace soup
 	const Rgb Rgb::MAGENTA{ 255, 0, 255 };
 	const Rgb Rgb::GRAY{ 128, 128, 128 };
 
+	Rgb Rgb::fromHex(std::string hex)
+	{
+		expandHex(hex);
+		static_assert(sizeof(unsigned long) == sizeof(uint32_t));
+		return Rgb(std::stoul(hex, nullptr, 16));
+	}
+
+	void Rgb::expandHex(std::string& hex)
+	{
+		if (hex.at(0) == '#')
+		{
+			hex.erase(0, 1);
+		}
+		if (hex.size() == 3)
+		{
+			hex = std::move(std::string(2, hex.at(0)).append(2, hex.at(1)).append(2, hex.at(2)));
+		}
+	}
+
 	std::string Rgb::toHex() const
 	{
 		if (((r >> 4) == (r & 0xF))

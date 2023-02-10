@@ -58,6 +58,8 @@ namespace soup
 			return (r << 16) | (g << 8) | b;
 		}
 
+		[[nodiscard]] static Rgb fromHex(std::string hex);
+		static void expandHex(std::string& hex);
 		[[nodiscard]] std::string toHex() const;
 
 		[[nodiscard]] static Rgb lerp(Rgb a, Rgb b, float t)
