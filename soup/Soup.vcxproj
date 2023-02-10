@@ -499,6 +499,7 @@
     <ClInclude Include="format.hpp" />
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
+    <ClInclude Include="NativeString.hpp" />
     <ClInclude Include="Rgba.hpp" />
     <ClInclude Include="RgbaCanvas.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
@@ -884,6 +885,7 @@
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />
     <ClCompile Include="morse.cpp" />
+    <ClCompile Include="NativeString.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="rflParser.cpp" />
