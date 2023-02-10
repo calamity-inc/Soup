@@ -17,7 +17,7 @@ namespace soup
 		Rgb rgb;
 
 		constexpr Rgba() noexcept
-			: r(0), g(0), b(0)
+			: r(0), g(0), b(0), a(0)
 		{
 		}
 
