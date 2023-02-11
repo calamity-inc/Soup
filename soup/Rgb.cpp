@@ -16,7 +16,7 @@ namespace soup
 	Rgb Rgb::fromHex(std::string hex)
 	{
 		expandHex(hex);
-		static_assert(sizeof(unsigned long) == sizeof(uint32_t));
+		static_assert(sizeof(unsigned long) >= sizeof(uint32_t));
 		return Rgb(std::stoul(hex, nullptr, 16));
 	}
 
