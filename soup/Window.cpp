@@ -24,7 +24,8 @@ namespace soup
 				if (wc.draw_func)
 				{
 					RECT rect;
-					GetUpdateRect(hWnd, &rect, FALSE);
+					//GetUpdateRect(hWnd, &rect, FALSE);
+					GetWindowRect(hWnd, &rect);
 
 					PAINTSTRUCT ps;
 					HDC hdc = BeginPaint(hWnd, &ps);
