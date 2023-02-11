@@ -356,6 +356,7 @@ static void unit_data()
 		tag = xml::parse(R"(<html lang="en">Hello</html>)"); assert(tag->encode() == R"(<html lang="en">Hello</html>)");
 		tag = xml::parse(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
 		tag = xml::parse(R"(<html><body><h1></body>test)"); assert(tag->encode() == R"(<html><body><h1></h1></body>test</html>)");
+		tag = xml::parse(R"(<img src="soup"/>)"); assert(tag->encode() == R"(<img src="soup"></img>)");
 
 		// Handle multiple tags by implicitly creating a <body> tag
 		tag = xml::parse("<p>foo</p><p>bar</p>"); assert(tag->encode() == "<body><p>foo</p><p>bar</p></body>");
