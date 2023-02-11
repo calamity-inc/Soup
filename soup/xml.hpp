@@ -31,6 +31,9 @@ namespace soup
 		}
 
 		[[nodiscard]] std::string encode() const noexcept;
+
+		[[nodiscard]] bool hasAttribute(const std::string& name) const noexcept;
+		[[nodiscard]] const std::string& getAttribute(const std::string& name) const;
 	};
 
 	struct XmlText : public XmlNode

@@ -44,6 +44,30 @@ namespace soup
 		return str;
 	}
 
+	bool XmlTag::hasAttribute(const std::string& name) const noexcept
+	{
+		for (const auto& a : attributes)
+		{
+			if (a.first == name)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	const std::string& XmlTag::getAttribute(const std::string& name) const
+	{
+		for (const auto& a : attributes)
+		{
+			if (a.first == name)
+			{
+				return a.second;
+			}
+		}
+		throw std::exception();
+	}
+
 	UniquePtr<XmlTag> xml::parse(const std::string& xml)
 	{
 		auto i = xml.begin();

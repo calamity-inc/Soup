@@ -41,6 +41,24 @@ namespace soup
 			LineTo(hdc, b.x, b.y);
 		}
 
+		void drawCircle(unsigned int x, unsigned int y, float r, Rgb colour)
+		{
+			return drawEllipse(x, y, r, r, colour);
+		}
+
+		void drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour)
+		{
+			// Outline
+			SelectObject(hdc, GetStockObject(DC_PEN));
+			SetDCPenColor(hdc, RGB(colour.r, colour.g, colour.b));
+
+			// Filling
+			SelectObject(hdc, GetStockObject(DC_BRUSH));
+			SetDCBrushColor(hdc, RGB(colour.r, colour.g, colour.b));
+
+			Ellipse(hdc, x - xr, y - yr, x + xr, y + yr);
+		}
+
 		[[nodiscard]] Rgb getPixel(unsigned int x, unsigned int y) const final
 		{
 			auto col = GetPixel(hdc, x, y);

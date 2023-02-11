@@ -1206,6 +1206,12 @@
     <ClInclude Include="NativeString.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
+    <ClInclude Include="Svg.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="BCanvas.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1777,6 +1783,12 @@
       <Filter>util\string</Filter>
     </ClCompile>
     <ClCompile Include="Rgba.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="Svg.cpp">
+      <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="BCanvas.cpp">
       <Filter>vis</Filter>
     </ClCompile>
   </ItemGroup>

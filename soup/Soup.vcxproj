@@ -445,6 +445,7 @@
     <ClInclude Include="audWav.hpp" />
     <ClInclude Include="aud_math.hpp" />
     <ClInclude Include="base40.hpp" />
+    <ClInclude Include="BCanvas.hpp" />
     <ClInclude Include="BigintId.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
@@ -502,6 +503,7 @@
     <ClInclude Include="NativeString.hpp" />
     <ClInclude Include="Rgba.hpp" />
     <ClInclude Include="RgbaCanvas.hpp" />
+    <ClInclude Include="Svg.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
     <ClInclude Include="WootingAnalog.hpp" />
@@ -846,6 +848,7 @@
     <ClCompile Include="base32.cpp" />
     <ClCompile Include="base58.cpp" />
     <ClCompile Include="base64.cpp" />
+    <ClCompile Include="BCanvas.cpp" />
     <ClCompile Include="bcrypt.cpp" />
     <ClCompile Include="bech32.cpp" />
     <ClCompile Include="Bigfloat.cpp" />
@@ -893,6 +896,7 @@
     <ClCompile Include="RgbaCanvas.cpp" />
     <ClCompile Include="soup.cpp" />
     <ClCompile Include="spaceship.cpp" />
+    <ClCompile Include="Svg.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />

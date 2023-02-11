@@ -30,6 +30,22 @@ namespace soup
 		}
 	}
 
+	void RenderTarget::drawCircle(unsigned int x, unsigned int y, float r, Rgb colour)
+	{
+		for (float i = 0.01f; i < M_TAU; i += 0.01f)
+		{
+			drawLine(Vector2(x, y), Vector2(x + (cos(i) * r), y + (sin(i) * r)), colour);
+		}
+	}
+
+	void RenderTarget::drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour)
+	{
+		for (float i = 0.01f; i < M_TAU; i += 0.01f)
+		{
+			drawLine(Vector2(x, y), Vector2(x + (cos(i) * xr), y + (sin(i) * yr)), colour);
+		}
+	}
+
 	void RenderTarget::drawLine(Vector2 a, Vector2 b, Rgb colour)
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
