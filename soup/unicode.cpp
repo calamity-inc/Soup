@@ -92,7 +92,18 @@ namespace soup
 
 	UTF16_STRING_TYPE unicode::utf8_to_utf16(const std::string& utf8) noexcept
 	{
+#if SOUP_WINDOWS
+		std::wstring utf16;
+		const int sizeRequired = MultiByteToWideChar(CP_UTF8, 0, utf8.data(), (int)utf8.size(), nullptr, 0);
+		SOUP_IF_LIKELY (sizeRequired != 0)
+		{
+			utf16 = std::wstring(sizeRequired, 0);
+			MultiByteToWideChar(CP_UTF8, 0, utf8.data(), (int)utf8.size(), utf16.data(), sizeRequired);
+		}
+		return utf16;
+#else
 		return utf32_to_utf16(utf8_to_utf32(utf8));
+#endif
 	}
 
 	UTF16_STRING_TYPE unicode::utf32_to_utf16(const std::u32string& utf32) noexcept
