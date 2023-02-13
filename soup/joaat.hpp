@@ -88,7 +88,7 @@ namespace soup
 		static void undo_partial(uint32_t& val) noexcept
 		{
 			val ^= (val >> 6) ^ (val >> 12) ^ (val >> 18) ^ (val >> 24) ^ (val >> 30);
-			val *= 0xC00FFC01;  // inverse of val += (val << 10);
+			val *= 0xC00FFC01; // inverse of val += (val << 10);
 		}
 
 		[[nodiscard]] static uint32_t undo_partial(uint32_t val, char c) noexcept
