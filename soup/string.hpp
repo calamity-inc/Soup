@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base.hpp"
+
 namespace soup
 {
 	class string
@@ -600,6 +602,14 @@ namespace soup
 
 		[[nodiscard]] static std::string _xor(const std::string& l, const std::string& r); // Did you know that "xor" was a C++ keyword?
 		[[nodiscard]] static std::string xorSameLength(const std::string& l, const std::string& r);
+
+#if SOUP_CPP20
+		[[nodiscard]] static std::string fixType(std::u8string&& str)
+		{
+			std::string fixed = std::move(*reinterpret_cast<std::string*>(&str));
+			return fixed;
+		}
+#endif
 
 		// char mutation
 
