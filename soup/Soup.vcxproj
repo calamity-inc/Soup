@@ -506,6 +506,8 @@
     <ClInclude Include="Svg.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
+    <ClInclude Include="WebSocket.hpp" />
+    <ClInclude Include="WebSocketConnection.hpp" />
     <ClInclude Include="WootingAnalog.hpp" />
     <ClInclude Include="InquiryLang.hpp" />
     <ClInclude Include="IntStruct.hpp" />
@@ -904,6 +906,8 @@
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="tridText.cpp" />
     <ClCompile Include="version_compare.cpp" />
+    <ClCompile Include="WebSocket.cpp" />
+    <ClCompile Include="WebSocketConnection.cpp" />
     <ClCompile Include="WootingAnalog.cpp" />
     <ClCompile Include="Writer.cpp" />
     <ClCompile Include="X509Certchain.cpp" />

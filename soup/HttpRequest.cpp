@@ -140,7 +140,7 @@ namespace soup
 		return {};
 	}
 
-	void HttpRequest::execute_send(Socket& s) const
+	std::string HttpRequest::getDataToSend() const
 	{
 		std::string data{};
 		data.append(method);
@@ -149,7 +149,12 @@ namespace soup
 		data.append(ObfusString(" HTTP/1.0").str());
 		data.append("\r\n");
 		data.append(toString());
-		s.send(data);
+		return data;
+	}
+
+	void HttpRequest::execute_send(Socket& s) const
+	{
+		s.send(getDataToSend());
 	}
 
 	void HttpRequest::execute_tick(Socket& s, std::string* resp)

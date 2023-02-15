@@ -2,12 +2,10 @@
 
 #if !SOUP_WASM
 
-#include "base64.hpp"
 #include "HttpRequest.hpp"
-#include "sha1.hpp"
 #include "Socket.hpp"
-#include "StringReader.hpp"
 #include "StringWriter.hpp"
+#include "WebSocket.hpp"
 #include "WebSocketFrameType.hpp"
 #include "WebSocketMessage.hpp"
 
@@ -195,7 +193,7 @@ namespace soup
 						{
 							// Firefox throws a SkillIssueException if we say HTTP/1.0
 							std::string cont = "HTTP/1.1 101\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nServer: Soup\r\nSec-WebSocket-Accept: ";
-							cont.append(hashWebSocketKey(key_entry->second));
+							cont.append(WebSocket::hashKey(key_entry->second));
 							cont.append("\r\n\r\n");
 							s.send(cont);
 
@@ -237,106 +235,51 @@ namespace soup
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap)
 		{
-			StringReader r{ std::move(data), false };
-
-			if (uint8_t buf; r.u8(buf))
+			bool fin;
+			uint8_t opcode;
+			if (WebSocket::readFrame(fin, opcode, data))
 			{
-				bool fin = (buf >> 7);
-				uint8_t opcode = (buf & 0x7F);
+				ServerWebService& srv = *cap.get<ServerWebService*>();
 
-				if (uint8_t buf; r.u8(buf))
+				if (opcode <= WebSocketFrameType::_NON_CONTROL_MAX) // non-control frame
 				{
-					bool has_mask = (buf >> 7);
-					uint64_t payload_len = (buf & 0x7F);
+					WebSocketMessage& msg_buf = s.custom_data.getStructFromMap(WebSocketMessage);
 
-					if (payload_len == 126)
+					if (opcode != 0)
 					{
-						uint16_t buf;
-						if (!r.u16(buf))
-						{
-							return;
-						}
-						payload_len = buf;
+						msg_buf.data = std::move(data);
+						msg_buf.is_text = (opcode == WebSocketFrameType::TEXT);
 					}
-					else if (payload_len == 127)
+					else
 					{
-						if (!r.u64(payload_len))
-						{
-							return;
-						}
+						msg_buf.data.append(data);
 					}
 
-					std::string mask;
-					if (has_mask)
+					if (fin)
 					{
-						if (!r.str(4, mask))
+						if (srv.on_websocket_message)
 						{
-							return;
+							srv.on_websocket_message(msg_buf, s, srv);
 						}
+						msg_buf.data.clear();
 					}
-
-					std::string payload;
-					if (!r.str(payload_len, payload))
+				}
+				else // control frame
+				{
+					if (opcode == WebSocketFrameType::PING)
 					{
+						wsSend(s, WebSocketFrameType::PONG, data);
+					}
+					else if (opcode != WebSocketFrameType::PONG)
+					{
+						s.close();
 						return;
 					}
-
-					if (has_mask)
-					{
-						for (auto i = 0; i != payload.size(); ++i)
-						{
-							payload[i] ^= mask.at(i % 4);
-						}
-					}
-
-					ServerWebService& srv = *cap.get<ServerWebService*>();
-
-					if (opcode <= WebSocketFrameType::_NON_CONTROL_MAX) // non-control frame
-					{
-						WebSocketMessage& msg_buf = s.custom_data.getStructFromMap(WebSocketMessage);
-
-						if (opcode != 0)
-						{
-							msg_buf.data = std::move(payload);
-							msg_buf.is_text = (opcode == WebSocketFrameType::TEXT);
-						}
-						else
-						{
-							msg_buf.data.append(payload);
-						}
-
-						if (fin)
-						{
-							if (srv.on_websocket_message)
-							{
-								srv.on_websocket_message(msg_buf, s, srv);
-							}
-							msg_buf.data.clear();
-						}
-					}
-					else // control frame
-					{
-						if (opcode == WebSocketFrameType::PING)
-						{
-							wsSend(s, WebSocketFrameType::PONG, payload);
-						}
-						else if (opcode != WebSocketFrameType::PONG)
-						{
-							s.close();
-							return;
-						}
-					}
-
-					srv.wsRecv(s);
 				}
+
+				srv.wsRecv(s);
 			}
 		}, this);
-	}
-
-	std::string ServerWebService::hashWebSocketKey(std::string key)
-	{
-		key.append("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-		return base64::encode(sha1::hash(key));
 	}
 }
 

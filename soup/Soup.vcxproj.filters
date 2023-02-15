@@ -1212,6 +1212,12 @@
     <ClInclude Include="BCanvas.hpp">
       <Filter>vis</Filter>
     </ClInclude>
+    <ClInclude Include="WebSocketConnection.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocket.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1790,6 +1796,12 @@
     </ClCompile>
     <ClCompile Include="BCanvas.cpp">
       <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocketConnection.cpp">
+      <Filter>net\web\websocket</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocket.cpp">
+      <Filter>net\web\websocket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

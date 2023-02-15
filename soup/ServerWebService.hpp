@@ -45,8 +45,6 @@ namespace soup
 	protected:
 		void httpRecv(Socket& s);
 		void wsRecv(Socket& s);
-
-		[[nodiscard]] static std::string hashWebSocketKey(std::string key);
 	};
 }
 #endif

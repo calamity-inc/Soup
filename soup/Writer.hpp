@@ -284,6 +284,13 @@ namespace soup
 			return true;
 		}
 
+		// String with known length.
+		bool str(size_t len, const char* v)
+		{
+			write(v, len);
+			return true;
+		}
+
 		// std::vector<uint8_t> with u8 size prefix.
 		bool vec_u8_u8(std::vector<uint8_t>& v)
 		{
