@@ -272,6 +272,30 @@ namespace soup
 		return true;
 	}
 
+	[[nodiscard]] static TlsCipherSuite_t tls_randGreaseyCiphersuite()
+	{
+		switch (rand(0, 15))
+		{
+		case 0: return TLS_GREASE_0;
+		case 1: return TLS_GREASE_1;
+		case 2: return TLS_GREASE_2;
+		case 3: return TLS_GREASE_3;
+		case 4: return TLS_GREASE_4;
+		case 5: return TLS_GREASE_5;
+		case 6: return TLS_GREASE_6;
+		case 7: return TLS_GREASE_7;
+		case 8: return TLS_GREASE_8;
+		case 9: return TLS_GREASE_9;
+		case 10: return TLS_GREASE_10;
+		case 11: return TLS_GREASE_11;
+		case 12: return TLS_GREASE_12;
+		case 13: return TLS_GREASE_13;
+		case 14: return TLS_GREASE_14;
+		default:;
+		}
+		return TLS_GREASE_15;
+	}
+
 	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap, bool(*certchain_validator)(const X509Certchain&, const std::string& server_name))
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
@@ -294,6 +318,10 @@ namespace soup
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
 		};
+		hello.cipher_suites.emplace(
+			hello.cipher_suites.begin() + rand(0, hello.cipher_suites.size() - 1),
+			tls_randGreaseyCiphersuite()
+		);
 		hello.compression_methods = { 0 };
 
 		{
