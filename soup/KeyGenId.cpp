@@ -28,7 +28,7 @@ namespace soup
 		StringWriter sw(LITTLE_ENDIAN);
 		sw.u64(const_cast<uint64_t&>(p.seed));
 		sw.u64(const_cast<uint64_t&>(q.seed));
-		return sw.str;
+		return sw.data;
 	}
 
 	RsaKeypair KeyGenId::getKeypair() const

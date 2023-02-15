@@ -379,7 +379,7 @@ namespace soup
 		}
 
 		next_send_seq_id = 0;
-		mysqlSend(w.str);
+		mysqlSend(w.data);
 
 		mysqlRecv([](MysqlConnection& con, std::string&& data, Capture&& _cap)
 		{
@@ -526,7 +526,7 @@ namespace soup
 
 		w.u32(stmt_id);
 
-		mysqlSend(std::move(w.str));
+		mysqlSend(std::move(w.data));
 	}
 
 	void MysqlConnection::mysqlRecv(recv_callback_t callback, Capture&& cap)

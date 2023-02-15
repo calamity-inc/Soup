@@ -7,7 +7,7 @@ namespace soup
 	class StringWriter final : public Writer
 	{
 	public:
-		std::string str{};
+		std::string data{};
 
 		StringWriter(Endian endian = LITTLE_ENDIAN)
 			: Writer(endian)
@@ -23,7 +23,7 @@ namespace soup
 
 		void write(const char* data, size_t size) final
 		{
-			str.append(data, size);
+			this->data.append(data, size);
 		}
 	};
 }

@@ -24,7 +24,7 @@ namespace soup
 		dq.qtype = qtype;
 		dq.write(sw);
 
-		return sw.str;
+		return sw.data;
 	}
 
 	std::vector<UniquePtr<dnsRecord>> dnsRawResolver::parseResponse(std::string&& data) const

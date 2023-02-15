@@ -147,8 +147,8 @@ namespace soup
 				}
 			}
 		}
-		w.str.append(payload);
-		s.send(w.str);
+		w.data.append(payload);
+		s.send(w.data);
 	}
 
 	void ServerWebService::httpRecv(Socket& s)

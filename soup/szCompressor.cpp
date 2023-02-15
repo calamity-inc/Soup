@@ -45,7 +45,7 @@ namespace soup
 	{
 		BitString bs(res.data);
 		bs->finishByte();
-		StringReader sr(std::move(bs.sw.str));
+		StringReader sr(std::move(bs.sw.data));
 		BitReader br(&sr);
 		return decompress(br) == data;
 	}

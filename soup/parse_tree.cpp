@@ -153,7 +153,7 @@ namespace soup
 
 				uint8_t b = OP_PUSH_FUN;
 				w.u8(b);
-				w.str_lp_u64_dyn(std::move(sw.str));
+				w.str_lp_u64_dyn(std::move(sw.data));
 				return;
 			}
 		}

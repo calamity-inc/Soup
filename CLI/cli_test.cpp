@@ -396,26 +396,26 @@ static void unit_io()
 		StringWriter w;
 		BitWriter bw(&w);
 
-		w.str.clear();
+		w.data.clear();
 		bw.u8(4, 0x0);
 		bw.u8(4, 0xF);
 		bw.u8(4, 0xF);
 		bw.u8(4, 0x0);
 		bw.finishByte();
-		assert(w.str == "\xF0\x0F");
+		assert(w.data == "\xF0\x0F");
 
-		w.str.clear();
+		w.data.clear();
 		bw.u8(5, 0b11111);
 		bw.u8(5, 0);
 		bw.u8(6, 0b111111);
 		bw.finishByte();
-		assert(w.str == "\x1F\xFC");
+		assert(w.data == "\x1F\xFC");
 
-		w.str.clear();
+		w.data.clear();
 		bw.u8(5, 0b11111);
 		bw.u8(4, 0b101);
 		bw.finishByte();
-		assert(w.str == "\x5F\x01");
+		assert(w.data == "\x5F\x01");
 	});
 }
 

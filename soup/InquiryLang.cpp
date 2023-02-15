@@ -105,7 +105,7 @@ keyword("qrcode", OP_QRCODE); \
 		//std::cout << ast.toString() << std::endl;
 		StringWriter sw;
 		ast.compile(sw);
-		StringReader sr(std::move(sw.str));
+		StringReader sr(std::move(sw.data));
 		LangVm vm{ sr };
 		for (uint8_t op; vm.getNextOp(op); )
 		{

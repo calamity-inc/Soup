@@ -19,7 +19,7 @@ namespace soup
 			ret.push_back(first);
 			StringWriter w{};
 			w.om(type);
-			ret.append(w.str);
+			ret.append(w.data);
 		}
 		return ret;
 	}

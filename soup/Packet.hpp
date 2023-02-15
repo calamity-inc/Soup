@@ -66,7 +66,7 @@ namespace soup
 		{
 			StringWriter w(endian);
 			write(w);
-			return w.str;
+			return w.data;
 		}
 
 		[[nodiscard]] std::string toBinaryStringLE()

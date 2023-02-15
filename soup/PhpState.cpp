@@ -348,7 +348,7 @@ namespace soup
 			StringWriter w;
 			b.compile(w);
 
-			StringReader r{ std::move(w.str) };
+			StringReader r{ std::move(w.data) };
 			execute(output, r, max_require_depth);
 		}
 		catch (const std::runtime_error& e)

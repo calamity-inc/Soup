@@ -33,7 +33,7 @@ namespace soup
 		StringWriter w(false);
 		w.u64(counter);
 
-		std::string mac = sha1::hmac(w.str, secret);
+		std::string mac = sha1::hmac(w.data, secret);
 
 		auto offset = ((uint8_t)mac.at(19) & 0xf);
 		int bin_code = ((uint8_t)mac.at(offset) & 0x7f) << 24

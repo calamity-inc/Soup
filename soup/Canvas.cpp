@@ -397,7 +397,7 @@ namespace soup
 	{
 		StringWriter sw;
 		toPng(sw);
-		return sw.str;
+		return sw.data;
 	}
 
 	void Canvas::toPng(Writer& w) const

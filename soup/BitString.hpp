@@ -30,7 +30,7 @@ namespace soup
 
 		void operator=(BitString&& b)
 		{
-			sw.str = std::move(b.sw.str);
+			sw.data = std::move(b.sw.data);
 			bw = std::move(b.bw);
 			associate();
 		}
@@ -44,7 +44,7 @@ namespace soup
 	public:
 		[[nodiscard]] size_t getBitLength() const noexcept
 		{
-			return (sw.str.size() * 8) + bw.bit_idx;
+			return (sw.data.size() * 8) + bw.bit_idx;
 		}
 
 		[[nodiscard]] BitWriter& operator*() noexcept
@@ -63,7 +63,7 @@ namespace soup
 			{
 				throw 0; // no idea why, but this just breaks big time if the target is not byte-aligned
 			}
-			for (const auto& c : sw.str)
+			for (const auto& c : sw.data)
 			{
 				target.u8(8, (uint8_t)c);
 			}
