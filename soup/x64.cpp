@@ -226,7 +226,6 @@ namespace soup
 			{
 				reg = RD;
 				decodeAccessType(access_type, str);
-				++str;
 			}
 		}
 		else if (*str == 's' && *++str == 'i')
@@ -243,6 +242,12 @@ namespace soup
 				deref_offset *= 10;
 				deref_offset += ((*str) - '0');
 			}
+		}
+
+		if (*str == ']')
+		{
+			SOUP_ASSERT(deref_size == 32); // We had '['?
+			++str;
 		}
 
 		if (*str != '\0')
