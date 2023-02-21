@@ -5,6 +5,7 @@
 #include <cmath> // fmod
 #include <cstdint>
 #include <cstring> // strlen
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <vector>
@@ -604,10 +605,16 @@ namespace soup
 		[[nodiscard]] static std::string xorSameLength(const std::string& l, const std::string& r);
 
 #if SOUP_CPP20
-		[[nodiscard]] static std::string fixType(std::u8string&& str)
+		[[nodiscard]] static std::string fixType(std::u8string str)
 		{
 			std::string fixed = std::move(*reinterpret_cast<std::string*>(&str));
 			return fixed;
+		}
+
+		[[nodiscard]] static std::u8string toUtf8Type(std::string str)
+		{
+			std::u8string u8 = std::move(*reinterpret_cast<std::u8string*>(&str));
+			return u8;
 		}
 #endif
 
@@ -673,5 +680,6 @@ namespace soup
 		// file
 
 		[[nodiscard]] static std::string fromFile(const std::string& file);
+		[[nodiscard]] static std::string fromFilePath(const std::filesystem::path& file);
 	};
 }

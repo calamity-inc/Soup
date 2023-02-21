@@ -75,6 +75,15 @@ namespace soup
 
 	std::string string::fromFile(const std::string& file)
 	{
+#if SOUP_CPP20
+		return fromFilePath(toUtf8Type(file));
+#else
+		return fromFilePath(std::filesystem::u8path(file));
+#endif
+	}
+
+	std::string string::fromFilePath(const std::filesystem::path& file)
+	{
 		std::string ret{};
 		if (std::filesystem::exists(file))
 		{
