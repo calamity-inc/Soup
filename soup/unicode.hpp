@@ -37,6 +37,9 @@ namespace soup
 		[[nodiscard]] static UTF16_STRING_TYPE utf8_to_utf16(const char8_t* utf8) noexcept;
 #endif
 		[[nodiscard]] static UTF16_STRING_TYPE utf8_to_utf16(const std::string& utf8) noexcept;
+#if SOUP_WINDOWS
+		[[nodiscard]] static UTF16_STRING_TYPE acp_to_utf16(const std::string& acp) noexcept;
+#endif
 		[[nodiscard]] static UTF16_STRING_TYPE utf32_to_utf16(const std::u32string& utf32) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(char32_t utf32) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(const std::u32string& utf32) noexcept;
