@@ -755,7 +755,7 @@ namespace soup
 
 	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size)
 	{
-		return decompress(compressed_data, compressed_data_size, compressed_data_size * 20);
+		return decompress(compressed_data, compressed_data_size, compressed_data_size * 23);
 	}
 
 	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size)
