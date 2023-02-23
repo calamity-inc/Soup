@@ -40,6 +40,7 @@ namespace soup
 	void WebSocketConnection::sendUpgradeRequest(std::string host, std::string path)
 	{
 		HttpRequest req(std::move(host), std::move(path));
+		req.header_fields.at("Connection") = "Upgrade";
 		req.header_fields.emplace("Upgrade", "websocket");
 		req.header_fields.emplace("Sec-WebSocket-Key", WebSocket::generateKey());
 		req.header_fields.emplace("Sec-WebSocket-Version", "13");
