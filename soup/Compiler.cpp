@@ -7,11 +7,14 @@
 namespace soup
 {
 	Compiler::Compiler()
+		: prog("clang"),
 #if SOUP_WINDOWS
-		: lang("c++20")
+		prog_ar("llvm-ar"),
+		lang("c++20")
 #else
 		// Debian's at clang 11 right now, which does support C++20, but not enough to compile Soup without modifications.
-		: lang("c++17")
+		prog_ar("ar"),
+		lang("c++17")
 #endif
 	{
 	}
@@ -58,7 +61,7 @@ namespace soup
 		args.emplace_back(out);
 		args.emplace_back("-c");
 		args.emplace_back(in);
-		return os::executeLong("clang", std::move(args));
+		return os::executeLong(prog, std::move(args));
 	}
 
 	const char* Compiler::getExecutableExtension() noexcept
@@ -77,7 +80,7 @@ namespace soup
 		args.emplace_back(out);
 		args.emplace_back(in);
 		addLinkerArgs(args);
-		return os::executeLong("clang", std::move(args));
+		return os::executeLong(prog, std::move(args));
 	}
 
 	std::string Compiler::makeExecutable(const std::vector<std::string>& objects, const std::string& out) const
@@ -87,7 +90,7 @@ namespace soup
 		args.emplace_back(out);
 		args.insert(args.end(), objects.begin(), objects.end());
 		addLinkerArgs(args);
-		return os::executeLong("clang", std::move(args));
+		return os::executeLong(prog, std::move(args));
 	}
 
 	const char* Compiler::getStaticLibraryExtension() noexcept
@@ -103,11 +106,7 @@ namespace soup
 	{
 		std::vector<std::string> args = { "rc", out };
 		args.insert(args.end(), objects.begin(), objects.end());
-#if SOUP_WINDOWS
-		return os::executeLong("llvm-ar", std::move(args));
-#else
-		return os::executeLong("ar", std::move(args));
-#endif
+		return os::executeLong(prog_ar, std::move(args));
 	}
 
 	const char* Compiler::getDynamicLibraryExtension() noexcept
@@ -131,7 +130,7 @@ namespace soup
 		args.emplace_back(out);
 		args.emplace_back(in);
 		addLinkerArgs(args);
-		return os::executeLong("clang", std::move(args));
+		return os::executeLong(prog, std::move(args));
 	}
 
 	std::string Compiler::makeDynamicLibrary(const std::vector<std::string>& objects, const std::string& out) const
@@ -145,6 +144,6 @@ namespace soup
 		args.emplace_back(out);
 		args.insert(args.end(), objects.begin(), objects.end());
 		addLinkerArgs(args);
-		return os::executeLong("clang", std::move(args));
+		return os::executeLong(prog, std::move(args));
 	}
 }

@@ -7,6 +7,8 @@ namespace soup
 {
 	struct Compiler
 	{
+		std::string prog;
+		std::string prog_ar;
 		std::string lang; // defaults to "c++20" or "c++17" depending on platform
 		bool rtti = false;
 		std::vector<std::string> extra_args{};
