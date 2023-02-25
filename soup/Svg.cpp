@@ -401,7 +401,7 @@ namespace soup
 			}
 			state.executeCmd(cmd);
 		}
-		
+
 		// If this code was any good, this is how filling would be done: https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule
 
 		// Fill shape
