@@ -120,14 +120,15 @@ namespace soup
 		{
 			bool fin;
 			uint8_t opcode;
-			if (WebSocket::readFrame(fin, opcode, data))
+			std::string payload;
+			while (WebSocket::readFrame(data, fin, opcode, payload))
 			{
 				SOUP_ASSERT(fin);
 				SOUP_ASSERT(opcode == WebSocketFrameType::TEXT || opcode == WebSocketFrameType::BINARY);
 
 				WebSocketMessage msg;
 				msg.is_text = (opcode == WebSocketFrameType::TEXT);
-				msg.data = std::move(data);
+				msg.data = std::move(payload);
 
 				auto& c = cap.get<CaptureWsRecv>();
 				c.cb(static_cast<WebSocketConnection&>(s), std::move(msg), std::move(c.cap));

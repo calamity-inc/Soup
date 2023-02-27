@@ -8,6 +8,6 @@ namespace soup
 	{
 		[[nodiscard]] static std::string generateKey();
 		[[nodiscard]] static std::string hashKey(std::string key);
-		[[nodiscard]] static bool readFrame(bool& fin, uint8_t& opcode, std::string& data_in_payload_out);
+		[[nodiscard]] static bool readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload);
 	};
 }

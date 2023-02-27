@@ -237,7 +237,8 @@ namespace soup
 		{
 			bool fin;
 			uint8_t opcode;
-			if (WebSocket::readFrame(fin, opcode, data))
+			std::string payload;
+			while (WebSocket::readFrame(data, fin, opcode, payload))
 			{
 				ServerWebService& srv = *cap.get<ServerWebService*>();
 
@@ -247,12 +248,12 @@ namespace soup
 
 					if (opcode != 0)
 					{
-						msg_buf.data = std::move(data);
+						msg_buf.data = std::move(payload);
 						msg_buf.is_text = (opcode == WebSocketFrameType::TEXT);
 					}
 					else
 					{
-						msg_buf.data.append(data);
+						msg_buf.data.append(payload);
 					}
 
 					if (fin)
@@ -268,7 +269,7 @@ namespace soup
 				{
 					if (opcode == WebSocketFrameType::PING)
 					{
-						wsSend(s, WebSocketFrameType::PONG, data);
+						wsSend(s, WebSocketFrameType::PONG, payload);
 					}
 					else if (opcode != WebSocketFrameType::PONG)
 					{

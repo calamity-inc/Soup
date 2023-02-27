@@ -20,9 +20,9 @@ namespace soup
 		return base64::encode(sha1::hash(key));
 	}
 
-	bool WebSocket::readFrame(bool& fin, uint8_t& opcode, std::string& data_in_payload_out)
+	bool WebSocket::readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload)
 	{
-		StringRefReader r(data_in_payload_out, false);
+		StringRefReader r(data, false);
 		uint8_t buf;
 		size_t header_size = 2;
 
@@ -68,12 +68,13 @@ namespace soup
 				return false;
 			}
 		}
-		data_in_payload_out.erase(0, header_size);
+		payload = data.substr(header_size, payload_len);
+		data.erase(0, header_size + payload_len);
 		if (has_mask)
 		{
-			for (auto i = 0; i != data_in_payload_out.size(); ++i)
+			for (auto i = 0; i != payload.size(); ++i)
 			{
-				data_in_payload_out[i] ^= mask.at(i % 4);
+				payload[i] ^= mask.at(i % 4);
 			}
 		}
 		return true;
