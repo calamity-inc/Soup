@@ -22,7 +22,7 @@ namespace soup
 
 	bool WebSocket::readFrame(bool& fin, uint8_t& opcode, std::string& data_in_payload_out)
 	{
-		StringRefReader r{ data_in_payload_out, false };
+		StringRefReader r(data_in_payload_out, false);
 		uint8_t buf;
 		size_t header_size = 2;
 
