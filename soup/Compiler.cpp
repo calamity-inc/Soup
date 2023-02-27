@@ -57,6 +57,8 @@ namespace soup
 	std::string Compiler::makeObject(const std::string& in, const std::string& out) const
 	{
 		auto args = getArgs();
+		args.emplace_back("-x");
+		args.emplace_back("c++");
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.emplace_back("-c");
