@@ -7,6 +7,7 @@
 
 #include "alpha2decodetbl.hpp"
 #include "Bigint.hpp"
+#include "bitutil.hpp"
 #if SOUP_CPP20
 #include "StringLiteral.hpp"
 #endif
@@ -34,6 +35,21 @@ namespace soup
 		}
 #endif
 
+		// Note that this may be higher than the actual encoded length.
+		[[nodiscard]]
+#if SOUP_CPP20
+		static
+#endif
+		size_t getEncodedLength(size_t inlen)
+		{
+			size_t alpha_size;
+			SOUP_ASSERT(ALPHA_SIZE.toPrimitive(alpha_size));
+			uint8_t seqlen = bitutil::getBitsNeededToEncodeRange(alpha_size);
+			size_t bytelen = ceil(8.0f / seqlen);
+			inlen *= bytelen;
+			return ceil(((float)inlen * seqlen) / 8);
+		}
+
 		[[nodiscard]]
 #if SOUP_CPP20
 		static
@@ -41,6 +57,21 @@ namespace soup
 		std::string encode(const std::string& msg)
 		{
 			return encode(Bigint::fromBinary(msg));
+		}
+
+		[[nodiscard]]
+#if SOUP_CPP20
+		static
+#endif
+		std::string encodeWithPadding(const std::string& msg)
+		{
+			auto enc = encode(msg);
+			auto len = getEncodedLength(msg.size());
+			while (enc.size() < len)
+			{
+				enc.insert(0, 1, ALPHA[0]);
+			}
+			return enc;
 		}
 
 		[[nodiscard]]
@@ -59,6 +90,7 @@ namespace soup
 			return enc;
 		}
 
+		// Note that leading zero-bytes will be trimmed both when encoding without padding, and by Bigint::toBinary during decoding, so if there is a certain length expectation, zeroes should be added to the front of the decoded data if that expectation is not met.
 		[[nodiscard]]
 #if SOUP_CPP20
 		static
