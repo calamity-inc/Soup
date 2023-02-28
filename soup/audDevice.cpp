@@ -151,7 +151,7 @@ namespace soup
 			auto fullnames = getFullDeviceNamesInWaveOutOrder();
 			// Fullnames _should_ be in the same order as waveOut devices, but let's be sure...
 			if (i < fullnames.size()
-				&& fullnames.at(i).substr(0, 31) == name
+				&& fullnames.at(i).substr(0, MAXPNAMELEN - 1) == name
 				)
 			{
 				return unicode::utf16_to_utf8(fullnames.at(i));
