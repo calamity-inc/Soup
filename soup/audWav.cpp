@@ -32,7 +32,7 @@ namespace soup
 		channels = fmt.channels;
 		auto ck = rr.seekChunk("data");
 		data_begin = ck.data_offset;
-		SOUP_IF_UNLIKELY(!ck.isValid())
+		SOUP_IF_UNLIKELY (!ck.isValid())
 		{
 			throw Exception("WAV file seems to be in an invalid format");
 		}
