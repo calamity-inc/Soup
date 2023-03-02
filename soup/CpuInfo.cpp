@@ -21,6 +21,7 @@ namespace soup
 #define EDX arr[2]
 #define ECX arr[3]
 
+#pragma optimize("", off)
 	CpuInfo::CpuInfo()
 	{
 		char buf[17];
@@ -48,6 +49,7 @@ namespace soup
 			}
 		}
 	}
+#pragma optimize("", on)
 
 	const CpuInfo& CpuInfo::get()
 	{
