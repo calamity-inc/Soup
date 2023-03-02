@@ -22,7 +22,7 @@ namespace soup
 
 		void operator=(const HandleBase&) = delete;
 
-		void operator=(HandleBase&& b)
+		void operator=(HandleBase&& b) noexcept
 		{
 			this->~HandleBase();
 			h = b.h;
