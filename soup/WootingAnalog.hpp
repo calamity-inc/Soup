@@ -8,6 +8,7 @@ namespace soup
 	// In case you don't know, Wooting keyboards are fully analog, so instead of "is key pressed" you can get a percentage how far the key is pressed.
 	// For this interface to work, the user needs the Wooting Analog SDK installed on their system.
 	// Note that the Wooting Analog SDK will print stuff to the console with no way to disable it. Might just be a Rust thing.
+	// ^ Setting the RUST_LOG environment variable to "off" should disable it.
 	class WootingAnalog
 	{
 	private:
