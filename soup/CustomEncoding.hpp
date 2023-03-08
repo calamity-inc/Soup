@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath> // ceil
 #include <cstring> // strlen
 #include <string>
 
