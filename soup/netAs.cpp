@@ -96,6 +96,7 @@ namespace soup
 		case 42473: // ANEXIA Internetdienstleistungs GmbH
 		case 59432: // GINERNET
 		case 209854: // Surfshark Ltd.
+		case 43357: // Owl Limited
 			// Latitude.sh (formerly Maxihost)
 		case 262287:
 		case 396356:
