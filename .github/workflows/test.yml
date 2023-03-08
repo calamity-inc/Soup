@@ -1,0 +1,21 @@
+name: Test
+
+on:
+  push: {}
+  pull_request:
+    branches: [ "senpai" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Soup
+        run: php linux_lib.php
+
+      - name: Build CLI
+        run: php linux_cli.php
+
+      - name: Run ./soupcli test
+        run: ./soupcli test
