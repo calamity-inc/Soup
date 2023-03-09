@@ -4,4 +4,7 @@
     <MASM Include="crc32_pclmul.asm" />
     <MASM Include="invoke_cpuid.asm" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Range_scanSSE.cpp" />
+  </ItemGroup>
 </Project>

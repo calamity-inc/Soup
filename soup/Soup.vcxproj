@@ -192,7 +192,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>$(SolutionDir)ASM x86_64\out\ASM x86_64.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -227,7 +227,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Lib>
-      <AdditionalDependencies>$(SolutionDir)ASM x86_64\out\ASM x86_64.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">
@@ -306,6 +306,7 @@
       <AdditionalOptions>-Wno-unused-command-line-argument -Xclang -std=c++20 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -315,7 +316,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-      <AdditionalDependencies>$(SolutionDir)ASM x86_64\out\ASM x86_64.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -350,7 +351,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-      <AdditionalDependencies>$(SolutionDir)ASM x86_64\out\ASM x86_64.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

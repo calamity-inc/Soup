@@ -1,6 +1,7 @@
 #include "Range.hpp"
 
 #include "base.hpp"
+#include "CpuInfo.hpp"
 #include "Pattern.hpp"
 
 namespace soup
@@ -47,6 +48,22 @@ namespace soup
 	{
 		auto data = sig.bytes.data();
 		auto length = sig.bytes.size();
+		SOUP_IF_UNLIKELY (length == 0)
+		{
+			return base;
+		}
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+		SOUP_IF_LIKELY (data[0].has_value())
+		{
+			SOUP_IF_LIKELY ((base.as<uintptr_t>() % 16) == 0) // To read the data from the pointer, the compiler implies _mm_load_si128, which needs an aligned address.
+			{
+				if (CpuInfo::get().supportsSSE2())
+				{
+					return scanSSE(sig);
+				}
+			}
+		}
+#endif
 		for (uintptr_t i = 0; i < size - length; ++i)
 		{
 			if (pattern_matches(base.add(i).as<uint8_t*>(), data, length))

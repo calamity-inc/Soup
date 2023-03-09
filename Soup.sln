@@ -18,7 +18,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLI", "CLI\CLI.vcxproj", "{
 		{84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA} = {84D33F55-DC5B-4AAA-8DB2-0EF66190BFBA}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASM x86_64", "ASM x86_64\ASM x86_64.vcxproj", "{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Intrin", "Intrin\Intrin.vcxproj", "{A2AE8CDF-6079-4D8E-B69E-76B445DE0207}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

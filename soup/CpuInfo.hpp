@@ -27,14 +27,39 @@ namespace soup
 	public:
 		[[nodiscard]] static const CpuInfo& get();
 
+		[[nodiscard]] bool supportsSSE() const noexcept
+		{
+			return (feature_flags_edx >> 25) & 1;
+		}
+
+		[[nodiscard]] bool supportsSSE2() const noexcept
+		{
+			return (feature_flags_edx >> 26) & 1;
+		}
+
+		[[nodiscard]] bool supportsSSE3() const noexcept
+		{
+			return (feature_flags_ecx >> 0) & 1;
+		}
+
 		[[nodiscard]] bool supportsPCLMULQDQ() const noexcept
 		{
 			return (feature_flags_ecx >> 1) & 1;
 		}
 
+		[[nodiscard]] bool supportsSSSE3() const noexcept
+		{
+			return (feature_flags_ecx >> 9) & 1;
+		}
+		
 		[[nodiscard]] bool supportsSSE4_1() const noexcept
 		{
 			return (feature_flags_ecx >> 19) & 1;
+		}
+
+		[[nodiscard]] bool supportsSSE4_2() const noexcept
+		{
+			return (feature_flags_ecx >> 20) & 1;
 		}
 
 		[[nodiscard]] bool supportsAESNI() const noexcept

@@ -25,6 +25,9 @@ namespace soup
 		[[nodiscard]] static bool pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept;
 
 		[[nodiscard]] Pointer scan(const Pattern& sig) const noexcept;
+	private:
+		[[nodiscard]] Pointer scanSSE(const Pattern& sig) const noexcept; // Implementd in Intrin
+	public:
 		[[nodiscard]] std::vector<Pointer> scan_all(const Pattern& sig, unsigned int limit = -1) const;
 	};
 }
