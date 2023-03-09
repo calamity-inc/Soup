@@ -1,0 +1,24 @@
+name: Build WASM library
+
+on:
+  push:
+    branches: [ "senpai" ]
+
+jobs:
+  emscripten:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mymindstorm/setup-emsdk@v12
+
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: php wasm.php
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: "WASM"
+          path: |
+            bindings/libsoup.js
+            bindings/libsoup.wasm
