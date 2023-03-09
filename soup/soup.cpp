@@ -160,9 +160,9 @@ SOUP_CEXPORT cbResult* Chatbot_process(const char* text)
 
 // Hotp
 
-SOUP_CEXPORT const char* Hotp_generateSecret(size_t bytes)
+SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes)
 {
-	returnString(Hotp::generateSecret(bytes));
+	return heap.add(Hotp::generateSecret(bytes));
 }
 
 // InquiryLang

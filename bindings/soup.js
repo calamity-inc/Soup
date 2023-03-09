@@ -45,7 +45,7 @@
 				process: soup.cwrap("Chatbot_process", "number", ["string"]),
 			};
 			soup.Hotp = {
-				generateSecret: soup.cwrap("Hotp_generateSecret", "string", ["number"]),
+				generateSecret: soup.cwrap("Hotp_generateSecret", "number", ["number"]),
 			};
 			soup.InquiryLang = {
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),

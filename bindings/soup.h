@@ -52,7 +52,7 @@ SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x);
 // Chatbot
 SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
 // Hotp
-SOUP_CEXPORT const char* Hotp_generateSecret(size_t bytes);
+SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes);
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);
