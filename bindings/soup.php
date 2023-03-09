@@ -37,6 +37,6 @@ soup_scope(function()
 {
 	global $soup;
 	$m = $soup->InquiryLang_execute("base64_encode Hello");
-	echo $soup->InquiryLang_formatResultLine($m);
+	echo $soup->InquiryLang_formatResultLine($m); // SGVsbG8=
 });
 */
