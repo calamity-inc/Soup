@@ -1,4 +1,5 @@
 #include "WebSocketConnection.hpp"
+#if !SOUP_WASM
 
 #include "HttpRequest.hpp"
 #include "rand.hpp"
@@ -136,3 +137,5 @@ namespace soup
 		}, CaptureWsRecv{ cb, std::move(cap) });
 	}
 }
+
+#endif

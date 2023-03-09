@@ -1,4 +1,5 @@
 #include "netInfo.hpp"
+#if !SOUP_WASM
 
 #include "HttpRequest.hpp"
 #include "IpAddr.hpp"
@@ -30,3 +31,5 @@ namespace soup
 		return IpAddr();
 	}
 }
+
+#endif

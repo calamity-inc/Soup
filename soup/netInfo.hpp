@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "fwd.hpp"
 
 #include <string>
@@ -17,3 +20,5 @@ namespace soup
 		[[nodiscard]] static IpAddr getPublicAddressImpl(const std::string& provider);
 	};
 }
+
+#endif

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Socket.hpp"
+#if !SOUP_WASM
 
 namespace soup
 {
@@ -20,3 +21,5 @@ namespace soup
 		void wsRecv(recv_callback_t cb, Capture&& cap = {});
 	};
 }
+
+#endif
