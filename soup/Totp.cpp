@@ -26,12 +26,12 @@ namespace soup
 		return uri;
 	}
 
-	int Totp::getValue()
+	int Totp::getValue() const
 	{
 		return getValue(time::unixSeconds());
 	}
 
-	int Totp::getValue(uint64_t t)
+	int Totp::getValue(uint64_t t) const
 	{
 		return Hotp::getValue(t / 30);
 	}

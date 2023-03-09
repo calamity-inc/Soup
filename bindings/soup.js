@@ -44,6 +44,9 @@
 			soup.Chatbot = {
 				process: soup.cwrap("Chatbot_process", "number", ["string"]),
 			};
+			soup.Hotp = {
+				generateSecret: soup.cwrap("Hotp_generateSecret", "string", ["number"]),
+			};
 			soup.InquiryLang = {
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
 				formatResultLine: soup.cwrap("InquiryLang_formatResultLine", "string", ["number"]),
@@ -66,6 +69,11 @@
 				getN: soup.cwrap("RsaKeypair_getN", "number", ["number"]),
 				getP: soup.cwrap("RsaKeypair_getP", "number", ["number"]),
 				getQ: soup.cwrap("RsaKeypair_getQ", "number", ["number"]),
+			};
+			soup.Totp = {
+				new: soup.cwrap("Totp_new", "number", ["string"]),
+				getQrCodeUri: soup.cwrap("Totp_getQrCodeUri", "string", ["number", "string", "string"]),
+				getValue: soup.cwrap("Totp_getValue", "number", ["number"]),
 			};
 			soup.exception = {
 				what: soup.cwrap("exception_what", "string", ["number"]),

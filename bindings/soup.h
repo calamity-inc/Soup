@@ -18,6 +18,7 @@
 	typedef void Mixed;
 	typedef void QrCode;
 	typedef void RsaKeypair;
+	typedef void Totp;
 
 	typedef void stdexception;
 	typedef void stdstring;
@@ -50,6 +51,8 @@ SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x);
 SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x);
 // Chatbot
 SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
+// Hotp
+SOUP_CEXPORT const char* Hotp_generateSecret(size_t bytes);
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);
@@ -68,6 +71,10 @@ SOUP_CEXPORT Canvas* QrCode_toNewCanvas(const QrCode* x, unsigned int border, bo
 SOUP_CEXPORT const Bigint* RsaKeypair_getN(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x);
+// Totp
+SOUP_CEXPORT Totp* Totp_new(const char* secret);
+SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);
+SOUP_CEXPORT int Totp_getValue(const Totp* x);
 // exception
 SOUP_CEXPORT const char* exception_what(const stdexception* x);
 

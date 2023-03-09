@@ -21,11 +21,13 @@ typedef void (*void_func_t)();
 #include "Canvas.hpp"
 #include "cbResult.hpp"
 #include "Chatbot.hpp"
+#include "Hotp.hpp"
 #include "InquiryLang.hpp"
 #include "KeyGenId.hpp"
 #include "Mixed.hpp"
 #include "QrCode.hpp"
 #include "rsa.hpp"
+#include "Totp.hpp"
 
 using namespace soup;
 
@@ -156,6 +158,13 @@ SOUP_CEXPORT cbResult* Chatbot_process(const char* text)
 	return heap.add(Chatbot::process(text));
 }
 
+// Hotp
+
+SOUP_CEXPORT const char* Hotp_generateSecret(size_t bytes)
+{
+	returnString(Hotp::generateSecret(bytes));
+}
+
 // InquiryLang
 
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x)
@@ -233,6 +242,23 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x)
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x)
 {
 	return &x->q;
+}
+
+// Totp
+
+SOUP_CEXPORT Totp* Totp_new(const char* secret)
+{
+	return new Totp(secret);
+}
+
+SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer)
+{
+	returnString(x->getQrCodeUri(label, issuer));
+}
+
+SOUP_CEXPORT int Totp_getValue(const Totp* x)
+{
+	return x->getValue();
 }
 
 // std::exception
