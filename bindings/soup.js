@@ -19,6 +19,10 @@
 			soup.broadenScope = soup.cwrap("broadenScope", "void", ["void"]);
 			soup.free = soup.cwrap("endLifetime", "void", ["void"]);
 			soup.tryCatch = soup.cwrap("tryCatch", "string", ["function"]);
+			soup.base32 = {
+				encode: soup.cwrap("base32_encode", "string", ["number", "bool"]),
+				decode: soup.cwrap("base32_decode", "number", ["string"]),
+			};
 			soup.base40 = {
 				encode: soup.cwrap("base40_encode", "string", ["number"]),
 				decode: soup.cwrap("base40_decode", "number", ["string"]),

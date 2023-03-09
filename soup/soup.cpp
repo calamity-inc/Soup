@@ -16,6 +16,7 @@ typedef void (*void_func_t)();
 
 #include "RaiiEmulator.hpp"
 
+#include "base32.hpp"
 #include "base40.hpp"
 #include "base64.hpp"
 #include "Canvas.hpp"
@@ -79,6 +80,18 @@ SOUP_CEXPORT const char* tryCatch(void_func_t f)
 		returnString("...");
 	}
 	return nullptr;
+}
+
+// base32
+
+SOUP_CEXPORT const char* base32_encode(const stdstring* x, bool pad)
+{
+	returnString(base32::encode(*x, pad));
+}
+
+SOUP_CEXPORT stdstring* base32_decode(const char* x)
+{
+	return heap.add(new std::string(base32::decode(x)));
 }
 
 // base40
