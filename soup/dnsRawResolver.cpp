@@ -1,7 +1,5 @@
 #include "dnsRawResolver.hpp"
 
-#if !SOUP_WASM
-
 #include "dnsHeader.hpp"
 #include "dnsQuestion.hpp"
 #include "dnsResource.hpp"
@@ -10,7 +8,7 @@
 
 namespace soup
 {
-	std::string dnsRawResolver::getQuery(dnsType qtype, const std::string& name) const
+	std::string dnsRawResolver::getQuery(dnsType qtype, const std::string& name)
 	{
 		StringWriter sw(false);
 
@@ -27,7 +25,7 @@ namespace soup
 		return sw.data;
 	}
 
-	std::vector<UniquePtr<dnsRecord>> dnsRawResolver::parseResponse(std::string&& data) const
+	std::vector<UniquePtr<dnsRecord>> dnsRawResolver::parseResponse(std::string&& data)
 	{
 		StringReader sr(std::move(data), false);
 
@@ -94,5 +92,3 @@ namespace soup
 		return res;
 	}
 }
-
-#endif
