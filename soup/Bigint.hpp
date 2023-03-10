@@ -14,6 +14,10 @@
 
 #include "fwd.hpp"
 
+#if SOUP_X86 && SOUP_BITS == 64
+#include <intrin.h>
+#endif
+
 #if SOUP_BIGINT_USE_INTVECTOR
 #include "IntVector.hpp"
 #endif
@@ -113,6 +117,19 @@ namespace soup
 		void enableBitInbounds(const size_t i);
 		void disableBitInbounds(const size_t i);
 		void copyFirstBits(const Bigint& b, size_t num);
+
+		[[nodiscard]] size_t getDChunk(size_t i) const noexcept;
+		void setDChunk(size_t i, chunk_t v) noexcept;
+
+#if SOUP_X86 && SOUP_BITS == 64
+		[[nodiscard]] static constexpr uint8_t getChunksPerQChunk() noexcept
+		{
+			return 128 / getBitsPerChunk();
+		}
+
+		[[nodiscard]] __m128i getQChunk(size_t i) const noexcept;
+		void setQChunk(size_t i, __m128i v) noexcept;
+#endif
 
 		void reset() noexcept;
 		[[nodiscard]] bool isZero() const noexcept;

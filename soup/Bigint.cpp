@@ -2,6 +2,7 @@
 
 #include "Bitset.hpp"
 #include "branchless.hpp"
+#include "CpuInfo.hpp"
 #include "Endian.hpp"
 #include "rand.hpp"
 #include "RngInterface.hpp"
@@ -413,6 +414,28 @@ namespace soup
 			setBit(i, b.getBit(i));
 		}
 	}
+
+	size_t Bigint::getDChunk(size_t i) const noexcept
+	{
+		return *reinterpret_cast<const size_t*>(&chunks[i * 2]);
+	}
+
+	void Bigint::setDChunk(size_t i, chunk_t v) noexcept
+	{
+		*reinterpret_cast<size_t*>(&chunks[i * 2]) = v;
+	}
+
+#if SOUP_X86 && SOUP_BITS == 64
+	__m128i Bigint::getQChunk(size_t i) const noexcept
+	{
+		return _mm_loadu_si128(reinterpret_cast<const __m128i*>(&chunks[i * getChunksPerQChunk()]));
+	}
+
+	void Bigint::setQChunk(size_t i, __m128i v) noexcept
+	{
+		*reinterpret_cast<__m128i*>(&chunks[i * getChunksPerQChunk()]) = v;
+	}
+#endif
 
 	void Bigint::reset() noexcept
 	{
@@ -942,18 +965,70 @@ namespace soup
 	void Bigint::operator|=(const Bigint& b)
 	{
 		const auto nc = b.getNumChunks();
-		for (size_t i = 0; i != nc; ++i)
+		size_t i = 0;
+		if (nc == getNumChunks())
 		{
-			setChunk(i, getChunk(i) | b.getChunkInbounds(i));
+#if SOUP_X86 && SOUP_BITS == 64
+			if (CpuInfo::get().supportsSSE2())
+			{
+				for (; i + getChunksPerQChunk() < nc; i += getChunksPerQChunk())
+				{
+					size_t qi = (i / getChunksPerQChunk());
+					setQChunk(qi, _mm_or_si128(getQChunk(qi), b.getQChunk(qi)));
+				}
+			}
+#endif
+			for (; i + 2 < nc; i += 2)
+			{
+				size_t di = (i / 2);
+				setDChunk(di, getDChunk(di) | b.getDChunk(i));
+			}
+			for (; i != nc; ++i)
+			{
+				setChunkInbounds(i, getChunkInbounds(i) | b.getChunkInbounds(i));
+			}
+		}
+		else
+		{
+			for (; i != nc; ++i)
+			{
+				setChunk(i, getChunk(i) | b.getChunkInbounds(i));
+			}
 		}
 	}
 
 	void Bigint::operator&=(const Bigint& b)
 	{
 		const auto nc = getNumChunks();
-		for (size_t i = 0; i != nc; ++i)
+		size_t i = 0;
+		if (nc == b.getNumChunks())
 		{
-			setChunkInbounds(i, getChunkInbounds(i) & b.getChunk(i));
+#if SOUP_X86 && SOUP_BITS == 64
+			if (CpuInfo::get().supportsSSE2())
+			{
+				for (; i + getChunksPerQChunk() < nc; i += getChunksPerQChunk())
+				{
+					size_t qi = (i / getChunksPerQChunk());
+					setQChunk(qi, _mm_and_si128(getQChunk(qi), b.getQChunk(qi)));
+				}
+			}
+#endif
+			for (; i + 2 < nc; i += 2)
+			{
+				size_t di = (i / 2);
+				setDChunk(di, getDChunk(di) & b.getDChunk(i));
+			}
+			for (; i != nc; ++i)
+			{
+				setChunkInbounds(i, getChunkInbounds(i) & b.getChunkInbounds(i));
+			}
+		}
+		else
+		{
+			for (; i != nc; ++i)
+			{
+				setChunkInbounds(i, getChunkInbounds(i) & b.getChunk(i));
+			}
 		}
 		shrink();
 	}
