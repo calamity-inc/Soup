@@ -42,6 +42,11 @@ namespace soup
 #endif
 	}
 
+	int time::getLocalTimezoneOffset() noexcept
+	{
+		return datetimeLocal(0).hour - datetimeUtc(0).hour;
+	}
+
 	std::time_t time::toUnix(const Datetime& dt)
 	{
 		return toUnix(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);

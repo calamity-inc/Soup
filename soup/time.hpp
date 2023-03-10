@@ -48,6 +48,8 @@ namespace soup
 		[[nodiscard]] static Datetime datetimeUtc(std::time_t ts) noexcept; // construct datetime based on UNIX time stamp
 		[[nodiscard]] static Datetime datetimeLocal(std::time_t ts) noexcept; // construct datetime based on local time at UNIX time stamp
 
+		[[nodiscard]] static int getLocalTimezoneOffset() noexcept;
+
 		[[nodiscard]] static std::time_t toUnix(const Datetime& dt);
 		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);
 	};
