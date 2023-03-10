@@ -13,6 +13,12 @@ jobs:
       - name: Build libsoup.so
         run: php linux_so.php
 
+      - name: Ensure libsoup.so exists
+        uses: andstor/file-existence-action@v2
+        with:
+          files: "libsoup.so"
+          fail: true
+
       - name: Upload libsoup.so
         uses: actions/upload-artifact@v3
         with:
@@ -27,6 +33,12 @@ jobs:
       - name: Build libsoup.so
         run: php linux_so.php
 
+      - name: Ensure libsoup.so exists
+        uses: andstor/file-existence-action@v2
+        with:
+          files: "libsoup.so"
+          fail: true
+
       - name: Upload libsoup.so
         uses: actions/upload-artifact@v3
         with:
@@ -40,6 +52,12 @@ jobs:
 
       - name: Build libsoup.so
         run: php linux_so.php
+
+      - name: Ensure libsoup.so exists
+        uses: andstor/file-existence-action@v2
+        with:
+          files: "libsoup.so"
+          fail: true
 
       - name: Upload libsoup.so
         uses: actions/upload-artifact@v3

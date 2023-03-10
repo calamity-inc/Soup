@@ -15,6 +15,12 @@ jobs:
       - name: Build
         run: php wasm.php
 
+      - name: Ensure files exist
+        uses: andstor/file-existence-action@v2
+        with:
+          files: "bindings/libsoup.js, bindings/libsoup.wasm"
+          fail: true
+
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
