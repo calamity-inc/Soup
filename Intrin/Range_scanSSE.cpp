@@ -26,8 +26,7 @@ namespace soup
 				return base.add(i).add(j);
 			}
 			i += (j + 1);
-
 		}
-		return Pointer();
+		return nullptr;
 	}
 }
