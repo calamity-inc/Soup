@@ -88,6 +88,30 @@ namespace soup
 				}
 				res.emplace_back(soup::make_unique<dnsTxtRecord>(std::move(name), dr.ttl, std::move(data)));
 			}
+			else if (dr.rtype == DNS_MX)
+			{
+				uint16_t priority;
+				dnsName target;
+
+				StringReader rdata_sr(std::move(dr.rdata), false);
+				rdata_sr.u16(priority);
+				target.read(rdata_sr);
+
+				res.emplace_back(soup::make_unique<dnsMxRecord>(std::move(name), dr.ttl, priority, string::join(target.resolve(sr.data), '.')));
+			}
+			else if (dr.rtype == DNS_SRV)
+			{
+				uint16_t priority, weight, port;
+				dnsName target;
+
+				StringReader rdata_sr(std::move(dr.rdata), false);
+				rdata_sr.u16(priority);
+				rdata_sr.u16(weight);
+				rdata_sr.u16(port);
+				target.read(rdata_sr);
+
+				res.emplace_back(soup::make_unique<dnsSrvRecord>(std::move(name), dr.ttl, priority, weight, string::join(target.resolve(sr.data), '.'), port));
+			}
 		}
 		return res;
 	}

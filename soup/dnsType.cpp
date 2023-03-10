@@ -13,6 +13,8 @@ namespace soup
 		case DNS_CNAME: return "CNAME";
 		case DNS_PTR: return "PTR";
 		case DNS_TXT: return "TXT";
+		case DNS_MX: return "MX";
+		case DNS_SRV: return "SRV";
 		default:;
 		}
 		return std::to_string(type);
@@ -25,6 +27,8 @@ namespace soup
 		if (str == "CNAME") return DNS_CNAME;
 		if (str == "PTR") return DNS_PTR;
 		if (str == "TXT") return DNS_TXT;
+		if (str == "MX") return DNS_MX;
+		if (str == "SRV") return DNS_SRV;
 
 		std::string msg = "Unknown dnsType: ";
 		msg.append(str);

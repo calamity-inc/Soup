@@ -83,6 +83,19 @@ namespace soup
 		}
 	};
 
+	struct dnsMxRecord : public dnsRecord
+	{
+		uint16_t priority;
+		std::string target;
+
+		dnsMxRecord(std::string&& name, uint32_t ttl, uint16_t priority, std::string&& target)
+			: dnsRecord(DNS_MX, std::move(name), ttl), priority(priority), target(std::move(target))
+		{
+		}
+
+		[[nodiscard]] std::string getDataHumanReadable() const;
+	};
+
 	struct dnsSrvRecord : public dnsRecord
 	{
 		uint16_t priority;
@@ -94,5 +107,7 @@ namespace soup
 			: dnsRecord(DNS_SRV, std::move(name), ttl), priority(priority), weight(weight), target(std::move(target)), port(port)
 		{
 		}
+
+		[[nodiscard]] std::string getDataHumanReadable() const;
 	};
 }

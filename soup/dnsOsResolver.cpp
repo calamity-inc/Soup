@@ -44,6 +44,10 @@ namespace soup
 					}
 					res.emplace_back(soup::make_unique<dnsTxtRecord>(i->pName, i->dwTtl, std::move(data)));
 				}
+				else if (i->wType == DNS_TYPE_MX)
+				{
+					res.emplace_back(soup::make_unique<dnsMxRecord>(i->pName, i->dwTtl, i->Data.MX.wPreference, i->Data.MX.pNameExchange));
+				}
 				else if (i->wType == DNS_TYPE_SRV)
 				{
 					res.emplace_back(soup::make_unique<dnsSrvRecord>(i->pName, i->dwTtl, i->Data.SRV.wPriority, i->Data.SRV.wWeight, i->Data.SRV.pNameTarget, i->Data.SRV.wPort));
@@ -85,6 +89,10 @@ namespace soup
 				else if (ns_rr_type(rr) == ns_t_txt)
 				{
 					res.emplace_back(soup::make_unique<dnsTxtRecord>(ns_rr_name(rr), ns_rr_ttl(rr), (const char*)(ns_rr_rdata(rr) + 1)));
+				}
+				else if (ns_rr_type(rr) == ns_t_mx)
+				{
+					res.emplace_back(soup::make_unique<dnsMxRecord>(ns_rr_name(rr), ns_rr_ttl(rr), ntohs(*(unsigned short*)ns_rr_rdata(rr)), (const char*)(ns_rr_rdata(rr) + 2)));
 				}
 				else if (ns_rr_type(rr) == ns_t_srv)
 				{
