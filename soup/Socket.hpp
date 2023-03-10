@@ -51,7 +51,7 @@ namespace soup
 		Socket(const Socket&) = delete;
 
 		Socket(Socket&& b) noexcept
-			: Worker(true)
+			: Worker(WORKER_TYPE_SOCKET)
 		{
 			onConstruct();
 			operator =(std::move(b));
