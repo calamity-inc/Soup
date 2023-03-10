@@ -11,6 +11,11 @@
 
 namespace soup
 {
+	Socket& Scheduler::addSocket() noexcept
+	{
+		return addSocket(soup::make_unique<Socket>());
+	}
+
 	Socket& Scheduler::addSocket(UniquePtr<Socket>&& sock) noexcept
 	{
 #if SOUP_LINUX

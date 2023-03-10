@@ -29,6 +29,7 @@ namespace soup
 		on_connection_lost_t on_connection_lost = nullptr;
 		on_exception_t on_exception = nullptr;
 
+		Socket& addSocket() noexcept;
 		Socket& addSocket(UniquePtr<Socket>&& sock) noexcept;
 
 		template <typename T, SOUP_RESTRICT(std::is_same_v<T, Socket>)>
