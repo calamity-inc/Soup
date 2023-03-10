@@ -941,13 +941,10 @@ namespace soup
 
 	void Bigint::operator|=(const Bigint& b)
 	{
-		const auto nb = b.getNumBits();
-		for (size_t i = 0; i != nb; ++i)
+		const auto nc = b.getNumChunks();
+		for (size_t i = 0; i != nc; ++i)
 		{
-			if (b.getBit(i))
-			{
-				enableBit(i);
-			}
+			setChunk(i, getChunk(i) | b.getChunkInbounds(i));
 		}
 	}
 
