@@ -55,14 +55,9 @@ namespace soup
 #if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
 		SOUP_IF_LIKELY (data[0].has_value())
 		{
-			// To read the data from the pointer, we use _mm_load_si128, which needs an aligned address.
-			// We could use _mm_loadu_si128, but don't need it.
-			SOUP_IF_LIKELY ((base.as<uintptr_t>() % 16) == 0)
+			if (CpuInfo::get().supportsSSE2())
 			{
-				if (CpuInfo::get().supportsSSE2())
-				{
-					return scanSSE(sig);
-				}
+				return scanSSE(sig);
 			}
 		}
 #endif

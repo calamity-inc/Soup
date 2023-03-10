@@ -53,6 +53,18 @@ namespace soup
 			return bits;
 		}
 
-		static std::vector<bool> interleave(const std::vector<std::vector<bool>>& data); // assumes that all inner vectors have the same size
+		[[nodiscard]] static unsigned int getLeastSignificantSetBit(unsigned int mask) // UB if mask = 0
+		{
+			// These intrinsic functions just use the bsf instruction.
+#if defined(_MSC_VER) && !defined(__clang__)
+			unsigned long ret;
+			_BitScanForward((unsigned long*)&ret, mask);
+			return ret;
+#else
+			return __builtin_ctz(mask);
+#endif
+		}
+
+		[[nodiscard]] static std::vector<bool> interleave(const std::vector<std::vector<bool>>& data); // assumes that all inner vectors have the same size
 	};
 }
