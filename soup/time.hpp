@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <string>
 
 namespace soup
 {
@@ -13,6 +14,8 @@ namespace soup
 		int hour;
 		int minute;
 		int second;
+
+		int wday; // days since sunday (0-6)
 
 		[[nodiscard]] static Datetime fromTm(const struct tm& t);
 	};
@@ -49,6 +52,8 @@ namespace soup
 		[[nodiscard]] static Datetime datetimeLocal(std::time_t ts) noexcept; // construct datetime based on local time at UNIX time stamp
 
 		[[nodiscard]] static int getLocalTimezoneOffset() noexcept;
+
+		[[nodiscard]] static std::string toRfc2822(std::time_t ts); // construct date and time string as defined in RFC 2822 (ex: "Thu, 1 Feb 00:00:00 GMT") based on UNIX time stamp
 
 		[[nodiscard]] static std::time_t toUnix(const Datetime& dt);
 		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);

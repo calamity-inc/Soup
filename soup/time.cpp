@@ -1,6 +1,7 @@
 #include "time.hpp"
 
 #include "base.hpp"
+#include "string.hpp"
 
 #if SOUP_WINDOWS
 #define timegm _mkgmtime
@@ -11,12 +12,16 @@ namespace soup
 	Datetime Datetime::fromTm(const struct tm& t)
 	{
 		Datetime dt;
+
 		dt.year = t.tm_year + 1900;
 		dt.month = t.tm_mon + 1;
 		dt.day = t.tm_mday;
 		dt.hour = t.tm_hour;
 		dt.minute = t.tm_min;
 		dt.second = t.tm_sec;
+
+		dt.wday = t.tm_wday;
+
 		return dt;
 	}
 
@@ -45,6 +50,28 @@ namespace soup
 	int time::getLocalTimezoneOffset() noexcept
 	{
 		return datetimeLocal(0).hour - datetimeUtc(0).hour;
+	}
+
+	static const char wdays[(7 * 3) + 1] = "SunMonTueWedThuFriSat";
+	static const char months[(12 * 3) + 1] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+
+	std::string time::toRfc2822(std::time_t ts)
+	{
+		const auto dt = datetimeUtc(ts);
+
+		std::string str(&wdays[dt.wday * 3], 3);
+		str.append(", ");
+		str.append(std::to_string(dt.day));
+		str.push_back(' ');
+		str.append(&months[dt.month * 3], 3);
+		str.push_back(' ');
+		str.append(string::lpad(std::to_string(dt.hour), 2, '0'));
+		str.push_back(':');
+		str.append(string::lpad(std::to_string(dt.minute), 2, '0'));
+		str.push_back(':');
+		str.append(string::lpad(std::to_string(dt.second), 2, '0'));
+		str.append(" GMT");
+		return str;
 	}
 
 	std::time_t time::toUnix(const Datetime& dt)
