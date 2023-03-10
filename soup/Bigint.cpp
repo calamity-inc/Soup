@@ -425,7 +425,7 @@ namespace soup
 		*reinterpret_cast<size_t*>(&chunks[i * 2]) = v;
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64
+#if SOUP_BIGINT_USE_INTRIN
 	__m128i Bigint::getQChunk(size_t i) const noexcept
 	{
 		return _mm_loadu_si128(reinterpret_cast<const __m128i*>(&chunks[i * getChunksPerQChunk()]));
@@ -968,7 +968,7 @@ namespace soup
 		size_t i = 0;
 		if (nc == getNumChunks())
 		{
-#if SOUP_X86 && SOUP_BITS == 64
+#if SOUP_BIGINT_USE_INTRIN
 			if (CpuInfo::get().supportsSSE2())
 			{
 				for (; i + getChunksPerQChunk() < nc; i += getChunksPerQChunk())
@@ -1003,7 +1003,7 @@ namespace soup
 		size_t i = 0;
 		if (nc == b.getNumChunks())
 		{
-#if SOUP_X86 && SOUP_BITS == 64
+#if SOUP_BIGINT_USE_INTRIN
 			if (CpuInfo::get().supportsSSE2())
 			{
 				for (; i + getChunksPerQChunk() < nc; i += getChunksPerQChunk())

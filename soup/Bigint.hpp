@@ -6,6 +6,10 @@
 #define SOUP_BIGINT_USE_INTVECTOR SOUP_WINDOWS
 #endif
 
+#ifndef SOUP_BIGINT_USE_INTRIN
+#define SOUP_BIGINT_USE_INTRIN (SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS)
+#endif
+
 #include <string>
 #include <utility> // pair
 #if !SOUP_BIGINT_USE_INTVECTOR
@@ -14,7 +18,7 @@
 
 #include "fwd.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64
+#if SOUP_BIGINT_USE_INTRIN
 #include <intrin.h>
 #endif
 
@@ -121,7 +125,7 @@ namespace soup
 		[[nodiscard]] size_t getDChunk(size_t i) const noexcept;
 		void setDChunk(size_t i, chunk_t v) noexcept;
 
-#if SOUP_X86 && SOUP_BITS == 64
+#if SOUP_BIGINT_USE_INTRIN
 		[[nodiscard]] static constexpr uint8_t getChunksPerQChunk() noexcept
 		{
 			return 128 / getBitsPerChunk();
