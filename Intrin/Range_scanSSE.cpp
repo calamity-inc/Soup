@@ -13,7 +13,7 @@ namespace soup
 		const auto match = _mm_set1_epi8(data[0].value());
 		for (uintptr_t i = 0; i < size - length; i += 16)
 		{
-			int mask = _mm_movemask_epi8(_mm_cmpeq_epi8(match, *base.add(i).as<__m128i*>()));
+			int mask = _mm_movemask_epi8(_mm_cmpeq_epi8(match, _mm_load_si128(base.add(i).as<__m128i*>())));
 			if (mask != 0)
 			{
 				for (uintptr_t j = 0; j != 16; ++j)
