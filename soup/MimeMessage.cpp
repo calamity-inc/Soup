@@ -80,4 +80,47 @@ namespace soup
 		res.append(body);
 		return res;
 	}
+
+	std::string MimeMessage::getCanonicalisedBody(bool relaxed) const
+	{
+		std::string cbody = body;
+
+		// Ensure body ends on a single "\r\n"
+		if (cbody.length() > 2 && cbody.substr(cbody.length() - 2, 2) == "\r\n")
+		{
+			while (cbody.length() > 4 && cbody.substr(cbody.length() - 4, 4) == "\r\n\r\n")
+			{
+				cbody.erase(cbody.length() - 2, 2);
+			}
+		}
+		else
+		{
+			cbody.append("\r\n");
+		}
+
+		if (relaxed)
+		{
+			// Collapse multiple spaces into a single space
+			bool had_space = false;
+			for (auto i = cbody.begin(); i != cbody.end();)
+			{
+				if (*i == ' ')
+				{
+					if (had_space)
+					{
+						i = cbody.erase(i);
+						continue;
+					}
+					had_space = true;
+				}
+				else
+				{
+					had_space = false;
+				}
+				++i;
+			}
+		}
+
+		return cbody;
+	}
 }
