@@ -102,11 +102,13 @@ void cli_morse(int argc, const char** argv)
 		if (subcommand == "key")
 		{
 			cli_morse_key(argc > 1 && strcmp(argv[1], "--silent") == 0);
+			return;
 		}
 
 		if (subcommand == "encode" && argc > 1)
 		{
 			cli_morse_encode(argv[1], (argc > 2 && strcmp(argv[2], "--silent") == 0));
+			return;
 		}
 	}
 
