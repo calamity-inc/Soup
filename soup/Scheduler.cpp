@@ -97,7 +97,7 @@ namespace soup
 			not_just_sockets = true;
 			pollfds.emplace_back(pollfd{
 				(Socket::fd_t)-1,
-				POLLIN
+				0
 			});
 
 			if (w.holdup_type == Worker::IDLE)
