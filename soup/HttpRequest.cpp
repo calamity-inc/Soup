@@ -118,6 +118,42 @@ namespace soup
 					HttpResponse res = std::move(*resp);
 					res.status_code = string::toInt<uint16_t>(arr.at(1), 0);
 
+					if (auto enc = res.header_fields.find(ObfusString("Transfer-Encoding")); enc != res.header_fields.end())
+					{
+						if (joaat::hash(enc->second) == joaat::hash("chunked"))
+						{
+							size_t i = 0;
+							while (true)
+							{
+								const auto chunk_size_end = res.body.find("\r\n", i);
+								if (chunk_size_end == std::string::npos)
+								{
+									break;
+								}
+								const auto chunk_size_len = (chunk_size_end - i);
+								unsigned long long chunk_size = 0;
+								try
+								{
+									chunk_size = std::stoull(res.body.substr(i, chunk_size_len), nullptr, 16);
+								}
+								catch (...)
+								{
+								}
+								res.body.erase(i, chunk_size_len + 2); // erase chunk size + CRLF
+								i += chunk_size;
+								res.body.erase(i, 2); // erase CRLF after chunk-data
+								if (chunk_size == 0)
+								{
+									break;
+								}
+							}
+						}
+					}
+					else
+					{
+						// If no Transfer-Encoding, we'd have Content-Length in HTTP/1.1, or "Connection: close" in HTTP/1.0.
+					}
+
 					if (auto enc = res.header_fields.find(ObfusString("Content-Encoding")); enc != res.header_fields.end())
 					{
 						auto enc_joaat = joaat::hash(enc->second);
@@ -146,7 +182,7 @@ namespace soup
 		data.append(method);
 		data.push_back(' ');
 		data.append(path_is_encoded ? path : urlenc::encodePathWithQuery(path));
-		data.append(ObfusString(" HTTP/1.0").str());
+		data.append(ObfusString(" HTTP/1.1").str());
 		data.append("\r\n");
 		data.append(toString());
 		return data;
