@@ -4,12 +4,14 @@
 
 namespace soup
 {
-	struct Task : public Worker
+	class Task : public Worker
 	{
+	public:
 		explicit Task();
 
-		virtual void tick() = 0;
-
-		void awaitTaskCompletion(UniquePtr<Task>&& task);
+		void tick();
+		[[nodiscard]] bool tickUntilDone();
+	protected:
+		virtual void onTick() = 0;
 	};
 }

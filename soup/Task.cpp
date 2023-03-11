@@ -1,6 +1,6 @@
 #include "Task.hpp"
 
-#include "UniquePtr.hpp"
+#include "base.hpp"
 
 namespace soup
 {
@@ -10,13 +10,25 @@ namespace soup
 		holdup_type = Worker::IDLE;
 		holdup_callback.set([](Worker& w, Capture&&)
 		{
-			reinterpret_cast<Task&>(w).tick();
+			reinterpret_cast<Task&>(w).onTick();
 		});
 	}
 
-	void Task::awaitTaskCompletion(UniquePtr<Task>&& task)
+	void Task::tick()
 	{
-		holdup_type = Worker::TASK;
-		holdup_callback.cap = std::move(task);
+		if (!isWorkDone())
+		{
+			onTick();
+		}
+	}
+
+	bool Task::tickUntilDone()
+	{
+		SOUP_IF_UNLIKELY (isWorkDone())
+		{
+			return true;
+		}
+		onTick();
+		return false;
 	}
 }

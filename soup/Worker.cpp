@@ -42,6 +42,11 @@ namespace soup
 		}, std::move(cs));
 	}
 
+	bool Worker::isWorkDone() const noexcept
+	{
+		return holdup_type == NONE;
+	}
+
 	void Worker::setWorkDone() noexcept
 	{
 		holdup_type = NONE;

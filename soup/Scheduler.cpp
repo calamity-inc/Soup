@@ -104,25 +104,11 @@ namespace soup
 			{
 				fireHoldupCallback(w);
 			}
-			else if (w.holdup_type == Worker::PROMISE)
+			else //if (w.holdup_type == Worker::PROMISE)
 			{
 				if (!reinterpret_cast<PromiseBase*>(w.holdup_data)->isPending())
 				{
 					fireHoldupCallback(w);
-				}
-			}
-			else //if (w.holdup_type == Worker::TASK)
-			{
-				Task& subtask = *w.holdup_callback.cap.get<UniquePtr<Task>>();
-				if (subtask.holdup_type == Worker::NONE)
-				{
-					w.holdup_type = Worker::IDLE;
-					fireHoldupCallback(w);
-					w.holdup_callback.cap.reset();
-				}
-				else
-				{
-					tickWorker(pollfds, not_just_sockets, subtask);
 				}
 			}
 		}
