@@ -10,6 +10,20 @@ namespace soup
 		holdup_callback(*this);
 	}
 
+	void Worker::awaitPromiseCompletion(PromiseBase* p)
+	{
+		if (p->isPending())
+		{
+			holdup_type = PROMISE;
+			holdup_callback.fp = [](Worker&, Capture&&) {};
+			holdup_data = p;
+		}
+		else
+		{
+			holdup_type = NONE;
+		}
+	}
+
 	void Worker::awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap)
 	{
 		if (!p->isPending() && canRecurse())

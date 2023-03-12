@@ -502,6 +502,7 @@
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="NativeString.hpp" />
+    <ClInclude Include="netConnectTask.hpp" />
     <ClInclude Include="Rgba.hpp" />
     <ClInclude Include="RgbaCanvas.hpp" />
     <ClInclude Include="Svg.hpp" />

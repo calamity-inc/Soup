@@ -40,6 +40,7 @@ namespace soup
 		Worker& operator=(Worker&& b) noexcept = default;
 
 		void fireHoldupCallback();
+		void awaitPromiseCompletion(PromiseBase* p);
 		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap = {});
 		void awaitPromiseCompletion(UniquePtr<PromiseBase>&& p, void(*f)(Worker&, PromiseBase&, Capture&&), Capture&& cap = {});
 

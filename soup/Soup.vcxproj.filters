@@ -1218,6 +1218,9 @@
     <ClInclude Include="WebSocket.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
+    <ClInclude Include="netConnectTask.hpp">
+      <Filter>net\task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2005,6 +2008,9 @@
     </Filter>
     <Filter Include="util\tree">
       <UniqueIdentifier>{d96d8487-d3a5-4b49-9ede-1ed0a920b12d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\task">
+      <UniqueIdentifier>{99405f40-0597-44ee-bbc3-e89dfa1da5d9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
