@@ -29,6 +29,6 @@ namespace soup
 			return true;
 		}
 		onTick();
-		return false;
+		return isWorkDone();
 	}
 }
