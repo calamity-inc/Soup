@@ -1,5 +1,7 @@
 #include "Task.hpp"
 
+#include <thread>
+
 #include "base.hpp"
 
 namespace soup
@@ -30,5 +32,13 @@ namespace soup
 		}
 		onTick();
 		return isWorkDone();
+	}
+
+	void Task::runUntilDone()
+	{
+		while (!tickUntilDone())
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
 	}
 }

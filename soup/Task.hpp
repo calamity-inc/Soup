@@ -16,5 +16,8 @@ namespace soup
 
 		// For use within another Task's onTick. Returns true once done.
 		[[nodiscard]] bool tickUntilDone();
+	
+		// To use a Task without a Scheduler
+		void runUntilDone();
 	};
 }
