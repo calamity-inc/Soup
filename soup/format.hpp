@@ -17,13 +17,13 @@ namespace soup
 		return v;
 	}
 
-	template <typename In, SOUP_RESTRICT(std::is_integral_v<In>)>
+	template <typename In, SOUP_RESTRICT(std::is_arithmetic_v<In>)>
 	std::string format_toString(const In& v)
 	{
 		return std::to_string(v);
 	}
 
-	template <typename In, SOUP_RESTRICT(!std::is_integral_v<In>)>
+	template <typename In, SOUP_RESTRICT(!std::is_arithmetic_v<In>)>
 	std::string format_toString(const In& v)
 	{
 		return v.toString();
