@@ -9,6 +9,14 @@
 #include "Task.hpp"
 #include "time.hpp"
 
+#define LOG_TICK_DUR false
+
+#if LOG_TICK_DUR
+#include "format.hpp"
+#include "log.hpp"
+#include "Stopwatch.hpp"
+#endif
+
 namespace soup
 {
 	Socket& Scheduler::addSocket() noexcept
@@ -30,7 +38,14 @@ namespace soup
 		{
 			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
+#if LOG_TICK_DUR
+			Stopwatch t;
+#endif
 			tick(pollfds, not_just_sockets);
+#if LOG_TICK_DUR
+			t.stop();
+			logWriteLine(format("Tick took {} ms", t.getMs()));
+#endif
 			if (not_just_sockets)
 			{
 				yieldBusyspin(pollfds);
