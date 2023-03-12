@@ -8,10 +8,13 @@ namespace soup
 	{
 	public:
 		explicit Task();
-
-		void tick();
-		[[nodiscard]] bool tickUntilDone();
 	protected:
 		virtual void onTick() = 0;
+
+	public:
+		void tick();
+
+		// For use within another Task's onTick. Returns true once done.
+		[[nodiscard]] bool tickUntilDone();
 	};
 }
