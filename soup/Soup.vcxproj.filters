@@ -1221,6 +1221,9 @@
     <ClInclude Include="netConnectTask.hpp">
       <Filter>net\task</Filter>
     </ClInclude>
+    <ClInclude Include="X11Api.hpp">
+      <Filter>os\linux</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2011,6 +2014,9 @@
     </Filter>
     <Filter Include="net\task">
       <UniqueIdentifier>{99405f40-0597-44ee-bbc3-e89dfa1da5d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="os\linux">
+      <UniqueIdentifier>{310e94c6-0abc-4e73-93af-75ce41ba7409}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

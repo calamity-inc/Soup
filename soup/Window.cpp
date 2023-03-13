@@ -2,17 +2,21 @@
 
 #if SOUP_WINDOWS
 #include <Windowsx.h> // GET_X_LPARAM, GET_Y_LPARAM
+#endif
 
 #include <unordered_map>
 
+#if SOUP_WINDOWS
 #include "rand.hpp"
 #include "RenderTargetWindow.hpp"
 #include "unicode.hpp"
+#endif
 
 namespace soup
 {
-	static std::unordered_map<HWND, Window::Config> window_configs{};
+	static std::unordered_map<Window::handle_t, Window::Config> window_configs{};
 
+#if SOUP_WINDOWS
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		if (auto window_config_entry = window_configs.find(hWnd); window_config_entry != window_configs.end())
@@ -192,7 +196,7 @@ namespace soup
 		return DefWindowProcW(hWnd, message, wParam, lParam);
 	}
 
-	Window Window::create(const std::string& title, int width, int height, const std::string& icon_ico) noexcept
+	Window Window::create(const std::string& title, unsigned int width, unsigned int height, const std::string& icon_ico) noexcept
 	{
 		HINSTANCE hInstance = GetModuleHandle(NULL);
 
@@ -241,6 +245,7 @@ namespace soup
 		GetWindowThreadProcessId(h, &pid);
 		return pid;
 	}
+#endif
 
 	Window::Config& Window::getConfig()
 	{
@@ -252,6 +257,7 @@ namespace soup
 		return getConfig().custom_data;
 	}
 
+#if SOUP_WINDOWS
 	Window& Window::setDrawFunc(draw_func_t draw_func)
 	{
 		getConfig().draw_func = draw_func;
@@ -410,5 +416,30 @@ namespace soup
 	{
 		PostMessage(h, WM_DESTROY, 0, 0);
 	}
-}
+#else
+	Window Window::create(const std::string& title, unsigned int width, unsigned int height) noexcept
+	{
+		const X11Api& x = X11Api::get();
+		// NOTE: "Title" is currently ignored.
+		auto h = x.createSimpleWindow(x.display, x.defaultRootWindow(x.display), 100, 100, width, height, 0, 0, 0);
+		window_configs.emplace(h, Window::Config{});
+		x.mapWindow(x.display, h);
+		return Window{ h };
+	}
+
+	void Window::runMessageLoop() noexcept
+	{
+		const X11Api& x = X11Api::get();
+		void* event = alloca(24 * 8);
+		while (true)
+		{
+			// I figure this is relevant for actually getting events:
+			// XSelectInput(display, window, KeyPressMask | ButtonPressMask | ExposureMask);
+
+			// And for actually drawing to the window, might wanna look at this: https://github.com/QMonkey/Xlib-demo/blob/master/src/simple-drawing.c#L87
+
+			x.nextEvent(x.display, event);
+		}
+	}
 #endif
+}
