@@ -171,9 +171,15 @@ namespace soup
 				if (i->revents & ~POLLIN)
 				{
 					reinterpret_cast<Socket*>(workers_i->get())->remote_closed = true;
-					if (!reinterpret_cast<Socket*>(workers_i->get())->transport_hasData()
-						|| workers_i->get()->holdup_type != Worker::SOCKET
+					if (workers_i->get()->holdup_type == Worker::SOCKET
+						&& (reinterpret_cast<Socket*>(workers_i->get())->callback_recv_on_close
+							|| reinterpret_cast<Socket*>(workers_i->get())->transport_hasData()
+							)
 						)
+					{
+						// Don't get rid of the socket just yet...
+					}
+					else
 					{
 						onConnectionLoss(workers_i);
 						i = pollfds.erase(i);

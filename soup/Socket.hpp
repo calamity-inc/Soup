@@ -40,6 +40,7 @@ namespace soup
 		SocketAddr peer;
 		StructMap custom_data;
 		bool remote_closed = false;
+		bool callback_recv_on_close = false;
 
 		std::string tls_record_buf{};
 

@@ -1108,7 +1108,8 @@ namespace soup
 	{
 		if (canRecurse())
 		{
-			if (auto buf = transport_recvCommon(max_bytes); !buf.empty())
+			// In the case of remote_closed, recv callback would only be called if there's still data available or the user set callback_recv_on_close.
+			if (auto buf = transport_recvCommon(max_bytes); !buf.empty() || remote_closed)
 			{
 				callback(*this, std::move(buf), std::move(cap));
 				return;
