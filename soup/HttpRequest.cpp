@@ -83,7 +83,7 @@ namespace soup
 	std::optional<HttpResponse> HttpRequest::execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const
 	{
 		auto sock = make_unique<Socket>();
-		auto resp = make_unique<std::string>();
+		std::string resp{};
 		const auto& host = getHost();
 		if (sock->connect(host, port))
 		{
@@ -96,26 +96,26 @@ namespace soup
 					auto& cap = _cap.get<CaptureHttpRequestExecute>();
 					cap.req->execute_send(s);
 					execute_tick(s, cap.resp);
-				}, CaptureHttpRequestExecute{ this, resp.get() }, certchain_validator);
+				}, CaptureHttpRequestExecute{ this, &resp }, certchain_validator);
 			}
 			else
 			{
 				execute_send(s);
-				execute_tick(s, resp.get());
+				execute_tick(s, &resp);
 			}
 			sched.run();
 		}
-		if (!resp->empty())
+		if (!resp.empty())
 		{
-			auto i = resp->find("\r\n");
+			auto i = resp.find("\r\n");
 			if (i != std::string::npos)
 			{
-				auto arr = string::explode(resp->substr(0, i), ' ');
+				auto arr = string::explode(resp.substr(0, i), ' ');
 				if (arr.size() >= 2)
 				{
-					resp->erase(0, i + 2);
+					resp.erase(0, i + 2);
 
-					HttpResponse res = std::move(*resp);
+					HttpResponse res = std::move(resp);
 					res.status_code = string::toInt<uint16_t>(arr.at(1), 0);
 
 					if (auto enc = res.header_fields.find(ObfusString("Transfer-Encoding")); enc != res.header_fields.end())
