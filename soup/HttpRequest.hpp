@@ -36,9 +36,8 @@ namespace soup
 
 		[[nodiscard]] std::optional<HttpResponse> execute() const; // blocking
 		[[nodiscard]] std::optional<HttpResponse> execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const; // blocking
-		[[nodiscard]] std::string getDataToSend() const;
+		void send(Socket& s) const;
 	private:
-		void execute_send(Socket& s) const;
 		static void execute_tick(Socket& s, std::string* resp);
 	};
 }

@@ -45,7 +45,7 @@ namespace soup
 		req.header_fields.emplace("Upgrade", "websocket");
 		req.header_fields.emplace("Sec-WebSocket-Key", WebSocket::generateKey());
 		req.header_fields.emplace("Sec-WebSocket-Version", "13");
-		send(req.getDataToSend());
+		req.send(*this);
 	}
 
 	void WebSocketConnection::wsSend(std::string data, bool is_text)

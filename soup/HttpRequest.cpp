@@ -94,13 +94,13 @@ namespace soup
 				s.enableCryptoClient(host, [](Socket& s, Capture&& _cap)
 				{
 					auto& cap = _cap.get<CaptureHttpRequestExecute>();
-					cap.req->execute_send(s);
+					cap.req->send(s);
 					execute_tick(s, cap.resp);
 				}, CaptureHttpRequestExecute{ this, &resp }, certchain_validator);
 			}
 			else
 			{
-				execute_send(s);
+				send(s);
 				execute_tick(s, &resp);
 			}
 			sched.run();
@@ -176,7 +176,7 @@ namespace soup
 		return {};
 	}
 
-	std::string HttpRequest::getDataToSend() const
+	void HttpRequest::send(Socket& s) const
 	{
 		std::string data{};
 		data.append(method);
@@ -185,12 +185,7 @@ namespace soup
 		data.append(ObfusString(" HTTP/1.1").str());
 		data.append("\r\n");
 		data.append(toString());
-		return data;
-	}
-
-	void HttpRequest::execute_send(Socket& s) const
-	{
-		s.send(getDataToSend());
+		s.send(data);
 	}
 
 	void HttpRequest::execute_tick(Socket& s, std::string* resp)
