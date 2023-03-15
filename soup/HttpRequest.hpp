@@ -39,6 +39,8 @@ namespace soup
 		void send(Socket& s) const;
 	private:
 		static void execute_tick(Socket& s, std::string* resp);
+	public:
+		[[nodiscard]] static bool isChallengeResponse(const HttpResponse& res);
 	};
 }
 #endif

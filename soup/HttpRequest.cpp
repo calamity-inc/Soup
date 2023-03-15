@@ -155,7 +155,7 @@ namespace soup
 
 					res.decode();
 
-					if (res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) == std::string::npos)
+					if (!isChallengeResponse(res))
 					{
 						return std::optional<HttpResponse>(std::move(res));
 					}
@@ -185,6 +185,11 @@ namespace soup
 			resp->append(std::move(app));
 			execute_tick(s, resp);
 		}, resp);
+	}
+
+	bool HttpRequest::isChallengeResponse(const HttpResponse& res)
+	{
+		return res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) != std::string::npos;
 	}
 }
 
