@@ -86,8 +86,12 @@
 
 // === C++ version abstraction macros
 
+#if __cplusplus == 199711L
+	#error Please set the /Zc:__cplusplus compiler flag or manually adjust __cplusplus when using Soup.
+#endif
+
 #ifndef SOUP_CPP20
-	#if !defined(_MSC_VER) && (__cplusplus < 202002L)
+	#if __cplusplus < 202002L
 		#define SOUP_CPP20 false
 	#else
 		#define SOUP_CPP20 true
