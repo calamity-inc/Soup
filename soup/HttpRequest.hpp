@@ -41,6 +41,9 @@ namespace soup
 		static void execute_tick(Socket& s, std::string* resp);
 	public:
 		[[nodiscard]] static bool isChallengeResponse(const HttpResponse& res);
+
+		using response_callback_t = void(*)(Socket&, std::optional<HttpResponse>&&);
+		static void recvResponse(Socket& s, response_callback_t callback);
 	};
 }
 #endif

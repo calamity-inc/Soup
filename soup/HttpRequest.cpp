@@ -148,10 +148,6 @@ namespace soup
 							}
 						}
 					}
-					else
-					{
-						// If no Transfer-Encoding, we'd have Content-Length in HTTP/1.1, or "Connection: close" in HTTP/1.0.
-					}
 
 					res.decode();
 
@@ -190,6 +186,202 @@ namespace soup
 	bool HttpRequest::isChallengeResponse(const HttpResponse& res)
 	{
 		return res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) != std::string::npos;
+	}
+
+	struct HttpResponseReceiver
+	{
+		enum Status : uint8_t
+		{
+			CODE,
+			HEADER,
+			BODY_CHUNKED,
+			BODY_LEN,
+			BODY_CLOSE,
+		};
+
+		std::string buf{};
+		HttpResponse resp{};
+		Status status = CODE;
+		unsigned long long bytes_remain = 0;
+
+		HttpRequest::response_callback_t callback;
+
+		HttpResponseReceiver(HttpRequest::response_callback_t callback)
+			: callback(callback)
+		{
+		}
+
+		void tick(Socket& s, Capture&& cap)
+		{
+			s.recv([](Socket& s, std::string&& app, Capture&& cap)
+			{
+				auto& self = cap.get<HttpResponseReceiver>();
+				if (app.empty())
+				{
+					// Connection was closed and no more data
+					if (self.status == BODY_CLOSE)
+					{
+						self.resp.body = std::move(self.buf);
+						self.callbackSuccess(s);
+					}
+					else
+					{
+						self.callback(s, std::nullopt);
+					}
+					return;
+				}
+				self.buf.append(app);
+				while (true)
+				{
+					if (self.status == CODE)
+					{
+						auto i = self.buf.find("\r\n");
+						if (i == std::string::npos)
+						{
+							break;
+						}
+						auto arr = string::explode(self.buf.substr(0, i), ' ');
+						if (arr.size() < 2)
+						{
+							// Invalid data
+							self.callback(s, std::nullopt);
+							return;
+						}
+						self.buf.erase(0, i + 2);
+						self.resp.status_code = string::toInt<uint16_t>(arr.at(1), 0);
+						self.status = HEADER;
+					}
+					else if (self.status == HEADER)
+					{
+						auto i = self.buf.find("\r\n");
+						if (i == std::string::npos)
+						{
+							break;
+						}
+						auto line = self.buf.substr(0, i);
+						self.buf.erase(0, i + 2);
+						SOUP_IF_LIKELY (!line.empty())
+						{
+							self.resp.addHeader(line);
+						}
+						else
+						{
+							if (auto enc = self.resp.header_fields.find(ObfusString("Transfer-Encoding")); enc != self.resp.header_fields.end())
+							{
+								if (joaat::hash(enc->second) == joaat::hash("chunked"))
+								{
+									self.status = BODY_CHUNKED;
+								}
+							}
+							if (self.status == HEADER)
+							{
+								if (auto len = self.resp.header_fields.find(ObfusString("Content-Length")); len != self.resp.header_fields.end())
+								{
+									self.status = BODY_LEN;
+									try
+									{
+										self.bytes_remain = std::stoull(len->second);
+									}
+									catch (...)
+									{
+										self.callback(s, std::nullopt);
+										return;
+									}
+								}
+								else
+								{
+									if (auto con = self.resp.header_fields.find(ObfusString("Connection")); con != self.resp.header_fields.end())
+									{
+										if (joaat::hash(con->second) == joaat::hash("close"))
+										{
+											self.status = BODY_CLOSE;
+											s.callback_recv_on_close = true;
+										}
+									}
+									if (self.status == HEADER)
+									{
+										// We still have no idea how to read the body. Assuming response is header-only.
+										self.callbackSuccess(s);
+										return;
+									}
+								}
+							}
+						}
+					}
+					else if (self.status == BODY_CHUNKED)
+					{
+						if (self.bytes_remain == 0)
+						{
+							auto i = self.buf.find("\r\n");
+							if (i == std::string::npos)
+							{
+								break;
+							}
+							try
+							{
+								self.bytes_remain = std::stoull(self.buf.substr(0, i), nullptr, 16);
+							}
+							catch (...)
+							{
+								self.callback(s, std::nullopt);
+								return;
+							}
+							self.buf.erase(0, i + 2);
+							if (self.bytes_remain == 0)
+							{
+								self.callbackSuccess(s);
+								return;
+							}
+						}
+						else
+						{
+							if (self.buf.size() < self.bytes_remain + 2)
+							{
+								break;
+							}
+							self.resp.body.append(self.buf.substr(0, self.bytes_remain));
+							self.buf.erase(0, self.bytes_remain + 2);
+							self.bytes_remain = 0;
+						}
+					}
+					else if (self.status == BODY_LEN)
+					{
+						if (self.buf.size() < self.bytes_remain)
+						{
+							break;
+						}
+						self.resp.body = self.buf.substr(0, self.bytes_remain);
+						//self.buf.erase(0, self.bytes_remain);
+						self.callbackSuccess(s);
+						return;
+					}
+					else if (self.status == BODY_CLOSE)
+					{
+						break;
+					}
+				}
+				self.tick(s, std::move(cap));
+			}, std::move(cap));
+		}
+
+		void callbackSuccess(Socket& s)
+		{
+			resp.decode();
+			SOUP_IF_LIKELY (!HttpRequest::isChallengeResponse(resp))
+			{
+				callback(s, std::move(resp));
+			}
+			else
+			{
+				callback(s, std::nullopt);
+			}
+		}
+	};
+
+	void HttpRequest::recvResponse(Socket& s, response_callback_t callback)
+	{
+		Capture cap = HttpResponseReceiver(callback);
+		cap.get<HttpResponseReceiver>().tick(s, std::move(cap));
 	}
 }
 
