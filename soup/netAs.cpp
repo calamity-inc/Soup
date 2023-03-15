@@ -97,6 +97,7 @@ namespace soup
 		case 59432: // GINERNET
 		case 209854: // Surfshark Ltd.
 		case 43357: // Owl Limited
+		case 29802: // HIVELOCITY, Inc.
 			// Latitude.sh (formerly Maxihost)
 		case 262287:
 		case 396356:
