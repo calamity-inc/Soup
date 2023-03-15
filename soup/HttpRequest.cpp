@@ -2,7 +2,6 @@
 
 #if !SOUP_WASM
 
-#include "deflate.hpp"
 #include "joaat.hpp"
 #include "ObfusString.hpp"
 #include "Scheduler.hpp"
@@ -154,17 +153,7 @@ namespace soup
 						// If no Transfer-Encoding, we'd have Content-Length in HTTP/1.1, or "Connection: close" in HTTP/1.0.
 					}
 
-					if (auto enc = res.header_fields.find(ObfusString("Content-Encoding")); enc != res.header_fields.end())
-					{
-						auto enc_joaat = joaat::hash(enc->second);
-						switch (enc_joaat)
-						{
-						case joaat::hash("gzip"):
-						case joaat::hash("deflate"):
-							res.body = deflate::decompress(res.body).decompressed;
-							break;
-						}
-					}
+					res.decode();
 
 					if (res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) == std::string::npos)
 					{

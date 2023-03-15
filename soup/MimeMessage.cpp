@@ -1,6 +1,9 @@
 #include "MimeMessage.hpp"
 
+#include "deflate.hpp"
+#include "joaat.hpp"
 #include "MimeType.hpp"
+#include "ObfusString.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -71,6 +74,21 @@ namespace soup
 		if (auto key_offset = line.find(": "); key_offset != std::string::npos)
 		{
 			header_fields.emplace(line.substr(0, key_offset), line.substr(key_offset + 2));
+		}
+	}
+
+	void MimeMessage::decode()
+	{
+		if (auto enc = header_fields.find(ObfusString("Content-Encoding")); enc != header_fields.end())
+		{
+			auto enc_joaat = joaat::hash(enc->second);
+			switch (enc_joaat)
+			{
+			case joaat::hash("gzip"):
+			case joaat::hash("deflate"):
+				body = deflate::decompress(body).decompressed;
+				break;
+			}
 		}
 	}
 
