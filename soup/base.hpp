@@ -90,12 +90,15 @@
 	#error Please set the /Zc:__cplusplus compiler flag or manually adjust __cplusplus when using Soup.
 #endif
 
-#ifndef SOUP_CPP20
-	#if __cplusplus < 202002L
-		#define SOUP_CPP20 false
-	#else
-		#define SOUP_CPP20 true
-	#endif
+#ifdef SOUP_CPP20
+	#pragma message("Ignoring SOUP_CPP20 define, this is automatically set based on C++ version.")
+	#undef SOUP_CPP20
+#endif
+
+#if __cplusplus < 202002L
+	#define SOUP_CPP20 false
+#else
+	#define SOUP_CPP20 true
 #endif
 
 #if !SOUP_CPP20
