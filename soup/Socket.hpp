@@ -75,6 +75,7 @@ namespace soup
 
 		bool init(int af, int type);
 
+		bool connect(const char* host, uint16_t port) noexcept; // blocking
 		bool connect(const std::string& host, uint16_t port) noexcept; // blocking
 		bool connect(const SocketAddr& addr) noexcept; // blocking
 		bool connect(const IpAddr& ip, uint16_t port) noexcept; // blocking

@@ -87,6 +87,11 @@ namespace soup
 		return fd != -1;
 	}
 
+	bool Socket::connect(const char* host, uint16_t port) noexcept
+	{
+		return connect(std::string(host), port);
+	}
+
 	bool Socket::connect(const std::string& host, uint16_t port) noexcept
 	{
 		if (IpAddr hostaddr; hostaddr.fromString(host))
