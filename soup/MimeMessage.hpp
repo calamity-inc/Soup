@@ -19,6 +19,7 @@ namespace soup
 		void setContentType();
 
 		void loadMessage(const std::string& data);
+		void addHeader(const std::string& line);
 
 		[[nodiscard]] std::string toString() const;
 

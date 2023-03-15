@@ -62,10 +62,15 @@ namespace soup
 
 		for (const auto& line : string::explode(header, "\r\n"))
 		{
-			if (auto key_offset = line.find(": "); key_offset != std::string::npos)
-			{
-				header_fields.emplace(line.substr(0, key_offset), line.substr(key_offset + 2));
-			}
+			addHeader(line);
+		}
+	}
+
+	void MimeMessage::addHeader(const std::string& line)
+	{
+		if (auto key_offset = line.find(": "); key_offset != std::string::npos)
+		{
+			header_fields.emplace(line.substr(0, key_offset), line.substr(key_offset + 2));
 		}
 	}
 
