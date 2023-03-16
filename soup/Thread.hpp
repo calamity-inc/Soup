@@ -32,10 +32,9 @@ namespace soup
 		explicit Thread(std::function<void()>&& func) noexcept;
 		explicit Thread(const Thread& b) = delete;
 		explicit Thread(Thread&& b) = delete;
-	protected:
-		void create(void(*f)(Capture&&), Capture&& cap) noexcept;
+		void start(void(*f)(Capture&&), Capture&& cap) noexcept;
+		void start(std::function<void()>&& func) noexcept;
 
-	public:
 		~Thread() noexcept;
 
 		void setTimeCritical() noexcept;

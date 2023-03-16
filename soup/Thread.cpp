@@ -2,6 +2,16 @@
 
 namespace soup
 {
+	Thread::Thread(void(*f)(Capture&&), Capture&& cap) noexcept
+	{
+		start(f, std::move(cap));
+	}
+
+	Thread::Thread(std::function<void()>&& func) noexcept
+	{
+		start(std::move(func));
+	}
+
 	struct CaptureThreadCreate
 	{
 		void(*f)(Capture&&);
@@ -23,7 +33,7 @@ namespace soup
 		t->create_capture.reset();
 	}
 
-	Thread::Thread(void(*f)(Capture&&), Capture&& cap) noexcept
+	void Thread::start(void(*f)(Capture&&), Capture&& cap) noexcept
 	{
 		create_capture = CaptureThreadCreate{
 			f,
@@ -39,12 +49,12 @@ namespace soup
 #endif
 	}
 
-	Thread::Thread(std::function<void()>&& func) noexcept
-		: Thread([](Capture&& cap)
+	void Thread::start(std::function<void()>&& func) noexcept
+	{
+		start([](Capture&& cap)
 		{
 			cap.get<std::function<void()>>()();
-		}, std::move(func))
-	{
+		}, std::move(func));
 	}
 
 	Thread::~Thread() noexcept
