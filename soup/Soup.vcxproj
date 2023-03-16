@@ -506,6 +506,7 @@
     <ClInclude Include="netConnectTask.hpp" />
     <ClInclude Include="Rgba.hpp" />
     <ClInclude Include="RgbaCanvas.hpp" />
+    <ClInclude Include="SchedulerAwareTask.hpp" />
     <ClInclude Include="Svg.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
