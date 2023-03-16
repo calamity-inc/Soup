@@ -6,7 +6,7 @@
 
 namespace soup
 {
-	Task::Task()
+	Task::Task() noexcept
 		: Worker()
 	{
 		holdup_type = Worker::IDLE;

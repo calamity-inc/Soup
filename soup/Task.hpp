@@ -7,7 +7,7 @@ namespace soup
 	class Task : public Worker
 	{
 	public:
-		explicit Task();
+		explicit Task() noexcept;
 	protected:
 		virtual void onTick() = 0;
 
@@ -19,5 +19,11 @@ namespace soup
 	
 		// To use a Task without a Scheduler
 		void runUntilDone();
+
+	protected:
+		// Tasks only ever have the "IDLE" holdup with the onTick-invoking callback.
+		// However, that callback does not need its capture, so we can use it for arbitrary data.
+		[[nodiscard]] Capture& taskCapture() noexcept { return holdup_callback.cap; }
+		[[nodiscard]] const Capture& taskCapture() const noexcept { return holdup_callback.cap; }
 	};
 }
