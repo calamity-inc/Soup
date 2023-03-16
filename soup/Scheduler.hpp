@@ -11,6 +11,7 @@
 #include <poll.h>
 #endif
 
+#include "AtomicStack.hpp"
 #include "UniquePtr.hpp"
 #include "Worker.hpp"
 
@@ -18,9 +19,11 @@ namespace soup
 {
 	class Scheduler
 	{
-	public:
+	protected:
 		std::vector<UniquePtr<Worker>> workers{};
+		AtomicStack<UniquePtr<Worker>> pending_workers{};
 
+	public:
 		using on_work_done_t = void(*)(Worker&, Scheduler&);
 		using on_connection_lost_t = void(*)(Socket&, Scheduler&);
 		using on_exception_t = void(*)(Worker&, const std::exception&, Scheduler&);
@@ -29,6 +32,10 @@ namespace soup
 		on_connection_lost_t on_connection_lost = nullptr;
 		on_exception_t on_exception = nullptr;
 
+		virtual ~Scheduler() = default;
+
+		virtual Worker& addWorker(UniquePtr<Worker>&& w) noexcept;
+
 		Socket& addSocket() noexcept;
 		Socket& addSocket(UniquePtr<Socket>&& sock) noexcept;
 
@@ -36,6 +43,12 @@ namespace soup
 		T& addSocket(T&& sock) noexcept
 		{
 			return addSocket(make_unique<Socket>(std::move(sock)));
+		}
+
+		template <typename T, typename...Args>
+		T& add(Args&&...args)
+		{
+			return static_cast<T&>(addWorker(make_unique<T>(std::forward<Args>(args)...)));
 		}
 
 		void run();

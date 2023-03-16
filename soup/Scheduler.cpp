@@ -19,6 +19,11 @@
 
 namespace soup
 {
+	Worker& Scheduler::addWorker(UniquePtr<Worker>&& w) noexcept
+	{
+		return *pending_workers.emplace_front(std::move(w))->data;
+	}
+
 	Socket& Scheduler::addSocket() noexcept
 	{
 		return addSocket(soup::make_unique<Socket>());
@@ -29,12 +34,12 @@ namespace soup
 #if SOUP_LINUX
 		sock->setNonBlocking();
 #endif
-		return *reinterpret_cast<Socket*>(workers.emplace_back(std::move(sock)).get());
+		return static_cast<Socket&>(addWorker(std::move(sock)));
 	}
 
 	void Scheduler::run()
 	{
-		while (!workers.empty())
+		while (!workers.empty() || !pending_workers.empty())
 		{
 			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
@@ -75,6 +80,21 @@ namespace soup
 
 	void Scheduler::tick(std::vector<pollfd>& pollfds, bool& not_just_sockets)
 	{
+		// Schedule in pending workers
+		{
+			auto num_pending_workers = pending_workers.size();
+			SOUP_IF_UNLIKELY (num_pending_workers != 0)
+			{
+				workers.reserve(workers.size() + num_pending_workers);
+				do
+				{
+					auto worker = pending_workers.pop_front();
+					workers.emplace_back(std::move(*worker));
+				} while (--num_pending_workers);
+			}
+		}
+
+		// Process workers
 		for (auto i = workers.begin(); i != workers.end(); )
 		{
 			if ((*i)->type == WORKER_TYPE_SOCKET
