@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scheduler.hpp"
+#if !SOUP_WASM
 
 #include "Thread.hpp"
 
@@ -19,3 +20,5 @@ namespace soup
 		[[nodiscard]] bool isActive() const noexcept;
 	};
 }
+
+#endif

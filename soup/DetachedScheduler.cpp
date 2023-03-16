@@ -1,4 +1,5 @@
 #include "DetachedScheduler.hpp"
+#if !SOUP_WASM
 
 namespace soup
 {
@@ -27,3 +28,5 @@ namespace soup
 		return thrd.isRunning();
 	}
 }
+
+#endif
