@@ -70,7 +70,7 @@ namespace soup
 
 		[[nodiscard]] bool empty() const noexcept
 		{
-			return head.load() != nullptr;
+			return head.load() == nullptr;
 		}
 
 		[[nodiscard]] size_t size() const noexcept
