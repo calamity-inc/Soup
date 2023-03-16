@@ -1224,6 +1224,9 @@
     <ClInclude Include="X11Api.hpp">
       <Filter>os\linux</Filter>
     </ClInclude>
+    <ClInclude Include="DetachedScheduler.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1808,6 +1811,9 @@
     </ClCompile>
     <ClCompile Include="WebSocket.cpp">
       <Filter>net\web\websocket</Filter>
+    </ClCompile>
+    <ClCompile Include="DetachedScheduler.cpp">
+      <Filter>task</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
