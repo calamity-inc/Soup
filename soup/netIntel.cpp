@@ -77,7 +77,7 @@ namespace soup
 		while (aslistcsv.getLine(line))
 		{
 			auto asn_sep = line.find(',');
-			SOUP_IF_UNLIKELY(asn_sep == std::string::npos)
+			SOUP_IF_UNLIKELY (asn_sep == std::string::npos)
 			{
 				continue;
 			}
@@ -133,7 +133,7 @@ namespace soup
 		for (std::string line; ipv6toasntsv.getLine(line); )
 		{
 			auto arr = string::explode(line, '\t');
-			SOUP_IF_UNLIKELY(arr.size() < 5)
+			SOUP_IF_UNLIKELY (arr.size() < 5)
 			{
 				continue;
 			}
@@ -165,7 +165,7 @@ namespace soup
 		for (std::string line; ipv4tolocationcsv.getLine(line); )
 		{
 			auto arr = csv::parseLine(line);
-			SOUP_IF_UNLIKELY(arr.size() < 6)
+			SOUP_IF_UNLIKELY (arr.size() < 6)
 			{
 				continue;
 			}
@@ -193,7 +193,7 @@ namespace soup
 		for (std::string line; ipv6tolocationcsv.getLine(line); )
 		{
 			auto arr = csv::parseLine(line);
-			SOUP_IF_UNLIKELY(arr.size() < 6)
+			SOUP_IF_UNLIKELY (arr.size() < 6)
 			{
 				continue;
 			}
