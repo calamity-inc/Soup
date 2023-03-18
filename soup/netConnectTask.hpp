@@ -17,7 +17,7 @@ namespace soup
 
 		Promise<Socket> promise;
 
-		netConnectTask(IpAddr addr, uint16_t port)
+		netConnectTask(const IpAddr& addr, uint16_t port)
 			: promise([](Capture&& cap, PromiseBase* pb)
 			{
 				Info& info = cap.get<Info>();
