@@ -1230,6 +1230,9 @@
     <ClInclude Include="SchedulerAwareTask.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="netConfig.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1817,6 +1820,9 @@
     </ClCompile>
     <ClCompile Include="DetachedScheduler.cpp">
       <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="netConfig.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

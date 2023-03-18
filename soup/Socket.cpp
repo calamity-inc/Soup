@@ -12,9 +12,10 @@
 #include "aes.hpp"
 #include "Buffer.hpp"
 #include "BufferRefWriter.hpp"
-#include "dnsOsResolver.hpp"
+#include "dnsResolver.hpp"
 #include "ec.hpp"
 #include "NamedCurves.hpp"
+#include "netConfig.hpp"
 #include "rand.hpp"
 #include "SocketTlsHandshaker.hpp"
 #include "time.hpp"
@@ -98,7 +99,7 @@ namespace soup
 		{
 			return connect(hostaddr, port);
 		}
-		dnsOsResolver resolver;
+		const dnsResolver& resolver = *netConfig::get().dns_resolver;
 		auto res = resolver.lookupIPv4(host);
 		if (!res.empty() && connect(rand(res), port))
 		{
