@@ -2,6 +2,7 @@
 
 #include "base64.hpp"
 #include "string.hpp"
+#include "urlenc.hpp"
 
 namespace soup
 {
@@ -105,7 +106,12 @@ namespace soup
 			{
 				path = std::move(uri);
 			}
+			query = urlenc::decode(query);
 		}
+
+		path = urlenc::decode(path);
+		query = urlenc::decode(query);
+		fragment = urlenc::decode(fragment);
 	}
 
 	std::string Uri::toString() const
@@ -147,7 +153,7 @@ namespace soup
 
 	std::string Uri::getRequestPath() const
 	{
-		auto str = path;
+		auto str = urlenc::encodePath(path);
 		if (!query.empty())
 		{
 			str.push_back('?');

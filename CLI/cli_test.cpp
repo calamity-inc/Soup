@@ -687,10 +687,10 @@ static void test_uri()
 	assert(uri.port == 0);
 	assert(uri.user == "");
 	assert(uri.pass == "");
-	assert(uri.path == "/..;@www.google.com:%3443/");
+	assert(uri.path == "/..;@www.google.com:443/");
 	assert(uri.query == "");
 	assert(uri.fragment == "");
-	assert(uri.toString() == str);
+	// Not testing uri.toString because this one is very malformatted so it's expected that Soup re-encodes it more sanely.
 
 	str = "https://google.com?q=Soup";
 	uri = Uri(str);
