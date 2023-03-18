@@ -68,4 +68,34 @@ namespace soup
 		}
 		return res;
 	}
+
+	std::string urlenc::decode(const std::string& data)
+	{
+		std::string res;
+		for (auto i = data.begin(); i != data.end(); )
+		{
+			if (*i == '%' && (i + 1) != data.end() && (i + 2) != data.end())
+			{
+				std::string hex;
+				hex.push_back(*(++i));
+				hex.push_back(*(++i));
+				++i;
+				try
+				{
+					res.push_back((char)(unsigned char)std::stoul(hex, nullptr, 16));
+				}
+				catch (...)
+				{
+					i -= 2;
+					res.push_back('%');
+				}
+			}
+			else
+			{
+				res.push_back(*i);
+				++i;
+			}
+		}
+		return res;
+	}
 }
