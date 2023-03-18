@@ -23,6 +23,11 @@ namespace soup
 			return value;
 		}
 
+		operator const std::string& () const noexcept
+		{
+			return value;
+		}
+
 		bool operator ==(const std::string& b) const noexcept
 		{
 			return value == b;
