@@ -11,27 +11,17 @@
 
 namespace soup
 {
-	void json::decode(UniquePtr<JsonNode>& out, const std::string& data)
-	{
-		out = decodeForDedicatedVariable(data);
-	}
-
-	void json::decode(UniquePtr<JsonNode>& out, const char*& c)
-	{
-		out = decodeForDedicatedVariable(c);
-	}
-
-	UniquePtr<JsonNode> json::decodeForDedicatedVariable(const std::string& data)
+	UniquePtr<JsonNode> json::decode(const std::string& data)
 	{
 		if (data.empty())
 		{
 			return {};
 		}
 		const char* c = &data.at(0);
-		return decodeForDedicatedVariable(c);
+		return decode(c);
 	}
 
-	UniquePtr<JsonNode> json::decodeForDedicatedVariable(const char*& c)
+	UniquePtr<JsonNode> json::decode(const char*& c)
 	{
 		switch (*c)
 		{
@@ -95,6 +85,16 @@ namespace soup
 			}
 		}
 		return {};
+	}
+
+	void json::decode(UniquePtr<JsonNode>& out, const std::string& data)
+	{
+		out = decode(data);
+	}
+
+	UniquePtr<JsonNode> json::decodeForDedicatedVariable(const std::string& data)
+	{
+		return decode(data);
 	}
 
 	void json::binaryDecode(UniquePtr<JsonNode>& out, Reader& r)

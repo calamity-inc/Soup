@@ -20,7 +20,7 @@ namespace soup
 
 		void compress(BitWriter& bw, const std::string& data) const final
 		{
-			if (auto jt = json::decodeForDedicatedVariable(data))
+			if (auto jt = json::decode(data))
 			{
 				jt->binaryEncode(bw.getStream());
 			}

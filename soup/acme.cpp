@@ -38,7 +38,7 @@ namespace soup
 	{
 		HttpRequest req(domain, "/directory");
 		auto res = req.execute();
-		auto root = json::decodeForDedicatedVariable(res->body);
+		auto root = json::decode(res->body);
 		JsonObject& directory = root->asObj();
 		uri_newNonce = directory.at("newNonce").asStr().value;
 		uri_newAccount = directory.at("newAccount").asStr().value;
@@ -113,7 +113,7 @@ namespace soup
 	AcmeAuthorisation AcmeClient::getAuthorisation(const AcmeAccount& acct, const Uri& uri)
 	{
 		auto res = executeRequest(acct, uri, {});
-		auto j = json::decodeForDedicatedVariable(res.body);
+		auto j = json::decode(res.body);
 		JsonObject& jo = j->asObj();
 		AcmeAuthorisation authz;
 		authz.domain = jo.at("identifier").asObj().at("value").asStr().value;
@@ -203,7 +203,7 @@ namespace soup
 
 	AcmeOrder AcmeClient::parseOrderResponse(const HttpResponse& res)
 	{
-		auto j = json::decodeForDedicatedVariable(res.body);
+		auto j = json::decode(res.body);
 		JsonObject& jo = j->asObj();
 		AcmeOrder order{};
 		if (auto e = res.header_fields.find("Location"); e != res.header_fields.end())

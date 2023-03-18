@@ -311,7 +311,7 @@ static void unit_data()
 
 	test("json", []
 	{
-		auto tree = json::decodeForDedicatedVariable(R"({
+		auto tree = json::decode(R"({
 "firstName": "John",
 "lastName": "Smith",
 "isAlive": true,
