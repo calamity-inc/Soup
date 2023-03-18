@@ -28,7 +28,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] Socket& getSocket()
+		[[nodiscard]] Socket& getSocket() noexcept
 		{
 			return promise.getResult();
 		}
