@@ -1233,6 +1233,9 @@
     <ClInclude Include="netConfig.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="StateMachineTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
