@@ -2,6 +2,7 @@
 
 #if !SOUP_WASM
 
+#include "Callback.hpp"
 #include "joaat.hpp"
 #include "ObfusString.hpp"
 #include "Scheduler.hpp"
@@ -204,10 +205,10 @@ namespace soup
 		Status status = CODE;
 		unsigned long long bytes_remain = 0;
 
-		HttpRequest::response_callback_t callback;
+		Callback<void(Socket&, std::optional<HttpResponse>&&)> callback;
 
-		HttpResponseReceiver(HttpRequest::response_callback_t callback)
-			: callback(callback)
+		HttpResponseReceiver(void fp(Socket&, std::optional<HttpResponse>&&, Capture&&), Capture&& cap)
+			: callback(fp, std::move(cap))
 		{
 		}
 
@@ -378,9 +379,9 @@ namespace soup
 		}
 	};
 
-	void HttpRequest::recvResponse(Socket& s, response_callback_t callback)
+	void HttpRequest::recvResponse(Socket& s, void callback(Socket&, std::optional<HttpResponse>&&, Capture&&), Capture&& _cap)
 	{
-		Capture cap = HttpResponseReceiver(callback);
+		Capture cap = HttpResponseReceiver(callback, std::move(_cap));
 		cap.get<HttpResponseReceiver>().tick(s, std::move(cap));
 	}
 }
