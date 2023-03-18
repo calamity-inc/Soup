@@ -9,6 +9,11 @@ namespace soup
 	// URI = scheme ":" ["//" authority] path ["?" query] ["#" fragment]
 	// authority = [userinfo "@"] host [":" port]
 
+	Uri::Uri(const char* url)
+		: Uri(std::string(url))
+	{
+	}
+
 	Uri::Uri(std::string uri)
 	{
 		auto scheme_sep = uri.find(':');

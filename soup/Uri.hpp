@@ -16,6 +16,7 @@ namespace soup
 		std::string fragment{};
 
 		Uri() = default;
+		Uri(const char* url);
 		Uri(std::string url);
 
 		[[nodiscard]] std::string toString() const;
