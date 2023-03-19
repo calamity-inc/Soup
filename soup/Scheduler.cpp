@@ -252,17 +252,22 @@ namespace soup
 
 	Socket* Scheduler::findReusableSocketForHost(const std::string& host)
 	{
+		Socket* res = nullptr;
 		for (const auto& w : workers)
 		{
 			if (w->type == WORKER_TYPE_SOCKET
 				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
-				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMap(ReuseTag).host == host
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).host == host
 				)
 			{
-				return static_cast<Socket*>(w.get());
+				res = static_cast<Socket*>(w.get());
+				if (!static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).is_busy)
+				{
+					break;
+				}
 			}
 		}
-		return nullptr;
+		return res;
 	}
 
 	void Scheduler::closeReusableSockets()
