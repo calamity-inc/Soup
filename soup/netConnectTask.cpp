@@ -21,6 +21,8 @@ namespace soup
 			// In case we get no A records, we need enough data to start AAAA query.
 			taskCapture() = sched;
 			this->host = host;
+
+			// In order to connect after lookup, we need to remember the port.
 			this->port = port;
 		}
 	}
