@@ -2,6 +2,8 @@
 
 #include <cstring> // memcmp
 
+#include "joaat.hpp"
+#include "sha1.hpp"
 #include "sha256.hpp"
 
 namespace soup
@@ -21,6 +23,32 @@ namespace soup
 		try
 		{
 			auto tbsCert = cert.getSeq(0);
+			switch (joaat::hash(cert.getSeq(1).getOid(0).toString()))
+			{
+			case joaat::hash("1.2.840.113549.1.1.5"):
+				sig_type = RSA_WITH_SHA1;
+				break;
+
+			case joaat::hash("1.2.840.113549.1.1.11"):
+				sig_type = RSA_WITH_SHA256;
+				break;
+
+			case joaat::hash("1.2.840.113549.1.1.12"):
+				sig_type = RSA_WITH_SHA384;
+				break;
+
+			case joaat::hash("1.2.840.113549.1.1.13"):
+				sig_type = RSA_WITH_SHA512;
+				break;
+
+			case joaat::hash("1.2.840.10045.4.3.2"):
+				sig_type = ECDSA_WITH_SHA256;
+				break;
+
+			case joaat::hash("1.2.840.10045.4.3.3"):
+				sig_type = ECDSA_WITH_SHA384;
+				break;
+			}
 			tbsCertDer = tbsCert.toDer();
 			sig = cert.getInt(2);
 
@@ -28,8 +56,8 @@ namespace soup
 			auto oid_bin = pubInfo.getString(0);
 
 			const unsigned char rsa_oid[] = {
-				0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01,
-				0x05, 0x00
+				0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, // OID 1.2.840.113549.1.1.1
+				0x05, 0x00 // NULL
 			};
 			if (oid_bin.size() == sizeof(rsa_oid) && memcmp(oid_bin.data(), rsa_oid, sizeof(rsa_oid)) == 0)
 			{
@@ -86,7 +114,22 @@ namespace soup
 
 	bool X509Certificate::verify(const RsaPublicKey& issuer) const
 	{
-		// Assuming cert[1] is sequence of OID 1.2.840.113549.1.1.11 (rsa with sha256)
-		return issuer.verify<soup::sha256>(tbsCertDer, sig);
+		switch (sig_type)
+		{
+		case RSA_WITH_SHA1:
+			return issuer.verify<soup::sha1>(tbsCertDer, sig);
+
+		case RSA_WITH_SHA256:
+			return issuer.verify<soup::sha256>(tbsCertDer, sig);
+
+		case RSA_WITH_SHA384:
+		case RSA_WITH_SHA512:
+		case ECDSA_WITH_SHA256:
+		case ECDSA_WITH_SHA384:
+			return true; // TODO
+
+		case UNK_WITH_UNK:;
+		}
+		return false;
 	}
 }
