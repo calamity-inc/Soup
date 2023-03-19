@@ -696,7 +696,7 @@
     <ClInclude Include="JsonNodeType.hpp" />
     <ClInclude Include="JsonNode.hpp" />
     <ClInclude Include="JsonString.hpp" />
-    <ClInclude Include="Keystore.hpp" />
+    <ClInclude Include="TrustStore.hpp" />
     <ClInclude Include="MimeMessage.hpp" />
     <ClInclude Include="MouseButton.hpp" />
     <ClInclude Include="NamedCurves.hpp" />
@@ -967,7 +967,7 @@
     <ClCompile Include="JsonNull.cpp" />
     <ClCompile Include="JsonObject.cpp" />
     <ClCompile Include="JsonString.cpp" />
-    <ClCompile Include="Keystore.cpp" />
+    <ClCompile Include="TrustStore.cpp" />
     <ClCompile Include="LangDesc.cpp" />
     <ClCompile Include="LangVm.cpp" />
     <ClCompile Include="lyoContainer.cpp" />

@@ -1,11 +1,11 @@
-#include "Keystore.hpp"
+#include "TrustStore.hpp"
 
 #include "pem.hpp"
 #include "X509Certificate.hpp"
 
 namespace soup
 {
-	void Keystore::loadCaCerts(std::istream& is)
+	void TrustStore::loadCaCerts(std::istream& is)
 	{
 		std::string ca_common_name{};
 		std::string ca_pem{};
@@ -40,7 +40,7 @@ namespace soup
 		}
 	}
 
-	void Keystore::addCa(std::string&& common_name, std::string&& pem)
+	void TrustStore::addCa(std::string&& common_name, std::string&& pem)
 	{
 		X509Certificate xcert;
 		if (xcert.fromDer(pem::decode(std::move(pem)))
@@ -51,12 +51,12 @@ namespace soup
 		}
 	}
 
-	void Keystore::addCa(std::string&& common_name, RsaPublicKey&& key)
+	void TrustStore::addCa(std::string&& common_name, RsaPublicKey&& key)
 	{
 		data.emplace(std::move(common_name), std::move(key));
 	}
 
-	const RsaPublicKey* Keystore::findCommonName(const std::string& cn) const
+	const RsaPublicKey* TrustStore::findCommonName(const std::string& cn) const
 	{
 		auto i = data.find(cn);
 		if (i == data.end())

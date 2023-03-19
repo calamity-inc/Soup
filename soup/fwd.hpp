@@ -15,8 +15,8 @@ namespace soup
 	struct ChessCoordinate;
 
 	// crypto
-	struct Keystore;
 	struct RsaKeypair;
+	struct TrustStore;
 
 	// crypto.x509
 	struct X509Certchain;

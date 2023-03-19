@@ -299,7 +299,7 @@
     <ClInclude Include="ZipIndexedFile.hpp">
       <Filter>io\zip</Filter>
     </ClInclude>
-    <ClInclude Include="Keystore.hpp">
+    <ClInclude Include="TrustStore.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
     <ClInclude Include="X509Certchain.hpp">
@@ -1355,7 +1355,7 @@
     <ClCompile Include="ZipWriter.cpp">
       <Filter>io\zip</Filter>
     </ClCompile>
-    <ClCompile Include="Keystore.cpp">
+    <ClCompile Include="TrustStore.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
     <ClCompile Include="X509Certchain.cpp">

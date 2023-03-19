@@ -2,9 +2,9 @@
 
 #include <cstring> // strlen
 
-#include "Keystore.hpp"
 #include "pem.hpp"
 #include "string.hpp"
+#include "TrustStore.hpp"
 
 namespace soup
 {
@@ -36,10 +36,10 @@ namespace soup
 		return !certs.empty();
 	}
 
-	bool X509Certchain::verify(const std::string& domain, const Keystore& ks) const
+	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts) const
 	{
 		return isValidForDomain(domain)
-			&& verify(ks);
+			&& verify(ts);
 	}
 
 	bool X509Certchain::isValidForDomain(const std::string& domain) const
@@ -47,24 +47,24 @@ namespace soup
 		return certs.at(0).subject.getCommonName() == domain;
 	}
 
-	bool X509Certchain::verify(const Keystore& ks) const
+	bool X509Certchain::verify(const TrustStore& ts) const
 	{
-		return verifyTrust(ks)
+		return verifyTrust(ts)
 			&& verifySignatures()
 			;
 	}
 
-	bool X509Certchain::verifyTrust(const Keystore& ks) const
+	bool X509Certchain::verifyTrust(const TrustStore& ts) const
 	{
 		if (!certs.empty())
 		{
-			if (isAnyInKeystore(ks))
+			if (isAnyInTrustStore(ts))
 			{
 				return true;
 			}
 
 			const auto& root = certs.back();
-			if (auto entry = ks.findCommonName(root.issuer.getCommonName()))
+			if (auto entry = ts.findCommonName(root.issuer.getCommonName()))
 			{
 				if (root.verify(*entry))
 				{
@@ -75,11 +75,11 @@ namespace soup
 		return false;
 	}
 
-	bool X509Certchain::isAnyInKeystore(const Keystore& ks) const
+	bool X509Certchain::isAnyInTrustStore(const TrustStore& ts) const
 	{
 		for (auto i = certs.rbegin(); i != certs.rend(); ++i)
 		{
-			if (auto entry = ks.findCommonName(i->subject.getCommonName()))
+			if (auto entry = ts.findCommonName(i->subject.getCommonName()))
 			{
 				if (entry->n == i->key.n)
 				{

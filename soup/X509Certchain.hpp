@@ -14,11 +14,11 @@ namespace soup
 		bool fromDer(const std::vector<std::string>& vec);
 		bool fromPem(const std::string& str);
 
-		[[nodiscard]] bool verify(const std::string& domain, const Keystore& ks) const;
+		[[nodiscard]] bool verify(const std::string& domain, const TrustStore& ts) const;
 		[[nodiscard]] bool isValidForDomain(const std::string& domain) const;
-		[[nodiscard]] bool verify(const Keystore& ks) const;
-		[[nodiscard]] bool verifyTrust(const Keystore& ks) const;
-		[[nodiscard]] bool isAnyInKeystore(const Keystore& ks) const;
+		[[nodiscard]] bool verify(const TrustStore& ts) const;
+		[[nodiscard]] bool verifyTrust(const TrustStore& ts) const;
+		[[nodiscard]] bool isAnyInTrustStore(const TrustStore& ts) const;
 		[[nodiscard]] bool verifySignatures() const;
 	};
 }

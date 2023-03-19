@@ -7,7 +7,7 @@
 
 namespace soup
 {
-	struct Keystore
+	struct TrustStore
 	{
 		std::unordered_map<std::string, RsaPublicKey> data{};
 
