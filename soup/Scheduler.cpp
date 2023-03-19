@@ -103,8 +103,6 @@ namespace soup
 				SOUP_IF_UNLIKELY (reinterpret_cast<Socket*>(i->get())->fd == -1)
 				{
 					processClosedSocket(*reinterpret_cast<Socket*>(i->get()));
-					++i;
-					continue;
 				}
 			}
 			SOUP_IF_UNLIKELY ((*i)->holdup_type == Worker::NONE)
