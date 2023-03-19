@@ -31,6 +31,7 @@
 #include "TlsRecord.hpp"
 #include "TlsServerHello.hpp"
 #include "TlsServerKeyExchange.hpp"
+#include "TrustStore.hpp"
 
 #define LOGGING false
 
@@ -270,12 +271,28 @@ namespace soup
 		return setBlocking(false);
 	}
 
-	bool Socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis(const X509Certchain&, const std::string&)
+	bool Socket::certchain_validator_none(const X509Certchain&, const std::string&)
 	{
-		// certchain is already decently implemented, but there's a few flaws:
-		// - no ECC support (big deal since cloudflare is basically ecc only now)
-		// - no built-in trust stores (and what would be a good default? not all machines running this code can be trusted, to be quite honest.)
 		return true;
+	}
+
+	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string&)
+	{
+		const auto ts = TrustStore::fromMozilla();
+		// TODO: Support alternative common names so we can check if cert was issued for the server we are connecting to without false-negatives.
+		return chain.verify(ts);
+	}
+
+	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& name)
+	{
+		for (const auto& cert : chain.certs)
+		{
+			if (!cert.canBeVerified())
+			{
+				return false;
+			}
+		}
+		return certchain_validator_relaxed(chain, name);
 	}
 
 	[[nodiscard]] static TlsCipherSuite_t tls_randGreaseyCiphersuite()

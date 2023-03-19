@@ -77,7 +77,7 @@ namespace soup
 
 	std::optional<HttpResponse> HttpRequest::execute() const
 	{
-		return execute(&Socket::trustAllCertchainsWithNoChecksWhatsoever_ThisIsNotAJoke_IfYouCareYouShouldLookIntoThis);
+		return execute(&Socket::certchain_validator_relaxed);
 	}
 
 	std::optional<HttpResponse> HttpRequest::execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const

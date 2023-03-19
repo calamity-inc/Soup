@@ -107,6 +107,19 @@ namespace soup
 		return !isRsa();
 	}
 
+	bool X509Certificate::canBeVerified() const noexcept
+	{
+		switch (sig_type)
+		{
+		case RSA_WITH_SHA1:
+		case RSA_WITH_SHA256:
+			return true;
+
+		default:;
+		}
+		return false;
+	}
+
 	bool X509Certificate::verify(const X509Certificate& issuer) const
 	{
 		return verify(issuer.key);

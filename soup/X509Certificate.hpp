@@ -42,7 +42,7 @@ namespace soup
 	public:
 		[[nodiscard]] bool isRsa() const noexcept;
 		[[nodiscard]] bool isEc() const noexcept;
-
+		[[nodiscard]] bool canBeVerified() const noexcept;
 		[[nodiscard]] bool verify(const X509Certificate& issuer) const;
 		[[nodiscard]] bool verify(const RsaPublicKey& issuer) const;
 	};
