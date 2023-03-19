@@ -7,7 +7,20 @@
 
 namespace soup
 {
-	bool IpAddr::fromString(const std::string& str)
+	bool IpAddr::fromString(const char* str) noexcept
+	{
+		if (strstr(str, ".") == nullptr)
+		{
+			return inet_pton(AF_INET6, str, &data) == 1;
+		}
+		else
+		{
+			maskToV4();
+			return inet_pton(AF_INET, str, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12)) == 1;
+		}
+	}
+
+	bool IpAddr::fromString(const std::string& str) noexcept
 	{
 		if (str.find('.') == std::string::npos)
 		{

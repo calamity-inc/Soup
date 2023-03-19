@@ -1,5 +1,6 @@
 #include "Uri.hpp"
 
+#include "base.hpp"
 #include "base64.hpp"
 #include "string.hpp"
 #include "urlenc.hpp"
@@ -165,6 +166,25 @@ namespace soup
 			str.append(query);
 		}
 		return str;
+	}
+
+	bool Uri::isFile() const noexcept
+	{
+		return scheme == "file";
+	}
+
+	std::string Uri::getFilePath() const
+	{
+#if SOUP_WINDOWS
+		return path.substr(1);
+#else
+		return path;
+#endif
+	}
+
+	bool Uri::isHttp() const noexcept
+	{
+		return scheme == "http" || scheme == "https";
 	}
 
 	std::string Uri::data(const char* mime_type, const std::string& contents)

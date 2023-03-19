@@ -2,40 +2,49 @@
 
 #include "Task.hpp"
 
+#include "DelayedCtor.hpp"
+#include "dnsLookupTask.hpp"
 #include "Promise.hpp"
 #include "Socket.hpp"
 
 namespace soup
 {
-	struct netConnectTask : public Task
+	class netConnectTask : public Task
 	{
-		struct Info
+	protected:
+		struct ConnectInfo
 		{
 			IpAddr addr;
 			uint16_t port;
 		};
 
-		Promise<Socket> promise;
+		std::string host;
+		UniquePtr<dnsLookupTask> lookup;
+		DelayedCtor<Promise<Socket>> connect;
+		uint16_t port;
+		bool ipv6_lookup = false;
+
+	public:
+		netConnectTask(Scheduler* sched, const std::string& host, uint16_t port);
 
 		netConnectTask(const IpAddr& addr, uint16_t port)
-			: promise([](Capture&& cap, PromiseBase* pb)
+		{
+			proceedToConnect(addr, port);
+		}
+
+		[[nodiscard]] Socket getSocket() noexcept
+		{
+			Socket s;
+			if (connect.isConstructed())
 			{
-				Info& info = cap.get<Info>();
-				Socket sock;
-				sock.connect(info.addr, info.port);
-				pb->fulfil(std::move(sock));
-			}, Info{ addr, port })
-		{
+				s = std::move(connect->getResult());
+			}
+			return s;
 		}
 
-		[[nodiscard]] Socket& getSocket() noexcept
-		{
-			return promise.getResult();
-		}
+		void onTick() final;
 
-		void onTick() final
-		{
-			awaitPromiseCompletion(&promise);
-		}
+	protected:
+		void proceedToConnect(const IpAddr& addr, uint16_t port);
 	};
 }

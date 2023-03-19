@@ -116,6 +116,7 @@ namespace soup
 
 	// net.dns.resolver
 	struct dnsResolver;
+	struct dnsHttpResolver;
 
 	// net.tls
 	class SocketTlsHandshaker;

@@ -483,9 +483,12 @@
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
+    <ClInclude Include="DelayedCtor.hpp" />
     <ClInclude Include="DetachedScheduler.hpp" />
     <ClInclude Include="Diff.hpp" />
     <ClInclude Include="DiskDbReader.hpp" />
+    <ClInclude Include="dnsLookupTask.hpp" />
+    <ClInclude Include="dnsSchedulableResolver.hpp" />
     <ClInclude Include="dnsUdpResolver.hpp" />
     <ClInclude Include="dnsClass.hpp" />
     <ClInclude Include="dnsHeader.hpp" />
@@ -500,7 +503,9 @@
     <ClInclude Include="Exception.hpp" />
     <ClInclude Include="FactoriseProofOfWork.hpp" />
     <ClInclude Include="format.hpp" />
+    <ClInclude Include="GetFileContentsTask.hpp" />
     <ClInclude Include="HammingCode.hpp" />
+    <ClInclude Include="HttpRequestTask.hpp" />
     <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="NativeString.hpp" />
     <ClInclude Include="netConfig.hpp" />
@@ -888,6 +893,7 @@
     <ClCompile Include="dns_records.cpp" />
     <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="HammingCode.cpp" />
+    <ClCompile Include="HttpRequestTask.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="Jokebook.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
@@ -900,6 +906,7 @@
     <ClCompile Include="morse.cpp" />
     <ClCompile Include="NativeString.cpp" />
     <ClCompile Include="netConfig.cpp" />
+    <ClCompile Include="netConnectTask.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="rflParser.cpp" />

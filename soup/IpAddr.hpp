@@ -39,28 +39,12 @@ namespace soup
 
 		IpAddr(const char* str)
 		{
-			if (strstr(str, ".") == nullptr)
-			{
-				inet_pton(AF_INET6, str, &data);
-			}
-			else
-			{
-				maskToV4();
-				inet_pton(AF_INET, str, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
-			}
+			SOUP_ASSERT(fromString(str));
 		}
 
 		IpAddr(const std::string& str)
 		{
-			if (str.find('.') == std::string::npos)
-			{
-				inet_pton(AF_INET6, str.data(), &data);
-			}
-			else
-			{
-				maskToV4();
-				inet_pton(AF_INET, str.data(), reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(&data) + 12));
-			}
+			SOUP_ASSERT(fromString(str));
 		}
 
 		constexpr IpAddr(const IpAddr& b) noexcept
@@ -145,7 +129,8 @@ namespace soup
 			operator =(ipv4);
 		}
 
-		bool fromString(const std::string& str);
+		bool fromString(const char* str) noexcept;
+		bool fromString(const std::string& str) noexcept;
 
 		void operator = (const network_u32_t ipv4) noexcept
 		{
@@ -210,7 +195,7 @@ namespace soup
 		[[nodiscard]] native_u32_t getV4NativeEndian() const noexcept;
 
 	private:
-		void maskToV4()
+		void maskToV4() noexcept
 		{
 			shorts[0] = 0;
 			shorts[1] = 0;

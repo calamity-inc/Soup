@@ -1218,9 +1218,6 @@
     <ClInclude Include="WebSocket.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
-    <ClInclude Include="netConnectTask.hpp">
-      <Filter>net\task</Filter>
-    </ClInclude>
     <ClInclude Include="X11Api.hpp">
       <Filter>os\linux</Filter>
     </ClInclude>
@@ -1234,6 +1231,24 @@
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="StateMachineTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
+    <ClInclude Include="DelayedCtor.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpRequestTask.hpp">
+      <Filter>net\web</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsLookupTask.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="dnsSchedulableResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
+    <ClInclude Include="netConnectTask.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="GetFileContentsTask.hpp">
       <Filter>task</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1827,6 +1842,12 @@
     <ClCompile Include="netConfig.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="HttpRequestTask.cpp">
+      <Filter>net\web</Filter>
+    </ClCompile>
+    <ClCompile Include="netConnectTask.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2029,9 +2050,6 @@
     </Filter>
     <Filter Include="util\tree">
       <UniqueIdentifier>{d96d8487-d3a5-4b49-9ede-1ed0a920b12d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="net\task">
-      <UniqueIdentifier>{99405f40-0597-44ee-bbc3-e89dfa1da5d9}</UniqueIdentifier>
     </Filter>
     <Filter Include="os\linux">
       <UniqueIdentifier>{310e94c6-0abc-4e73-93af-75ce41ba7409}</UniqueIdentifier>

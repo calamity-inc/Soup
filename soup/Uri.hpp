@@ -21,7 +21,11 @@ namespace soup
 
 		[[nodiscard]] std::string toString() const;
 
+		[[nodiscard]] bool isHttp() const noexcept;
 		[[nodiscard]] std::string getRequestPath() const;
+
+		[[nodiscard]] bool isFile() const noexcept;
+		[[nodiscard]] std::string getFilePath() const;
 
 		[[nodiscard]] static std::string data(const char* mime_type, const std::string& contents);
 	};

@@ -1,5 +1,6 @@
 #include "netConfig.hpp"
 
+#include "dnsHttpResolver.hpp"
 #include "dnsOsResolver.hpp"
 
 namespace soup
@@ -11,8 +12,9 @@ namespace soup
 		return inst;
 	}
 
-	netConfig::netConfig()
-		: dns_resolver(soup::make_unique<dnsOsResolver>())
+	netConfig::netConfig() :
+		dns_resolver(soup::make_unique<dnsOsResolver>()),
+		schedulable_dns_resolver(soup::make_unique<dnsHttpResolver>())
 	{
 	}
 }

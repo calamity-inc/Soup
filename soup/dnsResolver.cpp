@@ -4,8 +4,18 @@ namespace soup
 {
 	std::vector<IpAddr> dnsResolver::lookupIPv4(const std::string& name) const
 	{
+		return simplifyIPv6LookupResults(lookup(DNS_A, name));
+	}
+
+	std::vector<IpAddr> dnsResolver::lookupIPv6(const std::string& name) const
+	{
+		return simplifyIPv6LookupResults(lookup(DNS_AAAA, name));
+	}
+
+	std::vector<IpAddr> dnsResolver::simplifyIPv4LookupResults(const std::vector<UniquePtr<dnsRecord>>& vec)
+	{
 		std::vector<IpAddr> res{};
-		for (const auto& r : lookup(DNS_A, name))
+		for (const auto& r : vec)
 		{
 			if (r->type == DNS_A)
 			{
@@ -15,10 +25,10 @@ namespace soup
 		return res;
 	}
 
-	std::vector<IpAddr> dnsResolver::lookupIPv6(const std::string& name) const
+	std::vector<IpAddr> dnsResolver::simplifyIPv6LookupResults(const std::vector<UniquePtr<dnsRecord>>& vec)
 	{
 		std::vector<IpAddr> res{};
-		for (const auto& r : lookup(DNS_AAAA, name))
+		for (const auto& r : vec)
 		{
 			if (r->type == DNS_AAAA)
 			{
