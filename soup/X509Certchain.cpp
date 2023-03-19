@@ -81,7 +81,7 @@ namespace soup
 		{
 			if (auto entry = ts.findCommonName(i->subject.getCommonName()))
 			{
-				if (entry->n == i->key.n)
+				if (entry->key.n == i->key.n)
 				{
 					return true;
 				}

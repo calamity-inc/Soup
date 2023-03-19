@@ -1,8 +1,8 @@
 #include "TrustStore.hpp"
 
 #include "base64.hpp"
+#include "macros.hpp"
 #include "pem.hpp"
-#include "X509Certificate.hpp"
 
 namespace soup
 {
@@ -149,13 +149,12 @@ namespace soup
 			"MIICODCCAb6gAwIBAgIJANZdm7N4gS7rMAoGCCqGSM49BAMDMGExCzAJBgNVBAYTAkpQMSUwIwYDVQQKExxTRUNPTSBUcnVzdCBTeXN0ZW1zIENPLixMVEQuMSswKQYDVQQDEyJTZWN1cml0eSBDb21tdW5pY2F0aW9uIEVDQyBSb290Q0ExMB4XDTE2MDYxNjA1MTUyOFoXDTM4MDExODA1MTUyOFowYTELMAkGA1UEBhMCSlAxJTAjBgNVBAoTHFNFQ09NIFRydXN0IFN5c3RlbXMgQ08uLExURC4xKzApBgNVBAMTIlNlY3VyaXR5IENvbW11bmljYXRpb24gRUNDIFJvb3RDQTEwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAASkpW9gAwPDvTH00xecK4R1rOX9PVdu12O/5gSJko6BnOPpR27KkBLIE+CnnfdldB9sELLo5OnvbYUymUSxXv3MdhDYW72ixvnWQuRXdtyQwjWpS4g8EkdtXP9JTxpKULGjQjBAMB0GA1UdDgQWBBSGHOf+LaVKiwj+KBH6vqNm+GBZLzAOBgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zAKBggqhkjOPQQDAwNoADBlAjAVXUI9/Lbu9zuxNuie9sRGKEkz0FhDKmMpzE2xtHqiuQ04pV1IKv3LsnNdo4gIxwwCMQDAqy0Obe0YottT6SXbVQjgUMzfRGEWgqtJsLKB7HOHeLRMsmIbEvoWTSVLY70eN9k=",
 		};
 		TrustStore ts;
+		ts.data.reserve(COUNT(cacerts));
 		for (const auto& cacert : cacerts)
 		{
 			X509Certificate cert;
-			if (cert.fromDer(base64::decode(cacert)))
-			{
-				ts.addCa(std::move(cert));
-			}
+			SOUP_ASSERT(cert.fromDer(base64::decode(cacert)));
+			ts.addCa(std::move(cert));
 		}
 		return ts;
 	}
@@ -199,7 +198,7 @@ namespace soup
 	{
 		if (!cert.key.n.isZero())
 		{
-			addCa(cert.issuer.getCommonName(), std::move(cert.key.n));
+			addCa(cert.issuer.getCommonName(), std::move(cert));
 		}
 	}
 
@@ -210,16 +209,16 @@ namespace soup
 			&& !xcert.key.n.isZero()
 			)
 		{
-			addCa(std::move(common_name), std::move(xcert.key));
+			addCa(std::move(common_name), std::move(xcert));
 		}
 	}
 
-	void TrustStore::addCa(std::string&& common_name, RsaPublicKey&& key)
+	void TrustStore::addCa(std::string&& common_name, X509Certificate&& cert)
 	{
-		data.emplace(std::move(common_name), std::move(key));
+		data.emplace(std::move(common_name), std::move(cert));
 	}
 
-	const RsaPublicKey* TrustStore::findCommonName(const std::string& cn) const
+	const X509Certificate* TrustStore::findCommonName(const std::string& cn) const
 	{
 		auto i = data.find(cn);
 		if (i == data.end())
