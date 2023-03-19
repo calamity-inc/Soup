@@ -1,6 +1,4 @@
 #include "HttpRequestTask.hpp"
-
-#include "Scheduler.hpp"
 #if !SOUP_WASM
 
 namespace soup
@@ -12,7 +10,7 @@ namespace soup
 			if (connector.tickUntilDone())
 			{
 				connecting = false;
-				sock = &getScheduler().addSocket(connector.getSocket());
+				sock = &connector.onDone(getScheduler());
 				if (hr.use_tls)
 				{
 					sock->enableCryptoClient(hr.getHost(), [](Socket&, Capture&& cap)

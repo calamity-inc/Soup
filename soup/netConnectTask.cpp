@@ -1,10 +1,10 @@
 #include "netConnectTask.hpp"
-
 #if !SOUP_WASM
 
 #include "dnsSchedulableResolver.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
+#include "Scheduler.hpp"
 
 namespace soup
 {
@@ -67,6 +67,12 @@ namespace soup
 		{
 			awaitPromiseCompletion(&*connect);
 		}
+	}
+
+	Socket& netConnectTask::onDone(Scheduler& sched)
+	{
+		SOUP_ASSERT(connect.isConstructed());
+		return sched.addSocket(std::move(connect->getResult()));
 	}
 
 	void netConnectTask::proceedToConnect(const IpAddr& addr, uint16_t port)

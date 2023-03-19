@@ -35,17 +35,9 @@ namespace soup
 			proceedToConnect(addr, port);
 		}
 
-		[[nodiscard]] Socket getSocket() noexcept
-		{
-			Socket s;
-			if (connect.isConstructed())
-			{
-				s = std::move(connect->getResult());
-			}
-			return s;
-		}
-
 		void onTick() final;
+
+		[[nodiscard]] Socket& onDone(Scheduler& sched);
 
 	protected:
 		void proceedToConnect(const IpAddr& addr, uint16_t port);
