@@ -1,5 +1,7 @@
 #include "netConfig.hpp"
 
+#if !SOUP_WASM
+
 #include "dnsHttpResolver.hpp"
 #include "dnsOsResolver.hpp"
 
@@ -18,3 +20,5 @@ namespace soup
 	{
 	}
 }
+
+#endif

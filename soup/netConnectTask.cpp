@@ -1,5 +1,7 @@
 #include "netConnectTask.hpp"
 
+#if !SOUP_WASM
+
 #include "dnsSchedulableResolver.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
@@ -75,3 +77,5 @@ namespace soup
 		}, ConnectInfo{ addr, port });
 	}
 }
+
+#endif

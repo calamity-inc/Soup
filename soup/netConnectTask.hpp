@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "Task.hpp"
 
 #include "DelayedCtor.hpp"
@@ -48,3 +51,5 @@ namespace soup
 		void proceedToConnect(const IpAddr& addr, uint16_t port);
 	};
 }
+
+#endif

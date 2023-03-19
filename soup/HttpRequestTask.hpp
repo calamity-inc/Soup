@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "SchedulerAwareTask.hpp"
 
 #include <optional>
@@ -29,3 +32,5 @@ namespace soup
 		void sendRequest();
 	};
 }
+
+#endif
