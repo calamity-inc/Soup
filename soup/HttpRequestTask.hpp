@@ -30,7 +30,7 @@ namespace soup
 		Socket* sock;
 		std::optional<HttpResponse> res; // Output
 
-		HttpRequestTask(Scheduler* sched, const Uri& uri);
+		HttpRequestTask(Scheduler& sched, const Uri& uri);
 
 		void onTick() final;
 

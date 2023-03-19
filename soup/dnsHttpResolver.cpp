@@ -24,7 +24,7 @@ namespace soup
 	{
 		DelayedCtor<HttpRequestTask> http;
 
-		dnsHttpLookupTask(Scheduler* sched, IpAddr&& server, dnsType qtype, const std::string& name)
+		dnsHttpLookupTask(Scheduler& sched, IpAddr&& server, dnsType qtype, const std::string& name)
 		{
 			std::string url = "https://";
 			url.append(server.toString());
@@ -47,7 +47,7 @@ namespace soup
 		}
 	};
 
-	UniquePtr<dnsLookupTask> dnsHttpResolver::makeLookupTask(Scheduler* sched, dnsType qtype, const std::string& name) const
+	UniquePtr<dnsLookupTask> dnsHttpResolver::makeLookupTask(Scheduler& sched, dnsType qtype, const std::string& name) const
 	{
 		IpAddr server;
 		SOUP_ASSERT(server.fromString(this->server));

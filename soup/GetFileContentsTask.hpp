@@ -13,7 +13,7 @@ namespace soup
 		std::string contents;
 		DelayedCtor<HttpRequestTask> http;
 
-		GetFileContentsTask(Scheduler* sched, const Uri& uri)
+		GetFileContentsTask(Scheduler& sched, const Uri& uri)
 		{
 			if (uri.isFile())
 			{

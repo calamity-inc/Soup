@@ -6,13 +6,13 @@
 
 namespace soup
 {
-	HttpRequestTask::HttpRequestTask(Scheduler* sched, const Uri& uri)
+	HttpRequestTask::HttpRequestTask(Scheduler& sched, const Uri& uri)
 		: SchedulerAwareTask(sched), hr(uri)
 	{
 		if (shouldRecycle())
 		{
 			hr.setKeepAlive();
-			sock = sched->findReusableSocketForHost(hr.getHost());
+			sock = sched.findReusableSocketForHost(hr.getHost());
 			if (sock)
 			{
 				sock->ref();
@@ -95,7 +95,7 @@ namespace soup
 	void HttpRequestTask::cannotRecycle()
 	{
 		state = CONNECTING;
-		connector.construct(&getScheduler(), hr.getHost(), hr.port);
+		connector.construct(getScheduler(), hr.getHost(), hr.port);
 	}
 
 	void HttpRequestTask::sendRequest()

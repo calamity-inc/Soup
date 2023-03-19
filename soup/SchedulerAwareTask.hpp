@@ -6,10 +6,10 @@ namespace soup
 {
 	struct SchedulerAwareTask : public Task
 	{
-		SchedulerAwareTask(Scheduler* sched) noexcept
+		SchedulerAwareTask(Scheduler& sched) noexcept
 			: Task()
 		{
-			taskCapture() = sched;
+			taskCapture().operator =<Scheduler*>(&sched);
 		}
 
 		[[nodiscard]] Scheduler& getScheduler() const noexcept

@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	netConnectTask::netConnectTask(Scheduler* sched, const std::string& host, uint16_t port)
+	netConnectTask::netConnectTask(Scheduler& sched, const std::string& host, uint16_t port)
 	{
 		if (IpAddr ip; ip.fromString(host))
 		{
@@ -19,7 +19,7 @@ namespace soup
 			lookup = netConfig::get().schedulable_dns_resolver->makeLookupTask(sched, DNS_A, host);
 
 			// In case we get no A records, we need enough data to start AAAA query.
-			taskCapture() = sched;
+			taskCapture().operator =<Scheduler*>(&sched);
 			this->host = host;
 
 			// In order to connect after lookup, we need to remember the port.
@@ -52,7 +52,7 @@ namespace soup
 					// IPv4 Result
 					if (lookup->res.empty())
 					{
-						lookup = netConfig::get().schedulable_dns_resolver->makeLookupTask(taskCapture().get<Scheduler*>(), DNS_AAAA, host);
+						lookup = netConfig::get().schedulable_dns_resolver->makeLookupTask(*taskCapture().get<Scheduler*>(), DNS_AAAA, host);
 						ipv6_lookup = true;
 					}
 					else
