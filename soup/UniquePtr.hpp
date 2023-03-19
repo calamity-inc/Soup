@@ -2,6 +2,8 @@
 
 #include "type_traits.hpp"
 
+#include <utility> // forward
+
 namespace soup
 {
 	// Why not std::unique_ptr?

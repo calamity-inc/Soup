@@ -6,6 +6,10 @@
 
 #if DELAYED_CTOR_DEBUGGER_FRIENDLY
 #include "UniquePtr.hpp"
+#else
+#include <memory> // destroy_at
+#include <utility> // forward
+#include "memory.hpp" // construct_at
 #endif
 
 namespace soup
@@ -61,7 +65,7 @@ namespace soup
 			data = soup::make_unique<T, Args...>(std::forward<Args>(args)...);
 			return data.get();
 #else
-			std::construct_at<T, Args...>(reinterpret_cast<T*>(&buf[0]), std::forward<Args>(args)...);
+			soup::construct_at<T, Args...>(reinterpret_cast<T*>(&buf[0]), std::forward<Args>(args)...);
 			constructed = true;
 			return reinterpret_cast<T*>(&buf[0]);
 #endif
