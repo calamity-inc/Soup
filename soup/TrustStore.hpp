@@ -11,7 +11,10 @@ namespace soup
 	{
 		std::unordered_map<std::string, RsaPublicKey> data{};
 
+		[[nodiscard]] static TrustStore fromMozilla();
+
 		void loadCaCerts(std::istream& is); // designed for contents of cacert.pem, which can be downloaded from https://curl.se/docs/caextract.html
+		void addCa(X509Certificate&& cert);
 		void addCa(std::string&& common_name, std::string&& pem);
 		void addCa(std::string&& common_name, RsaPublicKey&& key);
 

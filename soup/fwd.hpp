@@ -20,6 +20,7 @@ namespace soup
 
 	// crypto.x509
 	struct X509Certchain;
+	class X509Certificate;
 
 	// data
 	struct Oid;
