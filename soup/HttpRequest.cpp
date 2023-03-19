@@ -189,6 +189,11 @@ namespace soup
 		return res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) != std::string::npos;
 	}
 
+	void HttpRequest::setKeepAlive() noexcept
+	{
+		header_fields.at(ObfusString("Connection")) = ObfusString("keep-alive").str();
+	}
+
 	struct HttpResponseReceiver
 	{
 		enum Status : uint8_t

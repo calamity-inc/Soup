@@ -3,6 +3,7 @@
 #include "base.hpp"
 #if !SOUP_WASM
 
+#include <string>
 #include <vector>
 
 #if SOUP_WINDOWS
@@ -28,8 +29,8 @@ namespace soup
 		using on_connection_lost_t = void(*)(Socket&, Scheduler&);
 		using on_exception_t = void(*)(Worker&, const std::exception&, Scheduler&);
 
-		on_work_done_t on_work_done = nullptr;
-		on_connection_lost_t on_connection_lost = nullptr;
+		on_work_done_t on_work_done = nullptr; // This will always be called before a worker is deleted.
+		on_connection_lost_t on_connection_lost = nullptr; // Check remote_closed for which side caused connection to be lost.
 		on_exception_t on_exception = nullptr;
 
 		virtual ~Scheduler() = default;
@@ -59,9 +60,13 @@ namespace soup
 		void yieldBusyspin(std::vector<pollfd>& pollfds);
 		void yieldKernel(std::vector<pollfd>& pollfds);
 		int poll(std::vector<pollfd>& pollfds, int timeout);
-		void processPollResults(std::vector<pollfd>& pollfds);
+		void processPollResults(const std::vector<pollfd>& pollfds);
 		void fireHoldupCallback(Worker& w);
-		void onConnectionLoss(std::vector<UniquePtr<Worker>>::iterator& workers_i);
+		void processClosedSocket(Socket& s);
+
+	public:
+		[[nodiscard]] Socket* findReusableSocketForHost(const std::string& host);
+		void closeReusableSockets();
 	};
 }
 

@@ -40,6 +40,7 @@ namespace soup
 		SocketAddr peer;
 		StructMap custom_data;
 		bool remote_closed = false;
+		bool dispatched_connection_lost = false;
 		bool callback_recv_on_close = false;
 
 		std::string tls_record_buf{};
@@ -181,6 +182,19 @@ namespace soup
 		void transport_recvExact(int bytes, transport_recv_callback_t callback, Capture&& cap = {}, std::string&& pre = {});
 
 		void transport_close() noexcept;
+
+		// Task Utils
+
+		[[nodiscard]] bool isWorkDoneOrClosed() const noexcept;
+
+		void keepAlive();
+
+		// A ref will keep the socket alive so tasks can process that it was closed.
+		// However, if the socket ends up having no holdup, it will be cleaned up regardless.
+		[[nodiscard]] bool hasRefs() const noexcept;
+		[[nodiscard]] unsigned int getNumRefs() const noexcept;
+		void ref();
+		void unref();
 	};
 }
 #endif

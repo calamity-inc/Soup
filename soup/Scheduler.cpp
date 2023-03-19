@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "Promise.hpp"
+#include "ReuseTag.hpp"
 #include "Socket.hpp"
 #include "Task.hpp"
 #include "time.hpp"
@@ -97,14 +98,16 @@ namespace soup
 		// Process workers
 		for (auto i = workers.begin(); i != workers.end(); )
 		{
-			if ((*i)->type == WORKER_TYPE_SOCKET
-				&& reinterpret_cast<Socket*>(i->get())->fd == -1
-				)
+			if ((*i)->type == WORKER_TYPE_SOCKET)
 			{
-				onConnectionLoss(i);
-				continue;
+				SOUP_IF_UNLIKELY (reinterpret_cast<Socket*>(i->get())->fd == -1)
+				{
+					processClosedSocket(*reinterpret_cast<Socket*>(i->get()));
+					++i;
+					continue;
+				}
 			}
-			if ((*i)->holdup_type == Worker::NONE)
+			SOUP_IF_UNLIKELY ((*i)->holdup_type == Worker::NONE)
 			{
 				if (on_work_done)
 				{
@@ -179,9 +182,9 @@ namespace soup
 #endif
 	}
 
-	void Scheduler::processPollResults(std::vector<pollfd>& pollfds)
+	void Scheduler::processPollResults(const std::vector<pollfd>& pollfds)
 	{
-		for (auto i = pollfds.begin(); i != pollfds.end(); )
+		for (auto i = pollfds.begin(); i != pollfds.end(); ++i)
 		{
 			if (i->revents != 0
 				&& i->fd != -1
@@ -191,24 +194,13 @@ namespace soup
 				if (i->revents & ~POLLIN)
 				{
 					reinterpret_cast<Socket*>(workers_i->get())->remote_closed = true;
-					if (workers_i->get()->holdup_type == Worker::SOCKET
-						&& (reinterpret_cast<Socket*>(workers_i->get())->callback_recv_on_close
-							|| reinterpret_cast<Socket*>(workers_i->get())->transport_hasData()
-							)
-						)
-					{
-						// Don't get rid of the socket just yet...
-					}
-					else
-					{
-						onConnectionLoss(workers_i);
-						i = pollfds.erase(i);
-						continue;
-					}
+					processClosedSocket(*reinterpret_cast<Socket*>(workers_i->get()));
 				}
-				fireHoldupCallback(**workers_i);
+				else
+				{
+					fireHoldupCallback(**workers_i);
+				}
 			}
-			++i;
 		}
 	}
 
@@ -224,16 +216,69 @@ namespace soup
 			{
 				on_exception(w, e, *this);
 			}
+			w.holdup_type = Worker::NONE;
 		}
 	}
 
-	void Scheduler::onConnectionLoss(std::vector<UniquePtr<Worker>>::iterator& workers_i)
+	void Scheduler::processClosedSocket(Socket& s)
 	{
 		if (on_connection_lost)
 		{
-			on_connection_lost(*reinterpret_cast<Socket*>(workers_i->get()), *this);
+			if (!s.dispatched_connection_lost)
+			{
+				s.dispatched_connection_lost = true;
+				on_connection_lost(s, *this);
+			}
 		}
-		workers_i = workers.erase(workers_i);
+
+		if (s.holdup_type == Worker::SOCKET)
+		{
+			if (s.callback_recv_on_close
+				|| s.transport_hasData()
+				)
+			{
+				// Socket still has stuff to do...
+				fireHoldupCallback(s);
+			}
+			else if (s.hasRefs())
+			{
+				// There are tasks referencing this socket...
+			}
+			else
+			{
+				// No excuses, slate for execution.
+				s.holdup_type = Worker::NONE;
+			}
+		}
+	}
+
+	Socket* Scheduler::findReusableSocketForHost(const std::string& host)
+	{
+		for (const auto& w : workers)
+		{
+			if (w->type == WORKER_TYPE_SOCKET
+				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMap(ReuseTag).host == host
+				)
+			{
+				return static_cast<Socket*>(w.get());
+			}
+		}
+		return nullptr;
+	}
+
+	void Scheduler::closeReusableSockets()
+	{
+		for (const auto& w : workers)
+		{
+			if (w->type == WORKER_TYPE_SOCKET
+				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
+				&& !static_cast<Socket*>(w.get())->custom_data.getStructFromMap(ReuseTag).is_busy
+				)
+			{
+				static_cast<Socket*>(w.get())->close();
+			}
+		}
 	}
 }
 

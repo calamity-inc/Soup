@@ -42,6 +42,8 @@ namespace soup
 	public:
 		[[nodiscard]] static bool isChallengeResponse(const HttpResponse& res);
 
+		void setKeepAlive() noexcept;
+
 		static void recvResponse(Socket& s, void callback(Socket&, std::optional<HttpResponse>&&, Capture&&), Capture&& cap);
 	};
 }

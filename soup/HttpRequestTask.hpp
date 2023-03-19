@@ -14,20 +14,29 @@
 
 namespace soup
 {
-	struct HttpRequestTask : public SchedulerAwareTask
+	class HttpRequestTask : public SchedulerAwareTask
 	{
+	public:
+		enum State : uint8_t
+		{
+			WAIT_TO_REUSE,
+			CONNECTING,
+			AWAIT_RESPONSE,
+		};
+
+		State state;
 		HttpRequest hr;
-		netConnectTask connector;
-		bool connecting = true;
+		DelayedCtor<netConnectTask> connector;
 		Socket* sock;
 		std::optional<HttpResponse> res; // Output
 
-		HttpRequestTask(Scheduler* sched, const Uri& uri)
-			: SchedulerAwareTask(sched), hr(uri), connector(sched, hr.getHost(), hr.port)
-		{
-		}
+		HttpRequestTask(Scheduler* sched, const Uri& uri);
 
 		void onTick() final;
+
+	protected:
+		[[nodiscard]] bool shouldRecycle() const noexcept;
+		void cannotRecycle();
 
 		void sendRequest();
 	};
