@@ -4,7 +4,7 @@ namespace soup
 {
 	std::vector<IpAddr> dnsResolver::lookupIPv4(const std::string& name) const
 	{
-		return simplifyIPv6LookupResults(lookup(DNS_A, name));
+		return simplifyIPv4LookupResults(lookup(DNS_A, name));
 	}
 
 	std::vector<IpAddr> dnsResolver::lookupIPv6(const std::string& name) const
