@@ -40,7 +40,7 @@ namespace soup
 
 	void Scheduler::run()
 	{
-		while (!workers.empty() || !pending_workers.empty())
+		while (workers.size() != passive_workers || !pending_workers.empty())
 		{
 			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
@@ -248,6 +248,29 @@ namespace soup
 				s.holdup_type = Worker::NONE;
 			}
 		}
+	}
+
+	size_t Scheduler::getNumWorkers() const
+	{
+		return workers.size();
+	}
+
+	size_t Scheduler::getNumWorkersOfType(uint8_t type) const
+	{
+		size_t res = 0;
+		for (const auto& w : workers)
+		{
+			if (w->type == type)
+			{
+				++res;
+			}
+		}
+		return res;
+	}
+
+	size_t Scheduler::getNumSockets() const
+	{
+		return getNumWorkersOfType(WORKER_TYPE_SOCKET);
 	}
 
 	Socket* Scheduler::findReusableSocketForHost(const std::string& host)

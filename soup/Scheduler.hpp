@@ -18,13 +18,16 @@
 
 namespace soup
 {
+	// The only thing you are allowed to do from other threads is add a worker since that can be done atomically.
+	// All other operations are subject to race conditions.
 	class Scheduler
 	{
 	protected:
 		std::vector<UniquePtr<Worker>> workers{};
 		AtomicStack<UniquePtr<Worker>> pending_workers{};
-
 	public:
+		size_t passive_workers = 0;
+
 		using on_work_done_t = void(*)(Worker&, Scheduler&);
 		using on_connection_lost_t = void(*)(Socket&, Scheduler&);
 		using on_exception_t = void(*)(Worker&, const std::exception&, Scheduler&);
@@ -65,6 +68,10 @@ namespace soup
 		void processClosedSocket(Socket& s);
 
 	public:
+		[[nodiscard]] size_t getNumWorkers() const;
+		[[nodiscard]] size_t getNumWorkersOfType(uint8_t type) const;
+		[[nodiscard]] size_t getNumSockets() const;
+
 		[[nodiscard]] Socket* findReusableSocketForHost(const std::string& host);
 		void closeReusableSockets();
 	};

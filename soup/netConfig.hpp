@@ -3,7 +3,7 @@
 #include "base.hpp"
 #if !SOUP_WASM
 
-#include "fwd.hpp"
+#include "dnsHttpResolver.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
