@@ -51,6 +51,7 @@ namespace soup
 					if (lookup->res.empty())
 					{
 						lookup = netConfig::get().schedulable_dns_resolver->makeLookupTask(taskCapture().get<Scheduler*>(), DNS_AAAA, host);
+						ipv6_lookup = true;
 					}
 					else
 					{
