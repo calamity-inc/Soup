@@ -1,6 +1,8 @@
 #include "DetachedScheduler.hpp"
 #if !SOUP_WASM
 
+#include "SchedulerAwareTask.hpp"
+
 namespace soup
 {
 	DetachedScheduler::DetachedScheduler(netConfig&& conf)
@@ -53,6 +55,25 @@ namespace soup
 		else
 		{
 			fp(conf, std::move(cap));
+		}
+	}
+
+	struct CloseReusableSocketsTask : public SchedulerAwareTask
+	{
+		using SchedulerAwareTask::SchedulerAwareTask;
+
+		void onTick() final
+		{
+			getScheduler().closeReusableSockets();
+			setWorkDone();
+		}
+	};
+
+	void DetachedScheduler::closeReusableSockets()
+	{
+		if (isActive())
+		{
+			add<CloseReusableSocketsTask>(*this);
 		}
 	}
 

@@ -24,6 +24,8 @@ namespace soup
 
 		void updateConfig(void fp(netConfig&, Capture&&), Capture&& cap = {});
 
+		void closeReusableSockets();
+
 	protected:
 		void run();
 
