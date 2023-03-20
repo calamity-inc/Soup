@@ -36,9 +36,9 @@ namespace soup
 		switch (state)
 		{
 		case WAIT_TO_REUSE:
-			// If sock could be stale here, AWAIT_RESPONSE also has a stale pointer problem, so Scheduler needs to know that it cannot clean up the Socket.
-			if (!sock)
+			if (sock->isWorkDoneOrClosed())
 			{
+				sock->unref();
 				cannotRecycle();
 			}
 			else if (!sock->custom_data.getStructFromMap(ReuseTag).is_busy)
