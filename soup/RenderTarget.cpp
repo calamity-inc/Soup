@@ -32,17 +32,28 @@ namespace soup
 
 	void RenderTarget::drawCircle(unsigned int x, unsigned int y, float r, Rgb colour)
 	{
-		for (float i = 0.01f; i < M_TAU; i += 0.01f)
-		{
-			drawLine(Vector2(x, y), Vector2(x + (cos(i) * r), y + (sin(i) * r)), colour);
-		}
+		drawEllipse(x, y, r, r, colour);
+	}
+
+	static bool isPointInsideEllipse(float x, float y, float xr, float yr, float px, float py)
+	{
+		float dx = (px - x) / xr;
+		float dy = (py - y) / yr;
+		return (dx * dx + dy * dy) < 1.0f;
 	}
 
 	void RenderTarget::drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour)
 	{
-		for (float i = 0.01f; i < M_TAU; i += 0.01f)
+		// This could be more efficient by only going over the rectangle [x-xr, y-yr, x+xr, y+yr]
+		for (unsigned int px = 0; px != width; ++px)
 		{
-			drawLine(Vector2(x, y), Vector2(x + (cos(i) * xr), y + (sin(i) * yr)), colour);
+			for (unsigned int py = 0; py != height; ++py)
+			{
+				if (isPointInsideEllipse(x, y, xr, yr, px, py))
+				{
+					drawPixel(px, py, colour);
+				}
+			}
 		}
 	}
 
