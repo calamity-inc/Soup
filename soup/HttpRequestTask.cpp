@@ -57,9 +57,16 @@ namespace soup
 				connector.destroy();
 				if (shouldRecycle())
 				{
-					if (!sock->custom_data.isStructInMap(ReuseTag))
+					if (getScheduler().findReusableSocketForHost(hr.getHost()))
 					{
-						sock->custom_data.getStructFromMap(ReuseTag).host = hr.getHost();
+						hr.setClose();
+					}
+					else
+					{
+						if (!sock->custom_data.isStructInMap(ReuseTag))
+						{
+							sock->custom_data.getStructFromMap(ReuseTag).host = hr.getHost();
+						}
 					}
 				}
 				state = AWAIT_RESPONSE;
