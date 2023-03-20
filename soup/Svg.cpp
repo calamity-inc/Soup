@@ -2,12 +2,12 @@
 
 #include "base.hpp"
 
-#include "BCanvas.hpp"
 #include "joaat.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
 #include "string.hpp"
 #include "Vector2.hpp"
+#include "visCurves.hpp"
 #include "xml.hpp"
 
 namespace soup
@@ -111,18 +111,16 @@ namespace soup
 	{
 		const Svg& svg;
 		const RenderTarget& rt;
-		BCanvas shape;
+		std::vector<Vector2> path;
 
 		float args[6];
 
 		Vector2 cursor{ 0, 0 };
 		Vector2 first_point;
-		Vector2 points_sum{};
-		unsigned int num_points = 0;
 		Vector2 last_cubic_control_point;
 
 		SvgPathState(const Svg& svg, const RenderTarget& rt)
-			: svg(svg), rt(rt), shape(rt.width, rt.height)
+			: svg(svg), rt(rt)
 		{
 			resetArgs();
 			first_point.x = -1;
@@ -183,13 +181,17 @@ namespace soup
 			{
 				first_point = cursor;
 			}
-			points_sum += v;
-			++num_points;
 		}
 
-		[[nodiscard]] Vector2 getCentrePoint() const
+		void addPoint(Vector2 v)
 		{
-			return points_sum / num_points;
+			path.emplace_back(translate(v));
+		}
+
+		void addPointAndSetCursor(Vector2 v)
+		{
+			addPoint(v);
+			setCursor(v);
 		}
 
 		[[nodiscard]] Vector2 translate(const Vector2& v) const
@@ -215,25 +217,20 @@ namespace soup
 
 				case 'L': {
 					SOUP_ASSERT(getNumArgs() == 2);
-					auto dest = Vector2(args[0], args[1]);
-					shape.addLine(translate(cursor), translate(dest));
-					setCursor(dest);
+					addPointAndSetCursor(Vector2(args[0], args[1]));
 				}
 				break;
 
 				case 'l': {
 					SOUP_ASSERT(getNumArgs() == 2);
-					auto dest = cursor + Vector2(args[0], args[1]);
-					shape.addLine(translate(cursor), translate(dest));
-					setCursor(dest);
+					addPointAndSetCursor(cursor + Vector2(args[0], args[1]));
 				}
 				break;
 
 				case 'Z':
 				case 'z': {
 					SOUP_ASSERT(getNumArgs() == 0);
-					shape.addLine(translate(cursor), translate(first_point));
-					cursor = first_point;
+					addPointAndSetCursor(first_point);
 				}
 				break;
 
@@ -241,8 +238,7 @@ namespace soup
 					SOUP_ASSERT(getNumArgs() == 1);
 					auto dest = cursor;
 					dest.x = args[0];
-					shape.addLine(translate(cursor), translate(dest));
-					setCursor(dest);
+					addPointAndSetCursor(dest);
 				}
 				break;
 
@@ -250,8 +246,7 @@ namespace soup
 					SOUP_ASSERT(getNumArgs() == 1);
 					auto dest = cursor;
 					dest.x += args[0];
-					shape.addLine(translate(cursor), translate(dest));
-					setCursor(dest);
+					addPointAndSetCursor(dest);
 				}
 				break;
 
@@ -259,8 +254,7 @@ namespace soup
 					SOUP_ASSERT(getNumArgs() == 1);
 					auto dest = cursor;
 					dest.y = args[0];
-					shape.addLine(translate(cursor), translate(dest));
-					setCursor(dest);
+					addPointAndSetCursor(dest);
 				}
 				break;
 
@@ -268,8 +262,7 @@ namespace soup
 					SOUP_ASSERT(getNumArgs() == 1);
 					auto dest = cursor;
 					dest.y += args[0];
-					shape.addLine(translate(cursor), translate(dest));
-					setCursor(dest);
+					addPointAndSetCursor(dest);
 				}
 				break;
 
@@ -279,7 +272,10 @@ namespace soup
 					Vector2 a(args[0], args[1]);
 					Vector2 b(args[2], args[3]);
 					Vector2 c(args[4], args[5]);
-					shape.addCubicBezier(translate(cursor), translate(a), translate(b), translate(c));
+					for (float t = 0.0f; t < 1.0f; t += (0.4f / a.distance(c)))
+					{
+						addPoint(visCurves::cubicBezier(cursor, a, b, c, t));
+					}
 					setCursor(c);
 					last_cubic_control_point = b;
 				}
@@ -290,7 +286,10 @@ namespace soup
 					auto a = cursor + Vector2(args[0], args[1]);
 					auto b = cursor + Vector2(args[2], args[3]);
 					auto c = cursor + Vector2(args[4], args[5]);
-					shape.addCubicBezier(translate(cursor), translate(a), translate(b), translate(c));
+					for (float t = 0.0f; t < 1.0f; t += (0.4f / a.distance(c)))
+					{
+						addPoint(visCurves::cubicBezier(cursor, a, b, c, t));
+					}
 					setCursor(c);
 					last_cubic_control_point = b;
 				}
@@ -305,7 +304,10 @@ namespace soup
 					}
 					Vector2 b(args[0], args[1]);
 					Vector2 c(args[2], args[3]);
-					shape.addCubicBezier(translate(cursor), translate(a), translate(b), translate(c));
+					for (float t = 0.0f; t < 1.0f; t += (0.4f / a.distance(c)))
+					{
+						addPoint(visCurves::cubicBezier(cursor, a, b, c, t));
+					}
 					setCursor(c);
 					last_cubic_control_point = b;
 				}
@@ -320,12 +322,46 @@ namespace soup
 					}
 					auto b = cursor + Vector2(args[0], args[1]);
 					auto c = cursor + Vector2(args[2], args[3]);
-					shape.addCubicBezier(translate(cursor), translate(a), translate(b), translate(c));
+					for (float t = 0.0f; t < 1.0f; t += (0.4f / a.distance(c)))
+					{
+						addPoint(visCurves::cubicBezier(cursor, a, b, c, t));
+					}
 					setCursor(c);
 					last_cubic_control_point = b;
 				}
 				break;
 			}
+		}
+
+		// https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule
+		[[nodiscard]] bool isPointInPath(float x, float y) noexcept
+		{
+			size_t num = path.size();
+			size_t j = num - 1;
+			bool c = false;
+			for (size_t i = 0; i != num; ++i)
+			{
+				if ((x == path[i].x) && (y == path[i].y))
+				{
+					// point is a corner
+					return true;
+				}
+				if ((path[i].y > y) != (path[j].y > y))
+				{
+					auto slope = (x-path[i].x)*(path[j].y-path[i].y)-(path[j].x-path[i].x)*(y-path[i].y);
+					if (slope == 0)
+					{
+						// point is on boundary
+						return true;
+					}
+					if ((slope < 0) != (path[j].y < path[i].y))
+					{
+						c = !c;
+					}
+				}
+				j = i;
+			}
+			return c;
 		}
 	};
 
@@ -402,32 +438,16 @@ namespace soup
 			state.executeCmd(cmd);
 		}
 
-		// If this code was any good, this is how filling would be done: https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule
-
-		// Fill shape
-		auto fill_origin = translate(rt, state.getCentrePoint());
-		auto dir = (translate(rt, state.first_point) - fill_origin);
-		dir.normalise();
-		fill_origin -= (dir * 10.0f);
-		while (!state.shape.isPointInsideOfShape(fill_origin.x, fill_origin.y))
-		{
-			fill_origin += dir;
-		}
-		state.shape.floodFill((unsigned int)fill_origin.x, (unsigned int)fill_origin.y);
-
 		// Draw filled shape
 		for (unsigned int y = 0; y != rt.height; ++y)
 		{
 			for (unsigned int x = 0; x != rt.width; ++x)
 			{
-				if (state.shape.get(x, y))
-				//if (state.shape.isPointInsideOfShape(x, y))
+				if (state.isPointInPath(x, y))
 				{
 					rt.drawPixel(x, y, fill);
 				}
 			}
 		}
-
-		//rt.drawLine(translate(rt, state.first_point), fill_origin, Rgb::RED);
 	}
 }

@@ -48,66 +48,6 @@ namespace soup
 		}
 	}
 
-	// Not perfect.
-	bool BCanvas::isPointInsideOfShape(unsigned int x, unsigned int y) const
-	{
-		if (get(x, y))
-		{
-			return false;
-		}
-		unsigned int intersections = 0;
-		unsigned int intersection_buffer = 0;
-		int dx = 1, dy = 1;
-		if (x < (width / 2)) { dx = -1; }
-		if (y < (height / 2)) { dy = -1; }
-		while (true)
-		{
-			if (intersection_buffer != 0)
-			{
-				--intersection_buffer;
-			}
-			const bool can_go_x = ((unsigned int)(x + dx) < width);
-			const bool can_go_y = ((unsigned int)(y + dy) < height);
-			if (can_go_x)
-			{
-				if (get(x + dx, y))
-				{
-					if (intersection_buffer == 0)
-					{
-						++intersections;
-						intersection_buffer = 2;
-					}
-				}
-			}
-			if (can_go_y)
-			{
-				if (get(x, y + dy))
-				{
-					if (intersection_buffer == 0)
-					{
-						++intersections;
-						intersection_buffer = 2;
-					}
-				}
-			}
-			if (!can_go_x && !can_go_y)
-			{
-				break;
-			}
-			x += (can_go_x * dx);
-			y += (can_go_y * dy);
-			if (get(x, y))
-			{
-				if (intersection_buffer == 0)
-				{
-					++intersections;
-					intersection_buffer = 2;
-				}
-			}
-		}
-		return intersections % 2 == 1;
-	}
-
 	void BCanvas::floodFill(unsigned int x, unsigned int y)
 	{
 		SOUP_IF_UNLIKELY (get(x, y))

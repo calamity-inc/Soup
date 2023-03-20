@@ -6,10 +6,6 @@
 
 namespace soup
 {
-	// This has been tested against the following two images:
-	// - https://abs-0.twimg.com/emoji/v2/svg/1f600.svg
-	// - https://abs-0.twimg.com/emoji/v2/svg/1f642.svg
-	// Anything else may very well blow up at this point.
 	class Svg
 	{
 	public:
