@@ -41,12 +41,12 @@ namespace soup
 			LineTo(hdc, b.x, b.y);
 		}
 
-		void drawCircle(unsigned int x, unsigned int y, float r, Rgb colour)
+		void drawCircle(unsigned int x, unsigned int y, float r, Rgb colour) final
 		{
 			return drawEllipse(x, y, r, r, colour);
 		}
 
-		void drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour)
+		void drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour) final
 		{
 			// Outline
 			SelectObject(hdc, GetStockObject(DC_PEN));
