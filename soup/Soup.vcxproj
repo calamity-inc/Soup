@@ -482,6 +482,7 @@
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
     <ClInclude Include="DelayedCtor.hpp" />
     <ClInclude Include="DetachedScheduler.hpp" />

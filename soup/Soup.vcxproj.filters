@@ -1260,6 +1260,9 @@
     <ClInclude Include="SchedulerStats.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="visCurves.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
