@@ -258,7 +258,7 @@ namespace soup
 			while (true)
 			{
 				const CharT c = *it++;
-				if (!isNumberChar(c))
+				SOUP_IF_UNLIKELY (!isNumberChar(c))
 				{
 					break;
 				}
@@ -266,7 +266,7 @@ namespace soup
 				val += (c - '0');
 				max *= 10;
 				max += 9;
-				if (max < prev_max)
+				SOUP_IF_UNLIKELY (max < prev_max)
 				{
 					break;
 				}
@@ -285,7 +285,7 @@ namespace soup
 			while (true)
 			{
 				const CharT c = *it++;
-				if (!isNumberChar(c))
+				SOUP_IF_UNLIKELY (!isNumberChar(c))
 				{
 					break;
 				}
@@ -294,7 +294,7 @@ namespace soup
 				val += (c - '0');
 				max *= 10;
 				max += 9;
-				if (max < prev_max)
+				SOUP_IF_UNLIKELY (max < prev_max)
 				{
 					break;
 				}
