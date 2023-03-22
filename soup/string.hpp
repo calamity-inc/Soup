@@ -257,6 +257,17 @@ namespace soup
 			IntT prev_max = 0;
 			while (true)
 			{
+				if constexpr (std::is_unsigned_v<IntT>)
+				{
+					max *= 10;
+					max += 9;
+					SOUP_IF_UNLIKELY (!(max > prev_max))
+					{
+						break;
+					}
+					prev_max = max;
+				}
+
 				const CharT c = *it++;
 				SOUP_IF_UNLIKELY (!isNumberChar(c))
 				{
@@ -264,13 +275,17 @@ namespace soup
 				}
 				val *= 10;
 				val += (c - '0');
-				max *= 10;
-				max += 9;
-				SOUP_IF_UNLIKELY (max < prev_max)
+
+				if constexpr (std::is_signed_v<IntT>)
 				{
-					break;
+					max *= 10;
+					max += 9;
+					SOUP_IF_UNLIKELY (max < prev_max)
+					{
+						break;
+					}
+					prev_max = max;
 				}
-				prev_max = max;
 			}
 			return val;
 		}
@@ -284,6 +299,17 @@ namespace soup
 			IntT prev_max = 0;
 			while (true)
 			{
+				if constexpr (std::is_unsigned_v<IntT>)
+				{
+					max *= 10;
+					max += 9;
+					SOUP_IF_UNLIKELY (!(max > prev_max))
+					{
+						break;
+					}
+					prev_max = max;
+				}
+
 				const CharT c = *it++;
 				SOUP_IF_UNLIKELY (!isNumberChar(c))
 				{
@@ -292,13 +318,17 @@ namespace soup
 				had_number_char = true;
 				val *= 10;
 				val += (c - '0');
-				max *= 10;
-				max += 9;
-				SOUP_IF_UNLIKELY (max < prev_max)
+
+				if constexpr (std::is_signed_v<IntT>)
 				{
-					break;
+					max *= 10;
+					max += 9;
+					SOUP_IF_UNLIKELY (max < prev_max)
+					{
+						break;
+					}
+					prev_max = max;
 				}
-				prev_max = max;
 			}
 			if (!had_number_char)
 			{
