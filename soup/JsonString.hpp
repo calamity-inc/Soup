@@ -2,7 +2,7 @@
 
 #include "JsonNode.hpp"
 
-#include "string.hpp"
+#include <string>
 
 namespace soup
 {

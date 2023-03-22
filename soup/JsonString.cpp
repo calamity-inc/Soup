@@ -1,5 +1,6 @@
 #include "JsonString.hpp"
 
+#include "string.hpp"
 #include "unicode.hpp"
 #include "Writer.hpp"
 

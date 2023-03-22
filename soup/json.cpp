@@ -8,6 +8,7 @@
 #include "JsonObject.hpp"
 #include "JsonString.hpp"
 #include "Reader.hpp"
+#include "string.hpp"
 
 namespace soup
 {
