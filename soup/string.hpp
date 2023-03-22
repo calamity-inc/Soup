@@ -254,6 +254,11 @@ namespace soup
 			}
 			return res;
 		}
+		
+		enum ToIntFlags : uint8_t
+		{
+			TI_FULL = 1 << 0, // The entire string must be processed. If the string is too long or contains invalid characters, nullopt or fallback will be returned.
+		};
 
 		template <typename IntT, typename CharT>
 		[[nodiscard]] static IntT toInt(const CharT*& it) noexcept
@@ -343,7 +348,7 @@ namespace soup
 			return val;
 		}
 
-		template <typename IntT, typename StringView>
+		template <typename IntT, typename StringView, uint8_t Flags = 0>
 		[[nodiscard]] static std::optional<IntT> toInt(const StringView& str) noexcept
 		{
 			using CharT = typename StringView::value_type;
@@ -371,6 +376,13 @@ namespace soup
 			}
 			const CharT* it_ = &*it;
 			IntT val = toInt<IntT, CharT>(it_);
+			if constexpr (Flags & TI_FULL)
+			{
+				if (it != str.cend())
+				{
+					return std::nullopt;
+				}
+			}
 			if (neg)
 			{
 				val *= -1;
@@ -378,22 +390,22 @@ namespace soup
 			return std::optional<IntT>(std::move(val));
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static std::optional<IntT> toInt(const std::string_view& str) noexcept
 		{
-			return toInt<IntT, std::string_view>(str);
+			return toInt<IntT, std::string_view, Flags>(str);
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static std::optional<IntT> toInt(const std::wstring_view& str) noexcept
 		{
-			return toInt<IntT, std::wstring_view>(str);
+			return toInt<IntT, std::wstring_view, Flags>(str);
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT toInt(const std::string_view& str, IntT default_value) noexcept
 		{
-			auto res = toInt<IntT>(str);
+			auto res = toInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
@@ -401,10 +413,10 @@ namespace soup
 			return default_value;
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT toInt(const std::wstring_view& str, IntT default_value) noexcept
 		{
-			auto res = toInt<IntT>(str);
+			auto res = toInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
@@ -466,7 +478,7 @@ namespace soup
 			return val;
 		}
 
-		template <typename IntT, typename StringView>
+		template <typename IntT, typename StringView, uint8_t Flags = 0>
 		[[nodiscard]] static std::optional<IntT> hexToInt(const StringView& str) noexcept
 		{
 			using CharT = typename StringView::value_type;
@@ -482,25 +494,32 @@ namespace soup
 			}
 			const CharT* it_ = &*it;
 			IntT val = hexToIntImpl<IntT, CharT>(it_);
+			if constexpr (Flags & TI_FULL)
+			{
+				if (it != str.cend())
+				{
+					return std::nullopt;
+				}
+			}
 			return std::optional<IntT>(std::move(val));
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static std::optional<IntT> hexToInt(const std::string_view& str) noexcept
 		{
-			return hexToInt<IntT, std::string_view>(str);
+			return hexToInt<IntT, std::string_view, Flags>(str);
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags>
 		[[nodiscard]] static std::optional<IntT> hexToInt(const std::wstring_view& str) noexcept
 		{
-			return hexToInt<IntT, std::wstring_view>(str);
+			return hexToInt<IntT, std::wstring_view, Flags>(str);
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT hexToInt(const std::string_view& str, IntT default_value) noexcept
 		{
-			auto res = hexToInt<IntT>(str);
+			auto res = hexToInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
@@ -508,10 +527,10 @@ namespace soup
 			return default_value;
 		}
 
-		template <typename IntT>
+		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT hexToInt(const std::wstring_view& str, IntT default_value) noexcept
 		{
-			auto res = hexToInt<IntT>(str);
+			auto res = hexToInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
