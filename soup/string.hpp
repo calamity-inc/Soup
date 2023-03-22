@@ -175,6 +175,12 @@ namespace soup
 			return isLetter(c) || isNumberChar(c);
 		}
 
+		template <typename T>
+		[[nodiscard]] static constexpr bool isHexDigitChar(const T c) noexcept
+		{
+			return isNumberChar(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+		}
+
 		// string attributes
 
 		template <typename T>
@@ -399,6 +405,113 @@ namespace soup
 		[[nodiscard]] static IntT toInt(const std::wstring_view& str, IntT default_value) noexcept
 		{
 			auto res = toInt<IntT>(str);
+			if (res.has_value())
+			{
+				return res.value();
+			}
+			return default_value;
+		}
+
+		template <typename IntT, typename CharT>
+		[[nodiscard]] static IntT hexToIntImpl(const CharT*& it)
+		{
+			IntT val = 0;
+			IntT max = 0;
+			IntT prev_max = 0;
+			while (true)
+			{
+				if constexpr (std::is_unsigned_v<IntT>)
+				{
+					max *= 0x10;
+					max += 0xf;
+					SOUP_IF_UNLIKELY (!(max > prev_max))
+					{
+						break;
+					}
+					prev_max = max;
+				}
+
+				const CharT c = *it++;
+				if (isNumberChar(c))
+				{
+					val *= 0x10;
+					val += (c - '0');
+				}
+				else if (c >= 'a' && c <= 'f')
+				{
+					val *= 0x10;
+					val += 0xA + (c - 'a');
+				}
+				else if (c >= 'A' && c <= 'F')
+				{
+					val *= 0x10;
+					val += 0xA + (c - 'A');
+				}
+				else
+				{
+					break;
+				}
+
+				if constexpr (std::is_signed_v<IntT>)
+				{
+					max *= 0x10;
+					max += 0xf;
+					SOUP_IF_UNLIKELY (max < prev_max)
+					{
+						break;
+					}
+					prev_max = max;
+				}
+			}
+			return val;
+		}
+
+		template <typename IntT, typename StringView>
+		[[nodiscard]] static std::optional<IntT> hexToInt(const StringView& str) noexcept
+		{
+			using CharT = typename StringView::value_type;
+
+			auto it = str.cbegin();
+			if (it == str.cend())
+			{
+				return std::nullopt;
+			}
+			if (!isHexDigitChar(*it))
+			{
+				return std::nullopt;
+			}
+			const CharT* it_ = &*it;
+			IntT val = hexToIntImpl<IntT, CharT>(it_);
+			return std::optional<IntT>(std::move(val));
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static std::optional<IntT> hexToInt(const std::string_view& str) noexcept
+		{
+			return hexToInt<IntT, std::string_view>(str);
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static std::optional<IntT> hexToInt(const std::wstring_view& str) noexcept
+		{
+			return hexToInt<IntT, std::wstring_view>(str);
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static IntT hexToInt(const std::string_view& str, IntT default_value) noexcept
+		{
+			auto res = hexToInt<IntT>(str);
+			if (res.has_value())
+			{
+				return res.value();
+			}
+			return default_value;
+		}
+
+		template <typename IntT>
+		[[nodiscard]] static IntT hexToInt(const std::wstring_view& str, IntT default_value) noexcept
+		{
+			auto res = hexToInt<IntT>(str);
 			if (res.has_value())
 			{
 				return res.value();
