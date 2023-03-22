@@ -403,25 +403,25 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT toInt(const std::string_view& str, IntT default_value) noexcept
+		[[nodiscard]] static IntT toInt(const std::string_view& str, IntT fallback) noexcept
 		{
 			auto res = toInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
 			}
-			return default_value;
+			return fallback;
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT toInt(const std::wstring_view& str, IntT default_value) noexcept
+		[[nodiscard]] static IntT toInt(const std::wstring_view& str, IntT fallback) noexcept
 		{
 			auto res = toInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
 			}
-			return default_value;
+			return fallback;
 		}
 
 		template <typename IntT, typename CharT>
@@ -517,25 +517,25 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT hexToInt(const std::string_view& str, IntT default_value) noexcept
+		[[nodiscard]] static IntT hexToInt(const std::string_view& str, IntT fallback) noexcept
 		{
 			auto res = hexToInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
 			}
-			return default_value;
+			return fallback;
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT hexToInt(const std::wstring_view& str, IntT default_value) noexcept
+		[[nodiscard]] static IntT hexToInt(const std::wstring_view& str, IntT fallback) noexcept
 		{
 			auto res = hexToInt<IntT, Flags>(str);
 			if (res.has_value())
 			{
 				return res.value();
 			}
-			return default_value;
+			return fallback;
 		}
 
 		// string mutation
