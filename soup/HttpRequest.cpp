@@ -32,6 +32,8 @@ namespace soup
 	HttpRequest::HttpRequest(const Uri& uri)
 		: HttpRequest(uri.host, uri.getRequestPath())
 	{
+		path_is_encoded = true;
+
 		if (joaat::hash(uri.scheme) == joaat::hash("http"))
 		{
 			use_tls = false;
