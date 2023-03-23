@@ -15,7 +15,7 @@ namespace soup
 		void upgrade(std::string host, std::string path, callback_t cb, Capture&& cap = {});
 		void sendUpgradeRequest(std::string host, std::string path);
 
-		void wsSend(std::string data, bool is_text);
+		void wsSend(std::string data, bool is_text = true);
 		void wsSend(uint8_t opcode, std::string payload);
 
 		void wsRecv(recv_callback_t cb, Capture&& cap = {});
