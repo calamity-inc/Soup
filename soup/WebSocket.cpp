@@ -42,7 +42,7 @@ namespace soup
 
 		if (payload_len == 126)
 		{
-			header_size += (16 / 2);
+			header_size += (16 / 8);
 			uint16_t buf;
 			SOUP_IF_UNLIKELY (!r.u16(buf))
 			{
