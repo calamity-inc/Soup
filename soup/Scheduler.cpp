@@ -40,7 +40,7 @@ namespace soup
 
 	void Scheduler::run()
 	{
-		while (workers.size() != passive_workers || !pending_workers.empty())
+		while (shouldKeepRunning())
 		{
 			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
@@ -66,7 +66,7 @@ namespace soup
 	void Scheduler::runFor(unsigned int ms)
 	{
 		time_t deadline = time::millis() + ms;
-		while (!workers.empty())
+		while (shouldKeepRunning())
 		{
 			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
@@ -77,6 +77,11 @@ namespace soup
 				break;
 			}
 		}
+	}
+
+	bool Scheduler::shouldKeepRunning() const
+	{
+		return workers.size() != passive_workers || !pending_workers.empty();
 	}
 
 	void Scheduler::tick(std::vector<pollfd>& pollfds, bool& not_just_sockets)
