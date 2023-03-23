@@ -109,6 +109,11 @@ namespace soup
 		this->send(w.data);
 	}
 
+	struct WsRecvBuffer
+	{
+		std::string buf;
+	};
+
 	struct CaptureWsRecv
 	{
 		WebSocketConnection::recv_callback_t cb;
@@ -117,13 +122,28 @@ namespace soup
 
 	void WebSocketConnection::wsRecv(recv_callback_t cb, Capture&& cap)
 	{
-		recv([](Socket& s, std::string&& data, Capture&& cap)
+		recv([](Socket& s, std::string&& app, Capture&& _cap)
 		{
+			auto& buf = s.custom_data.getStructFromMap(WsRecvBuffer).buf;
+			auto& cap = _cap.get<CaptureWsRecv>();
+
+			buf.append(app);
+
 			bool fin;
 			uint8_t opcode;
 			std::string payload;
-			while (WebSocket::readFrame(data, fin, opcode, payload))
+			while (true)
 			{
+				auto res = WebSocket::readFrame(buf, fin, opcode, payload);
+				if (res != WebSocket::OK)
+				{
+					if (res == WebSocket::PAYLOAD_INCOMPLETE)
+					{
+						static_cast<WebSocketConnection&>(s).wsRecv(cap.cb, std::move(cap.cap));
+					}
+					break;
+				}
+
 				SOUP_ASSERT(fin);
 				SOUP_ASSERT(opcode == WebSocketFrameType::TEXT || opcode == WebSocketFrameType::BINARY);
 
@@ -131,8 +151,7 @@ namespace soup
 				msg.is_text = (opcode == WebSocketFrameType::TEXT);
 				msg.data = std::move(payload);
 
-				auto& c = cap.get<CaptureWsRecv>();
-				c.cb(static_cast<WebSocketConnection&>(s), std::move(msg), std::move(c.cap));
+				cap.cb(static_cast<WebSocketConnection&>(s), std::move(msg), std::move(cap.cap));
 			}
 		}, CaptureWsRecv{ cb, std::move(cap) });
 	}

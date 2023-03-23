@@ -238,7 +238,7 @@ namespace soup
 			bool fin;
 			uint8_t opcode;
 			std::string payload;
-			while (WebSocket::readFrame(data, fin, opcode, payload))
+			while (WebSocket::readFrame(data, fin, opcode, payload) == WebSocket::OK)
 			{
 				ServerWebService& srv = *cap.get<ServerWebService*>();
 
