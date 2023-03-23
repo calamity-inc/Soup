@@ -84,16 +84,16 @@ namespace soup
 
 	std::optional<HttpResponse> HttpRequest::execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const
 	{
-		auto sock = make_unique<Socket>();
+		auto sock = make_shared<Socket>();
 		std::string resp{};
 		const auto& host = getHost();
 		if (sock->connect(host, port))
 		{
 			Scheduler sched{};
-			Socket& s = sched.addSocket(std::move(sock));
+			auto s = sched.addSocket(std::move(sock));
 			if (use_tls)
 			{
-				s.enableCryptoClient(host, [](Socket& s, Capture&& _cap)
+				s->enableCryptoClient(host, [](Socket& s, Capture&& _cap)
 				{
 					auto& cap = _cap.get<CaptureHttpRequestExecute>();
 					cap.req->send(s);
@@ -102,8 +102,8 @@ namespace soup
 			}
 			else
 			{
-				send(s);
-				execute_tick(s, &resp);
+				send(*s);
+				execute_tick(*s, &resp);
 			}
 			sched.run();
 		}

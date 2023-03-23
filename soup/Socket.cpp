@@ -1198,11 +1198,6 @@ namespace soup
 		}
 	}
 
-	struct SocketRefData
-	{
-		unsigned int refs = 0;
-	};
-
 	bool Socket::isWorkDoneOrClosed() const noexcept
 	{
 		return isWorkDone()
@@ -1217,33 +1212,6 @@ namespace soup
 		{
 			// If we actually receive something in this state, we just let the scheduler delete the socket since it won't have a holdup anymore.
 		});
-	}
-
-	bool Socket::hasRefs() const noexcept
-	{
-		return custom_data.isStructInMap(SocketRefData);
-	}
-
-	unsigned int Socket::getNumRefs() const noexcept
-	{
-		if (hasRefs())
-		{
-			return custom_data.getStructFromMapConst(SocketRefData).refs;
-		}
-		return 0;
-	}
-
-	void Socket::ref()
-	{
-		++custom_data.getStructFromMap(SocketRefData).refs;
-	}
-
-	void Socket::unref()
-	{
-		if (--custom_data.getStructFromMap(SocketRefData).refs == 0)
-		{
-			custom_data.removeStructFromMap(SocketRefData);
-		}
 	}
 }
 

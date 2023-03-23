@@ -13,7 +13,7 @@ namespace soup
 	{
 	}
 
-	Worker& DetachedScheduler::addWorker(UniquePtr<Worker>&& w) noexcept
+	SharedPtr<Worker> DetachedScheduler::addWorker(SharedPtr<Worker>&& w) noexcept
 	{
 		if (!thrd.isRunning())
 		{

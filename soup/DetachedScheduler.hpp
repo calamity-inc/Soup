@@ -18,7 +18,7 @@ namespace soup
 
 		DetachedScheduler(netConfig&& conf = {});
 
-		Worker& addWorker(UniquePtr<Worker>&& w) noexcept final;
+		SharedPtr<Worker> addWorker(SharedPtr<Worker>&& w) noexcept final;
 
 		[[nodiscard]] bool isActive() const noexcept;
 

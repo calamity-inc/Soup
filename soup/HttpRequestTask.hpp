@@ -10,6 +10,7 @@
 #include "DelayedCtor.hpp"
 #include "HttpRequest.hpp"
 #include "netConnectTask.hpp"
+#include "SharedPtr.hpp"
 #include "Uri.hpp"
 
 namespace soup
@@ -27,7 +28,7 @@ namespace soup
 		State state;
 		HttpRequest hr;
 		DelayedCtor<netConnectTask> connector;
-		Socket* sock;
+		SharedPtr<Socket> sock;
 		std::optional<HttpResponse> res; // Output
 
 		HttpRequestTask(Scheduler& sched, const Uri& uri);

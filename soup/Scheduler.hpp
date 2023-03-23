@@ -13,7 +13,7 @@
 #endif
 
 #include "AtomicStack.hpp"
-#include "UniquePtr.hpp"
+#include "SharedPtr.hpp"
 #include "Worker.hpp"
 
 namespace soup
@@ -23,8 +23,8 @@ namespace soup
 	class Scheduler
 	{
 	protected:
-		std::vector<UniquePtr<Worker>> workers{};
-		AtomicStack<UniquePtr<Worker>> pending_workers{};
+		std::vector<SharedPtr<Worker>> workers{};
+		AtomicStack<SharedPtr<Worker>> pending_workers{};
 	public:
 		size_t passive_workers = 0;
 
@@ -38,21 +38,21 @@ namespace soup
 
 		virtual ~Scheduler() = default;
 
-		virtual Worker& addWorker(UniquePtr<Worker>&& w) noexcept;
+		virtual SharedPtr<Worker> addWorker(SharedPtr<Worker>&& w) noexcept;
 
-		Socket& addSocket() noexcept;
-		Socket& addSocket(UniquePtr<Socket>&& sock) noexcept;
+		SharedPtr<Socket> addSocket() noexcept;
+		SharedPtr<Socket> addSocket(SharedPtr<Socket>&& sock) noexcept;
 
 		template <typename T, SOUP_RESTRICT(std::is_same_v<T, Socket>)>
-		T& addSocket(T&& sock) noexcept
+		SharedPtr<T> addSocket(T&& sock) noexcept
 		{
-			return addSocket(make_unique<Socket>(std::move(sock)));
+			return addSocket(make_shared<Socket>(std::move(sock)));
 		}
 
 		template <typename T, typename...Args>
-		T& add(Args&&...args)
+		SharedPtr<T> add(Args&&...args)
 		{
-			return static_cast<T&>(addWorker(make_unique<T>(std::forward<Args>(args)...)));
+			return addWorker(make_shared<T>(std::forward<Args>(args)...));
 		}
 
 		void run();
@@ -72,7 +72,7 @@ namespace soup
 		[[nodiscard]] size_t getNumWorkersOfType(uint8_t type) const;
 		[[nodiscard]] size_t getNumSockets() const;
 
-		[[nodiscard]] Socket* findReusableSocketForHost(const std::string& host);
+		[[nodiscard]] SharedPtr<Socket> findReusableSocketForHost(const std::string& host);
 		void closeReusableSockets();
 	};
 }

@@ -37,7 +37,7 @@ namespace soup
 
 		void onTick() final;
 
-		[[nodiscard]] Socket& onDone(Scheduler& sched);
+		[[nodiscard]] SharedPtr<Socket> onDone(Scheduler& sched);
 
 	protected:
 		void proceedToConnect(const IpAddr& addr, uint16_t port);

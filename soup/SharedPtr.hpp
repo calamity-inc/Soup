@@ -140,6 +140,22 @@ namespace soup
 			b.data = nullptr;
 		}
 
+		// reinterpret_cast<Data*> is okay because it contains a pointer to the actual instance, so it's all the same regardless of T.
+
+		template <typename T2, SOUP_RESTRICT(std::is_base_of_v<T, T2> || std::is_base_of_v<T2, T>)>
+		SharedPtr(const SharedPtr<T2>& b) noexcept
+			: data(reinterpret_cast<Data*>(b.data))
+		{
+			data->incref();
+		}
+
+		template <typename T2, SOUP_RESTRICT(std::is_base_of_v<T, T2> || std::is_base_of_v<T2, T>)>
+		SharedPtr(SharedPtr<T2>&& b) noexcept
+			: data(reinterpret_cast<Data*>(b.data))
+		{
+			b.data = nullptr;
+		}
+
 		void operator=(const SharedPtr<T>& b)
 		{
 			reset();

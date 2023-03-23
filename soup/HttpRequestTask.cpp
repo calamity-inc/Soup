@@ -15,7 +15,6 @@ namespace soup
 			sock = sched.findReusableSocketForHost(hr.getHost());
 			if (sock)
 			{
-				sock->ref();
 				if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
 				{
 					state = WAIT_TO_REUSE;
@@ -38,7 +37,7 @@ namespace soup
 		case WAIT_TO_REUSE:
 			if (sock->isWorkDoneOrClosed())
 			{
-				sock->unref();
+				sock.reset();
 				cannotRecycle();
 			}
 			else if (!sock->custom_data.getStructFromMap(ReuseTag).is_busy)
@@ -52,8 +51,7 @@ namespace soup
 		case CONNECTING:
 			if (connector->tickUntilDone())
 			{
-				sock = &connector->onDone(getScheduler());
-				sock->ref();
+				sock = connector->onDone(getScheduler());
 				connector.destroy();
 				if (shouldRecycle())
 				{
@@ -87,7 +85,7 @@ namespace soup
 		case AWAIT_RESPONSE:
 			if (sock->isWorkDoneOrClosed())
 			{
-				sock->unref();
+				sock.reset();
 				setWorkDone();
 			}
 			break;
@@ -117,7 +115,6 @@ namespace soup
 				s.custom_data.getStructFromMap(ReuseTag).is_busy = false;
 				s.keepAlive();
 			}
-			s.unref();
 		}, this);
 	}
 }

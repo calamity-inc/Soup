@@ -69,7 +69,7 @@ namespace soup
 		}
 	}
 
-	Socket& netConnectTask::onDone(Scheduler& sched)
+	SharedPtr<Socket> netConnectTask::onDone(Scheduler& sched)
 	{
 		SOUP_ASSERT(connect.isConstructed());
 		return sched.addSocket(std::move(connect->getResult()));

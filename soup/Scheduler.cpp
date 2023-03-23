@@ -20,22 +20,22 @@
 
 namespace soup
 {
-	Worker& Scheduler::addWorker(UniquePtr<Worker>&& w) noexcept
+	SharedPtr<Worker> Scheduler::addWorker(SharedPtr<Worker>&& w) noexcept
 	{
-		return *pending_workers.emplace_front(std::move(w))->data;
+		return pending_workers.emplace_front(std::move(w))->data;
 	}
 
-	Socket& Scheduler::addSocket() noexcept
+	SharedPtr<Socket> Scheduler::addSocket() noexcept
 	{
-		return addSocket(soup::make_unique<Socket>());
+		return addSocket(soup::make_shared<Socket>());
 	}
 
-	Socket& Scheduler::addSocket(UniquePtr<Socket>&& sock) noexcept
+	SharedPtr<Socket> Scheduler::addSocket(SharedPtr<Socket>&& sock) noexcept
 	{
 #if SOUP_LINUX
 		sock->setNonBlocking();
 #endif
-		return static_cast<Socket&>(addWorker(std::move(sock)));
+		return addWorker(std::move(sock));
 	}
 
 	void Scheduler::run()
@@ -238,10 +238,6 @@ namespace soup
 				// Socket still has stuff to do...
 				fireHoldupCallback(s);
 			}
-			else if (s.hasRefs())
-			{
-				// There are tasks referencing this socket...
-			}
 			else
 			{
 				// No excuses, slate for execution.
@@ -273,7 +269,7 @@ namespace soup
 		return getNumWorkersOfType(WORKER_TYPE_SOCKET);
 	}
 
-	Socket* Scheduler::findReusableSocketForHost(const std::string& host)
+	SharedPtr<Socket> Scheduler::findReusableSocketForHost(const std::string& host)
 	{
 		for (const auto& w : workers)
 		{
@@ -282,10 +278,10 @@ namespace soup
 				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).host == host
 				)
 			{
-				return static_cast<Socket*>(w.get());
+				return w;
 			}
 		}
-		return nullptr;
+		return {};
 	}
 
 	void Scheduler::closeReusableSockets()

@@ -188,13 +188,6 @@ namespace soup
 		[[nodiscard]] bool isWorkDoneOrClosed() const noexcept;
 
 		void keepAlive();
-
-		// A ref will keep the socket alive so tasks can process that it was closed.
-		// However, if the socket ends up having no holdup, it will be cleaned up regardless.
-		[[nodiscard]] bool hasRefs() const noexcept;
-		[[nodiscard]] unsigned int getNumRefs() const noexcept;
-		void ref();
-		void unref();
 	};
 }
 #endif

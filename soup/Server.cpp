@@ -16,16 +16,16 @@ namespace soup
 		{
 			if (sock.hasConnection())
 			{
-				Socket& ref = server->addSocket(std::move(sock));
+				auto s = server->addSocket(std::move(sock));
 				if (service->on_connection_established)
 				{
-					service->on_connection_established(ref, *service, *server);
+					service->on_connection_established(*s, *service, *server);
 				}
 				if (service->on_tunnel_established)
 				{
-					service->on_tunnel_established(ref, *service, *server);
+					service->on_tunnel_established(*s, *service, *server);
 				}
-				service->srv_on_tunnel_established(ref, *service, *server);
+				service->srv_on_tunnel_established(*s, *service, *server);
 			}
 		}
 	};
@@ -39,12 +39,12 @@ namespace soup
 		{
 			if (sock.hasConnection())
 			{
-				Socket& ref = server->addSocket(std::move(sock));
+				auto s = server->addSocket(std::move(sock));
 				if (service->on_connection_established)
 				{
-					service->on_connection_established(ref, *service, *server);
+					service->on_connection_established(*s, *service, *server);
 				}
-				ref.enableCryptoServer(cert_selector, [](Socket& s, Capture&& _cap)
+				s->enableCryptoServer(cert_selector, [](Socket& s, Capture&& _cap)
 				{
 					CaptureServerPortCrypto& cap = *_cap.get<CaptureServerPortCrypto*>();
 					if (cap.service->on_tunnel_established)
