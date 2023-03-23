@@ -223,6 +223,12 @@ namespace soup
 			{
 				throw Exception("Attempt to release SharedPtr with more than 1 reference");
 			}
+#if SOUP_OPTIMISE_MAKE_SHARED
+			if (data->wasCreatedWithMakeShared())
+			{
+				throw Exception("Can't release this SharedPtr because it was created by make_shared and SOUP_OPTIMISE_MAKE_SHARED is true");
+			}
+#endif
 			T* res = get();
 			delete data;
 			data = nullptr;
