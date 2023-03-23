@@ -93,26 +93,26 @@ namespace soup
 								{
 									mingw_pending_mb = LMB;
 									mingw_pending_mb_x = -1;
+									continue;
 								}
-								continue;
 							}
-							if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 33)
+							else if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 33)
 							{
 								if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
 								{
 									mingw_pending_mb = MMB;
 									mingw_pending_mb_x = -1;
+									continue;
 								}
-								continue;
 							}
-							if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 34)
+							else if (irInBuf[i].Event.KeyEvent.uChar.UnicodeChar == 34)
 							{
 								if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
 								{
 									mingw_pending_mb = RMB;
 									mingw_pending_mb_x = -1;
+									continue;
 								}
-								continue;
 							}
 							if (char_handler)
 							{
