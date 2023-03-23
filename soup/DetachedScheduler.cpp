@@ -83,6 +83,8 @@ namespace soup
 		onPreRun();
 		Scheduler::run();
 		onPostRun();
+		workers.clear();
+		passive_workers = 0;
 		conf = std::move(netConfig::get());
 	}
 
@@ -92,8 +94,6 @@ namespace soup
 
 	void DetachedScheduler::onPostRun()
 	{
-		workers.clear();
-		passive_workers = 0;
 	}
 }
 
