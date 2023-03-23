@@ -12,7 +12,7 @@
 #include <poll.h>
 #endif
 
-#include "AtomicStack.hpp"
+#include "AtomicDeque.hpp"
 #include "SharedPtr.hpp"
 #include "Worker.hpp"
 
@@ -24,7 +24,7 @@ namespace soup
 	{
 	protected:
 		std::vector<SharedPtr<Worker>> workers{};
-		AtomicStack<SharedPtr<Worker>> pending_workers{};
+		AtomicDeque<SharedPtr<Worker>> pending_workers{};
 	public:
 		size_t passive_workers = 0;
 

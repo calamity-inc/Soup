@@ -100,7 +100,7 @@ namespace soup
 				workers.reserve(workers.size() + num_pending_workers);
 				do
 				{
-					auto worker = pending_workers.pop_front();
+					auto worker = pending_workers.pop_back();
 					workers.emplace_back(std::move(*worker));
 				} while (--num_pending_workers);
 			}
