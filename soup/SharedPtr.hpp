@@ -85,7 +85,7 @@ namespace soup
 					{
 						std::destroy_at<>(this);
 						std::destroy_at<>(inst);
-						operator delete(reinterpret_cast<void*>(this), sizeof(typename SharedPtr<T>::Data) + sizeof(T));
+						operator delete(reinterpret_cast<void*>(this)/*, sizeof(typename SharedPtr<T>::Data) + sizeof(T)*/);
 					}
 					else
 #endif
