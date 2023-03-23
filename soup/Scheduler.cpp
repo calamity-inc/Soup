@@ -284,6 +284,18 @@ namespace soup
 		return getNumWorkersOfType(WORKER_TYPE_SOCKET);
 	}
 
+	SharedPtr<Socket> Scheduler::getShared(const Worker& w) const
+	{
+		for (const auto& spW : workers)
+		{
+			if (spW.get() == &w)
+			{
+				return spW;
+			}
+		}
+		return {};
+	}
+
 	SharedPtr<Socket> Scheduler::findReusableSocketForHost(const std::string& host)
 	{
 		for (const auto& w : workers)

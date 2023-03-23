@@ -75,6 +75,7 @@ namespace soup
 		[[nodiscard]] size_t getNumWorkersOfType(uint8_t type) const;
 		[[nodiscard]] size_t getNumSockets() const;
 
+		[[nodiscard]] SharedPtr<Socket> getShared(const Worker& w) const;
 		[[nodiscard]] SharedPtr<Socket> findReusableSocketForHost(const std::string& host);
 		void closeReusableSockets();
 	};
