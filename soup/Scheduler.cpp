@@ -20,6 +20,8 @@
 
 namespace soup
 {
+	static thread_local Scheduler* this_thread_running_scheduler = nullptr;
+
 	SharedPtr<Worker> Scheduler::addWorker(SharedPtr<Worker>&& w) noexcept
 	{
 		return pending_workers.emplace_front(std::move(w))->data;
@@ -40,6 +42,7 @@ namespace soup
 
 	void Scheduler::run()
 	{
+		this_thread_running_scheduler = this;
 		while (shouldKeepRunning())
 		{
 			bool not_just_sockets = false;
@@ -61,10 +64,12 @@ namespace soup
 				yieldKernel(pollfds);
 			}
 		}
+		this_thread_running_scheduler = nullptr;
 	}
 
 	void Scheduler::runFor(unsigned int ms)
 	{
+		this_thread_running_scheduler = this;
 		time_t deadline = time::millis() + ms;
 		while (shouldKeepRunning())
 		{
@@ -77,6 +82,7 @@ namespace soup
 				break;
 			}
 		}
+		this_thread_running_scheduler = nullptr;
 	}
 
 	bool Scheduler::shouldKeepRunning() const
@@ -248,6 +254,11 @@ namespace soup
 				s.holdup_type = Worker::NONE;
 			}
 		}
+	}
+
+	Scheduler* Scheduler::get()
+	{
+		return this_thread_running_scheduler;
 	}
 
 	size_t Scheduler::getNumWorkers() const

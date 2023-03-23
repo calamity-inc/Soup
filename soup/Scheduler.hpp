@@ -69,6 +69,8 @@ namespace soup
 		void processClosedSocket(Socket& s);
 
 	public:
+		[[nodiscard]] static Scheduler* get();
+
 		[[nodiscard]] size_t getNumWorkers() const;
 		[[nodiscard]] size_t getNumWorkersOfType(uint8_t type) const;
 		[[nodiscard]] size_t getNumSockets() const;
