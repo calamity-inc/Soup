@@ -161,11 +161,10 @@ namespace soup
 
 	void Scheduler::yieldKernel(std::vector<pollfd>& pollfds)
 	{
-#if SOUP_LINUX
-		if (poll(pollfds, 1) > 0) // On Linux, poll does not detect closed sockets, even if shutdown is used.
-#else
-		if (poll(pollfds, -1) > 0)
-#endif
+		// Why timeout=1?
+		// - On Linux, poll does not detect closed sockets, even if shutdown is used.
+		// - If a scheduler that is only waiting on sockets has addWorker called on it, we don't want an insane delay until that worker starts.
+		if (poll(pollfds, 1) > 0)
 		{
 			processPollResults(pollfds);
 		}
