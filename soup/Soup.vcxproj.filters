@@ -1266,6 +1266,9 @@
     <ClInclude Include="T128.hpp">
       <Filter>cpu\x64</Filter>
     </ClInclude>
+    <ClInclude Include="DummyTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

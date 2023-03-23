@@ -483,6 +483,7 @@
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
