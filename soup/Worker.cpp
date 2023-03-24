@@ -74,10 +74,12 @@ namespace soup
 
 	std::string Worker::toString() const
 	{
+#if !SOUP_WASM
 		if (type == WORKER_TYPE_SOCKET)
 		{
 			return static_cast<const Socket*>(this)->toString();
 		}
+#endif
 		return "[Worker]";
 	}
 }
