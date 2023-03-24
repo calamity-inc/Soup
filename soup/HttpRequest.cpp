@@ -11,6 +11,12 @@
 #include "Uri.hpp"
 #include "urlenc.hpp"
 
+#define LOGGING false
+
+#if LOGGING
+#include "log.hpp"
+#endif
+
 namespace soup
 {
 	HttpRequest::HttpRequest(std::string method, std::string host, std::string path)
@@ -239,6 +245,9 @@ namespace soup
 					}
 					else
 					{
+#if LOGGING
+						logWriteLine("Connection closed unexpectedly");
+#endif
 						self.callback(s, std::nullopt);
 					}
 					return;
@@ -257,6 +266,9 @@ namespace soup
 						if (arr.size() < 2)
 						{
 							// Invalid data
+#if LOGGING
+							logWriteLine("Invalid data");
+#endif
 							self.callback(s, std::nullopt);
 							return;
 						}
@@ -297,6 +309,9 @@ namespace soup
 									}
 									catch (...)
 									{
+#if LOGGING
+										logWriteLine("Exception reading content length");
+#endif
 										self.callback(s, std::nullopt);
 										return;
 									}
@@ -336,6 +351,9 @@ namespace soup
 							}
 							catch (...)
 							{
+#if LOGGING
+								logWriteLine("Exception reading chunk length");
+#endif
 								self.callback(s, std::nullopt);
 								return;
 							}
@@ -386,6 +404,9 @@ namespace soup
 			}
 			else
 			{
+#if LOGGING
+				logWriteLine("Challenge response");
+#endif
 				callback(s, std::nullopt);
 			}
 		}
