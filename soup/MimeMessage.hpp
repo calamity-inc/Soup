@@ -20,6 +20,7 @@ namespace soup
 
 		void loadMessage(const std::string& data);
 		void addHeader(const std::string& line);
+		[[nodiscard]] static std::string normaliseHeaderCasing(const std::string& key);
 		void decode();
 
 		[[nodiscard]] std::string toString() const;

@@ -73,8 +73,25 @@ namespace soup
 	{
 		if (auto key_offset = line.find(": "); key_offset != std::string::npos)
 		{
-			header_fields.emplace(line.substr(0, key_offset), line.substr(key_offset + 2));
+			header_fields.emplace(normaliseHeaderCasing(line.substr(0, key_offset)), line.substr(key_offset + 2));
 		}
+	}
+
+	std::string MimeMessage::normaliseHeaderCasing(const std::string& key)
+	{
+		std::string out;
+		auto parts = string::explode(key, '-');
+		for (auto i = parts.begin(); i != parts.end(); ++i)
+		{
+			out.reserve(i->size() + 1);
+			out.push_back(std::toupper(i->at(0)));
+			out.append(string::lower(i->substr(1)));
+			if ((i + 1) != parts.end())
+			{
+				out.push_back('-');
+			}
+		}
+		return out;
 	}
 
 	void MimeMessage::decode()
