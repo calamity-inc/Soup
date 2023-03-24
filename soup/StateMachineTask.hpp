@@ -7,7 +7,7 @@ namespace soup
 	{
 		using state_t = uint8_t;
 
-		state_t state;
+		state_t state = 0;
 
 		using Task::Task;
 
