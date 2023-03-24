@@ -792,7 +792,7 @@ namespace soup
 		}
 
 		template <typename Str>
-		static Str lower(Str&& str)
+		[[nodiscard]] static Str lower(Str&& str)
 		{
 			lower(str);
 			return str;
@@ -808,7 +808,7 @@ namespace soup
 		}
 
 		template <typename Str>
-		static Str upper(Str&& str)
+		[[nodiscard]] static Str upper(Str&& str)
 		{
 			upper(str);
 			return str;
