@@ -3,6 +3,7 @@
 #include "fwd.hpp"
 
 #include <cstdint>
+#include <string>
 #include <utility>
 
 #include "Callback.hpp"
@@ -48,5 +49,7 @@ namespace soup
 		void setWorkDone() noexcept;
 
 		[[nodiscard]] bool canRecurse() noexcept;
+
+		[[nodiscard]] std::string toString() const;
 	};
 }

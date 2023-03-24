@@ -183,11 +183,13 @@ namespace soup
 
 		void transport_close() noexcept;
 
-		// Task Utils
+		// Utils
 
 		[[nodiscard]] bool isWorkDoneOrClosed() const noexcept;
 
 		void keepAlive();
+
+		[[nodiscard]] std::string toString() const;
 	};
 }
 #endif

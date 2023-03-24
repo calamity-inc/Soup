@@ -1,6 +1,7 @@
 #include "Worker.hpp"
 
 #include "Promise.hpp"
+#include "Socket.hpp"
 
 namespace soup
 {
@@ -69,5 +70,14 @@ namespace soup
 	bool Worker::canRecurse() noexcept
 	{
 		return ++recursions != 20;
+	}
+
+	std::string Worker::toString() const
+	{
+		if (type == WORKER_TYPE_SOCKET)
+		{
+			return static_cast<const Socket*>(this)->toString();
+		}
+		return "[Worker]";
 	}
 }

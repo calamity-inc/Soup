@@ -1213,6 +1213,11 @@ namespace soup
 			// If we actually receive something in this state, we just let the scheduler delete the socket since it won't have a holdup anymore.
 		});
 	}
+
+	std::string Socket::toString() const
+	{
+		return peer.toString();
+	}
 }
 
 #endif
