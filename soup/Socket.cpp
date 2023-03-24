@@ -337,9 +337,14 @@ namespace soup
 			TLS_RSA_WITH_AES_128_CBC_SHA256,
 			TLS_RSA_WITH_AES_256_CBC_SHA,
 			TLS_RSA_WITH_AES_128_CBC_SHA,
-			TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
-			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+
+			TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+			TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, // Cloudfront
+			TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+
+			TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, // Cloudflare
+			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, // Cloudflare
+			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, // Cloudflare
 		};
 		hello.cipher_suites.emplace(
 			hello.cipher_suites.begin() + rand(0, hello.cipher_suites.size() - 1),
@@ -398,6 +403,9 @@ namespace soup
 						s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
 						break;
 
+					case TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
+					case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256:
+					case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
 					case TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
 					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
 					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
