@@ -1866,6 +1866,7 @@
     <ClCompile Include="netConnectTask.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="Capture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
