@@ -6,8 +6,8 @@
 
 namespace soup
 {
-	HttpRequestTask::HttpRequestTask(Scheduler& sched, const Uri& uri)
-		: SchedulerAwareTask(sched), hr(uri)
+	HttpRequestTask::HttpRequestTask(Scheduler& sched, HttpRequest&& _hr)
+		: SchedulerAwareTask(sched), hr(std::move(_hr))
 	{
 		if (shouldRecycle())
 		{
@@ -28,6 +28,11 @@ namespace soup
 			}
 		}
 		cannotRecycle();
+	}
+
+	HttpRequestTask::HttpRequestTask(Scheduler& sched, const Uri& uri)
+		: HttpRequestTask(sched, HttpRequest(uri))
+	{
 	}
 
 	void HttpRequestTask::onTick()

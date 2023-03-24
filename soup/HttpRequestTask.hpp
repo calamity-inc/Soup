@@ -31,6 +31,7 @@ namespace soup
 		SharedPtr<Socket> sock;
 		std::optional<HttpResponse> res; // Output
 
+		HttpRequestTask(Scheduler& sched, HttpRequest&& hr);
 		HttpRequestTask(Scheduler& sched, const Uri& uri);
 
 		void onTick() final;
