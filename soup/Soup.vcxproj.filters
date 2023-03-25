@@ -1269,6 +1269,9 @@
     <ClInclude Include="DummyTask.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="Uuid.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1867,6 +1870,9 @@
       <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="Capture.cpp" />
+    <ClCompile Include="Uuid.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

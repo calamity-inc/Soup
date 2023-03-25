@@ -485,6 +485,7 @@
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="T128.hpp" />
+    <ClInclude Include="Uuid.hpp" />
     <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
     <ClInclude Include="DelayedCtor.hpp" />
@@ -929,6 +930,7 @@
     <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="tridText.cpp" />
+    <ClCompile Include="Uuid.cpp" />
     <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="WebSocket.cpp" />
     <ClCompile Include="WebSocketConnection.cpp" />
