@@ -172,3 +172,11 @@ namespace soup
 
 	inline console_impl console;
 }
+
+#ifndef SOUP_CONSOLE_MACROS
+#undef BEL
+#undef ESC
+#undef CSI
+#undef OSC
+#undef ST
+#endif

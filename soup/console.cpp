@@ -1,3 +1,4 @@
+#define SOUP_CONSOLE_MACROS
 #include "console.hpp"
 
 #if !SOUP_WASM
