@@ -792,6 +792,25 @@ static void unit_util_string()
 		assert(format("{} has {}", "John", 10) == "John has 10");
 		assert(format("{} has {}", "John", 10, 20) == "John has 10");
 	});
+	test("toInt", []
+	{
+		assert(string::toInt<int>("1337", 0) == 1337);
+		assert(string::toInt<int>("1337.", 0) == 1337);
+		assert(string::toInt<int, string::TI_FULL>("1337", 0) == 1337);
+		assert(string::toInt<int, string::TI_FULL>("1337.", 0) == 0);
+		assert(string::hexToInt<int>("1337", 0) == 0x1337);
+		assert(string::hexToInt<int>("1337.", 0) == 0x1337);
+		assert(string::hexToInt<int, string::TI_FULL>("1337", 0) == 0x1337);
+		assert(string::hexToInt<int, string::TI_FULL>("1337.", 0) == 0);
+		assert(string::toInt<int>(L"1337", 0) == 1337);
+		assert(string::toInt<int>(L"1337.", 0) == 1337);
+		assert(string::toInt<int, string::TI_FULL>(L"1337", 0) == 1337);
+		assert(string::toInt<int, string::TI_FULL>(L"1337.", 0) == 0);
+		assert(string::hexToInt<int>(L"1337", 0) == 0x1337);
+		assert(string::hexToInt<int>(L"1337.", 0) == 0x1337);
+		assert(string::hexToInt<int, string::TI_FULL>(L"1337", 0) == 0x1337);
+		assert(string::hexToInt<int, string::TI_FULL>(L"1337.", 0) == 0);
+	});
 }
 
 static void unit_util()

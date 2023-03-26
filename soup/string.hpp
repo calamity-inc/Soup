@@ -261,7 +261,7 @@ namespace soup
 		};
 
 		template <typename IntT, typename CharT>
-		[[nodiscard]] static IntT toInt(const CharT*& it) noexcept
+		[[nodiscard]] static IntT toIntImpl(const CharT*& it) noexcept
 		{
 			IntT val = 0;
 			IntT max = 0;
@@ -282,6 +282,7 @@ namespace soup
 				const CharT c = *it++;
 				SOUP_IF_UNLIKELY (!isNumberChar(c))
 				{
+					--it;
 					break;
 				}
 				val *= 10;
@@ -324,6 +325,7 @@ namespace soup
 				const CharT c = *it++;
 				SOUP_IF_UNLIKELY (!isNumberChar(c))
 				{
+					--it;
 					break;
 				}
 				had_number_char = true;
@@ -348,14 +350,11 @@ namespace soup
 			return val;
 		}
 
-		template <typename IntT, typename StringView, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> toInt(const StringView& str) noexcept
+		template <typename IntT, uint8_t Flags = 0, typename CharT>
+		[[nodiscard]] static std::optional<IntT> toInt(const CharT* it) noexcept
 		{
-			using CharT = typename StringView::value_type;
-
 			bool neg = false;
-			auto it = str.cbegin();
-			if (it == str.cend())
+			if (*it == '\0')
 			{
 				return std::nullopt;
 			}
@@ -365,7 +364,7 @@ namespace soup
 				neg = true;
 				[[fallthrough]];
 			case '+':
-				if (++it == str.cend())
+				if (*++it == '\0')
 				{
 					return std::nullopt;
 				}
@@ -374,11 +373,10 @@ namespace soup
 			{
 				return std::nullopt;
 			}
-			const CharT* it_ = &*it;
-			IntT val = toInt<IntT, CharT>(it_);
+			IntT val = toIntImpl<IntT, CharT>(it);
 			if constexpr (Flags & TI_FULL)
 			{
-				if (it != str.cend())
+				if (*it != '\0')
 				{
 					return std::nullopt;
 				}
@@ -391,19 +389,36 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> toInt(const std::string_view& str) noexcept
+		[[nodiscard]] static std::optional<IntT> toInt(const std::string& str) noexcept
 		{
-			return toInt<IntT, std::string_view, Flags>(str);
+			return toInt<IntT, Flags>(str.c_str());
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> toInt(const std::wstring_view& str) noexcept
+		[[nodiscard]] static std::optional<IntT> toInt(const std::wstring& str) noexcept
 		{
-			return toInt<IntT, std::wstring_view, Flags>(str);
+			return toInt<IntT, Flags>(str.c_str());
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT toInt(const std::string_view& str, IntT fallback) noexcept
+		[[nodiscard]] static IntT toInt(const char* str, IntT fallback) noexcept
+		{
+			auto res = toInt<IntT, Flags>(str);
+			if (res.has_value())
+			{
+				return res.value();
+			}
+			return fallback;
+		}
+		
+		template <typename IntT, uint8_t Flags = 0>
+		[[nodiscard]] static IntT toInt(const std::string& str, IntT fallback) noexcept
+		{
+			return toInt<IntT, Flags>(str.c_str(), fallback);
+		}
+
+		template <typename IntT, uint8_t Flags = 0>
+		[[nodiscard]] static IntT toInt(const wchar_t* str, IntT fallback) noexcept
 		{
 			auto res = toInt<IntT, Flags>(str);
 			if (res.has_value())
@@ -414,14 +429,9 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT toInt(const std::wstring_view& str, IntT fallback) noexcept
+		[[nodiscard]] static IntT toInt(const std::wstring& str, IntT fallback) noexcept
 		{
-			auto res = toInt<IntT, Flags>(str);
-			if (res.has_value())
-			{
-				return res.value();
-			}
-			return fallback;
+			return toInt<IntT, Flags>(str.c_str(), fallback);
 		}
 
 		template <typename IntT, typename CharT>
@@ -461,6 +471,7 @@ namespace soup
 				}
 				else
 				{
+					--it;
 					break;
 				}
 
@@ -478,13 +489,10 @@ namespace soup
 			return val;
 		}
 
-		template <typename IntT, typename StringView, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> hexToInt(const StringView& str) noexcept
+		template <typename IntT, uint8_t Flags = 0, typename CharT>
+		[[nodiscard]] static std::optional<IntT> hexToInt(const CharT* it) noexcept
 		{
-			using CharT = typename StringView::value_type;
-
-			auto it = str.cbegin();
-			if (it == str.cend())
+			if (*it == '\0')
 			{
 				return std::nullopt;
 			}
@@ -492,11 +500,10 @@ namespace soup
 			{
 				return std::nullopt;
 			}
-			const CharT* it_ = &*it;
-			IntT val = hexToIntImpl<IntT, CharT>(it_);
+			IntT val = hexToIntImpl<IntT, CharT>(it);
 			if constexpr (Flags & TI_FULL)
 			{
-				if (it != str.cend())
+				if (*it != '\0')
 				{
 					return std::nullopt;
 				}
@@ -505,19 +512,19 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> hexToInt(const std::string_view& str) noexcept
+		[[nodiscard]] static std::optional<IntT> hexToInt(const std::string& str) noexcept
 		{
-			return hexToInt<IntT, std::string_view, Flags>(str);
+			return hexToInt<IntT, Flags>(str.c_str());
 		}
 
 		template <typename IntT, uint8_t Flags>
-		[[nodiscard]] static std::optional<IntT> hexToInt(const std::wstring_view& str) noexcept
+		[[nodiscard]] static std::optional<IntT> hexToInt(const std::wstring& str) noexcept
 		{
-			return hexToInt<IntT, std::wstring_view, Flags>(str);
+			return hexToInt<IntT, Flags>(str.c_str());
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT hexToInt(const std::string_view& str, IntT fallback) noexcept
+		[[nodiscard]] static IntT hexToInt(const char* str, IntT fallback) noexcept
 		{
 			auto res = hexToInt<IntT, Flags>(str);
 			if (res.has_value())
@@ -528,7 +535,13 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static IntT hexToInt(const std::wstring_view& str, IntT fallback) noexcept
+		[[nodiscard]] static IntT hexToInt(const std::string& str, IntT fallback) noexcept
+		{
+			return hexToInt<IntT, Flags>(str.c_str(), fallback);
+		}
+
+		template <typename IntT, uint8_t Flags = 0>
+		[[nodiscard]] static IntT hexToInt(const wchar_t* str, IntT fallback) noexcept
 		{
 			auto res = hexToInt<IntT, Flags>(str);
 			if (res.has_value())
@@ -536,6 +549,12 @@ namespace soup
 				return res.value();
 			}
 			return fallback;
+		}
+
+		template <typename IntT, uint8_t Flags = 0>
+		[[nodiscard]] static IntT hexToInt(const std::wstring& str, IntT fallback) noexcept
+		{
+			return hexToInt<IntT, Flags>(str.c_str(), fallback);
 		}
 
 		// string mutation

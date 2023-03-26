@@ -64,7 +64,8 @@ namespace soup
 				host = uri.substr(0, port_sep);
 				const char* pPort = &uri.at(port_sep + 1);
 				const char* i = pPort;
-				port = string::toInt<uint16_t>(i);
+				port = string::toIntImpl<uint16_t>(i);
+				++i;
 
 				uri.erase(0, port_sep + (i - pPort));
 			}
