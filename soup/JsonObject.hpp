@@ -49,7 +49,6 @@ namespace soup
 		void add(std::string k, UniquePtr<T>&& v)
 		{
 			add(soup::make_unique<JsonString>(std::move(k)), std::move(v));
-
 		}
 	};
 }
