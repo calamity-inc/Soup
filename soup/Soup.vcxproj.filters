@@ -1869,9 +1869,11 @@
     <ClCompile Include="netConnectTask.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="Capture.cpp" />
     <ClCompile Include="Uuid.cpp">
       <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="Capture.cpp">
+      <Filter>task</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
