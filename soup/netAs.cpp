@@ -86,7 +86,6 @@ namespace soup
 		case 53831: // Squarespace, Inc.
 		case 6724: // Strato AG
 		case 18779: // EGIHosting
-		case 206092: // IPXO Limited (Bandito Networks Inc), related to Express VPN
 		case 36352: // ColoCrossing
 		case 60087: // Netsons s.r.l. (Uania Cloud Service)
 		case 8075: // Microsoft / Azure
@@ -166,6 +165,7 @@ namespace soup
 			|| slug.find("oracle") != std::string::npos
 			|| slug.find("m247") != std::string::npos
 			|| slug.find("leaseweb") != std::string::npos
+			|| slug.find("ipxo") != std::string::npos // AS61317, AS206092
 			)
 		{
 			return true;
