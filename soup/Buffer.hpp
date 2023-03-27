@@ -115,6 +115,13 @@ namespace soup
 			size = 0;
 		}
 
+		[[nodiscard]] uint8_t* release() noexcept
+		{
+			uint8_t* const d = data;
+			data = nullptr;
+			return d;
+		}
+
 	private:
 		void reset() noexcept
 		{
