@@ -76,9 +76,9 @@ namespace soup
 		for (const auto& elm : arr)
 		{
 			addJoke(
-				elm.asObj().at("type").asStr().value,
-				elm.asObj().at("setup").asStr().value,
-				elm.asObj().at("punchline").asStr().value
+				elm.asObj().at("type").asStr(),
+				elm.asObj().at("setup").asStr(),
+				elm.asObj().at("punchline").asStr()
 			);
 		}
 	}

@@ -12,7 +12,7 @@ namespace soup
 		std::vector<std::string> res{};
 		for (const auto& e : arr.children)
 		{
-			auto rel_word = e->asStr().value;
+			std::string rel_word = e->asStr();
 			if (rel_word.empty())
 			{
 				continue;
@@ -30,7 +30,7 @@ namespace soup
 	{
 		for (const auto& e : obj.children)
 		{
-			auto word = e.first->asStr().value;
+			std::string word = e.first->asStr();
 			string::lower(word);
 
 			JsonObject& data = e.second->asObj();
@@ -42,7 +42,7 @@ namespace soup
 			{
 				JsonArray& mdata = e2.second->asArr();
 				WordMeaning m{};
-				auto type_str = mdata.at(0).asStr().value;
+				std::string type_str = mdata.at(0).asStr();
 				if (type_str == "Noun")
 				{
 					m.type = NOUN;
@@ -59,14 +59,14 @@ namespace soup
 				{
 					m.type = ADVERB;
 				}
-				m.meaning = mdata.at(1).asStr().value;
+				m.meaning = mdata.at(1).asStr();
 				for (const auto& ctx : mdata.at(2).asArr())
 				{
-					m.context.emplace_back(ctx.asStr().value);
+					m.context.emplace_back(ctx.asStr());
 				}
 				for (const auto& ex : mdata.at(3).asArr())
 				{
-					m.example.emplace_back(ex.asStr().value);
+					m.example.emplace_back(ex.asStr());
 				}
 				dw.meanings.emplace_back(std::move(m));
 			}

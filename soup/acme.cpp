@@ -40,9 +40,9 @@ namespace soup
 		auto res = req.execute();
 		auto root = json::decode(res->body);
 		JsonObject& directory = root->asObj();
-		uri_newNonce = directory.at("newNonce").asStr().value;
-		uri_newAccount = directory.at("newAccount").asStr().value;
-		uri_newOrder = directory.at("newOrder").asStr().value;
+		uri_newNonce = (std::string)directory.at("newNonce").asStr();
+		uri_newAccount = (std::string)directory.at("newAccount").asStr();
+		uri_newOrder = (std::string)directory.at("newOrder").asStr();
 	}
 
 	AcmeAccount AcmeClient::createAccount(const RsaKeypair& kp, std::string email)
@@ -116,10 +116,10 @@ namespace soup
 		auto j = json::decode(res.body);
 		JsonObject& jo = j->asObj();
 		AcmeAuthorisation authz;
-		authz.domain = jo.at("identifier").asObj().at("value").asStr().value;
+		authz.domain = jo.at("identifier").asObj().at("value").asStr();
 		for (const auto& challenge : jo.at("challenges").asArr())
 		{
-			const auto type = challenge.asObj().at("type").asStr().value;
+			const std::string type = challenge.asObj().at("type").asStr();
 			const bool is_http = (type == "http-01");
 			if (!is_http
 				&& type != "dns-01"
@@ -128,8 +128,8 @@ namespace soup
 				continue;
 			}
 			authz.challenges.emplace_back(AcmeChallenge{
-				challenge.asObj().at("url").asStr().value,
-				challenge.asObj().at("token").asStr().value,
+				(std::string)challenge.asObj().at("url").asStr(),
+				challenge.asObj().at("token").asStr(),
 				is_http
 			});
 		}
@@ -210,19 +210,19 @@ namespace soup
 		{
 			order.uri = e->second;
 		}
-		order.status = jo.at("status").asStr().value;
+		order.status = jo.at("status").asStr();
 		for (const auto& id : jo.at("identifiers").asArr())
 		{
-			order.domains.emplace_back(id.asObj().at("value").asStr().value);
+			order.domains.emplace_back(id.asObj().at("value").asStr());
 		}
 		for (const auto& auth : jo.at("authorizations").asArr())
 		{
-			order.authorisations.emplace_back(auth.asStr().value);
+			order.authorisations.emplace_back(auth.asStr());
 		}
-		order.finalise = jo.at("finalize").asStr().value;
+		order.finalise = (std::string)jo.at("finalize").asStr();
 		if (auto certificate = jo.find("certificate"))
 		{
-			order.certificate = certificate->asStr().value;
+			order.certificate = (std::string)certificate->asStr();
 		}
 		return order;
 	}
