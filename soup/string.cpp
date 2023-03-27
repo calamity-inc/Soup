@@ -90,9 +90,10 @@ namespace soup
 			std::ifstream t(file, std::ios::binary);
 
 			t.seekg(0, std::ios::end);
-			ret.reserve(t.tellg());
+			const size_t s = t.tellg();
 			t.seekg(0, std::ios::beg);
 
+			ret.reserve(s);
 			ret.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 		}
 		return ret;
