@@ -97,6 +97,7 @@ namespace soup
 		case 209854: // Surfshark Ltd.
 		case 43357: // Owl Limited
 		case 29802: // HIVELOCITY, Inc.
+		case 54994: // QUANTIL NETWORKS INC
 			// Latitude.sh (formerly Maxihost)
 		case 262287:
 		case 396356:
