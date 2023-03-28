@@ -485,6 +485,7 @@
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="T128.hpp" />
+    <ClInclude Include="UniqueList.hpp" />
     <ClInclude Include="Uuid.hpp" />
     <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />

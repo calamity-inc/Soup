@@ -1272,6 +1272,9 @@
     <ClInclude Include="Uuid.hpp">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="UniqueList.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
