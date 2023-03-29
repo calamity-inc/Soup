@@ -448,6 +448,7 @@
     <ClInclude Include="aud_math.hpp" />
     <ClInclude Include="base40.hpp" />
     <ClInclude Include="BCanvas.hpp" />
+    <ClInclude Include="Benchmark.hpp" />
     <ClInclude Include="BigintId.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
@@ -874,6 +875,7 @@
     <ClCompile Include="BCanvas.cpp" />
     <ClCompile Include="bcrypt.cpp" />
     <ClCompile Include="bech32.cpp" />
+    <ClCompile Include="Benchmark.cpp" />
     <ClCompile Include="Bigfloat.cpp" />
     <ClCompile Include="Bigint.cpp" />
     <ClCompile Include="BigintId.cpp" />

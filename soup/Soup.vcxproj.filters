@@ -1275,6 +1275,9 @@
     <ClInclude Include="UniqueList.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="Benchmark.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1878,6 +1881,7 @@
     <ClCompile Include="Capture.cpp">
       <Filter>task</Filter>
     </ClCompile>
+    <ClCompile Include="Benchmark.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
