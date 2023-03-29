@@ -16,7 +16,8 @@
 #endif
 
 #ifndef SOUP_OPTIMISE_MAKE_SHARED
-#define SOUP_OPTIMISE_MAKE_SHARED SOUP_CPP20
+// InquiryLang_execute depends on SharedPtr::release
+#define SOUP_OPTIMISE_MAKE_SHARED SOUP_CPP20 && !SOUP_STANDALONE
 #endif
 
 #if SOUP_OPTIMISE_MAKE_SHARED
