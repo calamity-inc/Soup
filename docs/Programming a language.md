@@ -142,7 +142,7 @@ To invoke it with our compiled bytecode from before, we can simply do:
 #include <soup/StringReader.hpp>
 ```
 ```C++
-soup::StringReader r{ std::move(w.str) };
+soup::StringReader r{ std::move(w.data) };
 myVm(r);
 ```
 
@@ -202,7 +202,7 @@ int main()
     soup::StringWriter w;
     root.compile(w);
 
-    soup::StringReader r{ std::move(w.str) };
+    soup::StringReader r{ std::move(w.data) };
     myVm(r);
 }
 ```
