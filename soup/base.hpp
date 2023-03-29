@@ -132,4 +132,4 @@ namespace soup { extern void throwAssertionFailed(); }
 #define SOUP_ASSERT_ARG(x) SOUP_ASSERT(x)
 #define SOUP_ASSERT_LOGIC(x) SOUP_ASSERT(x)
 
-#define SOUP_UNUSED(x) ((void)x)
+template <typename T> SOUP_FORCEINLINE void SOUP_UNUSED(T&&) {}
