@@ -1,3 +1,0 @@
-+*.cpp
-dynamic
-arg -D SOUP_STANDALONE
