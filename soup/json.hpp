@@ -3,6 +3,15 @@
 #include "JsonNode.hpp"
 #include "UniquePtr.hpp"
 
+// Convenience includes
+#include "JsonArray.hpp"
+#include "JsonBool.hpp"
+#include "JsonFloat.hpp"
+#include "JsonInt.hpp"
+#include "JsonNull.hpp"
+#include "JsonObject.hpp"
+#include "JsonString.hpp"
+
 namespace soup
 {
 	struct json
