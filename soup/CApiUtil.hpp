@@ -21,7 +21,7 @@ namespace soup
 			std::vector<rflFunc> funcs{};
 			for (auto& line : string::explode(soup_h, '\n'))
 			{
-				if (line.back() == '\r')
+				if (!line.empty() && line.back() == '\r')
 				{
 					line.pop_back();
 				}
