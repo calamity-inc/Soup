@@ -1881,7 +1881,9 @@
     <ClCompile Include="Capture.cpp">
       <Filter>task</Filter>
     </ClCompile>
-    <ClCompile Include="Benchmark.cpp" />
+    <ClCompile Include="Benchmark.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
