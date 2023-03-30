@@ -17,7 +17,7 @@ This document will explain how to go from this text to executing the logic. We w
 
 Let's start by creating a simple `soup::LangDesc` that recognises the `echo` keyword and assigns it the colour of blue, then we just call `highlightSyntax` on it, and print it to the console:
 
-```C++
+```cpp
 #include <soup/console.hpp>
 #include <soup/FormattedText.hpp>
 #include <soup/LangDesc.hpp>
@@ -37,7 +37,7 @@ This code will print a blue `echo`, a yellow `"Hello, world!"`, and a white `;`.
 
 What just happened here? Let's take a look at the implementation of `highlightSyntax`:
 
-```C++
+```cpp
 FormattedText LangDesc::highlightSyntax(const std::string& code) const
 {
     return highlightSyntax(tokenise(code));
@@ -52,7 +52,7 @@ Now, let's move on to parsing.
 
 This step is all about building an abstract syntax tree (aka., parse tree). We can do this by adding a simple parse function to our call to `addToken`:
 
-```C++
+```cpp
 #include <soup/console.hpp>
 #include <soup/FormattedText.hpp>
 #include <soup/LangDesc.hpp>
@@ -98,10 +98,10 @@ block
 
 Since we have an AST now, we can simply call `ast.compile`, which takes a `soup::Writer` to, unsurprisingly, feed the bytecode to. For now, we'll simply write it to a string.
 
-```C++
+```cpp
 #include <soup/StringWriter.hpp>
 ```
-```C++
+```cpp
 soup::StringWriter w;
 ast.compile(w);
 ```
@@ -117,10 +117,10 @@ OP_ECHO
 
 All that's left to do now is writing a virtual machine using `soup::LangVm` so we'll only have to worry about our own op codes:
 
-```C++
+```cpp
 #include <soup/LangVm.hpp>
 ```
-```C++
+```cpp
 static void myVm(soup::Reader& r)
 {
     soup::LangVm vm{ r };
@@ -138,10 +138,10 @@ static void myVm(soup::Reader& r)
 
 To invoke it with our compiled bytecode from before, we can simply do:
 
-```C++
+```cpp
 #include <soup/StringReader.hpp>
 ```
-```C++
+```cpp
 soup::StringReader r{ std::move(w.data) };
 myVm(r);
 ```
@@ -152,7 +152,7 @@ For further reading, check out `soup::PhpState`, which uses Soup's language stac
 
 ## The complete program
 
-```C++
+```cpp
 #include <soup/console.hpp>
 #include <soup/FormattedText.hpp>
 #include <soup/LangDesc.hpp>

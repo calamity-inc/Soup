@@ -1,6 +1,6 @@
 # RSA
 
-```CPP
+```cpp
 #include <soup/rsa.hpp>
 ```
 
@@ -12,7 +12,7 @@ Soup supports key exchange as defined by PKCS#1, X.509, PEM and JWK. However, al
 
 The following PHP code can be used to extract the underlying integers from an OpenSSL private key object:
 
-```PHP
+```php
 $priv = openssl_pkey_get_private("file://priv.key");
 
 echo "n = ".gmp_strval(gmp_import(openssl_pkey_get_details($priv)["rsa"]["n"]))."\n";
@@ -25,7 +25,7 @@ echo "q = ".gmp_strval(gmp_import(openssl_pkey_get_details($priv)["rsa"]["q"])).
 
 If you wish to use the public key with Soup, you only need to know the modulus (`n`).
 
-```CPP
+```cpp
 using namespace soup::literals;
 
 soup::RsaPublicKey pub{
@@ -39,7 +39,7 @@ Although it can't hurt to verify that `e` is, in fact, 65537 — if it isn't, th
 
 You really only need to know the 2 prime numbers (`p` and `q`) to use an RSA private key.
 
-```CPP
+```cpp
 using namespace soup::literals;
 
 auto priv = soup::RsaKeypair(
@@ -54,13 +54,13 @@ Although this will perform a handful of large calculations to construct a `soup:
 
 Signing and verifying messages is done with simple templated functions. The template parameter is the hashing algorithm, which can be any descendant of `soup::CryptoHashAlgo`.
 
-```CPP
+```cpp
 soup::Bigint signature_bigint = priv.sign<soup::sha1>("It's me, I promise!");
 ```
 
 A common encapsulation for the signature is base64-encoded binary data, which you can easily convert it to with Soup:
 
-```CPP
+```cpp
 #include <soup/base64.hpp>
 
 std::string signature_base64 = soup::base64::encode(signature_bigint.toMessage());
@@ -68,7 +68,7 @@ std::string signature_base64 = soup::base64::encode(signature_bigint.toMessage()
 
 Finally, to decode and verify the signature:
 
-```CPP
+```cpp
 auto signature_bigint = soup::Bigint::fromMessage(soup::base64::decode(signature_base64));
 
 if (pub.verify<soup::sha1>("It's me, I promise!", signature_bigint))

@@ -2,13 +2,13 @@
 
 To use Soup's JSON capabilities you only need to include json.hpp.
 
-```C++
+```cpp
 #include <soup/json.hpp>
 ```
 
 ## Decode
 
-```C++
+```cpp
 if (auto root = soup::json::decode("[1, 2, 3]"))
 {
 	// root->isArr(); - true
@@ -26,7 +26,7 @@ else
 
 ## Encode
 
-```C++
+```cpp
 auto root = soup::make_unique<JsonObject>();
 root->add("bool", true);
 root->add("int", 1337);
