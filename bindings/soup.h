@@ -75,7 +75,7 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getN(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x);
 // Totp
-SOUP_CEXPORT Totp* Totp_new(const char* secret);
+SOUP_CEXPORT Totp* Totp_new(const stdstring* secret);
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);
 SOUP_CEXPORT int Totp_getValue(const Totp* x);
 // exception
