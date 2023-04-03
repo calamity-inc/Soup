@@ -27,7 +27,6 @@ end
 soup_scope(function()
 	local m = soup:call("InquiryLang_execute", "base64_encode Hello")
 	print(soup:callString("InquiryLang_formatResultLine", m)) -- SGVsbG8=
-end)
-]]
+end) ]]
 
 return soup

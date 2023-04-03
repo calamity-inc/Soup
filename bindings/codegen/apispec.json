@@ -1,0 +1,35 @@
+{
+	"classes": {
+		"stdstring": {},
+		"Totp": {
+			"new": "Totp_new",
+			"getQrCodeUri": "Totp_getQrCodeUri",
+			"getValue": "Totp_getValue"
+		}
+	},
+	"namespaces": {
+		"Hotp": {
+			"generateSecret": "Hotp_generateSecret"
+		}
+	},
+	"functions": {
+		"Hotp_generateSecret": [
+			"stdstring",
+			["int", "bytes", 16]
+		],
+		"Totp_new": [
+			"Totp",
+			["stdstring", "secret"]
+		],
+		"Totp_getQrCodeUri": [
+			"string",
+			["Totp", "x"],
+			["string", "label"],
+			["string", "issuer", ""]
+		],
+		"Totp_getValue": [
+			"int",
+			["Totp", "x"]
+		]
+	}
+}
