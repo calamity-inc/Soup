@@ -3,7 +3,7 @@
 #include <cstdint> // uintptr_t
 #include <utility> // move
 
-#include "deleter_impl.hpp"
+#include "deleter.hpp"
 #include "type_traits.hpp"
 
 namespace soup

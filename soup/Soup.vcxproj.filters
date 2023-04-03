@@ -908,7 +908,7 @@
     <ClInclude Include="Bitset.hpp">
       <Filter>bit</Filter>
     </ClInclude>
-    <ClInclude Include="deleter_impl.hpp">
+    <ClInclude Include="deleter.hpp">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="time.hpp">

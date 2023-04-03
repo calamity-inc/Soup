@@ -3,7 +3,7 @@
 #include <deque>
 #include <vector>
 
-#include "deleter_impl.hpp"
+#include "deleter.hpp"
 #include "Exception.hpp"
 
 namespace soup

@@ -638,7 +638,7 @@
     <ClInclude Include="crc32.hpp" />
     <ClInclude Include="CryptoHashAlgo.hpp" />
     <ClInclude Include="deflate.hpp" />
-    <ClInclude Include="deleter_impl.hpp" />
+    <ClInclude Include="deleter.hpp" />
     <ClInclude Include="DerivableMap.hpp" />
     <ClInclude Include="Dictionary.hpp" />
     <ClInclude Include="DictionaryWord.hpp" />
