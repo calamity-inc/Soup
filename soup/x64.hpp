@@ -226,6 +226,7 @@ namespace soup
 		{ "xor", 0x33, RM },
 		{ "movzx", 0x0FB6, RM, 8 },
 		{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
+		{ "movsxd", 0x63, RM }, // TODO: Disassembly should show "dword ptr"
 		{ "imul", 0x69, RMI, 32 },
 		{ "nop", 0x90, ZO },
 		{ "cpuid", 0x0FA2, ZO },
