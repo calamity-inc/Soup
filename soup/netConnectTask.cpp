@@ -10,6 +10,13 @@ namespace soup
 {
 	netConnectTask::netConnectTask(Scheduler& sched, const std::string& host, uint16_t port)
 	{
+		// Special case for localhost since DoH won't resolve this
+		if (host == "localhost")
+		{
+			proceedToConnect(IpAddr(SOUP_IPV4(127, 0, 0, 1)), port);
+			return;
+		}
+
 		if (IpAddr ip; ip.fromString(host))
 		{
 			proceedToConnect(ip, port);
