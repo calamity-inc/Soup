@@ -22,13 +22,17 @@ typedef void (*void_func_t)();
 #include "Canvas.hpp"
 #include "cbResult.hpp"
 #include "Chatbot.hpp"
+#include "DetachedScheduler.hpp"
 #include "Hotp.hpp"
+#include "HttpRequest.hpp"
+#include "HttpRequestTask.hpp"
 #include "InquiryLang.hpp"
 #include "KeyGenId.hpp"
 #include "Mixed.hpp"
 #include "QrCode.hpp"
 #include "rsa.hpp"
 #include "Totp.hpp"
+#include "Uri.hpp"
 
 using namespace soup;
 
@@ -183,6 +187,42 @@ SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes)
 	return heap.add(Hotp::generateSecret(bytes));
 }
 
+// HttpRequest
+
+SOUP_CEXPORT HttpRequest* HttpRequest_new(const char* uri)
+{
+#if SOUP_WASM
+	return nullptr;
+#else
+	return heap.add(new HttpRequest(Uri(uri)));
+#endif
+}
+
+SOUP_CEXPORT void HttpRequest_addHeader(HttpRequest* x, const char* key, const char* value)
+{
+#if !SOUP_WASM
+	x->header_fields.emplace(key, value);
+#endif
+}
+
+SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data)
+{
+#if !SOUP_WASM
+	x->setPayload(data);
+#endif
+}
+
+// HttpRequestTask
+
+SOUP_CEXPORT void* HttpRequestTask_newFromRequest(void* sched, const HttpRequest* hr)
+{
+#if SOUP_WASM
+	return nullptr;
+#else
+	return heap.add(new SharedPtr<HttpRequestTask>(new HttpRequestTask(*reinterpret_cast<DetachedScheduler*>(sched), HttpRequest(*hr))));
+#endif
+}
+
 // InquiryLang
 
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x)
@@ -260,6 +300,40 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x)
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x)
 {
 	return &x->q;
+}
+
+// Scheduler
+
+SOUP_CEXPORT void* Scheduler_new()
+{
+#if SOUP_WASM
+	return nullptr;
+#else
+	return heap.add(new DetachedScheduler());
+#endif
+}
+
+SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(void* sched)
+{
+#if !SOUP_WASM
+	reinterpret_cast<DetachedScheduler*>(sched)->dont_make_reusable_sockets = true;
+#endif
+}
+
+SOUP_CEXPORT bool Scheduler_isActive(void* sched)
+{
+#if SOUP_WASM
+	return false;
+#else
+	return reinterpret_cast<DetachedScheduler*>(sched)->isActive();
+#endif
+}
+
+SOUP_CEXPORT void Scheduler_add(void* sched, void* spWorker)
+{
+#if !SOUP_WASM
+	reinterpret_cast<DetachedScheduler*>(sched)->addWorker(SharedPtr<Worker>(*reinterpret_cast<SharedPtr<Worker>*>(spWorker)));
+#endif
 }
 
 // Totp

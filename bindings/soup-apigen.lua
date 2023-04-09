@@ -32,6 +32,32 @@ soup = {
 			libsoup:call("endLifetime", self.addr)
 		end,
 	},
+	HttpRequest = {
+		__name = "soup.HttpRequest",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		new = function(uri)
+			return initClass(soup.HttpRequest, { addr = libsoup:call("HttpRequest_new", uri) })
+		end,
+		addHeader = function(self, key, value)
+			libsoup:call("HttpRequest_addHeader", self.addr, key, value)
+		end,
+		setPayload = function(self, data)
+			libsoup:call("HttpRequest_setPayload", self.addr, data)
+		end,
+	},
+	HttpRequestTask = {
+		__name = "soup.HttpRequestTask",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		newFromRequest = function(sched, hr)
+			assert(getmetatable(sched) == soup.Scheduler)
+			assert(getmetatable(hr) == soup.HttpRequest)
+			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromRequest", sched.addr, hr.addr) })
+		end,
+	},
 	Totp = {
 		__name = "soup.Totp",
 		__gc = function(self)
@@ -49,6 +75,25 @@ soup = {
 		end,
 		getValue = function(self)
 			return libsoup:call("Totp_getValue", self.addr)
+		end,
+	},
+	Scheduler = {
+		__name = "soup.Scheduler",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		new = function()
+			return initClass(soup.Scheduler, { addr = libsoup:call("Scheduler_new") })
+		end,
+		setDontMakeReusableSockets = function(self)
+			libsoup:call("Scheduler_setDontMakeReusableSockets", self.addr)
+		end,
+		add = function(self, spWorker)
+			assert(getmetatable(spWorker) == soup.HttpRequestTask)
+			libsoup:call("Scheduler_add", self.addr, spWorker.addr)
+		end,
+		isActive = function(self)
+			return 0 ~= libsoup:call("Scheduler_isActive", self.addr)
 		end,
 	},
 }

@@ -6,7 +6,7 @@ $apinamespaces = [];
 
 function apiIsPrimitiveType(string $type): bool
 {
-	return $type == "int" || $type == "string";
+	return $type == "bool" || $type == "int" || $type == "string";
 }
 
 class ApiFuncArg

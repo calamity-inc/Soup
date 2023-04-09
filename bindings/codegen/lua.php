@@ -108,7 +108,16 @@ function namespaceFuncs(ApiNamespace $t)
 				}
 			}
 		}
-		if (!apiIsPrimitiveType($func->ret))
+		if ($func->ret == "void")
+		{
+			echo "\t\t\tlibsoup:call(\"{$func->name}\"".funcargs($t, $func).")\n";
+		}
+		else if ($func->ret == "bool")
+		{
+			// 0 is a truthy value in Lua, so we need to "convert" it
+			echo "\t\t\treturn 0 ~= libsoup:call(\"{$func->name}\"".funcargs($t, $func).")\n";
+		}
+		else if (!apiIsPrimitiveType($func->ret))
 		{
 			echo "\t\t\treturn initClass(soup.{$func->ret}, { addr = libsoup:call(\"{$func->name}\"".funcargs($t, $func).") })\n";
 		}

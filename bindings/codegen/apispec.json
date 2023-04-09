@@ -1,10 +1,24 @@
 {
 	"classes": {
 		"stdstring": {},
+		"HttpRequest": {
+			"new": "HttpRequest_new",
+			"addHeader": "HttpRequest_addHeader",
+			"setPayload": "HttpRequest_setPayload"
+		},
+		"HttpRequestTask": {
+			"newFromRequest": "HttpRequestTask_newFromRequest"
+		},
 		"Totp": {
 			"new": "Totp_new",
 			"getQrCodeUri": "Totp_getQrCodeUri",
 			"getValue": "Totp_getValue"
+		},
+		"Scheduler": {
+			"new": "Scheduler_new",
+			"setDontMakeReusableSockets": "Scheduler_setDontMakeReusableSockets",
+			"add": "Scheduler_add",
+			"isActive": "Scheduler_isActive"
 		}
 	},
 	"namespaces": {
@@ -16,6 +30,26 @@
 		"Hotp_generateSecret": [
 			"stdstring",
 			["int", "bytes", 16]
+		],
+		"HttpRequest_new": [
+			"HttpRequest",
+			["string", "uri"]
+		],
+		"HttpRequest_addHeader": [
+			"void",
+			["HttpRequest", "x"],
+			["string", "key"],
+			["string", "value"]
+		],
+		"HttpRequest_setPayload": [
+			"void",
+			["HttpRequest", "x"],
+			["string", "data"]
+		],
+		"HttpRequestTask_newFromRequest": [
+			"HttpRequestTask",
+			["Scheduler", "sched"],
+			["HttpRequest", "hr"]
 		],
 		"Totp_new": [
 			"Totp",
@@ -30,6 +64,22 @@
 		"Totp_getValue": [
 			"int",
 			["Totp", "x"]
+		],
+		"Scheduler_new": [
+			"Scheduler"
+		],
+		"Scheduler_setDontMakeReusableSockets": [
+			"void",
+			["Scheduler", "sched"]
+		],
+		"Scheduler_add": [
+			"void",
+			["Scheduler", "sched"],
+			["HttpRequestTask", "spWorker"]
+		],
+		"Scheduler_isActive": [
+			"bool",
+			["Scheduler", "sched"]
 		]
 	}
 }

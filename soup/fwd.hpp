@@ -126,6 +126,7 @@ namespace soup
 
 	// net.web
 	class HttpRequest;
+	class HttpRequestTask;
 	struct HttpResponse;
 	struct Uri;
 

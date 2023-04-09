@@ -14,6 +14,7 @@
 	typedef void Bigint;
 	typedef void Canvas;
 	typedef void cbResult;
+	typedef void HttpRequest;
 	typedef void KeyGenId;
 	typedef void Mixed;
 	typedef void QrCode;
@@ -57,6 +58,12 @@ SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x);
 SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
 // Hotp
 SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes);
+// HttpRequest
+SOUP_CEXPORT HttpRequest* HttpRequest_new(const char* uri);
+SOUP_CEXPORT void HttpRequest_addHeader(HttpRequest* x, const char* key, const char* value);
+SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data);
+// HttpRequestTask
+SOUP_CEXPORT void* HttpRequestTask_newFromRequest(void* sched, const HttpRequest* hr);
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);
@@ -75,6 +82,11 @@ SOUP_CEXPORT Canvas* QrCode_toNewCanvas(const QrCode* x, unsigned int border, bo
 SOUP_CEXPORT const Bigint* RsaKeypair_getN(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x);
+// Scheduler
+SOUP_CEXPORT void* Scheduler_new();
+SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(void* sched);
+SOUP_CEXPORT bool Scheduler_isActive(void* sched);
+SOUP_CEXPORT void Scheduler_add(void* sched, void* spWorker);
 // Totp
 SOUP_CEXPORT Totp* Totp_new(const stdstring* secret);
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);
