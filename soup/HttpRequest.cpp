@@ -73,6 +73,11 @@ namespace soup
 
 	void HttpRequest::setPayload(std::string payload)
 	{
+		if (joaat::hash(method) == joaat::hash("GET"))
+		{
+			method = ObfusString("POST").str();
+		}
+
 		header_fields.emplace(ObfusString("Content-Length"), std::to_string(payload.size()));
 		body = std::move(payload);
 	}
