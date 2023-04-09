@@ -60,7 +60,9 @@ namespace soup
 				connector.destroy();
 				if (shouldRecycle())
 				{
-					if (getScheduler().findReusableSocketForHost(hr.getHost()))
+					if (Scheduler::get()->dont_make_reusable_sockets
+						|| getScheduler().findReusableSocketForHost(hr.getHost())
+						)
 					{
 						hr.setClose();
 					}
