@@ -32,6 +32,7 @@ SOUP_CEXPORT void endScope();
 SOUP_CEXPORT void broadenScope(void* inst);
 SOUP_CEXPORT void endLifetime(void* inst);
 SOUP_CEXPORT const char* tryCatch(void_func_t f);
+SOUP_CEXPORT void throwException(const char* msg);
 // base32
 SOUP_CEXPORT const char* base32_encode(const stdstring* x, bool pad);
 SOUP_CEXPORT stdstring* base32_decode(const char* x);

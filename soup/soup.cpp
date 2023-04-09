@@ -82,6 +82,11 @@ SOUP_CEXPORT const char* tryCatch(void_func_t f)
 	return nullptr;
 }
 
+SOUP_CEXPORT void throwException(const char* msg)
+{
+	throw Exception(msg);
+}
+
 // base32
 
 SOUP_CEXPORT const char* base32_encode(const stdstring* x, bool pad)
