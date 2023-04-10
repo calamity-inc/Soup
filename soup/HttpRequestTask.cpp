@@ -21,6 +21,7 @@ namespace soup
 				}
 				else
 				{
+					sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
 					state = AWAIT_RESPONSE;
 					sendRequest();
 				}
