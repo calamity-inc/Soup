@@ -29,7 +29,7 @@ namespace soup
 				{
 					if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
 					{
-						setState(WAIT_TO_REUSE);
+						state = WAIT_TO_REUSE;
 					}
 					else
 					{
@@ -40,7 +40,7 @@ namespace soup
 					break;
 				}
 			}
-			cannotRecycle();
+			cannotRecycle(); // transition to CONNECTING state
 			break;
 
 		case WAIT_TO_REUSE:

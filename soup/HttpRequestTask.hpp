@@ -3,7 +3,7 @@
 #include "base.hpp"
 #if !SOUP_WASM
 
-#include "StateMachineTask.hpp"
+#include "Task.hpp"
 
 #include <optional>
 
@@ -15,10 +15,10 @@
 
 namespace soup
 {
-	class HttpRequestTask : public StateMachineTask
+	class HttpRequestTask : public Task
 	{
 	public:
-		enum State : state_t
+		enum State : uint8_t
 		{
 			START = 0,
 			WAIT_TO_REUSE,
@@ -26,6 +26,7 @@ namespace soup
 			AWAIT_RESPONSE,
 		};
 
+		State state = START;
 		HttpRequest hr;
 		DelayedCtor<netConnectTask> connector;
 		SharedPtr<Socket> sock;
