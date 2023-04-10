@@ -14,17 +14,12 @@ namespace soup
 {
 	struct dnsLookupWrapperTask : public Task
 	{
-		struct State
-		{
-			bool done = false;
-			std::vector<UniquePtr<dnsRecord>> res;
-		};
-
 		UniquePtr<dnsLookupTask> subtask;
-		State* state;
+		bool done = false;
+		std::vector<UniquePtr<dnsRecord>> res;
 
-		dnsLookupWrapperTask(UniquePtr<dnsLookupTask>&& subtask, State* state)
-			: subtask(std::move(subtask)), state(state)
+		dnsLookupWrapperTask(UniquePtr<dnsLookupTask>&& subtask)
+			: subtask(std::move(subtask))
 		{
 		}
 
@@ -32,8 +27,8 @@ namespace soup
 		{
 			if (subtask->tickUntilDone())
 			{
-				state->res = std::move(subtask->res);
-				state->done = true;
+				res = std::move(subtask->res);
+				done = true;
 				setWorkDone();
 			}
 		}
@@ -43,13 +38,12 @@ namespace soup
 	{
 		if (keep_alive_sched)
 		{
-			auto state = soup::make_unique<dnsLookupWrapperTask::State>(); // Stack allocation wouldn't work across threads.
-			keep_alive_sched->add<dnsLookupWrapperTask>(makeLookupTask(*keep_alive_sched, qtype, name), state);
+			auto task = keep_alive_sched->add<dnsLookupWrapperTask>(makeLookupTask(*keep_alive_sched, qtype, name));
 			do
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			} while (!state->done);
-			std::vector<UniquePtr<dnsRecord>> res = std::move(state->res);
+			} while (!task->done);
+			std::vector<UniquePtr<dnsRecord>> res = std::move(task->res);
 			return res;
 		}
 		else
