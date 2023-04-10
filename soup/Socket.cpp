@@ -874,7 +874,8 @@ namespace soup
 #if LOGGING
 				if (content_type == TlsContentType::alert)
 				{
-					std::string msg = "Remote closing connection with ";
+					std::string msg = s.toString();
+					msg.append(" - Remote closing connection with ");
 					if (data.at(0) == 2)
 					{
 						msg.append("fatal ");
