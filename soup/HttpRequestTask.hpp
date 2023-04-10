@@ -3,7 +3,7 @@
 #include "base.hpp"
 #if !SOUP_WASM
 
-#include "SchedulerAwareTask.hpp"
+#include "Task.hpp"
 
 #include <optional>
 
@@ -15,7 +15,7 @@
 
 namespace soup
 {
-	class HttpRequestTask : public SchedulerAwareTask
+	class HttpRequestTask : public Task
 	{
 	public:
 		enum State : uint8_t

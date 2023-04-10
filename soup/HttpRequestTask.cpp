@@ -7,7 +7,7 @@
 namespace soup
 {
 	HttpRequestTask::HttpRequestTask(Scheduler& sched, HttpRequest&& _hr)
-		: SchedulerAwareTask(sched), hr(std::move(_hr))
+		: hr(std::move(_hr))
 	{
 		if (shouldRecycle())
 		{
@@ -57,12 +57,12 @@ namespace soup
 		case CONNECTING:
 			if (connector->tickUntilDone())
 			{
-				sock = connector->onDone(getScheduler());
+				sock = connector->onDone(*Scheduler::get());
 				connector.destroy();
 				if (shouldRecycle())
 				{
 					if (Scheduler::get()->dont_make_reusable_sockets
-						|| getScheduler().findReusableSocketForHost(hr.getHost())
+						|| Scheduler::get()->findReusableSocketForHost(hr.getHost())
 						)
 					{
 						hr.setClose();
@@ -108,7 +108,7 @@ namespace soup
 	void HttpRequestTask::cannotRecycle()
 	{
 		state = CONNECTING;
-		connector.construct(getScheduler(), hr.getHost(), hr.port);
+		connector.construct(*Scheduler::get(), hr.getHost(), hr.port);
 	}
 
 	void HttpRequestTask::sendRequest()

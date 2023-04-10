@@ -521,7 +521,6 @@
     <ClInclude Include="ReuseTag.hpp" />
     <ClInclude Include="Rgba.hpp" />
     <ClInclude Include="RgbaCanvas.hpp" />
-    <ClInclude Include="SchedulerAwareTask.hpp" />
     <ClInclude Include="SchedulerStats.hpp" />
     <ClInclude Include="StateMachineTask.hpp" />
     <ClInclude Include="Svg.hpp" />

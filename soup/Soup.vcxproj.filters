@@ -1224,9 +1224,6 @@
     <ClInclude Include="DetachedScheduler.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="SchedulerAwareTask.hpp">
-      <Filter>task</Filter>
-    </ClInclude>
     <ClInclude Include="netConfig.hpp">
       <Filter>net</Filter>
     </ClInclude>

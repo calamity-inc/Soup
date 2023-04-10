@@ -1,23 +1,24 @@
 #pragma once
 
-#include "SchedulerAwareTask.hpp"
+#include "Task.hpp"
+
+#include "Scheduler.hpp"
 
 namespace soup
 {
-	struct SchedulerStats : public SchedulerAwareTask
+	struct SchedulerStats : public Task
 	{
 		size_t num_workers;
 		size_t num_sockets;
 
-		SchedulerStats(Scheduler& sched)
-			: SchedulerAwareTask(sched)
+		SchedulerStats()
 		{
 		}
 
 		void onTick() final
 		{
-			num_workers = getScheduler().getNumWorkers();
-			num_sockets = getScheduler().getNumSockets();
+			num_workers = Scheduler::get()->getNumWorkers();
+			num_sockets = Scheduler::get()->getNumSockets();
 		}
 	};
 }
