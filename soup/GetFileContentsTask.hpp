@@ -13,7 +13,7 @@ namespace soup
 		std::string contents;
 		DelayedCtor<HttpRequestTask> http;
 
-		GetFileContentsTask(Scheduler& sched, const Uri& uri)
+		GetFileContentsTask(const Uri& uri)
 		{
 			if (uri.isFile())
 			{
@@ -22,7 +22,7 @@ namespace soup
 			}
 			else if (uri.isHttp())
 			{
-				http.construct(sched, uri);
+				http.construct(uri);
 			}
 			else
 			{

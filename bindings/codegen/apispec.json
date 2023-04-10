@@ -48,7 +48,6 @@
 		],
 		"HttpRequestTask_newFromRequest": [
 			"HttpRequestTask",
-			["Scheduler", "sched"],
 			["HttpRequest", "hr"]
 		],
 		"Totp_new": [

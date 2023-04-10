@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Task.hpp"
+
 namespace soup
 {
 	//template <typename Task = Task>

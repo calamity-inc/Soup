@@ -38,7 +38,7 @@ namespace soup
 	{
 		if (keep_alive_sched)
 		{
-			auto task = keep_alive_sched->add<dnsLookupWrapperTask>(makeLookupTask(*keep_alive_sched, qtype, name));
+			auto task = keep_alive_sched->add<dnsLookupWrapperTask>(makeLookupTask(qtype, name));
 			do
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -62,14 +62,14 @@ namespace soup
 	{
 		DelayedCtor<HttpRequestTask> http;
 
-		dnsHttpLookupTask(Scheduler& sched, IpAddr&& server, dnsType qtype, const std::string& name)
+		dnsHttpLookupTask(IpAddr&& server, dnsType qtype, const std::string& name)
 		{
 			std::string url = "https://";
 			url.append(server.toString());
 			url.append("/dns-query?dns=");
 			url.append(base64::urlEncode(dnsRawResolver::getQuery(qtype, name)));
 
-			http.construct(sched, Uri(url));
+			http.construct(Uri(url));
 		}
 
 		void onTick() final
@@ -85,11 +85,11 @@ namespace soup
 		}
 	};
 
-	UniquePtr<dnsLookupTask> dnsHttpResolver::makeLookupTask(Scheduler& sched, dnsType qtype, const std::string& name) const
+	UniquePtr<dnsLookupTask> dnsHttpResolver::makeLookupTask(dnsType qtype, const std::string& name) const
 	{
 		IpAddr server;
 		SOUP_ASSERT(server.fromString(this->server));
-		return soup::make_unique<dnsHttpLookupTask>(sched, std::move(server), qtype, name);
+		return soup::make_unique<dnsHttpLookupTask>(std::move(server), qtype, name);
 	}
 }
 

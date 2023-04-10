@@ -214,12 +214,12 @@ SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data)
 
 // HttpRequestTask
 
-SOUP_CEXPORT void* HttpRequestTask_newFromRequest(void* sched, const HttpRequest* hr)
+SOUP_CEXPORT void* HttpRequestTask_newFromRequest(const HttpRequest* hr)
 {
 #if SOUP_WASM
 	return nullptr;
 #else
-	return heap.add(new SharedPtr<HttpRequestTask>(new HttpRequestTask(*reinterpret_cast<DetachedScheduler*>(sched), HttpRequest(*hr))));
+	return heap.add(new SharedPtr<HttpRequestTask>(new HttpRequestTask(HttpRequest(*hr))));
 #endif
 }
 

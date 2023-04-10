@@ -6,33 +6,13 @@
 
 namespace soup
 {
-	HttpRequestTask::HttpRequestTask(Scheduler& sched, HttpRequest&& _hr)
+	HttpRequestTask::HttpRequestTask(HttpRequest&& _hr)
 		: hr(std::move(_hr))
 	{
-		if (shouldRecycle())
-		{
-			hr.setKeepAlive();
-			sock = sched.findReusableSocketForHost(hr.getHost());
-			if (sock)
-			{
-				if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
-				{
-					state = WAIT_TO_REUSE;
-				}
-				else
-				{
-					sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
-					state = AWAIT_RESPONSE;
-					sendRequest();
-				}
-				return;
-			}
-		}
-		cannotRecycle();
 	}
 
-	HttpRequestTask::HttpRequestTask(Scheduler& sched, const Uri& uri)
-		: HttpRequestTask(sched, HttpRequest(uri))
+	HttpRequestTask::HttpRequestTask(const Uri& uri)
+		: HttpRequestTask(HttpRequest(uri))
 	{
 	}
 
@@ -40,6 +20,29 @@ namespace soup
 	{
 		switch (state)
 		{
+		case START:
+			if (shouldRecycle())
+			{
+				hr.setKeepAlive();
+				sock = Scheduler::get()->findReusableSocketForHost(hr.getHost());
+				if (sock)
+				{
+					if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
+					{
+						setState(WAIT_TO_REUSE);
+					}
+					else
+					{
+						sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
+						state = AWAIT_RESPONSE;
+						sendRequest();
+					}
+					break;
+				}
+			}
+			cannotRecycle();
+			break;
+
 		case WAIT_TO_REUSE:
 			if (sock->isWorkDoneOrClosed())
 			{
@@ -108,7 +111,7 @@ namespace soup
 	void HttpRequestTask::cannotRecycle()
 	{
 		state = CONNECTING;
-		connector.construct(*Scheduler::get(), hr.getHost(), hr.port);
+		connector.construct(hr.getHost(), hr.port);
 	}
 
 	void HttpRequestTask::sendRequest()

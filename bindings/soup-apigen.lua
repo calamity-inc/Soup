@@ -52,10 +52,9 @@ soup = {
 		__gc = function(self)
 			libsoup:call("endLifetime", self.addr)
 		end,
-		newFromRequest = function(sched, hr)
-			assert(getmetatable(sched) == soup.Scheduler)
+		newFromRequest = function(hr)
 			assert(getmetatable(hr) == soup.HttpRequest)
-			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromRequest", sched.addr, hr.addr) })
+			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromRequest", hr.addr) })
 		end,
 	},
 	Totp = {

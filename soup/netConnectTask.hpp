@@ -28,7 +28,7 @@ namespace soup
 		bool ipv6_lookup = false;
 
 	public:
-		netConnectTask(Scheduler& sched, const std::string& host, uint16_t port);
+		netConnectTask(const std::string& host, uint16_t port);
 
 		netConnectTask(const IpAddr& addr, uint16_t port)
 		{
