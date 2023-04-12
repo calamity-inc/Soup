@@ -2,12 +2,15 @@
 	"classes": {
 		"stdstring": {},
 		"HttpRequest": {
+			"__parent": "MimeMessage",
 			"new": "HttpRequest_new",
-			"addHeader": "HttpRequest_addHeader",
 			"setPayload": "HttpRequest_setPayload"
 		},
 		"HttpRequestTask": {
 			"newFromRequest": "HttpRequestTask_newFromRequest"
+		},
+		"MimeMessage": {
+			"addHeader": "MimeMessage_addHeader"
 		},
 		"Totp": {
 			"new": "Totp_new",
@@ -35,12 +38,6 @@
 			"HttpRequest",
 			["string", "uri"]
 		],
-		"HttpRequest_addHeader": [
-			"void",
-			["HttpRequest", "x"],
-			["string", "key"],
-			["string", "value"]
-		],
 		"HttpRequest_setPayload": [
 			"void",
 			["HttpRequest", "x"],
@@ -49,6 +46,12 @@
 		"HttpRequestTask_newFromRequest": [
 			"HttpRequestTask",
 			["HttpRequest", "hr"]
+		],
+		"MimeMessage_addHeader": [
+			"void",
+			["MimeMessage", "x"],
+			["string", "key"],
+			["string", "value"]
 		],
 		"Totp_new": [
 			"Totp",

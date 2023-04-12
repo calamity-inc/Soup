@@ -57,7 +57,6 @@ class ApiNamespace
 
 	public static function fromApispec(array $in): array
 	{
-		global $apifuncs;
 		$out = [];
 		foreach ($in as $name => $funcs)
 		{
@@ -66,20 +65,25 @@ class ApiNamespace
 			$type->methods = [];
 			foreach ($funcs as $fname => $apifunc)
 			{
-				if (!array_key_exists($apifunc, $apifuncs))
-				{
-					echo "{$name}'s {$fname} method maps to non-existent function.\n";
-					continue;
-				}
-				$type->methods[$fname] = $apifuncs[$apifunc];
+				$type->mapMethod($fname, $apifunc);
 			}
-			$type->sanityCheck();
 			$out[$name] = $type;
 		}
 		return $out;
 	}
 
-	protected function sanityCheck(): void
+	protected function mapMethod(string $fname, string $apifunc): void
+	{
+		global $apifuncs;
+		if (!array_key_exists($apifunc, $apifuncs))
+		{
+			echo "{$this->name}'s {$fname} method maps to non-existent function.\n";
+			return;
+		}
+		$this->methods[$fname] = $apifuncs[$apifunc];
+	}
+
+	public function sanityCheck(): void
 	{
 	}
 
@@ -93,9 +97,29 @@ class ApiNamespace
 
 class ApiClass extends ApiNamespace
 {
-	protected function sanityCheck(): void
+	public string $parent = "";
+
+	protected function mapMethod(string $fname, string $apifunc): void
+	{
+		if ($fname == "__parent")
+		{
+			$this->parent = $apifunc;
+			return;
+		}
+		parent::mapMethod($fname, $apifunc);
+	}
+
+	public function sanityCheck(): void
 	{
 		parent::sanityCheck();
+		if ($this->parent)
+		{
+			global $apiclasses;
+			if (!array_key_exists($this->parent, $apiclasses))
+			{
+				echo "{$this->name} has non-existent parent: {$this->parent}\n";
+			}
+		}
 		if (array_key_exists("new", $this->methods))
 		{
 			$func = $this->methods["new"];
@@ -104,6 +128,33 @@ class ApiClass extends ApiNamespace
 				echo "{$this->name}'s {$name} method (which maps to {$func->name}) returns different type: {$func->ret}\n";
 			}
 		}
+	}
+
+	public function getHierarchy(): array
+	{
+		global $apiclasses;
+		$arr = [ $this ];
+		for ($name = $this->parent; $name; )
+		{
+			$c = $apiclasses[$name];
+			array_push($arr, $c);
+			$name = $c->parent;
+		}
+		return $arr;
+	}
+
+	public function getCompatibleTypes(): array
+	{
+		global $apiclasses;
+		$arr = [ $this ];
+		foreach ($apiclasses as $c)
+		{
+			if ($c->parent == $this->name)
+			{
+				$arr = array_merge($arr, $c->getCompatibleTypes());
+			}
+		}
+		return $arr;
 	}
 }
 
@@ -126,6 +177,16 @@ foreach($apispec["functions"] as $name => $funcspec)
 
 $apiclasses = ApiClass::fromApispec($apispec["classes"]);
 $apinamespaces = ApiNamespace::fromApispec($apispec["namespaces"]);
+
+foreach ($apiclasses as $c)
+{
+	$c->sanityCheck();
+}
+
+foreach ($apinamespaces as $n)
+{
+	$n->sanityCheck();
+}
 
 foreach ($apifuncs as $func)
 {

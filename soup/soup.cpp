@@ -28,6 +28,7 @@ typedef void (*void_func_t)();
 #include "HttpRequestTask.hpp"
 #include "InquiryLang.hpp"
 #include "KeyGenId.hpp"
+#include "MimeMessage.hpp"
 #include "Mixed.hpp"
 #include "QrCode.hpp"
 #include "rsa.hpp"
@@ -198,13 +199,6 @@ SOUP_CEXPORT HttpRequest* HttpRequest_new(const char* uri)
 #endif
 }
 
-SOUP_CEXPORT void HttpRequest_addHeader(HttpRequest* x, const char* key, const char* value)
-{
-#if !SOUP_WASM
-	x->header_fields.emplace(key, value);
-#endif
-}
-
 SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data)
 {
 #if !SOUP_WASM
@@ -259,6 +253,13 @@ SOUP_CEXPORT stdstring* KeyGenId_toSeedsExport(const KeyGenId* x)
 SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x)
 {
 	return heap.add(x->getKeypair());
+}
+
+// MimeMessage
+
+SOUP_CEXPORT void MimeMessage_addHeader(MimeMessage* x, const char* key, const char* value)
+{
+	x->header_fields.emplace(key, value);
 }
 
 // Mixed

@@ -40,11 +40,11 @@ soup = {
 		new = function(uri)
 			return initClass(soup.HttpRequest, { addr = libsoup:call("HttpRequest_new", uri) })
 		end,
-		addHeader = function(self, key, value)
-			libsoup:call("HttpRequest_addHeader", self.addr, key, value)
-		end,
 		setPayload = function(self, data)
 			libsoup:call("HttpRequest_setPayload", self.addr, data)
+		end,
+		addHeader = function(self, key, value)
+			libsoup:call("MimeMessage_addHeader", self.addr, key, value)
 		end,
 	},
 	HttpRequestTask = {
@@ -55,6 +55,15 @@ soup = {
 		newFromRequest = function(hr)
 			assert(getmetatable(hr) == soup.HttpRequest)
 			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromRequest", hr.addr) })
+		end,
+	},
+	MimeMessage = {
+		__name = "soup.MimeMessage",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		addHeader = function(self, key, value)
+			libsoup:call("MimeMessage_addHeader", self.addr, key, value)
 		end,
 	},
 	Totp = {

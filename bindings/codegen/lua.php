@@ -73,6 +73,7 @@ function funcargs(ApiNamespace $t, ApiFunc $func): string
 
 function namespaceFuncs(ApiNamespace $t)
 {
+	global $apiclasses;
 	foreach ($t->methods as $name => $func)
 	{
 		echo "\t\t$name = function(";
@@ -104,7 +105,21 @@ function namespaceFuncs(ApiNamespace $t)
 			{
 				if ($i != 0 || $t->isStatic($func))
 				{
-					echo "\t\t\tassert(getmetatable({$arg->name}) == soup.{$arg->type})\n";
+					echo "\t\t\tassert(";
+					$first = true;
+					foreach ($apiclasses[$arg->type]->getCompatibleTypes() as $ct)
+					{
+						if ($first)
+						{
+							$first = false;
+						}
+						else
+						{
+							echo " || ";
+						}
+						echo "getmetatable({$arg->name}) == soup.{$ct->name}";
+					}
+					echo ")\n";
 				}
 			}
 		}
@@ -148,7 +163,10 @@ foreach ($apinamespaces as $t)
 foreach ($apiclasses as $t)
 {
 	beginClass($t);
-	namespaceFuncs($t);
+	foreach ($t->getHierarchy() as $t2)
+	{
+		namespaceFuncs($t2);
+	}
 	endNamespace($t);
 }
 

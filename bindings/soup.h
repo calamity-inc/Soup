@@ -16,6 +16,7 @@
 	typedef void cbResult;
 	typedef void HttpRequest;
 	typedef void KeyGenId;
+	typedef void MimeMessage;
 	typedef void Mixed;
 	typedef void QrCode;
 	typedef void RsaKeypair;
@@ -60,7 +61,6 @@ SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
 SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes);
 // HttpRequest
 SOUP_CEXPORT HttpRequest* HttpRequest_new(const char* uri);
-SOUP_CEXPORT void HttpRequest_addHeader(HttpRequest* x, const char* key, const char* value);
 SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data);
 // HttpRequestTask
 SOUP_CEXPORT void* HttpRequestTask_newFromRequest(const HttpRequest* hr);
@@ -72,6 +72,8 @@ SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, const stds
 SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits);
 SOUP_CEXPORT stdstring* KeyGenId_toSeedsExport(const KeyGenId* x);
 SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x);
+// MimeMessage
+SOUP_CEXPORT void MimeMessage_addHeader(MimeMessage* x, const char* key, const char* value);
 // Mixed
 SOUP_CEXPORT bool Mixed_isCanvas(const Mixed* x);
 SOUP_CEXPORT Canvas* Mixed_getCanvas(const Mixed* x);
