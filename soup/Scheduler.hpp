@@ -47,13 +47,13 @@ namespace soup
 		template <typename T, SOUP_RESTRICT(std::is_same_v<T, Socket>)>
 		SharedPtr<T> addSocket(T&& sock) noexcept
 		{
-			return addSocket(make_shared<Socket>(std::move(sock)));
+			return addSocket(soup::make_shared<Socket>(std::move(sock)));
 		}
 
 		template <typename T, typename...Args>
 		SharedPtr<T> add(Args&&...args)
 		{
-			return addWorker(make_shared<T>(std::forward<Args>(args)...));
+			return addWorker(soup::make_shared<T>(std::forward<Args>(args)...));
 		}
 
 		void run();
