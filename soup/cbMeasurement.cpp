@@ -117,8 +117,8 @@ namespace soup
 		case CB_G: return 0.001;
 		case CB_KG: break; // return 1.0;
 		case CB_OUNCES: return 0.02835;
-		case CB_POUNDS: return 0.454;
-		case CB_STONES: return 6.356;
+		case CB_POUNDS: return 0.4535923;
+		case CB_STONES: return 6.3502931;
 		case CB_HUNDREDWEIGHTS: return 50.8;
 		case CB_USTONS: return 907.185;
 		case CB_METRICTONS: return 1000;
