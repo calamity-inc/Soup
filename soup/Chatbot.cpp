@@ -39,12 +39,12 @@ namespace soup
 		cmds.emplace_back(soup::make_unique<cbCmdDelete>());
 
 		// Conversational
+		cmds.emplace_back(soup::make_unique<cbCmdOpinionFollowup>()); // This is quite a specific trigger, should be above cbCmdCapabilities to avoid conflict with "what do you" trigger.
 		cmds.emplace_back(soup::make_unique<cbCmdGreeting>());
 		cmds.emplace_back(soup::make_unique<cbCmdHowAreYou>());
 		cmds.emplace_back(soup::make_unique<cbCmdCapabilities>());
 		cmds.emplace_back(soup::make_unique<cbCmdFarewell>());
 		cmds.emplace_back(soup::make_unique<cbCmdOpinion>());
-		cmds.emplace_back(soup::make_unique<cbCmdOpinionFollowup>());
 		cmds.emplace_back(soup::make_unique<cbCmdThanks>());
 
 		return cmds;
