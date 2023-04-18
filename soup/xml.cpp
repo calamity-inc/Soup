@@ -1,5 +1,6 @@
 #include "xml.hpp"
 
+#include "Exception.hpp"
 #include "StringBuilder.hpp"
 #include "UniquePtr.hpp"
 
@@ -7,6 +8,52 @@
 
 namespace soup
 {
+	bool XmlNode::isTag() const noexcept
+	{
+		return !is_text;
+	}
+
+	bool XmlNode::isText() const noexcept
+	{
+		return is_text;
+	}
+
+	XmlTag& XmlNode::asTag()
+	{
+		if (!isTag())
+		{
+			throw Exception("XmlNode has unexpected type");
+		}
+		return *static_cast<XmlTag*>(this);
+	}
+
+	XmlText& XmlNode::asText()
+	{
+		if (!isText())
+		{
+			throw Exception("XmlNode has unexpected type");
+		}
+		return *static_cast<XmlText*>(this);
+	}
+
+	const XmlTag& XmlNode::asTag() const
+	{
+		if (!isTag())
+		{
+			throw Exception("XmlNode has unexpected type");
+		}
+		return *static_cast<const XmlTag*>(this);
+	}
+
+	const XmlText& XmlNode::asText() const
+	{
+		if (!isText())
+		{
+			throw Exception("XmlNode has unexpected type");
+		}
+		return *static_cast<const XmlText*>(this);
+	}
+
 	std::string XmlTag::encode() const noexcept
 	{
 		std::string str(1, '<');

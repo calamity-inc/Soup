@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "fwd.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
@@ -17,6 +18,16 @@ namespace soup
 			: is_text(is_text)
 		{
 		}
+
+		// Type checks.
+		[[nodiscard]] bool isTag() const noexcept;
+		[[nodiscard]] bool isText() const noexcept;
+		
+		// Type casts; will throw if node is of different type.
+		[[nodiscard]] XmlTag& asTag();
+		[[nodiscard]] XmlText& asText();
+		[[nodiscard]] const XmlTag& asTag() const;
+		[[nodiscard]] const XmlText& asText() const;
 	};
 
 	struct XmlTag : public XmlNode

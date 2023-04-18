@@ -25,6 +25,7 @@ namespace soup
 	// data
 	struct Oid;
 	struct XmlTag;
+	struct XmlText;
 
 	// data.asn1
 	struct Asn1Sequence;
