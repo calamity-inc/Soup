@@ -3,7 +3,10 @@
 #include <optional>
 #include <regex>
 #include <string>
+#include <unordered_map>
 #include <vector>
+
+#include "fwd.hpp"
 
 namespace soup
 {
@@ -28,6 +31,17 @@ namespace soup
 			: name(std::move(name)), match(std::move(begin_match)), end_match(std::move(end_match)), patterns(std::move(patterns))
 		{
 		}
+	};
+
+	struct TmGrammar
+	{
+		std::vector<TmPattern> patterns{};
+		std::unordered_map<std::string, std::vector<TmPattern>> repository{};
+
+		// fromPlist(plist::parse(...).at(0)->asDict())
+		void fromPlist(const PlistDict& dict);
+
+		[[nodiscard]] static TmPattern patternFromPlist(const PlistDict& dict);
 	};
 
 	struct TmClassifiedText

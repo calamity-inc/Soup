@@ -1,7 +1,43 @@
 #include "textmate_grammar.hpp"
 
+#include "plist.hpp"
+
 namespace soup
 {
+	void TmGrammar::fromPlist(const PlistDict& dict)
+	{
+		for (const auto& e : dict.children.at("patterns")->asArray().children)
+		{
+			patterns.emplace_back(patternFromPlist(e->asDict()));
+		}
+		if (auto pr = dict.children.find("repository"); pr != dict.children.end())
+		{
+			for (const auto& e : pr->second->asDict().children)
+			{
+				for (const auto& p : e.second->asDict().children.at("patterns")->asArray().children)
+				{
+					std::vector<TmPattern> patterns{};
+					patterns.emplace_back(patternFromPlist(p->asDict()));
+					repository.emplace(e.first, std::move(patterns));
+				}
+			}
+		}
+	}
+
+	TmPattern TmGrammar::patternFromPlist(const PlistDict& dict)
+	{
+		std::string name{};
+		if (auto e = dict.children.find("name"); e != dict.children.end())
+		{
+			name = e->second->asString().data;
+		}
+		if (auto e = dict.children.find("match"); e != dict.children.end())
+		{
+			return TmPattern(std::move(name), std::regex(e->second->asString().data));
+		}
+		throw 0;
+	}
+
 	const TmPattern* TmParser::getNextMatch(const std::vector<TmPattern>& patterns) const
 	{
 		const TmPattern* best = nullptr;
