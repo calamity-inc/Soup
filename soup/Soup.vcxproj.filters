@@ -1278,6 +1278,9 @@
     <ClInclude Include="xml.hpp">
       <Filter>data\xml</Filter>
     </ClInclude>
+    <ClInclude Include="plist.hpp">
+      <Filter>data\xml</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1885,6 +1888,9 @@
       <Filter>lang</Filter>
     </ClCompile>
     <ClCompile Include="xml.cpp">
+      <Filter>data\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="plist.cpp">
       <Filter>data\xml</Filter>
     </ClCompile>
   </ItemGroup>

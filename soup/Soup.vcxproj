@@ -485,6 +485,7 @@
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="DummyTask.hpp" />
+    <ClInclude Include="plist.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
     <ClInclude Include="UniqueList.hpp" />
@@ -920,6 +921,7 @@
     <ClCompile Include="netConfig.cpp" />
     <ClCompile Include="netConnectTask.cpp" />
     <ClCompile Include="netInfo.cpp" />
+    <ClCompile Include="plist.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="rflParser.cpp" />
     <ClCompile Include="Rgba.cpp" />

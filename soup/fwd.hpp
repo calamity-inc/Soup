@@ -40,6 +40,9 @@ namespace soup
 	struct JsonString;
 
 	// data.xml
+	struct PlistDict;
+	struct PlistArray;
+	struct PlistString;
 	struct XmlTag;
 	struct XmlText;
 
