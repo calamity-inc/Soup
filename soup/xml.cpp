@@ -68,6 +68,27 @@ namespace soup
 		throw std::exception();
 	}
 
+	XmlTag* XmlTag::findTag(const std::string& name_target)
+	{
+		if (name == name_target)
+		{
+			return this;
+		}
+		XmlTag* res = nullptr;
+		for (const auto& child : children)
+		{
+			if (!child->is_text)
+			{
+				res = static_cast<XmlTag*>(child.get())->findTag(name_target);
+				if (res != nullptr)
+				{
+					break;
+				}
+			}
+		}
+		return res;
+	}
+
 	UniquePtr<XmlTag> xml::parse(const std::string& xml)
 	{
 		auto i = xml.begin();

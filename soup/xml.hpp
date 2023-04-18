@@ -34,6 +34,8 @@ namespace soup
 
 		[[nodiscard]] bool hasAttribute(const std::string& name) const noexcept;
 		[[nodiscard]] const std::string& getAttribute(const std::string& name) const;
+
+		[[nodiscard]] XmlTag* findTag(const std::string& name_target);
 	};
 
 	struct XmlText : public XmlNode
