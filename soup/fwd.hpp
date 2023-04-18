@@ -24,8 +24,6 @@ namespace soup
 
 	// data
 	struct Oid;
-	struct XmlTag;
-	struct XmlText;
 
 	// data.asn1
 	struct Asn1Sequence;
@@ -40,6 +38,10 @@ namespace soup
 	struct JsonInt;
 	struct JsonObject;
 	struct JsonString;
+
+	// data.xml
+	struct XmlTag;
+	struct XmlText;
 
 	// io.bits
 	class BitReader;

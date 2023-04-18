@@ -698,9 +698,6 @@
     <ClInclude Include="SharedLibrary.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="xml.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
     <ClInclude Include="StringBuilder.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
@@ -1278,6 +1275,9 @@
     <ClInclude Include="textmate_grammar.hpp">
       <Filter>lang</Filter>
     </ClInclude>
+    <ClInclude Include="xml.hpp">
+      <Filter>data\xml</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1625,9 +1625,6 @@
     <ClCompile Include="SharedLibrary.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="xml.cpp">
-      <Filter>data</Filter>
-    </ClCompile>
     <ClCompile Include="WebSocketConnectionEmscripten.cpp">
       <Filter>net\web\websocket</Filter>
     </ClCompile>
@@ -1887,6 +1884,9 @@
     <ClCompile Include="textmate_grammar.cpp">
       <Filter>lang</Filter>
     </ClCompile>
+    <ClCompile Include="xml.cpp">
+      <Filter>data\xml</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2092,6 +2092,9 @@
     </Filter>
     <Filter Include="os\linux">
       <UniqueIdentifier>{310e94c6-0abc-4e73-93af-75ce41ba7409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\xml">
+      <UniqueIdentifier>{f75ca3d0-fd85-4d6c-8548-f420d29ee4c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
