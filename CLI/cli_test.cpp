@@ -364,6 +364,8 @@ static void unit_data()
 
 		// Handle multiple tags by implicitly creating a <body> tag
 		tag = xml::parse("<p>foo</p><p>bar</p>"); assert(tag->encode() == "<body><p>foo</p><p>bar</p></body>");
+
+		tag = xml::parse("<p>&amp;&lt;&gt;</p>"); assert(tag->encode() == "<p>&amp;&lt;&gt;</p>");
 	});
 
 	test("Endianness", []

@@ -1,6 +1,7 @@
 #include "xml.hpp"
 
 #include "Exception.hpp"
+#include "string.hpp"
 #include "StringBuilder.hpp"
 #include "UniquePtr.hpp"
 
@@ -77,7 +78,11 @@ namespace soup
 			if (child->is_text)
 			{
 				//str.push_back('{');
-				str.append(reinterpret_cast<XmlText*>(child.get())->contents);
+				std::string contents = reinterpret_cast<XmlText*>(child.get())->contents;
+				string::replaceAll(contents, "&", "&amp;");
+				string::replaceAll(contents, "<", "&lt;");
+				string::replaceAll(contents, ">", "&gt;");
+				str.append(contents);
 				//str.push_back('}');
 			}
 			else
@@ -134,6 +139,14 @@ namespace soup
 			}
 		}
 		return res;
+	}
+
+	XmlText::XmlText(std::string&& contents) noexcept
+		: XmlNode(true), contents(std::move(contents))
+	{
+		string::replaceAll(this->contents, "&amp;", "&");
+		string::replaceAll(this->contents, "&lt;", "<");
+		string::replaceAll(this->contents, "&gt;", ">");
 	}
 
 	UniquePtr<XmlTag> xml::parse(const std::string& xml)

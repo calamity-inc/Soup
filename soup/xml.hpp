@@ -58,10 +58,7 @@ namespace soup
 		{
 		}
 
-		XmlText(std::string&& contents) noexcept
-			: XmlNode(true), contents(std::move(contents))
-		{
-		}
+		XmlText(std::string&& contents) noexcept;
 	};
 
 	class xml
