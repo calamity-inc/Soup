@@ -28,6 +28,11 @@ namespace soup
 		bool ipv6_lookup = false;
 
 	public:
+		netConnectTask(const char* host, uint16_t port)
+			: netConnectTask(std::string(host), port)
+		{
+		}
+
 		netConnectTask(const std::string& host, uint16_t port);
 
 		netConnectTask(const IpAddr& addr, uint16_t port)
