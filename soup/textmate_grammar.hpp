@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "fwd.hpp"
+#include "StringParser.hpp"
 
 namespace soup
 {
@@ -62,30 +63,14 @@ namespace soup
 		}
 	};
 
-	class TmParser
+	class TmParser : public StringParser
 	{
 	public:
-		std::string code;
-		std::string::const_iterator it;
-
 		std::vector<TmClassifiedText> result{};
 
-		TmParser(std::string code)
-			: code(std::move(code)), it(this->code.cbegin())
-		{
-		}
+		using StringParser::StringParser;
 
 		[[nodiscard]] const TmPattern* getNextMatch(const std::vector<TmPattern>& patterns) const;
-
-		[[nodiscard]] size_t getPosition() const noexcept
-		{
-			return getPosition(it);
-		}
-
-		[[nodiscard]] size_t getPosition(std::string::const_iterator it) const noexcept
-		{
-			return it - code.cbegin();
-		}
 
 		void processPatternList(const std::vector<TmPattern>& patterns)
 		{

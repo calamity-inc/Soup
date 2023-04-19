@@ -486,6 +486,7 @@
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="plist.hpp" />
+    <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
     <ClInclude Include="UniqueList.hpp" />

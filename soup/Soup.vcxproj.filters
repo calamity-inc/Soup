@@ -1281,6 +1281,9 @@
     <ClInclude Include="plist.hpp">
       <Filter>data\xml</Filter>
     </ClInclude>
+    <ClInclude Include="StringParser.hpp">
+      <Filter>util\string</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

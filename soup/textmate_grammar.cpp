@@ -43,7 +43,7 @@ namespace soup
 		const TmPattern* best = nullptr;
 		for (const auto& pattern : patterns)
 		{
-			if (std::regex_search(it, code.cend(), pattern.res, pattern.match))
+			if (std::regex_search(it, data.cend(), pattern.res, pattern.match))
 			{
 				auto offset = pattern.res.position();
 				if (offset == 0)
