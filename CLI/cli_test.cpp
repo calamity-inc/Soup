@@ -22,6 +22,7 @@
 #include <JsonInt.hpp>
 #include <JsonObject.hpp>
 #include <JsonString.hpp>
+#include <Regex.hpp>
 #include <xml.hpp>
 
 #include <BitReader.hpp>
@@ -376,6 +377,14 @@ static void unit_data()
 		assert(Endianness::invert((uint32_t)0x78563412u) == 0x12345678u);
 		assert(Endianness::invert((uint64_t)0x1234567890ABCDEFull) == 0xEFCDAB9078563412ull);
 		assert(Endianness::invert((uint64_t)0xEFCDAB9078563412ull) == 0x1234567890ABCDEFull);
+	});
+
+	test("Regex", []
+	{
+		assert(Regex("ABC|XYZ").matches("ABC") == true);
+		assert(Regex("ABC|XYZ").matches("AB") == false);
+		assert(Regex("ABC|XYZ").matches("XYZ") == true);
+		assert(Regex("ABC|XYZ").matches("XY") == false);
 	});
 }
 

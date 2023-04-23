@@ -486,6 +486,15 @@
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="plist.hpp" />
+    <ClInclude Include="Regex.hpp" />
+    <ClInclude Include="RegexAlternative.hpp" />
+    <ClInclude Include="RegexConstraint.hpp" />
+    <ClInclude Include="RegexAnyCharConstraint.hpp" />
+    <ClInclude Include="RegexCharConstraint.hpp" />
+    <ClInclude Include="RegexGreedyOneConstraint.hpp" />
+    <ClInclude Include="RegexGroupConstraint.hpp" />
+    <ClInclude Include="RegexGroup.hpp" />
+    <ClInclude Include="RegexMatcher.hpp" />
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
@@ -924,6 +933,8 @@
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="plist.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="Regex.cpp" />
+    <ClCompile Include="RegexGroup.cpp" />
     <ClCompile Include="rflParser.cpp" />
     <ClCompile Include="Rgba.cpp" />
     <ClCompile Include="RgbaCanvas.cpp" />

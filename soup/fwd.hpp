@@ -39,6 +39,10 @@ namespace soup
 	struct JsonObject;
 	struct JsonString;
 
+	// data.regex
+	struct RegexConstraint;
+	struct RegexGroup;
+
 	// data.xml
 	struct PlistDict;
 	struct PlistArray;
