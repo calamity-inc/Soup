@@ -7,13 +7,13 @@
 
 namespace soup
 {
-	RegexGroup::RegexGroup(std::string::const_iterator& it, std::string::const_iterator end)
+	RegexGroup::RegexGroup(const ConstructorState& s)
 	{
 		RegexAlternative a{};
 		const RegexConstraint** pSuccessTransition = &initial;
 		bool force_success = false;
 		bool escape = false;
-		for (; it != end; ++it)
+		for (; s.it != s.end; ++s.it)
 		{
 			if (escape)
 			{
@@ -21,36 +21,36 @@ namespace soup
 			}
 			else
 			{
-				if (*it == '\\')
+				if (*s.it == '\\')
 				{
 					escape = true;
 					continue;
 				}
-				else if (*it == '|')
+				else if (*s.it == '|')
 				{
 					alternatives.emplace_back(std::move(a));
 					a.constraints.clear();
 					continue;
 				}
-				else if (*it == '(')
+				else if (*s.it == '(')
 				{
-					++it;
-					auto upGC = soup::make_unique<RegexGroupConstraint>(it, end);
+					++s.it;
+					auto upGC = soup::make_unique<RegexGroupConstraint>(s);
 					*pSuccessTransition = upGC->group.initial;
 					pSuccessTransition = upGC->getSuccessTransitionPointer();
 					force_success = false;
 					a.constraints.emplace_back(std::move(upGC));
-					if (it == end)
+					if (s.it == s.end)
 					{
 						break;
 					}
 					continue;
 				}
-				else if (*it == ')')
+				else if (*s.it == ')')
 				{
 					break;
 				}
-				else if (*it == '+')
+				else if (*s.it == '+')
 				{
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 					auto pModifiedConstraint = upModifiedConstraint.get();
@@ -71,7 +71,7 @@ namespace soup
 					a.constraints.back() = std::move(upGreedyConstraint);
 					continue;
 				}
-				else if (*it == '.')
+				else if (*s.it == '.')
 				{
 					auto c = a.constraints.emplace_back(soup::make_unique<RegexAnyCharConstraint>()).get();
 					*pSuccessTransition = c;
@@ -83,7 +83,7 @@ namespace soup
 			// TODO: UTF-8 mode:
 			// - implicitly capture multi-byte symbols in a non-capturing group to avoid jank with '?'
 			// - have '.' accept multi-byte symbols as a single symbol
-			auto c = a.constraints.emplace_back(soup::make_unique<RegexCharConstraint>(*it)).get();
+			auto c = a.constraints.emplace_back(soup::make_unique<RegexCharConstraint>(*s.it)).get();
 			*pSuccessTransition = c;
 			pSuccessTransition = &c->success_transition;
 			force_success = false;

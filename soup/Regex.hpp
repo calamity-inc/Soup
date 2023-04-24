@@ -9,7 +9,12 @@ namespace soup
 		RegexGroup group;
 
 		Regex(const std::string& pattern)
-			: group(pattern)
+			: Regex(pattern.cbegin(), pattern.cend())
+		{
+		}
+
+		Regex(std::string::const_iterator it, std::string::const_iterator end)
+			: group(it, end)
 		{
 		}
 

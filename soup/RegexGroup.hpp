@@ -9,22 +9,31 @@ namespace soup
 {
 	struct RegexGroup
 	{
+		struct ConstructorState
+		{
+			mutable std::string::const_iterator it;
+			std::string::const_iterator end;
+
+			ConstructorState(std::string::const_iterator it, std::string::const_iterator end)
+				: it(it), end(end)
+			{
+			}
+		};
+
 		const RegexConstraint* initial = nullptr;
 		std::vector<RegexAlternative> alternatives{};
 
-		struct NonRefTag {};
-
 		RegexGroup(const std::string& pattern)
-			: RegexGroup(pattern.cbegin(), pattern.cend(), NonRefTag{})
+			: RegexGroup(pattern.cbegin(), pattern.cend())
 		{
 		}
 
-		RegexGroup(std::string::const_iterator it, std::string::const_iterator end, NonRefTag)
-			: RegexGroup(static_cast<std::string::const_iterator&>(it), end)
+		RegexGroup(std::string::const_iterator it, std::string::const_iterator end)
+			: RegexGroup(ConstructorState(it, end))
 		{
 		}
 
-		RegexGroup(std::string::const_iterator& it, std::string::const_iterator end);
+		RegexGroup(const ConstructorState& s);
 
 		[[nodiscard]] std::string toString() const noexcept;
 	};
