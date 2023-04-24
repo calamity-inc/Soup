@@ -55,7 +55,7 @@ namespace soup
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 					auto pModifiedConstraint = upModifiedConstraint.get();
 					auto upGreedyConstraint = soup::make_unique<RegexGreedyOneConstraint>(std::move(upModifiedConstraint));
-					
+
 					// constraint --[success]-> greedy
 					*pSuccessTransition = upGreedyConstraint.get();
 
