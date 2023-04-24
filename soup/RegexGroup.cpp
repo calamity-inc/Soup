@@ -11,7 +11,6 @@ namespace soup
 	{
 		RegexAlternative a{};
 		const RegexConstraint** pSuccessTransition = &initial;
-		bool force_success = false;
 		bool escape = false;
 		for (; s.it != s.end; ++s.it)
 		{
@@ -38,7 +37,6 @@ namespace soup
 					auto upGC = soup::make_unique<RegexGroupConstraint>(s);
 					*pSuccessTransition = upGC->group.initial;
 					pSuccessTransition = upGC->getSuccessTransitionPointer();
-					force_success = false;
 					a.constraints.emplace_back(std::move(upGC));
 					if (s.it == s.end)
 					{
@@ -65,8 +63,8 @@ namespace soup
 					// greedy --[rollback]-> next-constraint
 					pSuccessTransition = &upGreedyConstraint->rollback_transition;
 
-					// If we don't have a next constraint...
-					force_success = true;
+					// If we don't have a next constraint, rollback is match success.
+					*reinterpret_cast<uintptr_t*>(pSuccessTransition) = 1;
 
 					a.constraints.back() = std::move(upGreedyConstraint);
 					continue;
@@ -76,7 +74,6 @@ namespace soup
 					auto c = a.constraints.emplace_back(soup::make_unique<RegexAnyCharConstraint>()).get();
 					*pSuccessTransition = c;
 					pSuccessTransition = &c->success_transition;
-					force_success = false;
 					continue;
 				}
 			}
@@ -86,14 +83,8 @@ namespace soup
 			auto c = a.constraints.emplace_back(soup::make_unique<RegexCharConstraint>(*s.it)).get();
 			*pSuccessTransition = c;
 			pSuccessTransition = &c->success_transition;
-			force_success = false;
 		}
 		alternatives.emplace_back(std::move(a));
-
-		if (force_success)
-		{
-			*reinterpret_cast<uintptr_t*>(pSuccessTransition) = 1;
-		}
 
 		if (alternatives.size() > 1)
 		{
