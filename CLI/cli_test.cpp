@@ -385,6 +385,11 @@ static void unit_data()
 		assert(Regex("ABC|XYZ").matches("AB") == false);
 		assert(Regex("ABC|XYZ").matches("XYZ") == true);
 		assert(Regex("ABC|XYZ").matches("XY") == false);
+
+		assert(Regex("(A|B)C").matches("AC") == true);
+		assert(Regex("(A|B)C").matches("AD") == false);
+		assert(Regex("(A|B)C").matches("BC") == true);
+		assert(Regex("(A|B)C").matches("BD") == false);
 	});
 }
 

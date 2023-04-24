@@ -13,6 +13,7 @@ namespace soup
 		{
 			mutable std::string::const_iterator it;
 			std::string::const_iterator end;
+			mutable std::vector<const RegexConstraint**> alternatives_transitions{};
 
 			ConstructorState(std::string::const_iterator it, std::string::const_iterator end)
 				: it(it), end(end)

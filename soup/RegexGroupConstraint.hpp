@@ -20,11 +20,6 @@ namespace soup
 			return group.initial;
 		}
 
-		[[nodiscard]] const RegexConstraint** getSuccessTransitionPointer() const noexcept
-		{
-			return &group.alternatives.back().constraints.back()->success_transition;
-		}
-
 		[[nodiscard]] bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept final
 		{
 			// Group constraints cannot be transitioned to, therefore this function will never be called.
