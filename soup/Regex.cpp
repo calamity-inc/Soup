@@ -1,6 +1,7 @@
 #include "Regex.hpp"
 
 #include "base.hpp"
+#include "RegexConstraintTransitionable.hpp"
 #include "RegexMatcher.hpp"
 
 #define REGEX_DEBUG_MATCH false

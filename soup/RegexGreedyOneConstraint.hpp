@@ -1,12 +1,12 @@
 #pragma once
 
-#include "RegexConstraint.hpp"
+#include "RegexConstraintTransitionable.hpp"
 
 #include "UniquePtr.hpp"
 
 namespace soup
 {
-	struct RegexGreedyOneConstraint : public RegexConstraint
+	struct RegexGreedyOneConstraint : public RegexConstraintTransitionable
 	{
 		UniquePtr<RegexConstraint> constraint;
 

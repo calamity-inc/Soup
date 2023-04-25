@@ -9,14 +9,14 @@ namespace soup
 {
 	struct TransitionsVector
 	{
-		std::vector<const RegexConstraint**> data;
+		std::vector<const RegexConstraintTransitionable**> data;
 
-		void emplace(const RegexConstraint** p)
+		void emplace(const RegexConstraintTransitionable** p)
 		{
 			data.emplace_back(p);
 		}
 
-		void setTransitionTo(const RegexConstraint* c) noexcept
+		void setTransitionTo(const RegexConstraintTransitionable* c) noexcept
 		{
 			for (const auto& p : data)
 			{
@@ -25,7 +25,7 @@ namespace soup
 			data.clear();
 		}
 
-		void discharge(std::vector<const RegexConstraint**>& outTransitions) noexcept
+		void discharge(std::vector<const RegexConstraintTransitionable**>& outTransitions) noexcept
 		{
 			for (const auto& p : data)
 			{
@@ -42,7 +42,7 @@ namespace soup
 
 		RegexAlternative a{};
 
-		std::vector<const RegexConstraint**> alternatives_transitions{};
+		std::vector<const RegexConstraintTransitionable**> alternatives_transitions{};
 
 		bool escape = false;
 		for (; s.it != s.end; ++s.it)
@@ -105,18 +105,22 @@ namespace soup
 				}
 				else if (*s.it == '.')
 				{
-					auto c = a.constraints.emplace_back(soup::make_unique<RegexAnyCharConstraint>()).get();
-					success_transitions.setTransitionTo(c);
-					success_transitions.emplace(&c->success_transition);
+					auto upC = soup::make_unique<RegexAnyCharConstraint>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 			}
 			// TODO: UTF-8 mode ('u'nicode flag):
 			// - implicitly capture multi-byte symbols in a non-capturing group to avoid jank with '?'
 			// - have '.' accept multi-byte symbols as a single symbol
-			auto c = a.constraints.emplace_back(soup::make_unique<RegexCharConstraint>(*s.it)).get();
-			success_transitions.setTransitionTo(c);
-			success_transitions.emplace(&c->success_transition);
+			auto upC = soup::make_unique<RegexCharConstraint>(*s.it);
+			auto pC = upC.get();
+			a.constraints.emplace_back(std::move(upC));
+			success_transitions.setTransitionTo(pC);
+			success_transitions.emplace(&pC->success_transition);
 		}
 		alternatives.emplace_back(std::move(a));
 		success_transitions.discharge(alternatives_transitions);
@@ -126,7 +130,7 @@ namespace soup
 			// Set up rollback transitions for the first constraint in each alternative to jump to next alternative
 			for (size_t i = 0; i + 1 != alternatives.size(); ++i)
 			{
-				alternatives.at(i).constraints.at(0)->rollback_transition = alternatives.at(i + 1).constraints.at(0);
+				alternatives.at(i).constraints.at(0)->rollback_transition = alternatives.at(i + 1).constraints.at(0)->getTransition();
 			}
 		}
 

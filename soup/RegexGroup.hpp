@@ -13,7 +13,7 @@ namespace soup
 		{
 			mutable std::string::const_iterator it;
 			std::string::const_iterator end;
-			mutable std::vector<const RegexConstraint**> alternatives_transitions{};
+			mutable std::vector<const RegexConstraintTransitionable**> alternatives_transitions{};
 
 			ConstructorState(std::string::const_iterator it, std::string::const_iterator end)
 				: it(it), end(end)
@@ -21,7 +21,7 @@ namespace soup
 			}
 		};
 
-		const RegexConstraint* initial = nullptr;
+		const RegexConstraintTransitionable* initial = nullptr;
 		std::vector<RegexAlternative> alternatives{};
 
 		RegexGroup(const std::string& pattern)

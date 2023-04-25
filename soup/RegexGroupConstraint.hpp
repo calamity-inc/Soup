@@ -15,15 +15,9 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] const RegexConstraint* getTransition() const noexcept final
+		[[nodiscard]] const RegexConstraintTransitionable* getTransition() const noexcept final
 		{
 			return group.initial;
-		}
-
-		[[nodiscard]] bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept final
-		{
-			// Group constraints cannot be transitioned to, therefore this function will never be called.
-			return false;
 		}
 
 		[[nodiscard]] std::string toString() const noexcept final

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "RegexConstraint.hpp"
+#include "RegexConstraintTransitionable.hpp"
 
 namespace soup
 {
-	struct RegexCharConstraint : public RegexConstraint
+	struct RegexCharConstraint : public RegexConstraintTransitionable
 	{
 		char c;
 

@@ -491,6 +491,7 @@
     <ClInclude Include="RegexConstraint.hpp" />
     <ClInclude Include="RegexAnyCharConstraint.hpp" />
     <ClInclude Include="RegexCharConstraint.hpp" />
+    <ClInclude Include="RegexConstraintTransitionable.hpp" />
     <ClInclude Include="RegexGreedyOneConstraint.hpp" />
     <ClInclude Include="RegexGroupConstraint.hpp" />
     <ClInclude Include="RegexGroup.hpp" />

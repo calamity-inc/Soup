@@ -40,7 +40,7 @@ namespace soup
 	struct JsonString;
 
 	// data.regex
-	struct RegexConstraint;
+	struct RegexConstraintTransitionable;
 	struct RegexGroup;
 
 	// data.xml

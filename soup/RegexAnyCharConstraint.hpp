@@ -1,10 +1,10 @@
 #pragma once
 
-#include "RegexConstraint.hpp"
+#include "RegexConstraintTransitionable.hpp"
 
 namespace soup
 {
-	struct RegexAnyCharConstraint : public RegexConstraint
+	struct RegexAnyCharConstraint : public RegexConstraintTransitionable
 	{
 		[[nodiscard]] bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept final
 		{
