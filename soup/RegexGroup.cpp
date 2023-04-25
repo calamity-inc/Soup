@@ -1,5 +1,6 @@
 #include "RegexGroup.hpp"
 
+#include "Regex.hpp"
 #include "RegexAnyCharConstraint.hpp"
 #include "RegexCharConstraint.hpp"
 #include "RegexGreedyOneConstraint.hpp"
@@ -118,7 +119,15 @@ namespace soup
 				}
 				else if (*s.it == '.')
 				{
-					auto upC = soup::make_unique<RegexAnyCharConstraint>();
+					UniquePtr<RegexConstraintTransitionable> upC;
+					if (s.flags & Regex::single_line)
+					{
+						upC = soup::make_unique<RegexAnyCharConstraint<true>>();
+					}
+					else
+					{
+						upC = soup::make_unique<RegexAnyCharConstraint<false>>();
+					}
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);

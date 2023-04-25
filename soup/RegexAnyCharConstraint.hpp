@@ -4,6 +4,7 @@
 
 namespace soup
 {
+	template <bool single_line>
 	struct RegexAnyCharConstraint : public RegexConstraintTransitionable
 	{
 		[[nodiscard]] bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept final
@@ -12,9 +13,12 @@ namespace soup
 			{
 				return false;
 			}
-			if (*it == '\n') // TODO: may also match '\n' if the 's' flag ("single line") is set.
+			if constexpr (!single_line)
 			{
-				return false;
+				if (*it == '\n')
+				{
+					return false;
+				}
 			}
 			++it;
 			return true;

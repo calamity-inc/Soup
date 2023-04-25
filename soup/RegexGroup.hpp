@@ -13,11 +13,12 @@ namespace soup
 		{
 			mutable std::string::const_iterator it;
 			std::string::const_iterator end;
+			uint16_t flags;
 			mutable size_t next_index = 0;
 			mutable std::vector<const RegexConstraintTransitionable**> alternatives_transitions{};
 
-			ConstructorState(std::string::const_iterator it, std::string::const_iterator end)
-				: it(it), end(end)
+			ConstructorState(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags)
+				: it(it), end(end), flags(flags)
 			{
 			}
 		};
@@ -27,13 +28,8 @@ namespace soup
 		const RegexConstraintTransitionable* initial = nullptr;
 		std::vector<RegexAlternative> alternatives{};
 
-		RegexGroup(const std::string& pattern)
-			: RegexGroup(pattern.cbegin(), pattern.cend())
-		{
-		}
-
-		RegexGroup(std::string::const_iterator it, std::string::const_iterator end)
-			: RegexGroup(ConstructorState(it, end))
+		RegexGroup(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags)
+			: RegexGroup(ConstructorState(it, end, flags))
 		{
 		}
 

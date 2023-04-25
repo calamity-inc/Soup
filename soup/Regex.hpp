@@ -7,20 +7,30 @@ namespace soup
 {
 	struct Regex
 	{
+		enum Flags : uint16_t
+		{
+			single_line = (1 << 0), // 's'
+		};
+
 		RegexGroup group;
 
-		Regex(const std::string& pattern)
-			: Regex(pattern.cbegin(), pattern.cend())
+		Regex(const std::string& pattern, const char* flags)
+			: Regex(pattern.cbegin(), pattern.cend(), parseFlags(flags))
 		{
 		}
 
-		Regex(std::string::const_iterator it, std::string::const_iterator end)
-			: group(it, end)
+		Regex(const std::string& pattern, uint16_t flags = 0)
+			: Regex(pattern.cbegin(), pattern.cend(), flags)
+		{
+		}
+
+		Regex(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags = 0)
+			: group(it, end, flags)
 		{
 		}
 
 		Regex(const Regex& b)
-			: Regex(b.toString())
+			: Regex(b.toString()) // BUG: Flags are ignored
 		{
 		}
 
@@ -35,6 +45,19 @@ namespace soup
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			return group.toString();
+		}
+
+		[[nodiscard]] static constexpr uint16_t parseFlags(const char* flags)
+		{
+			uint16_t res = 0;
+			for (; *flags != '\0'; ++flags)
+			{
+				if (*flags == 's')
+				{
+					res |= single_line;
+				}
+			}
+			return res;
 		}
 	};
 }
