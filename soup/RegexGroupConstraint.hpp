@@ -10,8 +10,8 @@ namespace soup
 	{
 		RegexGroup group;
 
-		RegexGroupConstraint(const RegexGroup::ConstructorState& s)
-			: group(s)
+		RegexGroupConstraint(const RegexGroup::ConstructorState& s, bool non_capturing)
+			: group(s, non_capturing)
 		{
 		}
 

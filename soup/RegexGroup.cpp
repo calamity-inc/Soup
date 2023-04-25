@@ -35,8 +35,8 @@ namespace soup
 		}
 	};
 
-	RegexGroup::RegexGroup(const ConstructorState& s)
-		: index(s.next_index++)
+	RegexGroup::RegexGroup(const ConstructorState& s, bool non_capturing)
+		: index(non_capturing ? -1 : s.next_index++)
 	{
 		TransitionsVector success_transitions;
 		success_transitions.data = { &initial };
@@ -68,8 +68,19 @@ namespace soup
 				}
 				else if (*s.it == '(')
 				{
-					++s.it;
-					auto upGC = soup::make_unique<RegexGroupConstraint>(s);
+					bool non_capturing = false;
+					if (++s.it != s.end && *s.it == '?')
+					{
+						if (++s.it != s.end)
+						{
+							if (*s.it == ':')
+							{
+								++s.it;
+								non_capturing = true;
+							}
+						}
+					}
+					auto upGC = soup::make_unique<RegexGroupConstraint>(s, non_capturing);
 					upGC->group.parent = this;
 					success_transitions.setTransitionTo(upGC->group.initial);
 					success_transitions.data = std::move(s.alternatives_transitions);

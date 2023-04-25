@@ -50,6 +50,10 @@ namespace soup
 			{
 				for (auto g = m.c->group; g; g = g->parent)
 				{
+					if (g->index == -1)
+					{
+						continue;
+					}
 					//std::cout << "group " << g->index << "; ";
 					while (g->index >= m.groups.size())
 					{
