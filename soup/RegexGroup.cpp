@@ -111,7 +111,7 @@ namespace soup
 					continue;
 				}
 			}
-			// TODO: UTF-8 mode:
+			// TODO: UTF-8 mode ('u'nicode flag):
 			// - implicitly capture multi-byte symbols in a non-capturing group to avoid jank with '?'
 			// - have '.' accept multi-byte symbols as a single symbol
 			auto c = a.constraints.emplace_back(soup::make_unique<RegexCharConstraint>(*s.it)).get();
