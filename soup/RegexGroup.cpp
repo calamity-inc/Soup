@@ -36,6 +36,7 @@ namespace soup
 	};
 
 	RegexGroup::RegexGroup(const ConstructorState& s)
+		: index(s.next_index++)
 	{
 		TransitionsVector success_transitions;
 		success_transitions.data = { &initial };
@@ -69,6 +70,7 @@ namespace soup
 				{
 					++s.it;
 					auto upGC = soup::make_unique<RegexGroupConstraint>(s);
+					upGC->group.parent = this;
 					success_transitions.setTransitionTo(upGC->group.initial);
 					success_transitions.data = std::move(s.alternatives_transitions);
 					a.constraints.emplace_back(std::move(upGC));
@@ -131,6 +133,15 @@ namespace soup
 			for (size_t i = 0; i + 1 != alternatives.size(); ++i)
 			{
 				alternatives.at(i).constraints.at(0)->rollback_transition = alternatives.at(i + 1).constraints.at(0)->getTransition();
+			}
+		}
+
+		// Set up group pointers 
+		for (const auto& a : alternatives)
+		{
+			for (const auto& c : a.constraints)
+			{
+				c->group = this;
 			}
 		}
 

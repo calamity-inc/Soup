@@ -1314,6 +1314,12 @@
     <ClInclude Include="RegexConstraintTransitionable.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>
+    <ClInclude Include="RegexMatchedGroup.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexMatch.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

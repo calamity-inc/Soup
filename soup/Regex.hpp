@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RegexGroup.hpp"
+#include "RegexMatch.hpp"
 
 namespace soup
 {
@@ -27,6 +28,9 @@ namespace soup
 
 		[[nodiscard]] bool matches(const std::string& str) const noexcept;
 		[[nodiscard]] bool matches(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
+
+		[[nodiscard]] std::optional<RegexMatch> match(const std::string& str) const noexcept;
+		[[nodiscard]] std::optional<RegexMatch> match(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
 
 		[[nodiscard]] std::string toString() const noexcept
 		{

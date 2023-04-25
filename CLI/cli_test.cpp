@@ -390,6 +390,8 @@ static void unit_data()
 		assert(Regex("(A|B)C").matches("AD") == false);
 		assert(Regex("(A|B)C").matches("BC") == true);
 		assert(Regex("(A|B)C").matches("BD") == false);
+
+		assert(Regex("A(.B|.C)D").match("ABCD")->toString() == R"(0="ABCD", 1="BC")");
 	});
 }
 

@@ -1,10 +1,13 @@
 #pragma once
 
+#include <optional>
 #include <stack>
 #include <string>
+#include <vector>
 
 #include "fwd.hpp"
 #include "Regex.hpp"
+#include "RegexMatchedGroup.hpp"
 
 namespace soup
 {
@@ -20,6 +23,7 @@ namespace soup
 		std::string::const_iterator it;
 		const std::string::const_iterator end;
 		std::stack<RollbackPoint> rollback_points{};
+		std::vector<std::optional<RegexMatchedGroup>> groups{};
 
 		RegexMatcher(const Regex& r, std::string::const_iterator begin, std::string::const_iterator end)
 			: c(r.group.initial), it(begin), end(end)

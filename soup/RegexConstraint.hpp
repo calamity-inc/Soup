@@ -10,6 +10,7 @@ namespace soup
 	{
 		const RegexConstraintTransitionable* success_transition = nullptr;
 		const RegexConstraintTransitionable* rollback_transition = nullptr;
+		const RegexGroup* group = nullptr;
 
 		virtual ~RegexConstraint() = default;
 

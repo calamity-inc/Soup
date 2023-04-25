@@ -19,6 +19,16 @@ namespace soup
 
 	bool Regex::matches(std::string::const_iterator it, std::string::const_iterator end) const noexcept
 	{
+		return match(it, end).has_value();
+	}
+
+	std::optional<RegexMatch> Regex::match(const std::string& str) const noexcept
+	{
+		return match(str.cbegin(), str.cend());
+	}
+
+	std::optional<RegexMatch> Regex::match(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	{
 		RegexMatcher m(*this, it, end);
 		while (m.c != nullptr)
 		{
@@ -35,8 +45,26 @@ namespace soup
 			}
 
 			// Matches?
+			auto _it = m.it;
 			if (m.c->matches(m.it, m.end))
 			{
+				for (auto g = m.c->group; g; g = g->parent)
+				{
+					//std::cout << "group " << g->index << "; ";
+					while (g->index >= m.groups.size())
+					{
+						m.groups.emplace_back(std::nullopt);
+					}
+					if (m.groups.at(g->index).has_value())
+					{
+						m.groups.at(g->index)->end = m.it;
+					}
+					else
+					{
+						m.groups.at(g->index) = RegexMatchedGroup{ _it, m.it };
+					}
+				}
+
 #if REGEX_DEBUG_MATCH
 				std::cout << "matched\n";
 #endif
@@ -57,7 +85,7 @@ namespace soup
 #if REGEX_DEBUG_MATCH
 					std::cout << "rollback says we should succeed now\n";
 #endif
-					return true;
+					goto _match_success;
 				}
 				continue;
 			}
@@ -66,8 +94,11 @@ namespace soup
 #if REGEX_DEBUG_MATCH
 			std::cout << "no matchy\n";
 #endif
-			return false;
+			return std::nullopt;
 		}
-		return true;
+	_match_success:
+		RegexMatch res;
+		res.groups = std::move(m.groups);
+		return std::optional<RegexMatch>(std::move(res));
 	}
 }
