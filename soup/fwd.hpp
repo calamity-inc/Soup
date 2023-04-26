@@ -42,6 +42,7 @@ namespace soup
 	// data.regex
 	struct RegexConstraintTransitionable;
 	struct RegexGroup;
+	struct RegexMatcher;
 
 	// data.xml
 	struct PlistDict;

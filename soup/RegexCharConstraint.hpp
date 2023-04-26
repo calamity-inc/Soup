@@ -2,6 +2,8 @@
 
 #include "RegexConstraintTransitionable.hpp"
 
+#include "RegexMatcher.hpp"
+
 namespace soup
 {
 	struct RegexCharConstraint : public RegexConstraintTransitionable
@@ -13,17 +15,17 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept final
+		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{
-			if (it == end)
+			if (m.it == m.end)
 			{
 				return false;
 			}
-			if (*it != c)
+			if (*m.it != c)
 			{
 				return false;
 			}
-			++it;
+			++m.it;
 			return true;
 		}
 

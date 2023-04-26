@@ -46,7 +46,7 @@ namespace soup
 
 			// Matches?
 			auto _it = m.it;
-			if (m.c->matches(m.it, m.end))
+			if (m.c->matches(m))
 			{
 				for (auto g = m.c->group; g; g = g->parent)
 				{

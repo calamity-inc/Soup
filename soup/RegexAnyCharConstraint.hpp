@@ -2,25 +2,27 @@
 
 #include "RegexConstraintTransitionable.hpp"
 
+#include "RegexMatcher.hpp"
+
 namespace soup
 {
 	template <bool single_line>
 	struct RegexAnyCharConstraint : public RegexConstraintTransitionable
 	{
-		[[nodiscard]] bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept final
+		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{
-			if (it == end)
+			if (m.it == m.end)
 			{
 				return false;
 			}
 			if constexpr (!single_line)
 			{
-				if (*it == '\n')
+				if (*m.it == '\n')
 				{
 					return false;
 				}
 			}
-			++it;
+			++m.it;
 			return true;
 		}
 

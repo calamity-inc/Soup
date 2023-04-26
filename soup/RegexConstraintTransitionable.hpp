@@ -11,7 +11,7 @@ namespace soup
 			return this;
 		}
 
-		// May only modify `it` if the constraint matches.
-		[[nodiscard]] virtual bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept = 0;
+		// May only modify `m.it` and only if the constraint matches.
+		[[nodiscard]] virtual bool matches(RegexMatcher& m) const noexcept = 0;
 	};
 }

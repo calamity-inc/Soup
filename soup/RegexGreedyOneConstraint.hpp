@@ -15,7 +15,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] bool matches(std::string::const_iterator& it, std::string::const_iterator end) const noexcept final
+		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{
 			// Meta-constraint. Transitions will be set up to correctly handle matching of this.
 			return true;
