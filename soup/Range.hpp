@@ -28,6 +28,6 @@ namespace soup
 	private:
 		[[nodiscard]] Pointer scanSimd(const Pattern& sig) const noexcept;
 	public:
-		[[nodiscard]] std::vector<Pointer> scan_all(const Pattern& sig, unsigned int limit = -1) const;
+		[[nodiscard]] std::vector<Pointer> scanAll(const Pattern& sig, unsigned int limit = -1) const;
 	};
 }

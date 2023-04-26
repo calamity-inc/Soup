@@ -99,7 +99,7 @@ namespace soup
 	}
 #endif
 
-	std::vector<Pointer> Range::scan_all(const Pattern& sig, unsigned int limit) const
+	std::vector<Pointer> Range::scanAll(const Pattern& sig, unsigned int limit) const
 	{
 		std::vector<Pointer> result;
 
