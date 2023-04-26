@@ -121,4 +121,22 @@ namespace soup
 		SOUP_ASSERT(res.isSuccess());
 		return res;
 	}
+
+	std::string Regex::unparseFlags(uint16_t flags)
+	{
+		std::string str{};
+		if (flags & single_line)
+		{
+			str.push_back('s');
+		}
+		if (flags & multi_line)
+		{
+			str.push_back('m');
+		}
+		if (flags & dollar_end_only)
+		{
+			str.push_back('D');
+		}
+		return str;
+	}
 }

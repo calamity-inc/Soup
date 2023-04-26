@@ -27,5 +27,10 @@ namespace soup
 			str.push_back(')');
 			return str;
 		}
+
+		void getFlags(uint16_t& set, uint16_t& unset) const noexcept final
+		{
+			group.getFlags(set, unset);
+		}
 	};
 }

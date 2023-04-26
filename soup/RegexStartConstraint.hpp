@@ -29,5 +29,17 @@ namespace soup
 		{
 			return "^";
 		}
+
+		void getFlags(uint16_t& set, uint16_t& unset) const noexcept final
+		{
+			if constexpr (multi_line)
+			{
+				set |= Regex::multi_line;
+			}
+			else
+			{
+				unset |= Regex::multi_line;
+			}
+		}
 	};
 }

@@ -37,5 +37,8 @@ namespace soup
 		RegexGroup(const ConstructorState& s, bool non_capturing = false);
 
 		[[nodiscard]] std::string toString() const noexcept;
+
+		[[nodiscard]] uint16_t getFlags() const;
+		void getFlags(uint16_t& set, uint16_t& unset) const noexcept;
 	};
 }

@@ -250,4 +250,24 @@ namespace soup
 		}
 		return str;
 	}
+
+	uint16_t RegexGroup::getFlags() const
+	{
+		uint16_t set = 0;
+		uint16_t unset = 0;
+		getFlags(set, unset);
+		SOUP_ASSERT((set & unset) == 0);
+		return set;
+	}
+
+	void RegexGroup::getFlags(uint16_t& set, uint16_t& unset) const noexcept
+	{
+		for (const auto& a : alternatives)
+		{
+			for (const auto& c : a.constraints)
+			{
+				c->getFlags(set, unset);
+			}
+		}
+	}
 }

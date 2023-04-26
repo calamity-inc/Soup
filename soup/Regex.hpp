@@ -32,7 +32,7 @@ namespace soup
 		}
 
 		Regex(const Regex& b)
-			: Regex(b.toString()) // BUG: Flags are ignored
+			: Regex(b.toString(), b.getFlags())
 		{
 		}
 
@@ -50,6 +50,25 @@ namespace soup
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			return group.toString();
+		}
+
+		[[nodiscard]] std::string toFullString() const noexcept
+		{
+			std::string str(1, '/');
+			str.append(toString());
+			str.push_back('/');
+			str.append(getFlagsString());
+			return str;
+		}
+
+		[[nodiscard]] uint16_t getFlags() const noexcept
+		{
+			return group.getFlags();
+		}
+
+		[[nodiscard]] std::string getFlagsString() const noexcept
+		{
+			return unparseFlags(group.getFlags());
 		}
 
 		[[nodiscard]] static constexpr uint16_t parseFlags(const char* flags)
@@ -72,5 +91,7 @@ namespace soup
 			}
 			return res;
 		}
+
+		[[nodiscard]] static std::string unparseFlags(uint16_t flags);
 	};
 }
