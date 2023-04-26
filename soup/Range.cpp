@@ -62,7 +62,7 @@ namespace soup
 		{
 			if (CpuInfo::get().supportsSSE2())
 			{
-				return scanSSE(sig);
+				return scanSimd(sig);
 			}
 		}
 #endif
@@ -77,7 +77,7 @@ namespace soup
 	}
 
 #if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
-	Pointer Range::scanSSE(const Pattern& sig) const noexcept
+	Pointer Range::scanSimd(const Pattern& sig) const noexcept
 	{
 		auto data = sig.bytes.data();
 		auto length = sig.bytes.size();
