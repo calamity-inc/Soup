@@ -396,6 +396,10 @@ static void unit_data()
 
 		assert(Regex(".").matches("\n") == false);
 		assert(Regex(".", "s").matches("\n") == true);
+
+		assert(Regex("^ABC").matches("ABC") == true);
+		assert(Regex(".^ABC", "sm").matches("\nABC") == true);
+		assert(Regex(".^ABC", "s").matches("\nABC") == false);
 	});
 }
 

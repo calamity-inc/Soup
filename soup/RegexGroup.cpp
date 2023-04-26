@@ -5,6 +5,7 @@
 #include "RegexCharConstraint.hpp"
 #include "RegexGreedyOneConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
+#include "RegexStartConstraint.hpp"
 
 namespace soup
 {
@@ -127,6 +128,23 @@ namespace soup
 					else
 					{
 						upC = soup::make_unique<RegexAnyCharConstraint<false>>();
+					}
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == '^')
+				{
+					UniquePtr<RegexConstraintTransitionable> upC;
+					if (s.flags & Regex::multi_line)
+					{
+						upC = soup::make_unique<RegexStartConstraint<true>>();
+					}
+					else
+					{
+						upC = soup::make_unique<RegexStartConstraint<false>>();
 					}
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));

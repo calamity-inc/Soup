@@ -9,7 +9,8 @@ namespace soup
 	{
 		enum Flags : uint16_t
 		{
-			single_line = (1 << 0), // 's'
+			single_line = (1 << 0), // 's' - '.' also matches '\n'
+			multi_line = (1 << 1), // 'm' - '^' also matches start of line
 		};
 
 		RegexGroup group;
@@ -55,6 +56,10 @@ namespace soup
 				if (*flags == 's')
 				{
 					res |= single_line;
+				}
+				else if (*flags == 'm')
+				{
+					res |= multi_line;
 				}
 			}
 			return res;

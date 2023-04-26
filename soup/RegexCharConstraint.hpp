@@ -40,6 +40,8 @@ namespace soup
 			case ')':
 			case '?':
 			case '.':
+			case '^':
+			case '$':
 				str.insert(0, 1, '\\');
 				break;
 			}

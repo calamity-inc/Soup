@@ -21,12 +21,13 @@ namespace soup
 
 		const RegexConstraintTransitionable* c;
 		std::string::const_iterator it;
+		const std::string::const_iterator begin;
 		const std::string::const_iterator end;
 		std::stack<RollbackPoint> rollback_points{};
 		std::vector<std::optional<RegexMatchedGroup>> groups{};
 
 		RegexMatcher(const Regex& r, std::string::const_iterator begin, std::string::const_iterator end)
-			: c(r.group.initial), it(begin), end(end)
+			: c(r.group.initial), it(begin), begin(begin), end(end)
 		{
 		}
 
