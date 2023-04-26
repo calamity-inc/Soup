@@ -73,6 +73,7 @@ namespace soup
 				else if (*s.it == '(')
 				{
 					bool non_capturing = false;
+					std::string name{};
 					if (++s.it != s.end && *s.it == '?')
 					{
 						if (++s.it != s.end)
@@ -82,10 +83,22 @@ namespace soup
 								++s.it;
 								non_capturing = true;
 							}
+							else if (*s.it == '\'')
+							{
+								while (++s.it != s.end && *s.it != '\'')
+								{
+									name.push_back(*s.it);
+								}
+								if (s.it != s.end)
+								{
+									++s.it;
+								}
+							}
 						}
 					}
 					auto upGC = soup::make_unique<RegexGroupConstraint>(s, non_capturing);
 					upGC->group.parent = this;
+					upGC->group.name = std::move(name);
 					success_transitions.setTransitionTo(upGC->group.initial);
 					success_transitions.data = std::move(s.alternatives_transitions);
 					a.constraints.emplace_back(std::move(upGC));

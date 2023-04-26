@@ -80,7 +80,7 @@ namespace soup
 					}
 					else
 					{
-						m.groups.at(g->index) = RegexMatchedGroup{ _it, m.it };
+						m.groups.at(g->index) = RegexMatchedGroup{ g->name, _it, m.it };
 					}
 				}
 

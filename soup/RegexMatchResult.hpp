@@ -24,6 +24,12 @@ namespace soup
 				if (groups.at(i).has_value())
 				{
 					str.append(std::to_string(i));
+					if (!groups.at(i)->name.empty())
+					{
+						str.push_back('{');
+						str.append(groups.at(i)->name);
+						str.push_back('}');
+					}
 					str.append("=\"");
 					str.append(groups.at(i)->toString());
 					str.append("\", ");

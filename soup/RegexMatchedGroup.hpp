@@ -6,6 +6,7 @@ namespace soup
 {
 	struct RegexMatchedGroup
 	{
+		std::string name;
 		std::string::const_iterator begin;
 		std::string::const_iterator end;
 
