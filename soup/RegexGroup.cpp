@@ -103,6 +103,8 @@ namespace soup
 					auto pModifiedConstraint = upModifiedConstraint.get();
 					auto upGreedyConstraint = soup::make_unique<RegexGreedyOneConstraint>(std::move(upModifiedConstraint));
 
+					pModifiedConstraint->group = this;
+
 					// constraint --[success]-> greedy
 					success_transitions.setTransitionTo(upGreedyConstraint.get());
 
