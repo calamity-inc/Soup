@@ -401,6 +401,10 @@ static void unit_data()
 		assert(Regex(".^ABC", "sm").matches("\nABC") == true);
 		assert(Regex(".^ABC", "s").matches("\nABC") == false);
 
+		assert(Regex("ABC$").matches("ABC") == true);
+		assert(Regex("ABC$").matches("ABC\n") == true);
+		assert(Regex("ABC$", "D").matches("ABC\n") == false);
+
 		assert(Regex("[abc]+").matchesFully("abc") == true);
 		assert(Regex("[abc]+").matchesFully("abcdef") == false);
 		assert(Regex("[a-z]+").matchesFully("abc") == true);

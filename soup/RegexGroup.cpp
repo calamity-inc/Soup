@@ -3,6 +3,7 @@
 #include "Regex.hpp"
 #include "RegexAnyCharConstraint.hpp"
 #include "RegexCharConstraint.hpp"
+#include "RegexEndConstraint.hpp"
 #include "RegexGreedyOneConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
@@ -164,6 +165,27 @@ namespace soup
 					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
+				else if (*s.it == '$')
+				{
+					UniquePtr<RegexConstraintTransitionable> upC;
+					if (s.flags & Regex::multi_line)
+					{
+						upC = soup::make_unique<RegexEndConstraint<true, false>>();
+					}
+					else if (s.flags & Regex::dollar_end_only)
+					{
+						upC = soup::make_unique<RegexEndConstraint<false, true>>();
+					}
+					else
+					{
+						upC = soup::make_unique<RegexEndConstraint<false, false>>();
+					}
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+					}
 			}
 			// TODO: UTF-8 mode ('u'nicode flag):
 			// - implicitly capture multi-byte symbols in a non-capturing group to avoid jank with '?'

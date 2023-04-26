@@ -10,7 +10,8 @@ namespace soup
 		enum Flags : uint16_t
 		{
 			single_line = (1 << 0), // 's' - '.' also matches '\n' - a.k.a. "dotall"
-			multi_line = (1 << 1), // 'm' - '^' also matches start of line
+			multi_line = (1 << 1), // 'm' - '^' and '$' also match start and end of lines, respectively
+			dollar_end_only = (1 << 2), // 'D' - '$' only matches end of pattern, not '\n' - ignored if multi_line flag is set
 		};
 
 		RegexGroup group;
@@ -63,6 +64,10 @@ namespace soup
 				else if (*flags == 'm')
 				{
 					res |= multi_line;
+				}
+				else if (*flags == 'D')
+				{
+					res |= dollar_end_only;
 				}
 			}
 			return res;
