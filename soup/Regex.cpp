@@ -22,6 +22,20 @@ namespace soup
 		return match(it, end).has_value();
 	}
 
+	bool Regex::matchesFully(const std::string& str) const noexcept
+	{
+		return matchesFully(str.cbegin(), str.cend());
+	}
+
+	bool Regex::matchesFully(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	{
+		if (auto opt = match(it, end))
+		{
+			return opt->groups.at(0)->end == end;
+		}
+		return false;
+	}
+
 	std::optional<RegexMatch> Regex::match(const std::string& str) const noexcept
 	{
 		return match(str.cbegin(), str.cend());
