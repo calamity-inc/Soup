@@ -9,7 +9,7 @@ namespace soup
 	{
 		enum Flags : uint16_t
 		{
-			single_line = (1 << 0), // 's' - '.' also matches '\n'
+			single_line = (1 << 0), // 's' - '.' also matches '\n' - a.k.a. "dotall"
 			multi_line = (1 << 1), // 'm' - '^' also matches start of line
 		};
 
