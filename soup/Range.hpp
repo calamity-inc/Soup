@@ -27,6 +27,7 @@ namespace soup
 		[[nodiscard]] Pointer scan(const Pattern& sig) const noexcept;
 	private:
 		[[nodiscard]] Pointer scanSSE(const Pattern& sig) const noexcept;
+		[[nodiscard]] std::vector<Pointer> scanSSEall(const Pattern& sig, unsigned int limit) const noexcept;
 	public:
 		[[nodiscard]] std::vector<Pointer> scan_all(const Pattern& sig, unsigned int limit = -1) const;
 	};
