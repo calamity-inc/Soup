@@ -1323,6 +1323,9 @@
     <ClInclude Include="RegexStartConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
+    <ClInclude Include="RegexRangeConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

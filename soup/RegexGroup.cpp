@@ -5,6 +5,7 @@
 #include "RegexCharConstraint.hpp"
 #include "RegexGreedyOneConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
+#include "RegexRangeConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 
 namespace soup
@@ -131,6 +132,15 @@ namespace soup
 					{
 						upC = soup::make_unique<RegexAnyCharConstraint<false>>();
 					}
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == '[')
+				{
+					auto upC = soup::make_unique<RegexRangeConstraint>(s.it, s.end);
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);
