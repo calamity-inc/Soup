@@ -7,9 +7,14 @@
 
 namespace soup
 {
-	struct RegexMatch
+	struct RegexMatchResult
 	{
 		std::vector<std::optional<RegexMatchedGroup>> groups{};
+
+		[[nodiscard]] bool isSuccess() const noexcept
+		{
+			return !groups.empty();
+		}
 
 		[[nodiscard]] std::string toString() const noexcept
 		{

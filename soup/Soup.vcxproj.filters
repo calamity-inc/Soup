@@ -1317,7 +1317,7 @@
     <ClInclude Include="RegexMatchedGroup.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>
-    <ClInclude Include="RegexMatch.hpp">
+    <ClInclude Include="RegexMatchResult.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>
     <ClInclude Include="RegexStartConstraint.hpp">

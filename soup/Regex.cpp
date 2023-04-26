@@ -19,7 +19,7 @@ namespace soup
 
 	bool Regex::matches(std::string::const_iterator it, std::string::const_iterator end) const noexcept
 	{
-		return match(it, end).has_value();
+		return match(it, end).isSuccess();
 	}
 
 	bool Regex::matchesFully(const std::string& str) const noexcept
@@ -29,19 +29,20 @@ namespace soup
 
 	bool Regex::matchesFully(std::string::const_iterator it, std::string::const_iterator end) const noexcept
 	{
-		if (auto opt = match(it, end))
+		auto res = match(it, end);
+		if (res.isSuccess())
 		{
-			return opt->groups.at(0)->end == end;
+			return res.groups.at(0)->end == end;
 		}
 		return false;
 	}
 
-	std::optional<RegexMatch> Regex::match(const std::string& str) const noexcept
+	RegexMatchResult Regex::match(const std::string& str) const noexcept
 	{
 		return match(str.cbegin(), str.cend());
 	}
 
-	std::optional<RegexMatch> Regex::match(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	RegexMatchResult Regex::match(std::string::const_iterator it, std::string::const_iterator end) const noexcept
 	{
 		RegexMatcher m(*this, it, end);
 		while (m.c != nullptr)
@@ -112,11 +113,12 @@ namespace soup
 #if REGEX_DEBUG_MATCH
 			std::cout << "no matchy\n";
 #endif
-			return std::nullopt;
+			return {};
 		}
 	_match_success:
-		RegexMatch res;
+		RegexMatchResult res;
 		res.groups = std::move(m.groups);
-		return std::optional<RegexMatch>(std::move(res));
+		SOUP_ASSERT(res.isSuccess());
+		return res;
 	}
 }

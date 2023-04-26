@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RegexGroup.hpp"
-#include "RegexMatch.hpp"
+#include "RegexMatchResult.hpp"
 
 namespace soup
 {
@@ -44,8 +44,8 @@ namespace soup
 		[[nodiscard]] bool matchesFully(const std::string& str) const noexcept;
 		[[nodiscard]] bool matchesFully(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
 
-		[[nodiscard]] std::optional<RegexMatch> match(const std::string& str) const noexcept;
-		[[nodiscard]] std::optional<RegexMatch> match(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
+		[[nodiscard]] RegexMatchResult match(const std::string& str) const noexcept;
+		[[nodiscard]] RegexMatchResult match(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
 
 		[[nodiscard]] std::string toString() const noexcept
 		{
