@@ -30,6 +30,6 @@ namespace soup
 	public:
 		[[nodiscard]] std::vector<Pointer> scanAll(const Pattern& sig, unsigned int limit = -1) const;
 	private:
-		[[nodiscard]] std::vector<Pointer> scanAllSimd(const Pattern& sig, unsigned int limit) const noexcept;
+		[[nodiscard]] std::vector<Pointer> scanAllSimd(const Pattern& sig, unsigned int limit) const;
 	};
 }
