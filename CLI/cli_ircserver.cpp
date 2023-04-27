@@ -146,7 +146,7 @@ static void ircClientRecvLoop(Socket& s)
 				line.pop_back();
 			}
 			std::cout << s.toString() << " | " << line << "\n";
-			if (line.substr(0, 4) == "NICK" && line.length() > 5)
+			if ((line.substr(0, 4) == "NICK" || line.substr(0, 4) == "nick") && line.length() > 5)
 			{
 				if (line.at(5) == '@' || line.at(5) == '+')
 				{
@@ -225,7 +225,7 @@ static void ircClientRecvLoop(Socket& s)
 					cd.nick = line.substr(5);
 				}
 			}
-			else if (line.substr(0, 4) == "JOIN" && line.length() > 5)
+			else if ((line.substr(0, 4) == "JOIN" || line.substr(0, 4) == "join") && line.length() > 5)
 			{
 				for (const auto& channel_name : string::explode(line.substr(5), ','))
 				{
@@ -304,7 +304,7 @@ static void ircClientRecvLoop(Socket& s)
 					}
 				}
 			}
-			else if (line.substr(0, 4) == "PART" && line.length() > 5)
+			else if ((line.substr(0, 4) == "PART" || line.substr(0, 4) == "part") && line.length() > 5)
 			{
 				auto channel_name = string::explode(line.substr(5), ' ').at(0);
 				if (cd.channels.find(channel_name) != cd.channels.end())
@@ -312,7 +312,7 @@ static void ircClientRecvLoop(Socket& s)
 					ircHandlePart(cd, channel_name);
 				}
 			}
-			else if (line.substr(0, 5) == "TOPIC" && line.length() > 6)
+			else if ((line.substr(0, 5) == "TOPIC" || line.substr(0, 5) == "topic") && line.length() > 6)
 			{
 				auto arr = string::explode(line.substr(6), " :");
 				SOUP_ASSERT(arr.size() == 2);
@@ -376,7 +376,7 @@ static void ircClientRecvLoop(Socket& s)
 				msg.append(data.substr(4));
 				s.send(msg);
 			}
-			else if (line.substr(0, 4) == "QUIT")
+			else if (line.substr(0, 4) == "QUIT" || line.substr(0, 4) == "quit")
 			{
 				return;
 			}
