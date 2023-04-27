@@ -6,6 +6,7 @@
 #include "RegexEndConstraint.hpp"
 #include "RegexGreedyOneConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
+#include "RegexOptConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 
@@ -14,10 +15,19 @@ namespace soup
 	struct TransitionsVector
 	{
 		std::vector<const RegexConstraintTransitionable**> data;
+		std::vector<const RegexConstraintTransitionable**> prev_data;
 
 		void emplace(const RegexConstraintTransitionable** p)
 		{
 			data.emplace_back(p);
+		}
+
+		void setPreviousTransitionTo(const RegexConstraintTransitionable* c) noexcept
+		{
+			for (const auto& p : prev_data)
+			{
+				*p = c;
+			}
 		}
 
 		void setTransitionTo(const RegexConstraintTransitionable* c) noexcept
@@ -26,6 +36,7 @@ namespace soup
 			{
 				*p = c;
 			}
+			prev_data = std::move(data);
 			data.clear();
 		}
 
@@ -133,6 +144,29 @@ namespace soup
 					*reinterpret_cast<uintptr_t*>(&upGreedyConstraint->rollback_transition) = 1;
 
 					a.constraints.back() = std::move(upGreedyConstraint);
+					continue;
+				}
+				else if (*s.it == '?')
+				{
+					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
+					auto pModifiedConstraint = upModifiedConstraint.get();
+					auto upOptConstraint = soup::make_unique<RegexOptConstraint>(std::move(upModifiedConstraint));
+
+					pModifiedConstraint->group = this;
+
+					// prev-constraint --[success]-> opt
+					success_transitions.setPreviousTransitionTo(upOptConstraint.get());
+
+					// opt --[success]-> constraint
+					upOptConstraint->success_transition = pModifiedConstraint->getTransition();
+
+					// opt --[rollback]-> next-constraint
+					success_transitions.emplace(&upOptConstraint->rollback_transition);
+
+					// If we don't have a next constraint, rollback is match success.
+					*reinterpret_cast<uintptr_t*>(&upOptConstraint->rollback_transition) = 1;
+
+					a.constraints.back() = std::move(upOptConstraint);
 					continue;
 				}
 				else if (*s.it == '.')

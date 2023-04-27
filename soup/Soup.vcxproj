@@ -499,6 +499,7 @@
     <ClInclude Include="RegexMatchedGroup.hpp" />
     <ClInclude Include="RegexMatcher.hpp" />
     <ClInclude Include="RegexMatchResult.hpp" />
+    <ClInclude Include="RegexOptConstraint.hpp" />
     <ClInclude Include="RegexRangeConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="StringParser.hpp" />
