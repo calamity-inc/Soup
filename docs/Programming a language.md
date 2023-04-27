@@ -2,7 +2,7 @@
 
 Say you have a syntax in mind, such as:
 
-```PHP
+```php
 echo "Hello world!";
 ```
 
