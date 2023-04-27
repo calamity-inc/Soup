@@ -149,6 +149,11 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "ircserver")
+		{
+			return cli_ircserver();
+		}
+
 		if (subcommand == "maze")
 		{
 			cli_maze();
@@ -272,6 +277,7 @@ Available tools:
 - edit [files...]
 - geoip [ip]
 - inquire
+- ircserver
 - maze
 - morse [key|encode [text]] <--silent>
 - qr [contents]

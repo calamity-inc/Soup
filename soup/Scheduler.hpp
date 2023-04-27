@@ -22,10 +22,9 @@ namespace soup
 	// All other operations are subject to race conditions.
 	class Scheduler
 	{
-	protected:
+	public:
 		std::vector<SharedPtr<Worker>> workers{};
 		AtomicDeque<SharedPtr<Worker>> pending_workers{};
-	public:
 		size_t passive_workers = 0;
 		bool dont_make_reusable_sockets = false;
 
