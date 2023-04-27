@@ -131,7 +131,6 @@ namespace soup
 		return result;
 	}
 
-
 #if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
 	std::vector<Pointer> Range::scanAllSimd(const Pattern& sig, unsigned int limit) const
 	{
