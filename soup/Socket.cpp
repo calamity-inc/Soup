@@ -400,7 +400,13 @@ namespace soup
 					switch (handshaker->cipher_suite)
 					{
 					default:
-						s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
+						/*s.tls_recvHandshake(std::move(handshaker), TlsHandshake::certificate_request, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)
+						{
+							TlsCertificate cert{};
+							s.tls_sendHandshake(handshaker, TlsHandshake::certificate, cert.toBinaryString());*/
+
+							s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
+						//});
 						break;
 
 					case TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
@@ -438,6 +444,7 @@ namespace soup
 
 	void Socket::enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker)
 	{
+		// BUG: If server sends certificate_request instead of server_hello_done, we fail.
 		tls_recvHandshake(std::move(handshaker), TlsHandshake::server_hello_done, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)
 		{
 			std::string cke{};
