@@ -24,6 +24,7 @@ namespace soup
 		const std::string::const_iterator begin;
 		const std::string::const_iterator end;
 		std::stack<RollbackPoint> rollback_points{};
+		std::stack<std::string::const_iterator> checkpoints{};
 		std::vector<std::optional<RegexMatchedGroup>> groups{};
 
 		RegexMatcher(const Regex& r, std::string::const_iterator begin, std::string::const_iterator end)
@@ -31,16 +32,27 @@ namespace soup
 		{
 		}
 
-		void save(const RegexConstraintTransitionable* rollback_transition) noexcept
+		void saveRollback(const RegexConstraintTransitionable* rollback_transition)
 		{
 			rollback_points.push(RollbackPoint{ rollback_transition, it });
 		}
 
-		void restore()
+		void restoreRollback()
 		{
 			c = rollback_points.top().c;
 			it = rollback_points.top().it;
 			rollback_points.pop();
+		}
+
+		void saveCheckpoint()
+		{
+			checkpoints.push(it);
+		}
+
+		void restoreCheckpoint()
+		{
+			it = checkpoints.top();
+			checkpoints.pop();
 		}
 	};
 }

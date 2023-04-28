@@ -8,6 +8,7 @@
 #include "RegexGreedyOneConstraint.hpp"
 #include "RegexGreedyZeroConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
+#include "RegexPositiveLookaheadConstraint.hpp"
 #include "RegexOptConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
 #include "RegexStartConstraint.hpp"
@@ -32,8 +33,14 @@ namespace soup
 			}
 		}
 
-		void setTransitionTo(const RegexConstraintTransitionable* c) noexcept
+		void setTransitionTo(const RegexConstraintTransitionable* c, bool save_checkpoint = false) noexcept
 		{
+			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & 1) == 0);
+			if (save_checkpoint)
+			{
+				reinterpret_cast<uintptr_t&>(c) |= 1;
+			}
+
 			for (const auto& p : data)
 			{
 				*p = c;
@@ -52,8 +59,8 @@ namespace soup
 		}
 	};
 
-	RegexGroup::RegexGroup(const ConstructorState& s, bool non_capturing)
-		: index(non_capturing ? -1 : s.next_index++)
+	RegexGroup::RegexGroup(const ConstructorState& s, bool non_capturing, bool lookahead)
+		: index(non_capturing ? -1 : s.next_index++), lookahead(lookahead)
 	{
 		TransitionsVector success_transitions;
 		success_transitions.data = { &initial };
@@ -86,6 +93,7 @@ namespace soup
 				else if (*s.it == '(')
 				{
 					bool non_capturing = false;
+					bool positive_lookahead = false;
 					std::string name{};
 					if (++s.it != s.end && *s.it == '?')
 					{
@@ -107,14 +115,40 @@ namespace soup
 									++s.it;
 								}
 							}
+							else if (*s.it == '=')
+							{
+								positive_lookahead = true;
+								++s.it;
+							}
 						}
 					}
-					auto upGC = soup::make_unique<RegexGroupConstraint>(s, non_capturing);
-					upGC->group.parent = this;
-					upGC->group.name = std::move(name);
-					success_transitions.setTransitionTo(upGC->group.initial);
-					success_transitions.data = std::move(s.alternatives_transitions);
-					a.constraints.emplace_back(std::move(upGC));
+					if (positive_lookahead)
+					{
+						auto upGC = soup::make_unique<RegexPositiveLookaheadConstraint>(s);
+						upGC->group.parent = this;
+						upGC->group.lookahead = true;
+
+						// last-constraint --[success]-> first-lookahead-constraint + save checkpoint
+						success_transitions.setTransitionTo(upGC->group.initial, true);
+						success_transitions.data = std::move(s.alternatives_transitions);
+
+						// last-lookahead-constraint --[success]-> group (to restore checkpoint)
+						success_transitions.setTransitionTo(upGC.get());
+
+						// group --> next-constraint
+						success_transitions.emplace(&upGC->success_transition);
+
+						a.constraints.emplace_back(std::move(upGC));
+					}
+					else
+					{
+						auto upGC = soup::make_unique<RegexGroupConstraint>(s, non_capturing);
+						upGC->group.parent = this;
+						upGC->group.name = std::move(name);
+						success_transitions.setTransitionTo(upGC->group.initial);
+						success_transitions.data = std::move(s.alternatives_transitions);
+						a.constraints.emplace_back(std::move(upGC));
+					}
 					if (s.it == s.end)
 					{
 						break;
@@ -261,7 +295,7 @@ namespace soup
 					success_transitions.setTransitionTo(pC);
 					success_transitions.emplace(&pC->success_transition);
 					continue;
-					}
+				}
 			}
 			// TODO: UTF-8 mode ('u'nicode flag):
 			// - implicitly capture multi-byte symbols in a non-capturing group to avoid jank with '?'

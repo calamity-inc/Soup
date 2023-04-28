@@ -56,7 +56,7 @@ namespace soup
 #if REGEX_DEBUG_MATCH
 				std::cout << "saved rollback; ";
 #endif
-				m.save(m.c->rollback_transition);
+				m.saveRollback(m.c->rollback_transition);
 			}
 
 			// Matches?
@@ -65,6 +65,10 @@ namespace soup
 			{
 				for (auto g = m.c->group; g; g = g->parent)
 				{
+					if (g->lookahead)
+					{
+						break;
+					}
 					if (g->index == -1)
 					{
 						continue;
@@ -84,11 +88,19 @@ namespace soup
 					}
 				}
 
+				m.c = m.c->success_transition;
+				SOUP_ASSERT(reinterpret_cast<uintptr_t>(m.c) != 1);
+				if (reinterpret_cast<uintptr_t>(m.c) & 1)
+				{
+#if REGEX_DEBUG_MATCH
+					std::cout << "saved checkpoint; ";
+#endif
+					m.c = reinterpret_cast<const RegexConstraintTransitionable*>(reinterpret_cast<uintptr_t>(m.c) & ~1);
+					m.saveCheckpoint();
+				}
 #if REGEX_DEBUG_MATCH
 				std::cout << "matched\n";
 #endif
-				m.c = m.c->success_transition;
-				SOUP_ASSERT(reinterpret_cast<uintptr_t>(m.c) != 1);
 				continue;
 			}
 
@@ -98,7 +110,7 @@ namespace soup
 #if REGEX_DEBUG_MATCH
 				std::cout << "did not match, rolling back\n";
 #endif
-				m.restore();
+				m.restoreRollback();
 				if (reinterpret_cast<uintptr_t>(m.c) == 1)
 				{
 #if REGEX_DEBUG_MATCH
@@ -124,6 +136,8 @@ namespace soup
 		{
 			res.groups.emplace_back(RegexMatchedGroup{ {}, m.begin, m.it });
 		}
+
+		SOUP_ASSERT(m.checkpoints.empty()); // if we made a checkpoint for a lookahead group, it should have been restored.
 
 		return res;
 	}

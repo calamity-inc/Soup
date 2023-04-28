@@ -28,13 +28,14 @@ namespace soup
 		const RegexConstraintTransitionable* initial = nullptr;
 		std::vector<RegexAlternative> alternatives{};
 		std::string name{};
+		bool lookahead = false;
 
 		RegexGroup(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags)
 			: RegexGroup(ConstructorState(it, end, flags))
 		{
 		}
 
-		RegexGroup(const ConstructorState& s, bool non_capturing = false);
+		RegexGroup(const ConstructorState& s, bool non_capturing = false, bool lookahead = false);
 
 		[[nodiscard]] std::string toString() const noexcept;
 
