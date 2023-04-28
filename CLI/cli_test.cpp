@@ -416,6 +416,10 @@ static void unit_data()
 		assert(Regex("A?BC").matches("DBC") == false);
 
 		assert(Regex("").match("ABC").toString() == R"(0="")");
+
+		assert(Regex("AB*C").matchesFully("AC") == true);
+		assert(Regex("AB*C").matchesFully("ABC") == true);
+		assert(Regex("AB*C").matchesFully("ABBC") == true);
 	});
 }
 

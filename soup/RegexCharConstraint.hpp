@@ -39,6 +39,8 @@ namespace soup
 			case '(':
 			case ')':
 			case '?':
+			case '+':
+			case '*':
 			case '.':
 			case '^':
 			case '$':

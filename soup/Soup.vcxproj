@@ -495,6 +495,7 @@
     <ClInclude Include="RegexEndConstraint.hpp" />
     <ClInclude Include="RegexFlags.hpp" />
     <ClInclude Include="RegexGreedyOneConstraint.hpp" />
+    <ClInclude Include="RegexGreedyZeroConstraint.hpp" />
     <ClInclude Include="RegexGroupConstraint.hpp" />
     <ClInclude Include="RegexGroup.hpp" />
     <ClInclude Include="RegexMatchedGroup.hpp" />

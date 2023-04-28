@@ -6,6 +6,7 @@
 #include "RegexCharConstraint.hpp"
 #include "RegexEndConstraint.hpp"
 #include "RegexGreedyOneConstraint.hpp"
+#include "RegexGreedyZeroConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
 #include "RegexOptConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
@@ -147,6 +148,32 @@ namespace soup
 					a.constraints.back() = std::move(upGreedyConstraint);
 					continue;
 				}
+				else if (*s.it == '*')
+				{
+					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
+					auto pModifiedConstraint = upModifiedConstraint.get();
+					auto upGreedyConstraint = soup::make_unique<RegexGreedyZeroConstraint>(std::move(upModifiedConstraint));
+
+					pModifiedConstraint->group = this;
+
+					// prev-constraint --[success]-> greedy
+					success_transitions.setPreviousTransitionTo(upGreedyConstraint.get());
+
+					// constraint --[success]-> greedy
+					success_transitions.setTransitionTo(upGreedyConstraint.get());
+
+					// greedy --[success]-> constraint
+					upGreedyConstraint->success_transition = pModifiedConstraint->getTransition();
+
+					// greedy --[rollback]-> next-constraint
+					success_transitions.emplace(&upGreedyConstraint->rollback_transition);
+
+					// If we don't have a next constraint, rollback is match success.
+					*reinterpret_cast<uintptr_t*>(&upGreedyConstraint->rollback_transition) = 1;
+
+					a.constraints.back() = std::move(upGreedyConstraint);
+					continue;
+				}
 				else if (*s.it == '?')
 				{
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
@@ -161,6 +188,7 @@ namespace soup
 					// opt --[success]-> constraint
 					upOptConstraint->success_transition = pModifiedConstraint->getTransition();
 
+					// constraint --[success]-> next-constraint
 					// opt --[rollback]-> next-constraint
 					success_transitions.emplace(&upOptConstraint->rollback_transition);
 
