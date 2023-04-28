@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RegexFlags.hpp"
 #include "RegexGroup.hpp"
 #include "RegexMatchResult.hpp"
 
@@ -7,13 +8,6 @@ namespace soup
 {
 	struct Regex
 	{
-		enum Flags : uint16_t
-		{
-			single_line = (1 << 0), // 's' - '.' also matches '\n' - a.k.a. "dotall"
-			multi_line = (1 << 1), // 'm' - '^' and '$' also match start and end of lines, respectively
-			dollar_end_only = (1 << 2), // 'D' - '$' only matches end of pattern, not '\n' - ignored if multi_line flag is set
-		};
-
 		RegexGroup group;
 
 		Regex(const std::string& pattern, const char* flags)
@@ -78,15 +72,15 @@ namespace soup
 			{
 				if (*flags == 's')
 				{
-					res |= single_line;
+					res |= RE_DOTALL;
 				}
 				else if (*flags == 'm')
 				{
-					res |= multi_line;
+					res |= RE_MULTILINE;
 				}
 				else if (*flags == 'D')
 				{
-					res |= dollar_end_only;
+					res |= RE_DOLLAR_ENDONLY;
 				}
 			}
 			return res;

@@ -6,7 +6,7 @@
 
 namespace soup
 {
-	template <bool single_line>
+	template <bool dotall>
 	struct RegexAnyCharConstraint : public RegexConstraintTransitionable
 	{
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
@@ -15,7 +15,7 @@ namespace soup
 			{
 				return false;
 			}
-			if constexpr (!single_line)
+			if constexpr (!dotall)
 			{
 				if (*m.it == '\n')
 				{
@@ -33,13 +33,13 @@ namespace soup
 
 		void getFlags(uint16_t& set, uint16_t& unset) const noexcept final
 		{
-			if constexpr (single_line)
+			if constexpr (dotall)
 			{
-				set |= Regex::single_line;
+				set |= RE_DOTALL;
 			}
 			else
 			{
-				unset |= Regex::single_line;
+				unset |= RE_DOTALL;
 			}
 		}
 	};

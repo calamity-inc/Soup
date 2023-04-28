@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	template <bool multi_line, bool dollar_end_only>
+	template <bool multi_line, bool end_only>
 	struct RegexEndConstraint : public RegexConstraintTransitionable
 	{
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
@@ -20,7 +20,7 @@ namespace soup
 					return true;
 				}
 			}
-			else if constexpr (!dollar_end_only)
+			else if constexpr (!end_only)
 			{
 				if ((m.it + 1) == m.end
 					&& *m.it == '\n'
@@ -41,19 +41,19 @@ namespace soup
 		{
 			if constexpr (multi_line)
 			{
-				set |= Regex::multi_line;
+				set |= RE_MULTILINE;
 			}
 			else
 			{
-				unset |= Regex::multi_line;
+				unset |= RE_MULTILINE;
 			}
-			if constexpr (dollar_end_only)
+			if constexpr (end_only)
 			{
-				set |= Regex::dollar_end_only;
+				set |= RE_DOLLAR_ENDONLY;
 			}
 			else
 			{
-				unset |= Regex::dollar_end_only;
+				unset |= RE_DOLLAR_ENDONLY;
 			}
 		}
 	};

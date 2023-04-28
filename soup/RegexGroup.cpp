@@ -1,6 +1,7 @@
 #include "RegexGroup.hpp"
 
-#include "Regex.hpp"
+#include "RegexFlags.hpp"
+
 #include "RegexAnyCharConstraint.hpp"
 #include "RegexCharConstraint.hpp"
 #include "RegexEndConstraint.hpp"
@@ -172,7 +173,7 @@ namespace soup
 				else if (*s.it == '.')
 				{
 					UniquePtr<RegexConstraintTransitionable> upC;
-					if (s.flags & Regex::single_line)
+					if (s.flags & RE_DOTALL)
 					{
 						upC = soup::make_unique<RegexAnyCharConstraint<true>>();
 					}
@@ -198,7 +199,7 @@ namespace soup
 				else if (*s.it == '^')
 				{
 					UniquePtr<RegexConstraintTransitionable> upC;
-					if (s.flags & Regex::multi_line)
+					if (s.flags & RE_MULTILINE)
 					{
 						upC = soup::make_unique<RegexStartConstraint<true>>();
 					}
@@ -215,11 +216,11 @@ namespace soup
 				else if (*s.it == '$')
 				{
 					UniquePtr<RegexConstraintTransitionable> upC;
-					if (s.flags & Regex::multi_line)
+					if (s.flags & RE_MULTILINE)
 					{
 						upC = soup::make_unique<RegexEndConstraint<true, false>>();
 					}
-					else if (s.flags & Regex::dollar_end_only)
+					else if (s.flags & RE_DOLLAR_ENDONLY)
 					{
 						upC = soup::make_unique<RegexEndConstraint<false, true>>();
 					}

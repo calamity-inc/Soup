@@ -34,11 +34,11 @@ namespace soup
 		{
 			if constexpr (multi_line)
 			{
-				set |= Regex::multi_line;
+				set |= RE_MULTILINE;
 			}
 			else
 			{
-				unset |= Regex::multi_line;
+				unset |= RE_MULTILINE;
 			}
 		}
 	};

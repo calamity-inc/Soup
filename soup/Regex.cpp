@@ -131,15 +131,15 @@ namespace soup
 	std::string Regex::unparseFlags(uint16_t flags)
 	{
 		std::string str{};
-		if (flags & single_line)
+		if (flags & RE_DOTALL)
 		{
 			str.push_back('s');
 		}
-		if (flags & multi_line)
+		if (flags & RE_MULTILINE)
 		{
 			str.push_back('m');
 		}
-		if (flags & dollar_end_only)
+		if (flags & RE_DOLLAR_ENDONLY)
 		{
 			str.push_back('D');
 		}
