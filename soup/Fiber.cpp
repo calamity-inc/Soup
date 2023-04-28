@@ -9,7 +9,7 @@
 namespace soup
 {
 #if SOUP_WINDOWS
-	__stdcall void Fiber::entry(void* _f)
+	void __stdcall Fiber::entry(void* _f)
 #else
 	void Fiber::entry()
 #endif

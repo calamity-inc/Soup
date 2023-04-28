@@ -110,19 +110,19 @@ namespace soup
 
 	Vector3 Matrix::getRotationXYZ() noexcept
 	{
-		float sy = sqrt(at(0, 0) * at(0, 0) + at(1, 0) * at(1, 0));
+		float sy = sqrtf(at(0, 0) * at(0, 0) + at(1, 0) * at(1, 0));
 		bool singular = sy < 1e-6;
 		float x, y, z;
 		if (!singular)
 		{
-			x = atan2(at(2, 1), at(2, 2));
-			y = atan2(-at(2, 0), sy);
-			z = atan2(at(1, 0), at(0, 0));
+			x = atan2f(at(2, 1), at(2, 2));
+			y = atan2f(-at(2, 0), sy);
+			z = atan2f(at(1, 0), at(0, 0));
 		}
 		else
 		{
-			x = atan2(-at(1, 2), at(1, 1));
-			y = atan2(-at(2, 0), sy);
+			x = atan2f(-at(1, 2), at(1, 1));
+			y = atan2f(-at(2, 0), sy);
 			z = 0.0f;
 		}
 		return Vector3(RAD_TO_DEG(x), RAD_TO_DEG(y), RAD_TO_DEG(z));

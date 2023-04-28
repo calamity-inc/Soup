@@ -30,7 +30,7 @@ namespace soup
 #endif
 
 #if SOUP_WINDOWS
-		static __stdcall void entry(void*);
+		static void __stdcall entry(void*);
 #else
 		static void entry();
 #endif

@@ -116,8 +116,8 @@ namespace soup
 			cosTheta = -cosTheta;
 			bFlip = true;
 		}
-		float theta = acos(cosTheta);
-		float sinTheta = sin(theta);
+		float theta = acosf(cosTheta);
+		float sinTheta = sinf(theta);
 
 		if (sinTheta <= 0.005f)
 		{
@@ -127,8 +127,8 @@ namespace soup
 		}
 		else
 		{
-			w1 = sin((1.0f - t) * theta) / sinTheta;
-			w2 = sin(t * theta) / sinTheta;
+			w1 = sinf((1.0f - t) * theta) / sinTheta;
+			w2 = sinf(t * theta) / sinTheta;
 		}
 
 		if (bFlip)

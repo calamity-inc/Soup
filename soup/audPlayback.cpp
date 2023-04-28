@@ -56,7 +56,7 @@ namespace soup
 		free(heap);
 	}
 
-	static CALLBACK void waveCallbackStatic(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+	static void CALLBACK waveCallbackStatic(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 	{
 		reinterpret_cast<waveOutData*>(dwInstance)->handleMessage(uMsg);
 	}
