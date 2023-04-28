@@ -414,6 +414,8 @@ static void unit_data()
 		assert(Regex("A?BC").matches("BC") == true);
 		assert(Regex("A?BC").matches("ABC") == true);
 		assert(Regex("A?BC").matches("DBC") == false);
+
+		assert(Regex("").match("ABC").toString() == R"(0="")");
 	});
 }
 

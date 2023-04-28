@@ -118,7 +118,13 @@ namespace soup
 	_match_success:
 		RegexMatchResult res;
 		res.groups = std::move(m.groups);
-		SOUP_ASSERT(res.isSuccess());
+
+		// Handle match of empty regex
+		SOUP_IF_UNLIKELY (!res.isSuccess())
+		{
+			res.groups.emplace_back(RegexMatchedGroup{ {}, m.begin, m.it });
+		}
+
 		return res;
 	}
 
