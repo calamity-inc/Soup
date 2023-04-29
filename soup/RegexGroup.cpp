@@ -8,6 +8,7 @@
 #include "RegexGreedyOneConstraint.hpp"
 #include "RegexGreedyZeroConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
+#include "RegexNegativeLookaheadConstraint.hpp"
 #include "RegexPositiveLookaheadConstraint.hpp"
 #include "RegexOptConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
@@ -94,6 +95,7 @@ namespace soup
 				{
 					bool non_capturing = false;
 					bool positive_lookahead = false;
+					bool negative_lookahead = false;
 					std::string name{};
 					if (++s.it != s.end && *s.it == '?')
 					{
@@ -120,6 +122,11 @@ namespace soup
 								positive_lookahead = true;
 								++s.it;
 							}
+							else if (*s.it == '!')
+							{
+								negative_lookahead = true;
+								++s.it;
+							}
 						}
 					}
 					if (positive_lookahead)
@@ -139,6 +146,30 @@ namespace soup
 
 							// group --> next-constraint
 							success_transitions.emplace(&upGC->success_transition);
+						}
+
+						a.constraints.emplace_back(std::move(upGC));
+					}
+					else if (negative_lookahead)
+					{
+						auto upGC = soup::make_unique<RegexNegativeLookaheadConstraint>(s);
+						upGC->group.parent = this;
+						upGC->group.lookahead = true;
+
+						if (upGC->group.initial)
+						{
+							// last-constraint --[success]-> first-lookahead-constraint
+							success_transitions.setTransitionTo(upGC->group.initial);
+							success_transitions.data = std::move(s.alternatives_transitions);
+						}
+
+						// last-lookahead-constraint --[success]-> fail
+						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraintTransitionable*>(0b10));
+
+						if (upGC->group.initial)
+						{
+							// first-lookahead-constraint --[rollback]-> next-constraint
+							success_transitions.emplace(&const_cast<RegexConstraintTransitionable*>(upGC->group.initial)->rollback_transition);
 						}
 
 						a.constraints.emplace_back(std::move(upGC));

@@ -7,11 +7,11 @@
 
 namespace soup
 {
-	struct RegexPositiveLookaheadConstraint : public RegexConstraintTransitionable
+	struct RegexNegativeLookaheadConstraint : public RegexConstraintTransitionable
 	{
 		RegexGroup group;
 
-		RegexPositiveLookaheadConstraint(const RegexGroup::ConstructorState& s)
+		RegexNegativeLookaheadConstraint(const RegexGroup::ConstructorState& s)
 			: group(s, true)
 		{
 		}
@@ -30,7 +30,7 @@ namespace soup
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			auto str = group.toString();
-			str.insert(0, "(?=");
+			str.insert(0, "(?!");
 			str.push_back(')');
 			return str;
 		}

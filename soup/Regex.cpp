@@ -89,14 +89,21 @@ namespace soup
 				}
 
 				m.c = m.c->success_transition;
-				SOUP_ASSERT(reinterpret_cast<uintptr_t>(m.c) != 1);
 				if (reinterpret_cast<uintptr_t>(m.c) & 1)
 				{
 #if REGEX_DEBUG_MATCH
 					std::cout << "saved checkpoint; ";
 #endif
 					m.c = reinterpret_cast<const RegexConstraintTransitionable*>(reinterpret_cast<uintptr_t>(m.c) & ~1);
+					SOUP_ASSERT(m.c != nullptr);
 					m.saveCheckpoint();
+				}
+				if (reinterpret_cast<uintptr_t>(m.c) == 0b10)
+				{
+#if REGEX_DEBUG_MATCH
+					std::cout << "matched into a snafu\n";
+#endif
+					return {};
 				}
 #if REGEX_DEBUG_MATCH
 				std::cout << "matched\n";

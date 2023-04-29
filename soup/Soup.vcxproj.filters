@@ -1341,6 +1341,9 @@
     <ClInclude Include="RegexPositiveLookaheadConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
+    <ClInclude Include="RegexNegativeLookaheadConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
