@@ -36,6 +36,23 @@ namespace soup
 		m_data.emplace_back(0x90);
 	}
 
+	void AssemblyBuilder::setAtoZero()
+	{
+		uint8_t bytes[] = {
+			0x31, 0xC0 // xor eax, eax
+		};
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::setA(uint32_t val)
+	{
+		uint8_t bytes[] = {
+			0xB8, 0x00, 0x00, 0x00, 0x00
+		};
+		*(uint32_t*)(&bytes[0] + 1) = val;
+		addBytes(bytes);
+	}
+
 	void AssemblyBuilder::setA(uint64_t val)
 	{
 		uint8_t bytes[] = {
@@ -96,6 +113,22 @@ namespace soup
 		addBytes(bytes);
 	}
 
+	void AssemblyBuilder::setAtoU64fromC()
+	{
+		uint8_t bytes[] = {
+			0x48, 0x8B, 0x01
+		};
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::setU64fromCtoA()
+	{
+		uint8_t bytes[] = {
+			0x48, 0x89, 0x01
+		};
+		addBytes(bytes);
+	}
+
 	void AssemblyBuilder::incRAX()
 	{
 		uint8_t bytes[] = {
@@ -125,6 +158,41 @@ namespace soup
 		uint8_t bytes[] = {
 			0xFF, 0xE0
 		};
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::cmpRAXtoRDX()
+	{
+		uint8_t bytes[] = {
+			0x48, 0x39, 0xD0
+		};
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::cmpPtrRAX(uint8_t val)
+	{
+		uint8_t bytes[] = {
+			0x80, 0x38, 0x00
+		};
+		*(uint8_t*)(&bytes[0] + 2) = val;
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::je(int8_t offset)
+	{
+		uint8_t bytes[] = {
+			0x74, 0x00
+		};
+		*(int8_t*)(&bytes[0] + 1) = offset;
+		addBytes(bytes);
+	}
+
+	void AssemblyBuilder::jne(int8_t offset)
+	{
+		uint8_t bytes[] = {
+			0x75, 0x00
+		};
+		*(int8_t*)(&bytes[0] + 1) = offset;
 		addBytes(bytes);
 	}
 

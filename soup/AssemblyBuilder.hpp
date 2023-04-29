@@ -26,6 +26,9 @@ namespace soup
 		void retn();
 		void nop();
 
+		void setAtoZero();
+
+		void setA(uint32_t val);
 		void setA(uint64_t val);
 		void setD(uint64_t val);
 		void set8(uint64_t val);
@@ -35,6 +38,9 @@ namespace soup
 		void set12toC(); // mov r12, rcx
 		void setCto12(); // mov rcx, r12
 
+		void setAtoU64fromC(); // mov rax, qword ptr [rcx]
+		void setU64fromCtoA(); // mov qword ptr [rcx], rax
+
 		void incRAX();
 
 		void movPtrRAX(uint8_t val);
@@ -42,6 +48,12 @@ namespace soup
 		void callA();
 
 		void jmpA();
+
+		void cmpRAXtoRDX();
+		void cmpPtrRAX(uint8_t val);
+
+		void je(int8_t offset);
+		void jne(int8_t offset);
 
 		uint8_t* data();
 		const uint8_t* data() const;
