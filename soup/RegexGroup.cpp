@@ -128,15 +128,18 @@ namespace soup
 						upGC->group.parent = this;
 						upGC->group.lookahead = true;
 
-						// last-constraint --[success]-> first-lookahead-constraint + save checkpoint
-						success_transitions.setTransitionTo(upGC->group.initial, true);
-						success_transitions.data = std::move(s.alternatives_transitions);
+						if (upGC->group.initial)
+						{
+							// last-constraint --[success]-> first-lookahead-constraint + save checkpoint
+							success_transitions.setTransitionTo(upGC->group.initial, true);
+							success_transitions.data = std::move(s.alternatives_transitions);
 
-						// last-lookahead-constraint --[success]-> group (to restore checkpoint)
-						success_transitions.setTransitionTo(upGC.get());
+							// last-lookahead-constraint --[success]-> group (to restore checkpoint)
+							success_transitions.setTransitionTo(upGC.get());
 
-						// group --> next-constraint
-						success_transitions.emplace(&upGC->success_transition);
+							// group --> next-constraint
+							success_transitions.emplace(&upGC->success_transition);
+						}
 
 						a.constraints.emplace_back(std::move(upGC));
 					}

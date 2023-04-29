@@ -424,6 +424,8 @@ static void unit_data()
 		assert(Regex("A(?=BC)B").match("AB").toString() == "");
 		assert(Regex("A(?=BC)B").match("ABC").toString() == R"(0="AB")");
 		assert(Regex("A(?=B+C)B").match("ABC").toString() == R"(0="AB")");
+
+		assert(Regex("A(?=)B").matchesFully("AB"));
 	});
 }
 
