@@ -429,6 +429,11 @@ static void unit_data()
 		assert(Regex("A(?!BC)B").match("AB").toString() == R"(0="AB")");
 		assert(Regex("A(?!BC)B").match("ABC").toString() == "");
 		assert(Regex("A(?!)B").match("AB").toString() == "");
+
+		assert(Regex("A{0}B").matchesFully("B") == true);
+		assert(Regex("A{0}B").matches("AB") == false);
+		assert(Regex("A{3}B").matches("AAB") == false);
+		assert(Regex("A{3}B").matchesFully("AAAB") == true);
 	});
 }
 

@@ -42,5 +42,10 @@ namespace soup
 				unset |= RE_DOTALL;
 			}
 		}
+
+		UniquePtr<RegexConstraint> clone() const final
+		{
+			return soup::make_unique<RegexAnyCharConstraint>();
+		}
 	};
 }

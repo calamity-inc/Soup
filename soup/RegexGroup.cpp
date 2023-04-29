@@ -1,6 +1,7 @@
 #include "RegexGroup.hpp"
 
 #include "RegexFlags.hpp"
+#include "string.hpp"
 
 #include "RegexAnyCharConstraint.hpp"
 #include "RegexCharConstraint.hpp"
@@ -12,6 +13,7 @@
 #include "RegexPositiveLookaheadConstraint.hpp"
 #include "RegexOptConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
+#include "RegexRepConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 
 namespace soup
@@ -57,6 +59,17 @@ namespace soup
 				outTransitions.emplace_back(p);
 			}
 			data.clear();
+		}
+
+		void rollback() noexcept
+		{
+			data = std::move(prev_data);
+			prev_data.clear();
+
+			for (const auto& p : data)
+			{
+				*p = nullptr;
+			}
 		}
 	};
 
@@ -328,6 +341,44 @@ namespace soup
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);
 					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == '{')
+				{
+					size_t i = 0;
+					while (++s.it != s.end && string::isNumberChar(*s.it))
+					{
+						i *= 10;
+						i += ((*s.it) - '0');
+					}
+
+					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
+					auto pModifiedConstraint = upModifiedConstraint.get();
+					if (i == 0)
+					{
+						success_transitions.rollback();
+						a.constraints.pop_back();
+					}
+					else
+					{
+						auto upRepConstraint = soup::make_unique<RegexRepConstraint>();
+						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
+						pModifiedConstraint->group = this;
+						while (--i != 0)
+						{
+							auto upClone = pModifiedConstraint->clone();
+							upClone->group = this;
+
+							// constraint --[success]-> clone
+							success_transitions.setTransitionTo(upClone->getTransition());
+
+							// clone --[success]-> whatever-comes-next
+							success_transitions.emplace(&upClone->success_transition);
+
+							upRepConstraint->constraints.emplace_back(std::move(upClone));
+						}
+						a.constraints.back() = std::move(upRepConstraint);
+					}
 					continue;
 				}
 			}

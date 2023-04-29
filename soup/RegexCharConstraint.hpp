@@ -49,5 +49,10 @@ namespace soup
 			}
 			return str;
 		}
+
+		UniquePtr<RegexConstraint> clone() const final
+		{
+			return soup::make_unique<RegexCharConstraint>(c);
+		}
 	};
 }

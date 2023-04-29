@@ -505,6 +505,7 @@
     <ClInclude Include="RegexMatchResult.hpp" />
     <ClInclude Include="RegexOptConstraint.hpp" />
     <ClInclude Include="RegexRangeConstraint.hpp" />
+    <ClInclude Include="RegexRepConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="T128.hpp" />
