@@ -303,6 +303,10 @@ namespace soup
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);
 					success_transitions.emplace(&pC->success_transition);
+					if (s.it == s.end)
+					{
+						break;
+					}
 					continue;
 				}
 				else if (*s.it == '^')
