@@ -44,7 +44,12 @@ namespace soup
 
 	RegexMatchResult Regex::match(std::string::const_iterator it, std::string::const_iterator end) const noexcept
 	{
-		RegexMatcher m(*this, it, end);
+		return match(it, it, end);
+	}
+
+	RegexMatchResult Regex::match(std::string::const_iterator it, std::string::const_iterator begin, std::string::const_iterator end) const noexcept
+	{
+		RegexMatcher m(*this, it, begin, end);
 		while (m.c != nullptr)
 		{
 #if REGEX_DEBUG_MATCH
@@ -147,6 +152,25 @@ namespace soup
 		SOUP_ASSERT(m.checkpoints.empty()); // if we made a checkpoint for a lookahead group, it should have been restored.
 
 		return res;
+	}
+
+	RegexMatchResult Regex::search(const std::string& str) const noexcept
+	{
+		return search(str.cbegin(), str.cend());
+	}
+
+	RegexMatchResult Regex::search(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	{
+		const auto begin = it;
+		for (; it != end; ++it)
+		{
+			auto res = match(it, begin, end);
+			if (res.isSuccess())
+			{
+				return res;
+			}
+		}
+		return {};
 	}
 
 	std::string Regex::unparseFlags(uint16_t flags)

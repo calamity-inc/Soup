@@ -27,8 +27,8 @@ namespace soup
 		std::stack<std::string::const_iterator> checkpoints{};
 		std::vector<std::optional<RegexMatchedGroup>> groups{};
 
-		RegexMatcher(const Regex& r, std::string::const_iterator begin, std::string::const_iterator end)
-			: c(r.group.initial), it(begin), begin(begin), end(end)
+		RegexMatcher(const Regex& r, std::string::const_iterator it, std::string::const_iterator begin, std::string::const_iterator end)
+			: c(r.group.initial), it(it), begin(begin), end(end)
 		{
 		}
 
