@@ -351,6 +351,10 @@ namespace soup
 						i *= 10;
 						i += ((*s.it) - '0');
 					}
+					if (s.it == s.end)
+					{
+						break;
+					}
 
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 					auto pModifiedConstraint = upModifiedConstraint.get();
