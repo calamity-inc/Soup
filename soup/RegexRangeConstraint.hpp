@@ -31,6 +31,190 @@ namespace soup
 						}
 					}
 				}
+				else if (*it == '['
+					&& (it + 1) != end && *++it == ':'
+					)
+				{
+					if ((it + 1) != end && *(it + 1) == 'a'
+						&& (it + 2) != end && *(it + 2) == 'l'
+						&& (it + 3) != end && *(it + 3) == 'n'
+						&& (it + 4) != end && *(it + 4) == 'u'
+						&& (it + 5) != end && *(it + 5) == 'm'
+						)
+					{
+						it += 5;
+						for (uint8_t c = '0'; c != '9' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						for (uint8_t c = 'A'; c != 'Z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						for (uint8_t c = 'a'; c != 'z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else if ((it + 1) != end && *(it + 1) == 'a'
+						&& (it + 2) != end && *(it + 2) == 'l'
+						&& (it + 3) != end && *(it + 3) == 'p'
+						&& (it + 4) != end && *(it + 4) == 'h'
+						&& (it + 5) != end && *(it + 5) == 'a'
+						)
+					{
+						it += 5;
+						for (uint8_t c = 'A'; c != 'Z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						for (uint8_t c = 'a'; c != 'z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else if ((it + 1) != end && *(it + 1) == 'a'
+						&& (it + 2) != end && *(it + 2) == 's'
+						&& (it + 3) != end && *(it + 3) == 'c'
+						&& (it + 4) != end && *(it + 4) == 'i'
+						&& (it + 5) != end && *(it + 5) == 'i'
+						)
+					{
+						it += 5;
+						for (uint8_t c = 0x00; c != 0x7F + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else if ((it + 1) != end && *(it + 1) == 'b'
+						&& (it + 2) != end && *(it + 2) == 'l'
+						&& (it + 3) != end && *(it + 3) == 'a'
+						&& (it + 4) != end && *(it + 4) == 'n'
+						&& (it + 5) != end && *(it + 5) == 'k'
+						)
+					{
+						it += 5;
+						mask.enable(' ');
+						mask.enable('\t');
+					}
+					else if ((it + 1) != end && *(it + 1) == 'c'
+						&& (it + 2) != end && *(it + 2) == 'n'
+						&& (it + 3) != end && *(it + 3) == 't'
+						&& (it + 4) != end && *(it + 4) == 'r'
+						&& (it + 5) != end && *(it + 5) == 'l'
+						)
+					{
+						it += 5;
+						for (uint8_t c = 0x00; c != 0x1F + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						mask.enable(0x7F);
+					}
+					else if ((it + 1) != end && *(it + 1) == 'd'
+						&& (it + 2) != end && *(it + 2) == 'i'
+						&& (it + 3) != end && *(it + 3) == 'g'
+						&& (it + 4) != end && *(it + 4) == 'i'
+						&& (it + 5) != end && *(it + 5) == 't'
+						)
+					{
+						it += 5;
+						for (uint8_t c = '0'; c != '9' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else if ((it + 1) != end && *(it + 1) == 'g'
+						&& (it + 2) != end && *(it + 2) == 'r'
+						&& (it + 3) != end && *(it + 3) == 'a'
+						&& (it + 4) != end && *(it + 4) == 'p'
+						&& (it + 5) != end && *(it + 5) == 'h'
+						)
+					{
+						it += 5;
+						for (uint8_t c = 0x21; c != 0x7E + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else if ((it + 1) != end && *(it + 1) == 'l'
+						&& (it + 2) != end && *(it + 2) == 'o'
+						&& (it + 3) != end && *(it + 3) == 'w'
+						&& (it + 4) != end && *(it + 4) == 'e'
+						&& (it + 5) != end && *(it + 5) == 'r'
+						)
+					{
+						it += 5;
+						for (uint8_t c = 'a'; c != 'z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else if ((it + 1) != end && *(it + 1) == 'u'
+						&& (it + 2) != end && *(it + 2) == 'p'
+						&& (it + 3) != end && *(it + 3) == 'p'
+						&& (it + 4) != end && *(it + 4) == 'e'
+						&& (it + 5) != end && *(it + 5) == 'r'
+						)
+					{
+						it += 5;
+						for (uint8_t c = 'A'; c != 'Z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else if ((it + 1) != end && *(it + 1) == 'w'
+						&& (it + 2) != end && *(it + 2) == 'o'
+						&& (it + 3) != end && *(it + 3) == 'r'
+						&& (it + 4) != end && *(it + 4) == 'd'
+						)
+					{
+						it += 4;
+						for (uint8_t c = '0'; c != '9' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						for (uint8_t c = 'A'; c != 'Z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						for (uint8_t c = 'a'; c != 'z' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						mask.enable('_');
+					}
+					else if ((it + 1) != end && *(it + 1) == 'x'
+						&& (it + 2) != end && *(it + 2) == 'd'
+						&& (it + 3) != end && *(it + 3) == 'i'
+						&& (it + 4) != end && *(it + 4) == 'g'
+						&& (it + 5) != end && *(it + 5) == 'i'
+						&& (it + 6) != end && *(it + 6) == 't'
+						)
+					{
+						it += 6;
+						for (uint8_t c = '0'; c != '9' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						for (uint8_t c = 'A'; c != 'F' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+						for (uint8_t c = 'a'; c != 'f' + 1; ++c)
+						{
+							mask.enable(c);
+						}
+					}
+					else
+					{
+						// Skip until next char is ':'
+						while ((it + 1) != end && (++it, (it + 1) != end) && (*(it + 1) != ':'));
+					}
+					if ((it + 1) != end) { ++it; } // :
+					if ((it + 1) != end) { ++it; } // ]
+					continue;
+				}
 				mask.enable(*it);
 				range_begin = (*it) + 1;
 			}
