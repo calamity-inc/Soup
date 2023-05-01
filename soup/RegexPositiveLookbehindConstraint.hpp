@@ -43,5 +43,10 @@ namespace soup
 		{
 			group.getFlags(set, unset);
 		}
+
+		[[nodiscard]] size_t getCursorAdvancement() const final
+		{
+			return 0;
+		}
 	};
 }
