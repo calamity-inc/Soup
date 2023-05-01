@@ -29,6 +29,14 @@ namespace soup
 			data.emplace_back(p);
 		}
 
+		void emplaceRollback(const RegexConstraintTransitionable** p)
+		{
+			data.emplace_back(p);
+
+			// If we don't have a next constraint, rollback is match success.
+			*reinterpret_cast<uintptr_t*>(p) = 1;
+		}
+
 		void setPreviousTransitionTo(const RegexConstraintTransitionable* c) noexcept
 		{
 			for (const auto& p : prev_data)
@@ -253,10 +261,7 @@ namespace soup
 					upGreedyConstraint->success_transition = pModifiedConstraint->getTransition();
 
 					// greedy --[rollback]-> next-constraint
-					success_transitions.emplace(&upGreedyConstraint->rollback_transition);
-
-					// If we don't have a next constraint, rollback is match success.
-					*reinterpret_cast<uintptr_t*>(&upGreedyConstraint->rollback_transition) = 1;
+					success_transitions.emplaceRollback(&upGreedyConstraint->rollback_transition);
 
 					a.constraints.back() = std::move(upGreedyConstraint);
 					continue;
@@ -279,10 +284,7 @@ namespace soup
 					upGreedyConstraint->success_transition = pModifiedConstraint->getTransition();
 
 					// greedy --[rollback]-> next-constraint
-					success_transitions.emplace(&upGreedyConstraint->rollback_transition);
-
-					// If we don't have a next constraint, rollback is match success.
-					*reinterpret_cast<uintptr_t*>(&upGreedyConstraint->rollback_transition) = 1;
+					success_transitions.emplaceRollback(&upGreedyConstraint->rollback_transition);
 
 					a.constraints.back() = std::move(upGreedyConstraint);
 					continue;
@@ -303,10 +305,7 @@ namespace soup
 
 					// constraint --[success]-> next-constraint
 					// opt --[rollback]-> next-constraint
-					success_transitions.emplace(&upOptConstraint->rollback_transition);
-
-					// If we don't have a next constraint, rollback is match success.
-					*reinterpret_cast<uintptr_t*>(&upOptConstraint->rollback_transition) = 1;
+					success_transitions.emplaceRollback(&upOptConstraint->rollback_transition);
 
 					a.constraints.back() = std::move(upOptConstraint);
 					continue;
