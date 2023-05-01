@@ -4,6 +4,7 @@
 
 #include "base.hpp"
 #include "BigBitset.hpp"
+#include "Exception.hpp"
 #include "RegexMatcher.hpp"
 
 namespace soup
@@ -208,8 +209,7 @@ namespace soup
 					}
 					else
 					{
-						// Skip until next char is ':'
-						while ((it + 1) != end && (++it, (it + 1) != end) && (*(it + 1) != ':'));
+						throw Exception("Unrecognised class in [[:class:]]");
 					}
 					if ((it + 1) != end) { ++it; } // :
 					if ((it + 1) != end) { ++it; } // ]
