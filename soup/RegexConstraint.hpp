@@ -4,6 +4,8 @@
 
 #include "fwd.hpp"
 
+#include "Exception.hpp"
+
 namespace soup
 {
 	struct RegexConstraint
@@ -18,12 +20,12 @@ namespace soup
 
 		[[nodiscard]] virtual size_t getCursorAdvancement() const
 		{
-			throw 0;
+			throw Exception("Constraint is not fixed-width");
 		}
 
 		[[nodiscard]] virtual UniquePtr<RegexConstraint> clone() const
 		{
-			throw 0;
+			throw Exception("Constraint is not clonable");
 		}
 
 		[[nodiscard]] virtual std::string toString() const noexcept = 0;

@@ -4,7 +4,6 @@
 
 #include "base.hpp"
 #include "BigBitset.hpp"
-#include "Exception.hpp"
 #include "RegexMatcher.hpp"
 
 namespace soup
