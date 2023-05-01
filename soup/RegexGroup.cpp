@@ -214,7 +214,7 @@ namespace soup
 						success_transitions.emplace(&upGC->success_transition);
 						success_transitions.setTransitionTo(upGC->group.initial);
 
-						// first-lookbehind-constraint --[success]-> next-constraint
+						// last-lookbehind-constraint --[success]-> next-constraint
 						success_transitions.data = std::move(s.alternatives_transitions);
 
 						a.constraints.emplace_back(std::move(upGC));
