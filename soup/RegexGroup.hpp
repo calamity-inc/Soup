@@ -28,7 +28,7 @@ namespace soup
 		const RegexConstraintTransitionable* initial = nullptr;
 		std::vector<RegexAlternative> alternatives{};
 		std::string name{};
-		bool lookahead = false;
+		bool lookahead_or_lookbehind = false;
 
 		RegexGroup(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags)
 			: RegexGroup(ConstructorState(it, end, flags))
@@ -41,5 +41,7 @@ namespace soup
 
 		[[nodiscard]] uint16_t getFlags() const;
 		void getFlags(uint16_t& set, uint16_t& unset) const noexcept;
+
+		[[nodiscard]] size_t getCursorAdvancement() const;
 	};
 }

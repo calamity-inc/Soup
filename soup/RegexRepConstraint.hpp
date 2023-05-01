@@ -25,5 +25,10 @@ namespace soup
 			str.push_back('}');
 			return str;
 		}
+
+		[[nodiscard]] size_t getCursorAdvancement() const final
+		{
+			return constraints.at(0)->getCursorAdvancement() * constraints.size();
+		}
 	};
 }

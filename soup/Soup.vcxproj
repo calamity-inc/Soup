@@ -504,6 +504,7 @@
     <ClInclude Include="RegexMatcher.hpp" />
     <ClInclude Include="RegexMatchResult.hpp" />
     <ClInclude Include="RegexOptConstraint.hpp" />
+    <ClInclude Include="RegexPositiveLookbehindConstraint.hpp" />
     <ClInclude Include="RegexRangeConstraint.hpp" />
     <ClInclude Include="RegexRepConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />

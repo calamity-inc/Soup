@@ -11,6 +11,7 @@
 #include "RegexGroupConstraint.hpp"
 #include "RegexNegativeLookaheadConstraint.hpp"
 #include "RegexPositiveLookaheadConstraint.hpp"
+#include "RegexPositiveLookbehindConstraint.hpp"
 #include "RegexOptConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
 #include "RegexRepConstraint.hpp"
@@ -109,6 +110,7 @@ namespace soup
 					bool non_capturing = false;
 					bool positive_lookahead = false;
 					bool negative_lookahead = false;
+					bool positive_lookbehind = false;
 					std::string name{};
 					if (++s.it != s.end && *s.it == '?')
 					{
@@ -140,13 +142,24 @@ namespace soup
 								negative_lookahead = true;
 								++s.it;
 							}
+							else if (*s.it == '<')
+							{
+								if (++s.it != s.end)
+								{
+									if (*s.it == '=')
+									{
+										positive_lookbehind = true;
+										++s.it;
+									}
+								}
+							}
 						}
 					}
 					if (positive_lookahead)
 					{
 						auto upGC = soup::make_unique<RegexPositiveLookaheadConstraint>(s);
 						upGC->group.parent = this;
-						upGC->group.lookahead = true;
+						upGC->group.lookahead_or_lookbehind = true;
 
 						if (upGC->group.initial)
 						{
@@ -167,7 +180,7 @@ namespace soup
 					{
 						auto upGC = soup::make_unique<RegexNegativeLookaheadConstraint>(s);
 						upGC->group.parent = this;
-						upGC->group.lookahead = true;
+						upGC->group.lookahead_or_lookbehind = true;
 
 						if (upGC->group.initial)
 						{
@@ -184,6 +197,25 @@ namespace soup
 							// first-lookahead-constraint --[rollback]-> next-constraint
 							success_transitions.emplace(&const_cast<RegexConstraintTransitionable*>(upGC->group.initial)->rollback_transition);
 						}
+
+						a.constraints.emplace_back(std::move(upGC));
+					}
+					else if (positive_lookbehind)
+					{
+						auto upGC = soup::make_unique<RegexPositiveLookbehindConstraint>(s);
+						upGC->group.parent = this;
+						upGC->group.lookahead_or_lookbehind = true;
+						upGC->window = upGC->group.getCursorAdvancement();
+
+						// last-constraint --[success]-> group (to move cursor)
+						success_transitions.setTransitionTo(upGC.get());
+
+						// group --> first-lookbehind-constraint
+						success_transitions.emplace(&upGC->success_transition);
+						success_transitions.setTransitionTo(upGC->group.initial);
+
+						// first-lookbehind-constraint --[success]-> next-constraint
+						success_transitions.data = std::move(s.alternatives_transitions);
 
 						a.constraints.emplace_back(std::move(upGC));
 					}
@@ -459,5 +491,18 @@ namespace soup
 				c->getFlags(set, unset);
 			}
 		}
+	}
+
+	size_t RegexGroup::getCursorAdvancement() const
+	{
+		size_t accum = 0;
+		for (const auto& a : alternatives)
+		{
+			for (const auto& c : a.constraints)
+			{
+				accum += c->getCursorAdvancement();
+			}
+		}
+		return accum;
 	}
 }

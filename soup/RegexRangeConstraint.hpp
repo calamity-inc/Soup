@@ -291,5 +291,10 @@ namespace soup
 			str.push_back(']');
 			return str;
 		}
+
+		[[nodiscard]] size_t getCursorAdvancement() const final
+		{
+			return 1;
+		}
 	};
 }

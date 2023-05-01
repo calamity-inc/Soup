@@ -56,5 +56,10 @@ namespace soup
 				unset |= RE_DOLLAR_ENDONLY;
 			}
 		}
+
+		[[nodiscard]] size_t getCursorAdvancement() const final
+		{
+			return 0;
+		}
 	};
 }

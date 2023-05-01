@@ -41,5 +41,10 @@ namespace soup
 				unset |= RE_MULTILINE;
 			}
 		}
+
+		[[nodiscard]] size_t getCursorAdvancement() const final
+		{
+			return 0;
+		}
 	};
 }

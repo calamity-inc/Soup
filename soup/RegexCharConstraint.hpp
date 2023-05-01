@@ -50,7 +50,12 @@ namespace soup
 			return str;
 		}
 
-		UniquePtr<RegexConstraint> clone() const final
+		[[nodiscard]] size_t getCursorAdvancement() const final
+		{
+			return 1;
+		}
+
+		[[nodiscard]] UniquePtr<RegexConstraint> clone() const final
 		{
 			return soup::make_unique<RegexCharConstraint>(c);
 		}

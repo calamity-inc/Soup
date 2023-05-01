@@ -16,6 +16,11 @@ namespace soup
 
 		[[nodiscard]] virtual const RegexConstraintTransitionable* getTransition() const noexcept = 0;
 
+		[[nodiscard]] virtual size_t getCursorAdvancement() const
+		{
+			throw 0;
+		}
+
 		[[nodiscard]] virtual UniquePtr<RegexConstraint> clone() const
 		{
 			throw 0;

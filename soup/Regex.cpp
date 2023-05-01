@@ -70,7 +70,7 @@ namespace soup
 			{
 				for (auto g = m.c->group; g; g = g->parent)
 				{
-					if (g->lookahead)
+					if (g->lookahead_or_lookbehind)
 					{
 						break;
 					}

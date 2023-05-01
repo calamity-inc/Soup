@@ -434,6 +434,9 @@ static void unit_data()
 		assert(Regex("A{0}B").matches("AB") == false);
 		assert(Regex("A{3}B").matches("AAB") == false);
 		assert(Regex("A{3}B").matchesFully("AAAB") == true);
+
+		assert(Regex("(?<=A)BC").search("BC").toString() == "");
+		assert(Regex("(?<=A)BC").search("ABC").toString() == R"(0="BC")");
 	});
 }
 
