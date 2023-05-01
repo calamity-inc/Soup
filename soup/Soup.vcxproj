@@ -499,6 +499,7 @@
     <ClInclude Include="RegexGroupConstraint.hpp" />
     <ClInclude Include="RegexGroup.hpp" />
     <ClInclude Include="RegexNegativeLookaheadConstraint.hpp" />
+    <ClInclude Include="RegexNegativeLookbehindConstraint.hpp" />
     <ClInclude Include="RegexPositiveLookaheadConstraint.hpp" />
     <ClInclude Include="RegexMatchedGroup.hpp" />
     <ClInclude Include="RegexMatcher.hpp" />

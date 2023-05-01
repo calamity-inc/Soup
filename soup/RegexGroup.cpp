@@ -10,6 +10,7 @@
 #include "RegexGreedyZeroConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
 #include "RegexNegativeLookaheadConstraint.hpp"
+#include "RegexNegativeLookbehindConstraint.hpp"
 #include "RegexPositiveLookaheadConstraint.hpp"
 #include "RegexPositiveLookbehindConstraint.hpp"
 #include "RegexOptConstraint.hpp"
@@ -119,6 +120,7 @@ namespace soup
 					bool positive_lookahead = false;
 					bool negative_lookahead = false;
 					bool positive_lookbehind = false;
+					bool negative_lookbehind = false;
 					std::string name{};
 					if (++s.it != s.end && *s.it == '?')
 					{
@@ -157,6 +159,11 @@ namespace soup
 									if (*s.it == '=')
 									{
 										positive_lookbehind = true;
+										++s.it;
+									}
+									else if (*s.it == '!')
+									{
+										negative_lookbehind = true;
 										++s.it;
 									}
 								}
@@ -224,6 +231,29 @@ namespace soup
 
 						// last-lookbehind-constraint --[success]-> next-constraint
 						success_transitions.data = std::move(s.alternatives_transitions);
+
+						a.constraints.emplace_back(std::move(upGC));
+					}
+					else if (negative_lookbehind)
+					{
+						auto upGC = soup::make_unique<RegexPositiveLookbehindConstraint>(s);
+						upGC->group.parent = this;
+						upGC->group.lookahead_or_lookbehind = true;
+						upGC->window = upGC->group.getCursorAdvancement();
+
+						// last-constraint --[success]-> group (to move cursor)
+						success_transitions.setTransitionTo(upGC.get());
+
+						// group --> first-lookbehind-constraint
+						success_transitions.emplace(&upGC->success_transition);
+						success_transitions.setTransitionTo(upGC->group.initial);
+
+						// last-lookbehind-constraint --[success]-> fail
+						success_transitions.data = std::move(s.alternatives_transitions);
+						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraintTransitionable*>(0b10));
+
+						// group --[rollback]--> next-constraint
+						success_transitions.emplaceRollback(&upGC->rollback_transition);
 
 						a.constraints.emplace_back(std::move(upGC));
 					}
