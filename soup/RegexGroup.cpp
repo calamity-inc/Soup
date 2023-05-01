@@ -73,8 +73,8 @@ namespace soup
 		}
 	};
 
-	RegexGroup::RegexGroup(const ConstructorState& s, bool non_capturing, bool lookahead)
-		: index(non_capturing ? -1 : s.next_index++), lookahead(lookahead)
+	RegexGroup::RegexGroup(const ConstructorState& s, bool non_capturing)
+		: index(non_capturing ? -1 : s.next_index++)
 	{
 		TransitionsVector success_transitions;
 		success_transitions.data = { &initial };
