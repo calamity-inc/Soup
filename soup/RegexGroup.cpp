@@ -17,6 +17,7 @@
 #include "RegexRangeConstraint.hpp"
 #include "RegexRepConstraint.hpp"
 #include "RegexStartConstraint.hpp"
+#include "RegexWordBoundaryConstraint.hpp"
 
 namespace soup
 {
@@ -99,6 +100,15 @@ namespace soup
 			if (escape)
 			{
 				escape = false;
+				if (*s.it == 'b')
+				{
+					auto upC = soup::make_unique<RegexWordBoundaryConstraint>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
 			}
 			else
 			{

@@ -443,6 +443,10 @@ static void unit_data()
 		assert(Regex("(?<!A)BC").search("BC").toString() == R"(0="BC")");
 		assert(Regex("(?<!A)BC").search("ABC").toString() == "");
 		assert(Regex("(?<!A)BC").search("DBC").toString() == R"(0="BC")");
+
+		assert(Regex(R"(\babc\b)").search("abc").toString() == R"(0="abc")");
+		assert(Regex(R"(\babc\b)").search(" abc ").toString() == R"(0="abc")");
+		assert(Regex(R"(\babc\b)").search("_abc_").toString() == "");
 	});
 }
 

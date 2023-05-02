@@ -509,6 +509,7 @@
     <ClInclude Include="RegexRangeConstraint.hpp" />
     <ClInclude Include="RegexRepConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />
+    <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />

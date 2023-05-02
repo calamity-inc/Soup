@@ -181,6 +181,12 @@ namespace soup
 			return isNumberChar(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
 		}
 
+		template <typename T>
+		[[nodiscard]] static constexpr bool isWordChar(const T c) noexcept
+		{
+			return isLetter(c) || isNumberChar(c) || c == '_';
+		}
+
 		// string attributes
 
 		template <typename T>
