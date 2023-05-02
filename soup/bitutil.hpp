@@ -45,12 +45,24 @@ namespace soup
 
 		[[nodiscard]] static constexpr uint8_t getBitsNeededToEncodeRange(size_t range_size) // aka. ceil(log2(range_size))
 		{
-			uint8_t bits = 0;
-			while ((((size_t)1) << bits) < range_size)
+			if (std::is_constant_evaluated()
+#if SOUP_BITS > 32
+				|| range_size > 0xFFFFFFFF
+#endif
+				)
 			{
-				++bits;
+				uint8_t bits = 0;
+				while ((((size_t)1) << bits) < range_size)
+				{
+					++bits;
+				}
+				return bits;
 			}
-			return bits;
+			else
+			{
+				SOUP_ASSERT(range_size != 0);
+				return getMostSignificantSetBit((uint32_t)range_size) + 1;
+			}
 		}
 
 		[[nodiscard]] static unsigned int getLeastSignificantSetBit(unsigned int mask) // UB if mask = 0
