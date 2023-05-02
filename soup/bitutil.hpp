@@ -65,6 +65,17 @@ namespace soup
 #endif
 		}
 
+		[[nodiscard]] static unsigned int getMostSignificantSetBit(unsigned int mask) // UB if mask = 0
+		{
+#if defined(_MSC_VER) && !defined(__clang__)
+			unsigned long ret;
+			_BitScanReverse(&ret, mask);
+			return ret;
+#else
+ 			return 31 - __builtin_clz(mask);
+#endif
+		}
+
 		[[nodiscard]] static std::vector<bool> interleave(const std::vector<std::vector<bool>>& data); // assumes that all inner vectors have the same size
 	};
 }
