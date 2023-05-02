@@ -58,7 +58,7 @@ namespace soup
 			// These intrinsic functions just use the bsf instruction.
 #if defined(_MSC_VER) && !defined(__clang__)
 			unsigned long ret;
-			_BitScanForward((unsigned long*)&ret, mask);
+			_BitScanForward(&ret, mask);
 			return ret;
 #else
 			return __builtin_ctz(mask);
