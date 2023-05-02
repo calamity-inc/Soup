@@ -368,6 +368,19 @@ namespace soup
 			hello.extensions.add(TlsExtensionType::elliptic_curves, ext_elliptic_curves);
 		}
 
+		{
+			// NGINX closes with "internal_error" if signature_algorithms is not present. Just copied the data from Chrome via Wireshark:
+			// - ecdsa_secp256r1_sha256 (0x0403)
+			// - rsa_pss_rsae_sha256 (0x0804)
+			// - rsa_pkcs1_sha256 (0x0401)
+			// - ecdsa_secp384r1_sha384 (0x0503)
+			// - rsa_pss_rsae_sha384 (0x0805)
+			// - rsa_pkcs1_sha384 (0x0501)
+			// - rsa_pss_rsae_sha512 (0x0806)
+			// - rsa_pkcs1_sha512 (0x0601)
+			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01", 18));
+		}
+
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_hello, hello.toBinaryString()))
 		{
 			tls_recvHandshake(std::move(handshaker), TlsHandshake::server_hello, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)

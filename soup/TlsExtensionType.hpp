@@ -8,5 +8,6 @@ namespace soup
 		server_name = 0,
 		elliptic_curves = 10,
 		ec_point_formats = 11,
+		signature_algorithms = 13,
 	);
 }
