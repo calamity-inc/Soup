@@ -410,6 +410,7 @@ static void unit_data()
 		assert(Regex("[abc]+").matchesFully("abcdef") == false);
 		assert(Regex("[a-z]+").matchesFully("abc") == true);
 		assert(Regex("[a-z]+").matchesFully("abcdef") == true);
+		assert(Regex("[^def]+").match("abcdef").toString() == R"(0="abc")");
 
 		assert(Regex("A?BC").matches("BC") == true);
 		assert(Regex("A?BC").matches("ABC") == true);

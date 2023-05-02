@@ -11,9 +11,22 @@ namespace soup
 	struct RegexRangeConstraint : public RegexConstraintTransitionable
 	{
 		BigBitset<0x100 / 8> mask{};
+		bool inverted = false;
 
 		RegexRangeConstraint(std::string::const_iterator& it, std::string::const_iterator end)
 		{
+			if (++it == end)
+			{
+				return;
+			}
+			if (*it == '^')
+			{
+				inverted = true;
+			}
+			else
+			{
+				--it;
+			}
 			char range_begin = 0;
 			while (++it != end && *it != ']')
 			{
@@ -225,7 +238,7 @@ namespace soup
 			{
 				return false;
 			}
-			if (!mask.get(*m.it))
+			if (mask.get(*m.it) == inverted)
 			{
 				return false;
 			}
@@ -236,6 +249,10 @@ namespace soup
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			std::string str(1, '[');
+			if (inverted)
+			{
+				str.push_back('^');
+			}
 			uint16_t range_begin = 0x100;
 			for (uint16_t i = 0; i != 0x100; ++i)
 			{
