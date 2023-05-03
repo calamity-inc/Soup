@@ -447,6 +447,10 @@ static void unit_data()
 		assert(Regex(R"(\babc\b)").search("abc").toString() == R"(0="abc")");
 		assert(Regex(R"(\babc\b)").search(" abc ").toString() == R"(0="abc")");
 		assert(Regex(R"(\babc\b)").search("_abc_").toString() == "");
+
+		assert(Regex(R"(\Bdef)").search("abcdef").toString() == R"(0="def")");
+		assert(Regex(R"(\Bdef)").search("abc def").toString() == "");
+		assert(Regex(R"(\Bdef)").search("def").toString() == "");
 	});
 }
 

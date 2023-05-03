@@ -102,7 +102,16 @@ namespace soup
 				escape = false;
 				if (*s.it == 'b')
 				{
-					auto upC = soup::make_unique<RegexWordBoundaryConstraint>();
+					auto upC = soup::make_unique<RegexWordBoundaryConstraint<false>>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == 'B')
+				{
+					auto upC = soup::make_unique<RegexWordBoundaryConstraint<true>>();
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);
