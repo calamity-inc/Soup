@@ -21,14 +21,13 @@ namespace soup
 #define EDX arr[2]
 #define ECX arr[3]
 
-#pragma optimize("", off)
 	CpuInfo::CpuInfo()
 	{
 		char buf[17];
 		buf[16] = 0;
 		invokeCpuid(buf, 0);
 		cpuid_max_eax = *reinterpret_cast<uint32_t*>(&buf[0]);
-		vendor_id = std::string(&buf[4]);
+		vendor_id = &buf[4];
 
 		if (cpuid_max_eax >= 0x01)
 		{
@@ -49,7 +48,6 @@ namespace soup
 			}
 		}
 	}
-#pragma optimize("", on)
 
 	const CpuInfo& CpuInfo::get()
 	{
