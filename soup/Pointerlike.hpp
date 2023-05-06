@@ -46,6 +46,12 @@ namespace soup
 		}
 
 		template <typename T>
+		[[nodiscard]] constexpr std::enable_if_t<std::is_pointer_v<T> && std::is_const_v<std::remove_pointer_t<T>>, T> get() const noexcept
+		{
+			return as<T>();
+		}
+
+		template <typename T>
 		void set(T val) const noexcept
 		{
 			*as<T*>() = val;
