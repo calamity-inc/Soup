@@ -87,7 +87,10 @@ namespace soup
 		{
 			ConnectInfo& info = cap.get<ConnectInfo>();
 			Socket sock;
-			sock.connect(info.addr, info.port);
+			if (!sock.connect(info.addr, info.port))
+			{
+				sock.close();
+			}
 			pb->fulfil(std::move(sock));
 		}, ConnectInfo{ addr, port });
 	}
