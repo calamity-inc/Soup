@@ -49,6 +49,7 @@ namespace soup
 
 	RegexMatchResult Regex::match(std::string::const_iterator it, std::string::const_iterator begin, std::string::const_iterator end) const noexcept
 	{
+		const auto match_begin = it;
 		RegexMatcher m(*this, it, begin, end);
 		while (m.c != nullptr)
 		{
@@ -143,10 +144,10 @@ namespace soup
 		RegexMatchResult res;
 		res.groups = std::move(m.groups);
 
-		// Handle match of empty regex
+		// Handle match of regex without capturing groups
 		SOUP_IF_UNLIKELY (!res.isSuccess())
 		{
-			res.groups.emplace_back(RegexMatchedGroup{ {}, m.begin, m.it });
+			res.groups.emplace_back(RegexMatchedGroup{ {}, match_begin, m.it });
 		}
 
 		SOUP_ASSERT(m.checkpoints.empty()); // if we made a checkpoint for a lookahead group, it should have been restored.
