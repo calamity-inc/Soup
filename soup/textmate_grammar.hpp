@@ -1,12 +1,13 @@
 #pragma once
 
+//#include <iostream>
 #include <optional>
-#include <regex>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "fwd.hpp"
+#include "Regex.hpp"
 #include "StringParser.hpp"
 
 namespace soup
@@ -14,21 +15,22 @@ namespace soup
 	struct TmPattern
 	{
 		std::string name;
-		std::regex match;
+		Regex match;
 		std::vector<std::string> captures{};
-		std::optional<std::regex> end_match;
+		std::optional<Regex> end_match;
 		std::vector<std::string> end_captures{};
 		std::vector<TmPattern> patterns;
 
-		mutable std::smatch res;
+		mutable RegexMatchResult res;
+		mutable size_t res_offset;
 		bool is_end = false;
 
-		TmPattern(std::string name, std::regex match, std::vector<std::string> captures = {})
+		TmPattern(std::string name, Regex match, std::vector<std::string> captures = {})
 			: name(std::move(name)), match(std::move(match)), captures(std::move(captures))
 		{
 		}
 
-		TmPattern(std::string name, std::regex begin_match, std::regex end_match, std::vector<TmPattern> patterns = {})
+		TmPattern(std::string name, Regex begin_match, Regex end_match, std::vector<TmPattern> patterns = {})
 			: name(std::move(name)), match(std::move(begin_match)), end_match(std::move(end_match)), patterns(std::move(patterns))
 		{
 		}
@@ -88,7 +90,7 @@ namespace soup
 		{
 			for (const auto& c : classifications)
 			{
-				std::cout << prefix << c.name << ": '" << code.substr(c.pos, c.len) << "'\n";
+				std::cout << prefix << c.name << ": '" << data.substr(c.pos, c.len) << "'\n";
 				printClassifications(c.children, std::string(prefix).append("\t"));
 			}
 		}*/

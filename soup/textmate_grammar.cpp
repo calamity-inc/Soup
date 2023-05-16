@@ -33,7 +33,7 @@ namespace soup
 		}
 		if (auto e = dict.children.find("match"); e != dict.children.end())
 		{
-			return TmPattern(std::move(name), std::regex(e->second->asString().data));
+			return TmPattern(std::move(name), Regex(e->second->asString().data));
 		}
 		throw 0;
 	}
@@ -43,15 +43,16 @@ namespace soup
 		const TmPattern* best = nullptr;
 		for (const auto& pattern : patterns)
 		{
-			if (std::regex_search(it, data.cend(), pattern.res, pattern.match))
+			pattern.res = pattern.match.search(it, data.cend());
+			if (pattern.res.isSuccess())
 			{
-				auto offset = pattern.res.position();
-				if (offset == 0)
+				pattern.res_offset = std::distance(it, pattern.res.groups.at(0)->begin);
+				if (pattern.res_offset == 0)
 				{
 					return &pattern;
 				}
 				if (best == nullptr
-					|| best->res.position() > offset
+					|| best->res_offset > pattern.res_offset
 					)
 				{
 					best = &pattern;
@@ -73,7 +74,7 @@ namespace soup
 
 			std::vector<TmClassifiedText> captures{};
 
-			for (size_t i = 0; i != pattern->res.size(); ++i)
+			for (size_t i = 0; i != pattern->res.groups.size(); ++i)
 			{
 				if (i >= pattern->captures.size())
 				{
@@ -81,11 +82,11 @@ namespace soup
 				}
 				if (!pattern->captures.at(i).empty())
 				{
-					captures.emplace_back(TmClassifiedText(getPosition(it + pattern->res.position(i)), (size_t)pattern->res.length(i), pattern->captures.at(i)));
+					captures.emplace_back(TmClassifiedText(getPosition(pattern->res.groups.at(i)->begin), (size_t)pattern->res.groups.at(i)->length(), pattern->captures.at(i)));
 				}
 			}
 
-			it += pattern->res.position();
+			it += pattern->res_offset;
 			size_t start_pos = getPosition();
 			it += pattern->res.length();
 

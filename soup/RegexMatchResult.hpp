@@ -16,6 +16,11 @@ namespace soup
 			return !groups.empty();
 		}
 
+		[[nodiscard]] size_t length() const
+		{
+			return groups.at(0).value().length();
+		}
+
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			std::string str{};
