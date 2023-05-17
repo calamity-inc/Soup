@@ -27,6 +27,11 @@ namespace soup
 			operator=(b);
 		}
 
+		ShortString(const ShortString<S>& b) noexcept
+		{
+			operator=(b);
+		}
+
 		void operator =(const std::string& b) noexcept
 		{
 			operator=(b.c_str());
@@ -35,6 +40,11 @@ namespace soup
 		void operator =(const char* b) noexcept
 		{
 			strncpy(data(), b, S);
+		}
+
+		void operator =(const ShortString<S>& b) noexcept
+		{
+			strncpy(data(), b.data(), S);
 		}
 
 		[[nodiscard]] char* data() noexcept
