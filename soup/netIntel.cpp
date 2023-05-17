@@ -157,7 +157,7 @@ namespace soup
 	{
 		StringReader ipv4tolocationcsv;
 		{
-			WebResource rsc("github.com", "/sapics/ip-location-db/raw/master/dbip-city/dbip-city-ipv4-num.csv.gz");
+			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/dbip-city/dbip-city-ipv4-num.csv.gz");
 			rsc.downloadWithCaching();
 			ipv4tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
@@ -185,7 +185,7 @@ namespace soup
 	{
 		StringReader ipv6tolocationcsv;
 		{
-			WebResource rsc("github.com", "/sapics/ip-location-db/raw/master/dbip-city/dbip-city-ipv6.csv.gz");
+			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/dbip-city/dbip-city-ipv6.csv.gz");
 			rsc.downloadWithCaching();
 			ipv6tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
