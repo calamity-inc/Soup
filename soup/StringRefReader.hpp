@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Reader.hpp"
+#include "ioSeekableReader.hpp"
 
 namespace soup
 {
-	class StringRefReader final : public Reader
+	class StringRefReader final : public ioSeekableReader
 	{
 	public:
 		const std::string& data;
 		size_t offset = 0;
 
 		StringRefReader(const std::string& data, bool little_endian = true)
-			: Reader(little_endian), data(data)
+			: ioSeekableReader(little_endian), data(data)
 		{
 		}
 
@@ -42,6 +42,22 @@ namespace soup
 			v = data.substr(offset, len);
 			offset += len;
 			return true;
+		}
+
+	public:
+		[[nodiscard]] size_t getPosition() final
+		{
+			return offset;
+		}
+
+		void seek(size_t pos) final
+		{
+			offset = pos;
+		}
+
+		void seekEnd() final
+		{
+			offset = data.size();
 		}
 	};
 }
