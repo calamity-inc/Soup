@@ -17,6 +17,8 @@ namespace soup
 		uint32_t feature_flags_ecx;
 		uint32_t feature_flags_edx;
 
+		uint32_t extended_features_0_ebx;
+
 		uint16_t base_frequency;
 		uint16_t max_frequency;
 		uint16_t bus_frequency;
@@ -65,6 +67,11 @@ namespace soup
 		[[nodiscard]] bool supportsAESNI() const noexcept
 		{
 			return (feature_flags_ecx >> 25) & 1;
+		}
+
+		[[nodiscard]] bool supportsSHA() const noexcept
+		{
+			return (extended_features_0_ebx >> 29) & 1;
 		}
 
 		[[nodiscard]] std::string toString() const;

@@ -1,6 +1,19 @@
 #include "sha1.hpp"
 
+#include "base.hpp"
+
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#define SHA1_USE_ASM true
+#else
+#define SHA1_USE_ASM false
+#endif
+
 #include <sstream>
+
+#if SHA1_USE_ASM
+#include "CpuInfo.hpp"
+#include "Endian.hpp"
+#endif
 
 namespace soup
 {
@@ -159,15 +172,30 @@ namespace soup
 		digest[4] += e;
 	}
 
+#if SHA1_USE_ASM
+	extern void sha1_transform_intrin(uint32_t state[5], const uint8_t data[]);
+#endif
+
+	template <bool intrin>
 	inline static void buffer_to_block(const std::string& buffer, uint32_t block[BLOCK_INTS])
 	{
 		/* Convert the std::string (byte buffer) to a uint32_t array (MSB) */
 		for (size_t i = 0; i < BLOCK_INTS; i++)
 		{
-			block[i] = (buffer[4 * i + 3] & 0xff)
-				| (buffer[4 * i + 2] & 0xff) << 8
-				| (buffer[4 * i + 1] & 0xff) << 16
-				| (buffer[4 * i + 0] & 0xff) << 24;
+			if constexpr (intrin)
+			{
+				block[i] = (buffer[4 * i + 0] & 0xff)
+					| (buffer[4 * i + 1] & 0xff) << 8
+					| (buffer[4 * i + 2] & 0xff) << 16
+					| (buffer[4 * i + 3] & 0xff) << 24;
+			}
+			else
+			{
+				block[i] = (buffer[4 * i + 3] & 0xff)
+					| (buffer[4 * i + 2] & 0xff) << 8
+					| (buffer[4 * i + 1] & 0xff) << 16
+					| (buffer[4 * i + 0] & 0xff) << 24;
+			}
 		}
 	}
 
@@ -183,7 +211,8 @@ namespace soup
 		return hash(is);
 	}
 
-	std::string sha1::hash(std::istream& is)
+	template <bool intrin>
+	static std::string sha1_hash_impl(std::istream& is)
 	{
 		// init
 		uint32_t digest[] = {
@@ -193,7 +222,7 @@ namespace soup
 			0x10325476,
 			0xc3d2e1f0,
 		};
-		static_assert(sizeof(digest) == DIGEST_BYTES);
+		static_assert(sizeof(digest) == sha1::DIGEST_BYTES);
 
 		std::string buffer{};
 		uint64_t transforms = 0;
@@ -201,16 +230,25 @@ namespace soup
 		// update
 		while (true)
 		{
-			char sbuf[BLOCK_BYTES];
-			is.read(sbuf, BLOCK_BYTES - buffer.size());
+			char sbuf[sha1::BLOCK_BYTES];
+			is.read(sbuf, sha1::BLOCK_BYTES - buffer.size());
 			buffer.append(sbuf, (std::size_t)is.gcount());
-			if (buffer.size() != BLOCK_BYTES)
+			if (buffer.size() != sha1::BLOCK_BYTES)
 			{
 				break;
 			}
-			uint32_t block[BLOCK_INTS];
-			buffer_to_block(buffer, block);
-			transform(digest, block);
+#if SHA1_USE_ASM
+			if constexpr (intrin)
+			{
+				sha1_transform_intrin(digest, (const uint8_t*)buffer.data());
+			}
+			else
+#endif
+			{
+				uint32_t block[BLOCK_INTS];
+				buffer_to_block<intrin>(buffer, block);
+				transform(digest, block);
+			}
 			buffer.clear();
 			++transforms;
 		}
@@ -218,22 +256,31 @@ namespace soup
 		// final
 
 		/* Total number of hashed bits */
-		uint64_t total_bits = (transforms * BLOCK_BYTES + buffer.size()) * 8;
+		uint64_t total_bits = (transforms * sha1::BLOCK_BYTES + buffer.size()) * 8;
 
 		/* Padding */
 		buffer += (char)0x80;
 		size_t orig_size = buffer.size();
-		while (buffer.size() < BLOCK_BYTES)
+		while (buffer.size() < sha1::BLOCK_BYTES)
 		{
 			buffer += (char)0x00;
 		}
 
 		uint32_t block[BLOCK_INTS];
-		buffer_to_block(buffer, block);
+		buffer_to_block<intrin>(buffer, block);
 
-		if (orig_size > BLOCK_BYTES - 8)
+		if (orig_size > sha1::BLOCK_BYTES - 8)
 		{
-			transform(digest, block);
+#if SHA1_USE_ASM
+			if constexpr (intrin)
+			{
+				sha1_transform_intrin(digest, (const uint8_t*)block);
+			}
+			else
+#endif
+			{
+				transform(digest, block);
+			}
 			for (size_t i = 0; i < BLOCK_INTS - 2; i++)
 			{
 				block[i] = 0;
@@ -241,12 +288,23 @@ namespace soup
 		}
 
 		/* Append total_bits, split this uint64_t into two uint32_t */
-		block[BLOCK_INTS - 1] = (uint32_t)total_bits;
-		block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
-		transform(digest, block);
+#if SHA1_USE_ASM
+		if constexpr (intrin)
+		{
+			block[BLOCK_INTS - 1] = Endianness::invert((uint32_t)total_bits);
+			block[BLOCK_INTS - 2] = Endianness::invert((uint32_t)(total_bits >> 32));
+			sha1_transform_intrin(digest, (const uint8_t*)block);
+		}
+		else
+#endif
+		{
+			block[BLOCK_INTS - 1] = (uint32_t)total_bits;
+			block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
+			transform(digest, block);
+		}
 
 		std::string bin{};
-		bin.reserve(DIGEST_BYTES);
+		bin.reserve(sha1::DIGEST_BYTES);
 		for (size_t i = 0; i < sizeof(digest) / sizeof(digest[0]); i++)
 		{
 			bin.push_back(((const char*)&digest[i])[3]);
@@ -255,5 +313,19 @@ namespace soup
 			bin.push_back(((const char*)&digest[i])[0]);
 		}
 		return bin;
+	}
+
+	std::string sha1::hash(std::istream& is)
+	{
+#if SHA1_USE_ASM
+		const CpuInfo& cpu_info = CpuInfo::get();
+		if (cpu_info.supportsSSSE3()
+			&& cpu_info.supportsSHA()
+			)
+		{
+			return sha1_hash_impl<true>(is);
+		}
+#endif
+		return sha1_hash_impl<false>(is);
 	}
 }

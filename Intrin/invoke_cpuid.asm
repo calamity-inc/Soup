@@ -4,7 +4,7 @@
 		mov rsi, rcx
 
 		mov eax, edx
-		; xor ecx, ecx
+		xor ecx, ecx
 		cpuid
 
 		mov [rsi], eax

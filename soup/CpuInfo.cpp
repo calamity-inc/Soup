@@ -39,12 +39,18 @@ namespace soup
 			feature_flags_ecx = ECX;
 			feature_flags_edx = EDX;
 
-			if (cpuid_max_eax >= 0x16)
+			if (cpuid_max_eax >= 0x07)
 			{
-				invokeCpuid(arr, 0x16);
-				base_frequency = EAX;
-				max_frequency = EBX;
-				bus_frequency = ECX;
+				invokeCpuid(arr, 0x07);
+				extended_features_0_ebx = EBX;
+
+				if (cpuid_max_eax >= 0x16)
+				{
+					invokeCpuid(arr, 0x16);
+					base_frequency = EAX;
+					max_frequency = EBX;
+					bus_frequency = ECX;
+				}
 			}
 		}
 	}
@@ -72,15 +78,21 @@ namespace soup
 			str.append("\nFeature Flags 2: ").append(string::hex(feature_flags_edx));
 			str.push_back('\n');
 
-			if (cpuid_max_eax >= 0x16)
+			if (cpuid_max_eax >= 0x07)
 			{
-				str.append("Base Frequency: ").append(std::to_string(base_frequency)).append(
-					" MHz\n"
-					"Max. Frequency: "
-				).append(std::to_string(max_frequency)).append(
-					" MHz\n"
-					"Bus (Reference) Frequency: "
-				).append(std::to_string(bus_frequency)).append(" MHz\n");
+				str.append("Feature Flags 3: ").append(string::hex(extended_features_0_ebx));
+				str.push_back('\n');
+
+				if (cpuid_max_eax >= 0x16)
+				{
+					str.append("Base Frequency: ").append(std::to_string(base_frequency)).append(
+						" MHz\n"
+						"Max. Frequency: "
+					).append(std::to_string(max_frequency)).append(
+						" MHz\n"
+						"Bus (Reference) Frequency: "
+					).append(std::to_string(bus_frequency)).append(" MHz\n");
+				}
 			}
 		}
 
@@ -109,7 +121,7 @@ namespace soup
 #endif
 
 			"mov eax, edx\n"
-			//"xor ecx, ecx\n"
+			"xor ecx, ecx\n"
 			"cpuid\n"
 
 			"mov [esi], eax\n"
@@ -124,7 +136,7 @@ namespace soup
 #else
 		static UniquePtr<AllocRaiiVirtual> invoke_asm = os::allocateExecutable(x64Asm(
 			"mov eax, esi\n"
-			//"xor ecx, ecx\n"
+			"xor ecx, ecx\n"
 			"cpuid\n"
 
 			"mov [rdi], eax\n"
