@@ -28,7 +28,15 @@ namespace soup
 
 		std::vector<std::optional<uint8_t>> getVec() const final
 		{
-			return std::vector<std::optional<uint8_t>>(aob.begin(), aob.end());
+			std::vector<std::optional<uint8_t>> res(aob.begin(), aob.end());
+			for (auto& byte : res)
+			{
+				if (byte.has_value())
+				{
+					byte = byte.value() ^ 0x0F;
+				}
+			}
+			return res;
 		}
 	};
 }

@@ -10,13 +10,6 @@ namespace soup
 	Pattern::Pattern(const CompiletimePatternWithOptBytesBase& sig)
 		: bytes(sig.getVec())
 	{
-		for (auto& byte : bytes)
-		{
-			if (byte.has_value())
-			{
-				byte = byte.value() ^ 0x0F;
-			}
-		}
 	}
 
 	Pattern::Pattern(std::string_view ida_sig)
