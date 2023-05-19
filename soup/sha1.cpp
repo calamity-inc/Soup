@@ -60,7 +60,7 @@ namespace soup
 	 * Hash a single 512-bit block. This is the core of the algorithm.
 	 */
 
-	inline static void transform(uint32_t digest[], uint32_t block[BLOCK_INTS], uint64_t& transforms)
+	inline static void transform(uint32_t digest[], uint32_t block[BLOCK_INTS])
 	{
 		/* Copy digest[] to working vars */
 		uint32_t a = digest[0];
@@ -157,9 +157,6 @@ namespace soup
 		digest[2] += c;
 		digest[3] += d;
 		digest[4] += e;
-
-		/* Count the number of transformations */
-		++transforms;
 	}
 
 	inline static void buffer_to_block(const std::string& buffer, uint32_t block[BLOCK_INTS])
@@ -213,8 +210,9 @@ namespace soup
 			}
 			uint32_t block[BLOCK_INTS];
 			buffer_to_block(buffer, block);
-			transform(digest, block, transforms);
+			transform(digest, block);
 			buffer.clear();
+			++transforms;
 		}
 
 		// final
@@ -235,7 +233,7 @@ namespace soup
 
 		if (orig_size > BLOCK_BYTES - 8)
 		{
-			transform(digest, block, transforms);
+			transform(digest, block);
 			for (size_t i = 0; i < BLOCK_INTS - 2; i++)
 			{
 				block[i] = 0;
@@ -245,7 +243,7 @@ namespace soup
 		/* Append total_bits, split this uint64_t into two uint32_t */
 		block[BLOCK_INTS - 1] = (uint32_t)total_bits;
 		block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
-		transform(digest, block, transforms);
+		transform(digest, block);
 
 		std::string bin{};
 		bin.reserve(DIGEST_BYTES);

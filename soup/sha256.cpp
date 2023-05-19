@@ -53,7 +53,7 @@ namespace soup
 		0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
 	};
 
-	inline static void transform(uint32_t digest[], uint32_t block[BLOCK_INTS], uint64_t& transforms)
+	inline static void transform(uint32_t digest[], uint32_t block[BLOCK_INTS])
 	{
 		uint32_t state[8];
 		memcpy(state, digest, sha256::DIGEST_BYTES);
@@ -99,8 +99,6 @@ namespace soup
 		{
 			digest[i] += state[i];
 		}
-
-		++transforms;
 	}
 
 	inline static void buffer_to_block(const std::string& buffer, uint32_t block[BLOCK_INTS])
@@ -157,8 +155,9 @@ namespace soup
 			}
 			uint32_t block[BLOCK_INTS];
 			buffer_to_block(buffer, block);
-			transform(digest, block, transforms);
+			transform(digest, block);
 			buffer.clear();
+			++transforms;
 		}
 
 		// final
@@ -179,7 +178,7 @@ namespace soup
 
 		if (orig_size > BLOCK_BYTES - 8)
 		{
-			transform(digest, block, transforms);
+			transform(digest, block);
 			for (size_t i = 0; i < BLOCK_INTS - 2; i++)
 			{
 				block[i] = 0;
@@ -189,7 +188,7 @@ namespace soup
 		/* Append total_bits, split this uint64_t into two uint32_t */
 		block[BLOCK_INTS - 1] = (uint32_t)total_bits;
 		block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
-		transform(digest, block, transforms);
+		transform(digest, block);
 
 		std::string bin{};
 		bin.reserve(DIGEST_BYTES);
