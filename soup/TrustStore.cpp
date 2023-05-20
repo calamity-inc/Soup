@@ -210,7 +210,10 @@ namespace soup
 
 	void TrustStore::addCa(std::string&& common_name, X509Certificate&& cert)
 	{
-		data.emplace(std::move(common_name), std::move(cert));
+		if (!common_name.empty())
+		{
+			data.emplace(std::move(common_name), std::move(cert));
+		}
 	}
 
 	const X509Certificate* TrustStore::findCommonName(const std::string& cn) const
