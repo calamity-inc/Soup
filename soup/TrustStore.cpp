@@ -186,6 +186,7 @@ namespace soup
 				{
 					ca_pem.append(std::move(line));
 				}
+				line.clear();
 			}
 		}
 		if (!ca_common_name.empty())
