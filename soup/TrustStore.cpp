@@ -196,18 +196,13 @@ namespace soup
 
 	void TrustStore::addCa(X509Certificate&& cert)
 	{
-		if (!cert.key.n.isZero())
-		{
-			addCa(cert.issuer.getCommonName(), std::move(cert));
-		}
+		addCa(cert.subject.getCommonName(), std::move(cert));
 	}
 
 	void TrustStore::addCa(std::string&& common_name, std::string&& pem)
 	{
 		X509Certificate xcert;
-		if (xcert.fromDer(pem::decode(std::move(pem)))
-			&& !xcert.key.n.isZero()
-			)
+		if (xcert.fromDer(pem::decode(std::move(pem))))
 		{
 			addCa(std::move(common_name), std::move(xcert));
 		}
