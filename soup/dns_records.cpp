@@ -36,6 +36,7 @@ namespace soup
 		case DNS_TXT: return reinterpret_cast<const dnsTxtRecord*>(this)->data;
 		case DNS_MX: return reinterpret_cast<const dnsMxRecord*>(this)->getDataHumanReadable();
 		case DNS_SRV: return reinterpret_cast<const dnsSrvRecord*>(this)->getDataHumanReadable();
+		case DNS_NS: return reinterpret_cast<const dnsNsRecord*>(this)->data;
 		default:;
 		}
 		return {};

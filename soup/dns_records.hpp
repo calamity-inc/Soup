@@ -110,4 +110,14 @@ namespace soup
 
 		[[nodiscard]] std::string getDataHumanReadable() const;
 	};
+
+	struct dnsNsRecord : public dnsRecord
+	{
+		std::string data;
+
+		dnsNsRecord(std::string&& name, uint32_t ttl, std::string&& data)
+			: dnsRecord(DNS_NS, std::move(name), ttl), data(std::move(data))
+		{
+		}
+	};
 }

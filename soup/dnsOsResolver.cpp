@@ -52,6 +52,10 @@ namespace soup
 				{
 					res.emplace_back(soup::make_unique<dnsSrvRecord>(i->pName, i->dwTtl, i->Data.SRV.wPriority, i->Data.SRV.wWeight, i->Data.SRV.pNameTarget, i->Data.SRV.wPort));
 				}
+				else if (i->wType == DNS_TYPE_NS)
+				{
+					res.emplace_back(soup::make_unique<dnsNsRecord>(i->pName, i->dwTtl, i->Data.NS.pNameHost));
+				}
 			}
 			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
 		}
@@ -99,6 +103,12 @@ namespace soup
 					char hostname[1024];
 					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr) + 6, hostname, sizeof(hostname));
 					res.emplace_back(soup::make_unique<dnsSrvRecord>(ns_rr_name(rr), ns_rr_ttl(rr), ntohs(*(unsigned short*)ns_rr_rdata(rr)), ntohs(*((unsigned short*)ns_rr_rdata(rr) + 1)), hostname, ntohs(*((unsigned short*)ns_rr_rdata(rr) + 2))));
+				}
+				else if (ns_rr_type(rr) == ns_t_ns)
+				{
+					char hostname[1024];
+					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr), hostname, sizeof(hostname));
+					res.emplace_back(soup::make_unique<dnsNsRecord>(ns_rr_name(rr), ns_rr_ttl(rr), hostname));
 				}
 			}
 		}

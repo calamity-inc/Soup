@@ -112,6 +112,15 @@ namespace soup
 
 				res.emplace_back(soup::make_unique<dnsSrvRecord>(std::move(name), dr.ttl, priority, weight, string::join(target.resolve(sr.data), '.'), port));
 			}
+			else if (dr.rtype == DNS_NS)
+			{
+				StringReader rdata_sr(std::move(dr.rdata), false);
+
+				dnsName cname;
+				cname.read(rdata_sr);
+
+				res.emplace_back(soup::make_unique<dnsNsRecord>(std::move(name), dr.ttl, string::join(cname.resolve(sr.data), '.')));
+			}
 		}
 		return res;
 	}
