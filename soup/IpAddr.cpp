@@ -9,7 +9,7 @@ namespace soup
 {
 	bool IpAddr::fromString(const char* str) noexcept
 	{
-		if (strstr(str, ".") == nullptr)
+		if (strstr(str, ":") != nullptr)
 		{
 			return inet_pton(AF_INET6, str, &data) == 1;
 		}
@@ -22,7 +22,7 @@ namespace soup
 
 	bool IpAddr::fromString(const std::string& str) noexcept
 	{
-		if (str.find('.') == std::string::npos)
+		if (str.find(':') != std::string::npos)
 		{
 			return inet_pton(AF_INET6, str.data(), &data) == 1;
 		}
