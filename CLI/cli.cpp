@@ -54,13 +54,13 @@ int main(int argc, const char** argv)
 		
 		if (subcommand == "dnsserver")
 		{
-			if (argc == 3)
+			if (argc > 2)
 			{
-				cli_dnsserver(argv[2]);
+				cli_dnsserver(argc - 2, &argv[2]);
 			}
 			else
 			{
-				std::cout << "Syntax: soup dnsserver [file]" << std::endl;
+				std::cout << "Syntax: soup dnsserver [file] <bind-ip>" << std::endl;
 			}
 			return 0;
 		}
@@ -286,7 +286,7 @@ Available tools:
 - 3d
 - chess <FEN>
 - dig [domain] <type=A> <@<doh:>[server]>
-- dnsserver [file]
+- dnsserver [file] <bind-ip>
 - dvd
 - edit [files...]
 - geoip [ip]

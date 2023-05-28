@@ -18,6 +18,7 @@ namespace soup
 		bool bindUdp(uint16_t port, udp_callback_t callback) noexcept;
 		bool bindUdp(const IpAddr& addr, uint16_t port, udp_callback_t callback) noexcept;
 		bool bindUdp(uint16_t port, ServerServiceUdp* service) noexcept;
+		bool bindUdp(const IpAddr& addr, uint16_t port, ServerServiceUdp* service) noexcept;
 	protected:
 		static void setDataAvailableHandler6(Socket& s);
 		static void setDataAvailableHandlerCrypto6(Socket& s);

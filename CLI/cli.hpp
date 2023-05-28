@@ -2,7 +2,7 @@
 
 void cli_3d();
 void cli_dig(int argc, const char** argv);
-void cli_dnsserver(const char* file);
+void cli_dnsserver(int argc, const char** argv);
 void cli_dvd();
 int cli_ircserver();
 void cli_maze();

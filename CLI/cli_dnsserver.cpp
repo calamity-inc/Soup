@@ -14,9 +14,9 @@ using namespace soup;
 
 static std::unordered_map<std::string, std::vector<SharedPtr<dnsRecord>>> records{};
 
-void cli_dnsserver(const char* file)
+void cli_dnsserver(int argc, const char** argv)
 {
-	FileReader fr(file);
+	FileReader fr(argv[0]);
 	for (std::string line; fr.getLine(line); )
 	{
 		auto arr = string::explode(line, '\t');
@@ -66,7 +66,18 @@ void cli_dnsserver(const char* file)
 		res.emplace_back(soup::make_unique<dnsTxtRecord>(name, 60, name));
 		return res;*/
 	});
-	serv.bindUdp(53, &dns_srv);
+
+	if (argc > 1)
+	{
+		IpAddr addr(argv[1]);
+		serv.bindUdp(addr, 53, &dns_srv);
+		std::cout << "Bound to UDP/" << addr.toString() << ":53" << std::endl;
+	}
+	else
+	{
+		serv.bindUdp(53, &dns_srv);
+		std::cout << "Bound to UDP/53" << std::endl;
+	}
 
 	serv.run();
 }
