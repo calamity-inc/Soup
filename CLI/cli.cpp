@@ -51,6 +51,19 @@ int main(int argc, const char** argv)
 			cli_dig(argc - 2, &argv[2]);
 			return 0;
 		}
+		
+		if (subcommand == "dnsserver")
+		{
+			if (argc == 3)
+			{
+				cli_dnsserver(argv[2]);
+			}
+			else
+			{
+				std::cout << "Syntax: soup dnsserver [file]" << std::endl;
+			}
+			return 0;
+		}
 
 		if (subcommand == "dvd")
 		{
@@ -273,6 +286,7 @@ Available tools:
 - 3d
 - chess <FEN>
 - dig [domain] <type=A> <@<doh:>[server]>
+- dnsserver [file]
 - dvd
 - edit [files...]
 - geoip [ip]

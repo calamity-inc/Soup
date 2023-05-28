@@ -7,7 +7,6 @@
 #include "dnsResource.hpp"
 #include "Socket.hpp"
 #include "string.hpp"
-#include "UniquePtr.hpp"
 
 namespace soup
 {
@@ -46,7 +45,7 @@ namespace soup
 
 		auto qname = string::join(dq.name.name, '.');
 
-		std::vector<UniquePtr<dnsRecord>> rrs = on_query(qname, dq.name, addr, (dnsType)dq.qtype);
+		std::vector<SharedPtr<dnsRecord>> rrs = on_query(qname, dq.name, addr, (dnsType)dq.qtype);
 
 		// TODO: Recursively resolve if A or AAAA query matches CNAME
 
