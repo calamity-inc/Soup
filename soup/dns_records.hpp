@@ -28,6 +28,8 @@ namespace soup
 		[[nodiscard]] static dnsRecordFactory getFactory(dnsType type);
 
 		[[nodiscard]] virtual std::string getDataHumanReadable() const = 0;
+
+		[[nodiscard]] virtual std::string toRdata() const = 0;
 	};
 
 	struct dnsARecord : public dnsRecord
@@ -42,6 +44,11 @@ namespace soup
 		[[nodiscard]] std::string getDataHumanReadable() const final
 		{
 			return IpAddr(data).toString4();
+		}
+		
+		[[nodiscard]] std::string toRdata() const final
+		{
+			return std::string(reinterpret_cast<const char*>(&data), 4);
 		}
 	};
 
@@ -63,6 +70,11 @@ namespace soup
 		{
 			return data.toString6();
 		}
+
+		[[nodiscard]] std::string toRdata() const final
+		{
+			return std::string(reinterpret_cast<const char*>(&data.data), 16);
+		}
 	};
 
 	struct dnsRecordName : public dnsRecord
@@ -78,6 +90,8 @@ namespace soup
 		{
 			return data;
 		}
+
+		[[nodiscard]] std::string toRdata() const final;
 	};
 
 	struct dnsCnameRecord : public dnsRecordName
@@ -109,6 +123,13 @@ namespace soup
 		{
 			return data;
 		}
+
+		[[nodiscard]] std::string toRdata() const final
+		{
+			std::string rdata = data;
+			rdata.insert(0, 1, (char)(uint8_t)rdata.size());
+			return rdata;
+		}
 	};
 
 	struct dnsMxRecord : public dnsRecord
@@ -122,6 +143,8 @@ namespace soup
 		}
 
 		[[nodiscard]] std::string getDataHumanReadable() const final;
+
+		[[nodiscard]] std::string toRdata() const final;
 	};
 
 	struct dnsSrvRecord : public dnsRecord
@@ -137,6 +160,8 @@ namespace soup
 		}
 
 		[[nodiscard]] std::string getDataHumanReadable() const final;
+
+		[[nodiscard]] std::string toRdata() const final;
 	};
 
 	struct dnsNsRecord : public dnsRecordName

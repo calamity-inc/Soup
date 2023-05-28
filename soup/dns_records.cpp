@@ -1,5 +1,8 @@
 #include "dns_records.hpp"
 
+#include "dnsName.hpp"
+#include "Exception.hpp"
+#include "string.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
@@ -25,12 +28,27 @@ namespace soup
 		return nullptr;
 	}
 
+	std::string dnsRecordName::toRdata() const
+	{
+		dnsName value;
+		value.name = string::explode(data, '.');
+
+		StringWriter sw(false);
+		value.write(sw);
+		return sw.data;
+	}
+
 	std::string dnsMxRecord::getDataHumanReadable() const
 	{
 		std::string str = std::to_string(priority);
 		str.push_back(' ');
 		str.append(target);
 		return str;
+	}
+
+	std::string dnsMxRecord::toRdata() const
+	{
+		Exception::purecall();
 	}
 
 	std::string dnsSrvRecord::getDataHumanReadable() const
@@ -43,5 +61,10 @@ namespace soup
 		str.push_back(' ');
 		str.append(target);
 		return str;
+	}
+
+	std::string dnsSrvRecord::toRdata() const
+	{
+		Exception::purecall();
 	}
 }
