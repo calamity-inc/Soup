@@ -46,7 +46,7 @@ namespace soup
 
 		auto qname = string::join(dq.name.name, '.');
 
-		std::vector<UniquePtr<dnsRecord>> rrs = on_query(qname, addr, (dnsType)dq.qtype);
+		std::vector<UniquePtr<dnsRecord>> rrs = on_query(qname, dq.name, addr, (dnsType)dq.qtype);
 
 		// TODO: Recursively resolve if A or AAAA query matches CNAME
 

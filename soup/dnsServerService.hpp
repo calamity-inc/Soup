@@ -16,7 +16,7 @@ namespace soup
 	class dnsServerService : public ServerServiceUdp
 	{
 	public:
-		using on_query_t = std::vector<UniquePtr<dnsRecord>>(*)(const std::string& name, const SocketAddr& sender, dnsType qtype);
+		using on_query_t = std::vector<UniquePtr<dnsRecord>>(*)(const std::string& qname_joined, const dnsName& qname, const SocketAddr& sender, dnsType qtype);
 
 		on_query_t on_query;
 

@@ -129,6 +129,7 @@ namespace soup
 
 	// net.dns.resolver
 	struct dnsResolver;
+	struct dnsName;
 	struct dnsHttpResolver;
 
 	// net.tls
