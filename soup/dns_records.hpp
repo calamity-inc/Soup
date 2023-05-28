@@ -36,7 +36,7 @@ namespace soup
 	{
 		network_u32_t data;
 
-		dnsARecord(std::string&& name, uint32_t ttl, network_u32_t data) noexcept
+		dnsARecord(std::string name, uint32_t ttl, network_u32_t data) noexcept
 			: dnsRecord(DNS_A, std::move(name), ttl), data(data)
 		{
 		}
@@ -56,12 +56,12 @@ namespace soup
 	{
 		IpAddr data;
 
-		dnsAaaaRecord(std::string&& name, uint32_t ttl, const uint8_t* data)
+		dnsAaaaRecord(std::string name, uint32_t ttl, const uint8_t* data)
 			: dnsRecord(DNS_AAAA, std::move(name), ttl), data(data)
 		{
 		}
 
-		dnsAaaaRecord(std::string&& name, uint32_t ttl, const IpAddr& data)
+		dnsAaaaRecord(std::string name, uint32_t ttl, const IpAddr& data)
 			: dnsRecord(DNS_AAAA, std::move(name), ttl), data(data)
 		{
 		}
@@ -96,7 +96,7 @@ namespace soup
 
 	struct dnsCnameRecord : public dnsRecordName
 	{
-		dnsCnameRecord(std::string&& name, uint32_t ttl, std::string&& data)
+		dnsCnameRecord(std::string name, uint32_t ttl, std::string data)
 			: dnsRecordName(DNS_CNAME, std::move(name), ttl, std::move(data))
 		{
 		}
@@ -104,7 +104,7 @@ namespace soup
 
 	struct dnsPtrRecord : public dnsRecordName
 	{
-		dnsPtrRecord(std::string&& name, uint32_t ttl, std::string&& data)
+		dnsPtrRecord(std::string name, uint32_t ttl, std::string data)
 			: dnsRecordName(DNS_PTR, std::move(name), ttl, std::move(data))
 		{
 		}
@@ -114,7 +114,7 @@ namespace soup
 	{
 		std::string data;
 
-		dnsTxtRecord(std::string&& name, uint32_t ttl, std::string&& data)
+		dnsTxtRecord(std::string name, uint32_t ttl, std::string data)
 			: dnsRecord(DNS_TXT, std::move(name), ttl), data(std::move(data))
 		{
 		}
@@ -137,7 +137,7 @@ namespace soup
 		uint16_t priority;
 		std::string target;
 
-		dnsMxRecord(std::string&& name, uint32_t ttl, uint16_t priority, std::string&& target)
+		dnsMxRecord(std::string name, uint32_t ttl, uint16_t priority, std::string target)
 			: dnsRecord(DNS_MX, std::move(name), ttl), priority(priority), target(std::move(target))
 		{
 		}
@@ -154,7 +154,7 @@ namespace soup
 		std::string target;
 		uint16_t port;
 
-		dnsSrvRecord(std::string&& name, uint32_t ttl, uint16_t priority, uint16_t weight, std::string&& target, uint16_t port)
+		dnsSrvRecord(std::string name, uint32_t ttl, uint16_t priority, uint16_t weight, std::string target, uint16_t port)
 			: dnsRecord(DNS_SRV, std::move(name), ttl), priority(priority), weight(weight), target(std::move(target)), port(port)
 		{
 		}
@@ -166,7 +166,7 @@ namespace soup
 
 	struct dnsNsRecord : public dnsRecordName
 	{
-		dnsNsRecord(std::string&& name, uint32_t ttl, std::string&& data)
+		dnsNsRecord(std::string name, uint32_t ttl, std::string data)
 			: dnsRecordName(DNS_NS, std::move(name), ttl, std::move(data))
 		{
 		}
