@@ -23,10 +23,28 @@ namespace soup
 				return soup::make_unique<dnsAaaaRecord>(std::move(name), ttl, IpAddr(human_readable_data));
 			};
 
+		case DNS_CNAME:
+			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			{
+				return soup::make_unique<dnsCnameRecord>(std::move(name), ttl, std::move(human_readable_data));
+			};
+
+		case DNS_PTR:
+			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			{
+				return soup::make_unique<dnsPtrRecord>(std::move(name), ttl, std::move(human_readable_data));
+			};
+
 		case DNS_TXT:
 			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
 			{
 				return soup::make_unique<dnsTxtRecord>(std::move(name), ttl, std::move(human_readable_data));
+			};
+
+		case DNS_NS:
+			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			{
+				return soup::make_unique<dnsNsRecord>(std::move(name), ttl, std::move(human_readable_data));
 			};
 
 		default:;
