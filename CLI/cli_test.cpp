@@ -832,6 +832,12 @@ static void unit_util_string()
 		assert(string::equalsIgnoreCase<std::string>("Java", "Lava") == false);
 		assert(string::equalsIgnoreCase<std::string>("Java", "Javaa") == false);
 	});
+	test("levenshtein", []
+	{
+		assert(string::levenshtein<std::string>("successfully", "success") == 5);
+		assert(string::levenshtein<std::string>("alpha", "scope") == 5);
+		assert(string::levenshtein<std::string>("equal", "equal") == 0);
+	});
 	test("StringMatch::search", []
 	{
 		assert(StringMatch::search("run program", "Run Script/Program") == true);
