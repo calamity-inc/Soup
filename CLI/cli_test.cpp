@@ -451,6 +451,10 @@ static void unit_data()
 		assert(Regex(R"(\Bdef)").search("abcdef").toString() == R"(0="def")");
 		assert(Regex(R"(\Bdef)").search("abc def").toString() == "");
 		assert(Regex(R"(\Bdef)").search("def").toString() == "");
+
+		assert(Regex("(abc|)").matchesFully("abc") == true);
+		assert(Regex("(abc|)").matchesFully("") == true);
+		assert(Regex("(abc|)").matchesFully("abcdef") == false);
 	});
 }
 

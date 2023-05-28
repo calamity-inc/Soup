@@ -1362,6 +1362,9 @@
     <ClInclude Include="ServerServiceUdp.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="RegexDummyConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

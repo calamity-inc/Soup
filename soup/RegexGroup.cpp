@@ -5,6 +5,7 @@
 
 #include "RegexAnyCharConstraint.hpp"
 #include "RegexCharConstraint.hpp"
+#include "RegexDummyConstraint.hpp"
 #include "RegexEndConstraint.hpp"
 #include "RegexGreedyOneConstraint.hpp"
 #include "RegexGreedyZeroConstraint.hpp"
@@ -484,6 +485,15 @@ namespace soup
 
 		if (alternatives.size() > 1)
 		{
+			// Ensure all alternatives have at least one constraint so we can set up transitions
+			for (auto& a : alternatives)
+			{
+				if (a.constraints.empty())
+				{
+					a.constraints.emplace_back(soup::make_unique<RegexDummyConstraint>());
+				}
+			}
+
 			// Set up rollback transitions for the first constraint in each alternative to jump to next alternative
 			for (size_t i = 0; i + 1 != alternatives.size(); ++i)
 			{
