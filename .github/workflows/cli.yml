@@ -16,11 +16,8 @@ jobs:
       - name: Build CLI
         run: php linux_cli.php
 
-      - name: Ensure soupcli exists
-        uses: andstor/file-existence-action@v2
-        with:
-          files: "soupcli"
-          fail: true
+      - name: Run ./soupcli test
+        run: ./soupcli test
 
       - name: Upload soupcli
         uses: actions/upload-artifact@v3
@@ -39,11 +36,8 @@ jobs:
       - name: Build CLI
         run: php linux_cli.php
 
-      - name: Ensure soupcli exists
-        uses: andstor/file-existence-action@v2
-        with:
-          files: "soupcli"
-          fail: true
+      - name: Run ./soupcli test
+        run: ./soupcli test
 
       - name: Upload soupcli
         uses: actions/upload-artifact@v3
@@ -62,11 +56,8 @@ jobs:
       - name: Build CLI
         run: php linux_cli.php
 
-      - name: Ensure soupcli exists
-        uses: andstor/file-existence-action@v2
-        with:
-          files: "soupcli"
-          fail: true
+      - name: Run ./soupcli test
+        run: ./soupcli test
 
       - name: Upload soupcli
         uses: actions/upload-artifact@v3
