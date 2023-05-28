@@ -3,6 +3,7 @@
 #if !SOUP_WASM
 
 #include "ServerService.hpp"
+#include "ServerServiceUdp.hpp"
 #include "Socket.hpp"
 
 namespace soup
@@ -142,6 +143,29 @@ namespace soup
 		return true;
 	}
 
+	bool Server::bindUdp(uint16_t port, ServerServiceUdp* service) noexcept
+	{
+		Socket sock6{};
+		if (!sock6.udpBind6(port))
+		{
+			return false;
+		}
+		setDataAvailableHandlerUdp(sock6, service);
+		addSocket(std::move(sock6));
+
+#if SOUP_WINDOWS
+		Socket sock4{};
+		if (!sock4.udpBind4(port))
+		{
+			return false;
+		}
+		setDataAvailableHandlerUdp(sock4, service);
+		addSocket(std::move(sock4));
+#endif
+
+		return true;
+	}
+
 	void Server::setDataAvailableHandler6(Socket& s)
 	{
 		s.holdup_type = Worker::SOCKET;
@@ -191,6 +215,15 @@ namespace soup
 			cap.get<udp_callback_t>()(s, std::move(sender), std::move(data));
 			setDataAvailableHandlerUdp(s, cap.get<udp_callback_t>());
 		}, callback);
+	}
+
+	void Server::setDataAvailableHandlerUdp(Socket& s, ServerServiceUdp* service)
+	{
+		s.udpRecv([](Socket& s, SocketAddr&& sender, std::string&& data, Capture&& cap)
+		{
+			cap.get<ServerServiceUdp*>()->callback(s, std::move(sender), std::move(data), *cap.get<ServerServiceUdp*>());
+			setDataAvailableHandlerUdp(s, cap.get<ServerServiceUdp*>());
+		}, service);
 	}
 }
 

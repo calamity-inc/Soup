@@ -123,6 +123,7 @@ namespace soup
 	class IpAddr;
 	class Server;
 	struct ServerService;
+	struct ServerServiceUdp;
 	class Socket;
 	struct SocketAddr;
 

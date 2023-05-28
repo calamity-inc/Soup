@@ -484,6 +484,7 @@
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="dnsServerService.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="Regex.hpp" />
@@ -510,6 +511,7 @@
     <ClInclude Include="RegexRepConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
+    <ClInclude Include="ServerServiceUdp.hpp" />
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
@@ -926,6 +928,7 @@
     <ClCompile Include="dnsName.cpp" />
     <ClCompile Include="dnsRawResolver.cpp" />
     <ClCompile Include="dnsResolver.cpp" />
+    <ClCompile Include="dnsServerService.cpp" />
     <ClCompile Include="dnsType.cpp" />
     <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="dns_records.cpp" />

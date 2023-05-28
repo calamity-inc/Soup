@@ -17,6 +17,7 @@ namespace soup
 		bool bindCrypto(uint16_t port, ServerService* service, tls_server_cert_selector_t cert_selector, tls_server_on_client_hello_t on_client_hello = nullptr) noexcept;
 		bool bindUdp(uint16_t port, udp_callback_t callback) noexcept;
 		bool bindUdp(const IpAddr& addr, uint16_t port, udp_callback_t callback) noexcept;
+		bool bindUdp(uint16_t port, ServerServiceUdp* service) noexcept;
 	protected:
 		static void setDataAvailableHandler6(Socket& s);
 		static void setDataAvailableHandlerCrypto6(Socket& s);
@@ -25,6 +26,7 @@ namespace soup
 		static void setDataAvailableHandlerCrypto4(Socket& s);
 #endif
 		static void setDataAvailableHandlerUdp(Socket& s, udp_callback_t callback);
+		static void setDataAvailableHandlerUdp(Socket& s, ServerServiceUdp* service);
 	};
 }
 #endif

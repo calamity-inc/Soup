@@ -1356,6 +1356,12 @@
     <ClInclude Include="RegexWordBoundaryConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
+    <ClInclude Include="dnsServerService.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerServiceUdp.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1973,6 +1979,9 @@
     </ClCompile>
     <ClCompile Include="Regex.cpp">
       <Filter>data\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsServerService.cpp">
+      <Filter>net\dns</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
