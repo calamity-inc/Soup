@@ -53,22 +53,28 @@ namespace soup
 		}
 	};
 
-	struct dnsCnameRecord : public dnsRecord
+	struct dnsRecordName : public dnsRecord
 	{
 		std::string data;
 
-		dnsCnameRecord(std::string&& name, uint32_t ttl, std::string&& data)
-			: dnsRecord(DNS_CNAME, std::move(name), ttl), data(std::move(data))
+		dnsRecordName(dnsType type, std::string&& name, uint32_t ttl, std::string&& data)
+			: dnsRecord(type, std::move(name), ttl), data(std::move(data))
 		{
 		}
 	};
 
-	struct dnsPtrRecord : public dnsRecord
+	struct dnsCnameRecord : public dnsRecordName
 	{
-		std::string data;
+		dnsCnameRecord(std::string&& name, uint32_t ttl, std::string&& data)
+			: dnsRecordName(DNS_CNAME, std::move(name), ttl, std::move(data))
+		{
+		}
+	};
 
+	struct dnsPtrRecord : public dnsRecordName
+	{
 		dnsPtrRecord(std::string&& name, uint32_t ttl, std::string&& data)
-			: dnsRecord(DNS_PTR, std::move(name), ttl), data(std::move(data))
+			: dnsRecordName(DNS_PTR, std::move(name), ttl, std::move(data))
 		{
 		}
 	};
@@ -111,12 +117,10 @@ namespace soup
 		[[nodiscard]] std::string getDataHumanReadable() const;
 	};
 
-	struct dnsNsRecord : public dnsRecord
+	struct dnsNsRecord : public dnsRecordName
 	{
-		std::string data;
-
 		dnsNsRecord(std::string&& name, uint32_t ttl, std::string&& data)
-			: dnsRecord(DNS_NS, std::move(name), ttl), data(std::move(data))
+			: dnsRecordName(DNS_NS, std::move(name), ttl, std::move(data))
 		{
 		}
 	};
