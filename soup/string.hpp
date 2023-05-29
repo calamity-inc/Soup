@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm> // transform
-#include <cctype> // tolower
 #include <cmath> // fmod
 #include <cstdint>
 #include <cstring> // strlen
@@ -861,7 +860,11 @@ namespace soup
 		{
 			std::transform(str.begin(), str.end(), str.begin(), [](typename Str::value_type c) -> typename Str::value_type
 			{
-				return std::tolower(c);
+				if (c >= 'A' && c <= 'Z')
+				{
+					return c - 'A' + 'a';
+				}
+				return c;
 			});
 		}
 
@@ -877,7 +880,11 @@ namespace soup
 		{
 			std::transform(str.begin(), str.end(), str.begin(), [](typename Str::value_type c) -> typename Str::value_type
 			{
-				return std::toupper(c);
+				if (c >= 'a' && c <= 'z')
+				{
+					return c - 'a' + 'A';
+				}
+				return c;
 			});
 		}
 
