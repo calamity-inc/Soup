@@ -859,7 +859,7 @@ namespace soup
 		template <typename Str>
 		static void lower(Str& str)
 		{
-			std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
+			std::transform(str.begin(), str.end(), str.begin(), [](typename Str::value_type c) -> typename Str::value_type
 			{
 				return std::tolower(c);
 			});
@@ -875,7 +875,7 @@ namespace soup
 		template <typename Str>
 		static void upper(Str& str)
 		{
-			std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
+			std::transform(str.begin(), str.end(), str.begin(), [](typename Str::value_type c) -> typename Str::value_type
 			{
 				return std::toupper(c);
 			});
