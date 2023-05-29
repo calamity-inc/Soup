@@ -23,6 +23,7 @@ void cli_dnsserver(int argc, const char** argv)
 		if (arr.size() >= 3)
 		{
 			auto name = arr[0];
+			string::lower(name);
 			auto type = dnsTypeFromString(arr[1]);
 			if (auto factory = dnsRecord::getFactory(type))
 			{

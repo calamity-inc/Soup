@@ -43,6 +43,12 @@ namespace soup
 			return;
 		}
 
+		// DNS is case-insensitive, so make query all lowercase for simplicity.
+		for (auto& entry : dq.name.name)
+		{
+			string::lower(entry);
+		}
+
 		auto qname = string::join(dq.name.name, '.');
 
 		std::vector<SharedPtr<dnsRecord>> rrs = on_query(qname, dq.name, addr, (dnsType)dq.qtype);
