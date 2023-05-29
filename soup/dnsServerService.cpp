@@ -71,6 +71,9 @@ namespace soup
 			}
 		}
 
+		// Reset num. additionals in case query had some
+		dh.arcount = 0;
+
 		StringWriter sw(BIG_ENDIAN);
 		dh.write(sw);
 		dq.write(sw);
