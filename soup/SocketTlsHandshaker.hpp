@@ -33,7 +33,8 @@ namespace soup
 		bool(*certchain_validator)(const X509Certchain&, const std::string& server_name);
 		X509Certchain certchain{};
 		std::string server_name{};
-		std::string server_x25519_public_key{};
+		uint16_t ecdhe_curve = 0;
+		std::string ecdhe_public_key{};
 		SocketTlsEncrypter pending_recv_encrypter;
 
 		// server

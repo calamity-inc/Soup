@@ -14,6 +14,7 @@
 #include "BufferRefWriter.hpp"
 #include "Curve25519.hpp"
 #include "dnsResolver.hpp"
+//#include "ecc.hpp"
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
@@ -363,6 +364,7 @@ namespace soup
 			TlsClientHelloExtEllipticCurves ext_elliptic_curves{};
 			ext_elliptic_curves.named_curves = {
 				NamedCurves::x25519,
+				//NamedCurves::secp256r1,
 			};
 
 			hello.extensions.add(TlsExtensionType::elliptic_curves, ext_elliptic_curves);
@@ -443,15 +445,35 @@ namespace soup
 								s.tls_close(TlsAlertDescription::decode_error);
 								return;
 							}
-							if (ske.named_curve != NamedCurves::x25519
-								|| ske.point.size() != Curve25519::KEY_SIZE
-								)
+							if (ske.named_curve == NamedCurves::x25519)
+							{
+								if (ske.point.size() != Curve25519::KEY_SIZE)
+								{
+									s.tls_close(TlsAlertDescription::handshake_failure);
+									return;
+								}
+							}
+#if false
+							else if (ske.named_curve == NamedCurves::secp256r1)
+							{
+								if (ske.point.size() != 65 // first byte for compression format (4 for uncompressed) + 32 for X + 32 for Y
+									|| ske.point.at(0) != 4
+									)
+								{
+									s.tls_close(TlsAlertDescription::handshake_failure);
+									return;
+								}
+								ske.point.erase(0, 1); // leave only X + Y
+							}
+#endif
+							else
 							{
 								s.tls_close(TlsAlertDescription::handshake_failure);
 								return;
 							}
 							// TODO: Validate signature
-							handshaker->server_x25519_public_key = std::move(ske.point);
+							handshaker->ecdhe_curve = ske.named_curve;
+							handshaker->ecdhe_public_key = std::move(ske.point);
 
 							s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
 						});
@@ -468,7 +490,7 @@ namespace soup
 		tls_recvHandshake(std::move(handshaker), TlsHandshake::server_hello_done, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)
 		{
 			std::string cke{};
-			if (handshaker->server_x25519_public_key.empty())
+			if (handshaker->ecdhe_curve == 0)
 			{
 				std::string pms{};
 				pms.reserve(48);
@@ -485,13 +507,13 @@ namespace soup
 
 				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(pms));
 			}
-			else
+			else if (handshaker->ecdhe_curve == NamedCurves::x25519)
 			{
 				uint8_t my_priv[Curve25519::KEY_SIZE];
 				Curve25519::generatePrivate(my_priv);
 
 				uint8_t their_pub[Curve25519::KEY_SIZE];
-				memcpy(their_pub, handshaker->server_x25519_public_key.data(), sizeof(their_pub));
+				memcpy(their_pub, handshaker->ecdhe_public_key.data(), sizeof(their_pub));
 
 				uint8_t shared_secret[Curve25519::SHARED_SIZE];
 				Curve25519::x25519(shared_secret, my_priv, their_pub);
@@ -502,6 +524,39 @@ namespace soup
 
 				cke = std::string(1, (char)sizeof(my_pub));
 				cke.append((const char*)my_pub, sizeof(my_pub));
+			}
+#if false
+			else if (handshaker->ecdhe_curve == NamedCurves::secp256r1)
+			{
+				// This is unfortunately broken. The server closes on us with bad_record_mac, presumably due to deriving a different premaster secret.
+
+				auto curve = EccCurve::secp256r1();
+
+				auto my_priv = curve.generatePrivate();
+
+				EccPoint their_pub;
+				their_pub.x = Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, 32));
+				their_pub.y = Bigint::fromBinary(handshaker->ecdhe_public_key.substr(32, 32));
+
+				auto shared_point = curve.multiply(their_pub, my_priv);
+#if true
+				auto shared_secret = shared_point.x.toBinary();
+				SOUP_ASSERT(shared_secret.size() == 32);
+				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(shared_secret));
+#else
+				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(shared_point.toBinary());
+#endif
+
+				auto my_pub = curve.derivePublic(my_priv);
+
+				cke = my_pub.toBinary();
+				cke.insert(0, 1, 4); // uncompressed
+				cke.insert(0, 1, 1 + 32 + 32);
+			}
+#endif
+			else
+			{
+				throw 0; // This should be unreachable.
 			}
 			if (s.tls_sendHandshake(handshaker, TlsHandshake::client_key_exchange, std::move(cke))
 				&& s.tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
@@ -991,6 +1046,21 @@ namespace soup
 			auto& cap = _cap.get<CaptureSocketTlsRecvRecordExpect>();
 			if (content_type != cap.expected_content_type)
 			{
+#if LOGGING
+				if (content_type == TlsContentType::alert)
+				{
+					std::string msg = s.toString();
+					msg.append(" - Remote closing connection with ");
+					if (data.at(0) == 2)
+					{
+						msg.append("fatal ");
+					}
+					msg.append("alert, description ");
+					msg.append(std::to_string((int)data.at(1)));
+					msg.append(". See TlsAlertDescription for details.");
+					logWriteLine(std::move(msg));
+				}
+#endif
 				s.tls_close(TlsAlertDescription::unexpected_message);
 				return;
 			}
