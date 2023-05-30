@@ -486,6 +486,7 @@
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="dnsServerService.hpp" />
     <ClInclude Include="DummyTask.hpp" />
+    <ClInclude Include="ecc.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="Regex.hpp" />
     <ClInclude Include="RegexAlternative.hpp" />
@@ -933,6 +934,7 @@
     <ClCompile Include="dnsType.cpp" />
     <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="dns_records.cpp" />
+    <ClCompile Include="ecc.cpp" />
     <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />

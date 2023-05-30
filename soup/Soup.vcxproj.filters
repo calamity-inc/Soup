@@ -1365,6 +1365,9 @@
     <ClInclude Include="RegexDummyConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
+    <ClInclude Include="ecc.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1985,6 +1988,9 @@
     </ClCompile>
     <ClCompile Include="dnsServerService.cpp">
       <Filter>net\dns</Filter>
+    </ClCompile>
+    <ClCompile Include="ecc.cpp">
+      <Filter>crypto</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
