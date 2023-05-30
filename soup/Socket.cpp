@@ -17,6 +17,7 @@
 #include "ecc.hpp"
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
+#include "plusaes.hpp"
 #include "rand.hpp"
 #include "SocketTlsHandshaker.hpp"
 #include "time.hpp"
@@ -346,6 +347,9 @@ namespace soup
 			TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, // Cloudflare
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, // Cloudflare
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, // Cloudflare
+
+			TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, // Apache + Let's Encrypt
+			TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, // Apache + Let's Encrypt
 		};
 		hello.cipher_suites.emplace(
 			hello.cipher_suites.begin() + rand(0, hello.cipher_suites.size() - 1),
@@ -437,6 +441,8 @@ namespace soup
 					case TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
 					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
 					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
+					case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
+					case TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:
 						s.tls_recvHandshake(std::move(handshaker), TlsHandshake::server_key_exchange, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)
 						{
 							TlsServerKeyExchange ske;
@@ -555,7 +561,14 @@ namespace soup
 				&& s.tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
 				)
 			{
-				handshaker->getKeys(s.tls_encrypter_send.mac_key, handshaker->pending_recv_encrypter.mac_key, s.tls_encrypter_send.cipher_key, handshaker->pending_recv_encrypter.cipher_key);
+				handshaker->getKeys(
+					s.tls_encrypter_send.mac_key,
+					handshaker->pending_recv_encrypter.mac_key,
+					s.tls_encrypter_send.cipher_key,
+					handshaker->pending_recv_encrypter.cipher_key,
+					s.tls_encrypter_send.implicit_iv,
+					handshaker->pending_recv_encrypter.implicit_iv
+				);
 				if (s.tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getClientFinishVerifyData()))
 				{
 					s.tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap)
@@ -717,7 +730,14 @@ namespace soup
 						auto& s = reinterpret_cast<Socket&>(w);
 						UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
-						handshaker->getKeys(s.tls_encrypter_recv.mac_key, s.tls_encrypter_send.mac_key, s.tls_encrypter_recv.cipher_key, s.tls_encrypter_send.cipher_key);
+						handshaker->getKeys(
+							s.tls_encrypter_recv.mac_key,
+							s.tls_encrypter_send.mac_key,
+							s.tls_encrypter_recv.cipher_key,
+							s.tls_encrypter_send.cipher_key,
+							s.tls_encrypter_recv.implicit_iv,
+							s.tls_encrypter_send.implicit_iv
+						);
 
 						handshaker->expected_finished_verify_data = handshaker->getClientFinishVerifyData();
 
@@ -1100,48 +1120,85 @@ namespace soup
 				if (s.tls_encrypter_recv.isActive())
 				{
 					constexpr auto cipher_bytes = 16;
-					const auto mac_length = s.tls_encrypter_recv.mac_key.size();
 
-					if ((data.size() % cipher_bytes) != 0
-						|| data.size() < (cipher_bytes + mac_length)
-						)
+					if (!s.tls_encrypter_recv.isAead())
 					{
-						s.tls_close(TlsAlertDescription::bad_record_mac);
-						return;
-					}
+						constexpr auto record_iv_length = 16;
+						const auto mac_length = s.tls_encrypter_recv.mac_key.size();
 
-					auto iv = data.substr(0, cipher_bytes);
-					data.erase(0, cipher_bytes);
-					data = aes::decryptCBC(data, s.tls_encrypter_recv.cipher_key, iv);
-
-					std::string mac{};
-
-					bool pad_mismatch = false;
-					uint8_t pad_len = data.back();
-					for (auto it = (data.end() - (pad_len + 1)); it != (data.end() - 1); ++it)
-					{
-						if (*it != pad_len)
+						if ((data.size() % cipher_bytes) != 0
+							|| data.size() < (cipher_bytes + mac_length)
+							)
 						{
-							pad_mismatch = true;
+							s.tls_close(TlsAlertDescription::bad_record_mac);
+							return;
+						}
+
+						auto iv = data.substr(0, record_iv_length);
+						data.erase(0, record_iv_length);
+						data = aes::decryptCBC(data, s.tls_encrypter_recv.cipher_key, iv);
+
+						std::string mac{};
+
+						bool pad_mismatch = false;
+						uint8_t pad_len = data.back();
+						for (auto it = (data.end() - (pad_len + 1)); it != (data.end() - 1); ++it)
+						{
+							if (*it != pad_len)
+							{
+								pad_mismatch = true;
+							}
+						}
+						if (data.size() >= pad_len)
+						{
+							data.erase(data.size() - (pad_len + 1));
+
+							if (data.size() > mac_length)
+							{
+								mac = data.substr(data.size() - mac_length);
+								data.erase(data.size() - mac_length);
+							}
+						}
+
+						if (s.tls_encrypter_recv.calculateMac(cap.content_type, data) != mac
+							|| pad_mismatch
+							)
+						{
+							s.tls_close(TlsAlertDescription::bad_record_mac);
+							return;
 						}
 					}
-					if (data.size() >= pad_len)
+					else
 					{
-						data.erase(data.size() - (pad_len + 1));
+						constexpr auto record_iv_length = 8;
 
-						if (data.size() > mac_length)
+						if (data.size() < (record_iv_length + cipher_bytes))
 						{
-							mac = data.substr(data.size() - mac_length);
-							data.erase(data.size() - mac_length);
+							s.tls_close(TlsAlertDescription::bad_record_mac);
+							return;
 						}
-					}
 
-					if (s.tls_encrypter_recv.calculateMac(cap.content_type, data) != mac
-						|| pad_mismatch
-						)
-					{
-						s.tls_close(TlsAlertDescription::bad_record_mac);
-						return;
+						auto tag = data.substr(data.length() - cipher_bytes);
+						data.erase(data.length() - cipher_bytes);
+
+						auto iv = s.tls_encrypter_recv.implicit_iv;
+						auto nonce_explicit = data.substr(0, record_iv_length);
+						iv.insert(iv.end(), nonce_explicit.begin(), nonce_explicit.end());
+						data.erase(0, record_iv_length);
+
+						auto ad = s.tls_encrypter_recv.calculateMacBytes(cap.content_type, data);
+
+						if (plusaes::decrypt_gcm(
+							(uint8_t*)data.data(), data.size(),
+							(const uint8_t*)ad.data(), ad.size(),
+							s.tls_encrypter_recv.cipher_key.data(), s.tls_encrypter_recv.cipher_key.size(),
+							iv.data(), iv.size(),
+							(const uint8_t*)tag.data(), tag.size()
+						) != plusaes::kErrorOk)
+						{
+							s.tls_close(TlsAlertDescription::bad_record_mac);
+							return;
+						}
 					}
 				}
 				cap.prev.callback(s, cap.content_type, std::move(data), std::move(cap.prev.cap));

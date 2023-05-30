@@ -54,9 +54,9 @@ namespace soup
 		return master_secret;
 	}
 
-	void SocketTlsHandshaker::getKeys(std::string& client_write_mac, std::string& server_write_mac, std::vector<uint8_t>& client_write_key, std::vector<uint8_t>& server_write_key)
+	void SocketTlsHandshaker::getKeys(std::string& client_write_mac, std::string& server_write_mac, std::vector<uint8_t>& client_write_key, std::vector<uint8_t>& server_write_key, std::vector<uint8_t>& client_write_iv, std::vector<uint8_t>& server_write_iv)
 	{
-		auto mac_key_length = 20; // SHA1 = 20, SHA256 = 32
+		size_t mac_key_length = 20; // SHA1 = 20, SHA256 = 32
 		switch (cipher_suite)
 		{
 		case TLS_RSA_WITH_AES_128_CBC_SHA256:
@@ -65,9 +65,16 @@ namespace soup
 		case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
 			mac_key_length = 32;
 			break;
+
+		case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
+		//case TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:
+		case TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:
+		//case TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:
+			mac_key_length = 0;
+			break;
 		}
 
-		auto enc_key_length = 16; // AES128 = 16, AES256 = 32
+		size_t enc_key_length = 16; // AES128 = 16, AES256 = 32
 		switch (cipher_suite)
 		{
 		case TLS_RSA_WITH_AES_256_CBC_SHA:
@@ -78,9 +85,21 @@ namespace soup
 			break;
 		}
 
+		size_t fixed_iv_length = 0;
+		switch (cipher_suite)
+		{
+		case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
+		//case TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:
+		case TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:
+		//case TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:
+			fixed_iv_length = 4;
+			break;
+		}
+
+		// tls_prf should use sha384 for TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 & TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 as per RFC5289.
 		auto key_block = sha256::tls_prf(
 			ObfusString("key expansion"),
-			(mac_key_length * 2) + (enc_key_length * 2),
+			(mac_key_length * 2) + (enc_key_length * 2) + (fixed_iv_length * 2),
 			getMasterSecret(),
 			std::string(server_random).append(client_random)
 		);
@@ -89,10 +108,14 @@ namespace soup
 		server_write_mac = key_block.substr(mac_key_length, mac_key_length);
 
 		auto client_write_key_str = key_block.substr(mac_key_length * 2, enc_key_length);
-		auto server_write_key_str = key_block.substr((mac_key_length * 2) + enc_key_length);
-
+		auto server_write_key_str = key_block.substr((mac_key_length * 2) + enc_key_length, enc_key_length);
 		client_write_key = std::vector<uint8_t>(client_write_key_str.begin(), client_write_key_str.end());
 		server_write_key = std::vector<uint8_t>(server_write_key_str.begin(), server_write_key_str.end());
+
+		auto client_write_iv_str = key_block.substr((mac_key_length * 2) + (enc_key_length * 2), fixed_iv_length);
+		auto server_write_iv_str = key_block.substr((mac_key_length * 2) + (enc_key_length * 2) + fixed_iv_length, fixed_iv_length);
+		client_write_iv = std::vector<uint8_t>(client_write_iv_str.begin(), client_write_iv_str.end());
+		server_write_iv = std::vector<uint8_t>(server_write_iv_str.begin(), server_write_iv_str.end());
 	}
 
 	std::string SocketTlsHandshaker::getClientFinishVerifyData()

@@ -294,41 +294,6 @@ namespace soup
 		return encryptCFB(in, key, iv); // Symmetricality go brr
 	}
 
-	std::vector<uint8_t> aes::encryptGCMNoAuth(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv/*, const std::vector<uint8_t>& ad*/)
-	{
-		SOUP_ASSERT_ARG(iv.size() == blockBytesLen);
-
-		// https://luca-giuzzi.unibs.it/corsi/Support/papers-cryptography/gcm-spec.pdf
-		// in = P
-		// out = H
-
-		std::vector<uint8_t> out(in.size(), 0);
-		std::vector<uint8_t> block(blockBytesLen, 0);
-		std::vector<uint8_t> encryptedBlock(blockBytesLen, 0);
-		std::vector<uint8_t> counterBlock = iv;
-		const auto Nr = getNr(key);
-		auto roundKeys = KeyExpansion(key);
-		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
-		{
-			EncryptBlock(counterBlock.data(), encryptedBlock.data(), roundKeys.data(), Nr);
-			XorBlocks(&in[i], encryptedBlock.data(), &out[i], blockBytesLen);
-			IncCounter(counterBlock.data());
-		}
-
-		// Generate tag
-		/*std::vector<uint8_t> tag = GHASH(key, out, ad, iv, in.size());
-
-		out.resize(out.size() + tag.size());
-		memcpy(&out[out.size() - tag.size()], tag.data(), tag.size());*/
-
-		return out;
-	}
-
-	std::vector<uint8_t> aes::decryptGCMNoAuth(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
-	{
-		return encryptGCMNoAuth(in, key, iv); // Symmetricality go brr
-	}
-
 	std::string aes::encryptECB(const std::string& in, const std::string& key)
 	{
 		std::vector<uint8_t> v_in(in.begin(), in.end());

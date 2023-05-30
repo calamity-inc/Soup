@@ -1,6 +1,7 @@
 #include "SocketTlsEncrypter.hpp"
 
 #include "aes.hpp"
+#include "plusaes.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
@@ -13,13 +14,18 @@ namespace soup
 		return mac_key.size();
 	}
 
-	std::string SocketTlsEncrypter::calculateMac(TlsContentType_t content_type, const std::string& content)
+	std::string SocketTlsEncrypter::calculateMacBytes(TlsContentType_t content_type, const std::string& content)
 	{
 		TlsMac mac{};
 		mac.seq_num = seq_num++;
 		mac.record.content_type = content_type;
 		mac.record.length = content.size();
-		auto msg = mac.toBinaryString();
+		return mac.toBinaryString();
+	}
+
+	std::string SocketTlsEncrypter::calculateMac(TlsContentType_t content_type, const std::string& content)
+	{
+		auto msg = calculateMacBytes(content_type, content);
 		msg.append(content);
 
 		if (mac_key.size() == 20)
@@ -36,23 +42,55 @@ namespace soup
 	{
 		constexpr auto cipher_bytes = 16;
 
-		auto mac = calculateMac(content_type, content);
-		auto cont_with_mac_size = (content.size() + mac.size());
-		auto aligned_in_len = ((((cont_with_mac_size + 1) / cipher_bytes) + 1) * cipher_bytes);
-		char pad_len = (aligned_in_len - cont_with_mac_size);
+		if (!isAead()) // AES-CBC
+		{
+			constexpr auto record_iv_length = 16;
 
-		std::vector<uint8_t> in{};
-		in.reserve(content.size() + mac.size() + pad_len);
-		in.insert(in.end(), content.begin(), content.end());
-		in.insert(in.end(), mac.begin(), mac.end());
-		in.insert(in.end(), (size_t)pad_len, (pad_len - 1));
+			auto mac = calculateMac(content_type, content);
+			auto cont_with_mac_size = (content.size() + mac.size());
+			auto aligned_in_len = ((((cont_with_mac_size + 1) / cipher_bytes) + 1) * cipher_bytes);
+			char pad_len = (aligned_in_len - cont_with_mac_size);
 
-		auto iv = rand.vec_u8(cipher_bytes);
-		std::vector<uint8_t> key(cipher_key.begin(), cipher_key.end());
-		auto out = aes::encryptCBC(in, key, iv);
+			std::vector<uint8_t> in{};
+			in.reserve(content.size() + mac.size() + pad_len);
+			in.insert(in.end(), content.begin(), content.end());
+			in.insert(in.end(), mac.begin(), mac.end());
+			in.insert(in.end(), (size_t)pad_len, (pad_len - 1));
 
-		iv.insert(iv.end(), out.begin(), out.end());
-		return iv;
+			auto iv = rand.vec_u8(record_iv_length);
+			std::vector<uint8_t> key(cipher_key.begin(), cipher_key.end());
+			auto out = aes::encryptCBC(in, key, iv);
+
+			iv.insert(iv.end(), out.begin(), out.end());
+			return iv;
+		}
+		else // AES-GCM
+		{
+			constexpr auto record_iv_length = 8;
+
+			auto nonce_explicit = rand.vec_u8(record_iv_length);
+			auto iv = implicit_iv;
+			iv.insert(iv.end(), nonce_explicit.begin(), nonce_explicit.end());
+
+			auto ad = calculateMacBytes(content_type, content);
+			
+			std::vector<uint8_t> data(content.begin(), content.end());
+
+			uint8_t tag[cipher_bytes];
+			SOUP_ASSERT(
+				plusaes::encrypt_gcm(
+					data.data(), data.size(),
+					(const uint8_t*)ad.data(), ad.size(),
+					cipher_key.data(), cipher_key.size(),
+					iv.data(), iv.size(),
+					tag, sizeof(tag)
+				) == plusaes::kErrorOk
+			);
+
+			data.insert(data.end(), tag, tag + 16);
+			data.insert(data.begin(), nonce_explicit.begin(), nonce_explicit.end());
+			return data;
+		}
 	}
 
 	void SocketTlsEncrypter::reset() noexcept
