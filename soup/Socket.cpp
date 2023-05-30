@@ -525,8 +525,6 @@ namespace soup
 			}
 			else if (handshaker->ecdhe_curve == NamedCurves::secp256r1)
 			{
-				// This is unfortunately broken. The server closes on us with bad_record_mac, presumably due to deriving a different premaster secret.
-
 				auto curve = EccCurve::secp256r1();
 
 				auto my_priv = curve.generatePrivate();
