@@ -369,16 +369,23 @@ namespace soup
 		}
 
 		{
-			// NGINX closes with "internal_error" if signature_algorithms is not present. Just copied the data from Chrome via Wireshark:
-			// - ecdsa_secp256r1_sha256 (0x0403)
+			// NGINX (e.g., api.deepl.com) closes with "internal_error" if signature_algorithms is not present. We provide the following:
 			// - rsa_pss_rsae_sha256 (0x0804)
 			// - rsa_pkcs1_sha256 (0x0401)
-			// - ecdsa_secp384r1_sha384 (0x0503)
 			// - rsa_pss_rsae_sha384 (0x0805)
 			// - rsa_pkcs1_sha384 (0x0501)
 			// - rsa_pss_rsae_sha512 (0x0806)
 			// - rsa_pkcs1_sha512 (0x0601)
+			// Also these, but doing so causes github.com in non-US regions to handshake failure for us because our elliptic_curves does not provide them:
+			// - ecdsa_secp384r1_sha384 (0x0503)
+			// - ecdsa_secp256r1_sha256 (0x0403)
+			// We provide them anyway because Cloudflare certs are EC only.
+			// We don't provide them in elliptic_curves because we don't support them for ECDHE, which becomes a problem with scui.rockstargames.com.
+#if false
+			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x0C\x08\x04\x04\x01\x08\x05\x05\x01\x08\x06\x06\x01", 14));
+#else
 			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01", 18));
+#endif
 		}
 
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_hello, hello.toBinaryString()))
