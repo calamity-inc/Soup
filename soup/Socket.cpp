@@ -534,13 +534,14 @@ namespace soup
 
 				auto my_priv = curve.generatePrivate();
 
-				EccPoint their_pub;
-				their_pub.x = Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, 32));
-				their_pub.y = Bigint::fromBinary(handshaker->ecdhe_public_key.substr(32, 32));
+				EccPoint their_pub(
+					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, 32)),
+					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(32, 32))
+				);
 
 				auto shared_point = curve.multiply(their_pub, my_priv);
 #if true
-				auto shared_secret = shared_point.x.toBinary();
+				auto shared_secret = shared_point.getX().toBinary();
 				SOUP_ASSERT(shared_secret.size() == 32);
 				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(shared_secret));
 #else

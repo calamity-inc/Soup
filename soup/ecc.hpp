@@ -7,10 +7,12 @@ namespace soup
 
 	struct EccPoint
 	{
+	protected:
 		bool point_at_infinity = true;
 		Bigint x{};
 		Bigint y{};
 
+	public:
 		EccPoint() = default;
 
 		EccPoint(Bigint x, Bigint y)
@@ -18,7 +20,19 @@ namespace soup
 		{
 		}
 
+		[[nodiscard]] const Bigint& getX() const
+		{
+			return x;
+		}
+
+		[[nodiscard]] const Bigint& getY() const
+		{
+			return y;
+		}
+
 		[[nodiscard]] std::string toBinary() const;
+
+		friend struct EccCurve;
 	};
 
 	// y^2 = x^3 + ax + b (mod p)
