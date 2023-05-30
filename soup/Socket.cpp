@@ -533,6 +533,7 @@ namespace soup
 					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, 32)),
 					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(32, 32))
 				);
+				SOUP_ASSERT(curve.validate(their_pub));
 
 				auto shared_point = curve.multiply(their_pub, my_priv);
 				auto shared_secret = shared_point.getX().toBinary();

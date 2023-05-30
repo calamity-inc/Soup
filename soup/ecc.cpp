@@ -103,4 +103,9 @@ namespace soup
 
 #endif
 	}
+
+	bool EccCurve::validate(const EccPoint& P) const
+	{
+		return (P.y.pow2() % this->p) == (((P.x * P.x * P.x) + (this->a * P.x) + this->b) % this->p);
+	}
 }

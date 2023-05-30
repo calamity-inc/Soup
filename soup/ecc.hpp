@@ -38,7 +38,6 @@ namespace soup
 		friend struct EccCurve;
 	};
 
-	// y^2 = x^3 + ax + b (mod p)
 	struct EccCurve
 	{
 		Bigint a;
@@ -54,5 +53,8 @@ namespace soup
 
 		[[nodiscard]] EccPoint add(const EccPoint& P, const EccPoint& Q) const;
 		[[nodiscard]] EccPoint multiply(EccPoint G, Bigint d) const;
+
+		// Checks if P satifies y^2 = x^3 + ax + b (mod p)
+		[[nodiscard]] bool validate(const EccPoint& P) const;
 	};
 }
