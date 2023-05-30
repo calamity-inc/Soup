@@ -30,7 +30,10 @@ namespace soup
 			return y;
 		}
 
-		[[nodiscard]] std::string toBinary() const;
+		[[nodiscard]] std::string toBinary() const
+		{
+			return x.toBinary() + y.toBinary();
+		}
 
 		friend struct EccCurve;
 	};

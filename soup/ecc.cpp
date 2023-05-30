@@ -6,13 +6,6 @@ namespace soup
 {
 	using namespace literals;
 
-	std::string EccPoint::toBinary() const
-	{
-		auto bin = x.toBinary() + y.toBinary();
-		SOUP_ASSERT(bin.size() == 64);
-		return bin;
-	}
-
 	EccCurve EccCurve::secp256r1()
 	{
 		EccCurve curve;
