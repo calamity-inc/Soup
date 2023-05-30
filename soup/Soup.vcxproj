@@ -672,7 +672,7 @@
     <ClInclude Include="Dictionary.hpp" />
     <ClInclude Include="DictionaryWord.hpp" />
     <ClInclude Include="dnsOsResolver.hpp" />
-    <ClInclude Include="ec.hpp" />
+    <ClInclude Include="Curve25519.hpp" />
     <ClInclude Include="Editor.hpp" />
     <ClInclude Include="EditorFile.hpp" />
     <ClInclude Include="EditorTab.hpp" />
@@ -989,7 +989,7 @@
     <ClCompile Include="deflate.cpp" />
     <ClCompile Include="Dictionary.cpp" />
     <ClCompile Include="dnsOsResolver.cpp" />
-    <ClCompile Include="ec.cpp" />
+    <ClCompile Include="Curve25519.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorTab.cpp" />
     <ClCompile Include="EditorText.cpp" />

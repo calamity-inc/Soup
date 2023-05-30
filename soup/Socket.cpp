@@ -12,8 +12,8 @@
 #include "aes.hpp"
 #include "Buffer.hpp"
 #include "BufferRefWriter.hpp"
+#include "Curve25519.hpp"
 #include "dnsResolver.hpp"
-#include "ec.hpp"
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
@@ -444,7 +444,7 @@ namespace soup
 								return;
 							}
 							if (ske.named_curve != NamedCurves::x25519
-								|| ske.point.size() != ec::X25519_KEY_SIZE
+								|| ske.point.size() != Curve25519::KEY_SIZE
 								)
 							{
 								s.tls_close(TlsAlertDescription::handshake_failure);
@@ -487,18 +487,18 @@ namespace soup
 			}
 			else
 			{
-				uint8_t my_priv[ec::X25519_KEY_SIZE];
-				ec::curve25519_generatePrivate(my_priv);
+				uint8_t my_priv[Curve25519::KEY_SIZE];
+				Curve25519::generatePrivate(my_priv);
 
-				uint8_t their_pub[ec::X25519_KEY_SIZE];
+				uint8_t their_pub[Curve25519::KEY_SIZE];
 				memcpy(their_pub, handshaker->server_x25519_public_key.data(), sizeof(their_pub));
 
-				uint8_t shared_secret[ec::X25519_SHARED_SIZE];
-				ec::x25519(shared_secret, my_priv, their_pub);
+				uint8_t shared_secret[Curve25519::SHARED_SIZE];
+				Curve25519::x25519(shared_secret, my_priv, their_pub);
 				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::string((const char*)shared_secret, sizeof(shared_secret)));
 
-				uint8_t my_pub[ec::X25519_KEY_SIZE];
-				ec::curve25519_derivePublic(my_pub, my_priv);
+				uint8_t my_pub[Curve25519::KEY_SIZE];
+				Curve25519::derivePublic(my_pub, my_priv);
 
 				cke = std::string(1, (char)sizeof(my_pub));
 				cke.append((const char*)my_pub, sizeof(my_pub));

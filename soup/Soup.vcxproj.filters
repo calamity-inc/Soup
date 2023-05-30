@@ -200,7 +200,7 @@
     <ClInclude Include="SocketTlsHandshaker.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="ec.hpp">
+    <ClInclude Include="Curve25519.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
     <ClInclude Include="TlsCipherSuite.hpp">
@@ -1421,7 +1421,7 @@
     <ClCompile Include="SocketTlsHandshaker.cpp">
       <Filter>net\tls</Filter>
     </ClCompile>
-    <ClCompile Include="ec.cpp">
+    <ClCompile Include="Curve25519.cpp">
       <Filter>crypto</Filter>
     </ClCompile>
     <ClCompile Include="Scheduler.cpp">
