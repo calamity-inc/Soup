@@ -32,7 +32,7 @@ namespace soup
 		Bigint d;
 		while (d < this->n)
 		{
-			d |= rand.coinflip();
+			d.setBit(0, rand.coinflip());
 			d <<= 1;
 		}
 		d >>= 1;
