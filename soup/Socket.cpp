@@ -14,7 +14,7 @@
 #include "BufferRefWriter.hpp"
 #include "Curve25519.hpp"
 #include "dnsResolver.hpp"
-//#include "ecc.hpp"
+#include "ecc.hpp"
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
@@ -364,7 +364,7 @@ namespace soup
 			TlsClientHelloExtEllipticCurves ext_elliptic_curves{};
 			ext_elliptic_curves.named_curves = {
 				NamedCurves::x25519,
-				//NamedCurves::secp256r1,
+				NamedCurves::secp256r1,
 			};
 
 			hello.extensions.add(TlsExtensionType::elliptic_curves, ext_elliptic_curves);
@@ -378,11 +378,11 @@ namespace soup
 			// - rsa_pkcs1_sha384 (0x0501)
 			// - rsa_pss_rsae_sha512 (0x0806)
 			// - rsa_pkcs1_sha512 (0x0601)
-			// Also these, but doing so causes github.com in non-US regions to handshake failure for us because our elliptic_curves does not provide them:
+			// Also these, but doing so may cause some servers to fail handshake if it picks a cert where curve is not in our elliptic_curves:
 			// - ecdsa_secp384r1_sha384 (0x0503)
 			// - ecdsa_secp256r1_sha256 (0x0403)
 			// We provide them anyway because Cloudflare certs are EC only.
-			// We don't provide them in elliptic_curves because we don't support them for ECDHE, which becomes a problem with scui.rockstargames.com.
+			// We don't provide them in elliptic_curves because we don't support them for ECDHE.
 #if false
 			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x0C\x08\x04\x04\x01\x08\x05\x05\x01\x08\x06\x06\x01", 14));
 #else
@@ -453,7 +453,6 @@ namespace soup
 									return;
 								}
 							}
-#if false
 							else if (ske.named_curve == NamedCurves::secp256r1)
 							{
 								if (ske.point.size() != 65 // first byte for compression format (4 for uncompressed) + 32 for X + 32 for Y
@@ -465,7 +464,6 @@ namespace soup
 								}
 								ske.point.erase(0, 1); // leave only X + Y
 							}
-#endif
 							else
 							{
 								s.tls_close(TlsAlertDescription::handshake_failure);
@@ -525,7 +523,6 @@ namespace soup
 				cke = std::string(1, (char)sizeof(my_pub));
 				cke.append((const char*)my_pub, sizeof(my_pub));
 			}
-#if false
 			else if (handshaker->ecdhe_curve == NamedCurves::secp256r1)
 			{
 				// This is unfortunately broken. The server closes on us with bad_record_mac, presumably due to deriving a different premaster secret.
@@ -540,13 +537,9 @@ namespace soup
 				);
 
 				auto shared_point = curve.multiply(their_pub, my_priv);
-#if true
 				auto shared_secret = shared_point.getX().toBinary();
 				SOUP_ASSERT(shared_secret.size() == 32);
 				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(shared_secret));
-#else
-				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(shared_point.toBinary());
-#endif
 
 				auto my_pub = curve.derivePublic(my_priv);
 
@@ -554,7 +547,6 @@ namespace soup
 				cke.insert(0, 1, 4); // uncompressed
 				cke.insert(0, 1, 1 + 32 + 32);
 			}
-#endif
 			else
 			{
 				throw 0; // This should be unreachable.
