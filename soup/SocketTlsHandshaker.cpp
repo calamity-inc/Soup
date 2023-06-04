@@ -25,20 +25,6 @@ namespace soup
 		return data;
 	}
 
-	int SocketTlsHandshaker::unpack(TlsHandshakeType_t expected_handshake_type, std::string& content)
-	{
-		TlsHandshake hs;
-		if (hs.fromBinary(content)
-			&& hs.handshake_type == expected_handshake_type
-			)
-		{
-			layer_bytes.append(content);
-			content = content.substr(4);
-			return hs.length;
-		}
-		return 0;
-	}
-
 	std::string SocketTlsHandshaker::getMasterSecret()
 	{
 		if (pre_master_secret)

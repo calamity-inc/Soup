@@ -45,7 +45,6 @@ namespace soup
 		explicit SocketTlsHandshaker(void(*callback)(Socket&, Capture&&), Capture&& callback_capture);
 
 		[[nodiscard]] std::string pack(TlsHandshakeType_t handshake_type, const std::string& content);
-		[[nodiscard]] int unpack(TlsHandshakeType_t expected_handshake_type, std::string& content);
 
 		[[nodiscard]] std::string getMasterSecret();
 		void getKeys(std::string& client_write_mac, std::string& server_write_mac, std::vector<uint8_t>& client_write_key, std::vector<uint8_t>& server_write_key, std::vector<uint8_t>& client_write_iv, std::vector<uint8_t>& server_write_iv);
