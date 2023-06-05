@@ -249,11 +249,11 @@ namespace soup
 			auto d = new size_t[n * m];
 
 			//memset(d, 0, n * m * sizeof(size_t));
-			for (int i = 0; i != n; ++i)
+			for (size_t i = 0; i != n; ++i)
 			{
 				d[i * n + 0] = i;
 			}
-			for (int j = 0; j != m; ++j)
+			for (size_t j = 0; j != m; ++j)
 			{
 				d[0 * n + j] = j;
 			}
