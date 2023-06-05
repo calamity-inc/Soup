@@ -841,6 +841,7 @@ static void unit_util_string()
 		assert(string::levenshtein<std::string>("successfully", "success") == 5);
 		assert(string::levenshtein<std::string>("alpha", "scope") == 5);
 		assert(string::levenshtein<std::string>("equal", "equal") == 0);
+		assert(string::levenshtein<std::string>("Hello, world!", "The sun is shining and it lets me know the day has just begun.") == 57);
 	});
 	test("StringMatch::search", []
 	{
