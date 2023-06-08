@@ -481,6 +481,7 @@
     <ClInclude Include="CidrSubnet4.hpp" />
     <ClInclude Include="CidrSubnet6.hpp" />
     <ClInclude Include="CidrSupernet.hpp" />
+    <ClInclude Include="compiletime.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />

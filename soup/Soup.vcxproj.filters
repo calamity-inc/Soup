@@ -1371,6 +1371,9 @@
     <ClInclude Include="plusaes.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="compiletime.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
