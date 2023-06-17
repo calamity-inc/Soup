@@ -555,7 +555,7 @@ namespace soup
 			}
 			else
 			{
-				throw 0; // This should be unreachable.
+				SOUP_ASSERT_UNREACHABLE;
 			}
 			if (s.tls_sendHandshake(handshaker, TlsHandshake::client_key_exchange, std::move(cke))
 				&& s.tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
