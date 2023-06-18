@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "dnsLookupTask.hpp"
 #include "dns_records.hpp"
 #include "UniquePtr.hpp"
 
@@ -15,6 +16,7 @@ namespace soup
 		[[nodiscard]] std::vector<IpAddr> lookupIPv6(const std::string& name) const;
 
 		[[nodiscard]] virtual std::vector<UniquePtr<dnsRecord>> lookup(dnsType qtype, const std::string& name) const = 0;
+		[[nodiscard]] virtual UniquePtr<dnsLookupTask> makeLookupTask(dnsType qtype, const std::string& name) const;
 
 		[[nodiscard]] static std::vector<IpAddr> simplifyIPv4LookupResults(const std::vector<UniquePtr<dnsRecord>>& vec);
 		[[nodiscard]] static std::vector<IpAddr> simplifyIPv6LookupResults(const std::vector<UniquePtr<dnsRecord>>& vec);

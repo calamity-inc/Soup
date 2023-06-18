@@ -1,7 +1,6 @@
 #include "netConnectTask.hpp"
 #if !SOUP_WASM
 
-#include "dnsSchedulableResolver.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
 #include "Scheduler.hpp"
@@ -23,7 +22,7 @@ namespace soup
 		}
 		else
 		{
-			lookup = netConfig::get().schedulable_dns_resolver->makeLookupTask(DNS_A, host);
+			lookup = netConfig::get().dns_resolver->makeLookupTask(DNS_A, host);
 
 			// In case we get no A records, we need enough data to start AAAA query.
 			this->host = host;
@@ -58,7 +57,7 @@ namespace soup
 					// IPv4 Result
 					if (lookup->res.empty())
 					{
-						lookup = netConfig::get().schedulable_dns_resolver->makeLookupTask(DNS_AAAA, host);
+						lookup = netConfig::get().dns_resolver->makeLookupTask(DNS_AAAA, host);
 						ipv6_lookup = true;
 					}
 					else

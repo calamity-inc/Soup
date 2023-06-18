@@ -1236,9 +1236,6 @@
     <ClInclude Include="dnsLookupTask.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
-    <ClInclude Include="dnsSchedulableResolver.hpp">
-      <Filter>net\dns\resolver</Filter>
-    </ClInclude>
     <ClInclude Include="netConnectTask.hpp">
       <Filter>net</Filter>
     </ClInclude>

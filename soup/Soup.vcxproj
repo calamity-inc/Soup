@@ -528,7 +528,6 @@
     <ClInclude Include="Diff.hpp" />
     <ClInclude Include="DiskDbReader.hpp" />
     <ClInclude Include="dnsLookupTask.hpp" />
-    <ClInclude Include="dnsSchedulableResolver.hpp" />
     <ClInclude Include="dnsUdpResolver.hpp" />
     <ClInclude Include="dnsClass.hpp" />
     <ClInclude Include="dnsHeader.hpp" />

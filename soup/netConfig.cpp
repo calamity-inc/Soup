@@ -2,7 +2,6 @@
 
 #if !SOUP_WASM
 
-#include "dnsHttpResolver.hpp"
 #include "dnsOsResolver.hpp"
 
 namespace soup
@@ -15,8 +14,7 @@ namespace soup
 	}
 
 	netConfig::netConfig() :
-		dns_resolver(soup::make_unique<dnsOsResolver>()),
-		schedulable_dns_resolver(soup::make_unique<dnsHttpResolver>())
+		dns_resolver(soup::make_unique<dnsOsResolver>())
 	{
 	}
 }
