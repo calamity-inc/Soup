@@ -10,7 +10,7 @@
 #endif
 
 #if SOUP_WINDOWS
-// make sure you have the /SUBSYTSEM linker option set to WINDOWS
+// make sure you have the /SUBSYSTEM linker option set to WINDOWS
 #define SOUP_MAIN_GUI(entrypoint) int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) { return ::soup::main_impl::windows_gui(entrypoint, lpCmdLine); }
 #define SOUP_MAIN_CLI(entrypoint) int __cdecl wmain(int argc, wchar_t** argv) { return ::soup::main_impl::windows(argc, argv, entrypoint, true); }
 #else
