@@ -1374,6 +1374,9 @@
     <ClInclude Include="IpcSocket.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="osRegistry.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2001,6 +2004,7 @@
     <ClCompile Include="IpcSocket.cpp">
       <Filter>os</Filter>
     </ClCompile>
+    <ClCompile Include="osRegistry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

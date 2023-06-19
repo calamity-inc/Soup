@@ -489,6 +489,7 @@
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="ecc.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
+    <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
     <ClInclude Include="Regex.hpp" />
@@ -955,6 +956,7 @@
     <ClCompile Include="netConfig.cpp" />
     <ClCompile Include="netConnectTask.cpp" />
     <ClCompile Include="netInfo.cpp" />
+    <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="plist.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="Regex.cpp" />
