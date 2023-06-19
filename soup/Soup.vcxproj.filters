@@ -1371,6 +1371,9 @@
     <ClInclude Include="compiletime.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="IpcSocket.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1994,6 +1997,9 @@
     </ClCompile>
     <ClCompile Include="ecc.cpp">
       <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="IpcSocket.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

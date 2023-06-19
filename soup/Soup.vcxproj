@@ -488,6 +488,7 @@
     <ClInclude Include="dnsServerService.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="ecc.hpp" />
+    <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
     <ClInclude Include="Regex.hpp" />
@@ -940,6 +941,7 @@
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
+    <ClCompile Include="IpcSocket.cpp" />
     <ClCompile Include="Jokebook.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
     <ClCompile Include="LcgRng.cpp" />
