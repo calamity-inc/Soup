@@ -321,14 +321,13 @@ namespace soup
 		return TLS_GREASE_15;
 	}
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap, bool(*certchain_validator)(const X509Certchain&, const std::string& server_name))
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap)
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
 			callback,
 			std::move(cap)
 		);
 		handshaker->server_name = std::move(server_name);
-		handshaker->certchain_validator = certchain_validator;
 
 		TlsClientHello hello;
 		hello.random.time = time::unixSeconds();
@@ -416,7 +415,7 @@ namespace soup
 						return;
 					}
 					if (!handshaker->certchain.fromDer(cert.asn1_certs)
-						|| !handshaker->certchain_validator(handshaker->certchain, handshaker->server_name)
+						|| !netConfig::get().certchain_validator(handshaker->certchain, handshaker->server_name)
 						)
 					{
 						s.tls_close(TlsAlertDescription::bad_certificate);

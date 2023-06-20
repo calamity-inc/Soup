@@ -30,7 +30,6 @@ namespace soup
 		std::string expected_finished_verify_data{};
 
 		// client
-		bool(*certchain_validator)(const X509Certchain&, const std::string& server_name);
 		X509Certchain certchain{};
 		std::string server_name{};
 		uint16_t ecdhe_curve = 0;

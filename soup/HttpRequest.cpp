@@ -90,11 +90,6 @@ namespace soup
 
 	std::optional<HttpResponse> HttpRequest::execute() const
 	{
-		return execute(&Socket::certchain_validator_relaxed);
-	}
-
-	std::optional<HttpResponse> HttpRequest::execute(bool(*certchain_validator)(const X509Certchain&, const std::string& server_name)) const
-	{
 		auto sock = make_shared<Socket>();
 		std::string resp{};
 		const auto& host = getHost();
@@ -109,7 +104,7 @@ namespace soup
 					auto& cap = _cap.get<CaptureHttpRequestExecute>();
 					cap.req->send(s);
 					execute_tick(s, cap.resp);
-				}, CaptureHttpRequestExecute{ this, &resp }, certchain_validator);
+				}, CaptureHttpRequestExecute{ this, &resp });
 			}
 			else
 			{

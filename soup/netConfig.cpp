@@ -3,6 +3,7 @@
 #if !SOUP_WASM
 
 #include "dnsOsResolver.hpp"
+#include "Socket.hpp"
 
 namespace soup
 {
@@ -14,7 +15,8 @@ namespace soup
 	}
 
 	netConfig::netConfig() :
-		dns_resolver(soup::make_unique<dnsOsResolver>())
+		dns_resolver(soup::make_unique<dnsOsResolver>()),
+		certchain_validator(&Socket::certchain_validator_relaxed)
 	{
 	}
 }
