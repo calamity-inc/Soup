@@ -7,6 +7,9 @@ namespace soup
 {
 	bool IpcSocket::bind(std::string name)
 	{
+		// Currently, IpcSocket created by privileged process can not be connected to by unprivileged processes.
+		// To rectify this, we should specify the appropriate security attributes: https://stackoverflow.com/a/57755632
+
 		name.insert(0, "\\\\.\\pipe\\");
 		close();
 		h = CreateNamedPipeA(
