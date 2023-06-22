@@ -1377,6 +1377,9 @@
     <ClInclude Include="osRegistry.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="ByteTraits.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
