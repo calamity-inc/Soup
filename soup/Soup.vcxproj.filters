@@ -2004,7 +2004,9 @@
     <ClCompile Include="IpcSocket.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="osRegistry.cpp" />
+    <ClCompile Include="osRegistry.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
