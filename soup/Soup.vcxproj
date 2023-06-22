@@ -494,6 +494,7 @@
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
+    <ClInclude Include="PointerAndBool.hpp" />
     <ClInclude Include="Regex.hpp" />
     <ClInclude Include="RegexAlternative.hpp" />
     <ClInclude Include="RegexConstraint.hpp" />
