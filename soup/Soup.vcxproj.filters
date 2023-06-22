@@ -1380,6 +1380,9 @@
     <ClInclude Include="ByteTraits.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="Hashmap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
