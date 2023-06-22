@@ -11,6 +11,7 @@
 
 namespace soup
 {
+#pragma pack(push, 1)
 	template <size_t Size>
 	class ObfusString
 	{
@@ -18,8 +19,9 @@ namespace soup
 		static constexpr size_t Len = Size - 1;
 
 	private:
+		// seed serves as null-terminator as it's set to 0 after deobfuscation
+		char data[Len];
 		uint32_t seed;
-		char data[Size];
 
 	public:
 		consteval ObfusString(const char(&in)[Size])
@@ -40,19 +42,19 @@ namespace soup
 			LcgRng rng(seed);
 
 			// rot13
-			for (size_t i = 0; i != Size; ++i)
+			for (size_t i = 0; i != Len; ++i)
 			{
 				data[i] = string::rot13(in[i]);
 			}
 
 			// flip bits
-			for (size_t i = 0; i != Size; ++i)
+			for (size_t i = 0; i != Len; ++i)
 			{
 				data[i] ^= rng.generateByte();
 			}
 
 			// mirror
-			for (size_t i = 0, j = Len; i != Size; ++i, --j)
+			for (size_t i = 0, j = Len - 1; i != Len; ++i, --j)
 			{
 				std::swap(data[i], data[j]);
 			}
@@ -68,19 +70,19 @@ namespace soup
 			seed = 0;
 
 			// mirror
-			for (size_t i = 0, j = Len; i != Size; ++i, --j)
+			for (size_t i = 0, j = Len - 1; i != Len; ++i, --j)
 			{
 				std::swap(data[i], data[j]);
 			}
 
 			// flip bits
-			for (size_t i = 0; i != Size; ++i)
+			for (size_t i = 0; i != Len; ++i)
 			{
 				data[i] ^= rng.generateByte();
 			}
 
 			// rot13
-			for (size_t i = 0; i != Size; ++i)
+			for (size_t i = 0; i != Len; ++i)
 			{
 				data[i] = string::rot13(data[i]);
 			}
@@ -147,6 +149,8 @@ namespace soup
 			return os;
 		}
 	};
+	static_assert(sizeof(ObfusString<3>) == 2 + 4);
+#pragma pack(pop)
 
 #if SOUP_CPP20
 	namespace literals
