@@ -2007,6 +2007,7 @@
     <ClCompile Include="osRegistry.cpp">
       <Filter>os</Filter>
     </ClCompile>
+    <ClCompile Include="base.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
