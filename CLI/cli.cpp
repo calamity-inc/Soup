@@ -99,17 +99,18 @@ int main(int argc, const char** argv)
 				return 0;
 			}
 			IpAddr addr = argv[2];
+			netIntel intel;
 			if (addr.isV4())
 			{
 				std::cout << "Initialising netIntel for IPv4..." << std::endl;
-				netIntel::init(true, false);
+				intel.init(true, false);
 			}
 			else
 			{
 				std::cout << "Initialising netIntel for IPv6..." << std::endl;
-				netIntel::init(false, true);
+				intel.init(false, true);
 			}
-			if (auto loc = netIntel::getLocationByIp(addr))
+			if (auto loc = intel.getLocationByIp(addr))
 			{
 				if (loc->city)
 				{
@@ -128,7 +129,7 @@ int main(int argc, const char** argv)
 					std::cout << "Country: " << loc->country_code.c_str() << std::endl;
 				}
 			}
-			if (auto as = netIntel::getAsByIp(addr))
+			if (auto as = intel.getAsByIp(addr))
 			{
 				std::cout << "AS Number: " << as->number << "\n";
 				std::cout << "AS Handle: " << as->handle << "\n";
