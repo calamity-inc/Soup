@@ -113,7 +113,7 @@ namespace soup
 			}
 			auto begin = string::toInt<uint32_t>(arr.at(0)).value();
 			auto end = string::toInt<uint32_t>(arr.at(1)).value();
-			netAs* as = getAsByNumber(asn);
+			const netAs* as = getAsByNumber(asn);
 			if (as == nullptr)
 			{
 				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, as_pool.emplace(std::move(arr.at(4))))).first->second.get();
@@ -144,7 +144,7 @@ namespace soup
 			}
 			IpAddr begin = arr.at(0);
 			IpAddr end = arr.at(1);
-			netAs* as = getAsByNumber(asn);
+			const netAs* as = getAsByNumber(asn);
 			if (as == nullptr)
 			{
 				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, as_pool.emplace(std::move(arr.at(4))))).first->second.get();
@@ -205,7 +205,7 @@ namespace soup
 		}
 	}
 
-	netAs* netIntel::getAsByNumber(uint32_t number) noexcept
+	const netAs* netIntel::getAsByNumber(uint32_t number) const noexcept
 	{
 		if (auto e = aslist.find(number); e != aslist.end())
 		{
@@ -214,7 +214,7 @@ namespace soup
 		return nullptr;
 	}
 
-	netAs* netIntel::getAsByIp(const IpAddr& addr)
+	const netAs* netIntel::getAsByIp(const IpAddr& addr) const
 	{
 		return addr.isV4()
 			? getAsByIpv4(addr.getV4NativeEndian())
@@ -222,7 +222,7 @@ namespace soup
 			;
 	}
 
-	netAs* netIntel::getAsByIpv4(native_u32_t ip)
+	const netAs* netIntel::getAsByIpv4(native_u32_t ip) const
 	{
 		if (auto e = ipv4toas.find(ip))
 		{
@@ -231,7 +231,7 @@ namespace soup
 		return nullptr;
 	}
 
-	netAs* netIntel::getAsByIpv6(const IpAddr& addr)
+	const netAs* netIntel::getAsByIpv6(const IpAddr& addr) const
 	{
 		if (auto e = ipv6toas.find(addr))
 		{
@@ -240,7 +240,7 @@ namespace soup
 		return nullptr;
 	}
 
-	netIntelLocationData* netIntel::getLocationByIp(const IpAddr& addr)
+	const netIntelLocationData* netIntel::getLocationByIp(const IpAddr& addr) const
 	{
 		return addr.isV4()
 			? getLocationByIpv4(addr.getV4NativeEndian())
@@ -248,12 +248,12 @@ namespace soup
 			;
 	}
 	
-	netIntelLocationData* netIntel::getLocationByIpv4(native_u32_t ip)
+	const netIntelLocationData* netIntel::getLocationByIpv4(native_u32_t ip) const
 	{
 		return ipv4tolocation.find(ip);
 	}
 
-	netIntelLocationData* netIntel::getLocationByIpv6(const IpAddr& addr)
+	const netIntelLocationData* netIntel::getLocationByIpv6(const IpAddr& addr) const
 	{
 		return ipv6tolocation.find(addr);
 	}

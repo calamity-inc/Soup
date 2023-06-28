@@ -68,6 +68,11 @@ namespace soup
 			}
 		}
 
+		[[nodiscard]] const V* find(const K& k) const
+		{
+			return const_cast<RangeMap<K, V>*>(this)->find(k);
+		}
+
 		void clear() noexcept
 		{
 			data.clear();

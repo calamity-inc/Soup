@@ -14,41 +14,41 @@ namespace soup
 	class netIntel
 	{
 	private:
-		inline static StringPool as_pool{};
-		inline static StringPool location_pool{};
-		inline static std::unordered_map<uint32_t, UniquePtr<netAs>> aslist{};
-		inline static RangeMap<uint32_t, netAs*> ipv4toas{};
-		inline static RangeMap<IpAddr, netAs*> ipv6toas{};
-		inline static RangeMap<uint32_t, netIntelLocationData> ipv4tolocation{};
-		inline static RangeMap<IpAddr, netIntelLocationData> ipv6tolocation{};
+		StringPool as_pool{};
+		StringPool location_pool{};
+		std::unordered_map<uint32_t, UniquePtr<netAs>> aslist{};
+		RangeMap<uint32_t, const netAs*> ipv4toas{};
+		RangeMap<IpAddr, const netAs*> ipv6toas{};
+		RangeMap<uint32_t, netIntelLocationData> ipv4tolocation{};
+		RangeMap<IpAddr, netIntelLocationData> ipv6tolocation{};
 
 	public:
-		static void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
+		void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
 		
-		static void asInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS data
-		[[nodiscard]] static bool asIsInited() noexcept;
-		static void asDeinit() noexcept;
+		void asInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS data
+		[[nodiscard]] bool asIsInited() noexcept;
+		void asDeinit() noexcept;
 		
-		static void locationInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises location data
-		[[nodiscard]] static bool locationIsInited() noexcept;
-		static void locationDeinit() noexcept;
+		void locationInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises location data
+		[[nodiscard]] bool locationIsInited() noexcept;
+		void locationDeinit() noexcept;
 
 	private:
-		static void initAsList(); // blocking
-		static void initIpv4ToAs(); // blocking
-		static void initIpv6ToAs(); // blocking
-		static void initIpv4ToLocation(); // blocking
-		static void initIpv6ToLocation(); // blocking
+		void initAsList(); // blocking
+		void initIpv4ToAs(); // blocking
+		void initIpv6ToAs(); // blocking
+		void initIpv4ToLocation(); // blocking
+		void initIpv6ToLocation(); // blocking
 
 	public:
-		[[nodiscard]] static netAs* getAsByNumber(uint32_t number) noexcept;
+		[[nodiscard]] const netAs* getAsByNumber(uint32_t number) const noexcept;
 
-		[[nodiscard]] static netAs* getAsByIp(const IpAddr& addr);
-		[[nodiscard]] static netAs* getAsByIpv4(native_u32_t ip);
-		[[nodiscard]] static netAs* getAsByIpv6(const IpAddr& addr);
+		[[nodiscard]] const netAs* getAsByIp(const IpAddr& addr) const;
+		[[nodiscard]] const netAs* getAsByIpv4(native_u32_t ip) const;
+		[[nodiscard]] const netAs* getAsByIpv6(const IpAddr& addr) const;
 
-		[[nodiscard]] static netIntelLocationData* getLocationByIp(const IpAddr& addr);
-		[[nodiscard]] static netIntelLocationData* getLocationByIpv4(native_u32_t ip);
-		[[nodiscard]] static netIntelLocationData* getLocationByIpv6(const IpAddr& addr);
+		[[nodiscard]] const netIntelLocationData* getLocationByIp(const IpAddr& addr) const;
+		[[nodiscard]] const netIntelLocationData* getLocationByIpv4(native_u32_t ip) const;
+		[[nodiscard]] const netIntelLocationData* getLocationByIpv6(const IpAddr& addr) const;
 	};
 }

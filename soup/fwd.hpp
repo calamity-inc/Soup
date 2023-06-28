@@ -122,6 +122,7 @@ namespace soup
 	// net
 	class IpAddr;
 	struct netConfig;
+	class netIntel;
 	class Server;
 	struct ServerService;
 	struct ServerServiceUdp;
