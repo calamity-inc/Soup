@@ -24,7 +24,8 @@ namespace soup
 
 	public:
 		void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
-		
+		void deinit() noexcept;
+
 		void asInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS data
 		[[nodiscard]] bool asIsInited() noexcept;
 		void asDeinit() noexcept;

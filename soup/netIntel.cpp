@@ -14,6 +14,12 @@ namespace soup
 		locationInit(ipv4, ipv6);
 	}
 
+	void netIntel::deinit() noexcept
+	{
+		asDeinit();
+		locationDeinit();
+	}
+
 	void netIntel::asInit(bool ipv4, bool ipv6)
 	{
 		initAsList();
