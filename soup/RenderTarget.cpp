@@ -151,6 +151,16 @@ namespace soup
 		}
 	}
 
+	void RenderTarget::drawCentredText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	{
+		drawCentredText(x, y, unicode::utf8_to_utf32(text), font, colour, scale);
+	}
+
+	void RenderTarget::drawCentredText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	{
+		drawText(x - (font.measureWidth(text) * scale * 0.5f), y, text, font, colour, scale);
+	}
+
 	void RenderTarget::drawRightboundText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		drawRightboundText(x, y, unicode::utf8_to_utf32(text), font, colour, scale);
