@@ -86,6 +86,7 @@ namespace soup
 		case joaat::hash("kilos"): return CB_KG;
 		case joaat::hash("ounce"): return CB_OUNCES;
 		case joaat::hash("ounces"): return CB_OUNCES;
+		case joaat::hash("lbs"): return CB_POUNDS;
 		case joaat::hash("pound"): return CB_POUNDS;
 		case joaat::hash("pounds"): return CB_POUNDS;
 		case joaat::hash("stone"): return CB_STONES;
