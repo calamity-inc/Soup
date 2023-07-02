@@ -34,6 +34,9 @@ namespace soup
 		void drawText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
 		void drawText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
 
+		void drawRightboundText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
+		void drawRightboundText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale = 1);
+
 		void drawCanvas(unsigned int x, unsigned int y, const Canvas& c);
 
 		[[nodiscard]] virtual Rgb getPixel(unsigned int x, unsigned int y) const;
