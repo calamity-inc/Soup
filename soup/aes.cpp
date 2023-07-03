@@ -350,6 +350,15 @@ namespace soup
 		return std::string(data.begin(), data.end());
 	}
 
+	void aes::pkcs7Unpad(std::string& decrypted)
+	{
+		auto pad_bytes = (char)decrypted.back();
+		while (pad_bytes--)
+		{
+			decrypted.pop_back();
+		}
+	}
+
 	void aes::EncryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
 	{
 		uint8_t state_0[4 * Nb];
