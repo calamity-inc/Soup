@@ -334,12 +334,15 @@ namespace soup
 		{
 			uint32_t data_start, header_size;
 			int32_t width, height;
+			//int16_t planes, bits_per_pixel;
 			SOUP_IF_LIKELY ((r.seek(0x0A), r.u32(data_start))
 				&& r.u32(header_size)
 				&& header_size == 40
 				&& r.i32(width)
 				&& r.i32(height)
 				&& height < 0
+				//&& r.i16(planes)
+				//&& r.i16(bits_per_pixel)
 				)
 			{
 				height *= -1;
@@ -347,14 +350,29 @@ namespace soup
 				c.resize(width, height);
 				r.seek(data_start);
 
+				int32_t pixels_remaining_on_this_line = width;
 				for (auto& p : c.pixels)
 				{
-					SOUP_IF_UNLIKELY (!r.u8(p.r)
+					SOUP_IF_UNLIKELY (!r.u8(p.b)
 						|| !r.u8(p.g)
-						|| !r.u8(p.b)
+						|| !r.u8(p.r)
 						)
 					{
 						break;
+					}
+					if (--pixels_remaining_on_this_line == 0)
+					{
+						const auto bytes_per_line = (width * 3);
+						if ((bytes_per_line % 4) != 0)
+						{
+							auto pad_bytes = 4 - (bytes_per_line % 4);
+							while (pad_bytes--)
+							{
+								uint8_t dummy;
+								r.u8(dummy);
+							}
+						}
+						pixels_remaining_on_this_line = width;
 					}
 				}
 			}
