@@ -22,6 +22,14 @@ namespace soup
 		drawRect(x, y, 1, 1, colour);
 	}
 
+	void RenderTarget::drawHollowRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour)
+	{
+		drawLine(Vector2(x, y), Vector2(x + width, y), colour); // top
+		drawLine(Vector2(x, y), Vector2(x, y + height), colour); // left
+		drawLine(Vector2(x + width, y), Vector2(x + width, y + height), colour); // right
+		drawLine(Vector2(x, y + height), Vector2(x + width, y + height), colour); // bottom
+	}
+
 	void RenderTarget::drawHollowCircle(unsigned int x, unsigned int y, float r, Rgb colour)
 	{
 		for (float i = 0.01f; i < M_TAU; i += 0.01f)

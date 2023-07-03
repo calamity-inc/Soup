@@ -21,6 +21,8 @@ namespace soup
 		void drawPixel(unsigned int x, unsigned int y, Rgb colour);
 
 		virtual void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) = 0;
+		void drawHollowRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour);
+
 		void drawHollowCircle(unsigned int x, unsigned int y, float r, Rgb colour);
 		virtual void drawCircle(unsigned int x, unsigned int y, float r, Rgb colour);
 		virtual void drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour);
