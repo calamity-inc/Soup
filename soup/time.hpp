@@ -18,6 +18,8 @@ namespace soup
 		int wday; // days since sunday (0-6)
 
 		[[nodiscard]] static Datetime fromTm(const struct tm& t);
+
+		[[nodiscard]] std::string toString() const;
 	};
 
 	struct time

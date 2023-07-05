@@ -9,6 +9,9 @@
 
 namespace soup
 {
+	static const char wdays[(7 * 3) + 1] = "SunMonTueWedThuFriSat";
+	static const char months[(12 * 3) + 1] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+
 	Datetime Datetime::fromTm(const struct tm& t)
 	{
 		Datetime dt;
@@ -23,6 +26,22 @@ namespace soup
 		dt.wday = t.tm_wday;
 
 		return dt;
+	}
+
+	std::string Datetime::toString() const
+	{
+		std::string str(&wdays[this->wday * 3], 3);
+		str.append(", ");
+		str.append(std::to_string(this->day));
+		str.push_back(' ');
+		str.append(&months[this->month * 3], 3);
+		str.push_back(' ');
+		str.append(string::lpad(std::to_string(this->hour), 2, '0'));
+		str.push_back(':');
+		str.append(string::lpad(std::to_string(this->minute), 2, '0'));
+		str.push_back(':');
+		str.append(string::lpad(std::to_string(this->second), 2, '0'));
+		return str;
 	}
 
 	Datetime time::datetimeUtc(std::time_t ts) noexcept
@@ -51,9 +70,6 @@ namespace soup
 	{
 		return datetimeLocal(0).hour - datetimeUtc(0).hour;
 	}
-
-	static const char wdays[(7 * 3) + 1] = "SunMonTueWedThuFriSat";
-	static const char months[(12 * 3) + 1] = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
 	std::string time::toRfc2822(std::time_t ts)
 	{
