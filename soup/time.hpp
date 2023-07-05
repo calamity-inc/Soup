@@ -2,7 +2,10 @@
 
 #include <chrono>
 #include <ctime>
+#include <filesystem>
 #include <string>
+
+#include "base.hpp"
 
 namespace soup
 {
@@ -59,5 +62,16 @@ namespace soup
 
 		[[nodiscard]] static std::time_t toUnix(const Datetime& dt);
 		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);
+
+#if SOUP_CPP20
+		[[nodiscard]] static std::time_t unixFromFile(std::filesystem::file_time_type ft)
+		{
+			return std::chrono::duration_cast<std::chrono::seconds>(
+				std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+					ft - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
+				).time_since_epoch()
+			).count();
+		}
+#endif
 	};
 }
