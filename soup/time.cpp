@@ -34,7 +34,7 @@ namespace soup
 		str.append(", ");
 		str.append(std::to_string(this->day));
 		str.push_back(' ');
-		str.append(&months[this->month * 3], 3);
+		str.append(&months[(this->month - 1) * 3], 3);
 		str.push_back(' ');
 		str.append(string::lpad(std::to_string(this->hour), 2, '0'));
 		str.push_back(':');
@@ -79,7 +79,7 @@ namespace soup
 		str.append(", ");
 		str.append(std::to_string(dt.day));
 		str.push_back(' ');
-		str.append(&months[dt.month * 3], 3);
+		str.append(&months[(dt.month - 1) * 3], 3);
 		str.push_back(' ');
 		str.append(string::lpad(std::to_string(dt.hour), 2, '0'));
 		str.push_back(':');

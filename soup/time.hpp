@@ -12,8 +12,8 @@ namespace soup
 	struct Datetime
 	{
 		int year;
-		int month;
-		int day;
+		int month; // 1-12
+		int day; // 1-31
 		int hour;
 		int minute;
 		int second;
