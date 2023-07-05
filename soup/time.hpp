@@ -53,6 +53,11 @@ namespace soup
 			//return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		}
 
+		[[nodiscard]] static std::time_t unixSecondsSince(std::time_t since) noexcept
+		{
+			return unixSeconds() - since;
+		}
+
 		[[nodiscard]] static Datetime datetimeUtc(std::time_t ts) noexcept; // construct datetime based on UNIX time stamp
 		[[nodiscard]] static Datetime datetimeLocal(std::time_t ts) noexcept; // construct datetime based on local time at UNIX time stamp
 
