@@ -37,9 +37,7 @@ namespace soup
 		void addName(const std::vector<std::pair<Oid, std::string>>& name);
 
 		[[nodiscard]] std::string toDer() const;
-	protected:
 		[[nodiscard]] std::string toDerNoPrefix() const;
-	public:
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const;
 
 		static Asn1Identifier readIdentifier(std::istream& s);
