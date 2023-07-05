@@ -49,7 +49,17 @@ namespace soup
 #endif
 		};
 
-		handle_t h;
+		handle_t h = 0;
+
+		operator bool() const noexcept
+		{
+			return h != 0;
+		}
+
+		void reset() noexcept
+		{
+			h = 0;
+		}
 
 #if SOUP_WINDOWS
 		[[nodiscard]] static Window create(const std::string& title, unsigned int width, unsigned int height, const std::string& icon_ico = {}) noexcept;
