@@ -189,6 +189,7 @@ namespace soup
 
 			case WM_DESTROY:
 				window_configs.erase(window_config_entry);
+				DestroyWindow(hWnd); // need to do this as otherwise window would stay around if this thread is not exiting now
 				PostQuitMessage(0);
 				return 0;
 			}
