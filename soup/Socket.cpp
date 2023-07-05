@@ -282,7 +282,12 @@ namespace soup
 	{
 		const auto ts = TrustStore::fromMozilla();
 		// TODO: Support alternative common names so we can check if cert was issued for the server we are connecting to without false-negatives.
+#if false
 		return chain.verify(ts);
+#else
+		// For some reason, verifySignatures fails for content.warframe.com on `issuer.verify<soup::sha256>(tbsCertDer, sig)`
+		return chain.verifyTrust(ts);
+#endif
 	}
 
 	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& name)
