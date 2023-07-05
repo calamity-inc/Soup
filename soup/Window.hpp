@@ -79,6 +79,7 @@ namespace soup
 		Window& show() noexcept;
 		Window& hide() noexcept;
 
+		[[nodiscard]] std::pair<unsigned int, unsigned int> getPos() noexcept;
 		[[nodiscard]] std::pair<unsigned int, unsigned int> getSize() noexcept;
 		Window& setPos(int x, int y) noexcept;
 		Window& setSize(int width, int height) noexcept;

@@ -337,6 +337,13 @@ namespace soup
 		return *this;
 	}
 
+	std::pair<unsigned int, unsigned int> Window::getPos() noexcept
+	{
+		RECT r;
+		GetWindowRect(h, &r);
+		return { r.left, r.top };
+	}
+
 	std::pair<unsigned int, unsigned int> Window::getSize() noexcept
 	{
 		RECT r;
