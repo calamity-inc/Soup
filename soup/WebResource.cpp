@@ -82,7 +82,6 @@ namespace soup
 			auto e = res->header_fields.find("Location");
 			if (e == res->header_fields.end())
 			{
-				// TODO: Consider "Age" header
 				// TODO: Respect "Cache-Control: max-age=..."
 				data_expires = time::unixSeconds() + (60 * 60 * 24);
 				data = std::move(res->body);
