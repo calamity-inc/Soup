@@ -87,7 +87,7 @@ namespace soup
 				) == plusaes::kErrorOk
 			);
 
-			data.insert(data.end(), tag, tag + 16);
+			data.insert(data.end(), tag, tag + cipher_bytes);
 			data.insert(data.begin(), nonce_explicit.begin(), nonce_explicit.end());
 			return data;
 		}
