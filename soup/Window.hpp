@@ -62,7 +62,8 @@ namespace soup
 		}
 
 #if SOUP_WINDOWS
-		[[nodiscard]] static Window create(const std::string& title, unsigned int width, unsigned int height, const std::string& icon_ico = {}) noexcept;
+		[[nodiscard]] static Window create(const std::string& title, unsigned int width, unsigned int height, const std::string& icon_ico) noexcept;
+		[[nodiscard]] static Window create(const std::string& title, unsigned int width, unsigned int height, HICON icon = NULL) noexcept;
 #else
 		[[nodiscard]] static Window create(const std::string& title, unsigned int width, unsigned int height) noexcept;
 #endif

@@ -199,6 +199,13 @@ namespace soup
 
 	Window Window::create(const std::string& title, unsigned int width, unsigned int height, const std::string& icon_ico) noexcept
 	{
+		std::wstring icon_ico_w = unicode::utf8_to_utf16(icon_ico);
+		HICON icon = (HICON)LoadImageW(NULL, icon_ico_w.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED);
+		return create(title, width, height, icon);
+	}
+
+	Window Window::create(const std::string& title, unsigned int width, unsigned int height, HICON icon) noexcept
+	{
 		HINSTANCE hInstance = GetModuleHandle(NULL);
 
 		std::wstring menu_name = unicode::utf8_to_utf16(title);
@@ -216,11 +223,7 @@ namespace soup
 		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wcex.lpszMenuName = menu_name.c_str();
 		wcex.lpszClassName = class_name.c_str();
-		if (!icon_ico.empty())
-		{
-			std::wstring icon_ico_w = unicode::utf8_to_utf16(icon_ico);
-			wcex.hIconSm = wcex.hIcon = (HICON)LoadImageW(NULL, icon_ico_w.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED);
-		}
+		wcex.hIconSm = wcex.hIcon = icon;
 		RegisterClassExW(&wcex);
 
 		HWND hWnd = CreateWindowW(wcex.lpszClassName, wcex.lpszMenuName, WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
