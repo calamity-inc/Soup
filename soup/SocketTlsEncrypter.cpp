@@ -73,7 +73,7 @@ namespace soup
 			iv.insert(iv.end(), nonce_explicit.begin(), nonce_explicit.end());
 
 			auto ad = calculateMacBytes(content_type, content);
-			
+
 			std::vector<uint8_t> data(content.begin(), content.end());
 
 			uint8_t tag[cipher_bytes];
