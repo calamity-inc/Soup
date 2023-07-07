@@ -123,7 +123,6 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions>-Wno-unused-command-line-argument -Xclang -std=c++20 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,7 +141,6 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions>-Wno-unused-command-line-argument -Xclang -std=c++20 %(AdditionalOptions)</AdditionalOptions>
-      <CallingConvention>FastCall</CallingConvention>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -164,7 +162,6 @@
       <AdditionalOptions>-Wno-unused-command-line-argument -Xclang -std=c++20 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,7 +181,6 @@
       <AdditionalOptions>-Wno-unused-command-line-argument -Xclang -std=c++20 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
