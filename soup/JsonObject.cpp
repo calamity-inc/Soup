@@ -10,6 +10,8 @@
 
 namespace soup
 {
+	using Container = JsonObject::Container;
+
 	JsonObject::JsonObject() noexcept
 		: JsonNode(JSON_OBJECT)
 	{
@@ -117,16 +119,9 @@ namespace soup
 		return true;
 	}
 
-	UniquePtr<JsonNode>* JsonObject::findUp(const JsonNode& k) noexcept
+	JsonNode* JsonObject::find(std::string k) const noexcept
 	{
-		for (auto& child : children)
-		{
-			if (*child.first == k)
-			{
-				return &child.second;
-			}
-		}
-		return nullptr;
+		return find(JsonString(std::move(k)));
 	}
 
 	JsonNode* JsonObject::find(const JsonNode& k) const noexcept
@@ -141,9 +136,39 @@ namespace soup
 		return nullptr;
 	}
 
-	JsonNode* JsonObject::find(std::string k) const noexcept
+	UniquePtr<JsonNode>* JsonObject::findUp(std::string k) noexcept
 	{
-		return find(JsonString(std::move(k)));
+		return findUp(JsonString(std::move(k)));
+	}
+
+	UniquePtr<JsonNode>* JsonObject::findUp(const JsonNode& k) noexcept
+	{
+		for (auto& child : children)
+		{
+			if (*child.first == k)
+			{
+				return &child.second;
+			}
+		}
+		return nullptr;
+	}
+
+	Container::iterator JsonObject::findIt(std::string k) noexcept
+	{
+		return findIt(JsonString(std::move(k)));
+	}
+
+	Container::iterator JsonObject::findIt(const JsonNode& k) noexcept
+	{
+		auto it = children.begin();
+		for (; it != children.end(); ++it)
+		{
+			if (*it->first == k)
+			{
+				break;
+			}
+		}
+		return it;
 	}
 
 	bool JsonObject::contains(const JsonNode& k) const noexcept
@@ -187,6 +212,16 @@ namespace soup
 	void JsonObject::erase(std::string k) noexcept
 	{
 		return erase(JsonString(std::move(k)));
+	}
+
+	void JsonObject::erase(Container::const_iterator it) noexcept
+	{
+		children.erase(it);
+	}
+
+	void JsonObject::clear() noexcept
+	{
+		children.clear();
 	}
 
 	void JsonObject::add(UniquePtr<JsonNode>&& k, UniquePtr<JsonNode>&& v)

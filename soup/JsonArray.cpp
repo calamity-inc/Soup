@@ -115,6 +115,11 @@ namespace soup
 		return *children.at(i);
 	}
 
+	void JsonArray::clear() noexcept
+	{
+		children.clear();
+	}
+
 	JsonArrayIterator JsonArray::begin() const noexcept
 	{
 		return { this, 0 };
