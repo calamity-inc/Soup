@@ -39,6 +39,11 @@ namespace soup
 			return millis() - since;
 		}
 
+		[[nodiscard]] static std::time_t millisUntil(std::time_t until) noexcept
+		{
+			return until - millis();
+		}
+
 		[[nodiscard]] static std::time_t nanos() noexcept
 		{
 			return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -56,6 +61,11 @@ namespace soup
 		[[nodiscard]] static std::time_t unixSecondsSince(std::time_t since) noexcept
 		{
 			return unixSeconds() - since;
+		}
+
+		[[nodiscard]] static std::time_t unixSecondsUntil(std::time_t until) noexcept
+		{
+			return until - unixSeconds();
 		}
 
 		[[nodiscard]] static Datetime datetimeUtc(std::time_t ts) noexcept; // construct datetime based on UNIX time stamp
