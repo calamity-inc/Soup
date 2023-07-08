@@ -341,6 +341,15 @@ namespace soup
 		return *this;
 	}
 
+	Window& Window::hideFromTaskbar() noexcept
+	{
+		auto style = GetWindowLong(h, GWL_EXSTYLE);
+		style |= WS_EX_TOOLWINDOW;
+		style &= ~(WS_EX_APPWINDOW);
+		SetWindowLong(h, GWL_EXSTYLE, style);
+		return *this;
+	}
+
 	std::pair<unsigned int, unsigned int> Window::getPos() noexcept
 	{
 		RECT r;
