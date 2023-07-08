@@ -87,6 +87,7 @@ namespace soup
 
 		bool u64(uint64_t& v)
 		{
+#if true
 			if (native_endianness)
 			{
 				return u8(((uint8_t*)&v)[0])
@@ -109,6 +110,31 @@ namespace soup
 					&& u8(((uint8_t*)&v)[1])
 					&& u8(((uint8_t*)&v)[0]);
 			}
+#else
+			uint8_t tmp;
+			if (isLittleEndian())
+			{
+				return u8((tmp = v >> 0, tmp))
+					&& u8((tmp = v >> 8, tmp))
+					&& u8((tmp = v >> 16, tmp))
+					&& u8((tmp = v >> 24, tmp))
+					&& u8((tmp = v >> 32, tmp))
+					&& u8((tmp = v >> 40, tmp))
+					&& u8((tmp = v >> 48, tmp))
+					&& u8((tmp = v >> 56, tmp));
+			}
+			else
+			{
+				return u8((tmp = v >> 56, tmp))
+					&& u8((tmp = v >> 48, tmp))
+					&& u8((tmp = v >> 40, tmp))
+					&& u8((tmp = v >> 32, tmp))
+					&& u8((tmp = v >> 24, tmp))
+					&& u8((tmp = v >> 16, tmp))
+					&& u8((tmp = v >> 8, tmp))
+					&& u8((tmp = v >> 0, tmp));
+			}
+#endif
 		}
 
 		bool i8(int8_t& v)
