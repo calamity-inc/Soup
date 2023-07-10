@@ -1219,6 +1219,16 @@ namespace soup
 			0,1,0,
 			1,0,0,
 		}));
+		f.glyphs.emplace('\'', Glyph(1, 8, {
+			0,
+			1,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+		}));
 		return f;
 	}
 
