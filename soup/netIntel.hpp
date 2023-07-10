@@ -42,6 +42,12 @@ namespace soup
 		void initIpv6ToLocation(); // blocking
 
 	public:
+		// === Lookup functions ===
+		// Note that these are only available after the init has finished.
+		// I point this out because of the blocking nature of the init, you would be right to put the init into another thread.
+		// However, there is NO function on netIntel that tells you if the instance is currently initing; this is including the "IsInited" functions.
+		// TL;DR: If there are multiple threads using the same netIntel instance, you have to control this yourself!
+
 		[[nodiscard]] const netAs* getAsByNumber(uint32_t number) const noexcept;
 
 		[[nodiscard]] const netAs* getAsByIp(const IpAddr& addr) const;
