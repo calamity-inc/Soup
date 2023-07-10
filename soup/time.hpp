@@ -88,5 +88,10 @@ namespace soup
 			).count();
 		}
 #endif
+
+		// Misc
+
+		[[nodiscard]] static int isLeapYear(int year);
+		[[nodiscard]] static int getDaysInMonth(int year, int month); // month starts at 1
 	};
 }
