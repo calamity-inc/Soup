@@ -2,8 +2,8 @@
 
 #include <atomic>
 
-#include "base.hpp"
 #include "Exception.hpp"
+#include "memory.hpp" // construct_at
 #include "type_traits.hpp"
 
 #ifndef SOUP_DEBUG_SHAREDPTR 
@@ -13,15 +13,6 @@
 #if SOUP_DEBUG_SHAREDPTR
 #include <iostream>
 #include <unordered_set>
-#endif
-
-#ifndef SOUP_OPTIMISE_MAKE_SHARED
-// InquiryLang_execute depends on SharedPtr::release
-#define SOUP_OPTIMISE_MAKE_SHARED SOUP_CPP20 && !SOUP_STANDALONE
-#endif
-
-#if SOUP_OPTIMISE_MAKE_SHARED
-#include <memory> // construct_at
 #endif
 
 namespace soup
@@ -41,7 +32,8 @@ namespace soup
 		struct Data
 		{
 			T* inst;
-			std::atomic_size_t refcount;
+			std::atomic_uint refcount;
+			bool was_created_with_make_shared = false;
 
 			Data(T* inst)
 				: inst(inst), refcount(1)
@@ -63,13 +55,6 @@ namespace soup
 #endif
 			}
 
-#if SOUP_OPTIMISE_MAKE_SHARED
-			[[nodiscard]] bool wasCreatedWithMakeShared() const noexcept
-			{
-				return (reinterpret_cast<uintptr_t>(this) + sizeof(*this)) == reinterpret_cast<uintptr_t>(inst);
-			}
-#endif
-
 			void decref()
 			{
 #if SOUP_DEBUG_SHAREDPTR
@@ -81,15 +66,14 @@ namespace soup
 					std::cout << (void*)inst << " :: No more references\n";
 					managed_instances.erase(inst);
 #endif
-#if SOUP_OPTIMISE_MAKE_SHARED
-					if (wasCreatedWithMakeShared())
+					if (was_created_with_make_shared)
 					{
-						std::destroy_at<>(this);
+						const auto inst = this->inst;
 						std::destroy_at<>(inst);
-						operator delete(reinterpret_cast<void*>(this)/*, sizeof(typename SharedPtr<T>::Data) + sizeof(T)*/);
+						std::destroy_at<>(this);
+						::operator delete(reinterpret_cast<void*>(inst)/*, sizeof(T) + sizeof(typename SharedPtr<T>::Data)*/);
 					}
 					else
-#endif
 					{
 						delete inst;
 						delete this;
@@ -224,14 +208,17 @@ namespace soup
 			{
 				throw Exception("Attempt to release SharedPtr with more than 1 reference");
 			}
-#if SOUP_OPTIMISE_MAKE_SHARED
-			if (data->wasCreatedWithMakeShared())
-			{
-				throw Exception("Can't release this SharedPtr because it was created by make_shared and SOUP_OPTIMISE_MAKE_SHARED is true");
-			}
-#endif
 			T* res = get();
-			delete data;
+			const auto was_created_with_make_shared = data->was_created_with_make_shared;
+			std::destroy_at<>(data);
+			if (was_created_with_make_shared)
+			{
+				// data will continue to be allocated behind the instance, but once the instance is free'd, data is also free'd.
+			}
+			else
+			{
+				::operator delete(reinterpret_cast<void*>(data));
+			}
 			data = nullptr;
 			return res;
 		}
@@ -240,13 +227,10 @@ namespace soup
 	template <typename T, typename...Args, SOUP_RESTRICT(!std::is_array_v<T>)>
 	[[nodiscard]] SharedPtr<T> make_shared(Args&&...args)
 	{
-#if SOUP_OPTIMISE_MAKE_SHARED
-		auto b = operator new(sizeof(typename SharedPtr<T>::Data) + sizeof(T));
-		auto inst = std::construct_at<>(reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(b) + sizeof(typename SharedPtr<T>::Data)), std::forward<Args>(args)...);
-		auto data = std::construct_at<>(reinterpret_cast<typename SharedPtr<T>::Data*>(b), inst);
+		auto b = ::operator new(sizeof(T) + sizeof(typename SharedPtr<T>::Data));
+		auto inst = soup::construct_at<>(reinterpret_cast<T*>(b), std::forward<Args>(args)...);
+		auto data = soup::construct_at<>(reinterpret_cast<typename SharedPtr<T>::Data*>(reinterpret_cast<uintptr_t>(b) + sizeof(T)), inst);
+		data->was_created_with_make_shared = true;
 		return SharedPtr<T>(data);
-#else
-		return SharedPtr<T>(new T(std::forward<Args>(args)...));
-#endif
 	}
 }
