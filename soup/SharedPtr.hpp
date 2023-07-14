@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <memory> // destroy_at
 
 #include "Exception.hpp"
 #include "memory.hpp" // construct_at
