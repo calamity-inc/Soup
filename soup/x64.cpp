@@ -486,6 +486,10 @@ namespace soup
 		{
 			if (op.matches(code))
 			{
+				if (*code == 0xF3)
+				{
+					++code;
+				}
 				if (*code == 0x0F)
 				{
 					++code;

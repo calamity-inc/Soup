@@ -101,29 +101,29 @@ namespace soup
 	struct x64Operation
 	{
 		const char* const name;
-		const uint16_t opcode;
+		const uint32_t opcode;
 		const x64OperandEncoding operand_encoding;
 		const uint8_t operand_size;
 		const uint8_t distinguish;
 
 		static constexpr uint8_t MAX_OPERANDS = 3;
 
-		x64Operation(const char* name, uint16_t opcode, x64OperandEncoding operand_encoding)
+		x64Operation(const char* name, uint32_t opcode, x64OperandEncoding operand_encoding)
 			: x64Operation(name, opcode, operand_encoding, 0, 8)
 		{
 		}
 
-		x64Operation(const char* name, uint16_t opcode, x64OperandEncoding operand_encoding, uint8_t operand_size)
+		x64Operation(const char* name, uint32_t opcode, x64OperandEncoding operand_encoding, uint8_t operand_size)
 			: x64Operation(name, opcode, operand_encoding, operand_size, 8)
 		{
 		}
 
-		x64Operation(const char* name, uint16_t opcode, x64OperandEncoding operand_encoding, uint8_t operand_size, uint8_t distinguish)
+		x64Operation(const char* name, uint32_t opcode, x64OperandEncoding operand_encoding, uint8_t operand_size, uint8_t distinguish)
 			: name(name), opcode(opcode), operand_encoding(operand_encoding), operand_size(operand_size), distinguish(distinguish)
 		{
 		}
 
-		[[nodiscard]] uint16_t getUniqueId() const noexcept
+		[[nodiscard]] uint32_t getUniqueId() const noexcept
 		{
 			return distinguish == 8
 				? opcode
@@ -133,8 +133,14 @@ namespace soup
 
 		[[nodiscard]] bool matches(const uint8_t* code) const noexcept
 		{
-			uint16_t b = *code;
-			if (b == 0x0F)
+			uint32_t b = *code;
+			if (*code == 0xF3)
+			{
+				++code;
+				b <<= 8;
+				b |= *code;
+			}
+			if (*code == 0x0F)
 			{
 				++code;
 				b <<= 8;
@@ -224,13 +230,17 @@ namespace soup
 		{ "xor", 0x31, MR },
 		{ "xor", 0x32, RM, 8 },
 		{ "xor", 0x33, RM },
-		{ "movzx", 0x0FB6, RM, 8 },
-		{ "movzx", 0x0FB7, RM, 16 }, // TODO: Account for operands having different sizes
+		{ "movzx", 0x0F'B6, RM, 8 },
+		{ "movzx", 0x0F'B7, RM, 16 }, // TODO: Account for operands having different sizes
 		{ "movsxd", 0x63, RM }, // TODO: Disassembly should show "dword ptr"
 		{ "imul", 0x69, RMI, 32 },
 		{ "nop", 0x90, ZO },
-		{ "cpuid", 0x0FA2, ZO },
+		{ "cpuid", 0x0F'A2, ZO },
 		{ "div", 0xF7, M, 32, 6 },
+
+		// TODO: Account for different register types, e.g. currently toString will show "ebx" instad of "xmm3"
+		{ "movss", 0xF3'0F'10, RM },
+		{ "movss", 0xF3'0F'11, MR },
 	};
 
 	struct x64Instruction
