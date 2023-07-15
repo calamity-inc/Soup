@@ -1,4 +1,4 @@
-// Based on https://github.com/kkAyataka/plusaes
+// Source: https://github.com/kkAyataka/plusaes
 
 // Copyright (C) 2015 kkAyataka
 //
@@ -483,6 +483,11 @@ std::bitset<N> inc32(const std::bitset<N> X) {
     return a || b;
 }
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wself-assign"
+#endif // __clang__
+
 /** Algorithm 1 @private */
 inline Block mul_blocks(const Block X, const Block Y) {
     const bitset128 R = (std::bitset<8>("11100001") || std::bitset<120>());
@@ -493,7 +498,7 @@ inline Block mul_blocks(const Block X, const Block Y) {
     for (int i = 127; i >= 0; --i) {
         // Z
         if (X_bits[i] == false) {
-            //Z = Z;
+            Z = Z;
         }
         else {
             Z = Z ^ V;
@@ -510,6 +515,10 @@ inline Block mul_blocks(const Block X, const Block Y) {
 
     return Z;
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif // __clang__
 
 /** Algorithm 2 @private */
 inline Block ghash(const Block & H, const std::vector<unsigned char> & X) {
@@ -623,9 +632,6 @@ inline void calc_gcm_tag(
     unsigned char * tag,
     const std::size_t tag_size
 ) {
-    using namespace detail;
-    using detail::gcm::operator||;
-
     const detail::RoundKeys rkeys = detail::expand_key(key, static_cast<int>(key_size));
     const gcm::Block H = gcm::calc_H(rkeys);
     const gcm::Block J0 = gcm::calc_J0(H, iv, iv_size);
@@ -660,9 +666,6 @@ inline void crypt_gcm(
     const std::size_t iv_size,
     unsigned char* crypted
 ) {
-    using namespace detail;
-    using detail::gcm::operator||;
-
     const detail::RoundKeys rkeys = detail::expand_key(key, static_cast<int>(key_size));
     const gcm::Block H = gcm::calc_H(rkeys);
     const gcm::Block J0 = gcm::calc_J0(H, iv, iv_size);
