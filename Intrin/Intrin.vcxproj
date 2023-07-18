@@ -12,6 +12,7 @@
   <ItemGroup>
     <ClCompile Include="crc32_pclmul.cpp" />
     <ClCompile Include="sha1_transform_intrin.cpp" />
+    <ClCompile Include="sha256_transform_intrin.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

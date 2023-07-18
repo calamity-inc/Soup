@@ -1,6 +1,7 @@
 #include "sha1.hpp"
 
 #include "base.hpp"
+#include "sha_commons.hpp"
 
 #if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
 #define SHA1_USE_ASM true
@@ -172,33 +173,6 @@ namespace soup
 		digest[4] += e;
 	}
 
-#if SHA1_USE_ASM
-	extern void sha1_transform_intrin(uint32_t state[5], const uint8_t data[]);
-#endif
-
-	template <bool intrin>
-	inline static void buffer_to_block(const std::string& buffer, uint32_t block[BLOCK_INTS])
-	{
-		/* Convert the std::string (byte buffer) to a uint32_t array (MSB) */
-		for (size_t i = 0; i < BLOCK_INTS; i++)
-		{
-			if constexpr (intrin)
-			{
-				block[i] = (buffer[4 * i + 0] & 0xff)
-					| (buffer[4 * i + 1] & 0xff) << 8
-					| (buffer[4 * i + 2] & 0xff) << 16
-					| (buffer[4 * i + 3] & 0xff) << 24;
-			}
-			else
-			{
-				block[i] = (buffer[4 * i + 3] & 0xff)
-					| (buffer[4 * i + 2] & 0xff) << 8
-					| (buffer[4 * i + 1] & 0xff) << 16
-					| (buffer[4 * i + 0] & 0xff) << 24;
-			}
-		}
-	}
-
 	std::string sha1::hash(const std::string& s)
 	{
 		std::istringstream is(s);
@@ -210,6 +184,10 @@ namespace soup
 		std::istringstream is(std::move(s));
 		return hash(is);
 	}
+
+#if SHA1_USE_ASM
+	extern void sha1_transform_intrin(uint32_t state[5], const uint8_t data[]);
+#endif
 
 	template <bool intrin>
 	static std::string sha1_hash_impl(std::istream& is)
@@ -246,7 +224,7 @@ namespace soup
 #endif
 			{
 				uint32_t block[BLOCK_INTS];
-				buffer_to_block<intrin>(buffer, block);
+				buffer_to_block<BLOCK_INTS, intrin>(buffer, block);
 				transform(digest, block);
 			}
 			buffer.clear();
@@ -267,7 +245,7 @@ namespace soup
 		}
 
 		uint32_t block[BLOCK_INTS];
-		buffer_to_block<intrin>(buffer, block);
+		buffer_to_block<BLOCK_INTS, intrin>(buffer, block);
 
 		if (orig_size > sha1::BLOCK_BYTES - 8)
 		{

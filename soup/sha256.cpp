@@ -1,7 +1,21 @@
 #include "sha256.hpp"
 
+#include "base.hpp"
+#include "sha_commons.hpp"
+
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#define SHA256_USE_ASM true
+#else
+#define SHA256_USE_ASM false
+#endif
+
 #include <cstring> // memcpy
 #include <sstream>
+
+#if SHA256_USE_ASM
+#include "CpuInfo.hpp"
+#include "Endian.hpp"
+#endif
 
 namespace soup
 {
@@ -101,18 +115,6 @@ namespace soup
 		}
 	}
 
-	inline static void buffer_to_block(const std::string& buffer, uint32_t block[BLOCK_INTS])
-	{
-		/* Convert the std::string (byte buffer) to a uint32_t array (MSB) */
-		for (size_t i = 0; i < BLOCK_INTS; i++)
-		{
-			block[i] = (buffer[4 * i + 3] & 0xff)
-				| (buffer[4 * i + 2] & 0xff) << 8
-				| (buffer[4 * i + 1] & 0xff) << 16
-				| (buffer[4 * i + 0] & 0xff) << 24;
-		}
-	}
-
 	std::string sha256::hash(const std::string& s)
 	{
 		std::istringstream is(s);
@@ -125,7 +127,12 @@ namespace soup
 		return hash(is);
 	}
 
-	std::string sha256::hash(std::istream& is)
+#if SHA256_USE_ASM
+	extern void sha256_transform_intrin(uint32_t state[8], const uint8_t data[]);
+#endif
+
+	template <bool intrin>
+	static std::string sha256_hash_impl(std::istream& is)
 	{
 		// init
 		uint32_t digest[] = {
@@ -138,7 +145,7 @@ namespace soup
 			0x1f83d9ab,
 			0x5be0cd19,
 		};
-		static_assert(sizeof(digest) == DIGEST_BYTES);
+		static_assert(sizeof(digest) == sha256::DIGEST_BYTES);
 
 		std::string buffer{};
 		uint64_t transforms = 0;
@@ -146,16 +153,25 @@ namespace soup
 		// update
 		while (true)
 		{
-			char sbuf[BLOCK_BYTES];
-			is.read(sbuf, BLOCK_BYTES - buffer.size());
+			char sbuf[sha256::BLOCK_BYTES];
+			is.read(sbuf, sha256::BLOCK_BYTES - buffer.size());
 			buffer.append(sbuf, (std::size_t)is.gcount());
-			if (buffer.size() != BLOCK_BYTES)
+			if (buffer.size() != sha256::BLOCK_BYTES)
 			{
 				break;
 			}
-			uint32_t block[BLOCK_INTS];
-			buffer_to_block(buffer, block);
-			transform(digest, block);
+#if SHA256_USE_ASM
+			if constexpr (intrin)
+			{
+				sha256_transform_intrin(digest, (const uint8_t*)buffer.data());
+			}
+			else
+#endif
+			{
+				uint32_t block[BLOCK_INTS];
+				buffer_to_block<BLOCK_INTS, intrin>(buffer, block);
+				transform(digest, block);
+			}
 			buffer.clear();
 			++transforms;
 		}
@@ -163,22 +179,31 @@ namespace soup
 		// final
 
 		/* Total number of hashed bits */
-		uint64_t total_bits = (transforms * BLOCK_BYTES + buffer.size()) * 8;
+		uint64_t total_bits = (transforms * sha256::BLOCK_BYTES + buffer.size()) * 8;
 
 		/* Padding */
 		buffer += (char)0x80;
 		size_t orig_size = buffer.size();
-		while (buffer.size() < BLOCK_BYTES)
+		while (buffer.size() < sha256::BLOCK_BYTES)
 		{
 			buffer += (char)0x00;
 		}
 
 		uint32_t block[BLOCK_INTS];
-		buffer_to_block(buffer, block);
+		buffer_to_block<BLOCK_INTS, intrin>(buffer, block);
 
-		if (orig_size > BLOCK_BYTES - 8)
+		if (orig_size > sha256::BLOCK_BYTES - 8)
 		{
-			transform(digest, block);
+#if SHA256_USE_ASM
+			if constexpr (intrin)
+			{
+				sha256_transform_intrin(digest, (const uint8_t*)buffer.data());
+			}
+			else
+#endif
+			{
+				transform(digest, block);
+			}
 			for (size_t i = 0; i < BLOCK_INTS - 2; i++)
 			{
 				block[i] = 0;
@@ -186,12 +211,23 @@ namespace soup
 		}
 
 		/* Append total_bits, split this uint64_t into two uint32_t */
-		block[BLOCK_INTS - 1] = (uint32_t)total_bits;
-		block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
-		transform(digest, block);
+#if SHA256_USE_ASM
+		if constexpr (intrin)
+		{
+			block[BLOCK_INTS - 1] = Endianness::invert((uint32_t)total_bits);
+			block[BLOCK_INTS - 2] = Endianness::invert((uint32_t)(total_bits >> 32));
+			sha256_transform_intrin(digest, (const uint8_t*)block);
+		}
+		else
+#endif
+		{
+			block[BLOCK_INTS - 1] = (uint32_t)total_bits;
+			block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
+			transform(digest, block);
+		}
 
 		std::string bin{};
-		bin.reserve(DIGEST_BYTES);
+		bin.reserve(sha256::DIGEST_BYTES);
 		for (size_t i = 0; i < sizeof(digest) / sizeof(digest[0]); i++)
 		{
 			bin.push_back(((const char*)&digest[i])[3]);
@@ -200,5 +236,19 @@ namespace soup
 			bin.push_back(((const char*)&digest[i])[0]);
 		}
 		return bin;
+	}
+
+	std::string sha256::hash(std::istream& is)
+	{
+#if SHA256_USE_ASM
+		const CpuInfo& cpu_info = CpuInfo::get();
+		if (cpu_info.supportsSSSE3()
+			&& cpu_info.supportsSHA()
+			)
+		{
+			return sha256_hash_impl<true>(is);
+		}
+#endif
+		return sha256_hash_impl<false>(is);
 	}
 }
