@@ -314,7 +314,8 @@ static void unit_data()
 
 	test("json", []
 	{
-		auto tree = json::decode(R"({
+		{
+			auto tree = json::decode(R"({
 "firstName": "John",
 "lastName": "Smith",
 "isAlive": true,
@@ -340,13 +341,40 @@ static void unit_data()
 "spouse": null
 }
 )");
-		JsonObject& obj = tree->asObj();
-		assert(obj.at("firstName").asStr() == "John");
-		assert(obj.at("lastName").asStr() == "Smith");
-		assert(obj.at("isAlive").asBool() == true);
-		assert(obj.at("age").asInt() == 27);
-		assert(obj.at("phoneNumbers").asArr().at(0).asObj().at("type").asStr() == "home");
-		assert(obj.at("spouse").isNull());
+			assert(tree);
+			JsonObject& obj = tree->asObj();
+			assert(obj.at("firstName").asStr() == "John");
+			assert(obj.at("lastName").asStr() == "Smith");
+			assert(obj.at("isAlive").asBool() == true);
+			assert(obj.at("age").asInt() == 27);
+			assert(obj.at("phoneNumbers").asArr().at(0).asObj().at("type").asStr() == "home");
+			assert(obj.at("spouse").isNull());
+		}
+		{
+			auto tree = json::decode(R"(// This is a comment
+
+/* This is a comment
+spanning over multiple lines */
+
+{
+"body":"Hello, world!"
+}
+			)");
+			assert(tree);
+			JsonObject& obj = tree->asObj();
+			assert(obj.at("body").asStr() == "Hello, world!");
+		}
+		{
+			auto tree = json::decode(R"(
+{
+// This is the body
+"body":"Hello, world!"
+}
+			)");
+			assert(tree);
+			JsonObject& obj = tree->asObj();
+			assert(obj.at("body").asStr() == "Hello, world!");
+		}
 	});
 
 	test("xml", []

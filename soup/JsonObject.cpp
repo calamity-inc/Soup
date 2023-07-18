@@ -22,10 +22,7 @@ namespace soup
 	{
 		while (true)
 		{
-			while (string::isSpace(*c))
-			{
-				++c;
-			}
+			json::handleLeadingSpace(c);
 			if (*c == '}' || *c == 0)
 			{
 				break;

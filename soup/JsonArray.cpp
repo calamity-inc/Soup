@@ -21,10 +21,7 @@ namespace soup
 	{
 		while (true)
 		{
-			while (string::isSpace(*c))
-			{
-				++c;
-			}
+			json::handleLeadingSpace(c);
 			auto val = json::decode(c);
 			if (!val)
 			{

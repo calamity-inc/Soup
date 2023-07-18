@@ -24,6 +24,8 @@ namespace soup
 
 	UniquePtr<JsonNode> json::decode(const char*& c)
 	{
+		handleLeadingSpace(c);
+
 		switch (*c)
 		{
 		case '"':
@@ -188,5 +190,52 @@ namespace soup
 			}
 		}
 		return {};
+	}
+
+	void json::handleLeadingSpace(const char*& c)
+	{
+		while (*c != 0)
+		{
+			if (string::isSpace(*c))
+			{
+				++c;
+			}
+			else if (*c == '/')
+			{
+				handleComment(c);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	void json::handleComment(const char*& c)
+	{
+		++c;
+		if (*c == '/')
+		{
+			do
+			{
+				++c;
+			} while (*c != '\n' && *c != 0);
+		}
+		else if (*c == '*')
+		{
+			do
+			{
+				++c;
+				if (*c == '*' && *(c + 1) == '/')
+				{
+					c += 2;
+					break;
+				}
+			} while (*c != 0);
+		}
+		else
+		{
+			--c;
+		}
 	}
 }
