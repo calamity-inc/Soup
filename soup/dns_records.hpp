@@ -27,6 +27,8 @@ namespace soup
 
 		[[nodiscard]] static dnsRecordFactory getFactory(dnsType type);
 
+		[[nodiscard]] static UniquePtr<dnsRecord> fromString(dnsType type, std::string&& name, uint32_t ttl, std::string&& str);
+
 		[[nodiscard]] virtual std::string toString() const = 0;
 		[[nodiscard]] virtual std::string toRdata() const = 0;
 	};

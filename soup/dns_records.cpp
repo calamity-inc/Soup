@@ -52,6 +52,16 @@ namespace soup
 		return nullptr;
 	}
 
+	UniquePtr<dnsRecord> dnsRecord::fromString(dnsType type, std::string&& name, uint32_t ttl, std::string&& str)
+	{
+		auto f = getFactory(type);
+		if (f)
+		{
+			return f(std::move(name), ttl, std::move(str));
+		}
+		return {};
+	}
+
 	std::string dnsRecordName::toRdata() const
 	{
 		dnsName value;
