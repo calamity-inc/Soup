@@ -34,10 +34,10 @@ namespace soup
 			}
 		}
 
-#define isStructInMap(T) containsImpl(::soup::joaat::hash(#T))
-#define addStructToMap(T, inst) emplace(::soup::joaat::hash(#T), inst); static_assert(std::is_same_v<T, decltype(inst)>)
-#define getStructFromMap(T) getImpl<T>(::soup::joaat::hash(#T))
-#define getStructFromMapConst(T) at(::soup::joaat::hash(#T)).get<T>()
-#define removeStructFromMap(T) removeImpl(::soup::joaat::hash(#T))
+#define isStructInMap(T) containsImpl(::soup::joaat::compileTimeHash(#T))
+#define addStructToMap(T, inst) emplace(::soup::joaat::compileTimeHash(#T), inst); static_assert(std::is_same_v<T, decltype(inst)>)
+#define getStructFromMap(T) getImpl<T>(::soup::joaat::compileTimeHash(#T))
+#define getStructFromMapConst(T) at(::soup::joaat::compileTimeHash(#T)).get<T>()
+#define removeStructFromMap(T) removeImpl(::soup::joaat::compileTimeHash(#T))
 	};
 }

@@ -4,6 +4,8 @@
 #include <optional>
 #include <string>
 
+#include "base.hpp"
+
 namespace soup
 {
 	struct joaat
@@ -24,6 +26,11 @@ namespace soup
 			val ^= (val >> 11);
 			val += (val << 15);
 			return val;
+		}
+
+		[[nodiscard]] static consteval uint32_t compileTimeHash(const char* str) noexcept
+		{
+			return hash(str);
 		}
 
 		[[nodiscard]] static constexpr uint32_t hash(const char* str, uint32_t initial) noexcept
