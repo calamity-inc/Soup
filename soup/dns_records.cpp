@@ -62,6 +62,11 @@ namespace soup
 		return {};
 	}
 
+	UniquePtr<dnsRecord> dnsRecord::copy() const
+	{
+		return fromString(type, std::string(name), ttl, toString());
+	}
+
 	std::string dnsRecordName::toRdata() const
 	{
 		dnsName value;

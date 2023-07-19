@@ -31,6 +31,8 @@ namespace soup
 
 		[[nodiscard]] virtual std::string toString() const = 0;
 		[[nodiscard]] virtual std::string toRdata() const = 0;
+
+		[[nodiscard]] UniquePtr<dnsRecord> copy() const;
 	};
 
 	struct dnsARecord : public dnsRecord
