@@ -12,39 +12,39 @@ namespace soup
 		switch (type)
 		{
 		case DNS_A:
-			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsARecord>(std::move(name), ttl, IpAddr(human_readable_data).getV4());
+				return soup::make_unique<dnsARecord>(std::move(name), ttl, IpAddr(str).getV4());
 			};
 
 		case DNS_AAAA:
-			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsAaaaRecord>(std::move(name), ttl, IpAddr(human_readable_data));
+				return soup::make_unique<dnsAaaaRecord>(std::move(name), ttl, IpAddr(str));
 			};
 
 		case DNS_CNAME:
-			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsCnameRecord>(std::move(name), ttl, std::move(human_readable_data));
+				return soup::make_unique<dnsCnameRecord>(std::move(name), ttl, std::move(str));
 			};
 
 		case DNS_PTR:
-			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsPtrRecord>(std::move(name), ttl, std::move(human_readable_data));
+				return soup::make_unique<dnsPtrRecord>(std::move(name), ttl, std::move(str));
 			};
 
 		case DNS_TXT:
-			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsTxtRecord>(std::move(name), ttl, std::move(human_readable_data));
+				return soup::make_unique<dnsTxtRecord>(std::move(name), ttl, std::move(str));
 			};
 
 		case DNS_NS:
-			return [](std::string&& name, uint32_t ttl, std::string&& human_readable_data) -> UniquePtr<dnsRecord>
+			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsNsRecord>(std::move(name), ttl, std::move(human_readable_data));
+				return soup::make_unique<dnsNsRecord>(std::move(name), ttl, std::move(str));
 			};
 
 		default:;
@@ -62,7 +62,7 @@ namespace soup
 		return sw.data;
 	}
 
-	std::string dnsMxRecord::getDataHumanReadable() const
+	std::string dnsMxRecord::toString() const
 	{
 		std::string str = std::to_string(priority);
 		str.push_back(' ');
@@ -75,7 +75,7 @@ namespace soup
 		Exception::purecall();
 	}
 
-	std::string dnsSrvRecord::getDataHumanReadable() const
+	std::string dnsSrvRecord::toString() const
 	{
 		std::string str = std::to_string(priority);
 		str.push_back(' ');

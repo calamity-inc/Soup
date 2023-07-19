@@ -10,7 +10,7 @@ namespace soup
 {
 	struct dnsRecord;
 
-	using dnsRecordFactory = UniquePtr<dnsRecord>(*)(std::string&& name, uint32_t ttl, std::string&& human_readable_data);
+	using dnsRecordFactory = UniquePtr<dnsRecord>(*)(std::string&& name, uint32_t ttl, std::string&& str);
 
 	struct dnsRecord
 	{
@@ -27,8 +27,7 @@ namespace soup
 
 		[[nodiscard]] static dnsRecordFactory getFactory(dnsType type);
 
-		[[nodiscard]] virtual std::string getDataHumanReadable() const = 0;
-
+		[[nodiscard]] virtual std::string toString() const = 0;
 		[[nodiscard]] virtual std::string toRdata() const = 0;
 	};
 
@@ -41,7 +40,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string getDataHumanReadable() const final
+		[[nodiscard]] std::string toString() const final
 		{
 			return IpAddr(data).toString4();
 		}
@@ -66,7 +65,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string getDataHumanReadable() const final
+		[[nodiscard]] std::string toString() const final
 		{
 			return data.toString6();
 		}
@@ -86,7 +85,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string getDataHumanReadable() const final
+		[[nodiscard]] std::string toString() const final
 		{
 			return data;
 		}
@@ -119,7 +118,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string getDataHumanReadable() const final
+		[[nodiscard]] std::string toString() const final
 		{
 			return data;
 		}
@@ -142,7 +141,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string getDataHumanReadable() const final;
+		[[nodiscard]] std::string toString() const final;
 
 		[[nodiscard]] std::string toRdata() const final;
 	};
@@ -159,7 +158,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string getDataHumanReadable() const final;
+		[[nodiscard]] std::string toString() const final;
 
 		[[nodiscard]] std::string toRdata() const final;
 	};
