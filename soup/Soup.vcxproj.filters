@@ -1389,6 +1389,9 @@
     <ClInclude Include="sha_commons.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="dnsCacheResolver.hpp">
+      <Filter>net\dns</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2020,6 +2023,7 @@
       <Filter>os</Filter>
     </ClCompile>
     <ClCompile Include="base.cpp" />
+    <ClCompile Include="dnsCacheResolver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
