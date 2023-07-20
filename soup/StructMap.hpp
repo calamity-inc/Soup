@@ -15,8 +15,8 @@ namespace soup
 			return find(id) != end();
 		}
 
-		template <typename T>
-		[[nodiscard]] T& getImpl(uint32_t id)
+		template <typename T, uint32_t id>
+		[[nodiscard]] T& getImpl()
 		{
 			auto e = find(id);
 			if (e != end())
@@ -36,7 +36,7 @@ namespace soup
 
 #define isStructInMap(T) containsImpl(::soup::joaat::compileTimeHash(#T))
 #define addStructToMap(T, inst) emplace(::soup::joaat::compileTimeHash(#T), inst); static_assert(std::is_same_v<T, decltype(inst)>)
-#define getStructFromMap(T) getImpl<T>(::soup::joaat::compileTimeHash(#T))
+#define getStructFromMap(T) getImpl<T, ::soup::joaat::compileTimeHash(#T)>()
 #define getStructFromMapConst(T) at(::soup::joaat::compileTimeHash(#T)).get<T>()
 #define removeStructFromMap(T) removeImpl(::soup::joaat::compileTimeHash(#T))
 	};
