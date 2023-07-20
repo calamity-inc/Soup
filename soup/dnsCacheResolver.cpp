@@ -45,6 +45,7 @@ namespace soup
 			if (underlying->tickUntilDone())
 			{
 				res = std::move(underlying->res);
+				resolver.addToCache(res);
 				setWorkDone();
 			}
 		}
