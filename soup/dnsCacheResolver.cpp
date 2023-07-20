@@ -2,6 +2,13 @@
 
 #include "time.hpp"
 
+#define LOGGING false
+
+#if LOGGING
+#include "format.hpp"
+#include "log.hpp"
+#endif
+
 namespace soup
 {
 	std::vector<UniquePtr<dnsRecord>> dnsCacheResolver::lookup(dnsType qtype, const std::string& name) const
@@ -62,7 +69,10 @@ namespace soup
 		{
 			if (i->getExpiry() < time::unixSeconds())
 			{
-				i = cache.erase(i);
+				i = cache.erase(i);				
+#if LOGGING
+				logWriteLine(format("[DNS Cache] {}@{} expired", dnsTypeToString(i->record->type), i->record->name));
+#endif
 				continue;
 			}
 			if (i->record->type == qtype
@@ -73,6 +83,16 @@ namespace soup
 			}
 			++i;
 		}
+#if LOGGING
+		if (res.empty())
+		{
+			logWriteLine(format("[DNS Cache] {}@{} miss", dnsTypeToString(qtype), name));
+		}
+		else
+		{
+			logWriteLine(format("[DNS Cache] {}@{} hit", dnsTypeToString(qtype), name));
+		}
+#endif
 		return res;
 	}
 
@@ -83,6 +103,9 @@ namespace soup
 			const auto t = time::unixSeconds();
 			for (const auto& record : records)
 			{
+#if LOGGING
+				logWriteLine(format("[DNS Cache] {}@{} added", dnsTypeToString(record->type), record->name));
+#endif
 				cache.emplace_back(CachedRecord{ record->copy(), t });
 			}
 		}
