@@ -2023,7 +2023,9 @@
       <Filter>os</Filter>
     </ClCompile>
     <ClCompile Include="base.cpp" />
-    <ClCompile Include="dnsCacheResolver.cpp" />
+    <ClCompile Include="dnsCacheResolver.cpp">
+      <Filter>net\dns</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
