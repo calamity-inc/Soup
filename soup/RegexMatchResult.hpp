@@ -21,6 +21,31 @@ namespace soup
 			return groups.at(0).value().length();
 		}
 
+		[[nodiscard]] const RegexMatchedGroup* findGroupByIndex(size_t i) const noexcept
+		{
+			if (i < groups.size()
+				&& groups.at(i).has_value()
+				)
+			{
+				return &groups.at(i).value();
+			}
+			return nullptr;
+		}
+
+		[[nodiscard]] const RegexMatchedGroup* findGroupByName(const std::string& name) const noexcept
+		{
+			for (size_t i = 0; i != groups.size(); ++i)
+			{
+				if (groups.at(i).has_value()
+					&& groups.at(i)->name == name
+					)
+				{
+					return &groups.at(i).value();
+				}
+			}
+			return nullptr;
+		}
+
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			std::string str{};
