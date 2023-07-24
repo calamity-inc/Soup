@@ -189,6 +189,14 @@ namespace soup
 		{
 			str.push_back('D');
 		}
+		if (flags & RE_UNICODE)
+		{
+			str.push_back('u');
+		}
+		if (flags & RE_UNGREEDY)
+		{
+			str.push_back('U');
+		}
 		return str;
 	}
 }
