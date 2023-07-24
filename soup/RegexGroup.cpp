@@ -305,6 +305,7 @@ namespace soup
 						greedy = false;
 						++s.it;
 					}
+					greedy ^= s.hasFlag(RE_UNGREEDY);
 
 					RegexConstraint* pModifiedConstraint;
 					UniquePtr<RegexConstraintTransitionable> upQuantifierConstraint;
@@ -356,6 +357,7 @@ namespace soup
 						greedy = false;
 						++s.it;
 					}
+					greedy ^= s.hasFlag(RE_UNGREEDY);
 
 					RegexConstraint* pModifiedConstraint;
 					UniquePtr<RegexConstraintTransitionable> upQuantifierConstraint;

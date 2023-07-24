@@ -21,6 +21,11 @@ namespace soup
 				: it(it), end(end), flags(flags)
 			{
 			}
+
+			[[nodiscard]] bool hasFlag(uint16_t flag) const noexcept
+			{
+				return (flags & flag) != 0;
+			}
 		};
 
 		const size_t index = 0;

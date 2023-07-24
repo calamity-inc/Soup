@@ -488,6 +488,9 @@ spanning over multiple lines */
 		assert(Regex(".*?B").match("ABAB").toString() == R"(0="AB")");
 		assert(Regex(".+B").match("ABAB").toString() == R"(0="ABAB")");
 		assert(Regex(".+?B").match("ABAB").toString() == R"(0="AB")");
+
+		assert(Regex(".*B", RE_UNGREEDY).match("ABAB").toString() == R"(0="AB")");
+		assert(Regex(".*?B", RE_UNGREEDY).match("ABAB").toString() == R"(0="ABAB")");
 	});
 }
 
