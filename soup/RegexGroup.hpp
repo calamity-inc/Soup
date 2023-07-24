@@ -42,6 +42,11 @@ namespace soup
 
 		RegexGroup(const ConstructorState& s, bool non_capturing = false);
 
+		[[nodiscard]] bool isCapturing() const noexcept
+		{
+			return index != -1;
+		}
+
 		[[nodiscard]] std::string toString() const noexcept;
 
 		[[nodiscard]] uint16_t getFlags() const;

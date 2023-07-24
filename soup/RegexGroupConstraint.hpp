@@ -23,6 +23,10 @@ namespace soup
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			auto str = group.toString();
+			if (!group.isCapturing())
+			{
+				str.insert(0, "?:");
+			}
 			str.insert(0, 1, '(');
 			str.push_back(')');
 			return str;
