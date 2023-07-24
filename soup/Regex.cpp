@@ -75,7 +75,7 @@ namespace soup
 					{
 						break;
 					}
-					if (g->index == -1)
+					if (g->isNonCapturing())
 					{
 						continue;
 					}

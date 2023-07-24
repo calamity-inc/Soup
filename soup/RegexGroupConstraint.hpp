@@ -28,7 +28,7 @@ namespace soup
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			auto str = group.toString();
-			if (!group.isCapturing())
+			if (group.isNonCapturing())
 			{
 				str.insert(0, "?:");
 			}

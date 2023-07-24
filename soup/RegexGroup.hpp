@@ -47,9 +47,9 @@ namespace soup
 
 		RegexGroup(const ConstructorState& s, bool non_capturing = false);
 
-		[[nodiscard]] bool isCapturing() const noexcept
+		[[nodiscard]] bool isNonCapturing() const noexcept
 		{
-			return index != -1;
+			return index == -1;
 		}
 
 		[[nodiscard]] std::string toString() const noexcept;
