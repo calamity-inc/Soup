@@ -5,11 +5,11 @@
 #include "base.hpp"
 
 #define UTF8_CONTINUATION_FLAG 0b10000000
-#define UTF8_HAS_CONTINUATION(ch) (ch & 0b10000000)
-#define UTF8_IS_CONTINUATION(ch) ((ch & 0b11000000) == UTF8_CONTINUATION_FLAG)
+#define UTF8_HAS_CONTINUATION(ch) ((ch) & 0b10000000)
+#define UTF8_IS_CONTINUATION(ch) (((ch) & 0b11000000) == UTF8_CONTINUATION_FLAG)
 
-#define UTF16_IS_HIGH_SURROGATE(ch) ((ch >> 10) == 0x36)
-#define UTF16_IS_LOW_SURROGATE(ch) ((ch >> 10) == 0x37)
+#define UTF16_IS_HIGH_SURROGATE(ch) (((ch) >> 10) == 0x36)
+#define UTF16_IS_LOW_SURROGATE(ch) (((ch) >> 10) == 0x37)
 
 #if SOUP_WINDOWS
 #include <Windows.h>

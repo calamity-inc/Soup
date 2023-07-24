@@ -10,6 +10,11 @@ namespace soup
 	{
 		RegexGroup group;
 
+		RegexGroupConstraint()
+			: group()
+		{
+		}
+
 		RegexGroupConstraint(const RegexGroup::ConstructorState& s, bool non_capturing)
 			: group(s, non_capturing)
 		{

@@ -2,6 +2,7 @@
 
 #include "RegexFlags.hpp"
 #include "string.hpp"
+#include "unicode.hpp"
 
 #include "RegexAnyCharConstraint.hpp"
 #include "RegexCharConstraint.hpp"
@@ -426,13 +427,27 @@ namespace soup
 				else if (*s.it == '.')
 				{
 					UniquePtr<RegexConstraintTransitionable> upC;
-					if (s.flags & RE_DOTALL)
+					if (s.hasFlag(RE_DOTALL))
 					{
-						upC = soup::make_unique<RegexAnyCharConstraint<true>>();
+						if (s.hasFlag(RE_UNICODE))
+						{
+							upC = soup::make_unique<RegexAnyCharConstraint<true, true>>();
+						}
+						else
+						{
+							upC = soup::make_unique<RegexAnyCharConstraint<true, false>>();
+						}
 					}
 					else
 					{
-						upC = soup::make_unique<RegexAnyCharConstraint<false>>();
+						if (s.hasFlag(RE_UNICODE))
+						{
+							upC = soup::make_unique<RegexAnyCharConstraint<false, true>>();
+						}
+						else
+						{
+							upC = soup::make_unique<RegexAnyCharConstraint<false, false>>();
+						}
 					}
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
@@ -534,14 +549,30 @@ namespace soup
 					continue;
 				}
 			}
-			// TODO: UTF-8 mode ('u'nicode flag):
-			// - implicitly capture multi-byte symbols in a non-capturing group to avoid jank with '?'
-			// - have '.' accept multi-byte symbols as a single symbol
-			auto upC = soup::make_unique<RegexCharConstraint>(*s.it);
-			auto pC = upC.get();
-			a.constraints.emplace_back(std::move(upC));
-			success_transitions.setTransitionTo(pC);
-			success_transitions.emplace(&pC->success_transition);
+			if (UTF8_HAS_CONTINUATION(*s.it) && s.hasFlag(RE_UNICODE))
+			{
+				auto upGC = soup::make_unique<RegexGroupConstraint>();
+				auto pGC = upGC.get();
+				pGC->group.alternatives.emplace_back(RegexAlternative{});
+				a.constraints.emplace_back(std::move(upGC));
+
+				do
+				{
+					auto upCC = soup::make_unique<RegexCharConstraint>(*s.it);
+					auto pCC = upCC.get();
+					pGC->group.alternatives.back().constraints.emplace_back(std::move(upCC));
+					success_transitions.setTransitionTo(pCC);
+					success_transitions.emplace(&pCC->success_transition);
+				} while (s.it + 1 != s.end && UTF8_IS_CONTINUATION(*++s.it));
+			}
+			else
+			{
+				auto upC = soup::make_unique<RegexCharConstraint>(*s.it);
+				auto pC = upC.get();
+				a.constraints.emplace_back(std::move(upC));
+				success_transitions.setTransitionTo(pC);
+				success_transitions.emplace(&pC->success_transition);
+			}
 		}
 		alternatives.emplace_back(std::move(a));
 		success_transitions.discharge(alternatives_transitions);

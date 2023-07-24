@@ -86,6 +86,10 @@ namespace soup
 				{
 					res |= RE_DOLLAR_ENDONLY;
 				}
+				else if (*flags == 'u')
+				{
+					res |= RE_UNICODE;
+				}
 				else if (*flags == 'U')
 				{
 					res |= RE_DOLLAR_ENDONLY;

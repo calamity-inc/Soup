@@ -491,6 +491,9 @@ spanning over multiple lines */
 
 		assert(Regex(".*B", RE_UNGREEDY).match("ABAB").toString() == R"(0="AB")");
 		assert(Regex(".*?B", RE_UNGREEDY).match("ABAB").toString() == R"(0="ABAB")");
+
+		assert(Regex(".").matchesFully("💯") == false);
+		assert(Regex(".", RE_UNICODE).matchesFully("💯") == true);
 	});
 }
 
