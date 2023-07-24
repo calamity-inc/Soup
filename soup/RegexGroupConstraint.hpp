@@ -32,6 +32,12 @@ namespace soup
 			{
 				str.insert(0, "?:");
 			}
+			else if (!group.name.empty())
+			{
+				str.insert(0, 1, '\'');
+				str.insert(0, group.name);
+				str.insert(0, "?'");
+			}
 			str.insert(0, 1, '(');
 			str.push_back(')');
 			return str;
