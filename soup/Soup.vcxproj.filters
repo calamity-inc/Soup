@@ -1305,9 +1305,6 @@
     <ClInclude Include="RegexGroupConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
-    <ClInclude Include="RegexGreedyOneConstraint.hpp">
-      <Filter>data\regex\constraints</Filter>
-    </ClInclude>
     <ClInclude Include="RegexConstraintTransitionable.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>
@@ -1332,7 +1329,7 @@
     <ClInclude Include="RegexFlags.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>
-    <ClInclude Include="RegexGreedyZeroConstraint.hpp">
+    <ClInclude Include="RegexQuantifierConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
     <ClInclude Include="RegexPositiveLookaheadConstraint.hpp">
@@ -1341,7 +1338,7 @@
     <ClInclude Include="RegexNegativeLookaheadConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
-    <ClInclude Include="RegexRepConstraint.hpp">
+    <ClInclude Include="RegexExactQuantifierConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
     <ClInclude Include="RegexPositiveLookbehindConstraint.hpp">

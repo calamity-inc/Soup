@@ -7,16 +7,15 @@
 #include "RegexCharConstraint.hpp"
 #include "RegexDummyConstraint.hpp"
 #include "RegexEndConstraint.hpp"
-#include "RegexGreedyOneConstraint.hpp"
-#include "RegexGreedyZeroConstraint.hpp"
+#include "RegexExactQuantifierConstraint.hpp"
 #include "RegexGroupConstraint.hpp"
 #include "RegexNegativeLookaheadConstraint.hpp"
 #include "RegexNegativeLookbehindConstraint.hpp"
 #include "RegexPositiveLookaheadConstraint.hpp"
 #include "RegexPositiveLookbehindConstraint.hpp"
 #include "RegexOptConstraint.hpp"
+#include "RegexQuantifierConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
-#include "RegexRepConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 #include "RegexWordBoundaryConstraint.hpp"
 
@@ -298,45 +297,107 @@ namespace soup
 				}
 				else if (*s.it == '+')
 				{
-					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
-					auto pModifiedConstraint = upModifiedConstraint.get();
-					auto upGreedyConstraint = soup::make_unique<RegexGreedyOneConstraint>(std::move(upModifiedConstraint));
+					bool greedy = true;
+					if (s.it + 1 != s.end
+						&& *(s.it + 1) == '?'
+						)
+					{
+						greedy = false;
+						++s.it;
+					}
+
+					RegexConstraint* pModifiedConstraint;
+					UniquePtr<RegexConstraintTransitionable> upQuantifierConstraint;
+					if (greedy)
+					{
+						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
+						pModifiedConstraint = upModifiedConstraint.get();
+						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<true, true>>(std::move(upModifiedConstraint));
+					}
+					else
+					{
+						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
+						pModifiedConstraint = upModifiedConstraint.get();
+						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<true, false>>(std::move(upModifiedConstraint));
+					}
 
 					pModifiedConstraint->group = this;
 
-					// constraint --[success]-> greedy
-					success_transitions.setTransitionTo(upGreedyConstraint.get());
+					// constraint --[success]-> quantifier
+					success_transitions.setTransitionTo(upQuantifierConstraint.get());
 
-					// greedy --[success]-> constraint
-					upGreedyConstraint->success_transition = pModifiedConstraint->getTransition();
+					if (greedy)
+					{
+						// quantifier --[success]-> constraint
+						upQuantifierConstraint->success_transition = pModifiedConstraint->getTransition();
 
-					// greedy --[rollback]-> next-constraint
-					success_transitions.emplaceRollback(&upGreedyConstraint->rollback_transition);
+						// quantifier --[rollback]-> next-constraint
+						success_transitions.emplaceRollback(&upQuantifierConstraint->rollback_transition);
+					}
+					else
+					{
+						// quantifier --[success]-> next-constraint
+						success_transitions.emplace(&upQuantifierConstraint->success_transition);
 
-					a.constraints.back() = std::move(upGreedyConstraint);
+						// quantifier --[rollback]-> constraint
+						upQuantifierConstraint->rollback_transition = pModifiedConstraint->getTransition();
+					}
+
+					a.constraints.back() = std::move(upQuantifierConstraint);
 					continue;
 				}
 				else if (*s.it == '*')
 				{
-					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
-					auto pModifiedConstraint = upModifiedConstraint.get();
-					auto upGreedyConstraint = soup::make_unique<RegexGreedyZeroConstraint>(std::move(upModifiedConstraint));
+					bool greedy = true;
+					if (s.it + 1 != s.end
+						&& *(s.it + 1) == '?'
+						)
+					{
+						greedy = false;
+						++s.it;
+					}
+
+					RegexConstraint* pModifiedConstraint;
+					UniquePtr<RegexConstraintTransitionable> upQuantifierConstraint;
+					if (greedy)
+					{
+						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
+						pModifiedConstraint = upModifiedConstraint.get();
+						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<false, true>>(std::move(upModifiedConstraint));
+					}
+					else
+					{
+						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
+						pModifiedConstraint = upModifiedConstraint.get();
+						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<false, false>>(std::move(upModifiedConstraint));
+					}
 
 					pModifiedConstraint->group = this;
 
-					// prev-constraint --[success]-> greedy
-					success_transitions.setPreviousTransitionTo(upGreedyConstraint.get());
+					// prev-constraint --[success]-> quantifier
+					success_transitions.setPreviousTransitionTo(upQuantifierConstraint.get());
 
-					// constraint --[success]-> greedy
-					success_transitions.setTransitionTo(upGreedyConstraint.get());
+					// constraint --[success]-> quantifier
+					success_transitions.setTransitionTo(upQuantifierConstraint.get());
 
-					// greedy --[success]-> constraint
-					upGreedyConstraint->success_transition = pModifiedConstraint->getTransition();
+					if (greedy)
+					{
+						// quantifier --[success]-> constraint
+						upQuantifierConstraint->success_transition = pModifiedConstraint->getTransition();
 
-					// greedy --[rollback]-> next-constraint
-					success_transitions.emplaceRollback(&upGreedyConstraint->rollback_transition);
+						// quantifier --[rollback]-> next-constraint
+						success_transitions.emplaceRollback(&upQuantifierConstraint->rollback_transition);
+					}
+					else
+					{
+						// quantifier --[success]-> next-constraint
+						success_transitions.emplace(&upQuantifierConstraint->success_transition);
 
-					a.constraints.back() = std::move(upGreedyConstraint);
+						// quantifier --[rollback]-> constraint
+						upQuantifierConstraint->rollback_transition = pModifiedConstraint->getTransition();
+					}
+
+					a.constraints.back() = std::move(upQuantifierConstraint);
 					continue;
 				}
 				else if (*s.it == '?')
@@ -450,7 +511,7 @@ namespace soup
 					}
 					else
 					{
-						auto upRepConstraint = soup::make_unique<RegexRepConstraint>();
+						auto upRepConstraint = soup::make_unique<RegexExactQuantifierConstraint>();
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 						pModifiedConstraint->group = this;
 						while (--i != 0)

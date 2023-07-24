@@ -497,8 +497,7 @@
     <ClInclude Include="RegexDummyConstraint.hpp" />
     <ClInclude Include="RegexEndConstraint.hpp" />
     <ClInclude Include="RegexFlags.hpp" />
-    <ClInclude Include="RegexGreedyOneConstraint.hpp" />
-    <ClInclude Include="RegexGreedyZeroConstraint.hpp" />
+    <ClInclude Include="RegexQuantifierConstraint.hpp" />
     <ClInclude Include="RegexGroupConstraint.hpp" />
     <ClInclude Include="RegexGroup.hpp" />
     <ClInclude Include="RegexNegativeLookaheadConstraint.hpp" />
@@ -510,7 +509,7 @@
     <ClInclude Include="RegexOptConstraint.hpp" />
     <ClInclude Include="RegexPositiveLookbehindConstraint.hpp" />
     <ClInclude Include="RegexRangeConstraint.hpp" />
-    <ClInclude Include="RegexRepConstraint.hpp" />
+    <ClInclude Include="RegexExactQuantifierConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="ServerServiceUdp.hpp" />

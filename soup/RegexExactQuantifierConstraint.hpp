@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	struct RegexRepConstraint : public RegexConstraint
+	struct RegexExactQuantifierConstraint : public RegexConstraint
 	{
 		std::vector<UniquePtr<RegexConstraint>> constraints;
 

@@ -6,11 +6,12 @@
 
 namespace soup
 {
-	struct RegexGreedyZeroConstraint : public RegexConstraintTransitionable
+	template <bool at_least_one, bool greedy>
+	struct RegexQuantifierConstraint : public RegexConstraintTransitionable
 	{
 		UniquePtr<RegexConstraint> constraint;
 
-		RegexGreedyZeroConstraint(UniquePtr<RegexConstraint>&& constraint)
+		RegexQuantifierConstraint(UniquePtr<RegexConstraint>&& constraint)
 			: constraint(std::move(constraint))
 		{
 		}
@@ -24,7 +25,18 @@ namespace soup
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			std::string str = constraint->toString();
-			str.push_back('*');
+			if (at_least_one)
+			{
+				str.push_back('+');
+			}
+			else
+			{
+				str.push_back('*');
+			}
+			if (!greedy)
+			{
+				str.push_back('?');
+			}
 			return str;
 		}
 	};
