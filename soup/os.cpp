@@ -23,6 +23,13 @@
 
 namespace soup
 {
+	size_t os::filesize(const std::filesystem::path& path)
+	{
+		// This is not guaranteed to work, but works on UNIX, and on Windows in binary mode.
+		std::ifstream in(path, std::ifstream::ate | std::ifstream::binary);
+		return in.tellg();
+	}
+
 	std::filesystem::path os::tempfile(const std::string& ext)
 	{
 		std::filesystem::path path;
