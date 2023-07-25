@@ -352,10 +352,8 @@ namespace soup
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, // Cloudflare
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, // Cloudflare
 
-#if SOUP_TLS_SUPPORTS_AEAD
 			TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, // Apache + Let's Encrypt
 			TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, // Apache + Let's Encrypt
-#endif
 		};
 		hello.cipher_suites.emplace(
 			hello.cipher_suites.begin() + rand(0, hello.cipher_suites.size() - 1),

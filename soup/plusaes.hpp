@@ -1,4 +1,4 @@
-// Source: https://github.com/kkAyataka/plusaes
+// Source: https://github.com/Sainan/plusaes/tree/workaround32
 
 // Copyright (C) 2015 kkAyataka
 //
@@ -16,9 +16,14 @@
 #include <stdexcept>
 #include <vector>
 
-/** Version number of plusaes.
+/** @defgroup Base
+ * @{ */
+
+/** Version number of the plusaes.
  * 0x01020304 -> 1.2.3.4 */
-#define PLUSAES_VERSION 0x000A0000
+#define PLUSAES_VERSION 0x01000000
+
+/** @} */
 
 /** AES cipher APIs */
 namespace plusaes {
@@ -394,13 +399,7 @@ public:
         init_v(&bytes[0], bytes.size());
     }
 
-    Block(const std::bitset<128> & bits) {
-        init_v(0, 0);
-        const std::bitset<128> mask(0xFF); // 1 byte mask
-        for (std::size_t i = 0; i < 16; ++i) {
-            v_[15 - i] = static_cast<unsigned char>(((bits >> (i * 8)) & mask).to_ulong());
-        }
-    }
+    Block(const std::bitset<128> & bits); // implementation below
 
     inline unsigned char * data() {
         return v_;
@@ -440,6 +439,22 @@ private:
         }
     }
 };
+
+// Workaround for clang optimization in 32-bit build via Visual Studio producing incorrect results (https://github.com/kkAyataka/plusaes/issues/43)
+#if defined(__clang__) && defined(_WIN32) && !defined(_WIN64)
+#pragma optimize("", off)
+#endif
+inline Block::Block(const std::bitset<128> & bits)
+{
+    init_v(0, 0);
+    const std::bitset<128> mask(0xFF); // 1 byte mask
+    for (std::size_t i = 0; i < 16; ++i) {
+        v_[15 - i] = static_cast<unsigned char>(((bits >> (i * 8)) & mask).to_ulong());
+    }
+}
+#if defined(__clang__) && defined(_WIN32) && !defined(_WIN64)
+#pragma optimize("", on)
+#endif
 
 template<typename T>
 unsigned long ceil(const T v) {
@@ -681,6 +696,10 @@ inline void crypt_gcm(
 
 } // namespace detail
 
+/** @defgroup Base Base
+ * Base definitions and convenient functions
+ * @{ */
+
 /** Version number of plusaes. */
 inline unsigned int version() {
     return PLUSAES_VERSION;
@@ -718,6 +737,8 @@ typedef enum {
     kErrorInvalidTagSize,
     kErrorInvalidTag
 } Error;
+
+/** @} */
 
 namespace detail {
 
@@ -821,6 +842,10 @@ inline Error check_gcm_cond(
 }
 
 } // namespace detail
+
+/** @defgroup ECB ECB
+ * ECB mode functions
+ * @{ */
 
 /**
  * Encrypts data with ECB mode.
@@ -929,6 +954,12 @@ inline Error decrypt_ecb(
 
     return kErrorOk;
 }
+
+/** @} */
+
+/** @defgroup CBC CBC
+ * CBC mode functions
+ * @{ */
 
 /**
  * Encrypt data with CBC mode.
@@ -1083,6 +1114,8 @@ inline Error decrypt_cbc(
 
     return kErrorOk;
 }
+
+/** @} */
 
 /** @defgroup GCM GCM
  * GCM mode functions

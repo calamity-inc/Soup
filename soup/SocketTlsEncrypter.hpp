@@ -6,13 +6,6 @@
 #include "base.hpp"
 #include "type.hpp"
 
-// AES-GCM on 32-bit build seems to result in remote closing with bad_record_mac
-#if SOUP_BITS == 32
-#define SOUP_TLS_SUPPORTS_AEAD false
-#else
-#define SOUP_TLS_SUPPORTS_AEAD true
-#endif
-
 namespace soup
 {
 	struct SocketTlsEncrypter
@@ -29,11 +22,7 @@ namespace soup
 
 		[[nodiscard]] constexpr bool isAead() const noexcept
 		{
-#if SOUP_TLS_SUPPORTS_AEAD
 			return !implicit_iv.empty();
-#else
-			return false;
-#endif
 		}
 
 		[[nodiscard]] size_t getMacLength() const noexcept;
