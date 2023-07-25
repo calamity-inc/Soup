@@ -297,7 +297,7 @@ namespace soup
 			return bin2hexImpl(str, charset_hex_lower);
 		}
 
-		[[nodiscard]] static std::string bin2hexImpl(std::string str, const char* map)
+		[[nodiscard]] static std::string bin2hexImpl(const std::string& str, const char* map)
 		{
 			std::string res{};
 			res.reserve(str.size() * 2);
