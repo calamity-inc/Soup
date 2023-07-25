@@ -23,6 +23,7 @@ namespace soup
 
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{
+			// BUG: When 'u'nicode flag is set, window is measured in codepoints, but it's always used as bytes here.
 			if (std::distance(m.begin, m.it) < window)
 			{
 				return false;

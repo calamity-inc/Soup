@@ -35,11 +35,6 @@ namespace soup
 		std::string name{};
 		bool lookahead_or_lookbehind = false;
 
-		RegexGroup()
-			: index(-1)
-		{
-		}
-
 		RegexGroup(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags)
 			: RegexGroup(ConstructorState(it, end, flags))
 		{

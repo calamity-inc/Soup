@@ -490,6 +490,7 @@
     <ClInclude Include="PointerAndBool.hpp" />
     <ClInclude Include="Regex.hpp" />
     <ClInclude Include="RegexAlternative.hpp" />
+    <ClInclude Include="RegexCodepointConstraint.hpp" />
     <ClInclude Include="RegexConstraint.hpp" />
     <ClInclude Include="RegexAnyCharConstraint.hpp" />
     <ClInclude Include="RegexCharConstraint.hpp" />

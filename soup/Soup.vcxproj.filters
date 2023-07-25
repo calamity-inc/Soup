@@ -1389,6 +1389,9 @@
     <ClInclude Include="dnsCacheResolver.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
+    <ClInclude Include="RegexCodepointConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

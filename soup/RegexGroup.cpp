@@ -6,6 +6,7 @@
 
 #include "RegexAnyCharConstraint.hpp"
 #include "RegexCharConstraint.hpp"
+#include "RegexCodepointConstraint.hpp"
 #include "RegexDummyConstraint.hpp"
 #include "RegexEndConstraint.hpp"
 #include "RegexExactQuantifierConstraint.hpp"
@@ -549,30 +550,25 @@ namespace soup
 					continue;
 				}
 			}
+
+			UniquePtr<RegexConstraintTransitionable> upC;
 			if (UTF8_HAS_CONTINUATION(*s.it) && s.hasFlag(RE_UNICODE))
 			{
-				auto upGC = soup::make_unique<RegexGroupConstraint>();
-				auto pGC = upGC.get();
-				pGC->group.alternatives.emplace_back(RegexAlternative{});
-				a.constraints.emplace_back(std::move(upGC));
-
+				std::string c;
 				do
 				{
-					auto upCC = soup::make_unique<RegexCharConstraint>(*s.it);
-					auto pCC = upCC.get();
-					pGC->group.alternatives.back().constraints.emplace_back(std::move(upCC));
-					success_transitions.setTransitionTo(pCC);
-					success_transitions.emplace(&pCC->success_transition);
+					c.push_back(*s.it);
 				} while (s.it + 1 != s.end && UTF8_IS_CONTINUATION(*++s.it));
+				upC = soup::make_unique<RegexCodepointConstraint>(std::move(c));
 			}
 			else
 			{
-				auto upC = soup::make_unique<RegexCharConstraint>(*s.it);
-				auto pC = upC.get();
-				a.constraints.emplace_back(std::move(upC));
-				success_transitions.setTransitionTo(pC);
-				success_transitions.emplace(&pC->success_transition);
+				upC = soup::make_unique<RegexCharConstraint>(*s.it);
 			}
+			auto pC = upC.get();
+			a.constraints.emplace_back(std::move(upC));
+			success_transitions.setTransitionTo(pC);
+			success_transitions.emplace(&pC->success_transition);
 		}
 		alternatives.emplace_back(std::move(a));
 		success_transitions.discharge(alternatives_transitions);
