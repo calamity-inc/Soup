@@ -238,7 +238,15 @@ namespace soup
 					}
 					else if (positive_lookbehind)
 					{
-						auto upGC = soup::make_unique<RegexPositiveLookbehindConstraint>(s);
+						UniquePtr<RegexConstraintLookbehind> upGC;
+						if (s.hasFlag(RE_UNICODE))
+						{
+							upGC = soup::make_unique<RegexPositiveLookbehindConstraint<true>>(s);
+						}
+						else
+						{
+							upGC = soup::make_unique<RegexPositiveLookbehindConstraint<false>>(s);
+						}
 						upGC->group.parent = this;
 						upGC->group.lookahead_or_lookbehind = true;
 						upGC->window = upGC->group.getCursorAdvancement();
@@ -257,7 +265,15 @@ namespace soup
 					}
 					else if (negative_lookbehind)
 					{
-						auto upGC = soup::make_unique<RegexPositiveLookbehindConstraint>(s);
+						UniquePtr<RegexConstraintLookbehind> upGC;
+						if (s.hasFlag(RE_UNICODE))
+						{
+							upGC = soup::make_unique<RegexNegativeLookbehindConstraint<true>>(s);
+						}
+						else
+						{
+							upGC = soup::make_unique<RegexNegativeLookbehindConstraint<false>>(s);
+						}
 						upGC->group.parent = this;
 						upGC->group.lookahead_or_lookbehind = true;
 						upGC->window = upGC->group.getCursorAdvancement();

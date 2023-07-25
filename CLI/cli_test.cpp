@@ -494,6 +494,9 @@ spanning over multiple lines */
 
 		assert(Regex(".").matchesFully("💯") == false);
 		assert(Regex(".", RE_UNICODE).matchesFully("💯") == true);
+
+		assert(Regex("(?<=^.)A").search("💯A").isSuccess() == false);
+		assert(Regex("(?<=^.)A", RE_UNICODE).search("💯A").toString() == R"(0="A")");
 	});
 }
 

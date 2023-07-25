@@ -165,6 +165,9 @@ namespace soup
 		const auto begin = it;
 		for (; it != end; ++it)
 		{
+#if REGEX_DEBUG_MATCH
+			std::cout << "--- Attempting match with " << std::distance(begin, it) << " byte offset ---\r\n";
+#endif
 			auto res = match(it, begin, end);
 			if (res.isSuccess())
 			{

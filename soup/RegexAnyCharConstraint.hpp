@@ -24,17 +24,7 @@ namespace soup
 			}
 			if constexpr (unicode)
 			{
-				if (UTF8_HAS_CONTINUATION(*m.it))
-				{
-					do
-					{
-						++m.it;
-					} while (UTF8_IS_CONTINUATION(*m.it));
-				}
-				else
-				{
-					++m.it;
-				}
+				unicode::utf8_add(m.it);
 			}
 			else
 			{

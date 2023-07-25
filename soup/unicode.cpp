@@ -204,4 +204,28 @@ namespace soup
 		}
 		return char_len;
 	}
+
+	void unicode::utf8_add(std::string::const_iterator& it)
+	{
+		if (UTF8_HAS_CONTINUATION(*it))
+		{
+			do
+			{
+				++it;
+			} while (UTF8_IS_CONTINUATION(*it));
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	void unicode::utf8_sub(std::string::const_iterator& it)
+	{
+		--it;
+		while (UTF8_IS_CONTINUATION(*it))
+		{
+			--it;
+		}
+	}
 }
