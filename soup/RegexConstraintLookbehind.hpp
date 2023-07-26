@@ -44,7 +44,7 @@ namespace soup
 					{
 						return false;
 					}
-					unicode::utf8_sub(m.it);
+					unicode::utf8_sub(m.it, m.begin);
 				}
 			}
 			else

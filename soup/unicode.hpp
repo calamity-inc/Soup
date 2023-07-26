@@ -108,7 +108,7 @@ namespace soup
 		[[nodiscard]] static size_t utf8_char_len(const std::string& str) noexcept;
 		[[nodiscard]] static size_t utf16_char_len(const UTF16_STRING_TYPE& str) noexcept;
 
-		static void utf8_add(std::string::const_iterator& it);
-		static void utf8_sub(std::string::const_iterator& it);
+		static void utf8_add(std::string::const_iterator& it, std::string::const_iterator end);
+		static void utf8_sub(std::string::const_iterator& it, std::string::const_iterator begin);
 	};
 }

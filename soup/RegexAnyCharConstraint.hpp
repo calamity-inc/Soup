@@ -24,7 +24,7 @@ namespace soup
 			}
 			if constexpr (unicode)
 			{
-				unicode::utf8_add(m.it);
+				unicode::utf8_add(m.it, m.end);
 			}
 			else
 			{
