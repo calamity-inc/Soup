@@ -17,6 +17,7 @@
 #include "RegexPositiveLookbehindConstraint.hpp"
 #include "RegexOptConstraint.hpp"
 #include "RegexQuantifierConstraint.hpp"
+#include "RegexRangeQuantifierConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 #include "RegexWordBoundaryConstraint.hpp"
@@ -571,30 +572,48 @@ namespace soup
 				}
 				else if (*s.it == '{')
 				{
-					size_t i = 0;
+					size_t min_reps = 0;
 					while (++s.it != s.end && string::isNumberChar(*s.it))
 					{
-						i *= 10;
-						i += ((*s.it) - '0');
+						min_reps *= 10;
+						min_reps += ((*s.it) - '0');
 					}
 					if (s.it == s.end)
 					{
 						break;
 					}
 
+					bool exact = true;
+					size_t max_reps = 0;
+					if (*s.it == ',')
+					{
+						exact = false;
+						while (++s.it != s.end && string::isNumberChar(*s.it))
+						{
+							max_reps *= 10;
+							max_reps += ((*s.it) - '0');
+						}
+						if (s.it == s.end)
+						{
+							break;
+						}
+					}
+
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 					auto pModifiedConstraint = upModifiedConstraint.get();
-					if (i == 0)
+					if (min_reps == 0
+						|| (!exact && min_reps > max_reps)
+						)
 					{
 						success_transitions.rollback();
 						a.constraints.pop_back();
 					}
-					else
+					else if (exact)
 					{
 						auto upRepConstraint = soup::make_unique<RegexExactQuantifierConstraint>();
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 						pModifiedConstraint->group = this;
-						while (--i != 0)
+						while (--min_reps != 0)
 						{
 							auto upClone = pModifiedConstraint->clone();
 							upClone->group = this;
@@ -607,6 +626,51 @@ namespace soup
 
 							upRepConstraint->constraints.emplace_back(std::move(upClone));
 						}
+						a.constraints.back() = std::move(upRepConstraint);
+					}
+					else
+					{
+						auto upRepConstraint = soup::make_unique<RegexRangeQuantifierConstraint>();
+						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
+						upRepConstraint->min_reps = min_reps;
+						pModifiedConstraint->group = this;
+						size_t required_reps = min_reps;
+						while (--required_reps != 0)
+						{
+							auto upClone = pModifiedConstraint->clone();
+							upClone->group = this;
+
+							// constraint --[success]-> clone
+							success_transitions.setTransitionTo(upClone->getTransition());
+
+							// clone --[success]-> whatever-comes-next
+							success_transitions.emplace(&upClone->success_transition);
+
+							upRepConstraint->constraints.emplace_back(std::move(upClone));
+						}
+						TransitionsVector rep_transitions;
+						success_transitions.discharge(rep_transitions.data);
+						size_t optional_reps = (max_reps - min_reps) + 1;
+						while (--optional_reps != 0)
+						{
+							auto upClone = pModifiedConstraint->clone();
+							upClone->group = this;
+
+							// constraint --[success]-> clone
+							rep_transitions.setTransitionTo(upClone->getTransition());
+
+							// clone --[success]-> next-clone
+							rep_transitions.emplace(&upClone->success_transition);
+
+							// clone --[rollback]-> next-constraint
+							success_transitions.emplaceRollback(&upClone->rollback_transition);
+
+							upRepConstraint->constraints.emplace_back(std::move(upClone));
+						}
+
+						// last-clone --[success]-> next-constraint
+						rep_transitions.discharge(success_transitions.data);
+
 						a.constraints.back() = std::move(upRepConstraint);
 					}
 					continue;

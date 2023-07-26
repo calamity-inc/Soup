@@ -512,6 +512,7 @@
     <ClInclude Include="RegexPositiveLookbehindConstraint.hpp" />
     <ClInclude Include="RegexRangeConstraint.hpp" />
     <ClInclude Include="RegexExactQuantifierConstraint.hpp" />
+    <ClInclude Include="RegexRangeQuantifierConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="RegexWordCharConstraint.hpp" />

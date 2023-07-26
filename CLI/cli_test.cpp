@@ -504,6 +504,17 @@ spanning over multiple lines */
 		assert(Regex("\\AA\\Z").matches("A\n") == true);
 		assert(Regex("\\AA\\z").matches("A") == true);
 		assert(Regex("\\AA\\z").matches("A\n") == false);
+
+		SOUP_UNUSED(Regex("A{3,0}")); // this shouldn't infinitely loop at parse-time
+		SOUP_UNUSED(Regex("A{3,1}")); // this shouldn't infinitely loop at parse-time
+
+		assert(Regex("A{3,6}").matchesFully("A") == false);
+		assert(Regex("A{3,6}").matchesFully("AA") == false);
+		assert(Regex("A{3,6}").matchesFully("AAA") == true);
+		assert(Regex("A{3,6}").matchesFully("AAAA") == true);
+		assert(Regex("A{3,6}").matchesFully("AAAAA") == true);
+		assert(Regex("A{3,6}").matchesFully("AAAAAA") == true);
+		assert(Regex("A{3,6}").matchesFully("AAAAAAA") == false);
 	});
 }
 
