@@ -20,6 +20,7 @@
 #include "RegexRangeConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 #include "RegexWordBoundaryConstraint.hpp"
+#include "RegexWordCharConstraint.hpp"
 
 namespace soup
 {
@@ -114,6 +115,24 @@ namespace soup
 				else if (*s.it == 'B')
 				{
 					auto upC = soup::make_unique<RegexWordBoundaryConstraint<true>>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == 'w')
+				{
+					auto upC = soup::make_unique<RegexWordCharConstraint<false>>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == 'W')
+				{
+					auto upC = soup::make_unique<RegexWordCharConstraint<true>>();
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);

@@ -497,6 +497,8 @@ spanning over multiple lines */
 
 		assert(Regex("(?<=^.)A").search("💯A").isSuccess() == false);
 		assert(Regex("(?<=^.)A", RE_UNICODE).search("💯A").toString() == R"(0="A")");
+		
+		assert(Regex("\\w\\W\\w").matchesFully("A B") == true);
 	});
 }
 
