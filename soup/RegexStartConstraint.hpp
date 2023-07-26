@@ -6,7 +6,7 @@
 
 namespace soup
 {
-	template <bool multi_line>
+	template <bool escape_sequence, bool multi_line>
 	struct RegexStartConstraint : public RegexConstraintTransitionable
 	{
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
@@ -27,18 +27,21 @@ namespace soup
 
 		[[nodiscard]] std::string toString() const noexcept final
 		{
-			return "^";
+			return escape_sequence ? "\\A" : "^";
 		}
 
 		void getFlags(uint16_t& set, uint16_t& unset) const noexcept final
 		{
-			if constexpr (multi_line)
+			if constexpr (!escape_sequence)
 			{
-				set |= RE_MULTILINE;
-			}
-			else
-			{
-				unset |= RE_MULTILINE;
+				if constexpr (multi_line)
+				{
+					set |= RE_MULTILINE;
+				}
+				else
+				{
+					unset |= RE_MULTILINE;
+				}
 			}
 		}
 

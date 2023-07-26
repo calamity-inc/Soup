@@ -139,6 +139,33 @@ namespace soup
 					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
+				else if (*s.it == 'A')
+				{
+					auto upC = soup::make_unique<RegexStartConstraint<true, false>>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == 'Z')
+				{
+					auto upC = soup::make_unique<RegexEndConstraint<true, false, false>>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
+				else if (*s.it == 'z')
+				{
+					auto upC = soup::make_unique<RegexEndConstraint<true, false, true>>();
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
 			}
 			else
 			{
@@ -509,11 +536,11 @@ namespace soup
 					UniquePtr<RegexConstraintTransitionable> upC;
 					if (s.flags & RE_MULTILINE)
 					{
-						upC = soup::make_unique<RegexStartConstraint<true>>();
+						upC = soup::make_unique<RegexStartConstraint<false, true>>();
 					}
 					else
 					{
-						upC = soup::make_unique<RegexStartConstraint<false>>();
+						upC = soup::make_unique<RegexStartConstraint<false, false>>();
 					}
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
@@ -526,15 +553,15 @@ namespace soup
 					UniquePtr<RegexConstraintTransitionable> upC;
 					if (s.flags & RE_MULTILINE)
 					{
-						upC = soup::make_unique<RegexEndConstraint<true, false>>();
+						upC = soup::make_unique<RegexEndConstraint<false, true, false>>();
 					}
 					else if (s.flags & RE_DOLLAR_ENDONLY)
 					{
-						upC = soup::make_unique<RegexEndConstraint<false, true>>();
+						upC = soup::make_unique<RegexEndConstraint<false, false, true>>();
 					}
 					else
 					{
-						upC = soup::make_unique<RegexEndConstraint<false, false>>();
+						upC = soup::make_unique<RegexEndConstraint<false, false, false>>();
 					}
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
