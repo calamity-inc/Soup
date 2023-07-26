@@ -1401,6 +1401,9 @@
     <ClInclude Include="RegexRangeQuantifierConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
+    <ClInclude Include="RegexOpenEndedRangeQuantifierConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

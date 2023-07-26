@@ -13,6 +13,7 @@
 #include "RegexGroupConstraint.hpp"
 #include "RegexNegativeLookaheadConstraint.hpp"
 #include "RegexNegativeLookbehindConstraint.hpp"
+#include "RegexOpenEndedRangeQuantifierConstraint.hpp"
 #include "RegexPositiveLookaheadConstraint.hpp"
 #include "RegexPositiveLookbehindConstraint.hpp"
 #include "RegexOptConstraint.hpp"
@@ -601,14 +602,12 @@ namespace soup
 
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 					auto pModifiedConstraint = upModifiedConstraint.get();
-					if (min_reps == 0
-						|| (!exact && min_reps > max_reps)
-						)
+					if (min_reps == 0)
 					{
 						success_transitions.rollback();
 						a.constraints.pop_back();
 					}
-					else if (exact)
+					else if (exact || min_reps == max_reps) // {X} or {X,X}
 					{
 						auto upRepConstraint = soup::make_unique<RegexExactQuantifierConstraint>();
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
@@ -628,7 +627,37 @@ namespace soup
 						}
 						a.constraints.back() = std::move(upRepConstraint);
 					}
-					else
+					else if (max_reps == 0) // {X,}
+					{
+						auto upRepConstraint = soup::make_unique<RegexOpenEndedRangeQuantifierConstraint>();
+						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
+						pModifiedConstraint->group = this;
+						while (--min_reps != 0)
+						{
+							auto upClone = pModifiedConstraint->clone();
+							upClone->group = this;
+
+							// constraint --[success]-> clone
+							success_transitions.setTransitionTo(upClone->getTransition());
+
+							// clone --[success]-> whatever-comes-next
+							success_transitions.emplace(&upClone->success_transition);
+
+							upRepConstraint->constraints.emplace_back(std::move(upClone));
+						}
+
+						// last-clone --[success]-> quantifier
+						success_transitions.setTransitionTo(upRepConstraint.get());
+
+						// quantifier --[success]-> last-clone
+						upRepConstraint->success_transition = upRepConstraint->constraints.back()->getTransition();
+
+						// quantifier --[rollback]-> next-constraint
+						success_transitions.emplaceRollback(&upRepConstraint->rollback_transition);
+
+						a.constraints.back() = std::move(upRepConstraint);
+					}
+					else if (min_reps < max_reps) // {X,Y}
 					{
 						auto upRepConstraint = soup::make_unique<RegexRangeQuantifierConstraint>();
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
@@ -650,8 +679,7 @@ namespace soup
 						}
 						TransitionsVector rep_transitions;
 						success_transitions.discharge(rep_transitions.data);
-						size_t optional_reps = (max_reps - min_reps) + 1;
-						while (--optional_reps != 0)
+						for (size_t optional_reps = (max_reps - min_reps); optional_reps != 0; --optional_reps)
 						{
 							auto upClone = pModifiedConstraint->clone();
 							upClone->group = this;
@@ -672,6 +700,13 @@ namespace soup
 						rep_transitions.discharge(success_transitions.data);
 
 						a.constraints.back() = std::move(upRepConstraint);
+					}
+					else
+					{
+						// We may be here if (!exact && min_reps > max_reps)
+						// Which is invalid, so we just yeet the constraint as if {0} was written.
+						success_transitions.rollback();
+						a.constraints.pop_back();
 					}
 					continue;
 				}

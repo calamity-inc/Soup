@@ -499,6 +499,7 @@
     <ClInclude Include="RegexDummyConstraint.hpp" />
     <ClInclude Include="RegexEndConstraint.hpp" />
     <ClInclude Include="RegexFlags.hpp" />
+    <ClInclude Include="RegexOpenEndedRangeQuantifierConstraint.hpp" />
     <ClInclude Include="RegexQuantifierConstraint.hpp" />
     <ClInclude Include="RegexGroupConstraint.hpp" />
     <ClInclude Include="RegexGroup.hpp" />

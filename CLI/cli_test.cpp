@@ -507,6 +507,8 @@ spanning over multiple lines */
 
 		SOUP_UNUSED(Regex("A{3,0}")); // this shouldn't infinitely loop at parse-time
 		SOUP_UNUSED(Regex("A{3,1}")); // this shouldn't infinitely loop at parse-time
+		SOUP_UNUSED(Regex("A{3,2}")); // this shouldn't infinitely loop at parse-time
+		SOUP_UNUSED(Regex("A{3,3}")); // this shouldn't infinitely loop at parse-time
 
 		assert(Regex("A{3,6}").matchesFully("A") == false);
 		assert(Regex("A{3,6}").matchesFully("AA") == false);
@@ -515,6 +517,12 @@ spanning over multiple lines */
 		assert(Regex("A{3,6}").matchesFully("AAAAA") == true);
 		assert(Regex("A{3,6}").matchesFully("AAAAAA") == true);
 		assert(Regex("A{3,6}").matchesFully("AAAAAAA") == false);
+
+		assert(Regex("A{3,}B").matchesFully("B") == false);
+		assert(Regex("A{3,}B").matchesFully("AB") == false);
+		assert(Regex("A{3,}B").matchesFully("AAB") == false);
+		assert(Regex("A{3,}B").matchesFully("AAAB") == true);
+		assert(Regex("A{3,}B").matchesFully("AAAAB") == true);
 	});
 }
 
