@@ -279,7 +279,7 @@ namespace soup
 						if (upGC->group.initial)
 						{
 							// first-lookahead-constraint --[rollback]-> next-constraint
-							success_transitions.emplace(&const_cast<RegexConstraintTransitionable*>(upGC->group.initial)->rollback_transition);
+							success_transitions.emplaceRollback(&const_cast<RegexConstraintTransitionable*>(upGC->group.initial)->rollback_transition);
 						}
 
 						a.constraints.emplace_back(std::move(upGC));

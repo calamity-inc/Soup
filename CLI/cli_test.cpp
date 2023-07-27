@@ -459,6 +459,9 @@ spanning over multiple lines */
 		assert(Regex("A(?!BC)B").match("ABC").toString() == "");
 		assert(Regex("A(?!)B").match("AB").toString() == "");
 
+		assert(Regex("A(?!B)").matches("A") == true);
+		assert(Regex("A(?!B)").matches("AB") == false);
+
 		assert(Regex("A{0}B").matchesFully("B") == true);
 		assert(Regex("A{0}B").matches("AB") == false);
 		assert(Regex("A{3}B").matches("AAB") == false);
