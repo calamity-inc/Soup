@@ -1407,6 +1407,9 @@
     <ClInclude Include="StringPool.hpp">
       <Filter>data\container</Filter>
     </ClInclude>
+    <ClInclude Include="Serialiser.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
