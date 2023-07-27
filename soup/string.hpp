@@ -851,6 +851,11 @@ namespace soup
 			std::u8string u8 = std::move(*reinterpret_cast<std::u8string*>(&str));
 			return u8;
 		}
+#else
+		[[nodiscard]] static std::string fixType(std::string str)
+		{
+			return str;
+		}
 #endif
 
 		// char mutation
