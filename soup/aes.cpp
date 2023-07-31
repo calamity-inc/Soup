@@ -352,9 +352,11 @@ namespace soup
 
 	void aes::pkcs7Unpad(std::string& decrypted)
 	{
-		auto pad_bytes = (char)decrypted.back();
-		while (pad_bytes--)
+		const auto pad_size = (char)decrypted.back();
+		SOUP_ASSERT(pad_size >= 1 && pad_size <= 16);
+		for (auto i = pad_size; i; --i)
 		{
+			SOUP_ASSERT(decrypted.back() == pad_size);
 			decrypted.pop_back();
 		}
 	}
