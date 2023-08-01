@@ -272,6 +272,24 @@ namespace soup
 		}
 	}
 
+	void aes::decryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t* iv)
+	{
+		const auto Nr = getNr(key_len);
+		auto roundKeys = KeyExpansion(key, key_len);
+
+		std::vector<uint8_t> last_block(blockBytesLen, 0);
+		memcpy(last_block.data(), iv, blockBytesLen);
+
+		std::vector<uint8_t> this_block(blockBytesLen, 0);
+		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
+		{
+			memcpy(this_block.data(), &data[i], blockBytesLen);
+			DecryptBlock(&data[i], &data[i], roundKeys.data(), Nr);
+			XorBlocks(last_block.data(), &data[i], &data[i], blockBytesLen);
+			std::swap(this_block, last_block);
+		}
+	}
+
 	std::vector<uint8_t> aes::encryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
 		std::vector<uint8_t> out(in.size(), 0);
