@@ -326,11 +326,13 @@ namespace soup
 
 	std::string aes::decryptCBC(const std::string& in, const std::string& key, const std::string& iv)
 	{
-		std::vector<uint8_t> data(in.begin(), in.end());
-		std::vector<uint8_t> v_key(key.begin(), key.end());
-		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
-		decryptCBCInplace(data, v_key, v_iv);
-		return std::string(data.begin(), data.end());
+		std::string data(in.begin(), in.end());
+		decryptCBCInplace(
+			(uint8_t*)data.data(), data.size(),
+			(const uint8_t*)key.data(), key.size(),
+			(const uint8_t*)iv.data()
+		);
+		return data;
 	}
 
 	std::string aes::encryptCFB(const std::string& in, const std::string& key, const std::string& iv)
