@@ -284,18 +284,9 @@ namespace soup
 
 	std::vector<uint8_t> aes::decryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
-		std::vector<uint8_t> out(in.size(), 0);
-		std::vector<uint8_t> block(blockBytesLen, 0);
-		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key.data(), key.size());
-		memcpy(block.data(), iv.data(), blockBytesLen);
-		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
-		{
-			DecryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
-			XorBlocks(block.data(), &out[i], &out[i], blockBytesLen);
-			memcpy(block.data(), &in[i], blockBytesLen);
-		}
-		return out;
+		std::vector<uint8_t> data(in.begin(), in.end());
+		decryptCBCInplace(data, key, iv);
+		return data;
 	}
 
 	void aes::decryptCBCInplace(std::vector<uint8_t>& data, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
