@@ -1140,7 +1140,11 @@ namespace soup
 
 						auto iv = data.substr(0, record_iv_length);
 						data.erase(0, record_iv_length);
-						data = aes::decryptCBC(data, s.tls_encrypter_recv.cipher_key, iv);
+						aes::decryptCBCInplace(
+							(uint8_t*)data.data(), data.size(),
+							(const uint8_t*)s.tls_encrypter_recv.cipher_key.data(), s.tls_encrypter_recv.cipher_key.size(),
+							(const uint8_t*)iv.data()
+						);
 
 						std::string mac{};
 

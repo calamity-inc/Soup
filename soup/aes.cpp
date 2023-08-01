@@ -360,14 +360,6 @@ namespace soup
 		return encryptCFB(in, key, iv); // Symmetricality go brr
 	}
 
-	std::string aes::decryptCBC(const std::string& in, const std::vector<uint8_t>& key, const std::string& iv)
-	{
-		std::vector<uint8_t> data(in.begin(), in.end());
-		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
-		decryptCBCInplace(data, key, v_iv);
-		return std::string(data.begin(), data.end());
-	}
-
 	void aes::pkcs7Pad(std::string& encrypted)
 	{
 		auto next_aligned_size = ((encrypted.size() / 16) + 1) * 16;
