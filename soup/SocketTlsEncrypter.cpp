@@ -51,17 +51,21 @@ namespace soup
 			auto aligned_in_len = ((((cont_with_mac_size + 1) / cipher_bytes) + 1) * cipher_bytes);
 			char pad_len = (aligned_in_len - cont_with_mac_size);
 
-			std::vector<uint8_t> in{};
-			in.reserve(content.size() + mac.size() + pad_len);
-			in.insert(in.end(), content.begin(), content.end());
-			in.insert(in.end(), mac.begin(), mac.end());
-			in.insert(in.end(), (size_t)pad_len, (pad_len - 1));
+			std::vector<uint8_t> data{};
+			data.reserve(content.size() + mac.size() + pad_len);
+			data.insert(data.end(), content.begin(), content.end());
+			data.insert(data.end(), mac.begin(), mac.end());
+			data.insert(data.end(), (size_t)pad_len, (pad_len - 1));
 
 			auto iv = rand.vec_u8(record_iv_length);
 			std::vector<uint8_t> key(cipher_key.begin(), cipher_key.end());
-			auto out = aes::encryptCBC(in, key, iv);
+			aes::encryptCBCInplace(
+				data.data(), data.size(),
+				key.data(), key.size(),
+				iv.data()
+			);
 
-			iv.insert(iv.end(), out.begin(), out.end());
+			iv.insert(iv.end(), data.begin(), data.end());
 			return iv;
 		}
 		else // AES-GCM
