@@ -10,7 +10,7 @@ namespace soup
 	class aes
 	{
 	public:
-		// Input size must be a multiple of 16 bytes.
+		// Input size must be a multiple of 16 bytes. You may use a padding scheme such as PKCS#7 to ensure this; pkcs7Pad & pkcs7Unpad are provided here.
 		// Key size must be 16 bytes, 24 bytes, or 32 bytes.
 		// IV size must be 16 bytes.
 
