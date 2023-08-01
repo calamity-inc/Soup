@@ -259,7 +259,7 @@ namespace soup
 		decryptCBCInplace(data.data(), data.size(), key.data(), key.size(), iv.data());
 	}
 
-	void aes::decryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t* iv)
+	void aes::decryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16])
 	{
 		const auto Nr = getNr(key_len);
 		auto roundKeys = KeyExpansion(key, key_len);
