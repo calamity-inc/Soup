@@ -268,18 +268,25 @@ namespace soup
 
 	std::vector<uint8_t> aes::encryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
-		std::vector<uint8_t> out(in.size(), 0);
-		std::vector<uint8_t> block(blockBytesLen, 0);
-		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key.data(), key.size());
-		memcpy(block.data(), iv.data(), blockBytesLen);
-		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
+		std::vector<uint8_t> data(in.begin(), in.end());
+		encryptCBCInplace(data.data(), data.size(), key.data(), key.size(), iv.data());
+		return data;
+	}
+
+	void aes::encryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16])
+	{
+		const auto Nr = getNr(key_len);
+		auto roundKeys = KeyExpansion(key, key_len);
+
+		uint8_t last_block[blockBytesLen];
+		memcpy(last_block, iv, blockBytesLen);
+
+		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
 		{
-			XorBlocks(block.data(), &in[i], block.data(), blockBytesLen);
-			EncryptBlock(block.data(), &out[i], roundKeys.data(), Nr);
-			memcpy(block.data(), &out[i], blockBytesLen);
+			XorBlocks(last_block, &data[i], last_block, blockBytesLen);
+			EncryptBlock(last_block, &data[i], roundKeys.data(), Nr);
+			memcpy(last_block, &data[i], blockBytesLen);
 		}
-		return out;
 	}
 
 	std::vector<uint8_t> aes::decryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)

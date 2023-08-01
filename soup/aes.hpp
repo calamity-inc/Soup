@@ -25,6 +25,7 @@ namespace soup
 		[[nodiscard]] static std::string decryptECB(const std::string& in, const std::string& key);
 
 		[[nodiscard]] static std::vector<uint8_t> encryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
+		static void encryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
 		[[nodiscard]] static std::vector<uint8_t> decryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
 		static void decryptCBCInplace(std::vector<uint8_t>& data, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
 		static void decryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
