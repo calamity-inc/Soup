@@ -34,8 +34,8 @@ namespace soup
 
 	private:
 		[[nodiscard]] static std::vector<uint8_t> KeyExpansion(const std::vector<uint8_t>& key);
-		[[nodiscard]] static int getNk(const std::vector<uint8_t>& key);
-		[[nodiscard]] static int getNr(const std::vector<uint8_t>& key);
+		[[nodiscard]] static int getNk(size_t key_len);
+		[[nodiscard]] static int getNr(size_t key_len);
 		[[nodiscard]] static int getNr(const int Nk);
 
 		static void SubBytes(uint8_t** state);
