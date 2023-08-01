@@ -201,7 +201,7 @@ namespace soup
 	{
 		std::vector<uint8_t> out(in.size(), 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key);
+		auto roundKeys = KeyExpansion(key.data(), key.size());
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
 			EncryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
@@ -213,7 +213,7 @@ namespace soup
 	{
 		std::vector<uint8_t> out(in.size(), 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key);
+		auto roundKeys = KeyExpansion(key.data(), key.size());
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
 			DecryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
@@ -227,7 +227,7 @@ namespace soup
 		std::vector<uint8_t> out(in.size(), 0);
 		std::vector<uint8_t> block(blockBytesLen, 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key);
+		auto roundKeys = KeyExpansion(key.data(), key.size());
 		memcpy(block.data(), iv.data(), blockBytesLen);
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
@@ -243,7 +243,7 @@ namespace soup
 		std::vector<uint8_t> out(in.size(), 0);
 		std::vector<uint8_t> block(blockBytesLen, 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key);
+		auto roundKeys = KeyExpansion(key.data(), key.size());
 		memcpy(block.data(), iv.data(), blockBytesLen);
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
@@ -257,7 +257,7 @@ namespace soup
 	void aes::decryptCBCInplace(std::vector<uint8_t>& data, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
 	{
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key);
+		auto roundKeys = KeyExpansion(key.data(), key.size());
 
 		std::vector<uint8_t> last_block(blockBytesLen, 0);
 		memcpy(last_block.data(), iv.data(), blockBytesLen);
@@ -278,7 +278,7 @@ namespace soup
 		std::vector<uint8_t> block(blockBytesLen, 0);
 		std::vector<uint8_t> encryptedBlock(blockBytesLen, 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key);
+		auto roundKeys = KeyExpansion(key.data(), key.size());
 		memcpy(block.data(), iv.data(), blockBytesLen);
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
@@ -453,9 +453,9 @@ namespace soup
 		}
 	}
 
-	std::vector<uint8_t> aes::KeyExpansion(const std::vector<uint8_t>& key)
+	std::vector<uint8_t> aes::KeyExpansion(const uint8_t* key, size_t key_len)
 	{
-		const auto Nk = getNk(key.size());
+		const auto Nk = getNk(key_len);
 		const auto Nr = getNr(Nk);
 
 		std::vector<uint8_t> w(4 * Nb * (Nr + 1), 0);

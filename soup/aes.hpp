@@ -33,7 +33,7 @@ namespace soup
 		static void pkcs7Unpad(std::string& decrypted);
 
 	private:
-		[[nodiscard]] static std::vector<uint8_t> KeyExpansion(const std::vector<uint8_t>& key);
+		[[nodiscard]] static std::vector<uint8_t> KeyExpansion(const uint8_t* key, size_t key_len);
 		[[nodiscard]] static int getNk(size_t key_len);
 		[[nodiscard]] static int getNr(size_t key_len);
 		[[nodiscard]] static int getNr(const int Nk);
