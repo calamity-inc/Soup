@@ -197,29 +197,73 @@ namespace soup
 		{11,13,9,14}
 	};
 
-	std::vector<uint8_t> aes::encryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key)
+	void aes::pkcs7Pad(std::string& encrypted)
 	{
-		std::vector<uint8_t> out(in.size(), 0);
-		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key.data(), key.size());
-		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
-		{
-			EncryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
-		}
-		return out;
+		auto next_aligned_size = ((encrypted.size() / 16) + 1) * 16;
+		auto pad_size = (next_aligned_size - encrypted.size());
+
+		encrypted.insert(encrypted.end(), pad_size, (char)pad_size);
 	}
 
-	std::vector<uint8_t> aes::decryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key)
+	void aes::pkcs7Unpad(std::string& decrypted)
 	{
-		std::vector<uint8_t> out(in.size(), 0);
-		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key.data(), key.size());
-		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
+		const auto pad_size = (char)decrypted.back();
+		SOUP_ASSERT(pad_size >= 1 && pad_size <= 16);
+		for (auto i = pad_size; i; --i)
 		{
-			DecryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
+			SOUP_ASSERT(decrypted.back() == pad_size);
+			decrypted.pop_back();
 		}
+	}
 
-		return out;
+	std::string aes::encryptCBC(const std::string& in, const std::string& key, const std::string& iv)
+	{
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
+		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
+		auto out = encryptCBC(v_in, v_key, v_iv);
+		return std::string(out.begin(), out.end());
+	}
+
+	std::string aes::decryptCBC(const std::string& in, const std::string& key, const std::string& iv)
+	{
+		std::string data(in.begin(), in.end());
+		decryptCBCInplace(
+			(uint8_t*)data.data(), data.size(),
+			(const uint8_t*)key.data(), key.size(),
+			(const uint8_t*)iv.data()
+		);
+		return data;
+	}
+
+	std::string aes::encryptCFB(const std::string& in, const std::string& key, const std::string& iv)
+	{
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
+		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
+		auto out = encryptCFB(v_in, v_key, v_iv);
+		return std::string(out.begin(), out.end());
+	}
+
+	std::string aes::decryptCFB(const std::string& in, const std::string& key, const std::string& iv)
+	{
+		return encryptCFB(in, key, iv); // Symmetricality go brr
+	}
+
+	std::string aes::encryptECB(const std::string& in, const std::string& key)
+	{
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
+		auto out = encryptECB(v_in, v_key);
+		return std::string(out.begin(), out.end());
+	}
+
+	std::string aes::decryptECB(const std::string& in, const std::string& key)
+	{
+		std::vector<uint8_t> v_in(in.begin(), in.end());
+		std::vector<uint8_t> v_key(key.begin(), key.end());
+		auto out = decryptECB(v_in, v_key);
+		return std::string(out.begin(), out.end());
 	}
 
 	std::vector<uint8_t> aes::encryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
@@ -299,73 +343,29 @@ namespace soup
 		return encryptCFB(in, key, iv); // Symmetricality go brr
 	}
 
-	std::string aes::encryptECB(const std::string& in, const std::string& key)
+	std::vector<uint8_t> aes::encryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key)
 	{
-		std::vector<uint8_t> v_in(in.begin(), in.end());
-		std::vector<uint8_t> v_key(key.begin(), key.end());
-		auto out = encryptECB(v_in, v_key);
-		return std::string(out.begin(), out.end());
-	}
-
-	std::string aes::decryptECB(const std::string& in, const std::string& key)
-	{
-		std::vector<uint8_t> v_in(in.begin(), in.end());
-		std::vector<uint8_t> v_key(key.begin(), key.end());
-		auto out = decryptECB(v_in, v_key);
-		return std::string(out.begin(), out.end());
-	}
-
-	std::string aes::encryptCBC(const std::string& in, const std::string& key, const std::string& iv)
-	{
-		std::vector<uint8_t> v_in(in.begin(), in.end());
-		std::vector<uint8_t> v_key(key.begin(), key.end());
-		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
-		auto out = encryptCBC(v_in, v_key, v_iv);
-		return std::string(out.begin(), out.end());
-	}
-
-	std::string aes::decryptCBC(const std::string& in, const std::string& key, const std::string& iv)
-	{
-		std::string data(in.begin(), in.end());
-		decryptCBCInplace(
-			(uint8_t*)data.data(), data.size(),
-			(const uint8_t*)key.data(), key.size(),
-			(const uint8_t*)iv.data()
-		);
-		return data;
-	}
-
-	std::string aes::encryptCFB(const std::string& in, const std::string& key, const std::string& iv)
-	{
-		std::vector<uint8_t> v_in(in.begin(), in.end());
-		std::vector<uint8_t> v_key(key.begin(), key.end());
-		std::vector<uint8_t> v_iv(iv.begin(), iv.end());
-		auto out = encryptCFB(v_in, v_key, v_iv);
-		return std::string(out.begin(), out.end());
-	}
-
-	std::string aes::decryptCFB(const std::string& in, const std::string& key, const std::string& iv)
-	{
-		return encryptCFB(in, key, iv); // Symmetricality go brr
-	}
-
-	void aes::pkcs7Pad(std::string& encrypted)
-	{
-		auto next_aligned_size = ((encrypted.size() / 16) + 1) * 16;
-		auto pad_size = (next_aligned_size - encrypted.size());
-
-		encrypted.insert(encrypted.end(), pad_size, (char)pad_size);
-	}
-
-	void aes::pkcs7Unpad(std::string& decrypted)
-	{
-		const auto pad_size = (char)decrypted.back();
-		SOUP_ASSERT(pad_size >= 1 && pad_size <= 16);
-		for (auto i = pad_size; i; --i)
+		std::vector<uint8_t> out(in.size(), 0);
+		const auto Nr = getNr(key.size());
+		auto roundKeys = KeyExpansion(key.data(), key.size());
+		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
-			SOUP_ASSERT(decrypted.back() == pad_size);
-			decrypted.pop_back();
+			EncryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
 		}
+		return out;
+	}
+
+	std::vector<uint8_t> aes::decryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key)
+	{
+		std::vector<uint8_t> out(in.size(), 0);
+		const auto Nr = getNr(key.size());
+		auto roundKeys = KeyExpansion(key.data(), key.size());
+		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
+		{
+			DecryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
+		}
+
+		return out;
 	}
 
 	void aes::EncryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)

@@ -10,28 +10,28 @@ namespace soup
 	class aes
 	{
 	public:
-		// Input size must be a multiple of 16 bytes. You may use a padding scheme such as PKCS#7 to ensure this; pkcs7Pad & pkcs7Unpad are provided here.
+		// Input size must be a multiple of 16 bytes. You may use a padding scheme such as PKCS#7 to ensure this.
 		// Key size must be 16 bytes, 24 bytes, or 32 bytes.
 		// IV size must be 16 bytes.
 
-		[[nodiscard]] static std::vector<uint8_t> encryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key);
-		[[nodiscard]] static std::vector<uint8_t> decryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key);
+		static void pkcs7Pad(std::string& encrypted);
+		static void pkcs7Unpad(std::string& decrypted);
+
+		[[nodiscard]] static std::string encryptCBC(const std::string& in, const std::string& key, const std::string& iv);
+		[[nodiscard]] static std::string decryptCBC(const std::string& in, const std::string& key, const std::string& iv);
+		[[nodiscard]] static std::string encryptCFB(const std::string& in, const std::string& key, const std::string& iv);
+		[[nodiscard]] static std::string decryptCFB(const std::string& in, const std::string& key, const std::string& iv);
+		[[nodiscard]] static std::string encryptECB(const std::string& in, const std::string& key);
+		[[nodiscard]] static std::string decryptECB(const std::string& in, const std::string& key);
+
 		[[nodiscard]] static std::vector<uint8_t> encryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
 		[[nodiscard]] static std::vector<uint8_t> decryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
 		static void decryptCBCInplace(std::vector<uint8_t>& data, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
 		static void decryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
 		[[nodiscard]] static std::vector<uint8_t> encryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
 		[[nodiscard]] static std::vector<uint8_t> decryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
-
-		[[nodiscard]] static std::string encryptECB(const std::string& in, const std::string& key);
-		[[nodiscard]] static std::string decryptECB(const std::string& in, const std::string& key);
-		[[nodiscard]] static std::string encryptCBC(const std::string& in, const std::string& key, const std::string& iv);
-		[[nodiscard]] static std::string decryptCBC(const std::string& in, const std::string& key, const std::string& iv);
-		[[nodiscard]] static std::string encryptCFB(const std::string& in, const std::string& key, const std::string& iv);
-		[[nodiscard]] static std::string decryptCFB(const std::string& in, const std::string& key, const std::string& iv);
-
-		static void pkcs7Pad(std::string& encrypted);
-		static void pkcs7Unpad(std::string& decrypted);
+		[[nodiscard]] static std::vector<uint8_t> encryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key);
+		[[nodiscard]] static std::vector<uint8_t> decryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key);
 
 	private:
 		[[nodiscard]] static std::vector<uint8_t> KeyExpansion(const uint8_t* key, size_t key_len);
