@@ -276,15 +276,15 @@ namespace soup
 	void aes::encryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16])
 	{
 		const auto Nr = getNr(key_len);
-		auto roundKeys = KeyExpansion(key, key_len);
+		auto roundKeys = expandKey(key, key_len);
 
 		uint8_t last_block[blockBytesLen];
 		memcpy(last_block, iv, blockBytesLen);
 
 		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
 		{
-			XorBlocks(last_block, &data[i], last_block, blockBytesLen);
-			EncryptBlock(last_block, &data[i], roundKeys.data(), Nr);
+			xorBlocks(last_block, &data[i], last_block, blockBytesLen);
+			encryptBlock(last_block, &data[i], roundKeys.data(), Nr);
 			memcpy(last_block, &data[i], blockBytesLen);
 		}
 	}
@@ -304,7 +304,7 @@ namespace soup
 	void aes::decryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16])
 	{
 		const auto Nr = getNr(key_len);
-		auto roundKeys = KeyExpansion(key, key_len);
+		auto roundKeys = expandKey(key, key_len);
 
 		uint8_t block_heap_a[blockBytesLen];
 		uint8_t block_heap_b[blockBytesLen];
@@ -316,8 +316,8 @@ namespace soup
 		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
 		{
 			memcpy(this_block, &data[i], blockBytesLen);
-			DecryptBlock(&data[i], &data[i], roundKeys.data(), Nr);
-			XorBlocks(last_block, &data[i], &data[i], blockBytesLen);
+			decryptBlock(&data[i], &data[i], roundKeys.data(), Nr);
+			xorBlocks(last_block, &data[i], &data[i], blockBytesLen);
 			std::swap(this_block, last_block);
 		}
 	}
@@ -328,12 +328,12 @@ namespace soup
 		std::vector<uint8_t> block(blockBytesLen, 0);
 		std::vector<uint8_t> encryptedBlock(blockBytesLen, 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key.data(), key.size());
+		auto roundKeys = expandKey(key.data(), key.size());
 		memcpy(block.data(), iv.data(), blockBytesLen);
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
-			EncryptBlock(block.data(), encryptedBlock.data(), roundKeys.data(), Nr);
-			XorBlocks(&in[i], encryptedBlock.data(), &out[i], blockBytesLen);
+			encryptBlock(block.data(), encryptedBlock.data(), roundKeys.data(), Nr);
+			xorBlocks(&in[i], encryptedBlock.data(), &out[i], blockBytesLen);
 			memcpy(block.data(), &out[i], blockBytesLen);
 		}
 		return out;
@@ -348,10 +348,10 @@ namespace soup
 	{
 		std::vector<uint8_t> out(in.size(), 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key.data(), key.size());
+		auto roundKeys = expandKey(key.data(), key.size());
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
-			EncryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
+			encryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
 		}
 		return out;
 	}
@@ -360,16 +360,16 @@ namespace soup
 	{
 		std::vector<uint8_t> out(in.size(), 0);
 		const auto Nr = getNr(key.size());
-		auto roundKeys = KeyExpansion(key.data(), key.size());
+		auto roundKeys = expandKey(key.data(), key.size());
 		for (unsigned int i = 0; i < in.size(); i += blockBytesLen)
 		{
-			DecryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
+			decryptBlock(&in[i], &out[i], roundKeys.data(), Nr);
 		}
 
 		return out;
 	}
 
-	void aes::EncryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
+	void aes::encryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
 	{
 		uint8_t state_0[4 * Nb];
 		uint8_t* state[4];
@@ -389,19 +389,19 @@ namespace soup
 			}
 		}
 
-		AddRoundKey(state, roundKeys);
+		addRoundKey(state, roundKeys);
 
 		for (round = 1; round <= Nr - 1; round++)
 		{
-			SubBytes(state);
-			ShiftRows(state);
-			MixColumns(state);
-			AddRoundKey(state, roundKeys + round * 4 * Nb);
+			subBytes(state);
+			shiftRows(state);
+			mixColumns(state);
+			addRoundKey(state, roundKeys + round * 4 * Nb);
 		}
 
-		SubBytes(state);
-		ShiftRows(state);
-		AddRoundKey(state, roundKeys + Nr * 4 * Nb);
+		subBytes(state);
+		shiftRows(state);
+		addRoundKey(state, roundKeys + Nr * 4 * Nb);
 
 		for (i = 0; i < 4; i++)
 		{
@@ -412,7 +412,7 @@ namespace soup
 		}
 	}
 
-	void aes::DecryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
+	void aes::decryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
 	{
 		uint8_t state_0[4 * Nb];
 		uint8_t* state[4];
@@ -431,19 +431,19 @@ namespace soup
 			}
 		}
 
-		AddRoundKey(state, roundKeys + Nr * 4 * Nb);
+		addRoundKey(state, roundKeys + Nr * 4 * Nb);
 
 		for (round = Nr - 1; round >= 1; round--)
 		{
-			InvSubBytes(state);
-			InvShiftRows(state);
-			AddRoundKey(state, roundKeys + round * 4 * Nb);
-			InvMixColumns(state);
+			invSubBytes(state);
+			invShiftRows(state);
+			addRoundKey(state, roundKeys + round * 4 * Nb);
+			invMixColumns(state);
 		}
 
-		InvSubBytes(state);
-		InvShiftRows(state);
-		AddRoundKey(state, roundKeys);
+		invSubBytes(state);
+		invShiftRows(state);
+		addRoundKey(state, roundKeys);
 
 		for (i = 0; i < 4; i++)
 		{
@@ -453,7 +453,7 @@ namespace soup
 		}
 	}
 
-	std::vector<uint8_t> aes::KeyExpansion(const uint8_t* key, size_t key_len)
+	std::vector<uint8_t> aes::expandKey(const uint8_t* key, size_t key_len)
 	{
 		const auto Nk = getNk(key_len);
 		const auto Nr = getNr(Nk);
@@ -480,14 +480,14 @@ namespace soup
 
 			if (i / 4 % Nk == 0)
 			{
-				RotWord(temp);
-				SubWord(temp);
-				Rcon(rcon, i / (Nk * 4));
-				XorWords(temp, rcon, temp);
+				rotWord(temp);
+				subWord(temp);
+				getRoundConstant(rcon, i / (Nk * 4));
+				xorWords(temp, rcon, temp);
 			}
 			else if (Nk > 6 && i / 4 % Nk == 4)
 			{
-				SubWord(temp);
+				subWord(temp);
 			}
 
 			w[i + 0] = w[i - 4 * Nk] ^ temp[0];
@@ -515,7 +515,7 @@ namespace soup
 		return Nk + 6;
 	}
 
-	void aes::SubBytes(uint8_t** state)
+	void aes::subBytes(uint8_t** state)
 	{
 		int i, j;
 		uint8_t t;
@@ -529,7 +529,7 @@ namespace soup
 		}
 	}
 
-	void aes::ShiftRow(uint8_t** state, int i, int n)    // shift row i on n positions
+	void aes::shiftRow(uint8_t** state, int i, int n)    // shift row i on n positions
 	{
 		uint8_t tmp[Nb];
 		for (int j = 0; j < Nb; j++)
@@ -539,11 +539,11 @@ namespace soup
 		memcpy(state[i], tmp, Nb * sizeof(uint8_t));
 	}
 
-	void aes::ShiftRows(uint8_t** state)
+	void aes::shiftRows(uint8_t** state)
 	{
-		ShiftRow(state, 1, 1);
-		ShiftRow(state, 2, 2);
-		ShiftRow(state, 3, 3);
+		shiftRow(state, 1, 1);
+		shiftRow(state, 2, 2);
+		shiftRow(state, 3, 3);
 	}
 
 	uint8_t aes::xtime(uint8_t b)    // multiply on x
@@ -551,7 +551,7 @@ namespace soup
 		return (b << 1) ^ (((b >> 7) & 1) * 0x1b);
 	}
 
-	void aes::MixColumns(uint8_t** state)
+	void aes::mixColumns(uint8_t** state)
 	{
 		uint8_t temp_state[4][4];
 
@@ -580,7 +580,7 @@ namespace soup
 		}
 	}
 
-	void aes::AddRoundKey(uint8_t** state, uint8_t* key)
+	void aes::addRoundKey(uint8_t** state, uint8_t* key)
 	{
 		int i, j;
 		for (i = 0; i < 4; i++)
@@ -592,7 +592,7 @@ namespace soup
 		}
 	}
 
-	void aes::SubWord(uint8_t* a)
+	void aes::subWord(uint8_t* a)
 	{
 		int i;
 		for (i = 0; i < 4; i++)
@@ -601,7 +601,7 @@ namespace soup
 		}
 	}
 
-	void aes::RotWord(uint8_t* a)
+	void aes::rotWord(uint8_t* a)
 	{
 		uint8_t c = a[0];
 		a[0] = a[1];
@@ -610,7 +610,7 @@ namespace soup
 		a[3] = c;
 	}
 
-	void aes::XorWords(uint8_t* a, uint8_t* b, uint8_t* c)
+	void aes::xorWords(uint8_t* a, uint8_t* b, uint8_t* c)
 	{
 		int i;
 		for (i = 0; i < 4; i++)
@@ -619,7 +619,7 @@ namespace soup
 		}
 	}
 
-	void aes::Rcon(uint8_t* a, int n)
+	void aes::getRoundConstant(uint8_t* a, int n)
 	{
 		int i;
 		uint8_t c = 1;
@@ -632,7 +632,7 @@ namespace soup
 		a[1] = a[2] = a[3] = 0;
 	}
 
-	void aes::InvSubBytes(uint8_t** state)
+	void aes::invSubBytes(uint8_t** state)
 	{
 		int i, j;
 		uint8_t t;
@@ -646,7 +646,7 @@ namespace soup
 		}
 	}
 
-	void aes::InvMixColumns(uint8_t** state)
+	void aes::invMixColumns(uint8_t** state)
 	{
 		uint8_t temp_state[4][4];
 
@@ -672,14 +672,14 @@ namespace soup
 		}
 	}
 
-	void aes::InvShiftRows(uint8_t** state)
+	void aes::invShiftRows(uint8_t** state)
 	{
-		ShiftRow(state, 1, Nb - 1);
-		ShiftRow(state, 2, Nb - 2);
-		ShiftRow(state, 3, Nb - 3);
+		shiftRow(state, 1, Nb - 1);
+		shiftRow(state, 2, Nb - 2);
+		shiftRow(state, 3, Nb - 3);
 	}
 
-	void aes::XorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len)
+	void aes::xorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len)
 	{
 		for (unsigned int i = 0; i < len; i++)
 		{
@@ -687,7 +687,7 @@ namespace soup
 		}
 	}
 
-	void aes::IncCounter(uint8_t* counter)
+	void aes::incCounter(uint8_t* counter)
 	{
 		for (unsigned int i = 0; i != blockBytesLen; ++i)
 		{

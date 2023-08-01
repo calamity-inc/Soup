@@ -35,27 +35,27 @@ namespace soup
 		[[nodiscard]] static std::vector<uint8_t> decryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key);
 
 	private:
-		[[nodiscard]] static std::vector<uint8_t> KeyExpansion(const uint8_t* key, size_t key_len);
+		[[nodiscard]] static std::vector<uint8_t> expandKey(const uint8_t* key, size_t key_len);
 		[[nodiscard]] static int getNk(size_t key_len);
 		[[nodiscard]] static int getNr(size_t key_len);
 		[[nodiscard]] static int getNr(const int Nk);
 
-		static void SubBytes(uint8_t** state);
-		static void ShiftRow(uint8_t** state, int i, int n);    // shift row i on n positions
-		static void ShiftRows(uint8_t** state);
+		static void subBytes(uint8_t** state);
+		static void shiftRow(uint8_t** state, int i, int n);    // shift row i on n positions
+		static void shiftRows(uint8_t** state);
 		static uint8_t xtime(uint8_t b);    // multiply on x
-		static void MixColumns(uint8_t** state);
-		static void AddRoundKey(uint8_t** state, uint8_t* key);
-		static void SubWord(uint8_t* a);
-		static void RotWord(uint8_t* a);
-		static void XorWords(uint8_t* a, uint8_t* b, uint8_t* c);
-		static void Rcon(uint8_t* a, int n);
-		static void InvSubBytes(uint8_t** state);
-		static void InvMixColumns(uint8_t** state);
-		static void InvShiftRows(uint8_t** state);
-		static void EncryptBlock(const uint8_t in[], uint8_t out[], uint8_t key[], const int Nr);
-		static void DecryptBlock(const uint8_t in[], uint8_t out[], uint8_t key[], const int Nr);
-		static void XorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len);
-		static void IncCounter(uint8_t* counter);
+		static void mixColumns(uint8_t** state);
+		static void addRoundKey(uint8_t** state, uint8_t* key);
+		static void subWord(uint8_t* a);
+		static void rotWord(uint8_t* a);
+		static void xorWords(uint8_t* a, uint8_t* b, uint8_t* c);
+		static void getRoundConstant(uint8_t* a, int n);
+		static void invSubBytes(uint8_t** state);
+		static void invMixColumns(uint8_t** state);
+		static void invShiftRows(uint8_t** state);
+		static void encryptBlock(const uint8_t in[], uint8_t out[], uint8_t key[], const int Nr);
+		static void decryptBlock(const uint8_t in[], uint8_t out[], uint8_t key[], const int Nr);
+		static void xorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len);
+		static void incCounter(uint8_t* counter);
 	};
 }
