@@ -299,15 +299,18 @@ namespace soup
 		const auto Nr = getNr(key_len);
 		auto roundKeys = KeyExpansion(key, key_len);
 
-		std::vector<uint8_t> last_block(blockBytesLen, 0);
-		memcpy(last_block.data(), iv, blockBytesLen);
+		uint8_t block_heap_a[blockBytesLen];
+		uint8_t block_heap_b[blockBytesLen];
 
-		std::vector<uint8_t> this_block(blockBytesLen, 0);
+		uint8_t* last_block = block_heap_a;
+		memcpy(last_block, iv, blockBytesLen);
+
+		uint8_t* this_block = block_heap_b;
 		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
 		{
-			memcpy(this_block.data(), &data[i], blockBytesLen);
+			memcpy(this_block, &data[i], blockBytesLen);
 			DecryptBlock(&data[i], &data[i], roundKeys.data(), Nr);
-			XorBlocks(last_block.data(), &data[i], &data[i], blockBytesLen);
+			XorBlocks(last_block, &data[i], &data[i], blockBytesLen);
 			std::swap(this_block, last_block);
 		}
 	}
