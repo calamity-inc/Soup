@@ -202,7 +202,7 @@ namespace soup
 		auto next_aligned_size = ((encrypted.size() / 16) + 1) * 16;
 		auto pad_size = (next_aligned_size - encrypted.size());
 
-		encrypted.insert(encrypted.end(), pad_size, (char)pad_size);
+		encrypted.append(pad_size, (char)pad_size);
 	}
 
 	void aes::pkcs7Unpad(std::string& decrypted)
