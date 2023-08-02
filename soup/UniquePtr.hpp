@@ -9,6 +9,7 @@ namespace soup
 	// Why not std::unique_ptr?
 	// - Stores a deleter despite being templated
 	// - Produces RTTI even with RTTI off
+	// - Release method is not [[nodiscard]] so memory leaks can go unnoticed
 	template <typename T>
 	class UniquePtr
 	{
