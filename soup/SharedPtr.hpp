@@ -185,7 +185,11 @@ namespace soup
 
 		[[nodiscard]] T* get() const noexcept
 		{
-			return data->inst;
+			if (data)
+			{
+				return data->inst;
+			}
+			return nullptr;
 		}
 
 		[[nodiscard]] T& operator*() const noexcept
