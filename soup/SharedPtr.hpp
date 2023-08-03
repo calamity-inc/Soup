@@ -183,10 +183,11 @@ namespace soup
 
 		void reset()
 		{
+			const auto data = this->data;
 			if (data != nullptr)
 			{
+				this->data = nullptr;
 				data->decref();
-				data = nullptr;
 			}
 		}
 
