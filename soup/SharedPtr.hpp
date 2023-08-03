@@ -150,19 +150,27 @@ namespace soup
 
 		void operator=(const SharedPtr<T>& b)
 		{
-			reset();
-			data = b.data;
-			if (data != nullptr)
+			const auto prev_data = this->data;
+			this->data = b.data;
+			if (this->data != nullptr)
 			{
-				data->incref();
+				this->data->incref();
+			}
+			if (prev_data != nullptr)
+			{
+				prev_data->decref();
 			}
 		}
 
 		void operator=(SharedPtr<T>&& b)
 		{
-			reset();
-			data = b.data;
+			const auto prev_data = this->data;
+			this->data = b.data;
 			b.data = nullptr;
+			if (prev_data != nullptr)
+			{
+				prev_data->decref();
+			}
 		}
 
 		~SharedPtr()
