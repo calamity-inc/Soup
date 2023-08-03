@@ -117,7 +117,10 @@ namespace soup
 		SharedPtr(const SharedPtr<T>& b)
 			: data(b.data)
 		{
-			data->incref();
+			if (data != nullptr)
+			{
+				data->incref();
+			}
 		}
 
 		SharedPtr(SharedPtr<T>&& b)
@@ -132,7 +135,10 @@ namespace soup
 		SharedPtr(const SharedPtr<T2>& b) noexcept
 			: data(reinterpret_cast<Data*>(b.data))
 		{
-			data->incref();
+			if (data != nullptr)
+			{
+				data->incref();
+			}
 		}
 
 		template <typename T2, SOUP_RESTRICT(std::is_base_of_v<T, T2> || std::is_base_of_v<T2, T>)>
@@ -146,7 +152,10 @@ namespace soup
 		{
 			reset();
 			data = b.data;
-			data->incref();
+			if (data != nullptr)
+			{
+				data->incref();
+			}
 		}
 
 		void operator=(SharedPtr<T>&& b)
