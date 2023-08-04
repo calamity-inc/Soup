@@ -98,6 +98,9 @@ namespace soup
 		case 43357: // Owl Limited
 		case 29802: // HIVELOCITY, Inc.
 		case 54994: // QUANTIL NETWORKS INC
+			// NForce Entertainment B.V.	
+		case 43350:
+		case 64437:	
 			// Latitude.sh (formerly Maxihost)
 		case 262287:
 		case 396356:
