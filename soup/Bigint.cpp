@@ -1526,6 +1526,7 @@ namespace soup
 		return (*this & (*this - Bigint((chunk_t)1u))).isZero();
 	}
 
+	// Fermat's method
 	std::pair<Bigint, Bigint> Bigint::factorise() const
 	{
 		{
