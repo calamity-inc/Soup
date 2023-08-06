@@ -22,7 +22,7 @@ namespace soup
 
 		[[nodiscard]] static Datetime fromTm(const struct tm& t);
 
-		[[nodiscard]] std::string toString() const;
+		[[nodiscard]] std::string toString() const; // example: "00:00:00, 1 Jan"
 	};
 
 	struct time
