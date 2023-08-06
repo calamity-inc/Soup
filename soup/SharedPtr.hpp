@@ -227,11 +227,14 @@ namespace soup
 
 		[[nodiscard]] T* release()
 		{
-			if (getRefCount() != 1)
+			const auto data = this->data;
+			this->data = nullptr;
+			if (data->refcount.load() != 1)
 			{
+				this->data = data;
 				throw Exception("Attempt to release SharedPtr with more than 1 reference");
 			}
-			T* res = get();
+			T* const inst = data->inst;
 			const auto was_created_with_make_shared = data->was_created_with_make_shared;
 			std::destroy_at<>(data);
 			if (was_created_with_make_shared)
@@ -242,8 +245,7 @@ namespace soup
 			{
 				::operator delete(reinterpret_cast<void*>(data));
 			}
-			data = nullptr;
-			return res;
+			return inst;
 		}
 	};
 
