@@ -74,6 +74,7 @@ namespace soup
 		[[nodiscard]] static int getLocalTimezoneOffset() noexcept;
 
 		[[nodiscard]] static std::string toRfc2822(std::time_t ts); // construct date and time string as defined in RFC 2822 (ex: "Thu, 1 Jan 1970 00:00:00 GMT") based on UNIX time stamp
+		[[nodiscard]] static std::string toIso8601(std::time_t ts); // construct date and time string as defined in ISO 8601 (ex: "1970-01-01T00:00:00Z") based on UNIX time stamp
 
 		[[nodiscard]] static std::time_t toUnix(const Datetime& dt);
 		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);

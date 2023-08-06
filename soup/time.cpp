@@ -91,6 +91,26 @@ namespace soup
 		return str;
 	}
 
+	std::string time::toIso8601(std::time_t ts)
+	{
+		const auto dt = datetimeUtc(ts);
+
+		std::string str = std::to_string(dt.year);
+		str.push_back('-');
+		str.append(string::lpad(std::to_string(dt.month), 2, '0'));
+		str.push_back('-');
+		str.append(string::lpad(std::to_string(dt.day), 2, '0'));
+		str.push_back('T');
+		str.append(string::lpad(std::to_string(dt.hour), 2, '0'));
+		str.push_back(':');
+		str.append(string::lpad(std::to_string(dt.minute), 2, '0'));
+		str.push_back(':');
+		str.append(string::lpad(std::to_string(dt.second), 2, '0'));
+		str.push_back('Z');
+		return str;
+
+	}
+
 	std::time_t time::toUnix(const Datetime& dt)
 	{
 		return toUnix(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
