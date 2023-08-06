@@ -80,6 +80,8 @@ namespace soup
 		str.push_back(' ');
 		str.append(&months[(dt.month - 1) * 3], 3);
 		str.push_back(' ');
+		str.append(std::to_string(dt.year));
+		str.push_back(' ');
 		str.append(string::lpad(std::to_string(dt.hour), 2, '0'));
 		str.push_back(':');
 		str.append(string::lpad(std::to_string(dt.minute), 2, '0'));
