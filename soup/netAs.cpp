@@ -98,6 +98,7 @@ namespace soup
 		case 43357: // Owl Limited
 		case 29802: // HIVELOCITY, Inc.
 		case 54994: // QUANTIL NETWORKS INC
+		case 64476: // Shadow SAS (shadow.tech)
 			// NForce Entertainment B.V.	
 		case 43350:
 		case 64437:	
