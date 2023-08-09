@@ -238,6 +238,7 @@ namespace soup
 		{ "nop", 0x90, ZO },
 		{ "cpuid", 0x0F'A2, ZO },
 		{ "div", 0xF7, M, 32, 6 },
+		{ "movsx", 0x0F'BF, RM, 32 }, // TODO: Disassembly should show "word ptr"
 
 		// TODO: Account for different register types, e.g. currently toString will show "ebx" instad of "xmm3"
 		{ "movss", 0xF3'0F'10, RM },
