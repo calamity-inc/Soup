@@ -11,6 +11,7 @@
 #include <console.hpp>
 #include <Editor.hpp>
 #include <FileReader.hpp>
+#include <HttpRequest.hpp>
 #include <InquiryLang.hpp>
 #include <netIntel.hpp>
 #include <os.hpp>
@@ -18,6 +19,7 @@
 #include <riff.hpp>
 #include <string.hpp>
 #include <unicode.hpp>
+#include <Uri.hpp>
 #include <WavFmtChunk.hpp>
 
 using namespace soup;
@@ -135,6 +137,27 @@ int main(int argc, const char** argv)
 				std::cout << "AS Handle: " << as->handle << "\n";
 				std::cout << "AS Name: " << as->name << "\n";
 				std::cout << "AS is hosting provider? " << (as->isHosting() ? "Yes" : "No") << "\n";
+			}
+			return 0;
+		}
+
+		if (subcommand == "http")
+		{
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup http [uri]" << std::endl;
+				return 0;
+			}
+			auto hr = HttpRequest(Uri(argv[2]));
+			auto res = hr.execute();
+			if (res.has_value())
+			{
+				std::cout << res->status_code << "\n";
+				std::cout << res->toString() << "\n";
+			}
+			else
+			{
+				std::cout << "Request failed.\n";
 			}
 			return 0;
 		}
@@ -291,6 +314,7 @@ Available tools:
 - dvd
 - edit [files...]
 - geoip [ip]
+- http [uri]
 - inquire
 - ircserver
 - maze
