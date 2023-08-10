@@ -28,6 +28,68 @@ namespace soup
 		return dt;
 	}
 
+	Datetime Datetime::fromIso8601(const char* str)
+	{
+		Datetime dt{};
+		for (; string::isNumberChar(*str); ++str)
+		{
+			dt.year *= 10;
+			dt.year += ((*str) - '0');
+		}
+		SOUP_ASSERT(*str == '-');
+		++str;
+		for (; string::isNumberChar(*str); ++str)
+		{
+			dt.month *= 10;
+			dt.month += ((*str) - '0');
+		}
+		SOUP_ASSERT(*str == '-');
+		++str;
+		for (; string::isNumberChar(*str); ++str)
+		{
+			dt.day *= 10;
+			dt.day += ((*str) - '0');
+		}
+		if (*str == 'T')
+		{
+			++str;
+			for (; string::isNumberChar(*str); ++str)
+			{
+				dt.hour *= 10;
+				dt.hour += ((*str) - '0');
+			}
+			SOUP_ASSERT(*str == ':');
+			++str;
+			for (; string::isNumberChar(*str); ++str)
+			{
+				dt.minute *= 10;
+				dt.minute += ((*str) - '0');
+			}
+			if (*str == ':')
+			{
+				++str;
+				for (; string::isNumberChar(*str); ++str)
+				{
+					dt.second *= 10;
+					dt.second += ((*str) - '0');
+				}
+				if (*str == '.')
+				{
+					// Milliseconds may be given, we don't care.
+					do
+					{
+						++str;
+					} while (string::isNumberChar(*str));
+				}
+				SOUP_ASSERT(*str == 'Z'); // Time zone must not be present; we can't meaningfully deal with it without a more complex type and/or function signature.
+				++str;
+			}
+		}
+		SOUP_ASSERT(*str == '\0');
+		dt.setWdayFromDate();
+		return dt;
+	}
+
 	std::time_t Datetime::toTimestamp() const
 	{
 		return time::toUnix(year, month, day, hour, minute, second);
@@ -49,6 +111,19 @@ namespace soup
 			str.append(&months[(this->month - 1) * 3], 3);
 		}
 		return str;
+	}
+
+	// https://stackoverflow.com/a/66094245
+	static int dayofweek(int d, int m, int y)
+	{
+		static int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+		y -= m < 3;
+		return (y + y / 4 - y / 100 + y / 400 + t[m - 1] + d) % 7;
+	}
+
+	void Datetime::setWdayFromDate()
+	{
+		wday = dayofweek(day, month, year);
 	}
 
 	Datetime time::datetimeUtc(std::time_t ts) noexcept

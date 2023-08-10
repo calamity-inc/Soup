@@ -21,9 +21,12 @@ namespace soup
 		int wday; // days since sunday (0-6)
 
 		[[nodiscard]] static Datetime fromTm(const struct tm& t);
+		[[nodiscard]] static Datetime fromIso8601(const char* str);
 
 		[[nodiscard]] std::time_t toTimestamp() const;
 		[[nodiscard]] std::string toString() const; // example: "00:00:00, 1 Jan"
+
+		void setWdayFromDate();
 	};
 
 	struct time
