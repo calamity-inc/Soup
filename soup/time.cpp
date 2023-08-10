@@ -28,6 +28,11 @@ namespace soup
 		return dt;
 	}
 
+	std::time_t Datetime::toTimestamp() const
+	{
+		return time::toUnix(year, month, day, hour, minute, second);
+	}
+
 	std::string Datetime::toString() const
 	{
 		std::string str;
@@ -111,24 +116,10 @@ namespace soup
 		str.append(string::lpad(std::to_string(dt.second), 2, '0'));
 		str.push_back('Z');
 		return str;
-
-	}
-
-	std::time_t time::toUnix(const Datetime& dt)
-	{
-		return toUnix(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
 	}
 
 	std::time_t time::toUnix(int year, int month, int day, int hour, int minute, int second)
 	{
-		/*time_t t = (year - 1970);
-		t *= 12; t += (month - 1);
-		t *= 30.44; t += (day - 1);
-		t *= 24; t += hour;
-		t *= 60; t += minute;
-		t *= 60; t += second;
-		return t;*/
-
 		struct tm t;
 		t.tm_year = year - 1900;
 		t.tm_mon = month - 1;
@@ -137,7 +128,6 @@ namespace soup
 		t.tm_min = minute;
 		t.tm_sec = second;
 		return timegm(&t);
-
 	}
 
 	int time::isLeapYear(int year)
