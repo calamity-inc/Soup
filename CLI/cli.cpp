@@ -51,7 +51,7 @@ int main(int argc, const char** argv)
 			cli_dig(argc - 2, &argv[2]);
 			return 0;
 		}
-		
+
 		if (subcommand == "dnsserver")
 		{
 			if (argc > 2)
