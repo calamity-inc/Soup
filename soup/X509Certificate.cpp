@@ -52,6 +52,8 @@ namespace soup
 			tbsCertDer = tbsCert.toDer();
 			sig = cert.getInt(2);
 
+			hash = joaat::hash(cert.at(0).data);
+
 			auto pubInfo = tbsCert.getSeq(6);
 			auto oid_bin = pubInfo.getString(0);
 

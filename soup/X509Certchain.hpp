@@ -14,6 +14,8 @@ namespace soup
 		bool fromDer(const std::vector<std::string>& vec);
 		bool fromPem(const std::string& str);
 
+		void cleanup();
+
 		[[nodiscard]] bool verify(const std::string& domain, const TrustStore& ts) const;
 		[[nodiscard]] bool isValidForDomain(const std::string& domain) const;
 		[[nodiscard]] bool verify(const TrustStore& ts) const;

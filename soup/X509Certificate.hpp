@@ -27,6 +27,7 @@ namespace soup
 		Bigint sig;
 
 	public:
+		uint32_t hash;
 		X509RelativeDistinguishedName issuer;
 		X509RelativeDistinguishedName subject;
 		RsaPublicKey key;

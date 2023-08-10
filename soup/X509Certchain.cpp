@@ -1,6 +1,7 @@
 #include "X509Certchain.hpp"
 
 #include <cstring> // strlen
+#include <unordered_set>
 
 #include "pem.hpp"
 #include "string.hpp"
@@ -34,6 +35,30 @@ namespace soup
 			certs.emplace_back(std::move(xcert));
 		}
 		return !certs.empty();
+	}
+
+	void X509Certchain::cleanup()
+	{
+		// We assume that each entry in the certchain is signed by the next,
+		// but a server may be misconfigured and provide the subject certificate multiple times,
+		// as is the case with content.warframe.com at the time of writing this.
+		std::unordered_set<uint32_t> seen_before;
+		for (auto i = certs.begin(); i != certs.end(); )
+		{
+#if SOUP_CPP20
+			if (seen_before.contains(i->hash))
+#else
+			if (seen_before.find(i->hash) != seen_before.end())
+#endif
+			{
+				i = certs.erase(i);
+			}
+			else
+			{
+				seen_before.emplace(i->hash);
+				++i;
+			}
+		}
 	}
 
 	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts) const
