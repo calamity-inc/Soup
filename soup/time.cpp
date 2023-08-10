@@ -12,7 +12,7 @@ namespace soup
 	static const char wdays[(7 * 3) + 1] = "SunMonTueWedThuFriSat";
 	static const char months[(12 * 3) + 1] = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
-	Datetime Datetime::fromTm(const struct tm& t)
+	Datetime Datetime::fromTm(const struct tm& t) noexcept
 	{
 		Datetime dt;
 
@@ -28,7 +28,7 @@ namespace soup
 		return dt;
 	}
 
-	Datetime Datetime::fromIso8601(const char* str)
+	std::optional<Datetime> Datetime::fromIso8601(const char* str) noexcept
 	{
 		Datetime dt{};
 		for (; string::isNumberChar(*str); ++str)
@@ -36,14 +36,20 @@ namespace soup
 			dt.year *= 10;
 			dt.year += ((*str) - '0');
 		}
-		SOUP_ASSERT(*str == '-');
+		if (*str != '-')
+		{
+			return std::nullopt;
+		}
 		++str;
 		for (; string::isNumberChar(*str); ++str)
 		{
 			dt.month *= 10;
 			dt.month += ((*str) - '0');
 		}
-		SOUP_ASSERT(*str == '-');
+		if (*str != '-')
+		{
+			return std::nullopt;
+		}
 		++str;
 		for (; string::isNumberChar(*str); ++str)
 		{
@@ -58,7 +64,10 @@ namespace soup
 				dt.hour *= 10;
 				dt.hour += ((*str) - '0');
 			}
-			SOUP_ASSERT(*str == ':');
+			if (*str != ':')
+			{
+				return std::nullopt;
+			}
 			++str;
 			for (; string::isNumberChar(*str); ++str)
 			{
@@ -81,11 +90,17 @@ namespace soup
 						++str;
 					} while (string::isNumberChar(*str));
 				}
-				SOUP_ASSERT(*str == 'Z'); // Time zone must not be present; we can't meaningfully deal with it without a more complex type and/or function signature.
+				if (*str != 'Z') // Time zone must not be present; we can't meaningfully deal with it without a more complex type and/or function signature.
+				{
+					return std::nullopt;
+				}
 				++str;
 			}
 		}
-		SOUP_ASSERT(*str == '\0');
+		if (*str != '\0')
+		{
+			return std::nullopt;
+		}
 		dt.setWdayFromDate();
 		return dt;
 	}
@@ -114,14 +129,14 @@ namespace soup
 	}
 
 	// https://stackoverflow.com/a/66094245
-	static int dayofweek(int d, int m, int y)
+	static int dayofweek(int d, int m, int y) noexcept
 	{
 		static int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 		y -= m < 3;
 		return (y + y / 4 - y / 100 + y / 400 + t[m - 1] + d) % 7;
 	}
 
-	void Datetime::setWdayFromDate()
+	void Datetime::setWdayFromDate() noexcept
 	{
 		wday = dayofweek(day, month, year);
 	}

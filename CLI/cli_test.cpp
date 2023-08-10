@@ -979,8 +979,8 @@ static void unit_util_time()
 {
 	test("ISO 8601", []
 	{
-		assert(Datetime::fromIso8601("2024-04-25T00:00:00Z").toTimestamp() == 1714003200);
-		assert(Datetime::fromIso8601("2023-08-10T03:00:00.000Z").toTimestamp() == 1691636400);
+		assert(Datetime::fromIso8601("2024-04-25T00:00:00Z").value().toTimestamp() == 1714003200);
+		assert(Datetime::fromIso8601("2023-08-10T03:00:00.000Z").value().toTimestamp() == 1691636400);
 	});
 }
 

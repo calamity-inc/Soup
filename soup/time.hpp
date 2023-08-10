@@ -3,6 +3,7 @@
 #include <chrono>
 #include <ctime>
 #include <filesystem>
+#include <optional>
 #include <string>
 
 #include "base.hpp"
@@ -20,13 +21,13 @@ namespace soup
 
 		int wday; // days since sunday (0-6)
 
-		[[nodiscard]] static Datetime fromTm(const struct tm& t);
-		[[nodiscard]] static Datetime fromIso8601(const char* str);
+		[[nodiscard]] static Datetime fromTm(const struct tm& t) noexcept;
+		[[nodiscard]] static std::optional<Datetime> fromIso8601(const char* str) noexcept;
 
 		[[nodiscard]] std::time_t toTimestamp() const;
 		[[nodiscard]] std::string toString() const; // example: "00:00:00, 1 Jan"
 
-		void setWdayFromDate();
+		void setWdayFromDate() noexcept;
 	};
 
 	struct time
