@@ -15,7 +15,7 @@ if (auto root = soup::json::decode("[1, 2, 3]"))
 	// root->asObj(); - Would throw because of type mismatch
 	for (const auto& elm : root->asArr())
 	{
-		std::cout << elm.asInt() << "\n"; // Prints 1, 2, & 3 on seperate lines.
+		std::cout << elm.asInt() << "\n"; // Prints 1, 2, & 3 on separate lines.
 	}
 }
 else
