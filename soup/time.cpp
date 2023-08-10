@@ -38,8 +38,11 @@ namespace soup
 		str.append(string::lpad(std::to_string(this->second), 2, '0'));
 		str.append(", ");
 		str.append(std::to_string(this->day));
-		str.push_back(' ');
-		str.append(&months[(this->month - 1) * 3], 3);
+		if (this->month != 0)
+		{
+			str.push_back(' ');
+			str.append(&months[(this->month - 1) * 3], 3);
+		}
 		return str;
 	}
 
