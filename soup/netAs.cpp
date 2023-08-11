@@ -17,7 +17,6 @@ namespace soup
 		case 9335: // CAT Telecom Public Company Limited
 		case 11831: // eSecureData
 		case 11878: // tzulo, inc.
-		case 12876: // ONLINE S.A.S.
 		case 13046: // ISKON INTERNET d.d. za informatiku i telekomunikacije
 		case 13213: // UK-2 Limited
 		case 20278: // Nexeon Technologies, Inc.
@@ -132,6 +131,8 @@ namespace soup
 		case 16631:
 		case 19164:
 		case 22099:
+			// Scaleway (Note that their ASN 29447 is reused for residential internet by its holding company)
+		case 12876:
 			return true;
 		}
 		std::string slug = handle;
@@ -151,7 +152,6 @@ namespace soup
 				&& slug.find("afrihost") == std::string::npos
 				)
 			|| slug.find("layer") != std::string::npos // AS49453, AS57172 Global Layer B.V.
-			|| slug.find("scale") != std::string::npos
 			|| slug.find("server") != std::string::npos
 			|| slug.find("vps") != std::string::npos
 			|| slug.find("hetzner") != std::string::npos
