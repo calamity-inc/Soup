@@ -151,7 +151,9 @@ namespace soup
 				&& slug.find("afrihost") == std::string::npos
 				)
 			|| slug.find("layer") != std::string::npos // AS49453, AS57172 Global Layer B.V.
-			|| slug.find("scale") != std::string::npos
+			|| (slug.find("scale") != std::string::npos
+				&& slug.find("scaleway") == std::string::npos
+				)
 			|| slug.find("server") != std::string::npos
 			|| slug.find("vps") != std::string::npos
 			|| slug.find("hetzner") != std::string::npos
