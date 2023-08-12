@@ -158,6 +158,7 @@ namespace soup
 	struct HandleRaii;
 
 	// task
+	class Capture;
 	class PromiseBase;
 	class Scheduler;
 
