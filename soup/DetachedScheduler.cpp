@@ -4,10 +4,7 @@
 namespace soup
 {
 	DetachedScheduler::DetachedScheduler(netConfig&& conf)
-		: conf(std::move(conf)), thrd([](Capture&& cap)
-		{
-			cap.get<DetachedScheduler*>()->run();
-		}, this)
+		: conf(std::move(conf))
 	{
 	}
 

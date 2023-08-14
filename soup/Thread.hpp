@@ -20,13 +20,20 @@ namespace soup
 	{
 	public:
 #if SOUP_WINDOWS
-		HANDLE handle;
+		HANDLE handle = INVALID_HANDLE_VALUE;
 #else
-		pthread_t handle;
+		pthread_t handle{};
 		bool running = true;
 		bool joined = false;
 #endif
 		Capture create_capture;
+
+		explicit Thread() noexcept
+#if !SOUP_WINDOWS
+			: running(false), joined(true)
+#endif
+		{
+		}
 
 		explicit Thread(void(*f)(Capture&&), Capture&& cap = {}) noexcept;
 		explicit Thread(std::function<void()>&& func) noexcept;
