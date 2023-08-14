@@ -7,7 +7,7 @@
 
 #include "DelayedCtor.hpp"
 #include "dnsLookupTask.hpp"
-#include "Promise.hpp"
+#include "SharedPtr.hpp"
 #include "Socket.hpp"
 
 namespace soup
@@ -15,15 +15,24 @@ namespace soup
 	class netConnectTask : public Task
 	{
 	protected:
-		struct ConnectInfo
+		struct BlockingConnectTask : public Task
 		{
 			IpAddr addr;
 			uint16_t port;
+
+			Socket sock;
+
+			BlockingConnectTask(const IpAddr& addr, uint16_t port)
+				: addr(addr), port(port)
+			{
+			}
+
+			void onTick() final;
 		};
 
 		std::string host;
 		UniquePtr<dnsLookupTask> lookup;
-		DelayedCtor<Promise<Socket>> connect;
+		SharedPtr<BlockingConnectTask> connect;
 		uint16_t port;
 		bool ipv6_lookup = false;
 

@@ -1,6 +1,7 @@
 #include "netConnectTask.hpp"
 #if !SOUP_WASM
 
+#include "DetachedScheduler.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
 #include "Scheduler.hpp"
@@ -70,28 +71,35 @@ namespace soup
 		}
 		else
 		{
-			awaitPromiseCompletion(&*connect);
+			if (connect->isWorkDone())
+			{
+				setWorkDone();
+			}
 		}
 	}
 
 	SharedPtr<Socket> netConnectTask::onDone(Scheduler& sched)
 	{
-		SOUP_ASSERT(connect.isConstructed());
-		return sched.addSocket(std::move(connect->getResult()));
+		SOUP_ASSERT(connect);
+		auto sock = sched.addSocket(std::move(connect->sock));
+		connect.reset();
+		return sock;
 	}
+
+	static DetachedScheduler async_connect_sched;
 
 	void netConnectTask::proceedToConnect(const IpAddr& addr, uint16_t port)
 	{
-		connect.construct([](Capture&& cap, PromiseBase* pb)
+		connect = async_connect_sched.add<BlockingConnectTask>(addr, port);
+	}
+
+	void netConnectTask::BlockingConnectTask::onTick()
+	{
+		if (!sock.connect(addr, port))
 		{
-			ConnectInfo& info = cap.get<ConnectInfo>();
-			Socket sock;
-			if (!sock.connect(info.addr, info.port))
-			{
-				sock.close();
-			}
-			pb->fulfil(std::move(sock));
-		}, ConnectInfo{ addr, port });
+			sock.close();
+		}
+		setWorkDone();
 	}
 }
 
