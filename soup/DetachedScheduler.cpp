@@ -75,13 +75,16 @@ namespace soup
 
 	void DetachedScheduler::run()
 	{
-		netConfig::get() = std::move(conf);
-		onPreRun();
-		Scheduler::run();
-		onPostRun();
-		workers.clear();
-		passive_workers = 0;
-		conf = std::move(netConfig::get());
+		do
+		{
+			netConfig::get() = std::move(conf);
+			onPreRun();
+			Scheduler::run();
+			onPostRun();
+			workers.clear();
+			passive_workers = 0;
+			conf = std::move(netConfig::get());
+		} while (!pending_workers.empty());
 	}
 
 	void DetachedScheduler::onPreRun()
