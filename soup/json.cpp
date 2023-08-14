@@ -46,12 +46,41 @@ namespace soup
 		bool is_float = false;
 		for (; *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != ':' && *c != 0; ++c)
 		{
+			if ((is_int || is_float) && (*c == 'e' || *c == 'E'))
+			{
+				break;
+			}
+
 			buf.push_back(*c);
 
 			if (!string::isNumberChar(*c) && *c != '-')
 			{
 				is_int = false;
 				is_float = (*c == '.');
+			}
+		}
+		int exponent = 0;
+		if (*c == 'e' || *c == 'E')
+		{
+			++c;
+			is_int = false;
+			is_float = true;
+
+			const bool negative = (*c == '-');
+			if (!negative && *c != '+')
+			{
+				return {};
+			}
+			++c;
+
+			for (; *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != ':' && *c != 0; ++c)
+			{
+				exponent *= 10;
+				exponent += ((*c) - '0');
+			}
+			if (negative)
+			{
+				exponent *= -1;
 			}
 		}
 		if (!buf.empty())
@@ -68,7 +97,12 @@ namespace soup
 			{
 				try
 				{
-					return soup::make_unique<JsonFloat>(std::stod(buf));
+					auto val = std::stod(buf);
+					if (exponent != 0)
+					{
+						val *= std::pow(10.0, exponent);
+					}
+					return soup::make_unique<JsonFloat>(val);
 				}
 				catch (...)
 				{

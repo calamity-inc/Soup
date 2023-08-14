@@ -376,6 +376,14 @@ spanning over multiple lines */
 			JsonObject& obj = tree->asObj();
 			assert(obj.at("body").asStr() == "Hello, world!");
 		}
+		{
+			auto tree = json::decode(R"({"perc":1.23e-1,"score":1e+1})");
+			assert(tree);
+			assert(tree->asObj().contains("perc"));
+			assert(tree->asObj().at("perc").isFloat());
+			assert(tree->asObj().at("perc").asFloat().value == 0.123);
+			assert(tree->asObj().at("score").asFloat().value == 10.0);
+		}
 	});
 
 	test("xml", []
