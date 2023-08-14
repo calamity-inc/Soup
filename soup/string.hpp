@@ -78,9 +78,9 @@ namespace soup
 			else
 			{
 				std::string str = std::to_string(f);
-				while (str.at(str.size() - 1) == '0')
+				while (str.back() == '0')
 				{
-					str.erase(str.size() - 1);
+					str.pop_back();
 				}
 				return str;
 			}
