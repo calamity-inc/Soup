@@ -82,6 +82,10 @@ namespace soup
 				{
 					str.pop_back();
 				}
+				if (str.back() == '.')
+				{
+					str.push_back('0');
+				}
 				return str;
 			}
 		}
