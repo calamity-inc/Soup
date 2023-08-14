@@ -19,7 +19,7 @@ namespace soup
 	}
 
 	template <typename T>
-	[[nodiscard]] constexpr T pow(T x, T p) // b must be >= 0
+	[[nodiscard]] constexpr T pow(T x, T p) // p must be >= 0
 	{
 		// Stolen from https://stackoverflow.com/a/1505791
 		// Could be better: https://stackoverflow.com/a/101613 (also see comments)
