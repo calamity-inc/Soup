@@ -1,5 +1,7 @@
 #include "drJsonObject.hpp"
 
+#include "drInt.hpp"
+#include "JsonInt.hpp"
 #include "JsonString.hpp"
 
 namespace soup
@@ -37,6 +39,10 @@ namespace soup
 		if (node->isStr())
 		{
 			return drString::reflect(node->reinterpretAsStr().value);
+		}
+		if (node->isInt())
+		{
+			return soup::make_unique<drInt>(node->reinterpretAsInt().value);
 		}
 		return soup::make_unique<drString>(node->encode());
 	}
