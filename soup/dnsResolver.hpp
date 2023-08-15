@@ -6,10 +6,18 @@
 #include "dns_records.hpp"
 #include "UniquePtr.hpp"
 
+#ifdef _DEBUG
+#include "TransientToken.hpp"
+#endif
+
 namespace soup
 {
 	struct dnsResolver
 	{
+#ifdef _DEBUG
+		TransientToken transient_token;
+#endif
+
 		virtual ~dnsResolver() = default;
 
 		[[nodiscard]] std::vector<IpAddr> lookupIPv4(const std::string& name) const;
