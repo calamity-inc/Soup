@@ -1437,6 +1437,12 @@
     <ClInclude Include="CidrSubnet6Interface.hpp">
       <Filter>net\cidr\interface</Filter>
     </ClInclude>
+    <ClInclude Include="TransientToken.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="WeakRef.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2085,6 +2091,9 @@
     </ClCompile>
     <ClCompile Include="CidrSubnetInterface.cpp">
       <Filter>net\cidr\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="TransientToken.cpp">
+      <Filter>mem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -533,6 +533,7 @@
     <ClInclude Include="StringPool.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
+    <ClInclude Include="TransientToken.hpp" />
     <ClInclude Include="UniqueList.hpp" />
     <ClInclude Include="Uuid.hpp" />
     <ClInclude Include="visCurves.hpp" />
@@ -572,6 +573,7 @@
     <ClInclude Include="Svg.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
+    <ClInclude Include="WeakRef.hpp" />
     <ClInclude Include="WebSocket.hpp" />
     <ClInclude Include="WebSocketConnection.hpp" />
     <ClInclude Include="WootingAnalog.hpp" />
@@ -990,6 +992,7 @@
     <ClCompile Include="textmate_grammar.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
+    <ClCompile Include="TransientToken.cpp" />
     <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="tridText.cpp" />
