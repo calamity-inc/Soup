@@ -709,20 +709,7 @@ namespace soup
 					prev = del_pos + len(delim);
 				}
 				auto remain_len = (str.length() - prev);
-				if (remain_len != 0)
-				{
-					res.emplace_back(str.substr(prev, remain_len));
-				}
-				else
-				{
-					if constexpr (std::is_same_v<D, char> || std::is_same_v<D, wchar_t>)
-					{
-						if (str.at(str.length() - 1) == delim)
-						{
-							res.emplace_back(S{});
-						}
-					}
-				}
+				res.emplace_back(str.substr(prev, remain_len));
 			}
 			return res;
 		}
