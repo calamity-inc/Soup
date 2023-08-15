@@ -1410,6 +1410,24 @@
     <ClInclude Include="Serialiser.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
+    <ClInclude Include="drData.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drString.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drDatetime.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drInt.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drAdaptor.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="drJsonObject.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2044,6 +2062,18 @@
     <ClCompile Include="dnsCacheResolver.cpp">
       <Filter>net\dns</Filter>
     </ClCompile>
+    <ClCompile Include="drDatetime.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="drData.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="drString.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="drJsonObject.cpp">
+      <Filter>data\reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2258,6 +2288,9 @@
     </Filter>
     <Filter Include="data\regex\constraints">
       <UniqueIdentifier>{56f8c494-c165-4643-91ae-3b1a1f7122b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\reflection">
+      <UniqueIdentifier>{9521e71a-b92c-4612-918e-b721d28ff517}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

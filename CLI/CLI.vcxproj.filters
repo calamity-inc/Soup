@@ -13,6 +13,7 @@
     <ClCompile Include="cli_morse.cpp" />
     <ClCompile Include="cli_ircserver.cpp" />
     <ClCompile Include="cli_dnsserver.cpp" />
+    <ClCompile Include="cli_datareflection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="cli_3d.cpp" />
+    <ClCompile Include="cli_datareflection.cpp" />
     <ClCompile Include="cli_dig.cpp" />
     <ClCompile Include="cli_dnsserver.cpp" />
     <ClCompile Include="cli_dvd.cpp" />

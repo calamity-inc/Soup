@@ -480,6 +480,12 @@
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="dnsCacheResolver.hpp" />
     <ClInclude Include="dnsServerService.hpp" />
+    <ClInclude Include="drAdaptor.hpp" />
+    <ClInclude Include="drData.hpp" />
+    <ClInclude Include="drDatetime.hpp" />
+    <ClInclude Include="drInt.hpp" />
+    <ClInclude Include="drJsonObject.hpp" />
+    <ClInclude Include="drString.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="ecc.hpp" />
     <ClInclude Include="Hashmap.hpp" />
@@ -942,6 +948,10 @@
     <ClCompile Include="dnsType.cpp" />
     <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="dns_records.cpp" />
+    <ClCompile Include="drData.cpp" />
+    <ClCompile Include="drDatetime.cpp" />
+    <ClCompile Include="drJsonObject.cpp" />
+    <ClCompile Include="drString.cpp" />
     <ClCompile Include="ecc.cpp" />
     <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="HammingCode.cpp" />

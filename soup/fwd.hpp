@@ -39,6 +39,9 @@ namespace soup
 	struct JsonObject;
 	struct JsonString;
 
+	// data.reflection
+	class drData;
+
 	// data.regex
 	struct RegexConstraintTransitionable;
 	struct RegexGroup;

@@ -48,6 +48,12 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "datareflection")
+		{
+			cli_datareflection();
+			return 0;
+		}
+
 		if (subcommand == "dig")
 		{
 			cli_dig(argc - 2, &argv[2]);
@@ -309,6 +315,7 @@ int main(int argc, const char** argv)
 Available tools:
 - 3d
 - chess <FEN>
+- datareflection
 - dig [domain] <type=A> <@<doh:>[server]>
 - dnsserver [file] <bind-ip>
 - dvd
