@@ -42,6 +42,7 @@ namespace soup
 
 	void Scheduler::run()
 	{
+		SOUP_ASSERT(this_thread_running_scheduler == nullptr);
 		this_thread_running_scheduler = this;
 		while (shouldKeepRunning())
 		{
