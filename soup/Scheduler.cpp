@@ -215,6 +215,9 @@ namespace soup
 
 	void Scheduler::fireHoldupCallback(Worker& w)
 	{
+#ifdef _DEBUG
+		w.fireHoldupCallback();
+#else
 		try
 		{
 			w.fireHoldupCallback();
@@ -227,6 +230,7 @@ namespace soup
 			}
 			w.holdup_type = Worker::NONE;
 		}
+#endif
 	}
 
 	void Scheduler::processClosedSocket(Socket& s)
