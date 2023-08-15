@@ -33,8 +33,9 @@ namespace soup
 		t->create_capture.reset();
 	}
 
-	void Thread::start(void(*f)(Capture&&), Capture&& cap) noexcept
+	void Thread::start(void(*f)(Capture&&), Capture&& cap)
 	{
+		SOUP_ASSERT(!isRunning());
 		create_capture = CaptureThreadCreate{
 			f,
 			std::move(cap)
@@ -42,6 +43,8 @@ namespace soup
 #if SOUP_WINDOWS
 		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(__stdcall*)(LPVOID)>(&threadCreateCallback), this, 0, nullptr);
 #else
+		running = true;
+		joined = false;
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
 		//pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -49,7 +52,7 @@ namespace soup
 #endif
 	}
 
-	void Thread::start(std::function<void()>&& func) noexcept
+	void Thread::start(std::function<void()>&& func)
 	{
 		start([](Capture&& cap)
 		{
@@ -83,7 +86,7 @@ namespace soup
 	bool Thread::isRunning() const noexcept
 	{
 #if SOUP_WINDOWS
-		DWORD exit_code;
+		DWORD exit_code = 0;
 		return GetExitCodeThread(handle, &exit_code)
 			&& exit_code == STILL_ACTIVE
 			;
