@@ -1,0 +1,34 @@
+#include "CidrSubnetInterface.hpp"
+
+#include "CidrSubnet4Interface.hpp"
+#include "CidrSubnet6Interface.hpp"
+#include "IpAddr.hpp"
+#include "string.hpp"
+
+namespace soup
+{
+	UniquePtr<CidrSubnetInterface> CidrSubnetInterface::construct(const std::string& str)
+	{
+		auto sep = str.find('/');
+		IpAddr addr = str.substr(0, sep);
+		auto size = string::toInt<uint8_t, string::TI_FULL>(str.substr(sep + 1));
+		return construct(addr, size.value());
+	}
+
+	UniquePtr<CidrSubnetInterface> CidrSubnetInterface::construct(const IpAddr& addr, uint8_t size)
+	{
+		if (addr.isV4())
+		{
+			return soup::make_unique<CidrSubnet4Interface>(addr, size);
+		}
+		return soup::make_unique<CidrSubnet6Interface>(addr, size);
+	}
+
+	std::string CidrSubnetInterface::toString() const
+	{
+		std::string str = getAddr().toString();
+		str.push_back('/');
+		str.append(std::to_string(getSize()));
+		return str;
+	}
+}

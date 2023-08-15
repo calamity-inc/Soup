@@ -1428,6 +1428,15 @@
     <ClInclude Include="drJsonObject.hpp">
       <Filter>data\reflection</Filter>
     </ClInclude>
+    <ClInclude Include="CidrSubnetInterface.hpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnet4Interface.hpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CidrSubnet6Interface.hpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2074,6 +2083,9 @@
     <ClCompile Include="drJsonObject.cpp">
       <Filter>data\reflection</Filter>
     </ClCompile>
+    <ClCompile Include="CidrSubnetInterface.cpp">
+      <Filter>net\cidr\interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2291,6 +2303,9 @@
     </Filter>
     <Filter Include="data\reflection">
       <UniqueIdentifier>{9521e71a-b92c-4612-918e-b721d28ff517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\cidr\interface">
+      <UniqueIdentifier>{fa30efdc-f50f-4704-9a3b-16c74b58f622}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -69,7 +69,7 @@ namespace soup
 #endif
 		}
 
-		[[nodiscard]] static unsigned int getLeastSignificantSetBit(unsigned int mask) // UB if mask = 0
+		[[nodiscard]] static unsigned int getLeastSignificantSetBit(unsigned int mask) noexcept // UB if mask = 0
 		{
 			// These intrinsic functions just use the bsf instruction.
 #if defined(_MSC_VER) && !defined(__clang__)
@@ -81,7 +81,7 @@ namespace soup
 #endif
 		}
 
-		[[nodiscard]] static unsigned int getMostSignificantSetBit(unsigned int mask) // UB if mask = 0
+		[[nodiscard]] static unsigned int getMostSignificantSetBit(unsigned int mask) noexcept // UB if mask = 0
 		{
 #if defined(_MSC_VER) && !defined(__clang__)
 			unsigned long ret;

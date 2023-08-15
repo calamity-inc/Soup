@@ -27,5 +27,12 @@ namespace soup
 		}
 
 		[[nodiscard]] std::array<uint32_t, 4> random() const noexcept;
+
+		[[nodiscard]] constexpr IpAddr getAddr() const noexcept
+		{
+			return Ipv6Maths::toIpAddr(addr);
+		}
+
+		[[nodiscard]] uint8_t getSize() const noexcept;
 	};
 }

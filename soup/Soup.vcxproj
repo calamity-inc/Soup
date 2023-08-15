@@ -472,7 +472,10 @@
     <ClInclude Include="cbMeasurement.hpp" />
     <ClInclude Include="Chatbot.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
+    <ClInclude Include="CidrSubnet4Interface.hpp" />
     <ClInclude Include="CidrSubnet6.hpp" />
+    <ClInclude Include="CidrSubnet6Interface.hpp" />
+    <ClInclude Include="CidrSubnetInterface.hpp" />
     <ClInclude Include="CidrSupernet.hpp" />
     <ClInclude Include="compiletime.hpp" />
     <ClInclude Include="country_names.hpp" />
@@ -936,6 +939,7 @@
     <ClCompile Include="cbParser.cpp" />
     <ClCompile Include="Chatbot.cpp" />
     <ClCompile Include="CidrSubnet6.cpp" />
+    <ClCompile Include="CidrSubnetInterface.cpp" />
     <ClCompile Include="CpuInfo.cpp" />
     <ClCompile Include="DetachedScheduler.cpp" />
     <ClCompile Include="Diff.cpp" />

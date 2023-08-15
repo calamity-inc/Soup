@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bitmask.hpp"
+#include "bitutil.hpp"
 #include "IpAddr.hpp"
 #include "rand.hpp"
 
@@ -39,6 +40,20 @@ namespace soup
 		[[nodiscard]] native_u32_t random() const noexcept
 		{
 			return addr.data | rand.t<uint32_t>(0, ~mask);
+		}
+
+		[[nodiscard]] IpAddr getAddr() const noexcept
+		{
+			return IpAddr(addr);
+		}
+
+		[[nodiscard]] uint8_t getSize() const noexcept
+		{
+			if (mask == 0)
+			{
+				return 0;
+			}
+			return 32 - bitutil::getLeastSignificantSetBit(mask);
 		}
 	};
 }
