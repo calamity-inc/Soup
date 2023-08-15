@@ -114,6 +114,7 @@ namespace soup
 		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap = {});
 	protected:
 		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
+		void enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 
 	public:
 		void enableCryptoServer(tls_server_cert_selector_t cert_selector, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_on_client_hello_t on_client_hello = nullptr);

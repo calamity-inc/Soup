@@ -435,13 +435,7 @@ namespace soup
 					switch (handshaker->cipher_suite)
 					{
 					default:
-						/*s.tls_recvHandshake(std::move(handshaker), TlsHandshake::certificate_request, [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, std::string&& data)
-						{
-							TlsCertificate cert{};
-							s.tls_sendHandshake(handshaker, TlsHandshake::certificate, cert.toBinaryString());*/
-
-							s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
-						//});
+						s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
 						break;
 
 					case TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
@@ -504,118 +498,141 @@ namespace soup
 
 	void Socket::enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker)
 	{
-		// BUG: If server sends certificate_request instead of server_hello_done, we fail.
 		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 		{
-			if (handshake_type != TlsHandshake::server_hello_done)
+			if (handshake_type == TlsHandshake::server_hello_done)
 			{
-				s.tls_close(TlsAlertDescription::unexpected_message);
-				return;
+				s.enableCryptoClientProcessServerHelloDone(std::move(handshaker));
 			}
-			std::string cke{};
-			if (handshaker->ecdhe_curve == 0)
+			else if (handshake_type == TlsHandshake::certificate_request)
 			{
-				std::string pms{};
-				pms.reserve(48);
-				pms.push_back('\3');
-				pms.push_back('\3');
-				for (auto i = 0; i != 46; ++i)
+				s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 				{
-					pms.push_back(rand.ch());
-				}
+					if (handshake_type != TlsHandshake::server_hello_done)
+					{
+						s.tls_close(TlsAlertDescription::unexpected_message);
+						return;
+					}
 
-				TlsEncryptedPreMasterSecret epms{};
-				epms.data = handshaker->certchain.certs.at(0).key.encryptPkcs1(pms).toBinary();
-				cke = epms.toBinaryString();
-
-				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(pms));
-			}
-			else if (handshaker->ecdhe_curve == NamedCurves::x25519)
-			{
-				uint8_t my_priv[Curve25519::KEY_SIZE];
-				Curve25519::generatePrivate(my_priv);
-
-				uint8_t their_pub[Curve25519::KEY_SIZE];
-				memcpy(their_pub, handshaker->ecdhe_public_key.data(), sizeof(their_pub));
-
-				uint8_t shared_secret[Curve25519::SHARED_SIZE];
-				Curve25519::x25519(shared_secret, my_priv, their_pub);
-				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::string((const char*)shared_secret, sizeof(shared_secret)));
-
-				uint8_t my_pub[Curve25519::KEY_SIZE];
-				Curve25519::derivePublic(my_pub, my_priv);
-
-				cke = std::string(1, (char)sizeof(my_pub));
-				cke.append((const char*)my_pub, sizeof(my_pub));
-			}
-			else if (handshaker->ecdhe_curve == NamedCurves::secp256r1)
-			{
-				auto curve = EccCurve::secp256r1();
-
-				auto my_priv = curve.generatePrivate();
-
-				EccPoint their_pub(
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, 32)),
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(32, 32))
-				);
-				SOUP_ASSERT(curve.validate(their_pub));
-
-				auto shared_point = curve.multiply(their_pub, my_priv);
-				auto shared_secret = shared_point.getX().toBinary();
-				SOUP_ASSERT(shared_secret.size() == 32);
-				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(shared_secret));
-
-				auto my_pub = curve.derivePublic(my_priv);
-
-				cke = my_pub.toBinary();
-				SOUP_ASSERT(cke.size() == 32 + 32);
-				cke.insert(0, 1, 4); // uncompressed
-				cke.insert(0, 1, 1 + 32 + 32);
+					TlsCertificate cert{};
+					if (s.tls_sendHandshake(handshaker, TlsHandshake::certificate, cert.toBinaryString()))
+					{
+						s.enableCryptoClientProcessServerHelloDone(std::move(handshaker));
+					}
+				});
 			}
 			else
 			{
-				SOUP_ASSERT_UNREACHABLE;
-			}
-			if (s.tls_sendHandshake(handshaker, TlsHandshake::client_key_exchange, std::move(cke))
-				&& s.tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
-				)
-			{
-				handshaker->getKeys(
-					s.tls_encrypter_send.mac_key,
-					handshaker->pending_recv_encrypter.mac_key,
-					s.tls_encrypter_send.cipher_key,
-					handshaker->pending_recv_encrypter.cipher_key,
-					s.tls_encrypter_send.implicit_iv,
-					handshaker->pending_recv_encrypter.implicit_iv
-				);
-				if (s.tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getClientFinishVerifyData()))
-				{
-					s.tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap)
-					{
-						UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
-
-						s.tls_encrypter_recv = std::move(handshaker->pending_recv_encrypter);
-
-						handshaker->expected_finished_verify_data = handshaker->getServerFinishVerifyData();
-
-						s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
-						{
-							if (handshake_type != TlsHandshake::finished)
-							{
-								s.tls_close(TlsAlertDescription::unexpected_message);
-								return;
-							}
-							if (data != handshaker->expected_finished_verify_data)
-							{
-								s.tls_close(TlsAlertDescription::decrypt_error);
-								return;
-							}
-							handshaker->callback(s, std::move(handshaker->callback_capture));
-						});
-					}, std::move(handshaker));
-				}
+				s.tls_close(TlsAlertDescription::unexpected_message);
 			}
 		});
+	}
+
+	void Socket::enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker)
+	{
+		std::string cke{};
+		if (handshaker->ecdhe_curve == 0)
+		{
+			std::string pms{};
+			pms.reserve(48);
+			pms.push_back('\3');
+			pms.push_back('\3');
+			for (auto i = 0; i != 46; ++i)
+			{
+				pms.push_back(rand.ch());
+			}
+
+			TlsEncryptedPreMasterSecret epms{};
+			epms.data = handshaker->certchain.certs.at(0).key.encryptPkcs1(pms).toBinary();
+			cke = epms.toBinaryString();
+
+			handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(pms));
+		}
+		else if (handshaker->ecdhe_curve == NamedCurves::x25519)
+		{
+			uint8_t my_priv[Curve25519::KEY_SIZE];
+			Curve25519::generatePrivate(my_priv);
+
+			uint8_t their_pub[Curve25519::KEY_SIZE];
+			memcpy(their_pub, handshaker->ecdhe_public_key.data(), sizeof(their_pub));
+
+			uint8_t shared_secret[Curve25519::SHARED_SIZE];
+			Curve25519::x25519(shared_secret, my_priv, their_pub);
+			handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::string((const char*)shared_secret, sizeof(shared_secret)));
+
+			uint8_t my_pub[Curve25519::KEY_SIZE];
+			Curve25519::derivePublic(my_pub, my_priv);
+
+			cke = std::string(1, (char)sizeof(my_pub));
+			cke.append((const char*)my_pub, sizeof(my_pub));
+		}
+		else if (handshaker->ecdhe_curve == NamedCurves::secp256r1)
+		{
+			auto curve = EccCurve::secp256r1();
+
+			auto my_priv = curve.generatePrivate();
+
+			EccPoint their_pub(
+				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, 32)),
+				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(32, 32))
+			);
+			SOUP_ASSERT(curve.validate(their_pub));
+
+			auto shared_point = curve.multiply(their_pub, my_priv);
+			auto shared_secret = shared_point.getX().toBinary();
+			SOUP_ASSERT(shared_secret.size() == 32);
+			handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(shared_secret));
+
+			auto my_pub = curve.derivePublic(my_priv);
+
+			cke = my_pub.toBinary();
+			SOUP_ASSERT(cke.size() == 32 + 32);
+			cke.insert(0, 1, 4); // uncompressed
+			cke.insert(0, 1, 1 + 32 + 32);
+		}
+		else
+		{
+			SOUP_ASSERT_UNREACHABLE;
+		}
+		if (tls_sendHandshake(handshaker, TlsHandshake::client_key_exchange, std::move(cke))
+			&& tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
+			)
+		{
+			handshaker->getKeys(
+				tls_encrypter_send.mac_key,
+				handshaker->pending_recv_encrypter.mac_key,
+				tls_encrypter_send.cipher_key,
+				handshaker->pending_recv_encrypter.cipher_key,
+				tls_encrypter_send.implicit_iv,
+				handshaker->pending_recv_encrypter.implicit_iv
+			);
+			if (tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getClientFinishVerifyData()))
+			{
+				tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap)
+				{
+					UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
+
+					s.tls_encrypter_recv = std::move(handshaker->pending_recv_encrypter);
+
+					handshaker->expected_finished_verify_data = handshaker->getServerFinishVerifyData();
+
+					s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
+					{
+						if (handshake_type != TlsHandshake::finished)
+						{
+							s.tls_close(TlsAlertDescription::unexpected_message);
+							return;
+						}
+						if (data != handshaker->expected_finished_verify_data)
+						{
+							s.tls_close(TlsAlertDescription::decrypt_error);
+							return;
+						}
+						handshaker->callback(s, std::move(handshaker->callback_capture));
+					});
+				}, std::move(handshaker));
+			}
+		}
 	}
 
 	[[nodiscard]] static bool tls_serverSupportsCipherSuite(uint16_t cs) noexcept
