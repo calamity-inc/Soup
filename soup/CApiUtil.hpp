@@ -65,9 +65,11 @@ namespace soup
 				{
 					return "function";
 				}
-				if (type.name == "bool"
-					|| type.name == "void"
-					)
+				if (type.name == "bool")
+				{
+					return "boolean"; // It has to be "boolean", not "bool", otherwise emscripten interprets it as "number".
+				}
+				if (type.name == "void")
 				{
 					return type.name;
 				}

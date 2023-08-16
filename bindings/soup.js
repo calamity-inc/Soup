@@ -22,7 +22,7 @@
 			soup.throwException = soup.cwrap("throwException", "void", ["string"]);
 			soup.getCountryName = soup.cwrap("getCountryName", "string", ["string", "string"]);
 			soup.base32 = {
-				encode: soup.cwrap("base32_encode", "string", ["number", "bool"]),
+				encode: soup.cwrap("base32_encode", "string", ["number", "boolean"]),
 				decode: soup.cwrap("base32_decode", "number", ["string"]),
 			};
 			soup.base40 = {
@@ -44,7 +44,7 @@
 			};
 			soup.cbResult = {
 				getResponse: soup.cwrap("cbResult_getResponse", "string", ["number"]),
-				isDelete: soup.cwrap("cbResult_isDelete", "bool", ["number"]),
+				isDelete: soup.cwrap("cbResult_isDelete", "boolean", ["number"]),
 				getDeleteNum: soup.cwrap("cbResult_getDeleteNum", "number", ["number"]),
 			};
 			soup.Chatbot = {
@@ -52,7 +52,7 @@
 			};
 			soup.CidrSubnetInterface = {
 				new: soup.cwrap("CidrSubnetInterface_new", "number", ["string"]),
-				contains: soup.cwrap("CidrSubnetInterface_contains", "bool", ["number", "string"]),
+				contains: soup.cwrap("CidrSubnetInterface_contains", "boolean", ["number", "string"]),
 			};
 			soup.Hotp = {
 				generateSecret: soup.cwrap("Hotp_generateSecret", "number", ["number"]),
@@ -78,12 +78,12 @@
 				addHeader: soup.cwrap("MimeMessage_addHeader", "void", ["number", "string", "string"]),
 			};
 			soup.Mixed = {
-				isCanvas: soup.cwrap("Mixed_isCanvas", "bool", ["number"]),
+				isCanvas: soup.cwrap("Mixed_isCanvas", "boolean", ["number"]),
 				getCanvas: soup.cwrap("Mixed_getCanvas", "number", ["number"]),
 			};
 			soup.QrCode = {
 				newFromText: soup.cwrap("QrCode_newFromText", "number", ["string"]),
-				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "bool"]),
+				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "boolean"]),
 			};
 			soup.RsaKeypair = {
 				getN: soup.cwrap("RsaKeypair_getN", "number", ["number"]),
@@ -93,7 +93,7 @@
 			soup.Scheduler = {
 				new: soup.cwrap("Scheduler_new", "number", []),
 				setDontMakeReusableSockets: soup.cwrap("Scheduler_setDontMakeReusableSockets", "void", ["number"]),
-				isActive: soup.cwrap("Scheduler_isActive", "bool", ["number"]),
+				isActive: soup.cwrap("Scheduler_isActive", "boolean", ["number"]),
 				add: soup.cwrap("Scheduler_add", "void", ["number", "number"]),
 			};
 			soup.Totp = {
