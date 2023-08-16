@@ -17,7 +17,6 @@ namespace soup
 		Thread thrd;
 
 		DetachedScheduler(netConfig&& conf = {});
-		~DetachedScheduler();
 
 		SharedPtr<Worker> addWorker(SharedPtr<Worker>&& w) noexcept final;
 

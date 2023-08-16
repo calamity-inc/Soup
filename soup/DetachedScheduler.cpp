@@ -8,12 +8,6 @@ namespace soup
 	{
 	}
 
-	DetachedScheduler::~DetachedScheduler()
-	{
-		// If thread is running, it would have a stale pointer now.
-		SOUP_ASSERT(!thrd.isRunning());
-	}
-
 	SharedPtr<Worker> DetachedScheduler::addWorker(SharedPtr<Worker>&& w) noexcept
 	{
 		if (!thrd.isRunning())
