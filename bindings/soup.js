@@ -20,6 +20,7 @@
 			soup.free = soup.cwrap("endLifetime", "void", ["number"]);
 			soup.tryCatch = soup.cwrap("tryCatch", "string", ["function"]);
 			soup.throwException = soup.cwrap("throwException", "void", ["string"]);
+			soup.getCountryName = soup.cwrap("getCountryName", "string", ["string", "string"]);
 			soup.base32 = {
 				encode: soup.cwrap("base32_encode", "string", ["number", "bool"]),
 				decode: soup.cwrap("base32_decode", "number", ["string"]),

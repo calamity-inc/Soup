@@ -23,6 +23,7 @@ typedef void (*void_func_t)();
 #include "cbResult.hpp"
 #include "Chatbot.hpp"
 #include "CidrSubnetInterface.hpp"
+#include "country_names.hpp"
 #include "DetachedScheduler.hpp"
 #include "Hotp.hpp"
 #include "HttpRequest.hpp"
@@ -92,6 +93,11 @@ SOUP_CEXPORT const char* tryCatch(void_func_t f)
 SOUP_CEXPORT void throwException(const char* msg)
 {
 	throw Exception(msg);
+}
+
+SOUP_CEXPORT const char* getCountryName(const char* country_code, const char* language_code)
+{
+	return soup::getCountryName(country_code, language_code);
 }
 
 // base32
