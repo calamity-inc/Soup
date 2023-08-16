@@ -20,10 +20,12 @@ namespace soup
 		{
 			std::vector<drAdaptor> adaptors;
 			adaptors.emplace_back(drAdaptor{ "string", &adaptor_toString });
+			adaptors.emplace_back(drAdaptor{ "typename", &adaptor_getTypeName });
 			return adaptors;
 		}
 
 	private:
 		static UniquePtr<drData> adaptor_toString(const drData& data, const Capture&);
+		static UniquePtr<drData> adaptor_getTypeName(const drData& data, const Capture&);
 	};
 }
