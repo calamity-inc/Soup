@@ -52,21 +52,25 @@ namespace soup
 
 		[[nodiscard]] static std::string getJsType(const rflType& type)
 		{
-			if (type.at == rflType::POINTER
-				&& type.name == "const char"
-				)
+			if (type.at == rflType::POINTER)
 			{
-				return "string";
+				if (type.name == "const char")
+				{
+					return "string";
+				}
 			}
-			if (type.name == "void_func_t")
+			else
 			{
-				return "function";
-			}
-			if (type.name == "bool"
-				|| type.name == "void"
-				)
-			{
-				return type.name;
+				if (type.name == "void_func_t")
+				{
+					return "function";
+				}
+				if (type.name == "bool"
+					|| type.name == "void"
+					)
+				{
+					return type.name;
+				}
 			}
 			return "number";
 		}

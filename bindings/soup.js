@@ -16,8 +16,8 @@
 		{
 			soup.beginScope = soup.cwrap("beginScope", "void", []);
 			soup.endScope = soup.cwrap("endScope", "void", []);
-			soup.broadenScope = soup.cwrap("broadenScope", "void", ["void"]);
-			soup.free = soup.cwrap("endLifetime", "void", ["void"]);
+			soup.broadenScope = soup.cwrap("broadenScope", "void", ["number"]);
+			soup.free = soup.cwrap("endLifetime", "void", ["number"]);
 			soup.tryCatch = soup.cwrap("tryCatch", "string", ["function"]);
 			soup.throwException = soup.cwrap("throwException", "void", ["string"]);
 			soup.base32 = {
@@ -57,7 +57,7 @@
 				setPayload: soup.cwrap("HttpRequest_setPayload", "void", ["number", "string"]),
 			};
 			soup.HttpRequestTask = {
-				newFromRequest: soup.cwrap("HttpRequestTask_newFromRequest", "void", ["number"]),
+				newFromRequest: soup.cwrap("HttpRequestTask_newFromRequest", "number", ["number"]),
 			};
 			soup.InquiryLang = {
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
@@ -86,10 +86,10 @@
 				getQ: soup.cwrap("RsaKeypair_getQ", "number", ["number"]),
 			};
 			soup.Scheduler = {
-				new: soup.cwrap("Scheduler_new", "void", []),
-				setDontMakeReusableSockets: soup.cwrap("Scheduler_setDontMakeReusableSockets", "void", ["void"]),
-				isActive: soup.cwrap("Scheduler_isActive", "bool", ["void"]),
-				add: soup.cwrap("Scheduler_add", "void", ["void", "void"]),
+				new: soup.cwrap("Scheduler_new", "number", []),
+				setDontMakeReusableSockets: soup.cwrap("Scheduler_setDontMakeReusableSockets", "void", ["number"]),
+				isActive: soup.cwrap("Scheduler_isActive", "bool", ["number"]),
+				add: soup.cwrap("Scheduler_add", "void", ["number", "number"]),
 			};
 			soup.Totp = {
 				new: soup.cwrap("Totp_new", "number", ["number"]),
