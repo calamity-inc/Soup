@@ -487,6 +487,7 @@
     <ClInclude Include="drData.hpp" />
     <ClInclude Include="drDatetime.hpp" />
     <ClInclude Include="drInt.hpp" />
+    <ClInclude Include="drIpAddr.hpp" />
     <ClInclude Include="drJsonObject.hpp" />
     <ClInclude Include="drString.hpp" />
     <ClInclude Include="DummyTask.hpp" />

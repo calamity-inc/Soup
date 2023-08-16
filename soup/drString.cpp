@@ -1,6 +1,7 @@
 #include "drString.hpp"
 
 #include "drDatetime.hpp"
+#include "drIpAddr.hpp"
 #include "drJsonObject.hpp"
 #include "json.hpp"
 
@@ -18,6 +19,10 @@ namespace soup
 			{
 				return soup::make_unique<drJsonObject>(std::move(str), std::move(res));
 			}
+		}
+		if (IpAddr ip; ip.fromString(str))
+		{
+			return soup::make_unique<drIpAddr>(std::move(str), std::move(ip));
 		}
 		return soup::make_unique<drString>(std::move(str));
 	}

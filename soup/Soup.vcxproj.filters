@@ -1443,6 +1443,9 @@
     <ClInclude Include="WeakRef.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="drIpAddr.hpp">
+      <Filter>data\reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
