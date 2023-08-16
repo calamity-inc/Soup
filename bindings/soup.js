@@ -49,6 +49,10 @@
 			soup.Chatbot = {
 				process: soup.cwrap("Chatbot_process", "number", ["string"]),
 			};
+			soup.CidrSubnetInterface = {
+				new: soup.cwrap("CidrSubnetInterface_new", "number", ["string"]),
+				contains: soup.cwrap("CidrSubnetInterface_contains", "bool", ["number", "string"]),
+			};
 			soup.Hotp = {
 				generateSecret: soup.cwrap("Hotp_generateSecret", "number", ["number"]),
 			};

@@ -22,11 +22,13 @@ typedef void (*void_func_t)();
 #include "Canvas.hpp"
 #include "cbResult.hpp"
 #include "Chatbot.hpp"
+#include "CidrSubnetInterface.hpp"
 #include "DetachedScheduler.hpp"
 #include "Hotp.hpp"
 #include "HttpRequest.hpp"
 #include "HttpRequestTask.hpp"
 #include "InquiryLang.hpp"
+#include "IpAddr.hpp"
 #include "KeyGenId.hpp"
 #include "MimeMessage.hpp"
 #include "Mixed.hpp"
@@ -179,6 +181,18 @@ SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x)
 SOUP_CEXPORT cbResult* Chatbot_process(const char* text)
 {
 	return heap.add(Chatbot::process(text));
+}
+
+// CidrSubnetInterface
+
+SOUP_CEXPORT CidrSubnetInterface* CidrSubnetInterface_new(const char* range)
+{
+	return heap.add(CidrSubnetInterface::construct(range).release());
+}
+
+SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const char* ip_addr)
+{
+	return x->contains(IpAddr(ip_addr));
 }
 
 // Hotp

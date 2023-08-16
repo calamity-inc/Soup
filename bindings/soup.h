@@ -57,6 +57,9 @@ SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x);
 SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x);
 // Chatbot
 SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
+// CidrSubnetInterface
+SOUP_CEXPORT CidrSubnetInterface* CidrSubnetInterface_new(const char* range);
+SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const char* ip_addr);
 // Hotp
 SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes);
 // HttpRequest
