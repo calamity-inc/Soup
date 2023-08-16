@@ -19,6 +19,7 @@
 			soup.broadenScope = soup.cwrap("broadenScope", "void", ["void"]);
 			soup.free = soup.cwrap("endLifetime", "void", ["void"]);
 			soup.tryCatch = soup.cwrap("tryCatch", "string", ["function"]);
+			soup.throwException = soup.cwrap("throwException", "void", ["string"]);
 			soup.base32 = {
 				encode: soup.cwrap("base32_encode", "string", ["number", "bool"]),
 				decode: soup.cwrap("base32_decode", "number", ["string"]),
@@ -51,6 +52,13 @@
 			soup.Hotp = {
 				generateSecret: soup.cwrap("Hotp_generateSecret", "number", ["number"]),
 			};
+			soup.HttpRequest = {
+				new: soup.cwrap("HttpRequest_new", "number", ["string"]),
+				setPayload: soup.cwrap("HttpRequest_setPayload", "void", ["number", "string"]),
+			};
+			soup.HttpRequestTask = {
+				newFromRequest: soup.cwrap("HttpRequestTask_newFromRequest", "void", ["number"]),
+			};
 			soup.InquiryLang = {
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
 				formatResultLine: soup.cwrap("InquiryLang_formatResultLine", "string", ["number"]),
@@ -60,6 +68,9 @@
 				generate: soup.cwrap("KeyGenId_generate", "number", ["number"]),
 				toSeedsExport: soup.cwrap("KeyGenId_toSeedsExport", "number", ["number"]),
 				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number"]),
+			};
+			soup.MimeMessage = {
+				addHeader: soup.cwrap("MimeMessage_addHeader", "void", ["number", "string", "string"]),
 			};
 			soup.Mixed = {
 				isCanvas: soup.cwrap("Mixed_isCanvas", "bool", ["number"]),
@@ -74,8 +85,14 @@
 				getP: soup.cwrap("RsaKeypair_getP", "number", ["number"]),
 				getQ: soup.cwrap("RsaKeypair_getQ", "number", ["number"]),
 			};
+			soup.Scheduler = {
+				new: soup.cwrap("Scheduler_new", "void", []),
+				setDontMakeReusableSockets: soup.cwrap("Scheduler_setDontMakeReusableSockets", "void", ["void"]),
+				isActive: soup.cwrap("Scheduler_isActive", "bool", ["void"]),
+				add: soup.cwrap("Scheduler_add", "void", ["void", "void"]),
+			};
 			soup.Totp = {
-				new: soup.cwrap("Totp_new", "number", ["string"]),
+				new: soup.cwrap("Totp_new", "number", ["number"]),
 				getQrCodeUri: soup.cwrap("Totp_getQrCodeUri", "string", ["number", "string", "string"]),
 				getValue: soup.cwrap("Totp_getValue", "number", ["number"]),
 			};
