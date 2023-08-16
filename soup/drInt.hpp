@@ -2,6 +2,8 @@
 
 #include "drData.hpp"
 
+#include "string.hpp"
+
 namespace soup
 {
 	struct drInt : public drData
@@ -21,6 +23,25 @@ namespace soup
 		[[nodiscard]] std::string toString() const override
 		{
 			return std::to_string(int_data);
+		}
+
+		[[nodiscard]] std::vector<drAdaptor> getAdaptors() const final
+		{
+			auto adaptors = drData::getAdaptors();
+			adaptors.emplace_back(drAdaptor{ "binary", &adaptor_toBinary });
+			adaptors.emplace_back(drAdaptor{ "hex", &adaptor_toHex });
+			return adaptors;
+		}
+
+	private:
+		static UniquePtr<drData> adaptor_toBinary(const drData& data, const Capture&)
+		{
+			return soup::make_unique<drString>(string::binary(static_cast<const drInt&>(data).int_data));
+		}
+
+		static UniquePtr<drData> adaptor_toHex(const drData& data, const Capture&)
+		{
+			return soup::make_unique<drString>(string::hex(static_cast<const drInt&>(data).int_data));
 		}
 	};
 }
