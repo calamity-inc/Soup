@@ -82,16 +82,16 @@ namespace soup
 		body = std::move(payload);
 	}
 
-	struct CaptureHttpRequestExecute
+	struct HttpRequestExecuteData
 	{
 		const HttpRequest* req;
-		std::string* resp;
+		std::optional<HttpResponse> resp;
 	};
 
 	std::optional<HttpResponse> HttpRequest::execute() const
 	{
+		HttpRequestExecuteData data{ this };
 		auto sock = make_shared<Socket>();
-		std::string resp{};
 		const auto& host = getHost();
 		if (sock->connect(host, port))
 		{
@@ -99,75 +99,21 @@ namespace soup
 			auto s = sched.addSocket(std::move(sock));
 			if (use_tls)
 			{
-				s->enableCryptoClient(host, [](Socket& s, Capture&& _cap)
+				s->enableCryptoClient(host, [](Socket& s, Capture&& cap)
 				{
-					auto& cap = _cap.get<CaptureHttpRequestExecute>();
-					cap.req->send(s);
-					execute_tick(s, cap.resp);
-				}, CaptureHttpRequestExecute{ this, &resp });
+					auto& data = *cap.get<HttpRequestExecuteData*>();
+					data.req->send(s);
+					execute_recvResponse(s, &data.resp);
+				}, &data);
 			}
 			else
 			{
 				send(*s);
-				execute_tick(*s, &resp);
+				execute_recvResponse(*s, &data.resp);
 			}
 			sched.run();
 		}
-		if (!resp.empty())
-		{
-			auto i = resp.find("\r\n");
-			if (i != std::string::npos)
-			{
-				auto arr = string::explode(resp.substr(0, i), ' ');
-				if (arr.size() >= 2)
-				{
-					resp.erase(0, i + 2);
-
-					HttpResponse res = std::move(resp);
-					res.status_code = string::toInt<uint16_t>(arr.at(1), 0);
-
-					if (auto enc = res.header_fields.find(ObfusString("Transfer-Encoding")); enc != res.header_fields.end())
-					{
-						if (joaat::hash(enc->second) == joaat::hash("chunked"))
-						{
-							size_t i = 0;
-							while (true)
-							{
-								const auto chunk_size_end = res.body.find("\r\n", i);
-								if (chunk_size_end == std::string::npos)
-								{
-									break;
-								}
-								const auto chunk_size_len = (chunk_size_end - i);
-								unsigned long long chunk_size = 0;
-								try
-								{
-									chunk_size = std::stoull(res.body.substr(i, chunk_size_len), nullptr, 16);
-								}
-								catch (...)
-								{
-								}
-								res.body.erase(i, chunk_size_len + 2); // erase chunk size + CRLF
-								i += chunk_size;
-								res.body.erase(i, 2); // erase CRLF after chunk-data
-								if (chunk_size == 0)
-								{
-									break;
-								}
-							}
-						}
-					}
-
-					res.decode();
-
-					if (!isChallengeResponse(res))
-					{
-						return std::optional<HttpResponse>(std::move(res));
-					}
-				}
-			}
-		}
-		return {};
+		return data.resp;
 	}
 
 	void HttpRequest::send(Socket& s) const
@@ -182,13 +128,11 @@ namespace soup
 		s.send(data);
 	}
 
-	void HttpRequest::execute_tick(Socket& s, std::string* resp)
+	void HttpRequest::execute_recvResponse(Socket& s, std::optional<HttpResponse>* resp)
 	{
-		s.recv([](Socket& s, std::string&& app, Capture&& cap)
+		recvResponse(s, [](Socket& s, std::optional<HttpResponse>&& resp, Capture&& cap)
 		{
-			std::string* resp = cap.get<std::string*>();
-			resp->append(std::move(app));
-			execute_tick(s, resp);
+			*cap.get<std::optional<HttpResponse>*>() = std::move(resp);
 		}, resp);
 	}
 

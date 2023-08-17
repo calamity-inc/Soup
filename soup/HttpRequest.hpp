@@ -37,7 +37,7 @@ namespace soup
 		[[nodiscard]] std::optional<HttpResponse> execute() const; // blocking
 		void send(Socket& s) const;
 	private:
-		static void execute_tick(Socket& s, std::string* resp);
+		static void execute_recvResponse(Socket& s, std::optional<HttpResponse>* resp);
 	public:
 		[[nodiscard]] static bool isChallengeResponse(const HttpResponse& res);
 
