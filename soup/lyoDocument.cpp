@@ -71,7 +71,7 @@ namespace soup
 	{
 		auto doc = soup::make_unique<lyoDocument>();
 		lyoContainer* import_root = doc.get();
-		
+
 		// The tag_name of a lyoDocument should be "body", so if that does not match with the xml, the import root needs to be child of the document, not the document itself.
 		if (root.name != "body")
 		{
