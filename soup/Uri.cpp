@@ -169,6 +169,11 @@ namespace soup
 		return str;
 	}
 
+	Uri Uri::forFile(std::filesystem::path path) noexcept
+	{
+		return Uri("file:///" + urlenc::encodePath(string::fixType(std::filesystem::absolute(path).u8string())));
+	}
+
 	bool Uri::isFile() const noexcept
 	{
 		return scheme == "file";

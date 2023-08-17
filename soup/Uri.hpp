@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 
 namespace soup
@@ -24,6 +25,7 @@ namespace soup
 		[[nodiscard]] bool isHttp() const noexcept;
 		[[nodiscard]] std::string getRequestPath() const;
 
+		[[nodiscard]] static Uri forFile(std::filesystem::path path) noexcept;
 		[[nodiscard]] bool isFile() const noexcept;
 		[[nodiscard]] std::string getFilePath() const;
 
