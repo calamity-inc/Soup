@@ -35,4 +35,34 @@ namespace soup
 		}
 		return nullptr;
 	}
+
+	[[nodiscard]] inline const char* getCountryCode(const std::string& country_name, const std::string& language_code = "EN")
+	{
+		CountryNamesEntry* i = &country_names[0];
+
+		// Seek ahead to language code
+		for (;; ++i)
+		{
+			if (i->language_code == language_code)
+			{
+				break;
+			}
+			if (i == &country_names[COUNTRYNAMES_LANGUAGES])
+			{
+				// Exhausted all languages, abort lookup.
+				return nullptr;
+			}
+		}
+
+		// Find country
+		for (; i < &country_names[COUNTRYNAMES_COUNTRIES * COUNTRYNAMES_LANGUAGES]; i += COUNTRYNAMES_LANGUAGES)
+		{
+			if (country_name == i->value)
+			{
+				return i->country_code;
+			}
+		}
+
+		return nullptr;
+	}
 }
