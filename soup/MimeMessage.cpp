@@ -84,7 +84,7 @@ namespace soup
 		for (auto i = parts.begin(); i != parts.end(); ++i)
 		{
 			out.reserve(i->size() + 1);
-			out.push_back(std::toupper(i->at(0)));
+			out.push_back(string::upper_char(i->at(0)));
 			out.append(string::lower(i->substr(1)));
 			if ((i + 1) != parts.end())
 			{
