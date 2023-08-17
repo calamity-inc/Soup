@@ -851,17 +851,20 @@ namespace soup
 
 		// char mutation
 
+		template <typename Char>
+		[[nodiscard]] static Char lower_char(Char c)
+		{
+			if (c >= 'A' && c <= 'Z')
+			{
+				return c - 'A' + 'a';
+			}
+			return c;
+		}
+
 		template <typename Str>
 		static void lower(Str& str)
 		{
-			std::transform(str.begin(), str.end(), str.begin(), [](typename Str::value_type c) -> typename Str::value_type
-			{
-				if (c >= 'A' && c <= 'Z')
-				{
-					return c - 'A' + 'a';
-				}
-				return c;
-			});
+			std::transform(str.begin(), str.end(), str.begin(), &lower_char<typename Str::value_type>);
 		}
 
 		template <typename Str>
@@ -871,17 +874,20 @@ namespace soup
 			return str;
 		}
 
+		template <typename Char>
+		[[nodiscard]] static Char upper_char(Char c)
+		{
+			if (c >= 'a' && c <= 'z')
+			{
+				return c - 'a' + 'A';
+			}
+			return c;
+		}
+
 		template <typename Str>
 		static void upper(Str& str)
 		{
-			std::transform(str.begin(), str.end(), str.begin(), [](typename Str::value_type c) -> typename Str::value_type
-			{
-				if (c >= 'a' && c <= 'z')
-				{
-					return c - 'a' + 'A';
-				}
-				return c;
-			});
+			std::transform(str.begin(), str.end(), str.begin(), &upper_char<typename Str::value_type>);
 		}
 
 		template <typename Str>
