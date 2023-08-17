@@ -98,4 +98,19 @@ namespace soup
 		}
 		return ret;
 	}
+
+	void string::toFile(const std::string& file, const std::string& contents)
+	{
+#if SOUP_CPP20
+		return toFilePath(toUtf8Type(file), contents);
+#else
+		return toFilePath(std::filesystem::u8path(file), contents);
+#endif
+	}
+
+	void string::toFilePath(const std::filesystem::path& file, const std::string& contents)
+	{
+		std::ofstream of(file);
+		of << contents;
+	}
 }

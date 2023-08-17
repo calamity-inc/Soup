@@ -920,5 +920,7 @@ namespace soup
 
 		[[nodiscard]] static std::string fromFile(const std::string& file);
 		[[nodiscard]] static std::string fromFilePath(const std::filesystem::path& file);
+		static void toFile(const std::string& file, const std::string& contents);
+		static void toFilePath(const std::filesystem::path& file, const std::string& contents);
 	};
 }
