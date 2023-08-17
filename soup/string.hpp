@@ -897,6 +897,36 @@ namespace soup
 			return str;
 		}
 
+		// "hello world" -> "Hello World"
+		template <typename Str>
+		static void title(Str& str)
+		{
+			bool first = true;
+			for (auto& c : str)
+			{
+				if (first)
+				{
+					first = false;
+					c = upper_char(c);
+				}
+				else
+				{
+					c = lower_char(c);
+				}
+				if (isSpace(c))
+				{
+					first = true;
+				}
+			}
+		}
+
+		template <typename Str>
+		[[nodiscard]] static Str title(Str&& str)
+		{
+			title(str);
+			return str;
+		}
+
 		[[nodiscard]] static constexpr char rot13(char c) noexcept
 		{
 			if (isUppercaseLetter(c))
