@@ -194,7 +194,9 @@ namespace soup
 
 	bool HttpRequest::isChallengeResponse(const HttpResponse& res)
 	{
-		return res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) != std::string::npos;
+		return res.body.find(ObfusString(R"(href="https://www.cloudflare.com?utm_source=challenge)").str()) != std::string::npos
+			|| res.body.find(ObfusString(R"(<span id="challenge-error-text">Enable JavaScript and cookies to continue</)").str()) != std::string::npos // "Invisible" challenge
+			;
 	}
 
 	void HttpRequest::setClose() noexcept
