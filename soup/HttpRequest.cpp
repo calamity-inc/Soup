@@ -115,6 +115,40 @@ namespace soup
 		return data.resp;
 	}
 
+	struct HttpRequestExecuteEventStreamData
+	{
+		const HttpRequest* req;
+		void(*on_event)(std::unordered_map<std::string, std::string>&&, const Capture&);
+		Capture cap;
+	};
+
+	void HttpRequest::executeEventStream(void on_event(std::unordered_map<std::string, std::string>&&, const Capture&), Capture&& cap) const
+	{
+		HttpRequestExecuteEventStreamData data{ this, on_event, std::move(cap) };
+		auto sock = make_shared<Socket>();
+		const auto& host = getHost();
+		if (sock->connect(host, port))
+		{
+			Scheduler sched{};
+			auto s = sched.addSocket(std::move(sock));
+			if (use_tls)
+			{
+				s->enableCryptoClient(host, [](Socket& s, Capture&& cap)
+				{
+					auto* data = cap.get<HttpRequestExecuteEventStreamData*>();
+					data->req->send(s);
+					executeEventStream_recv(s, data);
+				}, &data);
+			}
+			else
+			{
+				send(*s);
+				executeEventStream_recv(*s, &data);
+			}
+			sched.run();
+		}
+	}
+
 	void HttpRequest::send(Socket& s) const
 	{
 		std::string data{};
@@ -133,6 +167,15 @@ namespace soup
 		{
 			*cap.get<std::optional<HttpResponse>*>() = std::move(resp);
 		}, resp);
+	}
+
+	void HttpRequest::executeEventStream_recv(Socket& s, void* cap)
+	{
+		recvEventStream(s, [](Socket& s, std::unordered_map<std::string, std::string>&& event, const Capture& cap)
+		{
+			auto* data = cap.get<HttpRequestExecuteEventStreamData*>();
+			data->on_event(std::move(event), data->cap);
+		}, cap);
 	}
 
 	bool HttpRequest::isChallengeResponse(const HttpResponse& res)
@@ -168,8 +211,14 @@ namespace soup
 		Status status = CODE;
 		unsigned long long bytes_remain = 0;
 
-		void(*callback)(Socket&, std::optional<HttpResponse>&&, Capture&&);
+		void(*on_body_part)(Socket&, const std::string&, const Capture&) = nullptr;
+		void(*callback)(Socket&, std::optional<HttpResponse>&&, Capture&&) = nullptr;
 		Capture cap;
+
+		HttpResponseReceiver(void on_body_part(Socket&, const std::string&, const Capture&), Capture&& cap)
+			: on_body_part(on_body_part), cap(std::move(cap))
+		{
+		}
 
 		HttpResponseReceiver(void callback(Socket&, std::optional<HttpResponse>&&, Capture&&), Capture&& cap)
 			: callback(callback), cap(std::move(cap))
@@ -194,7 +243,10 @@ namespace soup
 #if LOGGING
 						logWriteLine("Connection closed unexpectedly");
 #endif
-						self.callback(s, std::nullopt, std::move(self.cap));
+						if (self.callback)
+						{
+							self.callback(s, std::nullopt, std::move(self.cap));
+						}
 					}
 					return;
 				}
@@ -215,7 +267,10 @@ namespace soup
 #if LOGGING
 							logWriteLine("Invalid data");
 #endif
-							self.callback(s, std::nullopt, std::move(self.cap));
+							if (self.callback)
+							{
+								self.callback(s, std::nullopt, std::move(self.cap));
+							}
 							return;
 						}
 						self.buf.erase(0, i + 2);
@@ -258,7 +313,10 @@ namespace soup
 #if LOGGING
 										logWriteLine("Exception reading content length");
 #endif
-										self.callback(s, std::nullopt, std::move(self.cap));
+										if (self.callback)
+										{
+											self.callback(s, std::nullopt, std::move(self.cap));
+										}
 										return;
 									}
 								}
@@ -300,7 +358,10 @@ namespace soup
 #if LOGGING
 								logWriteLine("Exception reading chunk length");
 #endif
-								self.callback(s, std::nullopt, std::move(self.cap));
+								if (self.callback)
+								{
+									self.callback(s, std::nullopt, std::move(self.cap));
+								}
 								return;
 							}
 							self.buf.erase(0, i + 2);
@@ -316,7 +377,12 @@ namespace soup
 							{
 								break;
 							}
-							self.resp.body.append(self.buf.substr(0, self.bytes_remain));
+							auto chunk = self.buf.substr(0, self.bytes_remain);
+							if (self.on_body_part)
+							{
+								self.on_body_part(s, chunk, self.cap);
+							}
+							self.resp.body.append(chunk);
 							self.buf.erase(0, self.bytes_remain + 2);
 							self.bytes_remain = 0;
 						}
@@ -334,6 +400,10 @@ namespace soup
 					}
 					else if (self.status == BODY_CLOSE)
 					{
+						if (self.on_body_part)
+						{
+							self.on_body_part(s, app, self.cap);
+						}
 						break;
 					}
 				}
@@ -343,6 +413,10 @@ namespace soup
 
 		void callbackSuccess(Socket& s)
 		{
+			if (!callback)
+			{
+				return;
+			}
 			resp.decode();
 			SOUP_IF_LIKELY (!HttpRequest::isChallengeResponse(resp))
 			{
@@ -362,6 +436,44 @@ namespace soup
 	{
 		Capture cap = HttpResponseReceiver(callback, std::move(_cap));
 		cap.get<HttpResponseReceiver>().tick(s, std::move(cap));
+	}
+
+	struct CaptureRecvEventStream
+	{
+		void(*callback)(Socket&, std::unordered_map<std::string, std::string>&&, const Capture&);
+		Capture cap;
+	};
+
+	void HttpRequest::recvEventStream(Socket& s, void callback(Socket&, std::unordered_map<std::string, std::string>&&, const Capture&), Capture&& cap)
+	{
+		Capture receiver_cap = HttpResponseReceiver([](Socket& s, const std::string& part, const Capture& _cap)
+		{
+			std::unordered_map<std::string, std::string> data{};
+			auto lines = string::explode(part, '\n');
+			for (auto& line : lines)
+			{
+				if (line.back() == '\r')
+				{
+					line.pop_back();
+				}
+				if (line.empty())
+				{
+					if (!data.empty())
+					{
+						auto& cap = _cap.get<CaptureRecvEventStream>();
+						cap.callback(s, std::move(data), cap.cap);
+						data.clear();
+					}
+				}
+				else
+				{
+					auto sep = line.find(": ");
+					SOUP_ASSERT(sep != std::string::npos);
+					data.emplace(line.substr(0, sep), line.substr(sep + 2));
+				}
+			}
+		}, CaptureRecvEventStream{ callback, std::move(cap) });
+		receiver_cap.get<HttpResponseReceiver>().tick(s, std::move(receiver_cap));
 	}
 }
 
