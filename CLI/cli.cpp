@@ -37,6 +37,19 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "chatgpt")
+		{
+			if (argc > 2)
+			{
+				cli_chatgpt(argc - 2, &argv[2]);
+			}
+			else
+			{
+				std::cout << "Syntax: soup chatgpt [token] <model>" << std::endl;
+			}
+			return 0;
+		}
+
 		if (subcommand == "chess")
 		{
 			ChessCli cc{};
@@ -314,6 +327,7 @@ int main(int argc, const char** argv)
 
 Available tools:
 - 3d
+- chatgpt [token] <model>
 - chess <FEN>
 - datareflection
 - dig [domain] <type=A> <@<doh:>[server]>

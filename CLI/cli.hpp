@@ -1,6 +1,7 @@
 #pragma once
 
 void cli_3d();
+void cli_chatgpt(int argc, const char** argv);
 void cli_datareflection();
 void cli_dig(int argc, const char** argv);
 void cli_dnsserver(int argc, const char** argv);
