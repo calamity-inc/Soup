@@ -77,6 +77,18 @@ namespace soup
 		}
 	}
 
+	void MimeMessage::setHeader(const std::string& key, const std::string& value)
+	{
+		if (auto e = header_fields.find(key); e != header_fields.end())
+		{
+			e->second = value;
+		}
+		else
+		{
+			header_fields.emplace(key, value);
+		}
+	}
+
 	std::string MimeMessage::normaliseHeaderCasing(const std::string& key)
 	{
 		std::string out;

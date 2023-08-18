@@ -77,7 +77,7 @@ namespace soup
 			method = ObfusString("POST").str();
 		}
 
-		header_fields.emplace(ObfusString("Content-Length"), std::to_string(payload.size()));
+		setHeader(ObfusString("Content-Length"), std::to_string(payload.size()));
 		body = std::move(payload);
 	}
 
