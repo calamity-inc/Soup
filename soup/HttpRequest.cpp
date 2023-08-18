@@ -2,7 +2,6 @@
 
 #if !SOUP_WASM
 
-#include "Callback.hpp"
 #include "joaat.hpp"
 #include "ObfusString.hpp"
 #include "Scheduler.hpp"
@@ -169,10 +168,11 @@ namespace soup
 		Status status = CODE;
 		unsigned long long bytes_remain = 0;
 
-		Callback<void(Socket&, std::optional<HttpResponse>&&)> callback;
+		void(*callback)(Socket&, std::optional<HttpResponse>&&, Capture&&);
+		Capture cap;
 
-		HttpResponseReceiver(void fp(Socket&, std::optional<HttpResponse>&&, Capture&&), Capture&& cap)
-			: callback(fp, std::move(cap))
+		HttpResponseReceiver(void callback(Socket&, std::optional<HttpResponse>&&, Capture&&), Capture&& cap)
+			: callback(callback), cap(std::move(cap))
 		{
 		}
 
@@ -194,7 +194,7 @@ namespace soup
 #if LOGGING
 						logWriteLine("Connection closed unexpectedly");
 #endif
-						self.callback(s, std::nullopt);
+						self.callback(s, std::nullopt, std::move(self.cap));
 					}
 					return;
 				}
@@ -215,7 +215,7 @@ namespace soup
 #if LOGGING
 							logWriteLine("Invalid data");
 #endif
-							self.callback(s, std::nullopt);
+							self.callback(s, std::nullopt, std::move(self.cap));
 							return;
 						}
 						self.buf.erase(0, i + 2);
@@ -258,7 +258,7 @@ namespace soup
 #if LOGGING
 										logWriteLine("Exception reading content length");
 #endif
-										self.callback(s, std::nullopt);
+										self.callback(s, std::nullopt, std::move(self.cap));
 										return;
 									}
 								}
@@ -300,7 +300,7 @@ namespace soup
 #if LOGGING
 								logWriteLine("Exception reading chunk length");
 #endif
-								self.callback(s, std::nullopt);
+								self.callback(s, std::nullopt, std::move(self.cap));
 								return;
 							}
 							self.buf.erase(0, i + 2);
@@ -346,14 +346,14 @@ namespace soup
 			resp.decode();
 			SOUP_IF_LIKELY (!HttpRequest::isChallengeResponse(resp))
 			{
-				callback(s, std::move(resp));
+				callback(s, std::move(resp), std::move(cap));
 			}
 			else
 			{
 #if LOGGING
 				logWriteLine("Challenge response");
 #endif
-				callback(s, std::nullopt);
+				callback(s, std::nullopt, std::move(cap));
 			}
 		}
 	};
