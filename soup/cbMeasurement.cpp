@@ -76,8 +76,14 @@ namespace soup
 		case joaat::hash("g"): return CB_G;
 		case joaat::hash("kg"): return CB_KG;
 		case joaat::hash("ustons"): return CB_USTONS;
+		case joaat::hash("us"): return CB_USTONS;
+		case joaat::hash("customarytonnes"): return CB_USTONS;
+		case joaat::hash("customarytons"): return CB_USTONS;
+		case joaat::hash("customary"): return CB_USTONS;
 		case joaat::hash("metrictons"): return CB_METRICTONS;
+		case joaat::hash("metric"): return CB_METRICTONS;
 		case joaat::hash("imperialtons"): return CB_IMPERIALTONS;
+		case joaat::hash("imperial"): return CB_IMPERIALTONS;
 		case joaat::hash("gram"): return CB_G;
 		case joaat::hash("grams"): return CB_G;
 		case joaat::hash("kilogram"): return CB_KG;
@@ -93,9 +99,6 @@ namespace soup
 		case joaat::hash("stones"): return CB_STONES;
 		case joaat::hash("hundredweight"): return CB_HUNDREDWEIGHTS;
 		case joaat::hash("hundredweights"): return CB_HUNDREDWEIGHTS;
-		case joaat::hash("us"): return CB_USTONS;
-		case joaat::hash("metric"): return CB_METRICTONS;
-		case joaat::hash("imperial"): return CB_IMPERIALTONS;
 		}
 		return CB_NOUNIT;
 	}
