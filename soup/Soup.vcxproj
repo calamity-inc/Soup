@@ -492,6 +492,7 @@
     <ClInclude Include="drString.hpp" />
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="ecc.hpp" />
+    <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="osRegistry.hpp" />

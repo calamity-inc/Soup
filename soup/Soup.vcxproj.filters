@@ -1446,6 +1446,9 @@
     <ClInclude Include="Fiber.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="FiberTask.hpp">
+      <Filter>task</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
