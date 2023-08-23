@@ -22,7 +22,9 @@ namespace soup
 		Capture(Capture&& b) noexcept
 			: data(b.data), deleter(b.deleter)
 		{
+#ifdef _DEBUG
 			validate();
+#endif
 			b.forget();
 		}
 
@@ -42,7 +44,9 @@ namespace soup
 		Capture(T v)
 			: data(reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(v)))
 		{
+#ifdef _DEBUG
 			validate();
+#endif
 		}
 
 		~Capture()
@@ -114,18 +118,24 @@ namespace soup
 		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
 		[[nodiscard]] T& get() const noexcept
 		{
+#ifdef _DEBUG
 			validate();
+#endif
 			return *reinterpret_cast<T*>(data);
 		}
 
 		template <typename T, SOUP_RESTRICT(std::is_pointer_v<std::remove_reference_t<T>>)>
 		[[nodiscard]] T get() const noexcept
 		{
+#ifdef _DEBUG
 			validate();
+#endif
 			return reinterpret_cast<T>(data);
 		}
 
 	private:
+#ifdef _DEBUG
 		void validate() const;
+#endif
 	};
 }
