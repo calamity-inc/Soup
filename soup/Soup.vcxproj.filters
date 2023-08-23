@@ -575,9 +575,6 @@
     <ClInclude Include="Mixed.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="Fiber.hpp">
-      <Filter>task</Filter>
-    </ClInclude>
     <ClInclude Include="code_tree.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -1446,6 +1443,9 @@
     <ClInclude Include="drIpAddr.hpp">
       <Filter>data\reflection</Filter>
     </ClInclude>
+    <ClInclude Include="Fiber.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1708,9 +1708,6 @@
     </ClCompile>
     <ClCompile Include="Mixed.cpp">
       <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="Fiber.cpp">
-      <Filter>task</Filter>
     </ClCompile>
     <ClCompile Include="unit_testing.cpp">
       <Filter>util</Filter>
@@ -2097,6 +2094,9 @@
     </ClCompile>
     <ClCompile Include="TransientToken.cpp">
       <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="Fiber.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
