@@ -223,6 +223,8 @@ namespace soup
 		{ "call", 0xFF, M, 32, 3 },
 		{ "jmp", 0xEB, D, 8 },
 		{ "jmp", 0xE9, D, 32 },
+		{ "jmp", 0xFF, M, 32, 4 },
+		{ "jmp", 0xFF, M, 32, 5 }, // TODO: Disassembly of "48 FF 60 50" should show "jmp qword ptr"
 		{ "test", 0x84, MR, 8 },
 		{ "test", 0x85, MR },
 		{ "test", 0xF6, MI, 8, 0 },
