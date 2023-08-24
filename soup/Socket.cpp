@@ -1108,10 +1108,13 @@ namespace soup
 		tls_recvRecord([](Socket& s, TlsContentType_t content_type, std::string&& data, Capture&& _cap)
 		{
 			auto& cap = _cap.get<CaptureSocketTlsRecvRecordExpect>();
-			if (content_type != cap.expected_content_type)
+			if (content_type == cap.expected_content_type)
+			{
+				cap.callback(s, std::move(data), std::move(cap.cap));
+			}
+			else if (content_type == TlsContentType::alert)
 			{
 #if LOGGING
-				if (content_type == TlsContentType::alert)
 				{
 					std::string msg = s.toString();
 					msg.append(" - Remote closing connection with ");
@@ -1125,10 +1128,17 @@ namespace soup
 					logWriteLine(std::move(msg));
 				}
 #endif
-				s.tls_close(TlsAlertDescription::unexpected_message);
-				return;
+				s.remote_closed = true;
+				s.close();
+				if (s.callback_recv_on_close)
+				{
+					cap.callback(s, {}, std::move(cap.cap));
+				}
 			}
-			cap.callback(s, std::move(data), std::move(cap.cap));
+			else
+			{
+				s.tls_close(TlsAlertDescription::unexpected_message);
+			}
 		}, CaptureSocketTlsRecvRecordExpect{
 			expected_content_type,
 			callback,
