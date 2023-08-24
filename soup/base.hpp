@@ -86,7 +86,7 @@
 
 // === C++ version abstraction macros
 
-#if __cplusplus == 199711L
+#if __cplusplus == 1997'11L
 	#error Please set the /Zc:__cplusplus compiler flag or manually adjust __cplusplus when using Soup.
 #endif
 
@@ -95,7 +95,7 @@
 	#undef SOUP_CPP20
 #endif
 
-#if __cplusplus < 202002L
+#if __cplusplus < 2020'00L
 	#define SOUP_CPP20 false
 #else
 	#define SOUP_CPP20 true
@@ -111,6 +111,18 @@
 #else
 	#define SOUP_IF_LIKELY(cond) if (cond)
 	#define SOUP_IF_UNLIKELY(cond) if (cond)
+#endif
+
+#if __cplusplus < 2023'00L
+	#define SOUP_CPP23 false
+#else
+	#define SOUP_CPP23 true
+#endif
+
+#if SOUP_CPP23
+	#define SOUP_ASSUME(x) [[assume(x)]];
+#else
+	#define SOUP_ASSUME(x) ;
 #endif
 
 // === Platform-specific types
