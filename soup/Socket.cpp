@@ -368,6 +368,11 @@ namespace soup
 			ext_elliptic_curves.named_curves = {
 				NamedCurves::x25519,
 				NamedCurves::secp256r1,
+
+				// We don't support secp384r1 for key exchange which is what this extension is SUPPOSED to be for
+				// but the retarded NGINX/OpenSSL devs thought it's a good idea to use this extension to check if we support prospective certificates
+				// so we also say secp384r1 here in case that's what the cert uses.
+				NamedCurves::secp384r1,
 			};
 
 			hello.extensions.add(TlsExtensionType::elliptic_curves, ext_elliptic_curves);
@@ -379,23 +384,16 @@ namespace soup
 		}
 
 		{
-			// NGINX (e.g., api.deepl.com) closes with "internal_error" if signature_algorithms is not present. We provide the following:
+			// NGINX/OpenSSL (e.g., api.deepl.com) closes with "internal_error" if signature_algorithms is not present. We provide the following:
+			// - ecdsa_secp256r1_sha256 (0x0403)
 			// - rsa_pss_rsae_sha256 (0x0804)
 			// - rsa_pkcs1_sha256 (0x0401)
+			// - ecdsa_secp384r1_sha384 (0x0503)
 			// - rsa_pss_rsae_sha384 (0x0805)
 			// - rsa_pkcs1_sha384 (0x0501)
 			// - rsa_pss_rsae_sha512 (0x0806)
 			// - rsa_pkcs1_sha512 (0x0601)
-			// Also these, but doing so may cause some servers to fail handshake if it picks a cert where curve is not in our elliptic_curves:
-			// - ecdsa_secp384r1_sha384 (0x0503)
-			// - ecdsa_secp256r1_sha256 (0x0403)
-			// We provide them anyway because Cloudflare certs are EC only.
-			// We don't provide them in elliptic_curves because we don't support them for ECDHE.
-#if false
-			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x0C\x08\x04\x04\x01\x08\x05\x05\x01\x08\x06\x06\x01", 14));
-#else
 			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01", 18));
-#endif
 		}
 
 		{
