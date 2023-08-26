@@ -1002,6 +1002,7 @@ static void unit_util()
 	{
 		assert(version_compare("1.0", "0.1") > 0);
 		assert(version_compare("0.1", "0") > 0);
+		assert(version_compare("1.0", "1.0-dev") > 0);
 	});
 }
 

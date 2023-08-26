@@ -4,18 +4,21 @@
 
 namespace soup
 {
-	strong_ordering version_compare(const std::string& in_a, const std::string& in_b)
+	strong_ordering version_compare(std::string in_a, std::string in_b)
 	{
-		std::vector<unsigned long> a{};
-		std::vector<unsigned long> b{};
+		std::vector<long> a{};
+		std::vector<long> b{};
+
+		string::replaceAll(in_a, "-", ".");
+		string::replaceAll(in_b, "-", ".");
 
 		for (const auto& s : string::explode(in_a, '.'))
 		{
-			a.emplace_back(std::stoul(s));
+			a.emplace_back(string::toInt<long>(s, -1));
 		}
 		for (const auto& s : string::explode(in_b, '.'))
 		{
-			b.emplace_back(std::stoul(s));
+			b.emplace_back(string::toInt<long>(s, -1));
 		}
 
 		if (a.size() != b.size())
