@@ -297,6 +297,17 @@ namespace soup
 		return certchain_validator_relaxed(chain, name);
 	}
 
+	template <typename T>
+	static void vector_emplace_back_randomised(std::vector<T>& target, std::vector<T>&& values)
+	{
+		while (!values.empty())
+		{
+			size_t i = rand(0, values.size() - 1);
+			target.emplace_back(values.at(i));
+			values.erase(values.begin() + i);
+		}
+	}
+
 	[[nodiscard]] static TlsCipherSuite_t tls_randGreaseyCiphersuite()
 	{
 		switch (rand(0, 15))
@@ -333,23 +344,26 @@ namespace soup
 		hello.random.time = time::unixSeconds();
 		rand.fill(hello.random.random);
 		handshaker->client_random = hello.random.toBinaryString();
-		hello.cipher_suites = {
+		vector_emplace_back_randomised(hello.cipher_suites, {
 			TLS_RSA_WITH_AES_256_CBC_SHA256,
 			TLS_RSA_WITH_AES_128_CBC_SHA256,
 			TLS_RSA_WITH_AES_256_CBC_SHA,
 			TLS_RSA_WITH_AES_128_CBC_SHA,
-
+		});
+		vector_emplace_back_randomised(hello.cipher_suites, {
 			TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
 			TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, // Cloudfront
 			TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-
+		});
+		vector_emplace_back_randomised(hello.cipher_suites, {
 			TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, // Cloudflare
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, // Cloudflare
 			TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, // Cloudflare
-
+		});
+		vector_emplace_back_randomised(hello.cipher_suites, {
 			TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, // Apache + Let's Encrypt
 			TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, // Apache + Let's Encrypt
-		};
+		});
 		hello.cipher_suites.emplace(
 			hello.cipher_suites.begin() + rand(0, hello.cipher_suites.size() - 1),
 			tls_randGreaseyCiphersuite()
@@ -374,8 +388,9 @@ namespace soup
 			hello.extensions.add(TlsExtensionType::elliptic_curves, ext_elliptic_curves);
 		}
 
+		// RFC 8422 says we MUST send this if we're compliant, but this isn't practically needed, so we're using it to defend against JA3 fingerprinting.
+		if (soup::rand.coinflip())
 		{
-			// Not practically needed but RFC 8422 says we MUST send this if we're compliant.
 			hello.extensions.add(TlsExtensionType::ec_point_formats, std::string("\x01\x00", 2));
 		}
 
@@ -392,9 +407,11 @@ namespace soup
 			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01", 18));
 		}
 
+		// We support only TLS 1.2. Not particularly useful to provide this extension, but in the future we may support TLS 1.3 and then
+		// this would defend against downgrade attacks.
+		// For now, we can use it to defend against JA3 fingerprinting. :^)
+		if (soup::rand.coinflip())
 		{
-			// We support only TLS 1.2. Not particularly useful to provide this extension, but in the future we may support TLS 1.3 and then
-			// this would defend against downgrade attacks.
 			hello.extensions.add(TlsExtensionType::supported_versions, "\x02\x03\x03");
 		}
 
