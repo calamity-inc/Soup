@@ -374,6 +374,11 @@ namespace soup
 		}
 
 		{
+			// Not practically needed but RFC 8422 says we MUST send this if we're compliant.
+			hello.extensions.add(TlsExtensionType::ec_point_formats, std::string("\x01\x00", 2));
+		}
+
+		{
 			// NGINX (e.g., api.deepl.com) closes with "internal_error" if signature_algorithms is not present. We provide the following:
 			// - rsa_pss_rsae_sha256 (0x0804)
 			// - rsa_pkcs1_sha256 (0x0401)
@@ -391,6 +396,12 @@ namespace soup
 #else
 			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01", 18));
 #endif
+		}
+
+		{
+			// We support only TLS 1.2. Not particularly useful to provide this extension, but in the future we may support TLS 1.3 and then
+			// this would defend against downgrade attacks.
+			hello.extensions.add(TlsExtensionType::supported_versions, "\x02\x03\x03");
 		}
 
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_hello, hello.toBinaryString()))
