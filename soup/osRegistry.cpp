@@ -6,6 +6,8 @@
 #include "Exception.hpp"
 #include "unicode.hpp"
 
+#pragma comment(lib, "Advapi32")
+
 namespace soup
 {
 	using Key = osRegistry::Key;
