@@ -5,7 +5,10 @@ echo <<<EOC
 -- See also: https://github.com/calamity-inc/Soup-Lua-Bindings
 
 local ffi = require("luaffi") -- https://github.com/calamity-inc/luaffi
-local libsoup = ffi.open("soup")
+if not SOUP_WORKING_DIR then
+	SOUP_WORKING_DIR = ""
+end
+local libsoup = ffi.open(SOUP_WORKING_DIR .. "soup")
 
 local function initClass(mt, t)
 	setmetatable(t, mt)
