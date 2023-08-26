@@ -7,6 +7,7 @@
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
+#include <ecc.hpp>
 
 #include <base32.hpp>
 #include <base58.hpp>
@@ -162,6 +163,29 @@ static void unit_crypto()
 		assert(kp.getPrivate().encryptUnpadded("Soup") == enc);
 		assert(kp.getPublic().decryptUnpadded(enc) == "Soup");
 	});
+
+	unit("ecc")
+	{
+		test("secp256r1", []
+		{
+			// https://asecuritysite.com/ecc/p256p
+			auto curve = EccCurve::secp256r1();
+			auto p = curve.multiply(curve.G, "1"_b);
+			assert(p.getX() == curve.G.getX());
+			assert(p.getY() == curve.G.getY());
+			p = curve.multiply(curve.G, "2"_b);
+			assert(p.getX() == "0x7cf27b188d034f7e8a52380304b51ac3c08969e277f21b35a60b48fc47669978"_b);
+			assert(p.getY() == "0x7775510db8ed040293d9ac69f7430dbba7dade63ce982299e04b79d227873d1"_b);
+		});
+		test("secp384r1", []
+		{
+			// http://cryptomanager.com/tv.html
+			auto curve = EccCurve::secp384r1();
+			auto pub = curve.derivePublic("0x911540762B807060EBB1071D8B76F9C6B0C8570B2D56204B7D62448443171798EDF712E7CF55895D675FFE7B5CF35750"_b);
+			assert(pub.getX() == "0xB7828FF3F814932B531D3CD58947A77655CA12EE533333EE12E921C39114B752BEFDB3E45C05D6C1F8222C5C6B234E8D"_b);
+			assert(pub.getY() == "0x1F4B1BBA3434C6BAA34250744B4E109E09A55D5F3075BEC33256C94A468792C2B5650D24F85482C988B7328E825F488D"_b);
+		});
+	}
 }
 
 static void unit_data()

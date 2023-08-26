@@ -368,10 +368,6 @@ namespace soup
 			ext_elliptic_curves.named_curves = {
 				NamedCurves::x25519,
 				NamedCurves::secp256r1,
-
-				// We don't support secp384r1 for key exchange which is what this extension is SUPPOSED to be for
-				// but the retarded NGINX/OpenSSL devs thought it's a good idea to use this extension to check if we support prospective certificates
-				// so we also say secp384r1 here in case that's what the cert uses.
 				NamedCurves::secp384r1,
 			};
 
@@ -487,6 +483,17 @@ namespace soup
 								}
 								ske.point.erase(0, 1); // leave only X + Y
 							}
+							else if (ske.named_curve == NamedCurves::secp384r1)
+							{
+								if (ske.point.size() != 97 // first byte for compression format (4 for uncompressed) + 48 for X + 48 for Y
+									|| ske.point.at(0) != 4
+									)
+								{
+									s.tls_close(TlsAlertDescription::handshake_failure);
+									return;
+								}
+								ske.point.erase(0, 1); // leave only X + Y
+							}
 							else
 							{
 								s.tls_close(TlsAlertDescription::handshake_failure);
@@ -575,29 +582,42 @@ namespace soup
 			cke = std::string(1, (char)sizeof(my_pub));
 			cke.append((const char*)my_pub, sizeof(my_pub));
 		}
-		else if (handshaker->ecdhe_curve == NamedCurves::secp256r1)
+		else if (handshaker->ecdhe_curve == NamedCurves::secp256r1
+			|| handshaker->ecdhe_curve == NamedCurves::secp384r1
+			)
 		{
-			auto curve = EccCurve::secp256r1();
+			EccCurve curve;
+			size_t csize;
+			if (handshaker->ecdhe_curve != NamedCurves::secp384r1)
+			{
+				curve = EccCurve::secp256r1();
+				csize = 32;
+			}
+			else
+			{
+				curve = EccCurve::secp384r1();
+				csize = 48;
+			}
 
 			auto my_priv = curve.generatePrivate();
 
 			EccPoint their_pub(
-				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, 32)),
-				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(32, 32))
+				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, csize)),
+				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(csize, csize))
 			);
 			SOUP_ASSERT(curve.validate(their_pub));
 
 			auto shared_point = curve.multiply(their_pub, my_priv);
 			auto shared_secret = shared_point.getX().toBinary();
-			SOUP_ASSERT(shared_secret.size() == 32);
+			SOUP_ASSERT(shared_secret.size() == csize);
 			handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>(std::move(shared_secret));
 
 			auto my_pub = curve.derivePublic(my_priv);
 
 			cke = my_pub.toBinary();
-			SOUP_ASSERT(cke.size() == 32 + 32);
+			SOUP_ASSERT(cke.size() == csize + csize);
 			cke.insert(0, 1, 4); // uncompressed
-			cke.insert(0, 1, 1 + 32 + 32);
+			cke.insert(0, 1, 1 + csize + csize);
 		}
 		else
 		{

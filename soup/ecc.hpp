@@ -47,6 +47,7 @@ namespace soup
 		Bigint n;
 
 		[[nodiscard]] static EccCurve secp256r1();
+		[[nodiscard]] static EccCurve secp384r1();
 
 		[[nodiscard]] Bigint generatePrivate() const;
 		[[nodiscard]] EccPoint derivePublic(const Bigint& d) const;
