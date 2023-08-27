@@ -64,7 +64,7 @@ namespace soup
 				connector.destroy();
 				if (shouldRecycle())
 				{
-					// Tag socket we just created for reuse, if permitted by scheduler and no other reusable socket for the host exists.
+					// Tag socket we just created for reuse if permitted by scheduler and no other reusable socket for the host exists.
 					if (Scheduler::get()->dont_make_reusable_sockets
 						|| Scheduler::get()->findReusableSocketForHost(hr.getHost())
 						)
