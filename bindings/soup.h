@@ -21,6 +21,7 @@
 	typedef void QrCode;
 	typedef void RsaKeypair;
 	typedef void Totp;
+	typedef void YubikeyValidator;
 
 	typedef void stdexception;
 	typedef void stdstring;
@@ -97,6 +98,9 @@ SOUP_CEXPORT void Scheduler_add(void* sched, void* spWorker);
 SOUP_CEXPORT Totp* Totp_new(const stdstring* secret);
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);
 SOUP_CEXPORT int Totp_getValue(const Totp* x);
+// YubikeyValidator
+SOUP_CEXPORT YubikeyValidator* YubikeyValidator_new(const char* id, const char* secret);
+SOUP_CEXPORT const char* YubikeyValidator_validate(const YubikeyValidator* x, const char* otp);
 // exception
 SOUP_CEXPORT const char* exception_what(const stdexception* x);
 

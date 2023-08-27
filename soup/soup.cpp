@@ -37,6 +37,7 @@ typedef void (*void_func_t)();
 #include "rsa.hpp"
 #include "Totp.hpp"
 #include "Uri.hpp"
+#include "YubikeyValidator.hpp"
 
 using namespace soup;
 
@@ -372,6 +373,18 @@ SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, con
 SOUP_CEXPORT int Totp_getValue(const Totp* x)
 {
 	return x->getValue();
+}
+
+// YubikeyValidator
+
+SOUP_CEXPORT YubikeyValidator* YubikeyValidator_new(const char* id, const char* secret)
+{
+	return heap.add(new YubikeyValidator(id, secret));
+}
+
+SOUP_CEXPORT const char* YubikeyValidator_validate(const YubikeyValidator* x, const char* otp)
+{
+	returnString(x->validate(otp).device_id);
 }
 
 // std::exception
