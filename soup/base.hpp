@@ -138,8 +138,12 @@
 
 // === Development helper macros
 
-namespace soup { [[noreturn]] void throwAssertionFailed(); }
-#define SOUP_ASSERT(x) SOUP_IF_UNLIKELY (!(x)) { ::soup::throwAssertionFailed(); }
+namespace soup
+{
+	[[noreturn]] void throwAssertionFailed();
+	[[noreturn]] void throwAssertionFailed(const char* what);
+}
+#define SOUP_ASSERT(x, ...) SOUP_IF_UNLIKELY (!(x)) { ::soup::throwAssertionFailed(__VA_ARGS__); }
 #define SOUP_ASSERT_UNREACHABLE ::soup::throwAssertionFailed();
 
 #define SOUP_ASSERT_ARG(x) SOUP_ASSERT(x)

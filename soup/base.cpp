@@ -9,4 +9,11 @@ namespace soup
 	{
 		throw Exception(ObfusString("Assertion failed").str());
 	}
+
+	void throwAssertionFailed(const char* what)
+	{
+		std::string msg = "Assertion failed: ";
+		msg.append(what);
+		throw Exception(std::move(msg));
+	}
 }
