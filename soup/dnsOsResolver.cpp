@@ -96,7 +96,9 @@ namespace soup
 				}
 				else if (ns_rr_type(rr) == ns_t_mx)
 				{
-					res.emplace_back(soup::make_unique<dnsMxRecord>(ns_rr_name(rr), ns_rr_ttl(rr), ntohs(*(unsigned short*)ns_rr_rdata(rr)), (const char*)(ns_rr_rdata(rr) + 2)));
+					char hostname[1024];
+					dn_expand(ns_msg_base(nsMsg), ns_msg_end(nsMsg), ns_rr_rdata(rr) + 2, hostname, sizeof(hostname));
+					res.emplace_back(soup::make_unique<dnsMxRecord>(ns_rr_name(rr), ns_rr_ttl(rr), ntohs(*(unsigned short*)ns_rr_rdata(rr)), hostname));
 				}
 				else if (ns_rr_type(rr) == ns_t_srv)
 				{
