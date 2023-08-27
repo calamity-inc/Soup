@@ -82,6 +82,11 @@ namespace soup
 #endif
 		}
 
+		[[nodiscard]] operator bool() const noexcept
+		{
+			return isConstructed();
+		}
+
 		[[nodiscard]] T& operator*() noexcept
 		{
 #if DELAYED_CTOR_DEBUGGER_FRIENDLY
