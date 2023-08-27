@@ -10,6 +10,8 @@
 #include <Socket.hpp>
 #include <string.hpp>
 #include <TlsClientHello.hpp>
+#include <TlsCipherSuite.hpp>
+#include <TlsExtensionType.hpp>
 #include <TlsServerRsaData.hpp>
 #include <WebSocketMessage.hpp>
 
@@ -18,6 +20,15 @@ struct SimpleServerClientData
 	std::vector<uint16_t> cipher_suites{};
 	std::vector<uint8_t> compression_methods{};
 	std::vector<uint16_t> extensions{};
+
+	[[nodiscard]] uint32_t getTlsIdHash() const noexcept
+	{
+		uint32_t sum = soup::crc32::INITIAL;
+		sum = soup::crc32::hash((const uint8_t*)cipher_suites.data(), cipher_suites.size() * 2, sum);
+		sum = soup::crc32::hash((const uint8_t*)compression_methods.data(), compression_methods.size(), sum);
+		sum = soup::crc32::hash((const uint8_t*)extensions.data(), extensions.size() * 2, sum);
+		return sum;
+	}
 };
 
 static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::ServerWebService&)
@@ -31,37 +42,13 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 </head>
 <body>
 	<h1>Soup</h1>
-	<p>Soup is a C++ framework that is currently private.</p>
+	<p>Soup is a C++ framework that does absolutely everything, with no external dependenices.</p>
 	<p>The website you are currently viewing is directly delivered to you via a relatively simple server, using Soup's powerful abstractions.</p>
 	<ul>
-		<li><a href="pem-decoder">PEM Decoder</a> - Using Soup's JS API, powered by WASM.</li>
+		<li><a href="/tlsid">TLS fingerprint</a></li>
 	</ul>
-</body>
-</html>
-)EOC");
-	}
-	else if (req.path == "/pem-decoder")
-	{
-		soup::ServerWebService::sendHtml(s, R"EOC(<html>
-<head>
-	<title>PEM Decoder | Soup</title>
-</head>
-<body>
-	<h1>PEM Decoder</h1>
-	<textarea oninput="processInput(event)"></textarea>
-	<pre></pre>
-	<script src="https://use.soup.do"></script>
-	<script>
-		function processInput(e)
-		{
-			if(soup.ready)
-			{
-				var seq = soup.asn1_sequence.new(soup.pem.decode(e.target.value));
-				document.querySelector("pre").textContent = soup.asn1_sequence.toString(seq);
-				soup.asn1_sequence.free(seq);
-			}
-		}
-	</script>
+	<hr>
+	<p><a href="https://github.com/calamity-inc/Soup">Soup on Github</a></p>
 </body>
 </html>
 )EOC");
@@ -74,12 +61,24 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 		}
 		else
 		{
+			// Disable keep-alive to allow seeing randomisation on reload.
+			soup::ServerWebService::disableKeepAlive(s);
+
 			auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
+
+			bool has_grease = false;
 
 			std::string cipher_suites_str{};
 			for (const auto& cs : data.cipher_suites)
 			{
-				soup::string::listAppend(cipher_suites_str, soup::string::hex(cs));
+				std::string str = soup::string::hex(cs);
+				if (soup::tls_isGreaseyCiphersuite(cs))
+				{
+					has_grease = true;
+					str.insert(0, "<i>");
+					str.append("</i>");
+				}
+				soup::string::listAppend(cipher_suites_str, std::move(str));
 			}
 
 			std::string compression_methods_str{};
@@ -91,18 +90,78 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 			std::string extensions_str{};
 			for (const auto& ext : data.extensions)
 			{
-				soup::string::listAppend(extensions_str, soup::string::hex(ext));
+				std::string str = soup::string::hex(ext);
+				if (soup::tls_isGreaseyExtension(ext))
+				{
+					has_grease = true;
+					str.insert(0, "<i>");
+					str.append("</i>");
+				}
+				soup::string::listAppend(extensions_str, std::move(str));
 			}
 
-			std::string str = "<p>Your user agent offered the following for the TLS handshake:</p><ul><li>Cipher suites: ";
+			std::string str = "<p>Your client offered the following for the TLS handshake:</p><ul><li>Cipher suites: ";
 			str.append(cipher_suites_str);
 			str.append("</li><li>Compression methods: ");
 			str.append(compression_methods_str);
 			str.append("</li><li>Extensions: ");
 			str.append(extensions_str);
-			str.append("</li></ul><p>\"Hashing\" this together gives us the following: ");
-			str.append(soup::string::hex(soup::crc32::hash(str)));
+			str.append("</li></ul>");
+			if (has_grease)
+			{
+				str.append("<p>Italic values are GREASE, which will be randomised with each request.</p>");
+
+				for (auto i = data.cipher_suites.begin(); i != data.cipher_suites.end(); )
+				{
+					if (soup::tls_isGreaseyCiphersuite(*i))
+					{
+						i = data.cipher_suites.erase(i);
+					}
+					else
+					{
+						++i;
+					}
+				}
+				for (auto i = data.extensions.begin(); i != data.extensions.end(); )
+				{
+					if (soup::tls_isGreaseyExtension(*i))
+					{
+						i = data.extensions.erase(i);
+					}
+					else
+					{
+						++i;
+					}
+				}
+			}
+
+			str.append("<p>\"Hashing\" this together ");
+			if (has_grease)
+			{
+				str.append("(sans GREASE) ");
+			}
+			str.append("gives us the following: ");
+			str.append(soup::string::hex(data.getTlsIdHash()));
+
+			std::sort(data.cipher_suites.begin(), data.cipher_suites.end(), [](uint16_t a, uint16_t b)
+			{
+				return a < b;
+			});
+			std::sort(data.extensions.begin(), data.extensions.end(), [](uint16_t a, uint16_t b)
+			{
+				return a < b;
+			});
+
+			str.append("</p><p>Additionally, if we ignore ordering, we get this hash: ");
+			str.append(soup::string::hex(data.getTlsIdHash()));
 			str.append("</p>");
+
+			// Chrome: CA5B7A48
+			// Firefox: D3519C76
+			// Firefox (Incognito): A0C44F97
+			// cURL: 2D01D915
+			// Soup: 3CCAD55E, 584CC037, B6289622, DA7F09A6
+
 			soup::ServerWebService::sendHtml(s, std::move(str));
 		}
 	}

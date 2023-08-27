@@ -24,6 +24,11 @@ namespace soup
 	{
 	}
 
+	void ServerWebService::disableKeepAlive(Socket& s)
+	{
+		s.custom_data.getStructFromMap(WebServerClientData).keep_alive = false;
+	}
+
 	void ServerWebService::sendContent(Socket& s, std::string body)
 	{
 		sendContent(s, "200", std::move(body));

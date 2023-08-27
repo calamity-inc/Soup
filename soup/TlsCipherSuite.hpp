@@ -42,4 +42,29 @@ namespace soup
 		TLS_GREASE_14 = 0xEAEA,
 		TLS_GREASE_15 = 0xFAFA,
 	};
+
+	[[nodiscard]] inline bool tls_isGreaseyCiphersuite(TlsCipherSuite_t ciphersuite)
+	{
+		switch (ciphersuite)
+		{
+		case TLS_GREASE_0:
+		case TLS_GREASE_1:
+		case TLS_GREASE_2:
+		case TLS_GREASE_3:
+		case TLS_GREASE_4:
+		case TLS_GREASE_5:
+		case TLS_GREASE_6:
+		case TLS_GREASE_7:
+		case TLS_GREASE_8:
+		case TLS_GREASE_9:
+		case TLS_GREASE_10:
+		case TLS_GREASE_11:
+		case TLS_GREASE_12:
+		case TLS_GREASE_13:
+		case TLS_GREASE_14:
+		case TLS_GREASE_15:
+			return true;
+		}
+		return false;
+	}
 }

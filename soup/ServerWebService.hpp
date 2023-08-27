@@ -25,6 +25,7 @@ namespace soup
 		ServerWebService(handle_request_t handle_request = nullptr);
 
 		// HTTP
+		static void disableKeepAlive(Socket& s);
 		static void sendContent(Socket& s, std::string body);
 		static void sendContent(Socket& s, const char* status, std::string body);
 		static void sendContent(Socket& s, HttpResponse&& resp);
