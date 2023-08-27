@@ -1449,6 +1449,9 @@
     <ClInclude Include="FiberTask.hpp">
       <Filter>task</Filter>
     </ClInclude>
+    <ClInclude Include="EmailAddress.hpp">
+      <Filter>net\email</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2321,6 +2324,9 @@
     </Filter>
     <Filter Include="net\cidr\interface">
       <UniqueIdentifier>{fa30efdc-f50f-4704-9a3b-16c74b58f622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\email">
+      <UniqueIdentifier>{fdc38d4c-17dd-4110-979d-b75739f33d5a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

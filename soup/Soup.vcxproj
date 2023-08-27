@@ -487,6 +487,7 @@
     <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
+    <ClInclude Include="EmailAddress.hpp" />
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />

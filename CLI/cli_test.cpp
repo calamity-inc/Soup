@@ -42,8 +42,13 @@
 
 #include <math.hpp>
 
+// net.email
+#include <EmailAddress.hpp>
+
+// net.web
 #include <Uri.hpp>
 
+// net
 #include <Socket.hpp>
 
 #include <StringMatch.hpp>
@@ -802,6 +807,27 @@ static void unit_math()
 	});
 }
 
+static void unit_net_email()
+{
+	test("EmailAddress", []
+	{
+		{
+			EmailAddress addr("Deez Nuts <deez@nuts.co>");
+			assert(addr.address == "deez@nuts.co");
+			assert(addr.name == "Deez Nuts");
+			assert(addr.toString() == "Deez Nuts <deez@nuts.co>");
+			assert(addr.getDomain() == "nuts.co");
+		}
+		{
+			EmailAddress addr("<deez@nuts.co>");
+			assert(addr.address == "deez@nuts.co");
+			assert(addr.name == "");
+			assert(addr.toString() == "<deez@nuts.co>");
+			assert(addr.getDomain() == "nuts.co");
+		}
+	});
+}
+
 static void test_uri()
 {
 	std::string str;
@@ -1080,6 +1106,10 @@ void cli_test()
 		}
 		unit("net")
 		{
+			unit("email")
+			{
+				unit_net_email();
+			}
 			unit("web")
 			{
 				test("uri", &test_uri);
