@@ -19,6 +19,7 @@ namespace soup
 		void setContentType();
 
 		void loadMessage(const std::string& data);
+		[[nodiscard]] bool hasHeader(const std::string& key);
 		void addHeader(const std::string& line);
 		void setHeader(const std::string& key, const std::string& value);
 		[[nodiscard]] static std::string normaliseHeaderCasing(const std::string& key);

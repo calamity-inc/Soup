@@ -69,6 +69,15 @@ namespace soup
 		}
 	}
 
+	bool MimeMessage::hasHeader(const std::string& key)
+	{
+#if SOUP_CPP20
+		return header_fields.contains(key);
+#else
+		return header_fields.find(key) != header_fields.end();
+#endif
+	}
+
 	void MimeMessage::addHeader(const std::string& line)
 	{
 		if (auto key_offset = line.find(": "); key_offset != std::string::npos)
