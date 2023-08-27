@@ -6,7 +6,7 @@
 #include "dns_records.hpp"
 #include "UniquePtr.hpp"
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 #include "TransientToken.hpp"
 #endif
 
@@ -14,7 +14,7 @@ namespace soup
 {
 	struct dnsResolver
 	{
-#ifdef _DEBUG
+#ifndef NDEBUG
 		TransientToken transient_token;
 #endif
 

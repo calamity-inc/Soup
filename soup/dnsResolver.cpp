@@ -4,7 +4,7 @@
 
 #include "DetachedScheduler.hpp"
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 #include "WeakRef.hpp"
 #endif
 
@@ -14,7 +14,7 @@ namespace soup
 
 	struct dnsAsyncExecTask : public Task
 	{
-#ifdef _DEBUG
+#ifndef NDEBUG
 		WeakRef<dnsResolver> resolv;
 #else
 		const dnsResolver& resolv;
@@ -26,7 +26,7 @@ namespace soup
 
 		dnsAsyncExecTask(const dnsResolver& resolv, dnsType qtype, const std::string& name)
 			:
-#ifdef _DEBUG
+#ifndef NDEBUG
 			resolv(const_cast<dnsResolver*>(&resolv))
 #else
 			resolv(resolv)
@@ -37,7 +37,7 @@ namespace soup
 
 		void onTick() final
 		{
-#ifdef _DEBUG
+#ifndef NDEBUG
 			auto pResolv = resolv.getPointer();
 			SOUP_ASSERT(pResolv); // Resolver has been deleted in the time the task was started. Was it stack-allocated?
 			result = pResolv->lookup(qtype, name);
