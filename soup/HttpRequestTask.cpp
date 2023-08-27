@@ -60,7 +60,7 @@ namespace soup
 		case CONNECTING:
 			if (connector->tickUntilDone())
 			{
-				sock = connector->onDone(*Scheduler::get());
+				sock = connector->onDone();
 				connector.destroy();
 				if (shouldRecycle())
 				{

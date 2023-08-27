@@ -78,6 +78,11 @@ namespace soup
 		}
 	}
 
+	SharedPtr<Socket> netConnectTask::onDone()
+	{
+		return onDone(*Scheduler::get());
+	}
+
 	SharedPtr<Socket> netConnectTask::onDone(Scheduler& sched)
 	{
 		SOUP_ASSERT(connect);

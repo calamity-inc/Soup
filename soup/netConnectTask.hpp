@@ -51,6 +51,7 @@ namespace soup
 
 		void onTick() final;
 
+		[[nodiscard]] SharedPtr<Socket> onDone(); // Output
 		[[nodiscard]] SharedPtr<Socket> onDone(Scheduler& sched); // Output
 
 	protected:
