@@ -14,6 +14,7 @@
 	typedef void Bigint;
 	typedef void Canvas;
 	typedef void cbResult;
+	typedef void CidrSubnetInterface;
 	typedef void HttpRequest;
 	typedef void KeyGenId;
 	typedef void MimeMessage;
