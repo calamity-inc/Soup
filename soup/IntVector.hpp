@@ -2,7 +2,6 @@
 
 #include <cstring> // memcpy
 
-#include "branchless.hpp"
 #ifdef _DEBUG
 #include "Exception.hpp"
 #endif
@@ -52,6 +51,10 @@ namespace soup
 			{
 				data = (T*)malloc(max_elms * sizeof(T));
 				memcpy(data, b.data, num_elms * sizeof(T));
+			}
+			else
+			{
+				data = nullptr;
 			}
 		}
 
@@ -156,7 +159,7 @@ namespace soup
 	protected:
 		void makeSpaceForMoreElements() noexcept
 		{
-			const auto old_data = branchless::trinary<T*>(max_elms == 0, nullptr, data);
+			const auto old_data = data;
 			max_elms += (0x1000 / sizeof(T));
 			data = (T*)malloc(max_elms * sizeof(T));
 			if (old_data != nullptr)
@@ -179,6 +182,7 @@ namespace soup
 			{
 				max_elms = 0;
 				::free(data);
+				data = nullptr;
 			}
 		}
 
