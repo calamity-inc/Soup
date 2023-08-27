@@ -1611,7 +1611,7 @@ namespace soup
 	Bigint Bigint::modMulInv(const Bigint& m) const
 	{
 		Bigint x, y;
-		if (gcd(m, x, y) == Bigint((chunk_t)1u))
+		if (gcd(m, x, y) == Bigint((chunk_t)1u)) // Is coprime?
 		{
 			return (x % m + m) % m;
 		}
