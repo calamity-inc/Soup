@@ -379,12 +379,20 @@ SOUP_CEXPORT int Totp_getValue(const Totp* x)
 
 SOUP_CEXPORT YubikeyValidator* YubikeyValidator_new(const char* id, const char* secret)
 {
+#if SOUP_WASM
+	return nullptr;
+#else
 	return heap.add(new YubikeyValidator(id, secret));
+#endif
 }
 
 SOUP_CEXPORT const char* YubikeyValidator_validate(const YubikeyValidator* x, const char* otp)
 {
+#if SOUP_WASM
+	return "";
+#else
 	returnString(x->validate(otp).device_id);
+#endif
 }
 
 // std::exception

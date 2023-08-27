@@ -17,6 +17,7 @@ namespace soup
 	// crypto
 	struct RsaKeypair;
 	struct TrustStore;
+	class YubikeyValidator;
 
 	// crypto.x509
 	struct X509Certchain;
