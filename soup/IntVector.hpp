@@ -3,6 +3,9 @@
 #include <cstring> // memcpy
 
 #include "branchless.hpp"
+#ifdef _DEBUG
+#include "Exception.hpp"
+#endif
 
 namespace soup
 {
@@ -79,13 +82,25 @@ namespace soup
 			return data[idx];
 		}
 
-		[[nodiscard]] T& at(size_t idx) noexcept
+		[[nodiscard]] T& at(size_t idx)
 		{
+#ifdef _DEBUG
+			SOUP_IF_UNLIKELY (idx >= size())
+			{
+				throw Exception("Out of range");
+			}
+#endif
 			return data[idx];
 		}
 
-		[[nodiscard]] const T& at(size_t idx) const noexcept
+		[[nodiscard]] const T& at(size_t idx) const
 		{
+#ifdef _DEBUG
+			SOUP_IF_UNLIKELY (idx >= size())
+			{
+				throw Exception("Out of range");
+			}
+#endif
 			return data[idx];
 		}
 
