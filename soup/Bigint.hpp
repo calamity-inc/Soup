@@ -330,12 +330,12 @@ namespace soup
 
 	namespace literals
 	{
-		inline Bigint operator "" _b(unsigned long long v)
+		inline Bigint operator ""_b(unsigned long long v)
 		{
 			return Bigint((size_t)v);
 		}
 
-		inline Bigint operator "" _b(const char* str, size_t len)
+		inline Bigint operator ""_b(const char* str, size_t len)
 		{
 			return Bigint::fromString(str, len);
 		}

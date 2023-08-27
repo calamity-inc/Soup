@@ -156,7 +156,7 @@ namespace soup
 	namespace literals
 	{
 		template <StringLiteral Str>
-		consteval auto operator "" _obfus()
+		consteval auto operator ""_obfus()
 		{
 			return ObfusString<Str.size()>(Str.data);
 		}
