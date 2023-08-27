@@ -215,11 +215,6 @@ namespace soup
 		return 0;
 	}
 
-	chunk_t Bigint::getChunkInbounds(size_t i) const noexcept
-	{
-		return chunks[i];
-	}
-
 	void Bigint::setChunk(size_t i, chunk_t v)
 	{
 		if (i < chunks.size())
@@ -230,11 +225,6 @@ namespace soup
 		{
 			addChunk(v);
 		}
-	}
-
-	void Bigint::setChunkInbounds(size_t i, chunk_t v)
-	{
-		chunks[i] = v;
 	}
 
 	void Bigint::addChunk(size_t i, chunk_t v)
@@ -767,7 +757,7 @@ namespace soup
 			{
 				for (size_t i = getNumBits(); i-- != 0; )
 				{
-					res.second.leftShiftSmall(1);
+					res.second.leftShiftOne();
 					res.second.setBit(0, getBitInbounds(i));
 					if (res.second >= divisor)
 					{
@@ -805,7 +795,7 @@ namespace soup
 		Bigint remainder{};
 		for (size_t i = getNumBits(); i-- != 0; )
 		{
-			remainder.leftShiftSmall(1);
+			remainder.leftShiftOne();
 			remainder.setBit(0, getBitInbounds(i));
 			if (remainder >= divisor)
 			{
@@ -876,20 +866,60 @@ namespace soup
 
 	void Bigint::leftShiftSmall(const size_t b)
 	{
-		size_t carry = 0;
+		chunk_t carry = 0;
 		const auto nc = getNumChunks();
-		for (size_t i = 0; i != nc; ++i)
+		size_t i = 0;
+		if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
 		{
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if (nc >= 4)
+			{
+				for (; i <= nc - 4; i += 4)
+				{
+					chunk_t c0[2];
+					chunk_t c1[2];
+					chunk_t c2[2];
+					chunk_t c3[2];
+
+					c0[0] = getChunkInbounds(i + 0);
+					c0[1] = 0;
+					c1[0] = getChunkInbounds(i + 1);
+					c1[1] = 0;
+					c2[0] = getChunkInbounds(i + 2);
+					c2[1] = 0;
+					c3[0] = getChunkInbounds(i + 3);
+					c3[1] = 0;
+
+					*reinterpret_cast<size_t*>(&c0[0]) = (*reinterpret_cast<size_t*>(&c0[0]) << b);
+					*reinterpret_cast<size_t*>(&c1[0]) = (*reinterpret_cast<size_t*>(&c1[0]) << b);
+					*reinterpret_cast<size_t*>(&c2[0]) = (*reinterpret_cast<size_t*>(&c2[0]) << b);
+					*reinterpret_cast<size_t*>(&c3[0]) = (*reinterpret_cast<size_t*>(&c3[0]) << b);
+
+					c0[0] |= carry;
+					c1[0] |= c0[1];
+					c2[0] |= c1[1];
+					c3[0] |= c2[1];
+
+					setChunkInbounds(i + 0, c0[0]);
+					setChunkInbounds(i + 1, c1[0]);
+					setChunkInbounds(i + 2, c2[0]);
+					setChunkInbounds(i + 3, c3[0]);
+
+					carry = c3[1];
+				}
+			}
+			for (; i < nc; ++i)
 			{
 				chunk_t c[2];
 				c[0] = getChunkInbounds(i);
 				c[1] = 0;
-				*reinterpret_cast<size_t*>(&c[0]) = ((*reinterpret_cast<size_t*>(&c[0]) << b) | carry);
-				setChunkInbounds(i, c[0]);
+				*reinterpret_cast<size_t*>(&c[0]) = (*reinterpret_cast<size_t*>(&c[0]) << b);
+				setChunkInbounds(i, c[0] | carry);
 				carry = c[1];
 			}
-			else
+		}
+		else
+		{
+			for (; i != nc; ++i)
 			{
 				size_t c = getChunkInbounds(i);
 				c = ((c << b) | carry);
@@ -901,6 +931,11 @@ namespace soup
 		{
 			addChunk(carry);
 		}
+	}
+
+	void Bigint::leftShiftOne()
+	{
+		leftShiftSmall(1);
 	}
 
 	void Bigint::operator>>=(const size_t b)

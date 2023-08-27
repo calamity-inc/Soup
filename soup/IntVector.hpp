@@ -69,12 +69,12 @@ namespace soup
 			return num_elms;
 		}
 
-		[[nodiscard]] T& operator[](size_t idx) noexcept
+		[[nodiscard]] SOUP_FORCEINLINE T& operator[](size_t idx) noexcept
 		{
 			return data[idx];
 		}
 
-		[[nodiscard]] const T& operator[](size_t idx) const noexcept
+		[[nodiscard]] SOUP_FORCEINLINE const T& operator[](size_t idx) const noexcept
 		{
 			return data[idx];
 		}

@@ -93,11 +93,11 @@ namespace soup
 
 		[[nodiscard]] chunk_t getChunk(size_t i) const noexcept;
 	private:
-		[[nodiscard]] chunk_t getChunkInbounds(size_t i) const noexcept;
+		[[nodiscard]] SOUP_FORCEINLINE chunk_t getChunkInbounds(size_t i) const noexcept { return chunks[i]; }
 	public:
 		void setChunk(size_t i, chunk_t v);
 	private:
-		void setChunkInbounds(size_t i, chunk_t v);
+		SOUP_FORCEINLINE void setChunkInbounds(size_t i, chunk_t v) noexcept { chunks[i] = v; }
 	public:
 		void addChunk(size_t i, chunk_t v);
 		void addChunk(chunk_t v);
@@ -182,6 +182,7 @@ namespace soup
 		void operator<<=(const size_t b);
 	private:
 		void leftShiftSmall(const size_t b);
+		void leftShiftOne();
 	public:
 		void operator>>=(const size_t b);
 		void operator|=(const Bigint& b);
