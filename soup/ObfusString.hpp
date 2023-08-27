@@ -54,7 +54,7 @@ namespace soup
 			}
 
 			// mirror
-			for (size_t i = 0, j = Len - 1; i != Len; ++i, --j)
+			for (size_t i = 0, j = Len - 1; i != Len / 2; ++i, --j)
 			{
 				std::swap(data[i], data[j]);
 			}
@@ -70,7 +70,7 @@ namespace soup
 			seed = 0;
 
 			// mirror
-			for (size_t i = 0, j = Len - 1; i != Len; ++i, --j)
+			for (size_t i = 0, j = Len - 1; i != Len / 2; ++i, --j)
 			{
 				std::swap(data[i], data[j]);
 			}
