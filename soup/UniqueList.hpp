@@ -18,14 +18,29 @@ namespace soup
 			{
 			}
 
-			void operator++(int) noexcept
+			T& operator*() const noexcept
 			{
-				return node->next;
+				return *node;
 			}
 
 			T* operator->() const noexcept
 			{
 				return node;
+			}
+
+			bool operator==(const Iterator& b) const noexcept
+			{
+				return node == b.node;
+			}
+
+			bool operator!=(const Iterator& b) const noexcept
+			{
+				return !operator==(b);
+			}
+
+			void operator++() noexcept
+			{
+				node = node->unique_list_link.next;
 			}
 		};
 
@@ -72,7 +87,13 @@ namespace soup
 
 		T* emplace_back(UniquePtr<T>&& up)
 		{
-			T* node = up.release();
+			return emplace_back(up.release());
+		}
+
+		T* emplace_back(T* node)
+		{
+			// Initialise node's next-pointer to nullptr
+			node->unique_list_link.next = nullptr;
 
 			// Update prev-pointer of new node
 			node->unique_list_link.prev = tail;
@@ -80,7 +101,7 @@ namespace soup
 			// Update previous next-pointer
 			if (tail)
 			{
-				tail->next = node;
+				tail->unique_list_link.next = node;
 			}
 			else
 			{
@@ -89,6 +110,8 @@ namespace soup
 
 			// Update tail
 			tail = node;
+
+			return node;
 		}
 
 		Iterator erase(Iterator it)
@@ -107,7 +130,7 @@ namespace soup
 			// Update next prev-pointer
 			if (next)
 			{
-				next->prev = prev;
+				next->unique_list_link.prev = prev;
 			}
 			else
 			{
@@ -117,7 +140,7 @@ namespace soup
 			// Update previous next-pointer
 			if (prev)
 			{
-				prev->next = next;
+				prev->unique_list_link.next = next;
 			}
 			else
 			{
