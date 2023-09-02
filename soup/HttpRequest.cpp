@@ -110,6 +110,9 @@ namespace soup
 				send(*s);
 				execute_recvResponse(*s, &data.resp);
 			}
+#if SOUP_WINDOWS
+			sched.add_worker_can_wait_forever_for_all_i_care = true;
+#endif
 			sched.run();
 		}
 		return data.resp;

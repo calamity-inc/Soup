@@ -176,7 +176,14 @@ namespace soup
 		// Why timeout=1?
 		// - On Linux, poll does not detect closed sockets, even if shutdown is used.
 		// - If a scheduler that is only waiting on sockets has addWorker called on it, we don't want an insane delay until that worker starts.
-		if (poll(pollfds, 1) > 0)
+		int timeout = 1;
+#if SOUP_WINDOWS
+		if (add_worker_can_wait_forever_for_all_i_care)
+		{
+			timeout = -1;
+		}
+#endif
+		if (poll(pollfds, timeout) > 0)
 		{
 			processPollResults(pollfds);
 		}

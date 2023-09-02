@@ -27,6 +27,9 @@ namespace soup
 		AtomicDeque<SharedPtr<Worker>> pending_workers{};
 		size_t passive_workers = 0;
 		bool dont_make_reusable_sockets = false;
+#if SOUP_WINDOWS
+		bool add_worker_can_wait_forever_for_all_i_care = false;
+#endif
 
 		using on_work_done_t = void(*)(Worker&, Scheduler&);
 		using on_connection_lost_t = void(*)(Socket&, Scheduler&);
