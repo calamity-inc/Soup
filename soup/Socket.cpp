@@ -87,7 +87,7 @@ namespace soup
 	bool Socket::init(int af, int type)
 	{
 		close();
-		fd = ::socket(af, type, 0);
+		fd = ::socket(af, type, type == SOCK_STREAM ? IPPROTO_TCP : /* SOCK_DGRAM -> */ IPPROTO_UDP);
 		return fd != -1;
 	}
 
