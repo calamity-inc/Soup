@@ -195,7 +195,7 @@ namespace soup
 		peer.port = port;
 		sockaddr_in6 sa{};
 		sa.sin6_family = AF_INET6;
-		sa.sin6_port = htons(port);
+		sa.sin6_port = Endianness::toNetwork(native_u16_t(port));
 		memcpy(&sa.sin6_addr, &addr.data, sizeof(in6_addr));
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
@@ -214,7 +214,7 @@ namespace soup
 		peer.port = port;
 		sockaddr_in sa{};
 		sa.sin_family = AF_INET;
-		sa.sin_port = htons(port);
+		sa.sin_port = Endianness::toNetwork(native_u16_t(port));
 		sa.sin_addr.s_addr = addr.getV4();
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
