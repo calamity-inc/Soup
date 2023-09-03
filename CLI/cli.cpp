@@ -9,6 +9,7 @@
 #include <CompiledExecutable.hpp>
 #include <country_names.hpp>
 #include <console.hpp>
+#include <dhcp.hpp>
 #include <Editor.hpp>
 #include <FileReader.hpp>
 #include <HttpRequest.hpp>
@@ -64,6 +65,19 @@ int main(int argc, const char** argv)
 		if (subcommand == "datareflection")
 		{
 			cli_datareflection();
+			return 0;
+		}
+
+		if (subcommand == "dhcp")
+		{
+			if (auto info = dhcp::requestInfo(); info.isValid())
+			{
+				std::cout << "Router \"" << info.server_name << "\" responded to DHCPInform and provided DNS server " << IpAddr(info.dns_server).toString() << "\n";
+			}
+			else
+			{
+				std::cout << "I screamed into the void, but the void did not respond. Possibly VPN network?\n";
+			}
 			return 0;
 		}
 
@@ -330,6 +344,7 @@ Available tools:
 - chatgpt [token] <model>
 - chess <FEN>
 - datareflection
+- dhcp
 - dig [domain] <type=A> <@<doh:>[server]>
 - dnsserver [file] <bind-ip>
 - dvd
