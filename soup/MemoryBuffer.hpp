@@ -11,8 +11,9 @@
 
 namespace soup
 {
-	struct MemoryBuffer
+	class MemoryBuffer
 	{
+	public:
 		Pointer start;
 		void* data;
 		size_t size;
@@ -22,8 +23,10 @@ namespace soup
 		~MemoryBuffer();
 
 		void updateRegion(const Module& mod, Pointer start, size_t size);
+	private:
 		void release();
 
+	public:
 		[[nodiscard]] bool covers(Pointer p, size_t size = 1) const noexcept;
 
 		template <typename T>
