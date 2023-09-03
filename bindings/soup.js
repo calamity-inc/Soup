@@ -149,7 +149,6 @@
 				soup.Canvas.resizeNearestNeighbour(c, w * f, h * f);
 			};
 
-			delete soup.cwrap;
 			soup.ready = true;
 			soup.use = function(f)
 			{
