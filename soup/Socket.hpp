@@ -74,6 +74,11 @@ namespace soup
 			return fd != -1;
 		}
 
+		[[nodiscard]] constexpr bool isInited() const noexcept
+		{
+			return fd != -1;
+		}
+
 		bool init(int af, int type);
 
 		bool connect(const char* host, uint16_t port) noexcept; // blocking
@@ -124,6 +129,10 @@ namespace soup
 		[[nodiscard]] bool isEncrypted() const noexcept;
 
 		bool send(const std::string& data);
+
+		bool initUdpBroadcast4();
+
+		bool setSourcePort4(uint16_t port);
 
 		bool udpClientSend(const SocketAddr& addr, const std::string& data) noexcept;
 		bool udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept;

@@ -473,6 +473,8 @@
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="dhcp.hpp" />
+    <ClInclude Include="DhcpMessage.hpp" />
     <ClInclude Include="dnsCacheResolver.hpp" />
     <ClInclude Include="dnsServerService.hpp" />
     <ClInclude Include="drAdaptor.hpp" />
@@ -488,6 +490,8 @@
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
+    <ClInclude Include="netAdaptor.hpp" />
+    <ClInclude Include="MacAddr.hpp" />
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
@@ -939,6 +943,7 @@
     <ClCompile Include="CidrSubnetInterface.cpp" />
     <ClCompile Include="CpuInfo.cpp" />
     <ClCompile Include="DetachedScheduler.cpp" />
+    <ClCompile Include="dhcp.cpp" />
     <ClCompile Include="Diff.cpp" />
     <ClCompile Include="dnsCacheResolver.cpp" />
     <ClCompile Include="dnsHttpResolver.cpp" />
@@ -969,9 +974,11 @@
     <ClCompile Include="memVft.cpp" />
     <ClCompile Include="morse.cpp" />
     <ClCompile Include="NativeString.cpp" />
+    <ClCompile Include="netAdaptor.cpp" />
     <ClCompile Include="netConfig.cpp" />
     <ClCompile Include="netConnectTask.cpp" />
     <ClCompile Include="netInfo.cpp" />
+    <ClCompile Include="MacAddr.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="plist.cpp" />
     <ClCompile Include="Reader.cpp" />

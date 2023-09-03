@@ -879,21 +879,40 @@ namespace soup
 		return transport_send(data);
 	}
 
+	bool Socket::initUdpBroadcast4()
+	{
+		return init(AF_INET, SOCK_DGRAM)
+			&& setOpt<bool>(SO_BROADCAST, true)
+			;
+	}
+
+	bool Socket::setSourcePort4(uint16_t port)
+	{
+		sockaddr_in bindto{};
+		bindto.sin_family = AF_INET;
+		bindto.sin_addr.s_addr = INADDR_ANY;
+		bindto.sin_port = Endianness::toNetwork(native_u16_t(port));
+		return ::bind(fd, (sockaddr*)&bindto, sizeof(bindto)) != -1;
+	}
+
 	bool Socket::udpClientSend(const SocketAddr& addr, const std::string& data) noexcept
 	{
 		peer = addr;
-		if (addr.ip.isV4())
+		if (!isInited())
 		{
-			if (!init(AF_INET, SOCK_DGRAM))
+			if (addr.ip.isV4())
 			{
-				return false;
+				if (!init(AF_INET, SOCK_DGRAM))
+				{
+					return false;
+				}
 			}
-		}
-		else
-		{
-			if (!init(AF_INET6, SOCK_DGRAM))
+			else
 			{
-				return false;
+				if (!init(AF_INET6, SOCK_DGRAM))
+				{
+					return false;
+				}
 			}
 		}
 		return udpServerSend(addr, data);
