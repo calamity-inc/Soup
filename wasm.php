@@ -25,8 +25,11 @@ echo "Compiling...\n";
 $objects = [];
 foreach($files as $file)
 {
-	echo $file."\n";
-	passthru("$clang -c soup/$file.cpp -o bin/int/$file.o");
+	//if ($file == "soup")
+	{
+		echo $file."\n";
+		passthru("$clang -c soup/$file.cpp -o bin/int/$file.o");
+	}
 	array_push($objects, escapeshellarg("bin/int/$file.o"));
 }
 
