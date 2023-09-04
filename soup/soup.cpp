@@ -105,7 +105,7 @@ SOUP_CEXPORT const char* getCountryName(const char* country_code, const char* la
 
 SOUP_CEXPORT const char* base32_encode(const stdstring* x, bool pad)
 {
-	returnString(base32::encode(*x, pad));
+	returnString(base32::encode(heap.get(x), pad));
 }
 
 SOUP_CEXPORT stdstring* base32_decode(const char* x)
@@ -117,7 +117,7 @@ SOUP_CEXPORT stdstring* base32_decode(const char* x)
 
 SOUP_CEXPORT const char* base40_encode(const stdstring* x)
 {
-	returnString(base40::encode(*x));
+	returnString(base40::encode(heap.get(x)));
 }
 
 SOUP_CEXPORT stdstring* base40_decode(const char* x)
@@ -129,7 +129,7 @@ SOUP_CEXPORT stdstring* base40_decode(const char* x)
 
 SOUP_CEXPORT const char* base64_encode(const stdstring* x)
 {
-	returnString(base64::encode(*x));
+	returnString(base64::encode(heap.get(x)));
 }
 
 // Bigint
@@ -170,17 +170,17 @@ SOUP_CEXPORT stdstring* Canvas_toNewPngString(const Canvas* x)
 
 SOUP_CEXPORT const char* cbResult_getResponse(const cbResult* x)
 {
-	return x->response.c_str();
+	return heap.get(x).response.c_str();
 }
 
 SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x)
 {
-	return x->isDelete();
+	return heap.get(x).isDelete();
 }
 
 SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x)
 {
-	return x->getDeleteNum();
+	return heap.get(x).getDeleteNum();
 }
 
 // Chatbot
@@ -199,7 +199,7 @@ SOUP_CEXPORT CidrSubnetInterface* CidrSubnetInterface_new(const char* range)
 
 SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const char* ip_addr)
 {
-	return x->contains(IpAddr(ip_addr));
+	return heap.get(x).contains(IpAddr(ip_addr));
 }
 
 // Hotp
@@ -223,7 +223,7 @@ SOUP_CEXPORT HttpRequest* HttpRequest_new(const char* uri)
 SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data)
 {
 #if !SOUP_WASM
-	x->setPayload(data);
+	heap.get(x).setPayload(data);
 #endif
 }
 
@@ -251,14 +251,14 @@ SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x)
 
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x)
 {
-	returnString(InquiryLang::formatResultLine(*x));
+	returnString(InquiryLang::formatResultLine(heap.get(x)));
 }
 
 // KeyGenId
 
 SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, const stdstring* str)
 {
-	return heap.add(new KeyGenId(bits, *str));
+	return heap.add(new KeyGenId(bits, heap.get(str)));
 }
 
 SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits)
@@ -268,31 +268,31 @@ SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits)
 
 SOUP_CEXPORT stdstring* KeyGenId_toSeedsExport(const KeyGenId* x)
 {
-	return heap.add(x->toSeedsExport());
+	return heap.add(heap.get(x).toSeedsExport());
 }
 
 SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x)
 {
-	return heap.add(x->getKeypair());
+	return heap.add(heap.get(x).getKeypair());
 }
 
 // MimeMessage
 
 SOUP_CEXPORT void MimeMessage_addHeader(MimeMessage* x, const char* key, const char* value)
 {
-	x->header_fields.emplace(key, value);
+	heap.get(x).header_fields.emplace(key, value);
 }
 
 // Mixed
 
 SOUP_CEXPORT bool Mixed_isCanvas(const Mixed* x)
 {
-	return x->isCanvas();
+	return heap.get(x).isCanvas();
 }
 
 SOUP_CEXPORT Canvas* Mixed_getCanvas(const Mixed* x)
 {
-	return &x->getCanvas();
+	return &heap.get(x).getCanvas();
 }
 
 // QrCode
@@ -304,24 +304,24 @@ SOUP_CEXPORT QrCode* QrCode_newFromText(const char* x)
 
 SOUP_CEXPORT Canvas* QrCode_toNewCanvas(const QrCode* x, unsigned int border, bool black_bg)
 {
-	return heap.add(x->toCanvas(border, black_bg));
+	return heap.add(heap.get(x).toCanvas(border, black_bg));
 }
 
 // RsaKeypair
 
 SOUP_CEXPORT const Bigint* RsaKeypair_getN(const RsaKeypair* x)
 {
-	return &x->n;
+	return &heap.get(x).n;
 }
 
 SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x)
 {
-	return &x->p;
+	return &heap.get(x).p;
 }
 
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x)
 {
-	return &x->q;
+	return &heap.get(x).q;
 }
 
 // Scheduler
@@ -362,17 +362,17 @@ SOUP_CEXPORT void Scheduler_add(void* sched, void* spWorker)
 
 SOUP_CEXPORT Totp* Totp_new(const stdstring* secret)
 {
-	return heap.add(new Totp(*secret));
+	return heap.add(new Totp(heap.get(secret)));
 }
 
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer)
 {
-	returnString(x->getQrCodeUri(label, issuer));
+	returnString(heap.get(x).getQrCodeUri(label, issuer));
 }
 
 SOUP_CEXPORT int Totp_getValue(const Totp* x)
 {
-	return x->getValue();
+	return heap.get(x).getValue();
 }
 
 // YubikeyValidator
@@ -391,7 +391,7 @@ SOUP_CEXPORT const char* YubikeyValidator_validate(const YubikeyValidator* x, co
 #if SOUP_WASM
 	return "";
 #else
-	returnString(x->validate(otp).device_id);
+	returnString(heap.get(x).validate(otp).device_id);
 #endif
 }
 

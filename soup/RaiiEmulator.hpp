@@ -107,6 +107,19 @@ namespace soup
 			return currentScope().add(inst);
 		}
 
+		template <typename T>
+		[[nodiscard]] T& get(T* inst)
+		{
+			for (auto& scope : scopes)
+			{
+				if (auto e = scope.find((void*)inst); e != scope.objects.end())
+				{
+					return *inst;
+				}
+			}
+			throw Exception("Attempt to use an instance I don't manage (use-after-free?)");
+		}
+
 		void broadenScope(void* inst)
 		{
 			for (size_t i = 0; i != scopes.size(); ++i)
