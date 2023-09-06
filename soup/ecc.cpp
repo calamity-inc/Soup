@@ -6,6 +6,21 @@ namespace soup
 {
 	using namespace literals;
 
+	EccCurve EccCurve::secp256k1()
+	{
+		// https://asecuritysite.com/encryption/secp256k1p
+		EccCurve curve;
+		curve.a = Bigint{}; // 0
+		curve.b = (Bigint::chunk_t)7;
+		curve.p = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"_b; // Bigint::_2pow(256) - Bigint::_2pow(32) - "977"_b
+		curve.G = EccPoint(
+			"0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"_b,
+			"0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"_b
+		);
+		curve.n = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"_b;
+		return curve;
+	}
+
 	EccCurve EccCurve::secp256r1()
 	{
 		// https://asecuritysite.com/ecc/p256p
@@ -81,7 +96,9 @@ namespace soup
 		}
 		Bigint x = (m.pow2() - P.x - Q.x) % this->p;
 		Bigint y = (m * (P.x - x) - P.y) % this->p;
-		return EccPoint(std::move(x), std::move(y));
+		EccPoint res(std::move(x), std::move(y));
+		//SOUP_ASSERT(validate(res));
+		return res;
 	}
 
 	EccPoint EccCurve::multiply(EccPoint G, Bigint d) const
