@@ -10,7 +10,10 @@ namespace soup
 	{
 		uint8_t data[6];
 
-		static MacAddr DUMMY; // 00-1A-7D-DA-71-15: A very common MAC address from Bluetooth dongles that is unlikely to be used by other Ethernet users.
+		// 8C-1F-64-B9-8X-XX belongs to Calamity, Inc.
+		// You can use the '5-XX' section for any tomfoolery you wanna do with Soup.
+		static MacAddr SOUP_FIRST; // 8C-1F-64-B9-85-00
+		static MacAddr SOUP_LAST; // 8C-1F-64-B9-85-FF
 
 		MacAddr() = default;
 

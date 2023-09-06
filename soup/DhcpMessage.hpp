@@ -22,7 +22,7 @@ namespace soup
 		u32 your_addr = 0;
 		u32 server_addr = 0;
 		u32 gateway_addr = 0;
-		MacAddr mac_addr = MacAddr::DUMMY;
+		MacAddr mac_addr = MacAddr::SOUP_FIRST;
 		std::vector<std::pair<u8, std::string>> options{};
 
 		void addOption(u8 type, std::string&& data)
