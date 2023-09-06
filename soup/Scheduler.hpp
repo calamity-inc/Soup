@@ -37,7 +37,7 @@ namespace soup
 
 		on_work_done_t on_work_done = nullptr; // This will always be called before a worker is deleted.
 		on_connection_lost_t on_connection_lost = nullptr; // Check remote_closed for which side caused connection to be lost.
-		on_exception_t on_exception = nullptr;
+		on_exception_t on_exception = &on_exception_log;
 
 		virtual ~Scheduler() = default;
 
@@ -81,6 +81,8 @@ namespace soup
 		[[nodiscard]] SharedPtr<Socket> getShared(const Worker& w) const;
 		[[nodiscard]] SharedPtr<Socket> findReusableSocketForHost(const std::string& host);
 		void closeReusableSockets();
+
+		static void on_exception_log(Worker& w, const std::exception& e, Scheduler&);
 	};
 }
 

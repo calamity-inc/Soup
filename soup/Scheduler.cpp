@@ -4,6 +4,7 @@
 
 #include <thread>
 
+#include "log.hpp"
 #include "Promise.hpp"
 #include "ReuseTag.hpp"
 #include "Socket.hpp"
@@ -14,7 +15,6 @@
 
 #if LOG_TICK_DUR
 #include "format.hpp"
-#include "log.hpp"
 #include "Stopwatch.hpp"
 #endif
 
@@ -335,6 +335,15 @@ namespace soup
 				static_cast<Socket*>(w.get())->close();
 			}
 		}
+	}
+
+	void Scheduler::on_exception_log(Worker& w, const std::exception& e, Scheduler&)
+	{
+		std::string msg = "Exception while processing ";
+		msg.append(w.toString());
+		msg.append(": ");
+		msg.append(e.what());
+		logWriteLine(std::move(msg));
 	}
 }
 
