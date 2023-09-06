@@ -19,15 +19,56 @@ namespace soup
 
 		MacAddr(const uint8_t* data) noexcept
 		{
-			memcpy(this->data, data, 6);
+			memcpy(this->data, data, sizeof(this->data));
 		}
 
-		MacAddr(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f) noexcept
+		constexpr MacAddr(uint8_t a, uint8_t b, uint8_t c, uint8_t d, uint8_t e, uint8_t f) noexcept
 			: data{ a, b, c, d, e, f }
 		{
 		}
 
 		[[nodiscard]] std::string toString(char sep = '-') const;
+		
+		bool operator ==(const MacAddr& b)
+		{
+			return memcmp(data, b.data, sizeof(data)) == 0;
+		}
+
+		bool operator !=(const MacAddr& b)
+		{
+			return memcmp(data, b.data, sizeof(data)) != 0;
+		}
+
+		bool operator <(const MacAddr& b)
+		{
+			return memcmp(data, b.data, sizeof(data)) < 0;
+		}
+
+		bool operator <=(const MacAddr& b)
+		{
+			return memcmp(data, b.data, sizeof(data)) <= 0;
+		}
+
+		bool operator >(const MacAddr& b)
+		{
+			return memcmp(data, b.data, sizeof(data)) > 0;
+		}
+
+		bool operator >=(const MacAddr& b)
+		{
+			return memcmp(data, b.data, sizeof(data)) >= 0;
+		}
+
+		constexpr void operator ++()
+		{
+			for (auto i = sizeof(data); i != 0; --i)
+			{
+				if (++data[i - 1] != 0)
+				{
+					break;
+				}
+			}
+		}
 
 		template <typename T>
 		bool io(T& s)
