@@ -3,6 +3,7 @@
 #if !SOUP_WASM
 
 #include "DetachedScheduler.hpp"
+#include "log.hpp"
 
 #ifndef NDEBUG
 #include "WeakRef.hpp"
@@ -10,7 +11,23 @@
 
 namespace soup
 {
-	static DetachedScheduler dns_async_sched;
+	struct dnsAsyncScheduler : public DetachedScheduler
+	{
+		dnsAsyncScheduler()
+			: DetachedScheduler()
+		{
+			on_exception = &onException;
+		}
+
+		static void onException(Worker&, const std::exception& e, Scheduler&)
+		{
+			std::string msg = "Exception during DNS lookup task: ";
+			msg.append(e.what());
+			logWriteLine(std::move(msg));
+		}
+	};
+
+	static dnsAsyncScheduler dns_async_sched;
 
 	struct dnsAsyncExecTask : public Task
 	{
