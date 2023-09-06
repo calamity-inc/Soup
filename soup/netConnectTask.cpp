@@ -8,6 +8,8 @@
 
 namespace soup
 {
+	static DetachedScheduler async_connect_sched;
+
 	netConnectTask::netConnectTask(const std::string& host, uint16_t port)
 	{
 		// Special case for localhost since DoH won't resolve this
@@ -75,6 +77,10 @@ namespace soup
 			{
 				setWorkDone();
 			}
+			else
+			{
+				SOUP_ASSERT(async_connect_sched.isActive());
+			}
 		}
 	}
 
@@ -90,8 +96,6 @@ namespace soup
 		connect.reset();
 		return sock;
 	}
-
-	static DetachedScheduler async_connect_sched;
 
 	void netConnectTask::proceedToConnect(const IpAddr& addr, uint16_t port)
 	{
