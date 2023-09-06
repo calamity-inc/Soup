@@ -15,7 +15,7 @@
 namespace soup
 {
 	template <typename T>
-	class DelayedCtor
+	class alignas(T) DelayedCtor
 	{
 	private:
 #if DELAYED_CTOR_DEBUGGER_FRIENDLY
