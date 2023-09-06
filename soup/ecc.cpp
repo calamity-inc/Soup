@@ -137,6 +137,64 @@ namespace soup
 #endif
 	}
 
+	std::string EccCurve::encodePointUncompressed(const EccPoint& P) const
+	{
+		const auto bytes_per_axis = getBytesPerAxis();
+		std::string str;
+		str.reserve(1 + bytes_per_axis + bytes_per_axis);
+		str.push_back('\x04');
+		str.append(P.getX().toBinary(bytes_per_axis));
+		str.append(P.getY().toBinary(bytes_per_axis));
+		return str;
+	}
+
+	std::string EccCurve::encodePointCompressed(const EccPoint& P) const
+	{
+		const auto bytes_per_axis = getBytesPerAxis();
+		std::string str;
+		str.reserve(1 + bytes_per_axis);
+		str.push_back(P.getY().isOdd() ? '\x03' : '\x02');
+		str.append(P.getX().toBinary(bytes_per_axis));
+		return str;
+	}
+
+	EccPoint EccCurve::decodePoint(const std::string& str) const
+	{
+		const auto bytes_per_axis = getBytesPerAxis();
+
+		if (str.at(0) == 0x04)
+		{
+			SOUP_ASSERT(str.size() == 1 + bytes_per_axis + bytes_per_axis);
+			return EccPoint(
+				Bigint::fromBinary(str.substr(1, bytes_per_axis)),
+				Bigint::fromBinary(str.substr(1 + bytes_per_axis, bytes_per_axis))
+			);
+		}
+
+		SOUP_ASSERT(str.at(0) == 0x02 || str.at(0) == 0x03);
+		const bool odd_y = (str.at(0) == 0x03);
+		SOUP_ASSERT(str.size() == 1 + bytes_per_axis);
+		Bigint x = Bigint::fromBinary(str.substr(1, bytes_per_axis));
+
+		// https://github.com/mwarning/mbedtls_ecp_compression/blob/master/ecc_point_compression.c
+
+		Bigint y = x.pow2();
+		y += this->a;
+		y *= x;
+		y += this->b;
+
+		Bigint n = this->p;
+		++n;
+		n >>= 2; // divide by 4
+		y = y.modPow(n, this->p);
+		if (odd_y)
+		{
+			y = this->p - y;
+		}
+
+		return EccPoint(std::move(x), std::move(y));
+	}
+
 	bool EccCurve::validate(const EccPoint& P) const
 	{
 		return (P.y.pow2() % this->p) == (((P.x * P.x * P.x) + (this->a * P.x) + this->b) % this->p);

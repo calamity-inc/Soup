@@ -604,17 +604,15 @@ namespace soup
 			)
 		{
 			EccCurve curve;
-			size_t csize;
 			if (handshaker->ecdhe_curve != NamedCurves::secp384r1)
 			{
 				curve = EccCurve::secp256r1();
-				csize = 32;
 			}
 			else
 			{
 				curve = EccCurve::secp384r1();
-				csize = 48;
 			}
+			size_t csize = curve.getBytesPerAxis();
 
 			auto my_priv = curve.generatePrivate();
 
@@ -631,8 +629,7 @@ namespace soup
 
 			auto my_pub = curve.derivePublic(my_priv);
 
-			cke = my_pub.toBinary(csize);
-			cke.insert(0, 1, 4); // uncompressed
+			cke = curve.encodePointUncompressed(my_pub);
 			cke.insert(0, 1, 1 + csize + csize);
 		}
 		else
