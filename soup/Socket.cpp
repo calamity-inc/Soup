@@ -631,8 +631,7 @@ namespace soup
 
 			auto my_pub = curve.derivePublic(my_priv);
 
-			cke = my_pub.toBinary();
-			SOUP_ASSERT(cke.size() == csize + csize);
+			cke = my_pub.toBinary(csize);
 			cke.insert(0, 1, 4); // uncompressed
 			cke.insert(0, 1, 1 + csize + csize);
 		}

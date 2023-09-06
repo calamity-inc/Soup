@@ -325,6 +325,7 @@ namespace soup
 	public:
 		[[nodiscard]] static Bigint fromBinary(const std::string& msg);
 		[[nodiscard]] std::string toBinary() const;
+		[[nodiscard]] std::string toBinary(size_t bytes) const;
 
 		SOUP_STRINGIFYABLE(Bigint)
 	};

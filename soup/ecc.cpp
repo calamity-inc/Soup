@@ -141,4 +141,9 @@ namespace soup
 	{
 		return (P.y.pow2() % this->p) == (((P.x * P.x * P.x) + (this->a * P.x) + this->b) % this->p);
 	}
+
+	size_t EccCurve::getBytesPerAxis() const
+	{
+		return p.getNumBytes();
+	}
 }

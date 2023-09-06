@@ -30,9 +30,9 @@ namespace soup
 			return y;
 		}
 
-		[[nodiscard]] std::string toBinary() const
+		[[nodiscard]] std::string toBinary(size_t bytes_per_axis) const
 		{
-			return x.toBinary() + y.toBinary();
+			return x.toBinary(bytes_per_axis) + y.toBinary(bytes_per_axis);
 		}
 
 		friend struct EccCurve;
@@ -58,5 +58,7 @@ namespace soup
 
 		// Checks if P satifies y^2 = x^3 + ax + b (mod p)
 		[[nodiscard]] bool validate(const EccPoint& P) const;
+
+		[[nodiscard]] size_t getBytesPerAxis() const;
 	};
 }

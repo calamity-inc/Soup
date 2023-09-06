@@ -1897,4 +1897,15 @@ namespace soup
 		}
 		return str;
 	}
+
+	std::string Bigint::toBinary(size_t bytes) const
+	{
+		auto bin = toBinary();
+		SOUP_ASSERT(bytes >= bin.size());
+		if (auto pad = (bytes - bin.size()))
+		{
+			bin.insert(bin.cbegin(), pad, '\0');
+		}
+		return bin;
+	}
 }
