@@ -103,7 +103,7 @@ namespace soup
 		void addChunk(chunk_t v);
 		void shrink() noexcept;
 
-		[[nodiscard]] size_t getNumBytes() const noexcept;
+		[[nodiscard]] constexpr size_t getNumBytes() const noexcept { return getNumChunks() * getBytesPerChunk(); }
 		[[nodiscard]] uint8_t getByte(const size_t i) const noexcept;
 
 		[[nodiscard]] size_t getNumNibbles() const noexcept;

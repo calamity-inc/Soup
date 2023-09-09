@@ -257,11 +257,6 @@ namespace soup
 		}
 	}
 
-	size_t Bigint::getNumBytes() const noexcept
-	{
-		return getNumChunks() * getBytesPerChunk();
-	}
-
 	uint8_t Bigint::getByte(const size_t i) const noexcept
 	{
 		auto j = i / getBytesPerChunk();
