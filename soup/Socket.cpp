@@ -102,16 +102,32 @@ namespace soup
 		{
 			return connect(hostaddr, port);
 		}
-		const dnsResolver& resolver = *netConfig::get().dns_resolver;
-		auto res = resolver.lookupIPv4(host);
-		if (!res.empty() && connect(rand(res), port))
+		auto& conf = netConfig::get();
+		if (!conf.prefer_ipv6)
 		{
-			return true;
+			auto res = conf.dns_resolver->lookupIPv4(host);
+			if (!res.empty() && connect(rand(res), port))
+			{
+				return true;
+			}
+			res = conf.dns_resolver->lookupIPv6(host);
+			if (!res.empty() && connect(rand(res), port))
+			{
+				return true;
+			}
 		}
-		res = resolver.lookupIPv6(host);
-		if (!res.empty() && connect(rand(res), port))
+		else
 		{
-			return true;
+			auto res = conf.dns_resolver->lookupIPv6(host);
+			if (!res.empty() && connect(rand(res), port))
+			{
+				return true;
+			}
+			res = conf.dns_resolver->lookupIPv4(host);
+			if (!res.empty() && connect(rand(res), port))
+			{
+				return true;
+			}
 		}
 		return false;
 	}

@@ -15,6 +15,8 @@ namespace soup
 		[[nodiscard]] static netConfig& get(); // returns the netConfig instance for this thread
 
 		UniquePtr<dnsResolver> dns_resolver;
+		bool prefer_ipv6 = false; // for funny things like https://api.lovense.com/api/lan/getToys, currently not respected by netConnectTask
+
 		certchain_validator_t certchain_validator;
 
 		netConfig();
