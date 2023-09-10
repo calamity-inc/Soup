@@ -206,6 +206,7 @@ namespace soup
 		{ "push", 0xFF, M, 64, 6},
 		{ "add", 0x81, MI, 32, 0 },
 		{ "add", 0x83, MI, 8, 0 },
+		{ "add", 0x03, RM },
 		{ "sub", 0x81, MI, 32, 5 },
 		{ "sub", 0x83, MI, 8, 5 },
 		{ "sub", 0x2B, RM, 32 },
