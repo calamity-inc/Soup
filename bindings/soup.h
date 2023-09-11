@@ -15,12 +15,14 @@
 	typedef void Canvas;
 	typedef void cbResult;
 	typedef void CidrSubnetInterface;
+	typedef void DetachedScheduler;
 	typedef void HttpRequest;
 	typedef void KeyGenId;
 	typedef void MimeMessage;
 	typedef void Mixed;
 	typedef void QrCode;
 	typedef void RsaKeypair;
+	typedef void Scheduler;
 	typedef void Totp;
 	typedef void YubikeyValidator;
 
@@ -63,6 +65,9 @@ SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
 // CidrSubnetInterface
 SOUP_CEXPORT CidrSubnetInterface* CidrSubnetInterface_new(const char* range);
 SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const char* ip_addr);
+// DetachedScheduler
+SOUP_CEXPORT DetachedScheduler* DetachedScheduler_new();
+SOUP_CEXPORT bool DetachedScheduler_isActive(DetachedScheduler* sched);
 // Hotp
 SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes);
 // HttpRequest
@@ -91,10 +96,8 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getN(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x);
 // Scheduler
-SOUP_CEXPORT void* Scheduler_new();
-SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(void* sched);
-SOUP_CEXPORT bool Scheduler_isActive(void* sched);
-SOUP_CEXPORT void Scheduler_add(void* sched, void* spWorker);
+SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(Scheduler* sched);
+SOUP_CEXPORT void Scheduler_add(Scheduler* sched, void* spWorker);
 // Totp
 SOUP_CEXPORT Totp* Totp_new(const stdstring* secret);
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);

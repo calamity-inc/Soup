@@ -1,6 +1,11 @@
 {
 	"classes": {
 		"stdstring": {},
+		"DetachedScheduler": {
+			"__parent": "Scheduler",
+			"new": "DetachedScheduler_new",
+			"isActive": "DetachedScheduler_isActive"
+		},
 		"HttpRequest": {
 			"__parent": "MimeMessage",
 			"new": "HttpRequest_new",
@@ -13,16 +18,14 @@
 		"MimeMessage": {
 			"addHeader": "MimeMessage_addHeader"
 		},
+		"Scheduler": {
+			"setDontMakeReusableSockets": "Scheduler_setDontMakeReusableSockets",
+			"add": "Scheduler_add"
+		},
 		"Totp": {
 			"new": "Totp_new",
 			"getQrCodeUri": "Totp_getQrCodeUri",
 			"getValue": "Totp_getValue"
-		},
-		"Scheduler": {
-			"new": "Scheduler_new",
-			"setDontMakeReusableSockets": "Scheduler_setDontMakeReusableSockets",
-			"add": "Scheduler_add",
-			"isActive": "Scheduler_isActive"
 		},
 		"Worker": {}
 	},
@@ -32,6 +35,13 @@
 		}
 	},
 	"functions": {
+		"DetachedScheduler_new": [
+			"DetachedScheduler"
+		],
+		"DetachedScheduler_isActive": [
+			"bool",
+			["DetachedScheduler", "sched"]
+		],
 		"Hotp_generateSecret": [
 			"stdstring",
 			["int", "bytes", 16]
@@ -55,6 +65,15 @@
 			["string", "key"],
 			["string", "value"]
 		],
+		"Scheduler_setDontMakeReusableSockets": [
+			"void",
+			["Scheduler", "sched"]
+		],
+		"Scheduler_add": [
+			"void",
+			["Scheduler", "sched"],
+			["Worker", "spWorker"]
+		],
 		"Totp_new": [
 			"Totp",
 			["stdstring", "secret"]
@@ -68,22 +87,6 @@
 		"Totp_getValue": [
 			"int",
 			["Totp", "x"]
-		],
-		"Scheduler_new": [
-			"Scheduler"
-		],
-		"Scheduler_setDontMakeReusableSockets": [
-			"void",
-			["Scheduler", "sched"]
-		],
-		"Scheduler_add": [
-			"void",
-			["Scheduler", "sched"],
-			["Worker", "spWorker"]
-		],
-		"Scheduler_isActive": [
-			"bool",
-			["Scheduler", "sched"]
 		]
 	}
 }

@@ -202,6 +202,26 @@ SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const cha
 	return heap.get(x).contains(IpAddr(ip_addr));
 }
 
+// DetachedScheduler
+
+SOUP_CEXPORT DetachedScheduler* DetachedScheduler_new()
+{
+#if SOUP_WASM
+	return nullptr;
+#else
+	return heap.add(new DetachedScheduler());
+#endif
+}
+
+SOUP_CEXPORT bool DetachedScheduler_isActive(DetachedScheduler* sched)
+{
+#if SOUP_WASM
+	return false;
+#else
+	return heap.get(sched).isActive();
+#endif
+}
+
 // Hotp
 
 SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes)
@@ -326,35 +346,17 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x)
 
 // Scheduler
 
-SOUP_CEXPORT void* Scheduler_new()
-{
-#if SOUP_WASM
-	return nullptr;
-#else
-	return heap.add(new DetachedScheduler());
-#endif
-}
-
-SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(void* sched)
+SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(Scheduler* sched)
 {
 #if !SOUP_WASM
-	reinterpret_cast<DetachedScheduler*>(sched)->dont_make_reusable_sockets = true;
+	heap.get(sched).dont_make_reusable_sockets = true;
 #endif
 }
 
-SOUP_CEXPORT bool Scheduler_isActive(void* sched)
-{
-#if SOUP_WASM
-	return false;
-#else
-	return reinterpret_cast<DetachedScheduler*>(sched)->isActive();
-#endif
-}
-
-SOUP_CEXPORT void Scheduler_add(void* sched, void* spWorker)
+SOUP_CEXPORT void Scheduler_add(Scheduler* sched, void* spWorker)
 {
 #if !SOUP_WASM
-	reinterpret_cast<DetachedScheduler*>(sched)->addWorker(SharedPtr<Worker>(*reinterpret_cast<SharedPtr<Worker>*>(spWorker)));
+	heap.get(sched).addWorker(SharedPtr<Worker>(*reinterpret_cast<SharedPtr<Worker>*>(spWorker)));
 #endif
 }
 
