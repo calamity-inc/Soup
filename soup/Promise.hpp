@@ -2,32 +2,27 @@
 
 #include "Capture.hpp"
 #include "SelfDeletingThread.hpp"
-#include "SharedPtr.hpp"
 
 namespace soup
 {
 	class PromiseBase
 	{
 	protected:
-		SharedPtr<Capture> res;
+		Capture res{};
 
 	public:
-		PromiseBase()
-			: res(soup::make_shared<Capture>())
-		{
-		}
+		PromiseBase() = default;
 
 	protected:
 		PromiseBase(Capture&& res)
-			: PromiseBase()
+			: res(std::move(res))
 		{
-			fulfil(std::move(res));
 		}
 
 	public:
 		[[nodiscard]] bool isPending() const noexcept
 		{
-			return res->empty();
+			return res.empty();
 		}
 
 		[[nodiscard]] bool isFulfilled() const noexcept
@@ -40,7 +35,7 @@ namespace soup
 	protected:
 		void fulfil(Capture&& res) noexcept
 		{
-			*this->res = std::move(res);
+			this->res = std::move(res);
 		}
 	};
 
@@ -56,6 +51,7 @@ namespace soup
 		{
 		}
 
+		// If this is used, the Promise MUST NOT be stack-allocated.
 		Promise(T(*f)(Capture&&), Capture&& cap = {})
 			: Promise()
 		{
@@ -69,22 +65,23 @@ namespace soup
 
 		[[nodiscard]] T& getResult() const noexcept
 		{
-			return res->get<T>();
+			return res.get<T>();
 		}
 
+		// If this is used, the Promise MUST NOT be stack-allocated.
 		void fulfilOffThread(T(*f)(Capture&&), Capture&& cap = {})
 		{
 			new SelfDeletingThread([](Capture&& _cap)
 			{
 				auto& cap = _cap.get<CaptureFulfillOffThread>();
-				*cap.res = cap.f(std::move(cap.cap));
-			}, CaptureFulfillOffThread{ res, f, std::move(cap) });
+				cap.promise.fulfil(cap.f(std::move(cap.cap)));
+			}, CaptureFulfillOffThread{ *this, f, std::move(cap) });
 		}
 
 	protected:
 		struct CaptureFulfillOffThread
 		{
-			SharedPtr<Capture> res;
+			Promise& promise;
 			T(*f)(Capture&&);
 			Capture cap;
 		};

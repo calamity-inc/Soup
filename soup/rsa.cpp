@@ -344,12 +344,12 @@ namespace soup
 
 		std::vector<Bigint> primes{};
 		{
-			Promise<Bigint> p(gen_promise, ((bits / 2u) - 2u));
-			Promise<Bigint> q(gen_promise, ((bits / 2u) + 2u));
-			p.awaitCompletion();
-			q.awaitCompletion();
-			primes.emplace_back(p.getResult());
-			primes.emplace_back(q.getResult());
+			auto p = soup::make_unique<Promise<Bigint>>(gen_promise, ((bits / 2u) - 2u));
+			auto q = soup::make_unique<Promise<Bigint>>(gen_promise, ((bits / 2u) + 2u));
+			p->awaitCompletion();
+			q->awaitCompletion();
+			primes.emplace_back(p->getResult());
+			primes.emplace_back(q->getResult());
 		}
 
 		while (true)
@@ -398,12 +398,12 @@ namespace soup
 			primes.emplace_back(gen(rng, ((bits / 2u) - 2u)));
 			primes.emplace_back(gen(aux_rng, ((bits / 2u) + 2u)));
 #else
-			Promise<Bigint> p(gen_promise, CaptureGenerateRng{ rng, ((bits / 2u) - 2u) });
-			Promise<Bigint> q(gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) });
-			p.awaitCompletion();
-			q.awaitCompletion();
-			primes.emplace_back(p.getResult());
-			primes.emplace_back(q.getResult());
+			auto p = soup::make_unique<Promise<Bigint>>(gen_promise, CaptureGenerateRng{ rng, ((bits / 2u) - 2u) });
+			auto q = soup::make_unique<Promise<Bigint>>(gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) });
+			p->awaitCompletion();
+			q->awaitCompletion();
+			primes.emplace_back(p->getResult());
+			primes.emplace_back(q->getResult());
 #endif
 		}
 
