@@ -527,6 +527,7 @@
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="RegexWordCharConstraint.hpp" />
+    <ClInclude Include="SelfDeletingThread.hpp" />
     <ClInclude Include="Serialiser.hpp" />
     <ClInclude Include="ServerServiceUdp.hpp" />
     <ClInclude Include="sha_commons.hpp" />
@@ -983,6 +984,7 @@
     <ClCompile Include="MacAddr.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="plist.cpp" />
+    <ClCompile Include="Promise.cpp" />
     <ClCompile Include="punycode.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="Regex.cpp" />
@@ -990,6 +992,7 @@
     <ClCompile Include="rflParser.cpp" />
     <ClCompile Include="Rgba.cpp" />
     <ClCompile Include="RgbaCanvas.cpp" />
+    <ClCompile Include="SelfDeletingThread.cpp" />
     <ClCompile Include="soup.cpp" />
     <ClCompile Include="spaceship.cpp" />
     <ClCompile Include="Svg.cpp" />

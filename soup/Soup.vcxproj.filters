@@ -1470,6 +1470,9 @@
     <ClInclude Include="EstablishWebSocketConnectionTask.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
+    <ClInclude Include="SelfDeletingThread.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2133,6 +2136,12 @@
     </ClCompile>
     <ClCompile Include="punycode.cpp">
       <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="Promise.cpp">
+      <Filter>task</Filter>
+    </ClCompile>
+    <ClCompile Include="SelfDeletingThread.cpp">
+      <Filter>task</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

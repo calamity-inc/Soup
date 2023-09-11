@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	// Note: You cannot construct this on the stack because the thread needs a `this` pointer.
+	// MUST NOT be stack-allocated.
 	class DetachedScheduler : public Scheduler
 	{
 	protected:

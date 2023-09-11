@@ -814,7 +814,7 @@ namespace soup
 				}
 				data.erase(0, 2); // length prefix
 
-				handshaker->pre_master_secret = make_unique<Promise<std::string>>([](Capture&& _cap, PromiseBase*)
+				handshaker->pre_master_secret = soup::make_unique<Promise<std::string>>([](Capture&& _cap) -> std::string
 				{
 					auto& cap = _cap.get<CaptureDecryptPreMasterSecret>();
 					return cap.handshaker->rsa_data.private_key.decryptPkcs1(cap.data);

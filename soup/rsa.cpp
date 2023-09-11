@@ -337,15 +337,15 @@ namespace soup
 
 	RsaKeypair RsaKeypair::generate(unsigned int bits, bool lax_length_requirement)
 	{
-		auto gen_promise = [](Capture&& cap, PromiseBase*) -> Bigint
+		auto gen_promise = [](Capture&& cap) -> Bigint
 		{
 			return gen(cap.get<unsigned int>());
 		};
 
 		std::vector<Bigint> primes{};
 		{
-			Promise<Bigint> p{ gen_promise, ((bits / 2u) - 2u) };
-			Promise<Bigint> q{ gen_promise, ((bits / 2u) + 2u) };
+			Promise<Bigint> p(gen_promise, ((bits / 2u) - 2u));
+			Promise<Bigint> q(gen_promise, ((bits / 2u) + 2u));
 			p.awaitCompletion();
 			q.awaitCompletion();
 			primes.emplace_back(p.getResult());
@@ -386,7 +386,7 @@ namespace soup
 
 	RsaKeypair RsaKeypair::generate(RngInterface& rng, RngInterface& aux_rng, unsigned int bits, bool lax_length_requirement)
 	{
-		auto gen_promise = [](Capture&& _cap, PromiseBase*) -> Bigint
+		auto gen_promise = [](Capture&& _cap) -> Bigint
 		{
 			CaptureGenerateRng& cap = _cap.get<CaptureGenerateRng>();
 			return gen(cap.rng, cap.bits);
@@ -398,8 +398,8 @@ namespace soup
 			primes.emplace_back(gen(rng, ((bits / 2u) - 2u)));
 			primes.emplace_back(gen(aux_rng, ((bits / 2u) + 2u)));
 #else
-			Promise<Bigint> p{ gen_promise, CaptureGenerateRng{ rng, ((bits / 2u) - 2u) } };
-			Promise<Bigint> q{ gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) } };
+			Promise<Bigint> p(gen_promise, CaptureGenerateRng{ rng, ((bits / 2u) - 2u) });
+			Promise<Bigint> q(gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) });
 			p.awaitCompletion();
 			q.awaitCompletion();
 			primes.emplace_back(p.getResult());

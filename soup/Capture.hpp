@@ -54,6 +54,11 @@ namespace soup
 			free();
 		}
 
+		[[nodiscard]] bool empty() const noexcept
+		{
+			return data == nullptr;
+		}
+
 		void reset() noexcept
 		{
 			free();

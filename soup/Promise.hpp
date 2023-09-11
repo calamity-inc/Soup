@@ -1,108 +1,92 @@
 #pragma once
 
 #include "Capture.hpp"
-#include "Thread.hpp"
-#include "UniquePtr.hpp"
+#include "SelfDeletingThread.hpp"
+#include "SharedPtr.hpp"
 
 namespace soup
 {
 	class PromiseBase
 	{
 	protected:
-		UniquePtr<Thread> thrd{};
-		Capture res{};
+		SharedPtr<Capture> res;
 
-		PromiseBase(UniquePtr<Thread>&& thrd)
-			: thrd(std::move(thrd))
+	public:
+		PromiseBase()
+			: res(soup::make_shared<Capture>())
 		{
 		}
 
+	protected:
 		PromiseBase(Capture&& res)
-			: res(std::move(res))
+			: PromiseBase()
 		{
+			fulfil(std::move(res));
 		}
 
 	public:
 		[[nodiscard]] bool isPending() const noexcept
 		{
-			return thrd && thrd->isRunning();
+			return res->empty();
 		}
 
-		void awaitCompletion()
+		[[nodiscard]] bool isFulfilled() const noexcept
 		{
-			if (thrd)
-			{
-				thrd->awaitCompletion();
-				thrd.reset();
-			}
+			return !isPending();
 		}
 
-		void fulfil(Capture&& res)
+		void awaitCompletion();
+
+	protected:
+		void fulfil(Capture&& res) noexcept
 		{
-			this->res = std::move(res);
+			*this->res = std::move(res);
 		}
 	};
 
 	template <typename T>
 	class Promise : public PromiseBase
 	{
-	protected:
-		struct CaptureCtorRet
-		{
-			Promise* _this;
-			T(*f)(Capture&&, PromiseBase*);
-			Capture cap;
-		};
-
-		struct CaptureCtorVoid
-		{
-			Promise* _this;
-			void(*f)(Capture&&, PromiseBase*);
-			Capture cap;
-		};
-
-		static void thrdFuncRet(Capture&& _cap)
-		{
-			auto& cap = _cap.get<CaptureCtorRet>();
-			cap._this->res = cap.f(std::move(cap.cap), cap._this);
-		}
-
-		static void thrdFuncVoid(Capture&& _cap)
-		{
-			auto& cap = _cap.get<CaptureCtorVoid>();
-			cap.f(std::move(cap.cap), cap._this);
-		}
-
 	public:
-		Promise(T(*f)(Capture&&, PromiseBase*), Capture&& cap = {})
-			: PromiseBase(make_unique<Thread>(&thrdFuncRet, CaptureCtorRet{
-				this,
-				f,
-				std::move(cap)
-			}))
-		{
-		}
+		Promise() = default;
 
-		Promise(void(*f)(Capture&&, PromiseBase*), Capture&& cap = {})
-			: PromiseBase(make_unique<Thread>(&thrdFuncVoid, CaptureCtorVoid{
-				this,
-				f,
-				std::move(cap)
-			}))
-		{
-		}
-
+		// Creates a fulfilled promise
 		Promise(T&& res)
 			: PromiseBase(std::move(res))
 		{
 		}
 
-		Promise(const Promise& b) = delete;
-		Promise(Promise&& b) = delete;
+		Promise(T(*f)(Capture&&), Capture&& cap = {})
+			: Promise()
+		{
+			fulfilOffThread(f, std::move(cap));
+		}
+
+		void fulfil(T&& res)
+		{
+			PromiseBase::fulfil(std::move(res));
+		}
 
 		[[nodiscard]] T& getResult() const noexcept
 		{
-			return res.get<T>();
+			return res->get<T>();
 		}
+
+		void fulfilOffThread(T(*f)(Capture&&), Capture&& cap = {})
+		{
+			new SelfDeletingThread([](Capture&& _cap)
+			{
+				auto& cap = _cap.get<CaptureFulfillOffThread>();
+				*cap.res = cap.f(std::move(cap.cap));
+			}, CaptureFulfillOffThread{ res, f, std::move(cap) });
+		}
+
+	protected:
+		struct CaptureFulfillOffThread
+		{
+			SharedPtr<Capture> res;
+			T(*f)(Capture&&);
+			Capture cap;
+		};
 	};
 }
