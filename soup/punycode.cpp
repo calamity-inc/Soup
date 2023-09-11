@@ -2,8 +2,6 @@
 
 #include <algorithm> // clamp
 
-#include "base.hpp"
-
 namespace soup
 {
 	struct PunycodeState
