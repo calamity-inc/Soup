@@ -74,11 +74,16 @@ function funcargs(ApiNamespace $t, ApiFunc $func): string
 	return $str;
 }
 
-function namespaceFuncs(ApiNamespace $t)
+function namespaceFuncs(ApiNamespace $t, array &$excludes)
 {
 	global $apiclasses;
 	foreach ($t->methods as $name => $func)
 	{
+		if (array_key_exists($name, $excludes))
+		{
+			continue;
+		}
+		$excludes[$name] = true;
 		echo "\t\t$name = function(";
 		if ($func->args)
 		{
@@ -159,16 +164,18 @@ function endNamespace(ApiNamespace $t)
 foreach ($apinamespaces as $t)
 {
 	beginNamespace($t);
-	namespaceFuncs($t);
+	$excludes = [];
+	namespaceFuncs($t, $excludes);
 	endNamespace($t);
 }
 
 foreach ($apiclasses as $t)
 {
 	beginClass($t);
+	$excludes = [];
 	foreach ($t->getHierarchy() as $t2)
 	{
-		namespaceFuncs($t2);
+		namespaceFuncs($t2, $excludes);
 	}
 	endNamespace($t);
 }

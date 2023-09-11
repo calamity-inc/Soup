@@ -19,8 +19,11 @@
 			"addHeader": "MimeMessage_addHeader"
 		},
 		"Scheduler": {
+			"new": "Scheduler_new",
 			"setDontMakeReusableSockets": "Scheduler_setDontMakeReusableSockets",
-			"add": "Scheduler_add"
+			"add": "Scheduler_add",
+			"shouldKeepRunning": "Scheduler_shouldKeepRunning",
+			"tick": "Scheduler_tick"
 		},
 		"Totp": {
 			"new": "Totp_new",
@@ -65,6 +68,9 @@
 			["string", "key"],
 			["string", "value"]
 		],
+		"Scheduler_new": [
+			"Scheduler"
+		],
 		"Scheduler_setDontMakeReusableSockets": [
 			"void",
 			["Scheduler", "sched"]
@@ -73,6 +79,14 @@
 			"void",
 			["Scheduler", "sched"],
 			["Worker", "spWorker"]
+		],
+		"Scheduler_shouldKeepRunning": [
+			"bool",
+			["Scheduler", "sched"]
+		],
+		"Scheduler_tick": [
+			"void",
+			["Scheduler", "sched"]
 		],
 		"Totp_new": [
 			"Totp",

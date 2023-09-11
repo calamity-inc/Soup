@@ -96,8 +96,11 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getN(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getP(const RsaKeypair* x);
 SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x);
 // Scheduler
+SOUP_CEXPORT Scheduler* Scheduler_new();
 SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(Scheduler* sched);
 SOUP_CEXPORT void Scheduler_add(Scheduler* sched, void* spWorker);
+SOUP_CEXPORT bool Scheduler_shouldKeepRunning(Scheduler* sched);
+SOUP_CEXPORT void Scheduler_tick(Scheduler* sched);
 // Totp
 SOUP_CEXPORT Totp* Totp_new(const stdstring* secret);
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);

@@ -53,6 +53,12 @@ soup = {
 			assert(getmetatable(spWorker) == soup.Worker || getmetatable(spWorker) == soup.HttpRequestTask)
 			libsoup:call("Scheduler_add", self.addr, spWorker.addr)
 		end,
+		shouldKeepRunning = function(self)
+			return 0 ~= libsoup:call("Scheduler_shouldKeepRunning", self.addr)
+		end,
+		tick = function(self)
+			libsoup:call("Scheduler_tick", self.addr)
+		end,
 	},
 	HttpRequest = {
 		__name = "soup.HttpRequest",
@@ -93,12 +99,21 @@ soup = {
 		__gc = function(self)
 			libsoup:call("endLifetime", self.addr)
 		end,
+		new = function()
+			return initClass(soup.Scheduler, { addr = libsoup:call("Scheduler_new") })
+		end,
 		setDontMakeReusableSockets = function(self)
 			libsoup:call("Scheduler_setDontMakeReusableSockets", self.addr)
 		end,
 		add = function(self, spWorker)
 			assert(getmetatable(spWorker) == soup.Worker || getmetatable(spWorker) == soup.HttpRequestTask)
 			libsoup:call("Scheduler_add", self.addr, spWorker.addr)
+		end,
+		shouldKeepRunning = function(self)
+			return 0 ~= libsoup:call("Scheduler_shouldKeepRunning", self.addr)
+		end,
+		tick = function(self)
+			libsoup:call("Scheduler_tick", self.addr)
 		end,
 	},
 	Totp = {
