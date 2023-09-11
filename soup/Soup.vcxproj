@@ -496,6 +496,7 @@
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
     <ClInclude Include="PointerAndBool.hpp" />
+    <ClInclude Include="punycode.hpp" />
     <ClInclude Include="Regex.hpp" />
     <ClInclude Include="RegexAlternative.hpp" />
     <ClInclude Include="RegexCodepointConstraint.hpp" />
@@ -981,6 +982,7 @@
     <ClCompile Include="MacAddr.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="plist.cpp" />
+    <ClCompile Include="punycode.cpp" />
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="Regex.cpp" />
     <ClCompile Include="RegexGroup.cpp" />

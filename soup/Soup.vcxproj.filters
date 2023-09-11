@@ -1464,6 +1464,9 @@
     <ClInclude Include="MacAddr.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="punycode.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2124,6 +2127,9 @@
     </ClCompile>
     <ClCompile Include="dhcp.cpp">
       <Filter>net\dhcp</Filter>
+    </ClCompile>
+    <ClCompile Include="punycode.cpp">
+      <Filter>data\enc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

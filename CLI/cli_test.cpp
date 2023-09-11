@@ -13,6 +13,7 @@
 #include <base58.hpp>
 #include <base64.hpp>
 #include <cat.hpp>
+#include <punycode.hpp>
 #include <ripemd160.hpp>
 #include <sha1.hpp>
 #include <sha256.hpp>
@@ -282,6 +283,22 @@ static void unit_data()
 			assert(base64::urlDecode("8J-YgA==") == "😀");
 		});
 	}
+
+	test("punycode", []
+	{
+		auto test_punycode_pair = [](const std::string& encoded, const std::u32string& decoded)
+		{
+			assert(punycode::encode(decoded) == encoded);
+			assert(punycode::decode(encoded) == decoded);
+		};
+		test_punycode_pair("4ca", U"ä");
+		test_punycode_pair("4ca0b", U"äö");
+		test_punycode_pair("4ca0bs", U"äöü");
+		test_punycode_pair("bcher-kva", U"bücher");
+		test_punycode_pair("bcher-ova", U"bcherü");
+		test_punycode_pair("bcher-kvaf", U"ýbücher");
+		test_punycode_pair("ihqwcrb4cv8a8dqg056pqjye", U"他们为什么不说中文");
+	});
 
 	test("cat", []
 	{
