@@ -40,6 +40,13 @@ namespace soup
 		{
 		}
 
+		// For some reason, C++ thinks it can call the T&& overload for non-const SharedPtr references...
+		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<std::remove_reference_t<T>>)>
+		Capture(T& v)
+			: data(new std::remove_reference_t<T>(v)), deleter(&deleter_impl<std::remove_reference_t<T>>)
+		{
+		}
+
 		template <typename T, SOUP_RESTRICT(std::is_pointer_v<std::remove_reference_t<T>>)>
 		Capture(T v)
 			: data(reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(v)))

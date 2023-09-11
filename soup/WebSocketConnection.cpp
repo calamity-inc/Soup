@@ -155,6 +155,16 @@ namespace soup
 			}
 		}, CaptureWsRecv{ cb, std::move(cap) });
 	}
+
+	SharedPtr<Promise<WebSocketMessage>> WebSocketConnection::wsRecv()
+	{
+		auto p = soup::make_shared<Promise<WebSocketMessage>>();
+		wsRecv([](WebSocketConnection&, WebSocketMessage&& msg, Capture&& cap)
+		{
+			cap.get<SharedPtr<Promise<WebSocketMessage>>>()->fulfil(std::move(msg));
+		}, p);
+		return p;
+	}
 }
 
 #endif

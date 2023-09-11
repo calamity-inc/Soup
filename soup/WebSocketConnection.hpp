@@ -3,6 +3,10 @@
 #include "Socket.hpp"
 #if !SOUP_WASM
 
+#include "Promise.hpp"
+#include "SharedPtr.hpp"
+#include "WebSocketMessage.hpp"
+
 namespace soup
 {
 	class WebSocketConnection : public Socket
@@ -19,6 +23,7 @@ namespace soup
 		void wsSend(uint8_t opcode, std::string payload);
 
 		void wsRecv(recv_callback_t cb, Capture&& cap = {});
+		[[nodiscard]] SharedPtr<Promise<WebSocketMessage>> wsRecv();
 	};
 }
 
