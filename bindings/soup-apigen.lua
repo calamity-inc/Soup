@@ -100,11 +100,17 @@ soup = {
 			libsoup:call("Scheduler_setDontMakeReusableSockets", self.addr)
 		end,
 		add = function(self, spWorker)
-			assert(getmetatable(spWorker) == soup.HttpRequestTask)
+			assert(getmetatable(spWorker) == soup.Worker || getmetatable(spWorker) == soup.HttpRequestTask)
 			libsoup:call("Scheduler_add", self.addr, spWorker.addr)
 		end,
 		isActive = function(self)
 			return 0 ~= libsoup:call("Scheduler_isActive", self.addr)
+		end,
+	},
+	Worker = {
+		__name = "soup.Worker",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
 		end,
 	},
 }
