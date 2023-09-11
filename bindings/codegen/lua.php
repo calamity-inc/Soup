@@ -123,7 +123,7 @@ function namespaceFuncs(ApiNamespace $t, array &$excludes)
 						}
 						else
 						{
-							echo " || ";
+							echo " or ";
 						}
 						echo "getmetatable({$arg->name}) == soup.{$ct->name}";
 					}

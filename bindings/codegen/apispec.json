@@ -6,6 +6,11 @@
 			"new": "DetachedScheduler_new",
 			"isActive": "DetachedScheduler_isActive"
 		},
+		"EstablishWebSocketConnectionTask": {
+			"__parent": "Worker",
+			"new": "EstablishWebSocketConnectionTask_new",
+			"getSocket": "EstablishWebSocketConnectionTask_getSocket"
+		},
 		"HttpRequest": {
 			"__parent": "MimeMessage",
 			"new": "HttpRequest_new",
@@ -18,6 +23,13 @@
 		"MimeMessage": {
 			"addHeader": "MimeMessage_addHeader"
 		},
+		"PromiseBase": {
+			"isPending": "PromiseBase_isPending"
+		},
+		"Promise_WebSocketMessage": {
+			"__parent": "PromiseBase",
+			"getData": "Promise_WebSocketMessage_getData"
+		},
 		"Scheduler": {
 			"new": "Scheduler_new",
 			"setDontMakeReusableSockets": "Scheduler_setDontMakeReusableSockets",
@@ -25,12 +37,22 @@
 			"shouldKeepRunning": "Scheduler_shouldKeepRunning",
 			"tick": "Scheduler_tick"
 		},
+		"Socket": {
+			"__parent": "Worker"
+		},
 		"Totp": {
 			"new": "Totp_new",
 			"getQrCodeUri": "Totp_getQrCodeUri",
 			"getValue": "Totp_getValue"
 		},
-		"Worker": {}
+		"WebSocketConnection": {
+			"__parent": "Socket",
+			"wsSend": "WebSocketConnection_wsSend",
+			"wsRecv": "WebSocketConnection_wsRecv"
+		},
+		"Worker": {
+			"isWorkDone": "Worker_isWorkDone"
+		}
 	},
 	"namespaces": {
 		"Hotp": {
@@ -44,6 +66,14 @@
 		"DetachedScheduler_isActive": [
 			"bool",
 			["DetachedScheduler", "sched"]
+		],
+		"EstablishWebSocketConnectionTask_new": [
+			"EstablishWebSocketConnectionTask",
+			["string", "uri"]
+		],
+		"EstablishWebSocketConnectionTask_getSocket": [
+			"WebSocketConnection",
+			["EstablishWebSocketConnectionTask", "x"]
 		],
 		"Hotp_generateSecret": [
 			"stdstring",
@@ -67,6 +97,14 @@
 			["MimeMessage", "x"],
 			["string", "key"],
 			["string", "value"]
+		],
+		"PromiseBase_isPending": [
+			"bool",
+			["PromiseBase", "x"]
+		],
+		"Promise_WebSocketMessage_getData": [
+			"string",
+			["Promise_WebSocketMessage", "x"]
 		],
 		"Scheduler_new": [
 			"Scheduler"
@@ -101,6 +139,19 @@
 		"Totp_getValue": [
 			"int",
 			["Totp", "x"]
+		],
+		"WebSocketConnection_wsSend": [
+			"void",
+			["WebSocketConnection", "con"],
+			["string", "text"]
+		],
+		"WebSocketConnection_wsRecv": [
+			"Promise_WebSocketMessage",
+			["WebSocketConnection", "con"]
+		],
+		"Worker_isWorkDone": [
+			"bool",
+			["Worker", "x"]
 		]
 	}
 }

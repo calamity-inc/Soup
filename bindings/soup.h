@@ -68,6 +68,9 @@ SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const cha
 // DetachedScheduler
 SOUP_CEXPORT DetachedScheduler* DetachedScheduler_new();
 SOUP_CEXPORT bool DetachedScheduler_isActive(DetachedScheduler* sched);
+// EstablishWebSocketConnectionTask
+SOUP_CEXPORT void* EstablishWebSocketConnectionTask_new(const char* uri);
+SOUP_CEXPORT void* EstablishWebSocketConnectionTask_getSocket(void* x);
 // Hotp
 SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes);
 // HttpRequest
@@ -88,6 +91,10 @@ SOUP_CEXPORT void MimeMessage_addHeader(MimeMessage* x, const char* key, const c
 // Mixed
 SOUP_CEXPORT bool Mixed_isCanvas(const Mixed* x);
 SOUP_CEXPORT Canvas* Mixed_getCanvas(const Mixed* x);
+// PromiseBase
+SOUP_CEXPORT bool PromiseBase_isPending(void* x);
+// Promise_WebSocketMessage
+SOUP_CEXPORT const char* Promise_WebSocketMessage_getData(void* x);
 // QrCode
 SOUP_CEXPORT QrCode* QrCode_newFromText(const char* x);
 SOUP_CEXPORT Canvas* QrCode_toNewCanvas(const QrCode* x, unsigned int border, bool black_bg);
@@ -105,6 +112,11 @@ SOUP_CEXPORT void Scheduler_tick(Scheduler* sched);
 SOUP_CEXPORT Totp* Totp_new(const stdstring* secret);
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);
 SOUP_CEXPORT int Totp_getValue(const Totp* x);
+// WebSocketConnection
+SOUP_CEXPORT void WebSocketConnection_wsSend(void* con, const char* text);
+SOUP_CEXPORT void* WebSocketConnection_wsRecv(void* con);
+// Worker
+SOUP_CEXPORT bool Worker_isWorkDone(void* x);
 // YubikeyValidator
 SOUP_CEXPORT YubikeyValidator* YubikeyValidator_new(const char* id, const char* secret);
 SOUP_CEXPORT const char* YubikeyValidator_validate(const YubikeyValidator* x, const char* otp);

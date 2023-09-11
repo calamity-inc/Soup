@@ -120,6 +120,12 @@ namespace soup
 			throw Exception("Attempt to use an instance I don't manage (use-after-free?)");
 		}
 
+		template <typename T>
+		[[nodiscard]] T& get(void* inst)
+		{
+			return get(reinterpret_cast<T*>(inst));
+		}
+
 		void broadenScope(void* inst)
 		{
 			for (size_t i = 0; i != scopes.size(); ++i)

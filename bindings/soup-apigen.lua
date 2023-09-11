@@ -50,7 +50,7 @@ soup = {
 			libsoup:call("Scheduler_setDontMakeReusableSockets", self.addr)
 		end,
 		add = function(self, spWorker)
-			assert(getmetatable(spWorker) == soup.Worker || getmetatable(spWorker) == soup.HttpRequestTask)
+			assert(getmetatable(spWorker) == soup.Worker or getmetatable(spWorker) == soup.EstablishWebSocketConnectionTask or getmetatable(spWorker) == soup.HttpRequestTask or getmetatable(spWorker) == soup.Socket or getmetatable(spWorker) == soup.WebSocketConnection)
 			libsoup:call("Scheduler_add", self.addr, spWorker.addr)
 		end,
 		shouldKeepRunning = function(self)
@@ -58,6 +58,21 @@ soup = {
 		end,
 		tick = function(self)
 			libsoup:call("Scheduler_tick", self.addr)
+		end,
+	},
+	EstablishWebSocketConnectionTask = {
+		__name = "soup.EstablishWebSocketConnectionTask",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		new = function(uri)
+			return initClass(soup.EstablishWebSocketConnectionTask, { addr = libsoup:call("EstablishWebSocketConnectionTask_new", uri) })
+		end,
+		getSocket = function(self)
+			return initClass(soup.WebSocketConnection, { addr = libsoup:call("EstablishWebSocketConnectionTask_getSocket", self.addr) })
+		end,
+		isWorkDone = function(self)
+			return 0 ~= libsoup:call("Worker_isWorkDone", self.addr)
 		end,
 	},
 	HttpRequest = {
@@ -84,6 +99,9 @@ soup = {
 			assert(getmetatable(hr) == soup.HttpRequest)
 			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromRequest", hr.addr) })
 		end,
+		isWorkDone = function(self)
+			return 0 ~= libsoup:call("Worker_isWorkDone", self.addr)
+		end,
 	},
 	MimeMessage = {
 		__name = "soup.MimeMessage",
@@ -92,6 +110,27 @@ soup = {
 		end,
 		addHeader = function(self, key, value)
 			libsoup:call("MimeMessage_addHeader", self.addr, key, value)
+		end,
+	},
+	PromiseBase = {
+		__name = "soup.PromiseBase",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		isPending = function(self)
+			return 0 ~= libsoup:call("PromiseBase_isPending", self.addr)
+		end,
+	},
+	Promise_WebSocketMessage = {
+		__name = "soup.Promise_WebSocketMessage",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		getData = function(self)
+			return libsoup:callString("Promise_WebSocketMessage_getData", self.addr)
+		end,
+		isPending = function(self)
+			return 0 ~= libsoup:call("PromiseBase_isPending", self.addr)
 		end,
 	},
 	Scheduler = {
@@ -106,7 +145,7 @@ soup = {
 			libsoup:call("Scheduler_setDontMakeReusableSockets", self.addr)
 		end,
 		add = function(self, spWorker)
-			assert(getmetatable(spWorker) == soup.Worker || getmetatable(spWorker) == soup.HttpRequestTask)
+			assert(getmetatable(spWorker) == soup.Worker or getmetatable(spWorker) == soup.EstablishWebSocketConnectionTask or getmetatable(spWorker) == soup.HttpRequestTask or getmetatable(spWorker) == soup.Socket or getmetatable(spWorker) == soup.WebSocketConnection)
 			libsoup:call("Scheduler_add", self.addr, spWorker.addr)
 		end,
 		shouldKeepRunning = function(self)
@@ -114,6 +153,15 @@ soup = {
 		end,
 		tick = function(self)
 			libsoup:call("Scheduler_tick", self.addr)
+		end,
+	},
+	Socket = {
+		__name = "soup.Socket",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		isWorkDone = function(self)
+			return 0 ~= libsoup:call("Worker_isWorkDone", self.addr)
 		end,
 	},
 	Totp = {
@@ -135,10 +183,28 @@ soup = {
 			return libsoup:call("Totp_getValue", self.addr)
 		end,
 	},
+	WebSocketConnection = {
+		__name = "soup.WebSocketConnection",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		wsSend = function(self, text)
+			libsoup:call("WebSocketConnection_wsSend", self.addr, text)
+		end,
+		wsRecv = function(self)
+			return initClass(soup.Promise_WebSocketMessage, { addr = libsoup:call("WebSocketConnection_wsRecv", self.addr) })
+		end,
+		isWorkDone = function(self)
+			return 0 ~= libsoup:call("Worker_isWorkDone", self.addr)
+		end,
+	},
 	Worker = {
 		__name = "soup.Worker",
 		__gc = function(self)
 			libsoup:call("endLifetime", self.addr)
+		end,
+		isWorkDone = function(self)
+			return 0 ~= libsoup:call("Worker_isWorkDone", self.addr)
 		end,
 	},
 }

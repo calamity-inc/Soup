@@ -25,6 +25,7 @@ typedef void (*void_func_t)();
 #include "CidrSubnetInterface.hpp"
 #include "country_names.hpp"
 #include "DetachedScheduler.hpp"
+#include "EstablishWebSocketConnectionTask.hpp"
 #include "Hotp.hpp"
 #include "HttpRequest.hpp"
 #include "HttpRequestTask.hpp"
@@ -222,6 +223,22 @@ SOUP_CEXPORT bool DetachedScheduler_isActive(DetachedScheduler* sched)
 #endif
 }
 
+// EstablishWebSocketConnectionTask
+
+SOUP_CEXPORT void* EstablishWebSocketConnectionTask_new(const char* uri)
+{
+#if SOUP_WASM
+	return nullptr;
+#else
+	return heap.add(new SharedPtr<EstablishWebSocketConnectionTask>(new EstablishWebSocketConnectionTask(Uri(uri))));
+#endif
+}
+
+SOUP_CEXPORT void* EstablishWebSocketConnectionTask_getSocket(void* x)
+{
+	return heap.add(new SharedPtr<WebSocketConnection>(heap.get<SharedPtr<EstablishWebSocketConnectionTask>>(x)->sock));
+}
+
 // Hotp
 
 SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes)
@@ -315,6 +332,20 @@ SOUP_CEXPORT Canvas* Mixed_getCanvas(const Mixed* x)
 	return &heap.get(x).getCanvas();
 }
 
+// PromiseBase
+
+SOUP_CEXPORT bool PromiseBase_isPending(void* x)
+{
+	return heap.get<SharedPtr<PromiseBase>>(x)->isPending();
+}
+
+// Promise_WebSocketMessage
+
+SOUP_CEXPORT const char* Promise_WebSocketMessage_getData(void* x)
+{
+	return heap.get<SharedPtr<Promise<WebSocketMessage>>>(x)->getResult().data.c_str();
+}
+
 // QrCode
 
 SOUP_CEXPORT QrCode* QrCode_newFromText(const char* x)
@@ -400,6 +431,25 @@ SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, con
 SOUP_CEXPORT int Totp_getValue(const Totp* x)
 {
 	return heap.get(x).getValue();
+}
+
+// WebSocketConnection
+
+SOUP_CEXPORT void WebSocketConnection_wsSend(void* con, const char* text)
+{
+	return heap.get<SharedPtr<WebSocketConnection>>(con)->wsSend(text);
+}
+
+SOUP_CEXPORT void* WebSocketConnection_wsRecv(void* con)
+{
+	return heap.add(new SharedPtr(heap.get<SharedPtr<WebSocketConnection>>(con)->wsRecv()));
+}
+
+// Worker
+
+SOUP_CEXPORT bool Worker_isWorkDone(void* x)
+{
+	return heap.get<SharedPtr<Worker>>(x)->isWorkDone();
 }
 
 // YubikeyValidator
