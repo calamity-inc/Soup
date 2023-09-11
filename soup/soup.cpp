@@ -34,10 +34,13 @@ typedef void (*void_func_t)();
 #include "KeyGenId.hpp"
 #include "MimeMessage.hpp"
 #include "Mixed.hpp"
+#include "Promise.hpp"
 #include "QrCode.hpp"
 #include "rsa.hpp"
 #include "Totp.hpp"
 #include "Uri.hpp"
+#include "WebSocketMessage.hpp"
+#include "Worker.hpp"
 #include "YubikeyValidator.hpp"
 
 using namespace soup;
@@ -236,7 +239,11 @@ SOUP_CEXPORT void* EstablishWebSocketConnectionTask_new(const char* uri)
 
 SOUP_CEXPORT void* EstablishWebSocketConnectionTask_getSocket(void* x)
 {
+#if SOUP_WASM
+	return nullptr;
+#else
 	return heap.add(new SharedPtr<WebSocketConnection>(heap.get<SharedPtr<EstablishWebSocketConnectionTask>>(x)->sock));
+#endif
 }
 
 // Hotp
@@ -437,12 +444,18 @@ SOUP_CEXPORT int Totp_getValue(const Totp* x)
 
 SOUP_CEXPORT void WebSocketConnection_wsSend(void* con, const char* text)
 {
+#if !SOUP_WASM
 	return heap.get<SharedPtr<WebSocketConnection>>(con)->wsSend(text);
+#endif
 }
 
 SOUP_CEXPORT void* WebSocketConnection_wsRecv(void* con)
 {
+#if SOUP_WASM
+	return nullptr;
+#else
 	return heap.add(new SharedPtr(heap.get<SharedPtr<WebSocketConnection>>(con)->wsRecv()));
+#endif
 }
 
 // Worker

@@ -164,6 +164,7 @@ namespace soup
 
 	// task
 	class Capture;
+	class DetachedScheduler;
 	class PromiseBase;
 	class Scheduler;
 
