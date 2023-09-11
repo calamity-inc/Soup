@@ -46,8 +46,8 @@ namespace soup
 		this_thread_running_scheduler = this;
 		while (shouldKeepRunning())
 		{
-			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
+			bool not_just_sockets = false;
 #if LOG_TICK_DUR
 			Stopwatch t;
 #endif
@@ -70,12 +70,13 @@ namespace soup
 
 	void Scheduler::runFor(unsigned int ms)
 	{
+		SOUP_ASSERT(this_thread_running_scheduler == nullptr);
 		this_thread_running_scheduler = this;
 		time_t deadline = time::millis() + ms;
 		while (shouldKeepRunning())
 		{
-			bool not_just_sockets = false;
 			std::vector<pollfd> pollfds{};
+			bool not_just_sockets = false;
 			tick(pollfds, not_just_sockets);
 			yieldBusyspin(pollfds);
 			if (time::millis() > deadline)
@@ -89,6 +90,22 @@ namespace soup
 	bool Scheduler::shouldKeepRunning() const
 	{
 		return workers.size() != passive_workers || !pending_workers.empty();
+	}
+
+	void Scheduler::tick()
+	{
+		SOUP_ASSERT(this_thread_running_scheduler == nullptr);
+		this_thread_running_scheduler = this;
+
+		std::vector<pollfd> pollfds{};
+		bool not_just_sockets = false;
+		tick(pollfds, not_just_sockets);
+		if (poll(pollfds, 0) > 0)
+		{
+			processPollResults(pollfds);
+		}
+
+		this_thread_running_scheduler = nullptr;
 	}
 
 	void Scheduler::tick(std::vector<pollfd>& pollfds, bool& not_just_sockets)

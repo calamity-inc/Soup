@@ -60,8 +60,9 @@ namespace soup
 
 		void run();
 		void runFor(unsigned int ms);
-	protected:
 		[[nodiscard]] bool shouldKeepRunning() const;
+		void tick();
+	protected:
 		void tick(std::vector<pollfd>& pollfds, bool& not_just_sockets);
 		void tickWorker(std::vector<pollfd>& pollfds, bool& not_just_sockets, Worker& w);
 		void yieldBusyspin(std::vector<pollfd>& pollfds);
