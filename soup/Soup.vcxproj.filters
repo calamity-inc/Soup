@@ -1473,6 +1473,9 @@
     <ClInclude Include="SelfDeletingThread.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="fnv.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

@@ -92,13 +92,9 @@ namespace soup
 		}
 
 		[[nodiscard]] chunk_t getChunk(size_t i) const noexcept;
-	private:
 		[[nodiscard]] SOUP_FORCEINLINE chunk_t getChunkInbounds(size_t i) const noexcept { return chunks[i]; }
-	public:
 		void setChunk(size_t i, chunk_t v);
-	private:
 		SOUP_FORCEINLINE void setChunkInbounds(size_t i, chunk_t v) noexcept { chunks[i] = v; }
-	public:
 		void addChunk(size_t i, chunk_t v);
 		void addChunk(chunk_t v);
 		void shrink() noexcept;

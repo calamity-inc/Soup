@@ -488,6 +488,7 @@
     <ClInclude Include="ecc.hpp" />
     <ClInclude Include="EstablishWebSocketConnectionTask.hpp" />
     <ClInclude Include="FiberTask.hpp" />
+    <ClInclude Include="fnv.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
