@@ -4,7 +4,6 @@
 
 namespace soup
 {
-
 	struct EccPoint
 	{
 	protected:
