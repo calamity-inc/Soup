@@ -89,6 +89,11 @@ namespace soup
 			return ripT<int32_t>();
 		}
 
+		[[nodiscard]] uint32_t unrip(Pointer addr) const noexcept
+		{
+			return static_cast<uint32_t>(addr.sub(add(4).as<uintptr_t>()).as<uintptr_t>());
+		}
+
 #if SOUP_WINDOWS
 		[[nodiscard]] Pointer externalRip(const Module& mod) const noexcept;
 
