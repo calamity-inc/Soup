@@ -4,11 +4,6 @@
 
 namespace soup
 {
-	Pointer Pointer::rip() const noexcept
-	{
-		return ripT<int32_t>();
-	}
-
 #if SOUP_WINDOWS
 	Pointer Pointer::externalRip(const Module& mod) const noexcept
 	{

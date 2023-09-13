@@ -84,7 +84,10 @@ namespace soup
 			return add(as<T&>()).add(sizeof(T));
 		}
 
-		Pointer rip() const noexcept;
+		Pointer rip() const noexcept
+		{
+			return ripT<int32_t>();
+		}
 
 #if SOUP_WINDOWS
 		Pointer externalRip(const Module& mod) const noexcept;
