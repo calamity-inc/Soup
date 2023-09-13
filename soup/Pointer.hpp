@@ -68,7 +68,7 @@ namespace soup
 			this->ptr = reinterpret_cast<void*>(ptr);
 		}
 
-		void* addr() const noexcept
+		[[nodiscard]] void* addr() const noexcept
 		{
 			return ptr;
 		}
@@ -79,25 +79,25 @@ namespace soup
 		}
 
 		template <typename T>
-		inline Pointer ripT() const noexcept
+		[[nodiscard]] inline Pointer ripT() const noexcept
 		{
 			return add(as<T&>()).add(sizeof(T));
 		}
 
-		Pointer rip() const noexcept
+		[[nodiscard]] Pointer rip() const noexcept
 		{
 			return ripT<int32_t>();
 		}
 
 #if SOUP_WINDOWS
-		Pointer externalRip(const Module& mod) const noexcept;
+		[[nodiscard]] Pointer externalRip(const Module& mod) const noexcept;
 
 		[[nodiscard]] bool isInModule() const noexcept;
 		[[nodiscard]] bool isInModule(const Module& mod) const noexcept;
 		[[nodiscard]] bool isInRange(const Range& range) const noexcept;
 
-		Pointer rva() const noexcept;
-		Pointer rva(const Module& mod) const noexcept;
+		[[nodiscard]] Pointer rva() const noexcept;
+		[[nodiscard]] Pointer rva(const Module& mod) const noexcept;
 
 		[[nodiscard]] std::vector<Pointer> getJumps() const noexcept;
 		[[nodiscard]] Pointer followJumps() const noexcept;
