@@ -34,6 +34,11 @@ namespace soup
 
 	std::vector<UniquePtr<dnsRecord>> dnsHttpResolver::lookup(dnsType qtype, const std::string& name) const
 	{
+		std::vector<UniquePtr<dnsRecord>> res;
+		if (checkBuiltinResult(res, qtype, name))
+		{
+			return res;
+		}
 		if (keep_alive_sched)
 		{
 			auto task = keep_alive_sched->add<dnsLookupWrapperTask>(makeLookupTask(qtype, name));
@@ -41,7 +46,7 @@ namespace soup
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			} while (!task->isWorkDone());
-			std::vector<UniquePtr<dnsRecord>> res = std::move(task->res);
+			res = std::move(task->res);
 			return res;
 		}
 		else
@@ -85,6 +90,10 @@ namespace soup
 
 	UniquePtr<dnsLookupTask> dnsHttpResolver::makeLookupTask(dnsType qtype, const std::string& name) const
 	{
+		if (auto res = checkBuiltinResultTask(qtype, name))
+		{
+			return res;
+		}
 		IpAddr server;
 		SOUP_ASSERT(server.fromString(this->server));
 		return soup::make_unique<dnsHttpLookupTask>(std::move(server), qtype, name);

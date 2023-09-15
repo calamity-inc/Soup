@@ -8,6 +8,33 @@
 
 namespace soup
 {
+	bool dnsRawResolver::checkBuiltinResult(std::vector<UniquePtr<dnsRecord>>& res, dnsType qtype, const std::string& name)
+	{
+		if (name == "localhost")
+		{
+			if (qtype == DNS_A)
+			{
+				res.emplace_back(soup::make_unique<dnsARecord>(name, -1, SOUP_IPV4_NWE(127, 0, 0, 1)));
+			}
+			else if (qtype == DNS_AAAA)
+			{
+				res.emplace_back(soup::make_unique<dnsAaaaRecord>(name, -1, IpAddr("::1")));
+			}
+			return true;
+		}
+		return false;
+	}
+
+	UniquePtr<dnsLookupTask> dnsRawResolver::checkBuiltinResultTask(dnsType qtype, const std::string& name)
+	{
+		std::vector<UniquePtr<dnsRecord>> res;
+		if (checkBuiltinResult(res, qtype, name))
+		{
+			return dnsCachedResultTask::make(std::move(res));
+		}
+		return {};
+	}
+
 	std::string dnsRawResolver::getQuery(dnsType qtype, const std::string& name)
 	{
 		StringWriter sw(false);

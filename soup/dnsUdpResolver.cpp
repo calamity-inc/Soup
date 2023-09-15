@@ -9,6 +9,14 @@ namespace soup
 {
 	std::vector<UniquePtr<dnsRecord>> dnsUdpResolver::lookup(dnsType qtype, const std::string& name) const
 	{
+		{
+			std::vector<UniquePtr<dnsRecord>> res;
+			if (checkBuiltinResult(res, qtype, name))
+			{
+				return res;
+			}
+		}
+
 		Socket sock;
 		if (!sock.udpClientSend(server, getQuery(qtype, name)))
 		{

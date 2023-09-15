@@ -22,14 +22,6 @@ namespace soup
 		return res;
 	}
 
-	struct dnsCachedResultTask : public dnsLookupTask
-	{
-		void onTick() final
-		{
-			SOUP_ASSERT_UNREACHABLE;
-		}
-	};
-
 	struct dnsLookupAndCacheTask : public dnsLookupTask
 	{
 		const dnsCacheResolver& resolver;
@@ -55,10 +47,7 @@ namespace soup
 	{
 		if (auto res = findInCache(qtype, name); !res.empty())
 		{
-			auto task = soup::make_unique<dnsCachedResultTask>();
-			task->res = std::move(res);
-			task->setWorkDone();
-			return task;
+			return dnsCachedResultTask::make(std::move(res));
 		}
 		return soup::make_unique<dnsLookupAndCacheTask>(*this, underlying->makeLookupTask(qtype, name));
 	}
