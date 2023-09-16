@@ -98,6 +98,8 @@ namespace soup
 		case 29802: // HIVELOCITY, Inc.
 		case 54994: // QUANTIL NETWORKS INC
 		case 64476: // Shadow SAS (shadow.tech)
+		case 3223: // Voxility LLP
+		case 39743: // Voxility S.R.L. 
 			// NForce Entertainment B.V.
 		case 43350:
 		case 64437:	
