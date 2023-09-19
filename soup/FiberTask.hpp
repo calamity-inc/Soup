@@ -6,7 +6,8 @@
 
 namespace soup
 {
-	class FiberTask : public Task
+	template <typename Base = Task>
+	class FiberTask : public Base
 	{
 	private:
 		Fiber fiber;
