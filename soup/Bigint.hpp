@@ -26,6 +26,7 @@
 #include "IntVector.hpp"
 #endif
 #include "stringifyable.hpp"
+#include "Task.hpp"
 
 namespace soup
 {
@@ -217,13 +218,9 @@ namespace soup
 		[[nodiscard]] bool isPrimePrecheck(bool& ret) const;
 		[[nodiscard]] bool isPrime() const;
 		[[nodiscard]] bool isPrimeAccurate() const;
-	protected:
 		[[nodiscard]] bool isPrimeAccurateNoprecheck() const;
-	public:
 		[[nodiscard]] bool isProbablePrime(const int miller_rabin_iterations = 1) const;
-	protected:
 		[[nodiscard]] bool isProbablePrimeNoprecheck(const int miller_rabin_iterations = 1) const;
-	public:
 		[[nodiscard]] bool isCoprime(const Bigint& b) const;
 		[[nodiscard]] Bigint eulersTotient() const;
 		[[nodiscard]] Bigint reducedTotient() const;
@@ -338,4 +335,47 @@ namespace soup
 			return Bigint::fromString(str, len);
 		}
 	}
+
+	struct RandomProbablePrimeTask : public PromiseTask<Bigint>
+	{
+		const size_t bits;
+		const int miller_rabin_iterations;
+
+		int it;
+
+		RandomProbablePrimeTask(size_t bits, int miller_rabin_iterations)
+			: bits(bits), miller_rabin_iterations(miller_rabin_iterations), it(miller_rabin_iterations)
+		{
+		}
+
+		void onTick() final
+		{
+			if (it != miller_rabin_iterations)
+			{
+				if (result.isProbablePrimeNoprecheck(1))
+				{
+					if (++it == miller_rabin_iterations)
+					{
+						setWorkDone();
+					}
+				}
+				else
+				{
+					it = miller_rabin_iterations;
+				}
+			}
+			else
+			{
+				result = Bigint::random(bits);
+				result.enableBitInbounds(0);
+				bool pass;
+				if (!result.isPrimePrecheck(pass)
+					|| pass
+					)
+				{
+					it = 0;
+				}
+			}
+		}
+	};
 }

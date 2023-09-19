@@ -26,4 +26,18 @@ namespace soup
 		[[nodiscard]] Capture& taskCapture() noexcept { return holdup_callback.cap; }
 		[[nodiscard]] const Capture& taskCapture() const noexcept { return holdup_callback.cap; }
 	};
+
+	template <typename T>
+	struct PromiseTask : public Task
+	{
+		T result;
+
+		using Task::Task;
+
+		[[nodiscard]] T&& await()
+		{
+			runUntilDone();
+			return std::move(result);
+		}
+	};
 }

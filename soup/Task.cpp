@@ -1,8 +1,16 @@
 #include "Task.hpp"
 
-#include <thread>
+//#include <thread>
 
 #include "base.hpp"
+
+#define LOG_TICK_DUR false
+
+#if LOG_TICK_DUR
+#include "log.hpp"
+#include "format.hpp"
+#include "Stopwatch.hpp"
+#endif
 
 namespace soup
 {
@@ -36,9 +44,18 @@ namespace soup
 
 	void Task::runUntilDone()
 	{
+#if LOG_TICK_DUR
+		Stopwatch t;
+		while (t.start(), !tickUntilDone())
+#else
 		while (!tickUntilDone())
+#endif
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+#if LOG_TICK_DUR
+			t.stop();
+			logWriteLine(format("Tick took {} ms", t.getMs()));
+#endif
+			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
 }
