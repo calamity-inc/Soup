@@ -348,8 +348,8 @@ namespace soup
 			auto q = soup::make_unique<Promise<Bigint>>(gen_promise, ((bits / 2u) + 2u));
 			p->awaitCompletion();
 			q->awaitCompletion();
-			primes.emplace_back(p->getResult());
-			primes.emplace_back(q->getResult());
+			primes.emplace_back(std::move(p->getResult()));
+			primes.emplace_back(std::move(q->getResult()));
 		}
 
 		while (true)
@@ -402,8 +402,8 @@ namespace soup
 			auto q = soup::make_unique<Promise<Bigint>>(gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) });
 			p->awaitCompletion();
 			q->awaitCompletion();
-			primes.emplace_back(p->getResult());
-			primes.emplace_back(q->getResult());
+			primes.emplace_back(std::move(p->getResult()));
+			primes.emplace_back(std::move(q->getResult()));
 #endif
 		}
 
