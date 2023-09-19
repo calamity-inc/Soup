@@ -13,3 +13,5 @@ If you want some ideas as to how start using Soup, check out [the docs](https://
 ## License
 
 You may use Soup for personal and commercial projects, but they must be open-source.
+
+If you want to use Soup in a closed-source project, please contact licensing@calamity.gg about your use-case.
