@@ -144,7 +144,9 @@ namespace soup
 		if (slug.find("cdn") != std::string::npos
 			|| slug.find("colocation") != std::string::npos // AS48950 GLOBAL COLOCATION LIMITED
 			// Note: Not "colo" because "Telmex Colombia S.A."
-			|| slug.find("cloud") != std::string::npos // AS39845 2 Cloud Ltd.
+			|| (slug.find("cloud") != std::string::npos // AS39845 2 Cloud Ltd.
+				&& slug.find("the cloud") == std::string::npos // ignore AS41012 The Cloud Networks Limited
+				)			
 			|| slug.find("datacenter") != std::string::npos
 			|| slug.find("data center") != std::string::npos
 			|| slug.find("data-center") != std::string::npos
