@@ -28,6 +28,8 @@ namespace soup
 			VECTORCALL,
 		};
 
+		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
+
 		static uintptr_t call(CallConv conv, void* func, const std::vector<uintptr_t>& args);
 
 		static uintptr_t cdeclCall(void* func, const std::vector<uintptr_t>& args);
