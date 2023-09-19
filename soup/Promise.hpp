@@ -32,6 +32,11 @@ namespace soup
 
 		void awaitCompletion();
 
+		void reset() noexcept
+		{
+			res.reset();
+		}
+
 	protected:
 		void fulfil(Capture&& res) noexcept
 		{
@@ -51,7 +56,6 @@ namespace soup
 		{
 		}
 
-		// If this is used, the Promise MUST NOT be stack-allocated.
 		Promise(T(*f)(Capture&&), Capture&& cap = {})
 			: Promise()
 		{
@@ -68,7 +72,6 @@ namespace soup
 			return res.get<T>();
 		}
 
-		// If this is used, the Promise MUST NOT be stack-allocated.
 		void fulfilOffThread(T(*f)(Capture&&), Capture&& cap = {})
 		{
 			new SelfDeletingThread([](Capture&& _cap)

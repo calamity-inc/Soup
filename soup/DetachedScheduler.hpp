@@ -8,7 +8,6 @@
 
 namespace soup
 {
-	// MUST NOT be stack-allocated.
 	class DetachedScheduler : public Scheduler
 	{
 	protected:
