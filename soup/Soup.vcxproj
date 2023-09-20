@@ -974,6 +974,7 @@
     <ClCompile Include="LexemeParser.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
+    <ClCompile Include="lyoStylesheet.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />
     <ClCompile Include="morse.cpp" />

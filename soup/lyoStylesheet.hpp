@@ -17,5 +17,7 @@ namespace soup
 	{
 		std::string name;
 		std::vector<lyoRule> rules;
+
+		void addRulesFromCss(const std::string& css);
 	};
 }

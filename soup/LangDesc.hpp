@@ -12,6 +12,7 @@ namespace soup
 	{
 	public:
 		std::vector<Token> tokens{};
+		bool semicolon_is_not_space = false;
 
 		Token& addToken(const char* keyword, Token::parse_t parse = nullptr)
 		{

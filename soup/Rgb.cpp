@@ -1,5 +1,6 @@
 #include "Rgb.hpp"
 
+#include "joaat.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -49,5 +50,22 @@ namespace soup
 		str.append(string::lpad(string::hex(g), 2, '0'));
 		str.append(string::lpad(string::hex(b), 2, '0'));
 		return str;
+	}
+
+	std::optional<Rgb> Rgb::fromName(const std::string& name)
+	{
+		switch (joaat::hash(name))
+		{
+		case joaat::hash("black"): return BLACK;
+		case joaat::hash("white"): return WHITE;
+		case joaat::hash("red"): return RED;
+		case joaat::hash("yellow"): return YELLOW;
+		case joaat::hash("green"): return GREEN;
+		case joaat::hash("blue"): return BLUE;
+		case joaat::hash("magenta"): return MAGENTA;
+		case joaat::hash("grey"): case joaat::hash("gray"): return GREY;
+		case joaat::hash("lightgrey"): case joaat::hash("lightgray"): return LIGHTGREY;
+		}
+		return std::nullopt;
 	}
 }

@@ -98,7 +98,7 @@ namespace soup
 			else
 			{
 				if (string::isSpace(*i)
-					|| *i == ';'
+					|| (*i == ';' && !semicolon_is_not_space)
 					)
 				{
 					if (!st.lb_is_space)
@@ -119,6 +119,7 @@ namespace soup
 						|| *i == '<'
 						|| *i == '['
 						|| *i == '{'
+						|| *i == ';'
 						)
 					{
 						st.flushLiteralBuffer();

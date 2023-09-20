@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "math.hpp"
@@ -62,6 +63,8 @@ namespace soup
 		[[nodiscard]] static Rgb fromHex(std::string hex);
 		static void expandHex(std::string& hex);
 		[[nodiscard]] std::string toHex() const;
+
+		[[nodiscard]] static std::optional<Rgb> fromName(const std::string& name);
 
 		[[nodiscard]] static Rgb lerp(Rgb a, Rgb b, float t)
 		{

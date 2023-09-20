@@ -2146,6 +2146,9 @@
     <ClCompile Include="SelfDeletingThread.cpp">
       <Filter>task</Filter>
     </ClCompile>
+    <ClCompile Include="lyoStylesheet.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
