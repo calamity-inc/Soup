@@ -33,6 +33,7 @@ namespace soup
 
 		HttpRequestTask(HttpRequest&& hr);
 		HttpRequestTask(const Uri& uri);
+		HttpRequestTask(std::string host, std::string path);
 
 		void onTick() final;
 

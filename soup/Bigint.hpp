@@ -377,5 +377,10 @@ namespace soup
 				}
 			}
 		}
+
+		[[nodiscard]] bool benefitsFromHighFrequency() const final
+		{
+			return true;
+		}
 	};
 }

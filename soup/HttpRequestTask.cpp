@@ -16,6 +16,11 @@ namespace soup
 	{
 	}
 
+	HttpRequestTask::HttpRequestTask(std::string host, std::string path)
+		: HttpRequestTask(HttpRequest(std::move(host), std::move(path)))
+	{
+	}
+
 	void HttpRequestTask::onTick()
 	{
 		switch (state)

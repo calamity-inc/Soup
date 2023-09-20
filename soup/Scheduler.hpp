@@ -63,9 +63,15 @@ namespace soup
 		[[nodiscard]] bool shouldKeepRunning() const;
 		void tick();
 	protected:
-		void tick(std::vector<pollfd>& pollfds, bool& not_just_sockets);
-		void tickWorker(std::vector<pollfd>& pollfds, bool& not_just_sockets, Worker& w);
-		void yieldBusyspin(std::vector<pollfd>& pollfds);
+		enum WorkloadFlags : uint8_t
+		{
+			NOT_JUST_SOCKETS = 1 << 0,
+			HAS_HIGH_FREQUENCY_TASKS = 1 << 1,
+		};
+
+		void tick(std::vector<pollfd>& pollfds, uint8_t& workload_flags);
+		void tickWorker(std::vector<pollfd>& pollfds, uint8_t& workload_flags, Worker& w);
+		void yieldBusyspin(std::vector<pollfd>& pollfds, uint8_t workload_flags);
 		void yieldKernel(std::vector<pollfd>& pollfds);
 		int poll(std::vector<pollfd>& pollfds, int timeout);
 		void processPollResults(const std::vector<pollfd>& pollfds);

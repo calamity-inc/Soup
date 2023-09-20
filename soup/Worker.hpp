@@ -13,7 +13,8 @@ namespace soup
 {
 	constexpr uint8_t WORKER_TYPE_UNSPECIFIED = 0;
 	constexpr uint8_t WORKER_TYPE_SOCKET = 1;
-	constexpr uint8_t WORKER_TYPE_USER = 2;
+	constexpr uint8_t WORKER_TYPE_TASK = 2;
+	constexpr uint8_t WORKER_TYPE_USER = 3;
 
 	struct Worker
 	{
@@ -31,7 +32,7 @@ namespace soup
 		Callback<void(Worker&)> holdup_callback;
 		void* holdup_data;
 
-		Worker(uint8_t type = WORKER_TYPE_UNSPECIFIED) noexcept
+		Worker(uint8_t type) noexcept
 			: type(type)
 		{
 		}

@@ -18,13 +18,19 @@ namespace soup
 		[[nodiscard]] bool tickUntilDone();
 	
 		// To use a Task without a Scheduler
-		void runUntilDone();
+		void run();
 
 	protected:
 		// Tasks only ever have the "IDLE" holdup with the onTick-invoking callback.
 		// However, that callback does not need its capture, so we can use it for arbitrary data.
 		[[nodiscard]] Capture& taskCapture() noexcept { return holdup_callback.cap; }
 		[[nodiscard]] const Capture& taskCapture() const noexcept { return holdup_callback.cap; }
+
+	public:
+		[[nodiscard]] virtual bool benefitsFromHighFrequency() const
+		{
+			return false;
+		}
 	};
 
 	template <typename T>
@@ -36,7 +42,7 @@ namespace soup
 
 		[[nodiscard]] T&& await()
 		{
-			runUntilDone();
+			run();
 			return std::move(result);
 		}
 	};

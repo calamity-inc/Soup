@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "HttpRequestTask.hpp"
 #include "Packet.hpp"
 #include "rsa.hpp"
 #include "Uri.hpp"
@@ -77,7 +78,8 @@ namespace soup
 
 		std::string nonce;
 
-		AcmeClient(std::string _domain);
+		AcmeClient() = default; // requires init
+		AcmeClient(std::string domain); // blocking
 
 		// ACME accounts are bound to the key, so if you call this with a registered key, the existing account is returned.
 		// Let's Encrypt requires a 2048-bit or 4096-bit keypair.
@@ -105,6 +107,21 @@ namespace soup
 		// Returns pem-encoded certchain on success. Empty string on failure.
 		// Note that the certificate key must differ from ACME account key.
 		[[nodiscard]] std::string cliCreateCertificate(const AcmeAccount& acct, const RsaPrivateKey& priv, const std::vector<std::string>& domains);
+
+		struct InitTask : public Task
+		{
+			AcmeClient& client;
+			HttpRequestTask hrt;
+
+			InitTask(AcmeClient& client, std::string domain)
+				: client(client), hrt(domain, "/directory")
+			{
+			}
+
+			void onTick() final;
+		};
+
+		[[nodiscard]] InitTask init(std::string domain) { return InitTask(*this, std::move(domain)); }
 	};
 }
 

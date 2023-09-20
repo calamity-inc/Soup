@@ -1,26 +1,18 @@
 #include "Task.hpp"
 
-//#include <thread>
-
 #include "base.hpp"
 
-#define LOG_TICK_DUR false
-
-#if LOG_TICK_DUR
-#include "log.hpp"
-#include "format.hpp"
-#include "Stopwatch.hpp"
-#endif
+#include "Scheduler.hpp"
 
 namespace soup
 {
 	Task::Task() noexcept
-		: Worker()
+		: Worker(WORKER_TYPE_TASK)
 	{
 		holdup_type = Worker::IDLE;
 		holdup_callback.set([](Worker& w, Capture&&)
 		{
-			reinterpret_cast<Task&>(w).onTick();
+			static_cast<Task&>(w).onTick();
 		});
 	}
 
@@ -42,20 +34,34 @@ namespace soup
 		return isWorkDone();
 	}
 
-	void Task::runUntilDone()
+	struct TaskWrapper : public Task
 	{
-#if LOG_TICK_DUR
-		Stopwatch t;
-		while (t.start(), !tickUntilDone())
-#else
-		while (!tickUntilDone())
-#endif
+		Task& task;
+
+		TaskWrapper(Task& task)
+			: task(task)
 		{
-#if LOG_TICK_DUR
-			t.stop();
-			logWriteLine(format("Tick took {} ms", t.getMs()));
-#endif
-			//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
+
+		void onTick()
+		{
+			if (task.tickUntilDone())
+			{
+				setWorkDone();
+			}
+		}
+
+		[[nodiscard]] bool benefitsFromHighFrequency() const final
+		{
+			return task.benefitsFromHighFrequency();
+		}
+	};
+
+	void Task::run()
+	{
+		Scheduler sched;
+		sched.dont_make_reusable_sockets = true;
+		sched.add<TaskWrapper>(*this);
+		sched.run();
 	}
 }

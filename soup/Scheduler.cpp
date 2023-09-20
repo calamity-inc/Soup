@@ -47,18 +47,18 @@ namespace soup
 		while (shouldKeepRunning())
 		{
 			std::vector<pollfd> pollfds{};
-			bool not_just_sockets = false;
+			uint8_t workload_flags = 0;
 #if LOG_TICK_DUR
 			Stopwatch t;
 #endif
-			tick(pollfds, not_just_sockets);
+			tick(pollfds, workload_flags);
 #if LOG_TICK_DUR
 			t.stop();
 			logWriteLine(format("Tick took {} ms", t.getMs()));
 #endif
-			if (not_just_sockets)
+			if (workload_flags & NOT_JUST_SOCKETS)
 			{
-				yieldBusyspin(pollfds);
+				yieldBusyspin(pollfds, workload_flags);
 			}
 			else
 			{
@@ -76,9 +76,9 @@ namespace soup
 		while (shouldKeepRunning())
 		{
 			std::vector<pollfd> pollfds{};
-			bool not_just_sockets = false;
-			tick(pollfds, not_just_sockets);
-			yieldBusyspin(pollfds);
+			uint8_t workload_flags = 0;
+			tick(pollfds, workload_flags);
+			yieldBusyspin(pollfds, workload_flags);
 			if (time::millis() > deadline)
 			{
 				break;
@@ -98,8 +98,8 @@ namespace soup
 		this_thread_running_scheduler = this;
 
 		std::vector<pollfd> pollfds{};
-		bool not_just_sockets = false;
-		tick(pollfds, not_just_sockets);
+		uint8_t workload_flags = 0;
+		tick(pollfds, workload_flags);
 		if (poll(pollfds, 0) > 0)
 		{
 			processPollResults(pollfds);
@@ -108,7 +108,7 @@ namespace soup
 		this_thread_running_scheduler = nullptr;
 	}
 
-	void Scheduler::tick(std::vector<pollfd>& pollfds, bool& not_just_sockets)
+	void Scheduler::tick(std::vector<pollfd>& pollfds, uint8_t& workload_flags)
 	{
 		// Schedule in pending workers
 		{
@@ -129,9 +129,9 @@ namespace soup
 		{
 			if ((*i)->type == WORKER_TYPE_SOCKET)
 			{
-				SOUP_IF_UNLIKELY (reinterpret_cast<Socket*>(i->get())->fd == -1)
+				SOUP_IF_UNLIKELY (static_cast<Socket*>(i->get())->fd == -1)
 				{
-					processClosedSocket(*reinterpret_cast<Socket*>(i->get()));
+					processClosedSocket(*static_cast<Socket*>(i->get()));
 				}
 			}
 			SOUP_IF_UNLIKELY ((*i)->holdup_type == Worker::NONE)
@@ -143,30 +143,37 @@ namespace soup
 				i = workers.erase(i);
 				continue;
 			}
-			tickWorker(pollfds, not_just_sockets, **i);
+			tickWorker(pollfds, workload_flags, **i);
 			++i;
 		}
 	}
 
-	void Scheduler::tickWorker(std::vector<pollfd>& pollfds, bool& not_just_sockets, Worker& w)
+	void Scheduler::tickWorker(std::vector<pollfd>& pollfds, uint8_t& workload_flags, Worker& w)
 	{
 		if (w.holdup_type == Worker::SOCKET)
 		{
 			pollfds.emplace_back(pollfd{
-				reinterpret_cast<Socket&>(w).fd,
+				static_cast<Socket&>(w).fd,
 				POLLIN
 			});
 		}
 		else
 		{
-			not_just_sockets = true;
 			pollfds.emplace_back(pollfd{
 				(Socket::fd_t)-1,
 				0
 			});
 
+			workload_flags |= NOT_JUST_SOCKETS;
+
 			if (w.holdup_type == Worker::IDLE)
 			{
+				if (w.type == WORKER_TYPE_TASK
+					&& static_cast<Task&>(w).benefitsFromHighFrequency()
+					)
+				{
+					workload_flags |= HAS_HIGH_FREQUENCY_TASKS;
+				}
 				fireHoldupCallback(w);
 			}
 			else //if (w.holdup_type == Worker::PROMISE)
@@ -179,13 +186,16 @@ namespace soup
 		}
 	}
 
-	void Scheduler::yieldBusyspin(std::vector<pollfd>& pollfds)
+	void Scheduler::yieldBusyspin(std::vector<pollfd>& pollfds, uint8_t workload_flags)
 	{
 		if (poll(pollfds, 0) > 0)
 		{
 			processPollResults(pollfds);
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if (!(workload_flags & HAS_HIGH_FREQUENCY_TASKS))
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
 	}
 
 	void Scheduler::yieldKernel(std::vector<pollfd>& pollfds)

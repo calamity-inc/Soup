@@ -33,16 +33,9 @@ namespace soup
 		return base64::urlEncode(sha256::hash(getHttpValue(acct)));
 	}
 
-	AcmeClient::AcmeClient(std::string _domain)
-		: domain(std::move(_domain))
+	AcmeClient::AcmeClient(std::string domain)
 	{
-		HttpRequest req(domain, "/directory");
-		auto res = req.execute();
-		auto root = json::decode(res->body);
-		JsonObject& directory = root->asObj();
-		uri_newNonce = (std::string)directory.at("newNonce").asStr();
-		uri_newAccount = (std::string)directory.at("newAccount").asStr();
-		uri_newOrder = (std::string)directory.at("newOrder").asStr();
+		init(std::move(domain)).run();
 	}
 
 	AcmeAccount AcmeClient::createAccount(const RsaKeypair& kp, std::string email)
@@ -318,6 +311,19 @@ namespace soup
 			return getCertchain(acct, order);
 		}
 		return {};
+	}
+
+	void AcmeClient::InitTask::onTick()
+	{
+		if (hrt.tickUntilDone())
+		{
+			auto root = json::decode(hrt.result->body);
+			JsonObject& directory = root->asObj();
+			client.uri_newNonce = (std::string)directory.at("newNonce").asStr();
+			client.uri_newAccount = (std::string)directory.at("newAccount").asStr();
+			client.uri_newOrder = (std::string)directory.at("newOrder").asStr();
+			setWorkDone();
+		}
 	}
 }
 
