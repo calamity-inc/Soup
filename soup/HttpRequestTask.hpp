@@ -15,7 +15,7 @@
 
 namespace soup
 {
-	class HttpRequestTask : public Task
+	class HttpRequestTask : public PromiseTask<std::optional<HttpResponse>>
 	{
 	public:
 		enum State : uint8_t
@@ -30,7 +30,6 @@ namespace soup
 		HttpRequest hr;
 		DelayedCtor<netConnectTask> connector;
 		SharedPtr<Socket> sock;
-		std::optional<HttpResponse> res; // Output
 
 		HttpRequestTask(HttpRequest&& hr);
 		HttpRequestTask(const Uri& uri);

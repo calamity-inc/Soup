@@ -8,16 +8,15 @@
 
 namespace soup
 {
-	struct GetFileContentsTask : public Task
+	struct GetFileContentsTask : public PromiseTask<std::string>
 	{
-		std::string contents;
 		DelayedCtor<HttpRequestTask> http;
 
 		GetFileContentsTask(const Uri& uri)
 		{
 			if (uri.isFile())
 			{
-				contents = string::fromFile(uri.getFilePath());
+				result = string::fromFile(uri.getFilePath());
 				setWorkDone();
 			}
 			else if (uri.isHttp())
@@ -34,9 +33,9 @@ namespace soup
 		{
 			if (http->tickUntilDone())
 			{
-				if (http->res)
+				if (http->result)
 				{
-					contents = std::move(http->res->body);
+					result = std::move(http->result->body);
 				}
 				setWorkDone();
 			}

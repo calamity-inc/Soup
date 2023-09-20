@@ -9,19 +9,14 @@
 
 namespace soup
 {
-	struct dnsLookupTask : public Task
-	{
-		std::vector<UniquePtr<dnsRecord>> res;
-
-		using Task::Task;
-	};
+	using dnsLookupTask = PromiseTask<std::vector<UniquePtr<dnsRecord>>>;
 
 	struct dnsCachedResultTask : public dnsLookupTask
 	{
 		static UniquePtr<dnsCachedResultTask> make(std::vector<UniquePtr<dnsRecord>>&& res)
 		{
 			auto task = soup::make_unique<dnsCachedResultTask>();
-			task->res = std::move(res);
+			task->result = std::move(res);
 			task->setWorkDone();
 			return task;
 		}

@@ -37,28 +37,28 @@ namespace soup
 				if (ipv6_lookup)
 				{
 					// IPv6 Result
-					if (lookup->res.empty())
+					if (lookup->result.empty())
 					{
 						// No DNS results, bail
 						setWorkDone();
 					}
 					else
 					{
-						proceedToConnect(rand(dnsResolver::simplifyIPv6LookupResults(lookup->res)), port);
+						proceedToConnect(rand(dnsResolver::simplifyIPv6LookupResults(lookup->result)), port);
 						lookup.reset();
 					}
 				}
 				else
 				{
 					// IPv4 Result
-					if (lookup->res.empty())
+					if (lookup->result.empty())
 					{
 						lookup = netConfig::get().dns_resolver->makeLookupTask(DNS_AAAA, host);
 						ipv6_lookup = true;
 					}
 					else
 					{
-						proceedToConnect(rand(dnsResolver::simplifyIPv4LookupResults(lookup->res)), port);
+						proceedToConnect(rand(dnsResolver::simplifyIPv4LookupResults(lookup->result)), port);
 						lookup.reset();
 					}
 				}

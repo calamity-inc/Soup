@@ -78,7 +78,7 @@ namespace soup
 		{
 			if (watched_task->isWorkDone())
 			{
-				res = std::move(watched_task->result);
+				result = std::move(watched_task->result);
 				watched_task.reset();
 				setWorkDone();
 			}

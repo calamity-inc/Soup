@@ -12,10 +12,9 @@
 
 namespace soup
 {
-	struct dnsLookupWrapperTask : public Task
+	struct dnsLookupWrapperTask : public dnsLookupTask
 	{
 		UniquePtr<dnsLookupTask> subtask;
-		std::vector<UniquePtr<dnsRecord>> res;
 
 		dnsLookupWrapperTask(UniquePtr<dnsLookupTask>&& subtask)
 			: subtask(std::move(subtask))
@@ -26,7 +25,7 @@ namespace soup
 		{
 			if (subtask->tickUntilDone())
 			{
-				res = std::move(subtask->res);
+				result = std::move(subtask->result);
 				setWorkDone();
 			}
 		}
@@ -46,7 +45,7 @@ namespace soup
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			} while (!task->isWorkDone());
-			res = std::move(task->res);
+			res = std::move(task->result);
 			return res;
 		}
 		else
@@ -79,9 +78,9 @@ namespace soup
 		{
 			if (http->tickUntilDone())
 			{
-				if (http->res)
+				if (http->result)
 				{
-					res = dnsRawResolver::parseResponse(std::move(http->res->body));
+					result = dnsRawResolver::parseResponse(std::move(http->result->body));
 				}
 				setWorkDone();
 			}

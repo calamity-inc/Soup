@@ -120,7 +120,7 @@ namespace soup
 		hr.send(*sock);
 		HttpRequest::recvResponse(*sock, [](Socket& s, std::optional<HttpResponse>&& res, Capture&& cap)
 		{
-			cap.get<HttpRequestTask*>()->res = std::move(res);
+			cap.get<HttpRequestTask*>()->result = std::move(res);
 			cap.get<HttpRequestTask*>()->setWorkDone();
 			if (s.custom_data.isStructInMap(ReuseTag))
 			{
