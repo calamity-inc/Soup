@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	void PromiseBase::awaitCompletion()
+	void PromiseBase::awaitFulfilment()
 	{
 		while (isPending())
 		{
@@ -12,7 +12,7 @@ namespace soup
 		}
 	}
 
-	void Promise<void>::awaitCompletion()
+	void Promise<void>::awaitFulfilment()
 	{
 		while (isPending())
 		{

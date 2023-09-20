@@ -346,8 +346,8 @@ namespace soup
 		{
 			Promise<Bigint> p(gen_promise, ((bits / 2u) - 2u));
 			Promise<Bigint> q(gen_promise, ((bits / 2u) + 2u));
-			p.awaitCompletion();
-			q.awaitCompletion();
+			p.awaitFulfilment();
+			q.awaitFulfilment();
 			primes.emplace_back(std::move(p.getResult()));
 			primes.emplace_back(std::move(q.getResult()));
 		}
@@ -400,8 +400,8 @@ namespace soup
 #else
 			Promise<Bigint> p(gen_promise, CaptureGenerateRng{ rng, ((bits / 2u) - 2u) });
 			Promise<Bigint> q(gen_promise, CaptureGenerateRng{ aux_rng, ((bits / 2u) + 2u) });
-			p.awaitCompletion();
-			q.awaitCompletion();
+			p.awaitFulfilment();
+			q.awaitFulfilment();
 			primes.emplace_back(std::move(p.getResult()));
 			primes.emplace_back(std::move(q.getResult()));
 #endif

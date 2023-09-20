@@ -37,7 +37,7 @@ namespace soup
 			return !isPending();
 		}
 
-		void awaitCompletion();
+		void awaitFulfilment();
 
 		void reset() noexcept
 		{
@@ -121,7 +121,7 @@ namespace soup
 			return fulfiled;
 		}
 
-		void awaitCompletion();
+		void awaitFulfilment();
 
 		void fulfil() noexcept
 		{
