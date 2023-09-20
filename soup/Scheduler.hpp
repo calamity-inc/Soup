@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-#if !SOUP_WASM
 
 #include <string>
 #include <vector>
@@ -43,6 +42,7 @@ namespace soup
 
 		virtual SharedPtr<Worker> addWorker(SharedPtr<Worker>&& w) noexcept;
 
+#if !SOUP_WASM
 		SharedPtr<Socket> addSocket() noexcept;
 		SharedPtr<Socket> addSocket(SharedPtr<Socket>&& sock) noexcept;
 
@@ -51,6 +51,7 @@ namespace soup
 		{
 			return addSocket(soup::make_shared<Socket>(std::move(sock)));
 		}
+#endif
 
 		template <typename T, typename...Args>
 		SharedPtr<T> add(Args&&...args)
@@ -73,10 +74,14 @@ namespace soup
 		void tickWorker(std::vector<pollfd>& pollfds, uint8_t& workload_flags, Worker& w);
 		void yieldBusyspin(std::vector<pollfd>& pollfds, uint8_t workload_flags);
 		void yieldKernel(std::vector<pollfd>& pollfds);
+#if !SOUP_WASM
 		int poll(std::vector<pollfd>& pollfds, int timeout);
 		void processPollResults(const std::vector<pollfd>& pollfds);
+#endif
 		void fireHoldupCallback(Worker& w);
+#if !SOUP_WASM
 		void processClosedSocket(Socket& s);
+#endif
 
 	public:
 		[[nodiscard]] static Scheduler* get();
@@ -85,12 +90,12 @@ namespace soup
 		[[nodiscard]] size_t getNumWorkersOfType(uint8_t type) const;
 		[[nodiscard]] size_t getNumSockets() const;
 
-		[[nodiscard]] SharedPtr<Socket> getShared(const Worker& w) const;
+		[[nodiscard]] SharedPtr<Worker> getShared(const Worker& w) const;
+#if !SOUP_WASM
 		[[nodiscard]] SharedPtr<Socket> findReusableSocketForHost(const std::string& host);
 		void closeReusableSockets();
+#endif
 
 		static void on_exception_log(Worker& w, const std::exception& e, Scheduler&);
 	};
 }
-
-#endif

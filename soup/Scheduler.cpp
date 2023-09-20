@@ -1,7 +1,5 @@
 #include "Scheduler.hpp"
 
-#if !SOUP_WASM
-
 #include <thread>
 
 #include "log.hpp"
@@ -27,6 +25,7 @@ namespace soup
 		return pending_workers.emplace_front(std::move(w))->data;
 	}
 
+#if !SOUP_WASM
 	SharedPtr<Socket> Scheduler::addSocket() noexcept
 	{
 		return addSocket(soup::make_shared<Socket>());
@@ -39,6 +38,7 @@ namespace soup
 #endif
 		return addWorker(std::move(sock));
 	}
+#endif
 
 	void Scheduler::run()
 	{
@@ -100,10 +100,12 @@ namespace soup
 		std::vector<pollfd> pollfds{};
 		uint8_t workload_flags = 0;
 		tick(pollfds, workload_flags);
+#if !SOUP_WASM
 		if (poll(pollfds, 0) > 0)
 		{
 			processPollResults(pollfds);
 		}
+#endif
 
 		this_thread_running_scheduler = nullptr;
 	}
@@ -129,10 +131,12 @@ namespace soup
 		{
 			if ((*i)->type == WORKER_TYPE_SOCKET)
 			{
+#if !SOUP_WASM
 				SOUP_IF_UNLIKELY (static_cast<Socket*>(i->get())->fd == -1)
 				{
 					processClosedSocket(*static_cast<Socket*>(i->get()));
 				}
+#endif
 			}
 			SOUP_IF_UNLIKELY ((*i)->holdup_type == Worker::NONE)
 			{
@@ -150,6 +154,7 @@ namespace soup
 
 	void Scheduler::tickWorker(std::vector<pollfd>& pollfds, uint8_t& workload_flags, Worker& w)
 	{
+#if !SOUP_WASM
 		if (w.holdup_type == Worker::SOCKET)
 		{
 			pollfds.emplace_back(pollfd{
@@ -158,11 +163,14 @@ namespace soup
 			});
 		}
 		else
+#endif
 		{
+#if !SOUP_WASM
 			pollfds.emplace_back(pollfd{
 				(Socket::fd_t)-1,
 				0
 			});
+#endif
 
 			workload_flags |= NOT_JUST_SOCKETS;
 
@@ -188,10 +196,12 @@ namespace soup
 
 	void Scheduler::yieldBusyspin(std::vector<pollfd>& pollfds, uint8_t workload_flags)
 	{
+#if !SOUP_WASM
 		if (poll(pollfds, 0) > 0)
 		{
 			processPollResults(pollfds);
 		}
+#endif
 		if (!(workload_flags & HAS_HIGH_FREQUENCY_TASKS))
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -200,6 +210,7 @@ namespace soup
 
 	void Scheduler::yieldKernel(std::vector<pollfd>& pollfds)
 	{
+#if !SOUP_WASM
 		// Why timeout=1?
 		// - On Linux, poll does not detect closed sockets, even if shutdown is used.
 		// - If a scheduler that is only waiting on sockets has addWorker called on it, we don't want an insane delay until that worker starts.
@@ -214,8 +225,10 @@ namespace soup
 		{
 			processPollResults(pollfds);
 		}
+#endif
 	}
 
+#if !SOUP_WASM
 	int Scheduler::poll(std::vector<pollfd>& pollfds, int timeout)
 	{
 #if SOUP_WINDOWS
@@ -246,6 +259,7 @@ namespace soup
 			}
 		}
 	}
+#endif
 
 	void Scheduler::fireHoldupCallback(Worker& w)
 	{
@@ -267,6 +281,7 @@ namespace soup
 #endif
 	}
 
+#if !SOUP_WASM
 	void Scheduler::processClosedSocket(Socket& s)
 	{
 		if (on_connection_lost)
@@ -294,6 +309,7 @@ namespace soup
 			}
 		}
 	}
+#endif
 
 	Scheduler* Scheduler::get()
 	{
@@ -323,7 +339,7 @@ namespace soup
 		return getNumWorkersOfType(WORKER_TYPE_SOCKET);
 	}
 
-	SharedPtr<Socket> Scheduler::getShared(const Worker& w) const
+	SharedPtr<Worker> Scheduler::getShared(const Worker& w) const
 	{
 		for (const auto& spW : workers)
 		{
@@ -335,6 +351,7 @@ namespace soup
 		return {};
 	}
 
+#if !SOUP_WASM
 	SharedPtr<Socket> Scheduler::findReusableSocketForHost(const std::string& host)
 	{
 		for (const auto& w : workers)
@@ -363,6 +380,7 @@ namespace soup
 			}
 		}
 	}
+#endif
 
 	void Scheduler::on_exception_log(Worker& w, const std::exception& e, Scheduler&)
 	{
@@ -373,5 +391,3 @@ namespace soup
 		logWriteLine(std::move(msg));
 	}
 }
-
-#endif
