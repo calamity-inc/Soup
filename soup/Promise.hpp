@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "Capture.hpp"
 #include "SelfDeletingThread.hpp"
 
@@ -20,6 +22,11 @@ namespace soup
 		}
 
 	public:
+		operator bool() const noexcept
+		{
+			return isFulfilled();
+		}
+
 		[[nodiscard]] bool isPending() const noexcept
 		{
 			return res.empty();
@@ -44,7 +51,7 @@ namespace soup
 		}
 	};
 
-	template <typename T>
+	template <typename T = void>
 	class Promise : public PromiseBase
 	{
 	public:
@@ -88,5 +95,37 @@ namespace soup
 			T(*f)(Capture&&);
 			Capture cap;
 		};
+	};
+
+	template <>
+	class Promise<void>
+	{
+	private:
+		std::atomic_bool fulfiled = false;
+
+	public:
+		Promise() = default;
+
+		operator bool() const noexcept
+		{
+			return isFulfilled();
+		}
+
+		[[nodiscard]] bool isPending() const noexcept
+		{
+			return !isFulfilled();
+		}
+
+		[[nodiscard]] bool isFulfilled() const noexcept
+		{
+			return fulfiled;
+		}
+
+		void awaitCompletion();
+
+		void fulfil() noexcept
+		{
+			fulfiled = true;
+		}
 	};
 }
