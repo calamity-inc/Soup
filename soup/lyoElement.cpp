@@ -42,7 +42,7 @@ namespace soup
 	void lyoElement::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
 	{
 		x += style.margin_left;
-		if (!style.display_inline)
+		if (style.display_block)
 		{
 			y += style.margin_top;
 		}

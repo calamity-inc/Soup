@@ -31,7 +31,7 @@ namespace soup
 
 		// Check line wrap
 		if (x + flat_width >= parent->flat_width
-			|| !style.display_inline
+			|| style.display_block
 			)
 		{
 			wrapLine(x, y, wrap_y);

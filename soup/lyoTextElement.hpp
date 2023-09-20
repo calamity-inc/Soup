@@ -16,7 +16,6 @@ namespace soup
 		lyoTextElement(lyoContainer* parent, std::u32string text)
 			: lyoElement(parent), font(RasterFont::simple8()), text(std::move(text))
 		{
-			style.display_inline = true;
 		}
 
 		void updateFlatSize() final;

@@ -9,7 +9,7 @@ namespace soup
 {
 	struct lyoStyle
 	{
-		bool display_inline = false;
+		bool display_block = false;
 
 		uint8_t margin_left = 0;
 		uint8_t margin_right = 0;

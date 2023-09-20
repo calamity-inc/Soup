@@ -106,7 +106,7 @@ namespace soup
 
 		// Check line wrap
 		if (parent != nullptr
-			&& !style.display_inline
+			&& style.display_block
 			)
 		{
 			wrapLine(x, y, wrap_y);

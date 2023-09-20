@@ -1,7 +1,7 @@
 #include "lyoStyle.hpp"
 
 #define FOR_EACH_PROP(f) \
-f(display_inline); \
+f(display_block); \
 f(margin_left); \
 f(margin_right); \
 f(margin_top); \
