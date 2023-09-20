@@ -118,12 +118,12 @@ namespace soup
 	{
 		if (l.indentation != r.indentation)
 		{
-			ft.addSpan(l.indentation.toString(), Rgb::GRAY, Rgb::RED);
-			ft.addSpan(r.indentation.toString(), Rgb::GRAY, Rgb::GREEN);
+			ft.addSpan(l.indentation.toString(), Rgb::GREY, Rgb::RED);
+			ft.addSpan(r.indentation.toString(), Rgb::GREY, Rgb::GREEN);
 		}
 		else
 		{
-			ft.addSpan(l.indentation.toString(), Rgb::GRAY);
+			ft.addSpan(l.indentation.toString(), Rgb::GREY);
 		}
 
 		if (l.contents != r.contents)
@@ -138,12 +138,12 @@ namespace soup
 
 		if (l.ending != r.ending)
 		{
-			ft.addSpan(l.endingToString(), Rgb::GRAY, Rgb::RED);
-			ft.addSpan(r.endingToString(), Rgb::GRAY, Rgb::GREEN);
+			ft.addSpan(l.endingToString(), Rgb::GREY, Rgb::RED);
+			ft.addSpan(r.endingToString(), Rgb::GREY, Rgb::GREEN);
 		}
 		else
 		{
-			ft.addSpan(l.endingToString(), Rgb::GRAY);
+			ft.addSpan(l.endingToString(), Rgb::GREY);
 		}
 	}
 
@@ -180,9 +180,9 @@ namespace soup
 
 	void Diff::Line::toText(FormattedText& ft) const
 	{
-		ft.addSpan(indentation.toString(), Rgb::GRAY);
+		ft.addSpan(indentation.toString(), Rgb::GREY);
 		ft.addSpan(contents, Rgb::WHITE);
-		ft.addSpan(endingToString(), Rgb::GRAY);
+		ft.addSpan(endingToString(), Rgb::GREY);
 	}
 
 	FormattedText Diff::toText() const
