@@ -7,6 +7,7 @@
 #if LYO_DEBUG_POS
 #include "format.hpp"
 #include "log.hpp"
+#include "unicode.hpp"
 #endif
 
 namespace soup
@@ -22,7 +23,7 @@ namespace soup
 	void lyoTextElement::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
 	{
 #if LYO_DEBUG_POS
-		logWriteLine(format("lyoTextElement::updateFlatPos - Start: {}, {}", x, y));
+		logWriteLine(format("lyoTextElement({})::updateFlatPos - Start: {}, {}", unicode::utf32_to_utf8(text), x, y));
 #endif
 
 		// Update wrap_y
@@ -36,7 +37,7 @@ namespace soup
 			wrapLine(x, y, wrap_y);
 
 #if LYO_DEBUG_POS
-			logWriteLine(format("lyoTextElement::updateFlatPos - Wrap: {}, {}", x, y));
+			logWriteLine(format("lyoTextElement({})::updateFlatPos - Wrap: {}, {}", unicode::utf32_to_utf8(text), x, y));
 #endif
 		}
 
@@ -56,13 +57,14 @@ namespace soup
 		}
 
 #if LYO_DEBUG_POS
-		logWriteLine(format("lyoTextElement::updateFlatPos - End: {}, {}", x, y));
+		logWriteLine(format("lyoTextElement({})::updateFlatPos - End: {}, {}", unicode::utf32_to_utf8(text), x, y));
 #endif
 	}
 
 	void lyoTextElement::draw(RenderTarget& rt) const
 	{
 		lyoElement::draw(rt);
+		//rt.drawRect(flat_x, flat_y, flat_width, flat_height, Rgb::GREEN);
 		rt.drawText(flat_x, flat_y, text, font, style.color.has_value() ? style.color.value() : Rgb::WHITE, style.getFontScale());
 	}
 }
