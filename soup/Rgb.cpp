@@ -12,6 +12,7 @@ namespace soup
 	const Rgb Rgb::BLUE{ 0, 0, 255 };
 	const Rgb Rgb::MAGENTA{ 255, 0, 255 };
 	const Rgb Rgb::GRAY{ 128, 128, 128 };
+	const Rgb Rgb::LIGHTGRAY{ 211, 211, 211 };
 
 	Rgb Rgb::fromHex(std::string hex)
 	{

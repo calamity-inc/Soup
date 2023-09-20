@@ -26,6 +26,7 @@ namespace soup
 		static const Rgb BLUE;
 		static const Rgb MAGENTA;
 		static const Rgb GRAY;
+		static const Rgb LIGHTGRAY;
 
 		constexpr Rgb() noexcept
 			: r(0), g(0), b(0)
