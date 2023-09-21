@@ -24,10 +24,20 @@ namespace soup
 		Module(std::nullptr_t);
 		Module(const char* name);
 
-		[[nodiscard]] operator Range() const noexcept;
+		[[nodiscard]] operator Range() const noexcept
+		{
+			return range;
+		}
 
-		[[nodiscard]] Pointer base() const noexcept;
-		[[nodiscard]] size_t size() const noexcept;
+		[[nodiscard]] Pointer base() const noexcept
+		{
+			return range.base;
+		}
+
+		[[nodiscard]] size_t size() const noexcept
+		{
+			return range.size;
+		}
 
 		[[nodiscard]] Pointer getExport(const char* name) const noexcept;
 

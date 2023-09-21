@@ -44,21 +44,6 @@ namespace soup
 	{
 	}
 
-	Module::operator Range() const noexcept
-	{
-		return range;
-	}
-
-	Pointer Module::base() const noexcept
-	{
-		return range.base;
-	}
-
-	size_t Module::size() const noexcept
-	{
-		return range.size;
-	}
-
 	Pointer Module::getExport(const char* name) const noexcept
 	{
 		return Pointer((void*)GetProcAddress(*h, name));
