@@ -1247,7 +1247,9 @@ namespace soup
 		transport_recvExact(5, [](Socket& s, std::string&& data, Capture&& cap)
 		{
 			TlsRecord record{};
-			if (!record.fromBinary(data))
+			if (!record.fromBinary(data)
+				|| record.version.major != 3
+				)
 			{
 				s.tls_close(TlsAlertDescription::decode_error);
 				return;
