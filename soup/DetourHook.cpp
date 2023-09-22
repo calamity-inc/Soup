@@ -1,5 +1,7 @@
 #include "DetourHook.hpp"
 
+#include <cstring> // memcpy
+
 #include "Exception.hpp"
 #include "memProtFlags.hpp"
 #include "os.hpp"
