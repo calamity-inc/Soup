@@ -1,5 +1,6 @@
 #include "x64.hpp"
 
+#include "Endian.hpp"
 #include "Exception.hpp"
 #include "macros.hpp"
 #include "string.hpp"
@@ -328,6 +329,21 @@ namespace soup
 		}
 	}
 
+	void x64Instruction::setOperationFromOpcode(uint32_t opcode, uint8_t distinguish)
+	{
+		operation = nullptr;
+		for (const auto& opinfo : operations)
+		{
+			if (opinfo.opcode == opcode
+				&& opinfo.distinguish == distinguish
+				)
+			{
+				operation = &opinfo;
+				break;
+			}
+		}
+	}
+
 	std::string x64Instruction::toString() const
 	{
 		// This could be a bit cleverer and show e.g. "imul rax, 100" instead of "imul rax, rax, 100"
@@ -360,7 +376,9 @@ namespace soup
 		}
 
 		uint8_t rex = 0;
-		if (operands[0].access_type == ACCESS_64)
+		if (operands[0].access_type == ACCESS_64
+			&& strcmp(operation->name, "jmp") != 0
+			)
 		{
 			rex |= (1 << 3);
 		}
@@ -368,7 +386,10 @@ namespace soup
 		{
 			rex |= (1 << 2);
 		}
-		if (operation->getOprEncoding(1) == M && (operands[1].reg & 0x8))
+		if ((operation->getOprEncoding(0) == O && (operands[0].reg & 0x8))
+			|| (operation->getOprEncoding(0) == M && (operands[0].reg & 0x8))
+			|| (operation->getOprEncoding(1) == M && (operands[1].reg & 0x8))
+			)
 		{
 			rex |= (1 << 0);
 		}
@@ -391,7 +412,7 @@ namespace soup
 
 		if (operation->getNumModrmOperands() != 0)
 		{
-			uint8_t modrm = 0;
+			uint8_t modrm = (operation->distinguish << 5);
 			if (operands[0].deref_size == 0)
 			{
 				modrm |= (0b11 << 6); // direct
@@ -400,7 +421,10 @@ namespace soup
 			{
 				modrm |= (0b01 << 6);
 			}
-			modrm |= ((operands[1].reg & 0b111) << 3); // reg
+			if (operation->getNumOperands() != 1)
+			{
+				modrm |= ((operands[1].reg & 0b111) << 3); // reg
+			}
 			modrm |= (operands[0].reg & 0b111); // r/m
 			res.push_back(modrm);
 			if (operands[0].deref_size != 0
@@ -409,6 +433,12 @@ namespace soup
 			{
 				res.push_back(operands[0].deref_offset);
 			}
+		}
+
+		if (operation->getOprEncoding(1) == I)
+		{
+			static_assert(NATIVE_ENDIAN == LITTLE_ENDIAN);
+			res.append((const char*)&operands[1].val, sizeof(operands[1].val));
 		}
 
 		return res;

@@ -63,6 +63,20 @@ namespace soup
 			};
 		};
 
+		void setReg(x64Register reg, x64RegisterAccessType access_type) noexcept
+		{
+			this->reg = reg;
+			this->access_type = access_type;
+			this->deref_size = 0;
+			this->deref_offset = 0;
+		}
+
+		void setImm(uint64_t val) noexcept
+		{
+			this->reg = IMM;
+			this->val = val;
+		}
+
 		void reset() noexcept
 		{
 			val = 0;
@@ -261,6 +275,8 @@ namespace soup
 		void reset() noexcept;
 
 		void fromString(const std::string& str);
+
+		void setOperationFromOpcode(uint32_t opcode, uint8_t distinguish = 8);
 
 		[[nodiscard]] std::string toString() const;
 		[[nodiscard]] std::string toBytecode() const;
