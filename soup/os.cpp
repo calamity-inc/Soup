@@ -177,6 +177,24 @@ namespace soup
 		return alloc;
 	}
 
+	void* os::virtualAlloc(size_t len, int prot)
+	{
+#if SOUP_WINDOWS
+		return VirtualAlloc(nullptr, len, MEM_COMMIT | MEM_RESERVE, memProtFlagsToProtect(prot));
+#else
+		return mmap(nullptr, len, prot, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+#endif
+	}
+
+	void os::virtualFree(void* addr, size_t len)
+	{
+#if SOUP_WINDOWS
+		VirtualFree(addr, len, MEM_DECOMMIT);
+#else
+		munmap(addr, len);
+#endif
+	}
+
 	void os::changeProtection(void* addr, size_t len, int prot)
 	{
 #if SOUP_WINDOWS
