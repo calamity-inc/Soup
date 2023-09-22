@@ -177,6 +177,16 @@ namespace soup
 		return alloc;
 	}
 
+	void os::changeProtection(void* addr, size_t len, int prot)
+	{
+#if SOUP_WINDOWS
+		DWORD oldprotect;
+		VirtualProtect(addr, len, memProtFlagsToProtect(prot), &oldprotect);
+#else
+		mprotect(addr, len, prot);
+#endif
+	}
+
 #if SOUP_WINDOWS
 	PEB* os::getCurrentPeb()
 	{
