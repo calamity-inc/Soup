@@ -492,6 +492,7 @@
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
+    <ClInclude Include="memProtFlags.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
     <ClInclude Include="osRegistry.hpp" />
