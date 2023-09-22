@@ -36,22 +36,27 @@ namespace soup
 	{
 		return Pointer(as<int32_t&>()).add(mod.base().as<uintptr_t>());
 	}
+#endif
 
 	std::vector<Pointer> Pointer::getJumps() const noexcept
 	{
 		auto ptr = *this;
 		std::vector<Pointer> res{ ptr };
+#if SOUP_WINDOWS
 		__try
 		{
+#endif
 			while (ptr.as<uint8_t&>() == 0xE9)
 			{
 				ptr = ptr.add(1).rip();
 				res.emplace_back(ptr);
 			}
+#if SOUP_WINDOWS
 		}
 		__except (GetExceptionInformation()->ExceptionRecord->ExceptionCode == STATUS_ACCESS_VIOLATION ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 		{
 		}
+#endif
 		return res;
 	}
 
@@ -60,5 +65,4 @@ namespace soup
 		auto jumps = getJumps();
 		return jumps.back();
 	}
-#endif
 }

@@ -1476,6 +1476,9 @@
     <ClInclude Include="fnv.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="DetourHook.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
     <ClInclude Include="memProtFlags.hpp">
       <Filter>mem</Filter>
     </ClInclude>
@@ -2152,6 +2155,7 @@
     <ClCompile Include="lyoStylesheet.cpp">
       <Filter>vis\layout</Filter>
     </ClCompile>
+    <ClCompile Include="DetourHook.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

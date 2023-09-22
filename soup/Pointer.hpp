@@ -103,9 +103,9 @@ namespace soup
 
 		[[nodiscard]] Pointer rva() const noexcept;
 		[[nodiscard]] Pointer rva(const Module& mod) const noexcept;
+#endif
 
 		[[nodiscard]] std::vector<Pointer> getJumps() const noexcept;
 		[[nodiscard]] Pointer followJumps() const noexcept;
-#endif
 	};
 }
