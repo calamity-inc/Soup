@@ -116,6 +116,7 @@ namespace soup
 			InitTask(AcmeClient& client, std::string domain)
 				: client(client), hrt(domain, "/directory")
 			{
+				client.domain = std::move(domain);
 			}
 
 			void onTick() final;
