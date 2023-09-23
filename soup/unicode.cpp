@@ -116,18 +116,23 @@ namespace soup
 		utf16.reserve(utf32.size());
 		for (char32_t c : utf32)
 		{
-			if (c <= 0xFFFF)
-			{
-				utf16.push_back((UTF16_CHAR_TYPE)c);
-			}
-			else
-			{
-				c -= 0x10000;
-				utf16.push_back((UTF16_CHAR_TYPE)((c >> 10) + 0xD800));
-				utf16.push_back((UTF16_CHAR_TYPE)((c & 0x3FF) + 0xDC00));
-			}
+			utf32_to_utf16_char(utf16, c);
 		}
 		return utf16;
+	}
+
+	void unicode::utf32_to_utf16_char(UTF16_STRING_TYPE& utf16, char32_t c) noexcept
+	{
+		if (c <= 0xFFFF)
+		{
+			utf16.push_back((UTF16_CHAR_TYPE)c);
+		}
+		else
+		{
+			c -= 0x10000;
+			utf16.push_back((UTF16_CHAR_TYPE)((c >> 10) + 0xD800));
+			utf16.push_back((UTF16_CHAR_TYPE)((c & 0x3FF) + 0xDC00));
+		}
 	}
 
 	std::string unicode::utf32_to_utf8(char32_t utf32) noexcept
