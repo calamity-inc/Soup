@@ -4,36 +4,33 @@ namespace soup
 {
 	char32_t unicode::utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept
 	{
+		uint8_t ch = *it++;
+		if (!UTF8_HAS_CONTINUATION(ch))
+		{
+			return ch;
+		}
 		uint32_t uni;
 		uint8_t todo = 0;
-		uint8_t ch = *it++;
-		if (UTF8_HAS_CONTINUATION(ch))
+		if (UTF8_IS_CONTINUATION(ch))
 		{
-			if (UTF8_IS_CONTINUATION(ch))
-			{
-				return REPLACEMENT_CHAR;
-			}
-			if ((ch & 0b01111000) == 0b01110000) // 11110xxx
-			{
-				uni = (ch & 0b111);
-				todo = 3;
-			}
-			else if ((ch & 0b01110000) == 0b01100000) // 1110xxxx
-			{
-				uni = (ch & 0b1111);
-				todo = 2;
-			}
-			else //if ((ch & 0b01100000) == 0b01000000) // 110xxxxx
-			{
-				uni = (ch & 0b11111);
-				todo = 1;
-			}
+			return REPLACEMENT_CHAR;
 		}
-		else // 0xxxxxxx
+		if ((ch & 0b01111000) == 0b01110000) // 11110xxx
 		{
-			uni = ch;
+			uni = (ch & 0b111);
+			todo = 3;
 		}
-		for (uint8_t j = 0; j < todo; ++j)
+		else if ((ch & 0b01110000) == 0b01100000) // 1110xxxx
+		{
+			uni = (ch & 0b1111);
+			todo = 2;
+		}
+		else //if ((ch & 0b01100000) == 0b01000000) // 110xxxxx
+		{
+			uni = (ch & 0b11111);
+			todo = 1;
+		}
+		for (uint8_t j = 0; j != todo; ++j)
 		{
 			if (it == end)
 			{
