@@ -146,7 +146,7 @@ namespace soup
 				}
 			}
 		}
-		
+
 		[[nodiscard]] unsigned int getNumArgs() const noexcept
 		{
 			unsigned int tally = 0;
