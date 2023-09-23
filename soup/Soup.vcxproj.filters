@@ -2155,7 +2155,9 @@
     <ClCompile Include="lyoStylesheet.cpp">
       <Filter>vis\layout</Filter>
     </ClCompile>
-    <ClCompile Include="DetourHook.cpp" />
+    <ClCompile Include="DetourHook.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
