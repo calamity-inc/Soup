@@ -122,6 +122,11 @@ namespace soup
 			void onTick() final;
 		};
 
+		[[nodiscard]] bool isInited() const noexcept
+		{
+			return !uri_newNonce.empty();
+		}
+
 		[[nodiscard]] InitTask init(std::string domain) { return InitTask(*this, std::move(domain)); }
 	};
 }

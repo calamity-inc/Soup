@@ -20,6 +20,11 @@ namespace soup
 		Uri(const char* url);
 		Uri(std::string url);
 
+		[[nodiscard]] bool empty() const noexcept
+		{
+			return scheme.empty() && host.empty() && port == 0 && user.empty() && pass.empty() && path.empty() && query.empty() && fragment.empty();
+		}
+
 		[[nodiscard]] std::string toString() const;
 
 		[[nodiscard]] bool isHttp() const noexcept;
