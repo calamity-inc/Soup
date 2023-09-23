@@ -10,11 +10,11 @@ namespace soup
 {
 	struct lyoTextElement : public lyoElement
 	{
-		RasterFont font;
+		const RasterFont* font;
 		std::u32string text;
 
 		lyoTextElement(lyoContainer* parent, std::u32string text)
-			: lyoElement(parent), font(RasterFont::simple8()), text(std::move(text))
+			: lyoElement(parent), font(&RasterFont::simple8()), text(std::move(text))
 		{
 		}
 

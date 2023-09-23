@@ -14,7 +14,7 @@ namespace soup
 {
 	void lyoTextElement::updateFlatSize()
 	{
-		auto [measured_width, measured_height] = font.measure(text);
+		auto [measured_width, measured_height] = font->measure(text);
 		const auto scale = style.getFontScale();
 		flat_width = measured_width * scale;
 		flat_height = measured_height * scale;
@@ -49,7 +49,7 @@ namespace soup
 		x += style.margin_right;
 		if (parent->tag_name == "span")
 		{
-			x += (font.get(' ').width * style.getFontScale());
+			x += (font->get(' ').width * style.getFontScale());
 		}
 		else
 		{
@@ -65,6 +65,6 @@ namespace soup
 	{
 		lyoElement::draw(rt);
 		//rt.drawRect(flat_x, flat_y, flat_width, flat_height, Rgb::GREEN);
-		rt.drawText(flat_x, flat_y, text, font, style.color.has_value() ? style.color.value() : Rgb::WHITE, style.getFontScale());
+		rt.drawText(flat_x, flat_y, text, *font, style.color.has_value() ? style.color.value() : Rgb::WHITE, style.getFontScale());
 	}
 }
