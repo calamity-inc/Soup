@@ -11,7 +11,7 @@ namespace soup
 		{
 			if (UTF8_IS_CONTINUATION(ch))
 			{
-				return 0;
+				return REPLACEMENT_CHAR;
 			}
 			if ((ch & 0b01111000) == 0b01110000) // 11110xxx
 			{
@@ -37,7 +37,7 @@ namespace soup
 		{
 			if (it == end)
 			{
-				return 0;
+				return REPLACEMENT_CHAR;
 			}
 			uint8_t ch = *it++;
 			if (!UTF8_IS_CONTINUATION(ch))
@@ -51,7 +51,7 @@ namespace soup
 			|| uni > 0x10FFFF
 			)
 		{
-			return 0;
+			return REPLACEMENT_CHAR;
 		}
 		return uni;
 	}
@@ -70,15 +70,7 @@ namespace soup
 		const auto end = utf8.cend();
 		while (it != end)
 		{
-			auto uni = utf8_to_utf32_char(it, end);
-			if (uni == 0)
-			{
-				utf32.push_back(REPLACEMENT_CHAR);
-			}
-			else
-			{
-				utf32.push_back(uni);
-			}
+			utf32.push_back(utf8_to_utf32_char(it, end));
 		}
 		return utf32;
 	}
