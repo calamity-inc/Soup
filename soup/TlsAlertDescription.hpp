@@ -33,6 +33,10 @@ namespace soup
 			user_canceled = 90,
 			no_renegotiation = 100,
 			unsupported_extension = 110,
+			certificate_unobtainable = 111,
+			unrecognized_name = 112,
+			bad_certificate_status_response = 113,
+			bad_certificate_hash_value = 114,
 		};
 	};
 }
