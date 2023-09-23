@@ -63,6 +63,7 @@ namespace soup
 	std::u32string unicode::utf8_to_utf32(const std::string& utf8) noexcept
 	{
 		std::u32string utf32{};
+		utf32.reserve(utf8_char_len(utf8));
 		auto it = utf8.cbegin();
 		const auto end = utf8.cend();
 		while (it != end)
@@ -112,6 +113,7 @@ namespace soup
 	UTF16_STRING_TYPE unicode::utf32_to_utf16(const std::u32string& utf32) noexcept
 	{
 		UTF16_STRING_TYPE utf16{};
+		utf16.reserve(utf32.size());
 		for (char32_t c : utf32)
 		{
 			if (c <= 0xFFFF)
@@ -161,6 +163,7 @@ namespace soup
 	std::string unicode::utf32_to_utf8(const std::u32string& utf32) noexcept
 	{
 		std::string utf8{};
+		utf8.reserve(utf32.size());
 		for (const char32_t& c : utf32)
 		{
 			utf8.append(utf32_to_utf8(c));
