@@ -92,7 +92,15 @@ namespace soup
 		}
 		return utf16;
 #else
-		return utf32_to_utf16(utf8_to_utf32(utf8));
+		UTF16_STRING_TYPE utf16{};
+		utf16.reserve(utf8.size()); // Note: we could end up with a slightly oversized buffer here if UTF8 input has many 3 or 4 byte symbols
+		auto it = utf8.cbegin();
+		const auto end = utf8.cend();
+		while (it != end)
+		{
+			utf32_to_utf16_char(utf16, utf8_to_utf32_char(it, end));
+		}
+		return utf16;
 #endif
 	}
 
