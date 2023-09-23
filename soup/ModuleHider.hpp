@@ -10,8 +10,12 @@ namespace soup
 	class ModuleHider
 	{
 	private:
-		void* hidden_entry = nullptr;
-		void* hidden_pNext = nullptr;
+		uintptr_t InLoadOrderModuleList_links = 0;
+		uintptr_t* InLoadOrderModuleList_pNext;
+		uintptr_t InMemoryOrderModuleList_links = 0;
+		uintptr_t* InMemoryOrderModuleList_pNext;
+		//uintptr_t InInitializationOrderModuleList_links = 0;
+		//uintptr_t* InInitializationOrderModuleList_pNext;
 
 	public:
 		void enable(HMODULE mod);
