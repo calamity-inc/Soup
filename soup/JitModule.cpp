@@ -33,7 +33,7 @@ namespace soup
 		}
 	}
 
-	bool JitModule::needsToBeCompiled() const noexcept
+	bool JitModule::needsToBeCompiled() const
 	{
 		return dll_path.empty()
 			|| std::filesystem::last_write_time(cpp_path) > std::filesystem::last_write_time(dll_path)

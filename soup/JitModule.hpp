@@ -23,7 +23,7 @@ namespace soup
 
 		void remove();
 
-		[[nodiscard]] bool needsToBeCompiled() const noexcept;
+		[[nodiscard]] bool needsToBeCompiled() const;
 		std::string compile();
 		[[nodiscard]] void* getEntrypoint(const char* name) const noexcept;
 	};
