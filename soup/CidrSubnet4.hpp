@@ -55,5 +55,15 @@ namespace soup
 			}
 			return 32 - bitutil::getLeastSignificantSetBit(mask);
 		}
+
+		[[nodiscard]] native_u32_t getBegin() const noexcept
+		{
+			return addr;
+		}
+
+		[[nodiscard]] native_u32_t getEnd() const noexcept
+		{
+			return addr | ~mask;
+		}
 	};
 }

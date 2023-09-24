@@ -6,9 +6,8 @@
 namespace soup
 {
 	template <typename K, typename V>
-	class RangeMap
+	struct RangeMap
 	{
-	private:
 		struct Entry
 		{
 			K lower;
@@ -18,7 +17,6 @@ namespace soup
 
 		std::vector<Entry> data;
 
-	public:
 		void reserve(size_t i)
 		{
 			data.reserve(i);

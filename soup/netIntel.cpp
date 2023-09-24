@@ -1,7 +1,11 @@
 #include "netIntel.hpp"
 
+#include "bitutil.hpp"
+#include "CidrSubnet4Interface.hpp"
+#include "CidrSubnet6Interface.hpp"
 #include "csv.hpp"
 #include "deflate.hpp"
+#include "Ipv6Maths.hpp"
 #include "string.hpp"
 #include "StringReader.hpp"
 #include "WebResource.hpp"
@@ -244,6 +248,38 @@ namespace soup
 			return *e;
 		}
 		return nullptr;
+	}
+
+	std::vector<UniquePtr<CidrSubnetInterface>> netIntel::getRangesByAs(const netAs* as) const
+	{
+		std::vector<UniquePtr<CidrSubnetInterface>> res;
+
+		for (const auto& e : ipv4toas.data)
+		{
+			if (e.data == as)
+			{
+				res.emplace_back(soup::make_unique<CidrSubnet4Interface>(
+					IpAddr((native_u32_t)e.lower),
+					(31 - bitutil::getMostSignificantSetBit(/* e.upper - e.lower */ e.lower ^ e.upper))
+				));
+			}
+		}
+
+		for (const auto& e : ipv6toas.data)
+		{
+			if (e.data == as)
+			{
+				auto delta = Ipv6Maths::fromIpAddr(e.lower);
+				Ipv6Maths::xorEq(delta, Ipv6Maths::fromIpAddr(e.upper));
+
+				res.emplace_back(soup::make_unique<CidrSubnet6Interface>(
+					e.lower,
+					(127 - Ipv6Maths::getMostSignificantSetBit(delta))
+				));
+			}
+		}
+
+		return res;
 	}
 
 	const netIntelLocationData* netIntel::getLocationByIp(const IpAddr& addr) const

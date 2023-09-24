@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 
+#include "CidrSubnetInterface.hpp"
 #include "IpAddr.hpp"
 #include "netAs.hpp"
 #include "netIntelLocationData.hpp"
@@ -53,6 +54,8 @@ namespace soup
 		[[nodiscard]] const netAs* getAsByIp(const IpAddr& addr) const;
 		[[nodiscard]] const netAs* getAsByIpv4(native_u32_t ip) const;
 		[[nodiscard]] const netAs* getAsByIpv6(const IpAddr& addr) const;
+
+		[[nodiscard]] std::vector<UniquePtr<CidrSubnetInterface>> getRangesByAs(const netAs* as) const;
 
 		[[nodiscard]] const netIntelLocationData* getLocationByIp(const IpAddr& addr) const;
 		[[nodiscard]] const netIntelLocationData* getLocationByIpv4(native_u32_t ip) const;

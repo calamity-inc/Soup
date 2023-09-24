@@ -24,6 +24,11 @@ namespace soup
 		return soup::make_unique<CidrSubnet6Interface>(addr, size);
 	}
 
+	bool CidrSubnetInterface::contains(const CidrSubnetInterface& b) const noexcept
+	{
+		return getSize() >= b.getSize() && contains(b.getAddr());
+	}
+
 	std::string CidrSubnetInterface::toString() const
 	{
 		std::string str = getAddr().toString();

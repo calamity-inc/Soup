@@ -4,6 +4,7 @@
 #include <array>
 
 #include "bitmask.hpp"
+#include "bitutil.hpp"
 #include "IpAddr.hpp"
 
 #undef min
@@ -66,6 +67,27 @@ namespace soup
 			{
 				l[i] &= r[i];
 			}
+		}
+
+		static constexpr void xorEq(std::array<uint32_t, 4>& l, const std::array<uint32_t, 4>& r) noexcept
+		{
+			for (auto i = 0; i != 4; ++i)
+			{
+				l[i] ^= r[i];
+			}
+		}
+
+		[[nodiscard]] static constexpr int16_t getMostSignificantSetBit(const std::array<uint32_t, 4>& a) noexcept
+		{
+			int16_t offset = 96;
+			for (auto i = 0; i != 4; ++i, offset -= 32)
+			{
+				if (a[i] != 0)
+				{
+					return offset + bitutil::getMostSignificantSetBit(a[i]);
+				}
+			}
+			return -1;
 		}
 	};
 }
