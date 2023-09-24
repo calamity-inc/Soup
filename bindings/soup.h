@@ -78,6 +78,8 @@ SOUP_CEXPORT HttpRequest* HttpRequest_new(const char* uri);
 SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data);
 // HttpRequestTask
 SOUP_CEXPORT void* HttpRequestTask_newFromRequest(const HttpRequest* hr);
+SOUP_CEXPORT void* HttpRequestTask_newFromUrl(const char* url);
+SOUP_CEXPORT const char* HttpRequestTask_getResponseBodyCStr(void* hrt);
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);

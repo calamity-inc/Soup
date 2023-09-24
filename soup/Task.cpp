@@ -60,7 +60,8 @@ namespace soup
 	void Task::run()
 	{
 		Scheduler sched;
-		sched.dont_make_reusable_sockets = true;
+		sched.setDontMakeReusableSockets();
+		sched.setAddWorkerCanWaitForeverForAllICare();
 		sched.add<TaskWrapper>(*this);
 		sched.run();
 	}

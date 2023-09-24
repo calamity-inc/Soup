@@ -282,6 +282,16 @@ SOUP_CEXPORT void* HttpRequestTask_newFromRequest(const HttpRequest* hr)
 #endif
 }
 
+SOUP_CEXPORT void* HttpRequestTask_newFromUrl(const char* url)
+{
+	return heap.add(new SharedPtr<HttpRequestTask>(new HttpRequestTask(Uri(url))));
+}
+
+SOUP_CEXPORT const char* HttpRequestTask_getResponseBodyCStr(void* hrt)
+{
+	return heap.get<SharedPtr<HttpRequestTask>>(hrt)->result->body.c_str();
+}
+
 // InquiryLang
 
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x)
@@ -386,11 +396,7 @@ SOUP_CEXPORT const Bigint* RsaKeypair_getQ(const RsaKeypair* x)
 
 SOUP_CEXPORT Scheduler* Scheduler_new()
 {
-#if SOUP_WASM
-	return nullptr;
-#else
 	return heap.add(new Scheduler());
-#endif
 }
 
 SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(Scheduler* sched)
@@ -402,25 +408,17 @@ SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(Scheduler* sched)
 
 SOUP_CEXPORT void Scheduler_add(Scheduler* sched, void* spWorker)
 {
-#if !SOUP_WASM
 	heap.get(sched).addWorker(SharedPtr<Worker>(*reinterpret_cast<SharedPtr<Worker>*>(spWorker)));
-#endif
 }
 
 SOUP_CEXPORT bool Scheduler_shouldKeepRunning(Scheduler* sched)
 {
-#if SOUP_WASM
-	return false;
-#else
 	return heap.get(sched).shouldKeepRunning();
-#endif
 }
 
 SOUP_CEXPORT void Scheduler_tick(Scheduler* sched)
 {
-#if !SOUP_WASM
 	heap.get(sched).tick();
-#endif
 }
 
 // Totp

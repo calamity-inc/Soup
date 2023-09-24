@@ -10,6 +10,10 @@
 
 namespace soup
 {
+	/*
+	std::ofstream out(R"(C:\Users\Sainan\Desktop\Repos\Soup\bindings\cwraps.js)");
+	out << CApiUtil::getCwraps(CApiUtil::parseFunctions(string::fromFile(R"(C:\Users\Sainan\Desktop\Repos\Soup\bindings\soup.h)")));
+	*/
 	struct CApiUtil
 	{
 		[[nodiscard]] static std::vector<std::pair<std::string, std::vector<rflFunc>>> parseFunctions(const std::string& soup_h)
@@ -107,7 +111,7 @@ namespace soup
 				{
 					for (const auto& f : ns.second)
 					{
-						str.append("            soup.");
+						str.append("\t\t\tsoup.");
 						str.append(f.name == "endLifetime" ? "free" : f.name);
 						str.append(" = ");
 						str.append(getCwrap(f));
@@ -116,18 +120,18 @@ namespace soup
 				}
 				else
 				{
-					str.append("            soup.");
+					str.append("\t\t\tsoup.");
 					str.append(ns.first);
 					str.append(" = {\n");
 					for (const auto& f : ns.second)
 					{
-						str.append("                ");
+						str.append("\t\t\t\t");
 						str.append(f.name.substr(ns.first.size() + 1));
 						str.append(": ");
 						str.append(getCwrap(f));
 						str.append(",\n");
 					}
-					str.append("            };\n");
+					str.append("\t\t\t};\n");
 				}
 			}
 			return str;

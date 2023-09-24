@@ -1,22 +1,24 @@
 #pragma once
 
-#include "base.hpp"
-#if !SOUP_WASM
-
 #include "Task.hpp"
 
 #include <optional>
 
+#include "base.hpp"
+#include "HttpResponse.hpp"
+#include "Uri.hpp"
+#if !SOUP_WASM
 #include "DelayedCtor.hpp"
 #include "HttpRequest.hpp"
 #include "netConnectTask.hpp"
 #include "SharedPtr.hpp"
-#include "Uri.hpp"
+#endif
 
 namespace soup
 {
 	class HttpRequestTask : public PromiseTask<std::optional<HttpResponse>>
 	{
+#if !SOUP_WASM
 	public:
 		enum State : uint8_t
 		{
@@ -42,7 +44,13 @@ namespace soup
 		void cannotRecycle();
 
 		void sendRequest();
+#else
+	public:
+		HttpRequestTask(const Uri& uri);
+
+		void onTick() final;
+
+		int getSchedulingDisposition() const final;
+#endif
 	};
 }
-
-#endif

@@ -25,11 +25,15 @@ namespace soup
 		std::vector<SharedPtr<Worker>> workers{};
 		AtomicDeque<SharedPtr<Worker>> pending_workers{};
 		size_t passive_workers = 0;
+#if !SOUP_WASM
 		bool dont_make_reusable_sockets = false;
+#endif
+	private:
 #if SOUP_WINDOWS
 		bool add_worker_can_wait_forever_for_all_i_care = false;
 #endif
 
+	public:
 		using on_work_done_t = void(*)(Worker&, Scheduler&);
 		using on_connection_lost_t = void(*)(Socket&, Scheduler&);
 		using on_exception_t = void(*)(Worker&, const std::exception&, Scheduler&);
@@ -57,6 +61,20 @@ namespace soup
 		SharedPtr<T> add(Args&&...args)
 		{
 			return addWorker(soup::make_shared<T>(std::forward<Args>(args)...));
+		}
+
+		void setDontMakeReusableSockets() noexcept
+		{
+#if !SOUP_WASM
+			dont_make_reusable_sockets = true;
+#endif
+		}
+
+		void setAddWorkerCanWaitForeverForAllICare() noexcept
+		{
+#if SOUP_WINDOWS
+			add_worker_can_wait_forever_for_all_i_care = true;
+#endif
 		}
 
 		void run();

@@ -54,6 +54,14 @@
 				new: soup.cwrap("CidrSubnetInterface_new", "number", ["string"]),
 				contains: soup.cwrap("CidrSubnetInterface_contains", "boolean", ["number", "string"]),
 			};
+			soup.DetachedScheduler = {
+				new: soup.cwrap("DetachedScheduler_new", "number", []),
+				isActive: soup.cwrap("DetachedScheduler_isActive", "boolean", ["number"]),
+			};
+			soup.EstablishWebSocketConnectionTask = {
+				new: soup.cwrap("EstablishWebSocketConnectionTask_new", "number", ["string"]),
+				getSocket: soup.cwrap("EstablishWebSocketConnectionTask_getSocket", "number", ["number"]),
+			};
 			soup.Hotp = {
 				generateSecret: soup.cwrap("Hotp_generateSecret", "number", ["number"]),
 			};
@@ -63,6 +71,8 @@
 			};
 			soup.HttpRequestTask = {
 				newFromRequest: soup.cwrap("HttpRequestTask_newFromRequest", "number", ["number"]),
+				newFromUrl: soup.cwrap("HttpRequestTask_newFromUrl", "number", ["string"]),
+				getResponseBodyCStr: soup.cwrap("HttpRequestTask_getResponseBodyCStr", "string", ["number"]),
 			};
 			soup.InquiryLang = {
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
@@ -81,6 +91,12 @@
 				isCanvas: soup.cwrap("Mixed_isCanvas", "boolean", ["number"]),
 				getCanvas: soup.cwrap("Mixed_getCanvas", "number", ["number"]),
 			};
+			soup.PromiseBase = {
+				isPending: soup.cwrap("PromiseBase_isPending", "boolean", ["number"]),
+			};
+			soup.Promise_WebSocketMessage = {
+				getData: soup.cwrap("Promise_WebSocketMessage_getData", "string", ["number"]),
+			};
 			soup.QrCode = {
 				newFromText: soup.cwrap("QrCode_newFromText", "number", ["string"]),
 				toNewCanvas: soup.cwrap("QrCode_toNewCanvas", "number", ["number", "number", "boolean"]),
@@ -93,13 +109,25 @@
 			soup.Scheduler = {
 				new: soup.cwrap("Scheduler_new", "number", []),
 				setDontMakeReusableSockets: soup.cwrap("Scheduler_setDontMakeReusableSockets", "void", ["number"]),
-				isActive: soup.cwrap("Scheduler_isActive", "boolean", ["number"]),
 				add: soup.cwrap("Scheduler_add", "void", ["number", "number"]),
+				shouldKeepRunning: soup.cwrap("Scheduler_shouldKeepRunning", "boolean", ["number"]),
+				tick: soup.cwrap("Scheduler_tick", "void", ["number"]),
 			};
 			soup.Totp = {
 				new: soup.cwrap("Totp_new", "number", ["number"]),
 				getQrCodeUri: soup.cwrap("Totp_getQrCodeUri", "string", ["number", "string", "string"]),
 				getValue: soup.cwrap("Totp_getValue", "number", ["number"]),
+			};
+			soup.WebSocketConnection = {
+				wsSend: soup.cwrap("WebSocketConnection_wsSend", "void", ["number", "string"]),
+				wsRecv: soup.cwrap("WebSocketConnection_wsRecv", "number", ["number"]),
+			};
+			soup.Worker = {
+				isWorkDone: soup.cwrap("Worker_isWorkDone", "boolean", ["number"]),
+			};
+			soup.YubikeyValidator = {
+				new: soup.cwrap("YubikeyValidator_new", "number", ["string", "string"]),
+				validate: soup.cwrap("YubikeyValidator_validate", "string", ["number", "string"]),
 			};
 			soup.exception = {
 				what: soup.cwrap("exception_what", "string", ["number"]),

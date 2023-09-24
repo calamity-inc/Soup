@@ -1,11 +1,15 @@
 #include "HttpRequestTask.hpp"
-#if !SOUP_WASM
 
+#if !SOUP_WASM
 #include "ReuseTag.hpp"
 #include "Scheduler.hpp"
+#else
+#include <emscripten/fetch.h>
+#endif
 
 namespace soup
 {
+#if !SOUP_WASM
 	HttpRequestTask::HttpRequestTask(HttpRequest&& _hr)
 		: hr(std::move(_hr))
 	{
@@ -133,6 +137,38 @@ namespace soup
 			}
 		}, this);
 	}
-}
+#else
+	HttpRequestTask::HttpRequestTask(const Uri& uri)
+	{
+		emscripten_fetch_attr_t attr;
+		emscripten_fetch_attr_init(&attr);
+		strcpy(attr.requestMethod, "GET");
+		attr.userData = this;
+		attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+		attr.onsuccess = [](emscripten_fetch_t* fetch)
+		{
+			HttpResponse resp;
+			resp.body = std::string(fetch->data, fetch->numBytes);
+			resp.status_code = fetch->status;
+			((HttpRequestTask*)fetch->userData)->fulfil(std::move(resp));
+			emscripten_fetch_close(fetch);
+		};
+		attr.onerror = [](emscripten_fetch_t* fetch)
+		{
+			((HttpRequestTask*)fetch->userData)->setWorkDone();
+			emscripten_fetch_close(fetch);
+		};
+		auto url = uri.toString();
+		emscripten_fetch(&attr, url.c_str());
+	}
 
+	void HttpRequestTask::onTick()
+	{
+	}
+
+	int HttpRequestTask::getSchedulingDisposition() const
+	{
+		return LOW_FREQUENCY;
+	}
 #endif
+}
