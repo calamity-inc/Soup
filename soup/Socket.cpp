@@ -207,11 +207,15 @@ namespace soup
 		{
 			return false;
 		}
+
+		const auto port_ne = Endianness::toNetwork(native_u16_t(port));
+
 		peer.ip.reset();
-		peer.port = port;
+		peer.port = port_ne;
+
 		sockaddr_in6 sa{};
 		sa.sin6_family = AF_INET6;
-		sa.sin6_port = Endianness::toNetwork(native_u16_t(port));
+		sa.sin6_port = port_ne;
 		memcpy(&sa.sin6_addr, &addr.data, sizeof(in6_addr));
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
@@ -226,11 +230,15 @@ namespace soup
 		{
 			return false;
 		}
+
+		const auto port_ne = Endianness::toNetwork(native_u16_t(port));
+
 		peer.ip.reset();
-		peer.port = port;
+		peer.port = port_ne;
+
 		sockaddr_in sa{};
 		sa.sin_family = AF_INET;
-		sa.sin_port = Endianness::toNetwork(native_u16_t(port));
+		sa.sin_port = port_ne;
 		sa.sin_addr.s_addr = addr.getV4();
 		return setOpt<int>(SO_REUSEADDR, 1)
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
