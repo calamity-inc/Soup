@@ -56,6 +56,7 @@ namespace soup
 		[[nodiscard]] bool isWorkDone() const noexcept;
 		void setWorkDone() noexcept;
 
+		void disallowRecursion() noexcept;
 		[[nodiscard]] bool canRecurse() noexcept;
 
 		[[nodiscard]] std::string toString() const;

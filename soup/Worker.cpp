@@ -67,6 +67,11 @@ namespace soup
 		holdup_type = NONE;
 	}
 
+	void Worker::disallowRecursion() noexcept
+	{
+		recursions = 19;
+	}
+
 	bool Worker::canRecurse() noexcept
 	{
 		return ++recursions != 20;
