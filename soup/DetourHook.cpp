@@ -73,7 +73,7 @@ namespace soup
 		ins.setOperationFromOpcode(0xB8); // mov
 		ins.operands[0].setReg(R10, ACCESS_64);
 		ins.operands[1].setImm(reinterpret_cast<uint64_t>(target));
-		
+
 		auto bytecode = ins.toBytecode();
 
 		ins.setOperationFromOpcode(0xFF, 5); // jmp
