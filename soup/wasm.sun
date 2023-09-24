@@ -1,0 +1,9 @@
++*.cpp
+dynamic
+
+compiler em++
+linker_arg -sWASM=1
+linker_arg -sMODULARIZE=1
+linker_arg -sEXPORT_NAME=libsoup
+linker_arg -sEXPORTED_RUNTIME_METHODS=["cwrap"]
+linker_arg -sFETCH=1
