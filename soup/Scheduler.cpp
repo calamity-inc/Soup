@@ -214,10 +214,10 @@ namespace soup
 	void Scheduler::yieldKernel(std::vector<pollfd>& pollfds)
 	{
 #if !SOUP_WASM
-		// Why timeout=1?
+		// Why not timeout=-1?
 		// - On Linux, poll does not detect closed sockets, even if shutdown is used.
 		// - If a scheduler that is only waiting on sockets has addWorker called on it, we don't want an insane delay until that worker starts.
-		int timeout = 1;
+		int timeout = 50;
 #if SOUP_WINDOWS
 		if (add_worker_can_wait_forever_for_all_i_care)
 		{
