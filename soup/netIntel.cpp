@@ -163,11 +163,11 @@ namespace soup
 	{
 		StringReader ipv4tolocationcsv;
 		{
-			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/dbip-city/dbip-city-ipv4-num.csv.gz");
+			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/geolite2-city/geolite2-city-ipv4-num.csv.gz");
 			rsc.downloadWithCaching();
 			ipv4tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
-		ipv4tolocation.reserve(3000000);
+		ipv4tolocation.reserve(2'800'000);
 		for (std::string line; ipv4tolocationcsv.getLine(line); )
 		{
 			auto arr = csv::parseLine(line);
@@ -191,11 +191,11 @@ namespace soup
 	{
 		StringReader ipv6tolocationcsv;
 		{
-			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/dbip-city/dbip-city-ipv6.csv.gz");
+			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/geolite2-city/geolite2-city-ipv6.csv.gz");
 			rsc.downloadWithCaching();
 			ipv6tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
-		ipv6tolocation.reserve(3000000);
+		ipv6tolocation.reserve(700'000);
 		for (std::string line; ipv6tolocationcsv.getLine(line); )
 		{
 			auto arr = csv::parseLine(line);
