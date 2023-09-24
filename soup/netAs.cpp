@@ -26,7 +26,6 @@ namespace soup
 		case 30083: // GoDaddy.com, LLC
 		case 26496: // GoDaddy.com, LLC
 		case 30736: // ASERGO Scandinavia ApS
-		case 34594: // OT - OPTIMA TELEKOM d.d.
 		case 35758: // Rachamim Aviel Twito trading as A.B INTERNET SOLUTIONS
 		case 37518: // Fiber Grid INC
 		case 38731: // Vietel - CHT Compamy Ltd
