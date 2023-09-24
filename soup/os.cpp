@@ -206,6 +206,11 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
+	bool os::isWine()
+	{
+		return GetProcAddress(LoadLibraryA(ObfusString("ntdll.dll")), ObfusString("wine_get_version")) != nullptr;
+	}
+
 	PEB* os::getCurrentPeb()
 	{
 		// There is a "simpler" solution (https://gist.github.com/Wack0/849348f9d4f3a73dac864a556e9372a5), but this is what Microsoft does, so we shall, too.
