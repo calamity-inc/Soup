@@ -18,9 +18,15 @@ namespace soup
 		loadMessage(data);
 	}
 
+	void MimeMessage::setBody(std::string body)
+	{
+		this->body = std::move(body);
+		setContentLength();
+	}
+
 	void MimeMessage::setContentLength()
 	{
-		header_fields.emplace("Content-Length", std::to_string(body.size()));
+		header_fields.emplace(ObfusString("Content-Length"), std::to_string(body.size()));
 	}
 
 	void MimeMessage::setContentType()
