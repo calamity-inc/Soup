@@ -42,8 +42,8 @@ namespace soup
 
 	std::string JitModule::compile()
 	{
-		dll_path = os::tempfile(Compiler::getDynamicLibraryExtension());
 		Compiler compiler;
+		dll_path = os::tempfile(compiler.getDynamicLibraryExtension());
 		auto output = compiler.makeDynamicLibrary(cpp_path, dll_path.string());
 		if (std::filesystem::exists(dll_path))
 		{

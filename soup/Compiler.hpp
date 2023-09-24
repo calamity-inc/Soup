@@ -16,6 +16,8 @@ namespace soup
 
 		Compiler();
 
+		[[nodiscard]] bool isEmscripten() const;
+
 		[[nodiscard]] std::vector<std::string> getArgs() const;
 		void addLinkerArgs(std::vector<std::string>& args) const;
 
@@ -32,7 +34,7 @@ namespace soup
 		std::string makeStaticLibrary(const std::vector<std::string>& objects, const std::string& out) const;
 
 		// Dynamic / shared libraries
-		[[nodiscard]] static const char* getDynamicLibraryExtension() noexcept; // ".dll" or ".so"
+		[[nodiscard]] const char* getDynamicLibraryExtension() const; // ".dll" or ".so" or ".js"
 		std::string makeDynamicLibrary(const std::string& in, const std::string& out) const;
 		std::string makeDynamicLibrary(const std::vector<std::string>& objects, const std::string& out) const;
 	};

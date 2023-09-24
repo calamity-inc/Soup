@@ -19,6 +19,11 @@ namespace soup
 	{
 	}
 
+	bool Compiler::isEmscripten() const
+	{
+		return prog == "em++";
+	}
+
 	std::vector<std::string> Compiler::getArgs() const
 	{
 		std::vector<std::string> args{
@@ -41,15 +46,21 @@ namespace soup
 	void Compiler::addLinkerArgs(std::vector<std::string>& args) const
 	{
 #if SOUP_WINDOWS
-		args.emplace_back("-luser32");
-		args.emplace_back("-lgdi32");
+		if (!isEmscripten())
+		{
+			args.emplace_back("-luser32");
+			args.emplace_back("-lgdi32");
+		}
 #else
 		args.emplace_back("-fuse-ld=lld");
-		args.emplace_back("-lm");
-		args.emplace_back("-lresolv");
-		args.emplace_back("-ldl");
 		args.emplace_back("-lstdc++");
-		args.emplace_back("-lstdc++fs");
+		if (!isEmscripten())
+		{
+			args.emplace_back("-lstdc++fs");
+			args.emplace_back("-lresolv");
+		}
+		args.emplace_back("-lm");
+		args.emplace_back("-ldl");
 #endif
 		args.insert(args.end(), extra_linker_args.begin(), extra_linker_args.end());
 	}
@@ -111,8 +122,12 @@ namespace soup
 		return os::executeLong(prog_ar, std::move(args));
 	}
 
-	const char* Compiler::getDynamicLibraryExtension() noexcept
+	const char* Compiler::getDynamicLibraryExtension() const
 	{
+		if (isEmscripten())
+		{
+			return ".js";
+		}
 #if SOUP_WINDOWS
 		return ".dll";
 #else
