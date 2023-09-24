@@ -172,15 +172,13 @@ namespace soup
 			});
 #endif
 
-			workload_flags |= NOT_JUST_SOCKETS;
+			int dispo = Worker::NEUTRAL;
 
 			if (w.holdup_type == Worker::IDLE)
 			{
-				if (w.type == WORKER_TYPE_TASK
-					&& static_cast<Task&>(w).benefitsFromHighFrequency()
-					)
+				if (w.type == WORKER_TYPE_TASK)
 				{
-					workload_flags |= HAS_HIGH_FREQUENCY_TASKS;
+					dispo = static_cast<Task&>(w).getSchedulingDisposition();
 				}
 				fireHoldupCallback(w);
 			}
@@ -191,6 +189,11 @@ namespace soup
 					fireHoldupCallback(w);
 				}
 			}
+
+			workload_flags |= dispo;
+			static_assert((int)Worker::HIGH_FRQUENCY == (int)HAS_HIGH_FREQUENCY_TASKS);
+			static_assert((int)Worker::NEUTRAL == (int)NOT_JUST_SOCKETS);
+			static_assert((int)Worker::LOW_FREQUENCY == (int)0);
 		}
 	}
 

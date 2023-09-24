@@ -51,9 +51,9 @@ namespace soup
 			}
 		}
 
-		[[nodiscard]] bool benefitsFromHighFrequency() const final
+		[[nodiscard]] int getSchedulingDisposition() const final
 		{
-			return task.benefitsFromHighFrequency();
+			return task.getSchedulingDisposition();
 		}
 	};
 

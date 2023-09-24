@@ -27,9 +27,9 @@ namespace soup
 		[[nodiscard]] const Capture& taskCapture() const noexcept { return holdup_callback.cap; }
 
 	public:
-		[[nodiscard]] virtual bool benefitsFromHighFrequency() const
+		[[nodiscard]] virtual int getSchedulingDisposition() const
 		{
-			return false;
+			return NEUTRAL;
 		}
 	};
 
