@@ -69,7 +69,12 @@ namespace soup
 		case CONNECTING:
 			if (connector->tickUntilDone())
 			{
-				sock = connector->onDone();
+				if (!connector->wasSuccessful())
+				{
+					setWorkDone();
+					return;
+				}
+				sock = connector->getSocket();
 				connector.destroy();
 				if (shouldRecycle())
 				{

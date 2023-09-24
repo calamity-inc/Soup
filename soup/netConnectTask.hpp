@@ -51,8 +51,9 @@ namespace soup
 
 		void onTick() final;
 
-		[[nodiscard]] SharedPtr<Socket> onDone(); // Output
-		[[nodiscard]] SharedPtr<Socket> onDone(Scheduler& sched); // Output
+		[[nodiscard]] bool wasSuccessful() const; // Output
+		[[nodiscard]] SharedPtr<Socket> getSocket(); // Output
+		[[nodiscard]] SharedPtr<Socket> getSocket(Scheduler& sched); // Output
 
 	protected:
 		void proceedToConnect(const IpAddr& addr, uint16_t port);
