@@ -45,5 +45,11 @@ namespace soup
 			run();
 			return std::move(result);
 		}
+
+		void fulfil(T&& res)
+		{
+			result = std::move(res);
+			setWorkDone();
+		}
 	};
 }
