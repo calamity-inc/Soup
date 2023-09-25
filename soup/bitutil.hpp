@@ -92,6 +92,20 @@ namespace soup
 #endif
 		}
 
+		[[nodiscard]] static uint32_t getNumSetBits(uint32_t i) noexcept
+		{
+#if defined(_MSC_VER) && !defined(__clang__)
+			// https://stackoverflow.com/a/109025
+			i = i - ((i >> 1) & 0x55555555);
+			i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+			i = (i + (i >> 4)) & 0x0F0F0F0F;
+			i *= 0x01010101;
+			return i >> 24;
+#else
+			return __builtin_popcount(i);
+#endif
+		}
+
 		[[nodiscard]] static std::vector<bool> interleave(const std::vector<std::vector<bool>>& data); // assumes that all inner vectors have the same size
 	};
 }
