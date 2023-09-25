@@ -74,6 +74,7 @@ namespace soup
 		void clear() noexcept
 		{
 			data.clear();
+			data.shrink_to_fit();
 		}
 	};
 }
