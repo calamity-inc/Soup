@@ -30,7 +30,12 @@ namespace soup
 			{
 				if (connect.tickUntilDone())
 				{
-					sock = connect.onDone();
+					if (!connect.wasSuccessful())
+					{
+						setWorkDone();
+						return;
+					}
+					sock = connect.getSocket();
 					if (use_tls)
 					{
 						sock->enableCryptoClient(host, [](Socket& s, Capture&& cap)
