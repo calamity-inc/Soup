@@ -11,9 +11,6 @@ namespace soup
 	class audPlayback;
 	struct audSound;
 
-	// chess
-	struct ChessCoordinate;
-
 	// crypto
 	struct RsaKeypair;
 	struct TrustStore;
@@ -123,6 +120,9 @@ namespace soup
 	{
 		struct object;
 	}
+
+	// misc.chess
+	struct ChessCoordinate;
 
 	// net
 	class IpAddr;

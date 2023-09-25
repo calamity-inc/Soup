@@ -306,19 +306,19 @@
       <Filter>crypto\x509</Filter>
     </ClInclude>
     <ClInclude Include="Chessboard.hpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClInclude>
     <ClInclude Include="ChessSquare.hpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClInclude>
     <ClInclude Include="ChessPiece.hpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClInclude>
     <ClInclude Include="ChessCoordinate.hpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClInclude>
     <ClInclude Include="ChessCli.hpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClInclude>
     <ClInclude Include="HttpRequest.hpp">
       <Filter>net\web</Filter>
@@ -1596,13 +1596,13 @@
       <Filter>crypto\x509</Filter>
     </ClCompile>
     <ClCompile Include="ChessCli.cpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClCompile>
     <ClCompile Include="ChessSquare.cpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClCompile>
     <ClCompile Include="Chessboard.cpp">
-      <Filter>chess</Filter>
+      <Filter>misc\chess</Filter>
     </ClCompile>
     <ClCompile Include="MimeMessage.cpp">
       <Filter>data\mime</Filter>
@@ -2208,9 +2208,6 @@
     <Filter Include="io\zip">
       <UniqueIdentifier>{5e908491-421e-426f-ad6f-f870c4b0a291}</UniqueIdentifier>
     </Filter>
-    <Filter Include="chess">
-      <UniqueIdentifier>{4a2a3fea-b914-4a9e-b7c3-c051aa854664}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net\web">
       <UniqueIdentifier>{107b4f0f-f5db-4e5f-9a6a-8893289fac04}</UniqueIdentifier>
     </Filter>
@@ -2393,6 +2390,12 @@
     </Filter>
     <Filter Include="net\dhcp">
       <UniqueIdentifier>{8a9eeee2-244b-4c20-805e-db7637f1a562}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{d70cd700-b144-40cf-a83e-740e3d60518b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc\chess">
+      <UniqueIdentifier>{4a2a3fea-b914-4a9e-b7c3-c051aa854664}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
