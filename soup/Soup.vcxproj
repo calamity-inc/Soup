@@ -496,6 +496,8 @@
     <ClInclude Include="memProtFlags.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
+    <ClInclude Include="netIntelLocationData4OnDisk.hpp" />
+    <ClInclude Include="netIntelOnDisk.hpp" />
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
@@ -987,6 +989,7 @@
     <ClCompile Include="netConnectTask.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="MacAddr.cpp" />
+    <ClCompile Include="netIntelOnDisk.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="plist.cpp" />
     <ClCompile Include="Promise.cpp" />

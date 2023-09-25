@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <unordered_map>
 
 #include "CidrSubnetInterface.hpp"
@@ -14,7 +15,7 @@ namespace soup
 {
 	class netIntel
 	{
-	private:
+	public:
 		StringPool as_pool{};
 		StringPool location_pool{};
 		std::unordered_map<uint32_t, UniquePtr<netAs>> aslist{};
@@ -23,7 +24,6 @@ namespace soup
 		RangeMap<uint32_t, netIntelLocationData> ipv4tolocation{};
 		RangeMap<IpAddr, netIntelLocationData> ipv6tolocation{};
 
-	public:
 		void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
 		void deinit() noexcept;
 
@@ -60,5 +60,8 @@ namespace soup
 		[[nodiscard]] const netIntelLocationData* getLocationByIp(const IpAddr& addr) const;
 		[[nodiscard]] const netIntelLocationData* getLocationByIpv4(native_u32_t ip) const;
 		[[nodiscard]] const netIntelLocationData* getLocationByIpv6(const IpAddr& addr) const;
+
+	public:
+		void locationExport(const std::filesystem::path& dir);
 	};
 }

@@ -5,7 +5,9 @@
 #include "CidrSubnet6Interface.hpp"
 #include "csv.hpp"
 #include "deflate.hpp"
+#include "FileWriter.hpp"
 #include "Ipv6Maths.hpp"
+#include "netIntelLocationData4OnDisk.hpp"
 #include "string.hpp"
 #include "StringReader.hpp"
 #include "WebResource.hpp"
@@ -298,5 +300,35 @@ namespace soup
 	const netIntelLocationData* netIntel::getLocationByIpv6(const IpAddr& addr) const
 	{
 		return ipv6tolocation.find(addr);
+	}
+
+	void netIntel::locationExport(const std::filesystem::path& dir)
+	{
+		std::unordered_map<const char*, uint32_t> offsets{};
+		offsets.reserve(location_pool.pool.size());
+		{
+			FileWriter fw(dir / "location_pool.bin");
+			for (const auto& loc : location_pool.pool)
+			{
+				offsets.emplace(loc.c_str(), fw.s.tellp());
+				fw.str_nt(loc);
+			}
+		}
+		
+		{
+			FileWriter fw(dir / "ipv4tolocation.bin");
+			for (const auto& e : ipv4tolocation.data)
+			{
+				netIntelLocationData4OnDisk data;
+				data.lower = e.lower;
+				data.upper = e.upper;
+
+				data.country_code = e.data.country_code.c_str();
+				data.state_offset = offsets.at(e.data.state);
+				data.city_offset = offsets.at(e.data.city);
+
+				data.write(fw);
+			}
+		}
 	}
 }

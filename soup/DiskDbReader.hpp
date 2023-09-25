@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ioSeekableReader.hpp"
+#include "ioSizeMeasurer.hpp"
 
 namespace soup
 {

@@ -1482,6 +1482,12 @@
     <ClInclude Include="memProtFlags.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="netIntelLocationData4OnDisk.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
+    <ClInclude Include="netIntelOnDisk.hpp">
+      <Filter>net\intel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2157,6 +2163,9 @@
     </ClCompile>
     <ClCompile Include="DetourHook.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="netIntelOnDisk.cpp">
+      <Filter>net\intel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

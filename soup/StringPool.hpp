@@ -4,12 +4,10 @@
 
 namespace soup
 {
-	class StringPool
+	struct StringPool
 	{
-	private:
 		std::unordered_set<std::string> pool;
 
-	public:
 		[[nodiscard]] const char* emplace(const std::string& str)
 		{
 			return pool.emplace(str).first->c_str();
