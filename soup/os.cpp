@@ -6,6 +6,7 @@
 #include <fstream>
 
 #if SOUP_WINDOWS
+#include <Psapi.h>
 #include <ShlObj.h> // CSIDL_COMMON_APPDATA
 
 #pragma comment(lib, "Shell32.lib") // SHGetFolderPathW
@@ -206,6 +207,13 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
+	size_t os::getMemoryUsage()
+	{
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+		return pmc.PrivateUsage;
+	}
+
 	bool os::isWine()
 	{
 		return GetProcAddress(LoadLibraryA(ObfusString("ntdll.dll")), ObfusString("wine_get_version")) != nullptr;

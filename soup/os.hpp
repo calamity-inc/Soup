@@ -40,6 +40,8 @@ namespace soup
 		static void changeProtection(void* addr, size_t len, int prot);
 
 #if SOUP_WINDOWS
+		[[nodiscard]] static size_t getMemoryUsage();
+
 		[[nodiscard]] static bool isWine();
 
 		[[nodiscard]] static PEB* getCurrentPeb();
