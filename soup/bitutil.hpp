@@ -81,6 +81,12 @@ namespace soup
 #endif
 		}
 
+		template <typename T>
+		static constexpr void unsetLeastSignificantSetBit(T& val)
+		{
+			val &= (val - 1);
+		}
+
 		[[nodiscard]] static unsigned int getMostSignificantSetBit(unsigned int mask) noexcept // UB if mask = 0
 		{
 #if defined(_MSC_VER) && !defined(__clang__)

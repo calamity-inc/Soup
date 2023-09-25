@@ -92,7 +92,7 @@ namespace soup
 				{
 					return base.add(i).add(j);
 				}
-				mask &= (mask - 1); // knock out least significant set bit
+				bitutil::unsetLeastSignificantSetBit(mask);
 			}
 		}
 		return nullptr;
@@ -152,7 +152,7 @@ namespace soup
 						return result;
 					}
 				}
-				mask &= (mask - 1); // knock out least significant set bit
+				bitutil::unsetLeastSignificantSetBit(mask);
 			}
 		}
 		return result;
