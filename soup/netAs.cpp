@@ -99,6 +99,7 @@ namespace soup
 		case 64476: // Shadow SAS (shadow.tech)
 		case 3223: // Voxility LLP
 		case 39743: // Voxility S.R.L. 
+		case 207137: // PacketHub S.A.
 			// NForce Entertainment B.V.
 		case 43350:
 		case 64437:	
