@@ -538,6 +538,7 @@
     <ClInclude Include="sha_commons.hpp" />
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="StringPool.hpp" />
+    <ClInclude Include="Sudoku.hpp" />
     <ClInclude Include="T128.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
     <ClInclude Include="TransientToken.hpp" />
@@ -1003,6 +1004,7 @@
     <ClCompile Include="SelfDeletingThread.cpp" />
     <ClCompile Include="soup.cpp" />
     <ClCompile Include="spaceship.cpp" />
+    <ClCompile Include="Sudoku.cpp" />
     <ClCompile Include="Svg.cpp" />
     <ClCompile Include="Task.cpp" />
     <ClCompile Include="textmate_grammar.cpp" />
