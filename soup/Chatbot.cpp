@@ -64,7 +64,7 @@ namespace soup
 			cbCmdDefine::dict = soup::make_shared<Dictionary>();
 			cbCmdDefine::dict->read(fr);
 		}
-		
+
 		if (auto jokebook = dir / "jokebook.bin"; std::filesystem::is_regular_file(jokebook))
 		{
 			FileReader fr(jokebook);

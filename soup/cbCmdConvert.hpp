@@ -15,7 +15,7 @@ namespace soup
 		{
 			auto m = p.getArgMeasurementLefthand();
 			auto to_unit = p.getArgUnit();
-			
+
 			if (!m.isValid()
 				|| to_unit == CB_NOUNIT
 				)
