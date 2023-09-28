@@ -42,9 +42,14 @@ namespace soup
 
 		struct Field
 		{
-			uint32_t value_bf : 9 = 0;
-			uint32_t value_was_given : 1 = false;
-			uint32_t candidates_bf : 9 = 0b111'111'111;
+			uint32_t value_bf : 9;
+			uint32_t value_was_given : 1;
+			uint32_t candidates_bf : 9;
+
+			Field()
+				: value_bf(0), value_was_given(false), candidates_bf(0b111'111'111)
+			{
+			}
 
 			void setGiven(value_t value) noexcept
 			{
