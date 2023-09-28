@@ -327,6 +327,7 @@ namespace soup
 		return stepNakedSingle()
 			|| stepHiddenSingle()
 			|| stepLockedCandidates()
+			|| stepHiddenPair()
 			|| stepXWing()
 			;
 	}
@@ -510,6 +511,74 @@ namespace soup
 					{
 						return true;
 					}
+				}
+			}
+		}
+		return false;
+	}
+
+	bool Sudoku::stepHiddenPair() noexcept
+	{
+		for (value_t value1 = 1; value1 != 10; ++value1)
+		{
+			for (value_t value2 = 1; value2 != 10; ++value2)
+			{
+				if (value1 != value2)
+				{
+					const mask_t value1_bf = valueToMask(value1);
+					const mask_t value2_bf = valueToMask(value2);
+
+					// Row
+					for (index_t y = 0; y != 9; ++y)
+					{
+						auto candidates = getCandidatesInRow(value1_bf, y);
+						if (candidates == getCandidatesInRow(value2_bf, y)
+							&& bitutil::getNumSetBits(candidates) == 2
+							)
+						{
+							//std::cout << "Found hidden pair on " << (int)value1 << " and " << (int)value2 << " in row " << (y + 1) << "\n";
+							bool changed = false;
+							do
+							{
+								index_t x = bitutil::getLeastSignificantSetBit(candidates);
+								if (eliminateCandidate(~(value1_bf | value2_bf), x, y))
+								{
+									changed = true;
+								}
+							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
+							if (changed)
+							{
+								return true;
+							}
+						}
+					}
+
+					// Column
+					for (index_t x = 0; x != 9; ++x)
+					{
+						auto candidates = getCandidatesInColumn(value1_bf, x);
+						if (candidates == getCandidatesInColumn(value2_bf, x)
+							&& bitutil::getNumSetBits(candidates) == 2
+							)
+						{
+							//std::cout << "Found hidden pair on " << (int)value1 << " and " << (int)value2 << " in column " << (x + 1) << "\n";
+							bool changed = false;
+							do
+							{
+								index_t y = bitutil::getLeastSignificantSetBit(candidates);
+								if (eliminateCandidate(~(value1_bf | value2_bf), x, y))
+								{
+									changed = true;
+								}
+							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
+							if (changed)
+							{
+								return true;
+							}
+						}
+					}
+
+					// Could technically also do this for boxes although I think row & column is enough to pick everything up.
 				}
 			}
 		}

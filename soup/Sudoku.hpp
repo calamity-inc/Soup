@@ -113,6 +113,7 @@ namespace soup
 		bool stepNakedSingle() noexcept; // Fill in a digit with only 1 candidate if possible.
 		bool stepHiddenSingle() noexcept; // Fill in a digit that can only be in that place within a house if possible.
 		bool stepLockedCandidates() noexcept;
+		bool stepHiddenPair() noexcept;
 		bool stepXWing() noexcept;
 
 		// Note: Might not actually be able to solve the puzzle. No bifurcation will be attempted.
