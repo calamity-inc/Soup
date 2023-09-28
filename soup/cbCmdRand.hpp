@@ -8,9 +8,9 @@ namespace soup
 {
 	struct cbCmdRand : public cbCmd
 	{
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "number between" };
+			return p.checkTrigger("number between");
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final

@@ -8,9 +8,9 @@ namespace soup
 {
 	struct cbCmdCoinflip : public cbCmd
 	{
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "coinflip", "flip a coin" };
+			return p.checkTriggers({ "coinflip", "flip a coin" });
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final

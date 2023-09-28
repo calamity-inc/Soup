@@ -27,6 +27,7 @@ namespace soup
 
 	public:
 		bool checkTrigger(const std::string& trigger);
+		bool checkTriggers(const std::vector<std::string>& triggers);
 	private:
 		bool checkTriggerWord(const std::string& trigger);
 		bool checkTriggerPhrase(const std::vector<std::string>& trigger);

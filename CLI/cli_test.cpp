@@ -783,12 +783,9 @@ static bool test_chatbot_trigger(const std::string& text, const std::string& exp
 	cbParser p(text);
 	for (const auto& cmd : Chatbot::getAllCommands())
 	{
-		for (const auto& trigger : cmd->getTriggers())
+		if (cmd->checkTriggers(p))
 		{
-			if (p.checkTrigger(trigger))
-			{
-				return p.getTrigger() == expected_trigger;
-			}
+			return p.getTrigger() == expected_trigger;
 		}
 	}
 	return false;

@@ -32,6 +32,18 @@ namespace soup
 			;
 	}
 
+	bool cbParser::checkTriggers(const std::vector<std::string>& triggers)
+	{
+		for (const auto& trigger : triggers)
+		{
+			if (checkTrigger(trigger))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool cbParser::checkTriggerWord(const std::string& trigger)
 	{
 		auto i = text.begin();

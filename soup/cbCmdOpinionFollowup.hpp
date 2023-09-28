@@ -6,9 +6,9 @@ namespace soup
 {
 	struct cbCmdOpinionFollowup : public cbCmd
 	{
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "what do you have an opinion on" };
+			return p.checkTrigger("what do you have an opinion on");
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final

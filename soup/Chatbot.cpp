@@ -78,12 +78,9 @@ namespace soup
 		cbParser p(text);
 		for (const auto& cmd : getAllCommands())
 		{
-			for (const auto& trigger : cmd->getTriggers())
+			if (cmd->checkTriggers(p))
 			{
-				if (p.checkTrigger(trigger))
-				{
-					return cmd->process(p);
-				}
+				return cmd->process(p);
 			}
 		}
 		return "I'm sorry, I don't understand. :/";

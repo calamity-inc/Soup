@@ -8,9 +8,9 @@ namespace soup
 {
 	struct cbCmdArithmetic : public cbCmd
 	{
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "+", "-", "*", "/" };
+			return p.checkTriggers({ "+", "-", "*", "/" });
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final

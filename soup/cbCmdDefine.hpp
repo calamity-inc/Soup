@@ -16,9 +16,9 @@ namespace soup
 		* cbCmdDefine::dict->read(fr);
 		*/
 
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "define", "definition of" };
+			return p.checkTriggers({ "define", "definition of" });
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final

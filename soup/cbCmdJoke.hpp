@@ -16,9 +16,9 @@ namespace soup
 		* cbCmdJoke::jb->read(fr);
 		*/
 
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "joke", "jokes" };
+			return p.checkTriggers({ "joke", "jokes" });
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final

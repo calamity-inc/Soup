@@ -6,9 +6,9 @@ namespace soup
 {
 	struct cbCmdDelete : public cbCmd
 	{
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "delete" };
+			return p.checkTrigger("delete");
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final

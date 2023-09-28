@@ -6,9 +6,9 @@ namespace soup
 {
 	struct cbCmdHowAreYou : public cbCmd
 	{
-		[[nodiscard]] std::vector<std::string> getTriggers() const noexcept final
+		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return { "how are you" };
+			return p.checkTrigger("how are you");
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
