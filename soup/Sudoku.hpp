@@ -21,6 +21,13 @@ namespace soup
 	};
 	Sudoku s(grid);
 	*/
+	/* To print to console:
+	console.init(false);
+	Canvas c(15 * 9, 15 * 9);
+	RenderTargetCanvas rt(c);
+	s.draw(rt);
+	console << c.toStringDownsampledDoublewidth(true);
+	*/
 	struct Sudoku
 	{
 		using index_t = uint8_t;
