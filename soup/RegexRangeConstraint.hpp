@@ -232,6 +232,15 @@ namespace soup
 			}
 		}
 
+		template <size_t S>
+		RegexRangeConstraint(const char(&arr)[S])
+		{
+			for (const auto& c : arr)
+			{
+				mask.enable(c);
+			}
+		}
+
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{
 			if (m.it == m.end)

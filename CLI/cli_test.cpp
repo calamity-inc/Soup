@@ -611,6 +611,8 @@ spanning over multiple lines */
 		assert(Regex("A{3,}B").matchesFully("AAB") == false);
 		assert(Regex("A{3,}B").matchesFully("AAAB") == true);
 		assert(Regex("A{3,}B").matchesFully("AAAAB") == true);
+
+		assert(Regex(R"(\d+)").matchesFully("123"));
 	});
 }
 
