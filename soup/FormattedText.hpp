@@ -34,6 +34,11 @@ namespace soup
 			Colour fg;
 			Colour bg;
 
+			Span(std::string text)
+				: text(std::move(text)), fg(true), bg(true)
+			{
+			}
+
 			Span(std::string text, Rgb fg)
 				: text(std::move(text)), fg(fg), bg(true)
 			{
@@ -47,6 +52,7 @@ namespace soup
 
 		std::vector<std::vector<Span>> lines{};
 
+		void addSpan(std::string text);
 		void addSpan(std::string text, Rgb fg);
 		void addSpan(std::string text, Rgb fg, Rgb bg);
 		void addSpan(Span&& span);
@@ -56,6 +62,7 @@ namespace soup
 
 		void draw(RenderTarget& rt, const RasterFont& font) const;
 
-		[[nodiscard]] std::string toString() const;
+		[[nodiscard]] std::string toString() const; // uses ANSI escape codes
+		[[nodiscard]] std::string toHtml() const;
 	};
 }

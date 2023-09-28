@@ -6,6 +6,11 @@
 
 namespace soup
 {
+	void FormattedText::addSpan(std::string text)
+	{
+		addSpan(Span{ std::move(text) });
+	}
+
 	void FormattedText::addSpan(std::string text, Rgb fg)
 	{
 		addSpan(Span{ std::move(text), std::move(fg) });
@@ -87,6 +92,48 @@ namespace soup
 				break;
 			}
 			str.push_back('\n');
+		}
+		return str;
+	}
+
+	std::string FormattedText::toHtml() const
+	{
+		std::string str{};
+		for (auto line = lines.begin();; )
+		{
+			for (const auto& span : *line)
+			{
+				std::string css{};
+				if (!span.fg.reset)
+				{
+					css.append("color:");
+					css.append(span.fg.rgb.toHex());
+					css.push_back(';');
+				}
+				if (!span.bg.reset)
+				{
+					css.append("background-color:");
+					css.append(span.bg.rgb.toHex());
+					css.push_back(';');
+				}
+				if (!css.empty())
+				{
+					str.append(R"(<span style=")");
+					str.append(css);
+					str.append(R"(">)");
+					str.append(span.text);
+					str.append("</span>");
+				}
+				else
+				{
+					str.append(span.text);
+				}
+			}
+			if (++line == lines.end())
+			{
+				break;
+			}
+			str.append("<br>");
 		}
 		return str;
 	}
