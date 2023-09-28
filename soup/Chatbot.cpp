@@ -76,6 +76,11 @@ namespace soup
 	cbResult Chatbot::process(const std::string& text)
 	{
 		cbParser p(text);
+		return process(p);
+	}
+
+	cbResult Chatbot::process(cbParser& p)
+	{
 		for (const auto& cmd : getAllCommands())
 		{
 			if (cmd->checkTriggers(p))

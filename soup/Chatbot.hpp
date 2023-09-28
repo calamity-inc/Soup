@@ -15,6 +15,7 @@ namespace soup
 		static void intialiseResources(std::filesystem::path dir);
 
 		[[nodiscard]] static cbResult process(const std::string& text);
+		[[nodiscard]] static cbResult process(cbParser& p);
 		[[nodiscard]] static std::string getResponse(const std::string& text);
 	};
 }
