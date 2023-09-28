@@ -41,6 +41,10 @@ namespace soup
 			std::move(cap)
 		};
 #if SOUP_WINDOWS
+		if (handle != INVALID_HANDLE_VALUE)
+		{
+			CloseHandle(handle);
+		}
 		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(__stdcall*)(LPVOID)>(&threadCreateCallback), this, 0, nullptr);
 #else
 		running = true;
