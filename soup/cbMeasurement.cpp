@@ -80,6 +80,10 @@ namespace soup
 		case joaat::hash("customarytonnes"): return CB_USTONS;
 		case joaat::hash("customarytons"): return CB_USTONS;
 		case joaat::hash("customary"): return CB_USTONS;
+		case joaat::hash("ton"): return CB_METRICTONS;
+		case joaat::hash("tons"): return CB_METRICTONS;
+		case joaat::hash("tonne"): return CB_METRICTONS;
+		case joaat::hash("tonnes"): return CB_METRICTONS;
 		case joaat::hash("metrictons"): return CB_METRICTONS;
 		case joaat::hash("metric"): return CB_METRICTONS;
 		case joaat::hash("imperialtons"): return CB_IMPERIALTONS;
