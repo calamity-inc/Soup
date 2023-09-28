@@ -833,6 +833,12 @@ static void test_chatbot_implementables()
 	}
 }
 
+static void test_chatbot_results()
+{
+	assert(Chatbot::process("1000 + 234").response.find("1234") != std::string::npos);
+	assert(Chatbot::process("6900 kg in tonnes").response.find("6.9") != std::string::npos);
+}
+
 static void unit_math()
 {
 	test("pow", []
@@ -1132,6 +1138,7 @@ void cli_test()
 				test("triggers", &test_chatbot_triggers);
 				test("args", &test_chatbot_args);
 				test("implementables", &test_chatbot_implementables);
+				test("results", &test_chatbot_results);
 			}
 		}
 		unit("math")
