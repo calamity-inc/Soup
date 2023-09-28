@@ -787,22 +787,7 @@ static bool test_chatbot_trigger(const std::string& text, const std::string& exp
 		{
 			if (p.checkTrigger(trigger))
 			{
-				std::string trigger_str = *p.command_begin;
-				if (p.command_begin != p.command_end)
-				{
-					auto i = p.command_begin + 1;
-					while (true)
-					{
-						trigger_str.push_back(' ');
-						trigger_str.append(*i);
-						if (i == p.command_end)
-						{
-							break;
-						}
-						++i;
-					}
-				}
-				return trigger_str == expected_trigger;
+				return p.getTrigger() == expected_trigger;
 			}
 		}
 	}

@@ -22,7 +22,7 @@ namespace soup
 			{
 				std::string msg = m.isValid() ? m.toString() : "...";
 				msg.push_back(' ');
-				msg.append(*p.command_begin);
+				msg.append(p.getTrigger());
 				msg.push_back(' ');
 				msg.append(to_unit != CB_NOUNIT ? cbUnitToString(to_unit) : "...");
 				msg.push_back('?');

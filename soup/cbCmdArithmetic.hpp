@@ -33,7 +33,7 @@ namespace soup
 				}
 			}
 			std::string msg = "That expression evaluates to ";
-			msg.append(calculate(l, p.command_begin->at(0), r).toString());
+			msg.append(calculate(l, p.getTrigger().at(0), r).toString());
 			msg.append(". :)");
 			return cbResult(std::move(msg));
 		}

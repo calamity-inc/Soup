@@ -9,16 +9,20 @@ namespace soup
 {
 	class cbParser
 	{
-	public:
-		std::vector<std::string> words;
-		std::vector<std::string>::iterator command_begin;
-		std::vector<std::string>::iterator command_end;
+	private:
+		std::string text;
+		std::string::iterator command_begin;
+		std::string::iterator command_end;
 
-		explicit cbParser(const std::string& text);
+	public:
+		explicit cbParser(std::string text)
+			: text(std::move(text)), command_begin(text.end()), command_end(text.end())
+		{
+		}
 
 		[[nodiscard]] bool hasCommand() const noexcept
 		{
-			return command_begin != words.end();
+			return command_begin != text.end();
 		}
 
 	public:
@@ -27,9 +31,18 @@ namespace soup
 		bool checkTriggerWord(const std::string& trigger);
 		bool checkTriggerPhrase(const std::vector<std::string>& trigger);
 
-	private:
-		[[nodiscard]] std::string word2arg(std::vector<std::string>::iterator i) const noexcept;
+		void seekEndOfCurrentWord(std::string::iterator& i) const noexcept;
+		void seekStartOfNextWord(std::string::iterator& i) const noexcept;
+		void seekNextWord(std::string::iterator& i) const noexcept;
+		void seekStartOfCurrentWord(std::string::iterator& i) const noexcept;
+		void seekPreviousWord(std::string::iterator& i) const noexcept;
+
+		[[nodiscard]] std::string::iterator getWordAfterCommandEnd() const noexcept;
+		[[nodiscard]] std::string getWord(std::string::iterator i) const noexcept;
+
 	public:
+		[[nodiscard]] std::string getTrigger() const noexcept;
+
 		[[nodiscard]] std::string getArgWord() const noexcept;
 		[[nodiscard]] std::string getArgWordLefthand() const noexcept;
 
