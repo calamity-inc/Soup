@@ -28,6 +28,29 @@ namespace soup
 	s.draw(rt);
 	console << c.toStringDownsampledDoublewidth(true);
 	*/
+	/* To watch it slowly solve a Sudoku:
+	console.init(false);
+	Canvas c(15 * 9, 15 * 9);
+	RenderTargetCanvas rt(c);
+	do
+	{
+		s.draw(rt);
+		console.clearScreen();
+		console.setCursorPos(0, 0);
+		console << c.toStringDownsampledDoublewidth(true);
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+		s.eliminateImpossibleCandiates();
+
+		s.draw(rt);
+		console.clearScreen();
+		console.setCursorPos(0, 0);
+		console << c.toStringDownsampledDoublewidth(true);
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	} while (s.stepAny());
+	*/
 	struct Sudoku
 	{
 		using index_t = uint8_t;
