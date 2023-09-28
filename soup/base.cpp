@@ -12,8 +12,12 @@ namespace soup
 
 	void throwAssertionFailed(const char* what)
 	{
+#if false
 		std::string msg = "Assertion failed: ";
 		msg.append(what);
 		throw Exception(std::move(msg));
+#else
+		throw Exception(what);
+#endif
 	}
 }
