@@ -1,5 +1,10 @@
 #include "Thread.hpp"
 
+#if SOUP_WINDOWS
+#include "Exception.hpp"
+#include "format.hpp"
+#endif
+
 namespace soup
 {
 	Thread::Thread(void(*f)(Capture&&), Capture&& cap) noexcept
@@ -46,6 +51,10 @@ namespace soup
 			CloseHandle(handle);
 		}
 		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(__stdcall*)(LPVOID)>(&threadCreateCallback), this, 0, nullptr);
+		SOUP_IF_UNLIKELY (handle == NULL)
+		{
+			throw Exception(format("Failed to create thread: {}", GetLastError()));
+		}
 #else
 		running = true;
 		joined = false;
