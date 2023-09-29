@@ -584,47 +584,55 @@ namespace soup
 		for (value_t value = 1; value != 10; ++value)
 		{
 			const auto value_bf = valueToMask(value);
+
+			// Check rows to eliminate candidates in respective columns
+			for (index_t r1y = 0; r1y != 9; ++r1y)
+			{
+				auto candidates = getCandidatesInRow(value_bf, r1y);
+				if (bitutil::getNumSetBits(candidates) == 2)
+				{
+					for (index_t r2y = 0; r2y != 9; ++r2y)
+					{
+						if (r1y != r2y
+							&& candidates == getCandidatesInColumn(value_bf, r2y)
+							)
+						{
+							bool changed = false;
+							do
+							{
+								index_t x = bitutil::getLeastSignificantSetBit(candidates);
+								changed |= eliminateCandidatesInColumn(value_bf, x, r1y, r2y);
+							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
+							if (changed)
+							{
+								return true;
+							}
+						}
+					}
+				}
+			}
+
+			// Check columns to eliminate candidates in respective rows
 			for (index_t c1x = 0; c1x != 9; ++c1x)
 			{
-				if (getNumCandidatesInColumn(value_bf, c1x) >= 2)
+				auto candidates = getCandidatesInColumn(value_bf, c1x);
+				if (bitutil::getNumSetBits(candidates) == 2)
 				{
 					for (index_t c2x = 0; c2x != 9; ++c2x)
 					{
 						if (c1x != c2x
-							&& getNumCandidatesInColumn(value_bf, c2x) >= 2
+							&& candidates == getCandidatesInColumn(value_bf, c2x)
 							)
 						{
-							for (index_t r1y = 0; r1y != 9; ++r1y)
+							bool changed = false;
+							do 
 							{
-								if (getNumCandidatesInRow(value_bf, r1y) >= 2
-									&& getField(c1x, r1y).isCandidateMask(value_bf)
-									&& getField(c2x, r1y).isCandidateMask(value_bf)
-									&& getField(c1x, r1y).getNumCandidates() == 2
-									&& getField(c2x, r1y).getNumCandidates() == 2
-									)
-								{
-									for (index_t r2y = 0; r2y != 9; ++r2y)
-									{
-										if (r1y != r2y
-											&& getNumCandidatesInRow(value_bf, r2y) >= 2
-											&& getField(c1x, r2y).isCandidateMask(value_bf)
-											&& getField(c2x, r2y).isCandidateMask(value_bf)
-											&& getField(c1x, r2y).getNumCandidates() == 2
-											&& getField(c2x, r2y).getNumCandidates() == 2
-											)
-										{
-											bool changed = false;
-											changed |= eliminateCandidatesInRow(value_bf, r1y, c1x, c2x);
-											changed |= eliminateCandidatesInRow(value_bf, r2y, c1x, c2x);
-											changed |= eliminateCandidatesInColumn(value_bf, c1x, r1y, r2y);
-											changed |= eliminateCandidatesInColumn(value_bf, c2x, r1y, r2y);
-											if (changed)
-											{
-												return true;
-											}
-										}
-									}
-								}
+								index_t y = bitutil::getLeastSignificantSetBit(candidates);
+								changed |= eliminateCandidatesInRow(value_bf, y, c1x, c2x);
+							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
+							if (changed)
+							{
+								return true;
 							}
 						}
 					}
