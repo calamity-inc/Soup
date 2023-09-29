@@ -6,13 +6,9 @@ namespace soup
 {
 	struct HandleBase
 	{
-		HANDLE h;
+		HANDLE h = INVALID_HANDLE_VALUE;
 
-		HandleBase() noexcept
-			: h(INVALID_HANDLE_VALUE)
-		{
-		}
-
+		HandleBase() noexcept = default;
 		HandleBase(const HandleBase&) = delete;
 
 		HandleBase(HANDLE h) noexcept

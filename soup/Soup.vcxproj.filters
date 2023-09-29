@@ -1491,6 +1491,12 @@
     <ClInclude Include="Sudoku.hpp">
       <Filter>misc</Filter>
     </ClInclude>
+    <ClInclude Include="UsbHid.hpp">
+      <Filter>os\input</Filter>
+    </ClInclude>
+    <ClInclude Include="AnalogueKeyboard.hpp">
+      <Filter>os\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2172,6 +2178,12 @@
     </ClCompile>
     <ClCompile Include="Sudoku.cpp">
       <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="UsbHid.cpp">
+      <Filter>os\input</Filter>
+    </ClCompile>
+    <ClCompile Include="AnalogueKeyboard.cpp">
+      <Filter>os\input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

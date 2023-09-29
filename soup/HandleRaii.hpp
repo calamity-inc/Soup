@@ -8,6 +8,17 @@ namespace soup
 	{
 		using HandleBase::HandleBase;
 
+		HandleRaii(HANDLE h) noexcept
+			: HandleBase(h)
+		{
+		}
+
+		HandleRaii(HandleRaii&& b) noexcept
+			: HandleBase(b.h)
+		{
+			b.h = INVALID_HANDLE_VALUE;
+		}
+
 		~HandleRaii() noexcept final
 		{
 			if (isValid())
@@ -16,5 +27,7 @@ namespace soup
 				invalidate();
 			}
 		}
+
+		using HandleBase::operator=;
 	};
 }

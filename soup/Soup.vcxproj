@@ -424,6 +424,7 @@
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
     <ClInclude Include="alpha2decodetbl.hpp" />
+    <ClInclude Include="AnalogueKeyboard.hpp" />
     <ClInclude Include="audDevice.hpp" />
     <ClInclude Include="audMixer.hpp" />
     <ClInclude Include="audPlayback.hpp" />
@@ -543,6 +544,7 @@
     <ClInclude Include="textmate_grammar.hpp" />
     <ClInclude Include="TransientToken.hpp" />
     <ClInclude Include="UniqueList.hpp" />
+    <ClInclude Include="UsbHid.hpp" />
     <ClInclude Include="Uuid.hpp" />
     <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
@@ -917,6 +919,7 @@
     <ClCompile Include="aes.cpp" />
     <ClCompile Include="aglContent.cpp" />
     <ClCompile Include="aglTranspiler.cpp" />
+    <ClCompile Include="AnalogueKeyboard.cpp" />
     <ClCompile Include="Asn1Identifier.cpp" />
     <ClCompile Include="Asn1Sequence.cpp" />
     <ClCompile Include="AssemblyBuilder.cpp" />
@@ -1014,6 +1017,7 @@
     <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="tridText.cpp" />
+    <ClCompile Include="UsbHid.cpp" />
     <ClCompile Include="Uuid.cpp" />
     <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="WebSocket.cpp" />
