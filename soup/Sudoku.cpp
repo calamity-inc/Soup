@@ -541,10 +541,7 @@ namespace soup
 							do
 							{
 								index_t x = bitutil::getLeastSignificantSetBit(candidates);
-								if (eliminateCandidate(~(value1_bf | value2_bf), x, y))
-								{
-									changed = true;
-								}
+								changed |= eliminateCandidate(~(value1_bf | value2_bf), x, y);
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
 							{
@@ -566,10 +563,7 @@ namespace soup
 							do
 							{
 								index_t y = bitutil::getLeastSignificantSetBit(candidates);
-								if (eliminateCandidate(~(value1_bf | value2_bf), x, y))
-								{
-									changed = true;
-								}
+								changed |= eliminateCandidate(~(value1_bf | value2_bf), x, y);
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
 							{
