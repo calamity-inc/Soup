@@ -1,5 +1,5 @@
 <?php
-$clang = "em++ -O3 -std=c++17 -flto -fvisibility=hidden";
+$clang = "em++ -O3 -std=c++17 -flto -fvisibility=hidden -fwasm-exceptions";
 
 // Setup folders
 if(!is_dir("bin"))
