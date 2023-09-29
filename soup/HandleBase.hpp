@@ -58,10 +58,10 @@ namespace soup
 
 		[[nodiscard]] operator bool() const noexcept
 		{
-			return valid();
+			return isValid();
 		}
 
-		[[nodiscard]] bool valid() const noexcept
+		[[nodiscard]] bool isValid() const noexcept
 		{
 			return h != INVALID_HANDLE_VALUE;
 		}

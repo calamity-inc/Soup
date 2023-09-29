@@ -10,7 +10,7 @@ namespace soup
 
 		~HandleRaii() noexcept final
 		{
-			if (valid())
+			if (isValid())
 			{
 				CloseHandle(h);
 				invalidate();
