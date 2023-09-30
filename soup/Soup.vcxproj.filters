@@ -1173,9 +1173,6 @@
     <ClInclude Include="Screen.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="WootingAnalog.hpp">
-      <Filter>os\input</Filter>
-    </ClInclude>
     <ClInclude Include="UsbHidScancode.hpp">
       <Filter>os\input</Filter>
     </ClInclude>
@@ -2048,9 +2045,6 @@
     </ClCompile>
     <ClCompile Include="cat.cpp">
       <Filter>data\cat</Filter>
-    </ClCompile>
-    <ClCompile Include="WootingAnalog.cpp">
-      <Filter>os\input</Filter>
     </ClCompile>
     <ClCompile Include="TreeReader.cpp">
       <Filter>util\tree</Filter>

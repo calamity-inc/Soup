@@ -587,7 +587,6 @@
     <ClInclude Include="WeakRef.hpp" />
     <ClInclude Include="WebSocket.hpp" />
     <ClInclude Include="WebSocketConnection.hpp" />
-    <ClInclude Include="WootingAnalog.hpp" />
     <ClInclude Include="InquiryLang.hpp" />
     <ClInclude Include="IntStruct.hpp" />
     <ClInclude Include="ioSeekableReader.hpp" />
@@ -1024,7 +1023,6 @@
     <ClCompile Include="visKeyboard.cpp" />
     <ClCompile Include="WebSocket.cpp" />
     <ClCompile Include="WebSocketConnection.cpp" />
-    <ClCompile Include="WootingAnalog.cpp" />
     <ClCompile Include="Writer.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
