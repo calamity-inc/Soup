@@ -1497,6 +1497,9 @@
     <ClInclude Include="AnalogueKeyboard.hpp">
       <Filter>os\input</Filter>
     </ClInclude>
+    <ClInclude Include="visKeyboard.hpp">
+      <Filter>vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2184,6 +2187,9 @@
     </ClCompile>
     <ClCompile Include="AnalogueKeyboard.cpp">
       <Filter>os\input</Filter>
+    </ClCompile>
+    <ClCompile Include="visKeyboard.cpp">
+      <Filter>vis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -524,6 +524,34 @@ namespace soup
 		f.glyphs.emplace('_', Glyph(3, 1, {
 			1,1,1,
 		}, 4));
+		f.glyphs.emplace('=', Glyph(3, 5, {
+			0,0,0,
+			1,1,1,
+			0,0,0,
+			1,1,1,
+			0,0,0,
+		}));
+		f.glyphs.emplace('[', Glyph(2, 5, {
+			1,1,
+			1,0,
+			1,0,
+			1,0,
+			1,1,
+		}));
+		f.glyphs.emplace(']', Glyph(2, 5, {
+			1,1,
+			0,1,
+			0,1,
+			0,1,
+			1,1,
+		}));
+		f.glyphs.emplace('\'', Glyph(1, 5, {
+			1,
+			1,
+			0,
+			0,
+			0,
+		}));
 		return f;
 	}
 

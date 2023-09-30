@@ -583,6 +583,7 @@
     <ClInclude Include="Svg.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
     <ClInclude Include="UsbHidScancode.hpp" />
+    <ClInclude Include="visKeyboard.hpp" />
     <ClInclude Include="WeakRef.hpp" />
     <ClInclude Include="WebSocket.hpp" />
     <ClInclude Include="WebSocketConnection.hpp" />
@@ -1020,6 +1021,7 @@
     <ClCompile Include="UsbHid.cpp" />
     <ClCompile Include="Uuid.cpp" />
     <ClCompile Include="version_compare.cpp" />
+    <ClCompile Include="visKeyboard.cpp" />
     <ClCompile Include="WebSocket.cpp" />
     <ClCompile Include="WebSocketConnection.cpp" />
     <ClCompile Include="WootingAnalog.cpp" />

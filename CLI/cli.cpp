@@ -224,6 +224,12 @@ int main(int argc, const char** argv)
 			return cli_ircserver();
 		}
 
+		if (subcommand == "keyboard")
+		{
+			cli_keyboard();
+			return 0;
+		}
+
 		if (subcommand == "maze")
 		{
 			cli_maze();
@@ -353,6 +359,7 @@ Available tools:
 - http [uri]
 - inquire
 - ircserver
+- keyboard
 - maze
 - morse [key|encode [text]] <--silent>
 - qr [contents]

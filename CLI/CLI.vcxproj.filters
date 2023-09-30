@@ -15,6 +15,7 @@
     <ClCompile Include="cli_dnsserver.cpp" />
     <ClCompile Include="cli_datareflection.cpp" />
     <ClCompile Include="cli_chatgpt.cpp" />
+    <ClCompile Include="cli_keyboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

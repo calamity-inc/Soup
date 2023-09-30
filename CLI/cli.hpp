@@ -7,6 +7,7 @@ void cli_dig(int argc, const char** argv);
 void cli_dnsserver(int argc, const char** argv);
 void cli_dvd();
 int cli_ircserver();
+void cli_keyboard();
 void cli_maze();
 void cli_morse(int argc, const char** argv);
 void cli_repl();
