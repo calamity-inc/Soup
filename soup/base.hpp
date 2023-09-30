@@ -127,7 +127,7 @@
 
 // === C++ feature abstraction macros
 
-#if __cpp_exceptions < 1997'11L
+#if (__cpp_exceptions < 1997'11L) && (!defined(_MSC_VER) || defined(__clang__))
 	#define SOUP_EXCEPTIONS false
 	#define SOUP_THROW(x) ::soup::throwImpl(x);
 
