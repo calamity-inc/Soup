@@ -10,7 +10,7 @@ There are no external dependencies, so all you have to do is run a batch build f
 
 If you want some ideas as to how start using Soup, check out [the docs](https://docs.soup.do/).
 
-## License
+## Licence
 
 You may use Soup for personal and commercial projects, but they must be open-source.
 
