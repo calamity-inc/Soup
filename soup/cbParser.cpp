@@ -286,51 +286,50 @@ namespace soup
 
 	cbMeasurement cbParser::getArgMeasurement() const noexcept
 	{
-		try
+		cbMeasurement m;
+		for (auto i = getWordAfterCommandEnd(); i != text.end(); seekNextWord(i))
 		{
-			cbMeasurement m;
-			for (auto i = getWordAfterCommandEnd(); i != text.end(); seekNextWord(i))
+			auto arg = getWord(i);
+			if (string::isNumeric(arg))
 			{
-				auto arg = getWord(i);
-				if (string::isNumeric(arg))
+				char* str_end;
+				m.quantity = std::strtod(arg.c_str(), &str_end);
+				if (str_end == arg.c_str() || m.quantity == HUGE_VAL)
 				{
-					m.quantity = std::stod(arg);
-					seekNextWord(i);
-					if (i != text.end())
-					{
-						m.unit = cbUnitFromString(getWord(i));
-						return m;
-					}
+					break;
+				}
+				seekNextWord(i);
+				if (i != text.end())
+				{
+					m.unit = cbUnitFromString(getWord(i));
+					return m;
 				}
 			}
-		}
-		catch (...)
-		{
 		}
 		return {};
 	}
 
 	cbMeasurement cbParser::getArgMeasurementLefthand() const noexcept
 	{
-		try
+		cbMeasurement m;
+		for (auto i = command_begin; i != text.begin(); )
 		{
-			cbMeasurement m;
-			for (auto i = command_begin; i != text.begin(); )
+			seekPreviousWord(i);
+			m.unit = cbUnitFromString(getWord(i));
+			if (m.unit != CB_NOUNIT
+				&& i != text.begin()
+				)
 			{
 				seekPreviousWord(i);
-				m.unit = cbUnitFromString(getWord(i));
-				if (m.unit != CB_NOUNIT
-					&& i != text.begin()
-					)
+				auto arg = getWord(i);
+				char* str_end;
+				m.quantity = std::strtod(arg.c_str(), &str_end);
+				if (str_end == arg.c_str() || m.quantity == HUGE_VAL)
 				{
-					seekPreviousWord(i);
-					m.quantity = std::stod(getWord(i));
-					return m;
+					break;
 				}
+				return m;
 			}
-		}
-		catch (...)
-		{
 		}
 		return {};
 	}
