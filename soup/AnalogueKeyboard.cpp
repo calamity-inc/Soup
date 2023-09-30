@@ -1,5 +1,7 @@
 #include "AnalogueKeyboard.hpp"
 
+#if SOUP_WINDOWS
+
 #include "Packet.hpp"
 #include "StringRefReader.hpp"
 
@@ -103,3 +105,5 @@ namespace soup
 		return keys;
 	}
 }
+
+#endif
