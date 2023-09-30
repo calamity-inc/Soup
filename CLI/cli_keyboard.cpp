@@ -7,12 +7,14 @@
 #include <RasterFont.hpp>
 #include <RenderTarget.hpp>
 #include <Rgb.hpp>
+#include <Thread.hpp>
 #include <visKeyboard.hpp>
 #include <Window.hpp>
 
 #if SOUP_WINDOWS
 using namespace soup;
 
+static bool running = true;
 static const char* kbd_name = "Digital Keyboard";
 static Window w;
 static visKeyboard viskbd;
@@ -21,14 +23,14 @@ static visKeyboard viskbd;
 void cli_keyboard()
 {
 #if SOUP_WINDOWS
-	std::thread t([]
+	Thread t([]
 	{
 #if true
 		for (const auto& kbd : AnalogueKeyboard::getAll())
 		{
 			kbd_name = kbd.name;
 			w.redraw();
-			while (true)
+			while (running)
 			{
 				auto keys = kbd.getActiveKeys();
 				viskbd.clear();
@@ -46,12 +48,13 @@ void cli_keyboard()
 				}
 				w.redraw();
 			}
+			return;
 		}
 #endif
 		// Digital keyboard
 		uint8_t dblbuf[visKeyboard::NUM_KEYS];
 		memset(dblbuf, 0, sizeof(dblbuf));
-		while (true)
+		while (running)
 		{
 			dblbuf[visKeyboard::KEY_BACKQUOTE] = (GetAsyncKeyState(VK_OEM_3) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_1] = (GetAsyncKeyState('1') & 0x8000) ? 255 : 0;
@@ -149,6 +152,10 @@ void cli_keyboard()
 	w.setInvisibleColour(Rgb::GREEN);
 	w.setTopmost(true);
 	w.runMessageLoop();
+
+	running = false;
+	CancelSynchronousIo(t.handle);
+	t.awaitCompletion();
 #else
 	std::cout << "Sorry, this only works on Windows (for now).\n";
 #endif
