@@ -71,6 +71,7 @@ namespace soup
 		[[nodiscard]] static Window getFocused() noexcept;
 
 		[[nodiscard]] DWORD getOwnerPid() const noexcept;
+		[[nodiscard]] DWORD getOwnerTid() const noexcept;
 #endif
 
 		[[nodiscard]] Window::Config& getConfig();

@@ -1173,9 +1173,6 @@
     <ClInclude Include="Screen.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="UsbHidScancode.hpp">
-      <Filter>os\input</Filter>
-    </ClInclude>
     <ClInclude Include="TreeNode.hpp">
       <Filter>util\tree</Filter>
     </ClInclude>
@@ -1496,6 +1493,9 @@
     </ClInclude>
     <ClInclude Include="visKeyboard.hpp">
       <Filter>vis</Filter>
+    </ClInclude>
+    <ClInclude Include="scancodes.hpp">
+      <Filter>os\input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

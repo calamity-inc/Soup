@@ -533,6 +533,7 @@
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="RegexWordCharConstraint.hpp" />
+    <ClInclude Include="scancodes.hpp" />
     <ClInclude Include="SelfDeletingThread.hpp" />
     <ClInclude Include="Serialiser.hpp" />
     <ClInclude Include="ServerServiceUdp.hpp" />
@@ -582,7 +583,6 @@
     <ClInclude Include="StateMachineTask.hpp" />
     <ClInclude Include="Svg.hpp" />
     <ClInclude Include="TreeWriter.hpp" />
-    <ClInclude Include="UsbHidScancode.hpp" />
     <ClInclude Include="visKeyboard.hpp" />
     <ClInclude Include="WeakRef.hpp" />
     <ClInclude Include="WebSocket.hpp" />

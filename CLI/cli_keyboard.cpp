@@ -18,6 +18,14 @@ static bool running = true;
 static const char* kbd_name = "Digital Keyboard";
 static Window w;
 static visKeyboard viskbd;
+
+[[nodiscard]] static bool isPhysicalKeyPressed(uint16_t ps2_scancode) noexcept
+{
+	// GetKeyboardLayout(0) doesn't seem to react to layout changes without a program restart
+	const auto layout = GetKeyboardLayout(Window::getFocused().getOwnerTid());
+	const auto vk = MapVirtualKeyExA(ps2_scancode, MAPVK_VSC_TO_VK_EX, layout);
+	return GetAsyncKeyState(vk) & 0x8000;
+}
 #endif
 
 void cli_keyboard()
@@ -36,7 +44,7 @@ void cli_keyboard()
 				viskbd.clear();
 				for (const auto& key : keys)
 				{
-					//std::cout << std::hex << "Scancode " << (int)key.scancode << ", VK " << key.getVk() << "\n";
+					//std::cout << std::hex << "Scancode " << (int)key.scancode << ", VK " << key.getVk() << ", VKT " << key.getVkTranslated() << "\n";
 					if (key.hasUsbHidScancode())
 					{
 						viskbd.set(key.getUsbHidScancode(), key.value);
@@ -56,58 +64,58 @@ void cli_keyboard()
 		memset(dblbuf, 0, sizeof(dblbuf));
 		while (running)
 		{
-			dblbuf[visKeyboard::KEY_BACKQUOTE] = (GetAsyncKeyState(VK_OEM_3) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_1] = (GetAsyncKeyState('1') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_2] = (GetAsyncKeyState('2') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_3] = (GetAsyncKeyState('3') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_4] = (GetAsyncKeyState('4') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_5] = (GetAsyncKeyState('5') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_6] = (GetAsyncKeyState('6') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_7] = (GetAsyncKeyState('7') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_8] = (GetAsyncKeyState('8') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_9] = (GetAsyncKeyState('9') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_0] = (GetAsyncKeyState('0') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_MINUS] = (GetAsyncKeyState(VK_OEM_MINUS) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_EQUALS] = (GetAsyncKeyState(VK_OEM_PLUS) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_BACKSPACE] = (GetAsyncKeyState(VK_BACK) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_TAB] = (GetAsyncKeyState(VK_TAB) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_Q] = (GetAsyncKeyState('Q') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_W] = (GetAsyncKeyState('W') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_E] = (GetAsyncKeyState('E') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_R] = (GetAsyncKeyState('R') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_T] = (GetAsyncKeyState('T') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_Y] = (GetAsyncKeyState('Y') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_U] = (GetAsyncKeyState('U') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_I] = (GetAsyncKeyState('I') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_O] = (GetAsyncKeyState('O') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_P] = (GetAsyncKeyState('P') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_BRACKET_LEFT] = (GetAsyncKeyState(VK_OEM_4) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_BRACKET_RIGHT] = (GetAsyncKeyState(VK_OEM_6) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_CAPSLOCK] = (GetAsyncKeyState(VK_CAPITAL) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_A] = (GetAsyncKeyState('A') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_S] = (GetAsyncKeyState('S') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_D] = (GetAsyncKeyState('D') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_F] = (GetAsyncKeyState('F') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_G] = (GetAsyncKeyState('G') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_H] = (GetAsyncKeyState('H') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_J] = (GetAsyncKeyState('J') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_K] = (GetAsyncKeyState('K') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_L] = (GetAsyncKeyState('L') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_SEMICOLON] = (GetAsyncKeyState(VK_OEM_1) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_QUOTE] = (GetAsyncKeyState(VK_OEM_7) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_BACKSLASH] = (GetAsyncKeyState(VK_OEM_5) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_ENTER] = (GetAsyncKeyState(VK_RETURN) & 0x8000) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_BACKQUOTE] = isPhysicalKeyPressed(PS2_BACKQUOTE) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_1] = isPhysicalKeyPressed(PS2_1) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_2] = isPhysicalKeyPressed(PS2_2) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_3] = isPhysicalKeyPressed(PS2_3) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_4] = isPhysicalKeyPressed(PS2_4) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_5] = isPhysicalKeyPressed(PS2_5) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_6] = isPhysicalKeyPressed(PS2_6) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_7] = isPhysicalKeyPressed(PS2_7) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_8] = isPhysicalKeyPressed(PS2_8) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_9] = isPhysicalKeyPressed(PS2_9) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_0] = isPhysicalKeyPressed(PS2_0) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_MINUS] = isPhysicalKeyPressed(PS2_MINUS) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_EQUALS] = isPhysicalKeyPressed(PS2_EQUALS) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_BACKSPACE] = isPhysicalKeyPressed(PS2_BACKSPACE) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_TAB] = isPhysicalKeyPressed(PS2_TAB) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_Q] = isPhysicalKeyPressed(PS2_Q) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_W] = isPhysicalKeyPressed(PS2_W) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_E] = isPhysicalKeyPressed(PS2_E) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_R] = isPhysicalKeyPressed(PS2_R) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_T] = isPhysicalKeyPressed(PS2_T) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_Y] = isPhysicalKeyPressed(PS2_Y) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_U] = isPhysicalKeyPressed(PS2_U) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_I] = isPhysicalKeyPressed(PS2_I) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_O] = isPhysicalKeyPressed(PS2_O) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_P] = isPhysicalKeyPressed(PS2_P) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_BRACKET_LEFT] = isPhysicalKeyPressed(PS2_BRACKET_LEFT) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_BRACKET_RIGHT] = isPhysicalKeyPressed(PS2_BRACKET_RIGHT) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_CAPS_LOCK] = isPhysicalKeyPressed(PS2_CAPS_LOCK) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_A] = isPhysicalKeyPressed(PS2_A) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_S] = isPhysicalKeyPressed(PS2_S) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_D] = isPhysicalKeyPressed(PS2_D) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_F] = isPhysicalKeyPressed(PS2_F) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_G] = isPhysicalKeyPressed(PS2_G) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_H] = isPhysicalKeyPressed(PS2_H) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_J] = isPhysicalKeyPressed(PS2_J) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_K] = isPhysicalKeyPressed(PS2_K) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_L] = isPhysicalKeyPressed(PS2_L) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_SEMICOLON] = isPhysicalKeyPressed(PS2_SEMICOLON) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_QUOTE] = isPhysicalKeyPressed(PS2_QUOTE) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_BACKSLASH] = isPhysicalKeyPressed(PS2_BACKSLASH) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_ENTER] = isPhysicalKeyPressed(PS2_ENTER) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_LSHIFT] = (GetAsyncKeyState(VK_LSHIFT) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_Z] = (GetAsyncKeyState('Z') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_X] = (GetAsyncKeyState('X') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_C] = (GetAsyncKeyState('C') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_V] = (GetAsyncKeyState('V') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_B] = (GetAsyncKeyState('B') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_N] = (GetAsyncKeyState('N') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_M] = (GetAsyncKeyState('M') & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_COMMA] = (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_PERIOD] = (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_SLASH] = (GetAsyncKeyState(VK_OEM_2) & 0x8000) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_Z] = isPhysicalKeyPressed(PS2_Z) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_X] = isPhysicalKeyPressed(PS2_X) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_C] = isPhysicalKeyPressed(PS2_C) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_V] = isPhysicalKeyPressed(PS2_V) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_B] = isPhysicalKeyPressed(PS2_B) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_N] = isPhysicalKeyPressed(PS2_N) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_M] = isPhysicalKeyPressed(PS2_M) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_COMMA] = isPhysicalKeyPressed(PS2_COMMA) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_PERIOD] = isPhysicalKeyPressed(PS2_PERIOD) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_SLASH] = isPhysicalKeyPressed(PS2_SLASH) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_RSHIFT] = (GetAsyncKeyState(VK_RSHIFT) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_LCTRL] = (GetAsyncKeyState(VK_LCONTROL) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_LMETA] = (GetAsyncKeyState(VK_LWIN) & 0x8000) ? 255 : 0;
@@ -116,7 +124,7 @@ void cli_keyboard()
 			dblbuf[visKeyboard::KEY_RALT] = (GetAsyncKeyState(VK_RMENU) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_RMETA] = (GetAsyncKeyState(VK_RWIN) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_RCTRL] = (GetAsyncKeyState(VK_RCONTROL) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_NUMLOCK] = (GetAsyncKeyState(VK_NUMLOCK) & 0x8000) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_NUM_LOCK] = (GetAsyncKeyState(VK_NUMLOCK) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_NUMPAD_DIVIDE] = (GetAsyncKeyState(VK_DIVIDE) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_NUMPAD_MULTIPLY] = (GetAsyncKeyState(VK_MULTIPLY) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_NUMPAD_SUBTRACT] = (GetAsyncKeyState(VK_SUBTRACT) & 0x8000) ? 255 : 0;
@@ -130,7 +138,7 @@ void cli_keyboard()
 			dblbuf[visKeyboard::KEY_NUMPAD1] = (GetAsyncKeyState(VK_NUMPAD1) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_NUMPAD2] = (GetAsyncKeyState(VK_NUMPAD2) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_NUMPAD3] = (GetAsyncKeyState(VK_NUMPAD3) & 0x8000) ? 255 : 0;
-			dblbuf[visKeyboard::KEY_NUMPAD_ENTER] = (GetAsyncKeyState(VK_RETURN) & 0x8000) ? 255 : 0;
+			dblbuf[visKeyboard::KEY_NUMPAD_ENTER] = isPhysicalKeyPressed(0xE01C) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_NUMPAD0] = (GetAsyncKeyState(VK_NUMPAD0) & 0x8000) ? 255 : 0;
 			dblbuf[visKeyboard::KEY_NUMPAD_DECIMAL] = (GetAsyncKeyState(VK_DECIMAL) & 0x8000) ? 255 : 0;
 			if (memcmp(viskbd.values, dblbuf, sizeof(dblbuf)) != 0)

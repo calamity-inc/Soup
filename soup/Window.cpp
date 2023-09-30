@@ -249,6 +249,11 @@ namespace soup
 		GetWindowThreadProcessId(h, &pid);
 		return pid;
 	}
+
+	DWORD Window::getOwnerTid() const noexcept
+	{
+		return GetWindowThreadProcessId(h, nullptr);
+	}
 #endif
 
 	Window::Config& Window::getConfig()

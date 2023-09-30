@@ -4,10 +4,12 @@
 
 namespace soup
 {
-	// Based on https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-sdk/src/keycode.rs
-	// This also looks good: https://gist.github.com/MightyPork/6da26e382a7ad91b5496ee55fdc73db2
-
-	// Instead of "scancodes" they might be called "Usage IDs" as on page 53 of https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
+	/*
+	* Based on https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-sdk/src/keycode.rs
+	* This also looks good: https://gist.github.com/MightyPork/6da26e382a7ad91b5496ee55fdc73db2
+	*
+	* Instead of "scancodes" they might be called "Usage IDs" as on page 53 of https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
+	*/
 	enum UsbHidScancode : uint8_t
 	{
 		HID_A = 0x04,
@@ -36,23 +38,23 @@ namespace soup
 		HID_X = 0x1b,
 		HID_Y = 0x1c,
 		HID_Z = 0x1d,
-		HID_DIGIT1 = 0x1e,
-		HID_DIGIT2 = 0x1f,
-		HID_DIGIT3 = 0x20,
-		HID_DIGIT4 = 0x21,
-		HID_DIGIT5 = 0x22,
-		HID_DIGIT6 = 0x23,
-		HID_DIGIT7 = 0x24,
-		HID_DIGIT8 = 0x25,
-		HID_DIGIT9 = 0x26,
-		HID_DIGIT0 = 0x27,
+		HID_1 = 0x1e,
+		HID_2 = 0x1f,
+		HID_3 = 0x20,
+		HID_4 = 0x21,
+		HID_5 = 0x22,
+		HID_6 = 0x23,
+		HID_7 = 0x24,
+		HID_8 = 0x25,
+		HID_9 = 0x26,
+		HID_0 = 0x27,
 		HID_ENTER = 0x28,
 		HID_ESCAPE = 0x29,
 		HID_BACKSPACE = 0x2a,
 		HID_TAB = 0x2b,
 		HID_SPACE = 0x2c,
 		HID_MINUS = 0x2d,
-		HID_EQUAL = 0x2e,
+		HID_EQUALS = 0x2e,
 		HID_BRACKET_LEFT = 0x2f,
 		HID_BRACKET_RIGHT = 0x30,
 		HID_BACKSLASH = 0x31,
@@ -155,80 +157,148 @@ namespace soup
 	};
 
 	// My PCs haven't had a PS/2 port in a few generations, but... Windows. :)
+	enum Ps2Scancode : uint16_t
+	{
+		PS2_A = 0x001E,
+		PS2_B = 0x0030,
+		PS2_C = 0x002E,
+		PS2_D = 0x0020,
+		PS2_E = 0x0012,
+		PS2_F = 0x0021,
+		PS2_G = 0x0022,
+		PS2_H = 0x0023,
+		PS2_I = 0x0017,
+		PS2_J = 0x0024,
+		PS2_K = 0x0025,
+		PS2_L = 0x0026,
+		PS2_M = 0x0032,
+		PS2_N = 0x0031,
+		PS2_O = 0x0018,
+		PS2_P = 0x0019,
+		PS2_Q = 0x0010,
+		PS2_R = 0x0013,
+		PS2_S = 0x001F,
+		PS2_T = 0x0014,
+		PS2_U = 0x0016,
+		PS2_V = 0x002F,
+		PS2_W = 0x0011,
+		PS2_X = 0x002D,
+		PS2_Y = 0x0015,
+		PS2_Z = 0x002C,
+		PS2_1 = 0x0002,
+		PS2_2 = 0x0003,
+		PS2_3 = 0x0004,
+		PS2_4 = 0x0005,
+		PS2_5 = 0x0006,
+		PS2_6 = 0x0007,
+		PS2_7 = 0x0008,
+		PS2_8 = 0x0009,
+		PS2_9 = 0x000A,
+		PS2_0 = 0x000B,
+		PS2_ENTER = 0x001C,
+		PS2_ESCAPE = 0x0001,
+		PS2_BACKSPACE = 0x000E,
+		PS2_TAB = 0x000F,
+		PS2_SPACE = 0x0039,
+		PS2_MINUS = 0x000C,
+		PS2_EQUALS = 0x000D,
+		PS2_BRACKET_LEFT = 0x001A,
+		PS2_BRACKET_RIGHT = 0x001B,
+		PS2_BACKSLASH = 0x002B,
+		PS2_SEMICOLON = 0x0027,
+		PS2_QUOTE = 0x0028,
+		PS2_BACKQUOTE = 0x0029,
+		PS2_COMMA = 0x0033,
+		PS2_PERIOD = 0x0034,
+		PS2_SLASH = 0x0035,
+		PS2_CAPS_LOCK = 0x003A,
+		PS2_F1 = 0x003B,
+		PS2_F2 = 0x003C,
+		PS2_F3 = 0x003D,
+		PS2_F4 = 0x003E,
+		PS2_F5 = 0x003F,
+		PS2_F6 = 0x0040,
+		PS2_F7 = 0x0041,
+		PS2_F8 = 0x0042,
+		PS2_F9 = 0x0043,
+		PS2_F10 = 0x0044,
+		PS2_F11 = 0x0057,
+		PS2_F12 = 0x0058,
+	};
 
 	[[nodiscard]] constexpr uint16_t usb_hid_scancode_to_ps2_scancode(uint8_t scancode) noexcept
 	{
-		// https://stackoverflow.com/a/69600455
+		// Based on https://stackoverflow.com/a/69600455
 		switch (scancode)
 		{
 		case 0x01: return 0x00FF; // Overrun Error
 		case 0x02: return 0x00FC; // POST Fail
-		case 0x04: return 0x001E; // a A
-		case 0x05: return 0x0030; // b B
-		case 0x06: return 0x002E; // c C
-		case 0x07: return 0x0020; // d D
-		case 0x08: return 0x0012; // e E
-		case 0x09: return 0x0021; // f F
-		case 0x0A: return 0x0022; // g G
-		case 0x0B: return 0x0023; // h H
-		case 0x0C: return 0x0017; // i I
-		case 0x0D: return 0x0024; // j J
-		case 0x0E: return 0x0025; // k K
-		case 0x0F: return 0x0026; // l L
-		case 0x10: return 0x0032; // m M
-		case 0x11: return 0x0031; // n N
-		case 0x12: return 0x0018; // o O
-		case 0x13: return 0x0019; // p P
-		case 0x14: return 0x0010; // q Q
-		case 0x15: return 0x0013; // r R
-		case 0x16: return 0x001F; // s S
-		case 0x17: return 0x0014; // t T
-		case 0x18: return 0x0016; // u U
-		case 0x19: return 0x002F; // v V
-		case 0x1A: return 0x0011; // w W
-		case 0x1B: return 0x002D; // x X
-		case 0x1C: return 0x0015; // y Y
-		case 0x1D: return 0x002C; // z Z
-		case 0x1E: return 0x0002; // 1 !
-		case 0x1F: return 0x0003; // 2 @
-		case 0x20: return 0x0004; // 3 #
-		case 0x21: return 0x0005; // 4 $
-		case 0x22: return 0x0006; // 5 %
-		case 0x23: return 0x0007; // 6 ^
-		case 0x24: return 0x0008; // 7 &
-		case 0x25: return 0x0009; // 8 *
-		case 0x26: return 0x000A; // 9 (
-		case 0x27: return 0x000B; // 0 )
-		case 0x28: return 0x001C; // Return
-		case 0x29: return 0x0001; // Escape
-		case 0x2A: return 0x000E; // Backspace
-		case 0x2B: return 0x000F; // Tab
-		case 0x2C: return 0x0039; // Space
-		case 0x2D: return 0x000C; // - _
-		case 0x2E: return 0x000D; // = +
-		case 0x2F: return 0x001A; // [ case 
-		case 0x30: return 0x001B; // ] }
-		case 0x31: return 0x002B; // \ |
-		case 0x32: return 0x002B; // Europe 1 (Note 2)
-		case 0x33: return 0x0027; // ; :
-		case 0x34: return 0x0028; // ' "
-		case 0x35: return 0x0029; // ` ~
-		case 0x36: return 0x0033; // , <
-		case 0x37: return 0x0034; // . >
-		case 0x38: return 0x0035; // / ?
-		case 0x39: return 0x003A; // Caps Lock
-		case 0x3A: return 0x003B; // F1
-		case 0x3B: return 0x003C; // F2
-		case 0x3C: return 0x003D; // F3
-		case 0x3D: return 0x003E; // F4
-		case 0x3E: return 0x003F; // F5
-		case 0x3F: return 0x0040; // F6
-		case 0x40: return 0x0041; // F7
-		case 0x41: return 0x0042; // F8
-		case 0x42: return 0x0043; // F9
-		case 0x43: return 0x0044; // F10
-		case 0x44: return 0x0057; // F11
-		case 0x45: return 0x0058; // F12
+		case HID_A: return PS2_A;
+		case HID_B: return PS2_B;
+		case HID_C: return PS2_C;
+		case HID_D: return PS2_D;
+		case HID_E: return PS2_E;
+		case HID_F: return PS2_F;
+		case HID_G: return PS2_G;
+		case HID_H: return PS2_H;
+		case HID_I: return PS2_I;
+		case HID_J: return PS2_J;
+		case HID_K: return PS2_K;
+		case HID_L: return PS2_L;
+		case HID_M: return PS2_M;
+		case HID_N: return PS2_N;
+		case HID_O: return PS2_O;
+		case HID_P: return PS2_P;
+		case HID_Q: return PS2_Q;
+		case HID_R: return PS2_R;
+		case HID_S: return PS2_S;
+		case HID_T: return PS2_T;
+		case HID_U: return PS2_U;
+		case HID_V: return PS2_V;
+		case HID_W: return PS2_W;
+		case HID_X: return PS2_X;
+		case HID_Y: return PS2_Y;
+		case HID_Z: return PS2_Z;
+		case HID_1: return PS2_1;
+		case HID_2: return PS2_2;
+		case HID_3: return PS2_3;
+		case HID_4: return PS2_4;
+		case HID_5: return PS2_5;
+		case HID_6: return PS2_6;
+		case HID_7: return PS2_7;
+		case HID_8: return PS2_8;
+		case HID_9: return PS2_9;
+		case HID_0: return PS2_0;
+		case HID_ENTER: return PS2_ENTER;
+		case HID_ESCAPE: return PS2_ESCAPE;
+		case HID_BACKSPACE: return PS2_BACKSPACE;
+		case HID_TAB: return PS2_TAB;
+		case HID_SPACE: return PS2_SPACE;
+		case HID_MINUS: return PS2_MINUS;
+		case HID_EQUALS: return PS2_EQUALS;
+		case HID_BRACKET_LEFT: return PS2_BRACKET_LEFT;
+		case HID_BRACKET_RIGHT: return PS2_BRACKET_RIGHT;
+		case HID_BACKSLASH: return PS2_BACKSLASH;
+		case HID_INTL_HASH: return 0x002B; // Europe 1 (Note 2)
+		case HID_SEMICOLON: return PS2_SEMICOLON;
+		case HID_QUOTE: return PS2_QUOTE;
+		case HID_BACKQUOTE: return PS2_BACKQUOTE;
+		case HID_COMMA: return PS2_COMMA;
+		case HID_PERIOD: return PS2_PERIOD;
+		case HID_SLASH: return PS2_SLASH;
+		case HID_CAPS_LOCK: return PS2_CAPS_LOCK;
+		case HID_F1: return PS2_F1;
+		case HID_F2: return PS2_F2;
+		case HID_F3: return PS2_F3;
+		case HID_F4: return PS2_F4;
+		case HID_F5: return PS2_F5;
+		case HID_F6: return PS2_F6;
+		case HID_F7: return PS2_F7;
+		case HID_F8: return PS2_F8;
+		case HID_F9: return PS2_F9;
+		case HID_F10: return PS2_F10;
+		case HID_F11: return PS2_F11;
+		case HID_F12: return PS2_F12;
 		case 0x46: return 0xE037; // Print Screen (Note 1)
 		case 0x47: return 0x0046; // Scroll Lock
 		case 0x49: return 0xE052; // Insert (Note 1)

@@ -5,8 +5,8 @@
 
 #include <vector>
 
+#include "scancodes.hpp"
 #include "UsbHid.hpp"
-#include "UsbHidScancode.hpp"
 
 namespace soup
 {

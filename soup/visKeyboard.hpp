@@ -3,7 +3,7 @@
 #include <cstring> // memset
 
 #include "fwd.hpp"
-#include "UsbHidScancode.hpp"
+#include "scancodes.hpp"
 
 namespace soup
 {
@@ -40,7 +40,7 @@ namespace soup
 			KEY_BRACKET_LEFT,
 			KEY_BRACKET_RIGHT,
 			KEY_ENTER,
-			KEY_CAPSLOCK,
+			KEY_CAPS_LOCK,
 			KEY_A,
 			KEY_S,
 			KEY_D,
@@ -75,7 +75,7 @@ namespace soup
 			KEY_FN,
 			KEY_RCTRL,
 
-			KEY_NUMLOCK,
+			KEY_NUM_LOCK,
 			KEY_NUMPAD_DIVIDE,
 			KEY_NUMPAD_MULTIPLY,
 			KEY_NUMPAD_SUBTRACT,
@@ -113,18 +113,18 @@ namespace soup
 			switch (scancode)
 			{
 			case HID_BACKQUOTE: values[KEY_BACKQUOTE] = value; break;
-			case HID_DIGIT1: values[KEY_1] = value; break;
-			case HID_DIGIT2: values[KEY_2] = value; break;
-			case HID_DIGIT3: values[KEY_3] = value; break;
-			case HID_DIGIT4: values[KEY_4] = value; break;
-			case HID_DIGIT5: values[KEY_5] = value; break;
-			case HID_DIGIT6: values[KEY_6] = value; break;
-			case HID_DIGIT7: values[KEY_7] = value; break;
-			case HID_DIGIT8: values[KEY_8] = value; break;
-			case HID_DIGIT9: values[KEY_9] = value; break;
-			case HID_DIGIT0: values[KEY_0] = value; break;
+			case HID_1: values[KEY_1] = value; break;
+			case HID_2: values[KEY_2] = value; break;
+			case HID_3: values[KEY_3] = value; break;
+			case HID_4: values[KEY_4] = value; break;
+			case HID_5: values[KEY_5] = value; break;
+			case HID_6: values[KEY_6] = value; break;
+			case HID_7: values[KEY_7] = value; break;
+			case HID_8: values[KEY_8] = value; break;
+			case HID_9: values[KEY_9] = value; break;
+			case HID_0: values[KEY_0] = value; break;
 			case HID_MINUS: values[KEY_MINUS] = value; break;
-			case HID_EQUAL: values[KEY_EQUALS] = value; break;
+			case HID_EQUALS: values[KEY_EQUALS] = value; break;
 			case HID_BACKSPACE: values[KEY_BACKSPACE] = value; break;
 			case HID_TAB: values[KEY_TAB] = value; break;
 			case HID_Q: values[KEY_Q] = value; break;
@@ -140,7 +140,7 @@ namespace soup
 			case HID_BRACKET_LEFT: values[KEY_BRACKET_LEFT] = value; break;
 			case HID_BRACKET_RIGHT: values[KEY_BRACKET_RIGHT] = value; break;
 			case HID_ENTER: values[KEY_ENTER] = value; break;
-			case HID_CAPS_LOCK: values[KEY_CAPSLOCK] = value; break;
+			case HID_CAPS_LOCK: values[KEY_CAPS_LOCK] = value; break;
 			case HID_A: values[KEY_A] = value; break;
 			case HID_S: values[KEY_S] = value; break;
 			case HID_D: values[KEY_D] = value; break;
@@ -175,7 +175,7 @@ namespace soup
 				// no HID for KEY_FN
 			case HID_CONTROL_RIGHT: values[KEY_RCTRL] = value; break;
 
-			case HID_NUM_LOCK: values[KEY_NUMLOCK] = value; break;
+			case HID_NUM_LOCK: values[KEY_NUM_LOCK] = value; break;
 			case HID_NUMPAD_DIVIDE: values[KEY_NUMPAD_DIVIDE] = value; break;
 			case HID_NUMPAD_MULTIPLY: values[KEY_NUMPAD_MULTIPLY] = value; break;
 			case HID_NUMPAD_SUBTRACT: values[KEY_NUMPAD_SUBTRACT] = value; break;

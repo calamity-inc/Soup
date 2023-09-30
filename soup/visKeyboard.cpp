@@ -36,7 +36,7 @@ namespace soup
 		drawKey(rt, scale, "[", values[KEY_BRACKET_LEFT], x + (5 + 110) * scale, y + 10 * scale);
 		drawKey(rt, scale, "]", values[KEY_BRACKET_RIGHT], x + (5 + 120) * scale, y + 10 * scale);
 		drawKey(rt, scale, nullptr, values[KEY_ENTER], x + (5 + 130) * scale, y + 10 * scale, 14);
-		drawKey(rt, scale, nullptr, values[KEY_CAPSLOCK], x + 0 * scale, y + 20 * scale, 18);
+		drawKey(rt, scale, nullptr, values[KEY_CAPS_LOCK], x + 0 * scale, y + 20 * scale, 18);
 		drawKey(rt, scale, "A", values[KEY_A], x + (8 + 10) * scale, y + 20 * scale);
 		drawKey(rt, scale, "S", values[KEY_S], x + (8 + 20) * scale, y + 20 * scale);
 		drawKey(rt, scale, "D", values[KEY_D], x + (8 + 30) * scale, y + 20 * scale);
@@ -74,7 +74,7 @@ namespace soup
 
 		x += 155 * scale;
 
-		drawKey(rt, scale, nullptr, values[KEY_NUMLOCK], x + 0 * scale, y + 0 * scale);
+		drawKey(rt, scale, nullptr, values[KEY_NUM_LOCK], x + 0 * scale, y + 0 * scale);
 		drawKey(rt, scale, "/", values[KEY_NUMPAD_DIVIDE], x + 10 * scale, y + 0 * scale);
 		drawKey(rt, scale, "*", values[KEY_NUMPAD_MULTIPLY], x + 20 * scale, y + 0 * scale);
 		drawKey(rt, scale, "-", values[KEY_NUMPAD_SUBTRACT], x + 30 * scale, y + 0 * scale);
