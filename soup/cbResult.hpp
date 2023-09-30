@@ -52,10 +52,7 @@ namespace soup
 
 		[[nodiscard]] const DeleteArgs& getDeleteArgs() const
 		{
-			SOUP_IF_UNLIKELY (!isDelete())
-			{
-				throw 0;
-			}
+			SOUP_ASSERT(isDelete());
 			return delete_args;
 		}
 

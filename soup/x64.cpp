@@ -250,11 +250,8 @@ namespace soup
 			SOUP_ASSERT(deref_size == 32); // We had '['?
 			++str;
 		}
-
-		if (*str != '\0')
-		{
-			throw 0;
-		}
+		
+		SOUP_ASSERT(*str == '\0');
 	}
 
 	void x64Instruction::reset() noexcept
@@ -325,7 +322,7 @@ namespace soup
 		{
 			std::string err = "Unknown x64 instruction: ";
 			err.append(op);
-			throw Exception(std::move(err));
+			SOUP_THROW(Exception(std::move(err)));
 		}
 	}
 

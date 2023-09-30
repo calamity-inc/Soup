@@ -33,10 +33,7 @@ namespace soup
 
 	const Joke& Jokebook::getRandomJokeByType(const std::string& type) const
 	{
-		if (!hasType(type))
-		{
-			throw 0;
-		}
+		SOUP_ASSERT(hasType(type));
 		while (true)
 		{
 			const Joke& j = getRandomJoke();

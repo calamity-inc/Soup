@@ -16,15 +16,19 @@ namespace soup
 		dnsAsyncScheduler()
 			: DetachedScheduler()
 		{
+#if SOUP_EXCEPTIONS
 			on_exception = &onException;
+#endif
 		}
 
+#if SOUP_EXCEPTIONS
 		static void onException(Worker&, const std::exception& e, Scheduler&)
 		{
 			std::string msg = "Exception during DNS lookup task: ";
 			msg.append(e.what());
 			logWriteLine(std::move(msg));
 		}
+#endif
 	};
 
 	static dnsAsyncScheduler dns_async_sched;

@@ -18,10 +18,7 @@ namespace soup
 	audDevice audDevice::get(int i)
 	{
 		WAVEOUTCAPSW woc;
-		SOUP_IF_UNLIKELY (waveOutGetDevCapsW(i, &woc, sizeof(WAVEOUTCAPSW)) != S_OK)
-		{
-			throw 0;
-		}
+		SOUP_ASSERT(waveOutGetDevCapsW(i, &woc, sizeof(WAVEOUTCAPSW)) != S_OK);
 		return audDevice{
 			i,
 			woc.szPname,

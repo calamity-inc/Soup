@@ -1,7 +1,6 @@
 #include "QrCode.hpp"
 
 #include <climits>
-#include <stdexcept>
 
 #include "Canvas.hpp"
 #include "string.hpp"
@@ -37,10 +36,7 @@ namespace soup
 
 	Segment Segment::makeBytes(const std::vector<uint8_t>& data)
 	{
-		if (data.size() > static_cast<unsigned int>(INT_MAX))
-		{
-			throw std::exception();
-		}
+		SOUP_ASSERT(data.size() <= static_cast<unsigned int>(INT_MAX));
 
 		BitBuffer bb;
 		for (uint8_t b : data)
@@ -55,10 +51,7 @@ namespace soup
 		int charCount = 0;
 		for (; *digits != '\0'; digits++, charCount++) {
 			char c = *digits;
-			if (c < '0' || c > '9')
-			{
-				throw std::exception();
-			}
+			SOUP_ASSERT(c >= '0' && c <= '9');
 			accumData = accumData * 10 + (c - '0');
 			accumCount++;
 			if (accumCount == 3) {
@@ -79,10 +72,7 @@ namespace soup
 		int charCount = 0;
 		for (; *text != '\0'; text++, charCount++) {
 			const char* temp = std::strchr(ALPHANUMERIC_CHARSET, *text);
-			if (temp == nullptr)
-			{
-				throw std::exception(); // String contains unencodable characters in alphanumeric mode
-			}
+			SOUP_ASSERT(temp != nullptr); // String contains unencodable characters in alphanumeric mode
 			accumData = accumData * 45 + static_cast<int>(temp - ALPHANUMERIC_CHARSET);
 			accumCount++;
 			if (accumCount == 2) {
@@ -122,10 +112,12 @@ namespace soup
 
 	Segment Segment::makeEci(long assignVal) {
 		BitBuffer bb;
-		if (assignVal < 0)
-			throw std::exception();
-		else if (assignVal < (1 << 7))
+		if (assignVal < 0) {
+			SOUP_ASSERT_UNREACHABLE;
+		}
+		else if (assignVal < (1 << 7)) {
 			bb.appendBits(static_cast<uint32_t>(assignVal), 8);
+		}
 		else if (assignVal < (1 << 14)) {
 			bb.appendBits(2, 2);
 			bb.appendBits(static_cast<uint32_t>(assignVal), 14);
@@ -134,8 +126,9 @@ namespace soup
 			bb.appendBits(6, 3);
 			bb.appendBits(static_cast<uint32_t>(assignVal), 21);
 		}
-		else
-			throw std::exception();
+		else {
+			SOUP_ASSERT_UNREACHABLE;
+		}
 		return Segment(SegmentMode::ECI, 0, std::move(bb));
 	}
 
@@ -229,9 +222,7 @@ namespace soup
 			dataUsedBits = Segment::getTotalBits(segs, version);
 			if (dataUsedBits != -1 && dataUsedBits <= dataCapacityBits)
 				break;  // This version number is found to be suitable
-			if (version >= maxVersion) {  // All versions in the range could not fit the given data
-				throw std::exception();
-			}
+			SOUP_ASSERT(version < maxVersion); // All versions in the range could not fit the given data
 		}
 
 		// Increase the error correction level while the data still fits in the current version number
@@ -476,8 +467,7 @@ namespace soup
 	}
 
 	std::vector<uint8_t> QrCode::addEccAndInterleave(const std::vector<uint8_t>& data) const {
-		if (data.size() != static_cast<unsigned int>(getNumDataCodewords(version, errorCorrectionLevel)))
-			throw std::exception();
+		SOUP_ASSERT(data.size() == static_cast<unsigned int>(getNumDataCodewords(version, errorCorrectionLevel)));
 
 		// Calculate parameter numbers
 		int numBlocks = NUM_ERROR_CORRECTION_BLOCKS[static_cast<int>(errorCorrectionLevel)][version];
@@ -512,8 +502,7 @@ namespace soup
 	}
 
 	void QrCode::drawCodewords(const std::vector<uint8_t>& data) {
-		if (data.size() != static_cast<unsigned int>(getNumRawDataModules(version) / 8))
-			throw std::exception();
+		SOUP_ASSERT(data.size() == static_cast<unsigned int>(getNumRawDataModules(version) / 8));
 
 		size_t i = 0;  // Bit index into the data
 		// Do the funny zigzag scan
@@ -666,8 +655,7 @@ namespace soup
 	}
 
 	std::vector<uint8_t> QrCode::reedSolomonComputeDivisor(int degree) {
-		if (degree < 1 || degree > 255)
-			throw std::exception();
+		SOUP_ASSERT(degree >= 1 && degree <= 255);
 		// Polynomial coefficients are stored from highest to lowest power, excluding the leading term which is always 1.
 		// For example the polynomial x^3 + 255x^2 + 8x + 93 is stored as the uint8 array {255, 8, 93}.
 		std::vector<uint8_t> result(static_cast<size_t>(degree));

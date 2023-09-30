@@ -33,7 +33,7 @@ case 18: return reinterpret_cast<uintptr_t(cc*)(uintptr_t, uintptr_t, uintptr_t,
 case 19: return reinterpret_cast<uintptr_t(cc*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(args.at(0), args.at(1), args.at(2), args.at(3), args.at(4), args.at(5), args.at(6), args.at(7), args.at(8), args.at(9), args.at(10), args.at(11), args.at(12), args.at(13), args.at(14), args.at(15), args.at(16), args.at(17), args.at(18)); \
 case 20: return reinterpret_cast<uintptr_t(cc*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(args.at(0), args.at(1), args.at(2), args.at(3), args.at(4), args.at(5), args.at(6), args.at(7), args.at(8), args.at(9), args.at(10), args.at(11), args.at(12), args.at(13), args.at(14), args.at(15), args.at(16), args.at(17), args.at(18), args.at(19)); \
 } \
-throw BadCall();
+SOUP_THROW(BadCall());
 
 namespace soup
 {
@@ -58,7 +58,7 @@ namespace soup
 		case THISCALL: return thiscall(func, args);
 		case VECTORCALL: return vectorcall(func, args);
 		}
-		throw BadCall();
+		SOUP_THROW(BadCall());
 	}
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wignored-attributes"

@@ -266,7 +266,7 @@ namespace soup
 
 	void Scheduler::fireHoldupCallback(Worker& w)
 	{
-#ifdef _DEBUG
+#if defined(_DEBUG) || !SOUP_EXCEPTIONS
 		w.fireHoldupCallback();
 #else
 		try

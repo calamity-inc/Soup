@@ -221,7 +221,7 @@ namespace soup
 					}
 					else
 					{
-						throw Exception("Unrecognised class in [[:class:]]");
+						SOUP_THROW(Exception("Unrecognised class in [[:class:]]"));
 					}
 					if ((it + 1) != end) { ++it; } // :
 					if ((it + 1) != end) { ++it; } // ]

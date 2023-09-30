@@ -27,7 +27,7 @@ namespace soup
 			auto len = readLength(s);
 			SOUP_IF_UNLIKELY (len > 10000)
 			{
-				throw Exception("Asn1Sequence is unreasonably long");
+				SOUP_THROW(Exception("Asn1Sequence is unreasonably long"));
 			}
 			std::string buf(len, '\0');
 			s.read(buf.data(), len);
@@ -47,7 +47,7 @@ namespace soup
 		auto len = readLength(s);
 		SOUP_IF_UNLIKELY (len > 10000)
 		{
-			throw Exception("Asn1Sequence is unreasonably long");
+			SOUP_THROW(Exception("Asn1Sequence is unreasonably long"));
 		}
 		std::string buf(len, '\0');
 		s.read(buf.data(), len);

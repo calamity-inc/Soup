@@ -95,7 +95,10 @@ namespace soup
 			}
 			else if (is_float)
 			{
+				// Not ideal because std::stod may throw.
+#if SOUP_EXCEPTIONS
 				try
+#endif
 				{
 					auto val = std::stod(buf);
 					if (exponent != 0)
@@ -104,9 +107,11 @@ namespace soup
 					}
 					return soup::make_unique<JsonFloat>(val);
 				}
+#if SOUP_EXCEPTIONS
 				catch (...)
 				{
 				}
+#endif
 			}
 			else if (buf == "true")
 			{

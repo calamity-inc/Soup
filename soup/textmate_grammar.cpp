@@ -35,7 +35,7 @@ namespace soup
 		{
 			return TmPattern(std::move(name), Regex(e->second->asString().data));
 		}
-		throw 0;
+		SOUP_ASSERT_UNREACHABLE;
 	}
 
 	const TmPattern* TmParser::getNextMatch(const std::vector<TmPattern>& patterns) const

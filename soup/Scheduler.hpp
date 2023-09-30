@@ -36,11 +36,15 @@ namespace soup
 	public:
 		using on_work_done_t = void(*)(Worker&, Scheduler&);
 		using on_connection_lost_t = void(*)(Socket&, Scheduler&);
+#if SOUP_EXCEPTIONS
 		using on_exception_t = void(*)(Worker&, const std::exception&, Scheduler&);
+#endif
 
 		on_work_done_t on_work_done = nullptr; // This will always be called before a worker is deleted.
 		on_connection_lost_t on_connection_lost = nullptr; // Check remote_closed for which side caused connection to be lost.
+#if SOUP_EXCEPTIONS
 		on_exception_t on_exception = &on_exception_log;
+#endif
 
 		virtual ~Scheduler() = default;
 

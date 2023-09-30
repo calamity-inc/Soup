@@ -126,7 +126,7 @@ namespace soup
 				std::string msg = "Failed to find program \"";
 				msg.append(program_og);
 				msg.push_back('"');
-				throw Exception(std::move(msg));
+				SOUP_THROW(Exception(std::move(msg)));
 			}
 			string::rtrim(program);
 		}

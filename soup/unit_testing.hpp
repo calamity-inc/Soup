@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if SOUP_EXCEPTIONS
+
 #include <string>
 
 #include "code_tree.hpp"
@@ -50,3 +53,4 @@ namespace soup
 		void setException(std::string&& msg);
 	};
 }
+#endif

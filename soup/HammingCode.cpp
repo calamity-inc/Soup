@@ -29,7 +29,7 @@ namespace soup
 				return chunk_total_bits;
 			}
 		}
-		throw 0;
+		SOUP_ASSERT_UNREACHABLE;
 	}
 
 	[[nodiscard]] static bool ispowerof2(size_t i) noexcept

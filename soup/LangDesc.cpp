@@ -22,7 +22,7 @@ namespace soup
 		{
 			if (i == code.end())
 			{
-				throw ParseError("Unterminated string");
+				SOUP_THROW(ParseError("Unterminated string"));
 			}
 		}
 
@@ -251,7 +251,7 @@ namespace soup
 						std::string err = "Parser for ";
 						err.append(t.keyword);
 						err.append(" pushed arguments but didn't set op");
-						throw ParseError(std::move(err));
+						SOUP_THROW(ParseError(std::move(err)));
 					}
 				}
 				else

@@ -34,6 +34,6 @@ namespace soup
 
 		std::string msg = "Unknown dnsType: ";
 		msg.append(str);
-		throw Exception(std::move(msg));
+		SOUP_THROW(Exception(std::move(msg)));
 	}
 }

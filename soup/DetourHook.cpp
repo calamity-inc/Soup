@@ -28,7 +28,7 @@ namespace soup
 			auto ins = x64Disasm(op);
 			if (!ins.isValid())
 			{
-				throw Exception("Unsupported instruction");
+				SOUP_THROW(Exception("Unsupported instruction"));
 			}
 			og_bytes += (uint8_t)(op - op_start);
 			for (const auto& opr : ins.operands)
@@ -37,7 +37,7 @@ namespace soup
 					|| opr.reg == soup::DIS
 					)
 				{
-					throw Exception("Instruction interacts with instruction pointer");
+					SOUP_THROW(Exception("Instruction interacts with instruction pointer"));
 				}
 			}
 		} while (og_bytes < longjump_trampoline_size);

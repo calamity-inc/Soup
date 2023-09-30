@@ -25,7 +25,7 @@ namespace soup
 			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 			err.append(" expected lefthand value, found ");
 			err.append(node->toString());
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 		pushArgNode(std::move(node));
 #if ENSURE_SANITY
@@ -51,7 +51,7 @@ namespace soup
 		std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 		err.append(" expected righthand value, found ");
 		err.append(node->toString());
-		throw ParseError(std::move(err));
+		SOUP_THROW(ParseError(std::move(err)));
 	}
 
 	void ParserState::pushArg(Mixed&& val)
@@ -91,7 +91,7 @@ namespace soup
 		{
 			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 			err.append(" expected lefthand, found start of block");
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 		--i;
 		UniquePtr<astNode> ret = std::move(*i);
@@ -144,17 +144,14 @@ namespace soup
 		{
 			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 			err.append(" expected righthand, found end of block");
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 	}
 
 	void ParserState::ensureValidIterator() const
 	{
-		if ((*i)->type != astNode::LEXEME
-			|| reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword == Lexeme::VAL
-			)
-		{
-			throw 0;
-		}
+		SOUP_ASSERT((*i)->type == astNode::LEXEME
+			&& reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword != Lexeme::VAL
+		);
 	}
 }

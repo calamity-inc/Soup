@@ -32,7 +32,7 @@ namespace soup
 
 		case CB_NOUNIT: break;
 		}
-		throw 0;
+		SOUP_ASSERT_UNREACHABLE;
 	}
 
 	cbUnit cbUnitFromString(std::string str)

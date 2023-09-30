@@ -15,14 +15,19 @@ namespace soup
 		{
 			auto s = p.getArgNumeric();
 			long i;
+			// Not ideal because std::stol may throw.
+#if SOUP_EXCEPTIONS
 			try
+#endif
 			{
 				i = std::stol(s);
 			}
+#if SOUP_EXCEPTIONS
 			catch (...)
 			{
 				return "Delete ...?";
 			}
+#endif
 			cbResult res(CB_RES_DELETE);
 			res.delete_args.num = i;
 			return res;

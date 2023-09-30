@@ -20,7 +20,9 @@ namespace soup
 
 	bool X509Certificate::load(const Asn1Sequence& cert)
 	{
+#if SOUP_EXCEPTIONS
 		try
+#endif
 		{
 			auto tbsCert = cert.getSeq(0);
 			switch (joaat::hash(cert.getSeq(1).getOid(0).toString()))
@@ -82,9 +84,11 @@ namespace soup
 
 			return true;
 		}
+#if SOUP_EXCEPTIONS
 		catch (const std::out_of_range&)
 		{
 		}
+#endif
 		return false;
 	}
 

@@ -186,7 +186,7 @@ namespace soup
 		}
 		std::string err = "JsonObject has no member with key ";
 		err.append(k.encode());
-		throw Exception(std::move(err));
+		SOUP_THROW(Exception(std::move(err)));
 	}
 
 	JsonNode& JsonObject::at(std::string k) const

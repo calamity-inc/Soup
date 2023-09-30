@@ -72,7 +72,7 @@ namespace soup
 	{
 		if (!isDict())
 		{
-			throw Exception("PlistNode has unexpected type");
+			SOUP_THROW(Exception("PlistNode has unexpected type"));
 		}
 		return *static_cast<PlistDict*>(this);
 	}
@@ -81,7 +81,7 @@ namespace soup
 	{
 		if (!isArray())
 		{
-			throw Exception("PlistNode has unexpected type");
+			SOUP_THROW(Exception("PlistNode has unexpected type"));
 		}
 		return *static_cast<PlistArray*>(this);
 	}
@@ -90,7 +90,7 @@ namespace soup
 	{
 		if (!isString())
 		{
-			throw Exception("PlistNode has unexpected type");
+			SOUP_THROW(Exception("PlistNode has unexpected type"));
 		}
 		return *static_cast<PlistString*>(this);
 	}
@@ -99,7 +99,7 @@ namespace soup
 	{
 		if (!isDict())
 		{
-			throw Exception("PlistNode has unexpected type");
+			SOUP_THROW(Exception("PlistNode has unexpected type"));
 		}
 		return *static_cast<const PlistDict*>(this);
 	}
@@ -108,7 +108,7 @@ namespace soup
 	{
 		if (!isArray())
 		{
-			throw Exception("PlistNode has unexpected type");
+			SOUP_THROW(Exception("PlistNode has unexpected type"));
 		}
 		return *static_cast<const PlistArray*>(this);
 	}
@@ -117,7 +117,7 @@ namespace soup
 	{
 		if (!isString())
 		{
-			throw Exception("PlistNode has unexpected type");
+			SOUP_THROW(Exception("PlistNode has unexpected type"));
 		}
 		return *static_cast<const PlistString*>(this);
 	}
@@ -151,7 +151,7 @@ namespace soup
 				{
 					SOUP_IF_UNLIKELY (!key.empty())
 					{
-						throw Exception(format("Key given but no value provided: {}", key));
+						SOUP_THROW(Exception(format("Key given but no value provided: {}", key)));
 					}
 					key = static_cast<XmlTag*>(child.get())->children.at(0)->asText().contents;
 				}
@@ -159,7 +159,7 @@ namespace soup
 				{
 					SOUP_IF_UNLIKELY (key.empty())
 					{
-						throw Exception(format("Expected key, found {}", static_cast<XmlTag*>(child.get())->name));
+						SOUP_THROW(Exception(format("Expected key, found {}", static_cast<XmlTag*>(child.get())->name)));
 					}
 					dict->children.emplace(std::move(key), parseTag(*static_cast<XmlTag*>(child.get())));
 					key.clear();
@@ -167,7 +167,7 @@ namespace soup
 			}
 			if (!key.empty())
 			{
-				throw Exception(format("Key given but no value provided: {}", key));
+				SOUP_THROW(Exception(format("Key given but no value provided: {}", key)));
 			}
 			return dict;
 		}
@@ -191,8 +191,8 @@ namespace soup
 		}
 		else if (tag.name == "key")
 		{
-			throw Exception("Unexpected key");
+			SOUP_THROW(Exception("Unexpected key"));
 		}
-		throw Exception(format("Unknown type: {}", tag.name));
+		SOUP_THROW(Exception(format("Unknown type: {}", tag.name)));
 	}
 }

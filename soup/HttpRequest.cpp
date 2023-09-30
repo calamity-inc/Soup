@@ -304,10 +304,14 @@ namespace soup
 								if (auto len = self.resp.header_fields.find(ObfusString("Content-Length")); len != self.resp.header_fields.end())
 								{
 									self.status = BODY_LEN;
+									// Not ideal because std::stoull may throw.
+#if SOUP_EXCEPTIONS
 									try
+#endif
 									{
 										self.bytes_remain = std::stoull(len->second);
 									}
+#if SOUP_EXCEPTIONS
 									catch (...)
 									{
 #if LOGGING
@@ -319,6 +323,7 @@ namespace soup
 										}
 										return;
 									}
+#endif
 								}
 								else
 								{
@@ -349,10 +354,14 @@ namespace soup
 							{
 								break;
 							}
+							// Not ideal because std::stoull may throw.
+#if SOUP_EXCEPTIONS
 							try
+#endif
 							{
 								self.bytes_remain = std::stoull(self.buf.substr(0, i), nullptr, 16);
 							}
+#if SOUP_EXCEPTIONS
 							catch (...)
 							{
 #if LOGGING
@@ -364,6 +373,7 @@ namespace soup
 								}
 								return;
 							}
+#endif
 							self.buf.erase(0, i + 2);
 							if (self.bytes_remain == 0)
 							{

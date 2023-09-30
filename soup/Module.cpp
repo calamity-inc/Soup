@@ -22,7 +22,7 @@ namespace soup
 	{
 		SOUP_IF_UNLIKELY (range.base.as<void*>() == nullptr)
 		{
-			throw Exception("Module not found");
+			SOUP_THROW(Exception("Module not found"));
 		}
 		auto dosHeader = range.base.as<IMAGE_DOS_HEADER*>();
 		auto ntHeader = range.base.add(dosHeader->e_lfanew).as<IMAGE_NT_HEADERS*>();

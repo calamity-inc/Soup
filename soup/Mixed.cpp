@@ -19,7 +19,7 @@ namespace soup
 			break;
 
 		case AST_BLOCK:
-			throw Exception("Can't copy this type");
+			SOUP_THROW(Exception("Can't copy this type"));
 
 		case INT:
 		case UINT:
@@ -179,7 +179,7 @@ namespace soup
 			str.append(getTypeName(e));
 			str.append(", found ");
 			str.append(getTypeName());
-			throw Exception(std::move(str));
+			SOUP_THROW(Exception(std::move(str)));
 		}
 	}
 

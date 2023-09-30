@@ -110,7 +110,7 @@ namespace soup
 				{
 					if (stack.empty())
 					{
-						throw ParseError("Function got less arguments than expected");
+						SOUP_THROW(ParseError("Function got less arguments than expected"));
 					}
 					vars.emplace(std::move(var_name), pop());
 				}
@@ -133,7 +133,7 @@ namespace soup
 	{
 		SOUP_IF_UNLIKELY (opcode != ops.size())
 		{
-			throw Exception("Opcode registered out of order");
+			SOUP_THROW(Exception("Opcode registered out of order"));
 		}
 		ops.emplace_back(op);
 	}
@@ -174,7 +174,7 @@ namespace soup
 			case OP_PUSH_FUN:
 			case OP_PUSH_VAR:
 			case OP_POP_ARGS:
-				throw ParseError("Can't assemble this (yet)");
+				SOUP_THROW(ParseError("Can't assemble this (yet)"));
 
 			case OP_PUSH_INT:
 			{
@@ -229,7 +229,7 @@ namespace soup
 			std::string err = "Op ";
 			err.append(std::to_string(current_op));
 			err.append(" failed to pop a value because the stack is empty");
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 		SharedPtr<Mixed> val = std::move(stack.top());
 #if DEBUG_VM
@@ -252,7 +252,7 @@ namespace soup
 			err.append(std::to_string(current_op));
 			err.append(" expected a value, found undefined variable ");
 			err.append(val->getVarName());
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 		return val;
 	}
@@ -276,7 +276,7 @@ namespace soup
 			err.append(std::to_string(current_op));
 			err.append(" expected a var name, found ");
 			err.append(val->getTypeName());
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 		return val->getVarName();
 	}
@@ -290,7 +290,7 @@ namespace soup
 			err.append(std::to_string(current_op));
 			err.append(" expected a string, found ");
 			err.append(val->getTypeName());
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 		return std::move(val->getString());
 	}
@@ -304,7 +304,7 @@ namespace soup
 			err.append(std::to_string(current_op));
 			err.append(" expected a function, found ");
 			err.append(val->getTypeName());
-			throw ParseError(std::move(err));
+			SOUP_THROW(ParseError(std::move(err)));
 		}
 		return StringReader(std::move(val->getFunc()));
 	}

@@ -125,6 +125,23 @@
 	#define SOUP_ASSUME(x) ;
 #endif
 
+// === C++ feature abstraction macros
+
+#if __cpp_exceptions < 1997'11L
+	#define SOUP_EXCEPTIONS false
+	#define SOUP_THROW(x) ::soup::throwImpl(x);
+
+	#include <stdexcept>
+
+	namespace soup
+	{
+		[[noreturn]] void throwImpl(std::exception&& e);
+	}
+#else
+	#define SOUP_EXCEPTIONS true
+	#define SOUP_THROW(x) throw x;
+#endif
+
 // === Platform-specific types
 // This is the only thing soup puts into the global namespace
 

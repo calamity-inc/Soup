@@ -80,15 +80,20 @@ namespace soup
 				hex.push_back(*(++i));
 				hex.push_back(*(++i));
 				++i;
+				// Not ideal because std::stoul may throw.
+#if SOUP_EXCEPTIONS
 				try
+#endif
 				{
 					res.push_back((char)(unsigned char)std::stoul(hex, nullptr, 16));
 				}
+#if SOUP_EXCEPTIONS
 				catch (...)
 				{
 					i -= 2;
 					res.push_back('%');
 				}
+#endif
 			}
 			else
 			{

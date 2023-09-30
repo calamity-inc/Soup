@@ -53,7 +53,7 @@ namespace soup
 		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(__stdcall*)(LPVOID)>(&threadCreateCallback), this, 0, nullptr);
 		SOUP_IF_UNLIKELY (handle == NULL)
 		{
-			throw Exception(format("Failed to create thread: {}", GetLastError()));
+			SOUP_THROW(Exception(format("Failed to create thread: {}", GetLastError())));
 		}
 #else
 		running = true;

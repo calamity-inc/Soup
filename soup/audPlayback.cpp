@@ -73,10 +73,7 @@ namespace soup
 
 	void audPlayback::open(const audDevice& dev, int channels, audFillBlock src, void* user_data)
 	{
-		if (wod)
-		{
-			throw 0;
-		}
+		SOUP_ASSERT(wod == nullptr);
 
 		this->dev = dev;
 		this->channels = channels;

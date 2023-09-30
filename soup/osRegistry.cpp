@@ -30,7 +30,7 @@ namespace soup
 		{
 			return Key{ k };
 		}
-		throw Exception("Failed to create registry key");
+		SOUP_THROW(Exception("Failed to create registry key"));
 	}
 
 	void osRegistry::Key::setValue(const std::string& value)

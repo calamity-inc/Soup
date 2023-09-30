@@ -67,10 +67,7 @@ namespace soup
 		rflFunc f;
 		f.return_type = readType();
 		f.name = readLiteral();
-		if (readLiteral() != "(")
-		{
-			throw 0;
-		}
+		SOUP_ASSERT(readLiteral() == "(");
 		if (peekLiteral() != ")")
 		{
 			while (true)
@@ -86,7 +83,7 @@ namespace soup
 				}
 				else // Wat?
 				{
-					throw 0;
+					SOUP_ASSERT_UNREACHABLE;
 				}
 			}
 		}
@@ -103,7 +100,7 @@ namespace soup
 		}
 		else if (st != "struct")
 		{
-			throw 0;
+			SOUP_ASSERT_UNREACHABLE;
 		}
 		rflStruct desc;
 		desc.name = readLiteral();
@@ -113,10 +110,7 @@ namespace soup
 		}
 		else
 		{
-			if (readLiteral() != "{")
-			{
-				throw 0;
-			}
+			SOUP_ASSERT(readLiteral() == "{");
 		}
 		while (peekLiteral() != "}")
 		{
@@ -153,10 +147,7 @@ namespace soup
 	std::string rflParser::readLiteral()
 	{
 		align();
-		if (!i->isLiteral())
-		{
-			throw 0;
-		}
+		SOUP_ASSERT(i->isLiteral());
 		return (i++)->val.getString();
 	}
 

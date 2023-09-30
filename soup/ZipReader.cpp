@@ -14,7 +14,7 @@ namespace soup
 	{
 		if (!is.isLittleEndian())
 		{
-			throw Exception("ZipReader expected underlying stream to be little endian");
+			SOUP_THROW(Exception("ZipReader expected underlying stream to be little endian"));
 		}
 	}
 
@@ -146,14 +146,14 @@ namespace soup
 					{
 						if (ret.empty())
 						{
-							throw Exception("Decompression failed");
+							SOUP_THROW(Exception("Decompression failed"));
 						}
-						throw Exception("Size after decompression doesn't match uncompressed_size");
+						SOUP_THROW(Exception("Size after decompression doesn't match uncompressed_size"));
 					}
 				}
 				else
 				{
-					throw Exception("Unsupported compression method");
+					SOUP_THROW(Exception("Unsupported compression method"));
 				}
 			}
 		}

@@ -20,24 +20,15 @@ namespace soup
 		deflateFilled(0),
 		adler(1)
 	{
-		if (width == 0 || height == 0)
-		{
-			throw 0; // Bad resolution
-		}
+		SOUP_ASSERT(width != 0 && height != 0); // Bad resolution?
 
 		// Compute and check data siezs
 		uint64_t lineSz = static_cast<uint64_t>(width) * 3 + 1;
-		if (lineSz > UINT32_MAX)
-		{
-			throw 0; // Image too large
-		}
+		SOUP_ASSERT(lineSz <= UINT32_MAX); // Image too large?
 		lineSize = static_cast<uint32_t>(lineSz);
 
 		uint64_t uncompRm = lineSize * height;
-		if (uncompRm > UINT32_MAX)
-		{
-			throw 0; // Image too large
-		}
+		SOUP_ASSERT(uncompRm <= UINT32_MAX); // Image too large?
 		uncompRemain = static_cast<uint32_t>(uncompRm);
 
 		uint32_t numBlocks = uncompRemain / DEFLATE_MAX_BLOCK_SIZE;
@@ -48,10 +39,7 @@ namespace soup
 		// 5 bytes per DEFLATE uncompressed block header, 2 bytes for zlib header, 4 bytes for zlib Adler-32 footer
 		uint64_t idatSize = static_cast<uint64_t>(numBlocks) * 5 + 6;
 		idatSize += uncompRemain;
-		if (idatSize > static_cast<uint32_t>(INT32_MAX))
-		{
-			throw 0; // Image too large
-		}
+		SOUP_ASSERT(idatSize <= static_cast<uint32_t>(INT32_MAX)); // Image too large?
 
 		// Write header (not a pure header, but a couple of things concatenated together)
 		uint8_t header[] = {  // 43 bytes long
@@ -89,17 +77,11 @@ namespace soup
 
 	void TinyPngOut::write(const uint8_t* pixels, size_t count)
 	{
-		if (count > SIZE_MAX / 3)
-		{
-			throw 0;
-		}
+		SOUP_ASSERT(count <= SIZE_MAX / 3);
 		count *= 3;  // Convert pixel count to byte count
 		while (count > 0)
 		{
-			if (positionY >= height)
-			{
-				throw 0; // All image pixels already written
-			}
+			SOUP_ASSERT(positionY < height); // All image pixels already written?
 
 			if (deflateFilled == 0) // Start DEFLATE block
 			{

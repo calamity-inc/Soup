@@ -30,7 +30,7 @@ namespace soup
 			int carry = mapBase58[(uint8_t)*psz];
 			if (carry == 0xFF)
 			{
-				throw Exception("Invalid base58 character");
+				SOUP_THROW(Exception("Invalid base58 character"));
 			}
 			int i = 0;
 			for (std::vector<uint8_t>::reverse_iterator it = b256.rbegin(); (carry != 0 || i < length) && (it != b256.rend()); ++it, ++i) {

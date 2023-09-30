@@ -20,12 +20,12 @@ namespace soup
 
 		[[nodiscard]] virtual size_t getCursorAdvancement() const
 		{
-			throw Exception("Constraint is not fixed-width");
+			SOUP_THROW(Exception("Constraint is not fixed-width"));
 		}
 
 		[[nodiscard]] virtual UniquePtr<RegexConstraint> clone() const
 		{
-			throw Exception("Constraint is not clonable");
+			SOUP_THROW(Exception("Constraint is not clonable"));
 		}
 
 		[[nodiscard]] virtual std::string toString() const noexcept = 0;

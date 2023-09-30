@@ -59,10 +59,7 @@ namespace soup
 
 		void commit(BitWriter& target) const
 		{
-			if (!target.isByteAligned())
-			{
-				throw 0; // no idea why, but this just breaks big time if the target is not byte-aligned
-			}
+			SOUP_ASSERT(target.isByteAligned()); // no idea why, but this just breaks big time if the target is not byte-aligned
 			for (const auto& c : sw.data)
 			{
 				target.u8(8, (uint8_t)c);

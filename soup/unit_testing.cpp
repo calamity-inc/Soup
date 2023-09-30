@@ -1,5 +1,7 @@
 #include "unit_testing.hpp"
 
+#if SOUP_EXCEPTIONS
+
 #include <iostream>
 #include <stdexcept>
 
@@ -136,3 +138,5 @@ namespace soup
 		}
 	}
 }
+
+#endif

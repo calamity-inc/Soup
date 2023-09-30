@@ -8,7 +8,10 @@ namespace soup
 	Mesh Mesh::fromObj(const std::string& obj)
 	{
 		Mesh m;
+		// Not ideal because std::stof or std::stoi may throw.
+#if SOUP_EXCEPTIONS
 		try
+#endif
 		{
 			auto lines = string::explode<std::string>(obj, '\n');
 			for (const auto& line : lines)
@@ -35,10 +38,12 @@ namespace soup
 				}
 			}
 		}
+#if SOUP_EXCEPTIONS
 		catch (const std::exception&)
 		{
 			m.clear();
 		}
+#endif
 		return m;
 	}
 

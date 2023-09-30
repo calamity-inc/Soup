@@ -254,16 +254,20 @@ namespace soup
 	{
 		void* const b = ::operator new(sizeof(T) + sizeof(typename SharedPtr<T>::Data));
 		typename SharedPtr<T>::Data* data;
+#if SOUP_EXCEPTIONS
 		try
+#endif
 		{
 			auto inst = soup::construct_at<>(reinterpret_cast<T*>(b), std::forward<Args>(args)...);
 			data = soup::construct_at<>(reinterpret_cast<typename SharedPtr<T>::Data*>(reinterpret_cast<uintptr_t>(b) + sizeof(T)), inst);
 		}
+#if SOUP_EXCEPTIONS
 		catch (...)
 		{
 			::operator delete(b);
 			std::rethrow_exception(std::current_exception());
 		}
+#endif
 		data->was_created_with_make_shared = true;
 		return SharedPtr<T>(data);
 	}

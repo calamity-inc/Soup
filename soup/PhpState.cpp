@@ -40,7 +40,7 @@ namespace soup
 			{
 				std::string err = "'function' expected righthand '(' or name, found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 			UniquePtr<astNode> var_name_literal{};
 			if (reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword == Lexeme::LITERAL)
@@ -52,7 +52,7 @@ namespace soup
 			{
 				std::string err = "'function' expected righthand '(', found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 
 			node = ps.popRighthand();
@@ -62,7 +62,7 @@ namespace soup
 			{
 				std::string err = "'function' expected righthand ')' or parameter list, found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 			std::vector<UniquePtr<astNode>> param_literals{};
 			if (reinterpret_cast<LexemeNode*>(node.get())->lexeme.val.getString() != ")")
@@ -84,7 +84,7 @@ namespace soup
 						}
 						std::string err = "Parameter list expected righthand ',', found ";
 						err.append(node->toString());
-						throw ParseError(std::move(err));
+						SOUP_THROW(ParseError(std::move(err)));
 					}
 
 					node = ps.popRighthand();
@@ -94,7 +94,7 @@ namespace soup
 					{
 						std::string err = "Parameter list expected righthand parameter after ',', found ";
 						err.append(node->toString());
-						throw ParseError(std::move(err));
+						SOUP_THROW(ParseError(std::move(err)));
 					}
 				}
 			}
@@ -104,7 +104,7 @@ namespace soup
 			{
 				std::string err = "'function' expected righthand block, found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 
 			reinterpret_cast<astBlock*>(node.get())->param_literals = std::move(param_literals);
@@ -132,7 +132,7 @@ namespace soup
 			{
 				std::string err = "'[' expected ']' after index/key, found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 		});
 		ld.addToken(".", Rgb::RED, [](ParserState& ps)
@@ -163,7 +163,7 @@ namespace soup
 			{
 				std::string err = "'if' expected righthand '(', found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 
 			ps.consumeRighthandValue(); // condition
@@ -175,7 +175,7 @@ namespace soup
 			{
 				std::string err = "'if(cond' expected righthand ')', found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 
 			node = ps.popRighthand();
@@ -188,7 +188,7 @@ namespace soup
 			{
 				std::string err = "'if(cond)' expected righthand block or ':', found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 			if (node->type != astNode::BLOCK)
 			{
@@ -198,7 +198,7 @@ namespace soup
 			{
 				std::string err = "'if(cond)' expected righthand block, found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 			ps.pushArg(reinterpret_cast<astBlock*>(node.release()));
 		});
@@ -212,7 +212,7 @@ namespace soup
 			{
 				std::string err = "'else' expected lefthand OP_IF, found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 			ps.setOp(OP_IF_ELSE);
 			ps.setArgs(std::move(reinterpret_cast<OpNode*>(node.get())->op.args));
@@ -222,7 +222,7 @@ namespace soup
 			{
 				std::string err = "'else' expected righthand block, found ";
 				err.append(node->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 			ps.pushArg(reinterpret_cast<astBlock*>(node.release()));
 		});
@@ -244,7 +244,7 @@ namespace soup
 					{
 						std::string err = "Argument list expected value, found ";
 						err.append(node->toString());
-						throw ParseError(std::move(err));
+						SOUP_THROW(ParseError(std::move(err)));
 					}
 					arg_nodes.emplace_back(std::move(node));
 
@@ -261,7 +261,7 @@ namespace soup
 						}
 						std::string err = "Argument list expected righthand ',', found ";
 						err.append(node->toString());
-						throw ParseError(std::move(err));
+						SOUP_THROW(ParseError(std::move(err)));
 					}
 
 					node = ps.popRighthand();
@@ -336,7 +336,10 @@ namespace soup
 	std::string PhpState::evaluate(const std::string& code, unsigned int max_require_depth) const
 	{
 		std::string output{};
+		// Ideally, the parser would report errors in a less fatal way...
+#if SOUP_EXCEPTIONS
 		try
+#endif
 		{
 			auto ld = getLangDesc();
 			auto ls = ld.tokenise(code);
@@ -351,6 +354,7 @@ namespace soup
 			StringReader r{ std::move(w.data) };
 			execute(output, r, max_require_depth);
 		}
+#if SOUP_EXCEPTIONS
 		catch (const std::runtime_error& e)
 		{
 			if (!output.empty())
@@ -360,6 +364,7 @@ namespace soup
 			output.append("ERROR: ");
 			output.append(e.what());
 		}
+#endif
 		return output;
 	}
 
@@ -400,7 +405,7 @@ namespace soup
 			{
 				std::string err = "Array has no entry with key ";
 				err.append(key->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 		});
 		vm.addOpcode(OP_ASSIGN, [](LangVm& vm)
@@ -454,7 +459,7 @@ namespace soup
 			auto& cap = vm.cap.get<CapturePhpVm>();
 			if (cap.max_require_depth == 0)
 			{
-				throw std::runtime_error("Max require depth exceeded");
+				SOUP_THROW(std::runtime_error("Max require depth exceeded"));
 			}
 			std::filesystem::path file = cap.state.cwd;
 			file /= vm.popString();
@@ -462,7 +467,7 @@ namespace soup
 			{
 				std::string err = "Required file doesn't exist: ";
 				err.append(file.string());
-				throw std::runtime_error(std::move(err));
+				SOUP_THROW(std::runtime_error(std::move(err)));
 			}
 			cap.output.append(cap.state.evaluate(string::fromFile(file.string()), cap.max_require_depth - 1));
 		});

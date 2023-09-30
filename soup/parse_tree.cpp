@@ -72,7 +72,7 @@ namespace soup
 			{
 				std::string err = "Unexpected ";
 				err.append(child->toString());
-				throw ParseError(std::move(err));
+				SOUP_THROW(ParseError(std::move(err)));
 			}
 		}
 	}
@@ -166,7 +166,7 @@ namespace soup
 		}
 		std::string err = "Non-compilable lexeme in parse tree at compile time: ";
 		err.append(toString());
-		throw ParseError(std::move(err));
+		SOUP_THROW(ParseError(std::move(err)));
 	}
 
 	// AstOpNode

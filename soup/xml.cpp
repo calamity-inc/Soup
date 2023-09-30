@@ -23,7 +23,7 @@ namespace soup
 	{
 		if (!isTag())
 		{
-			throw Exception("XmlNode has unexpected type");
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
 		}
 		return *static_cast<XmlTag*>(this);
 	}
@@ -32,7 +32,7 @@ namespace soup
 	{
 		if (!isText())
 		{
-			throw Exception("XmlNode has unexpected type");
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
 		}
 		return *static_cast<XmlText*>(this);
 	}
@@ -41,7 +41,7 @@ namespace soup
 	{
 		if (!isTag())
 		{
-			throw Exception("XmlNode has unexpected type");
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
 		}
 		return *static_cast<const XmlTag*>(this);
 	}
@@ -50,7 +50,7 @@ namespace soup
 	{
 		if (!isText())
 		{
-			throw Exception("XmlNode has unexpected type");
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
 		}
 		return *static_cast<const XmlText*>(this);
 	}
@@ -117,7 +117,7 @@ namespace soup
 				return a.second;
 			}
 		}
-		throw std::exception();
+		SOUP_ASSERT_UNREACHABLE;
 	}
 
 	XmlTag* XmlTag::findTag(const std::string& name_target)

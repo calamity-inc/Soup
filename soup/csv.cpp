@@ -15,10 +15,7 @@ namespace soup
 			{
 				i += 1;
 				auto sep = line.find('"', i);
-				if (sep == std::string::npos)
-				{
-					throw 0; // no closing quote
-				}
+				SOUP_ASSERT(sep != std::string::npos); // must have closing quote
 				res.emplace_back(line.substr(i, sep - i));
 				i = sep + 2;
 			}

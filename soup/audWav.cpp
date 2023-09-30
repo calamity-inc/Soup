@@ -17,7 +17,7 @@ namespace soup
 		RiffReader rr(r);
 		SOUP_IF_UNLIKELY (!rr.seekChunk("fmt ").isValid())
 		{
-			throw Exception("WAV file seems to be in an invalid format");
+			SOUP_THROW(Exception("WAV file seems to be in an invalid format"));
 		}
 		WavFmtChunk fmt;
 		fmt.read(r);
@@ -25,16 +25,16 @@ namespace soup
 		{
 			SOUP_IF_UNLIKELY (fmt.channels != 2 && fmt.channels != 1)
 			{
-				throw Exception("WAV file must be mono or stereo (such that 1 <= channels <= 2 holds true)");
+				SOUP_THROW(Exception("WAV file must be mono or stereo (such that 1 <= channels <= 2 holds true)"));
 			}
-			throw Exception("WAV file must be 16-bit (L)PCM at 44100 samples per second");
+			SOUP_THROW(Exception("WAV file must be 16-bit (L)PCM at 44100 samples per second"));
 		}
 		channels = fmt.channels;
 		auto ck = rr.seekChunk("data");
 		data_begin = ck.data_offset;
 		SOUP_IF_UNLIKELY (!ck.isValid())
 		{
-			throw Exception("WAV file seems to be in an invalid format");
+			SOUP_THROW(Exception("WAV file seems to be in an invalid format"));
 		}
 		duration_seconds = (double)ck.data_size / fmt.avg_bytes_per_sec;
 	}

@@ -18,15 +18,20 @@ namespace soup
 			auto as = p.getArgNumeric();
 			auto bs = p.getArgNumericSecond();
 			long long a, b;
+			// Not ideal because std::stoull may throw.
+#if SOUP_EXCEPTIONS
 			try
+#endif
 			{
 				a = std::stoll(as);
 				b = std::stoll(bs);
 			}
+#if SOUP_EXCEPTIONS
 			catch (...)
 			{
 				return "Number between ... and ...?";
 			}
+#endif
 			if (a > b)
 			{
 				std::swap(a, b);

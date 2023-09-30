@@ -12,10 +12,7 @@ namespace soup
 {
 	[[nodiscard]] static auto opArgToAglRepresentation(const UniquePtr<astNode>& arg)
 	{
-		if (arg->type != astNode::LEXEME)
-		{
-			throw 0;
-		}
+		SOUP_ASSERT(arg->type == astNode::LEXEME);
 		auto lexemenode = reinterpret_cast<const LexemeNode*>(arg.get());
 		return lexemenode->lexeme.getSourceString();
 	}
@@ -39,10 +36,7 @@ namespace soup
 		aglContent cont;
 		for (const auto& node : ast.children)
 		{
-			if (node->type != astNode::OP)
-			{
-				throw 0;
-			}
+			SOUP_ASSERT(node->type == astNode::OP);
 			auto opnode = reinterpret_cast<const OpNode*>(node.get());
 			switch (opnode->op.type)
 			{

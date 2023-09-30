@@ -220,7 +220,7 @@ inline unsigned int get_round_count(const int key_size) {
     case 32:
         return 14;
     default:
-        throw std::invalid_argument("Invalid key size");
+        SOUP_THROW(std::invalid_argument("Invalid key size"));
     }
 }
 
@@ -230,7 +230,7 @@ inline unsigned int get_round_count(const int key_size) {
  */
 inline RoundKeys expand_key(const unsigned char *key, const int key_size) {
     if (key_size != 16 && key_size != 24 && key_size != 32) {
-        throw std::invalid_argument("Invalid key size");
+        SOUP_THROW(std::invalid_argument("Invalid key size"));
     }
 
     const Word rcon[] = {
