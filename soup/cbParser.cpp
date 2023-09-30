@@ -147,11 +147,16 @@ namespace soup
 	{
 		for (; i != text.begin(); --i)
 		{
-			if (*(i - 1) == ' ')
+			if (isAtStartOfWord(i))
 			{
 				break;
 			}
 		}
+	}
+
+	bool cbParser::isAtStartOfWord(std::string::iterator i) const noexcept
+	{
+		return *(i - 1) == ' ';
 	}
 
 	void cbParser::seekPreviousWord(std::string::iterator& i) const noexcept

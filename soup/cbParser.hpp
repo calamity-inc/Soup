@@ -36,6 +36,7 @@ namespace soup
 		void seekStartOfNextWord(std::string::iterator& i) const noexcept;
 		void seekNextWord(std::string::iterator& i) const noexcept;
 		void seekStartOfCurrentWord(std::string::iterator& i) const noexcept;
+		[[nodiscard]] bool isAtStartOfWord(std::string::iterator i) const noexcept;
 		void seekPreviousWord(std::string::iterator& i) const noexcept;
 
 		[[nodiscard]] std::string::iterator getWordAfterCommandEnd() const noexcept;
