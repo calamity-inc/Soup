@@ -20,12 +20,22 @@ namespace soup
 		class ActiveKey
 		{
 		public:
-			UsbHidScancode scancode;
+			uint16_t scancode;
 			uint8_t value;
+
+			[[nodiscard]] bool hasUsbHidScancode() const noexcept
+			{
+				return scancode <= 0xFF;
+			}
+			
+			[[nodiscard]] UsbHidScancode getUsbHidScancode() const noexcept
+			{
+				return (UsbHidScancode)scancode;
+			}
 
 			[[nodiscard]] uint16_t getPs2Scancode() const noexcept
 			{
-				return usb_hid_scancode_to_ps2_scancode(scancode);
+				return hasUsbHidScancode() ? usb_hid_scancode_to_ps2_scancode(scancode) : 0;
 			}
 
 			[[nodiscard]] int getVk() const noexcept

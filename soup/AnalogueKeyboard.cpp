@@ -75,11 +75,11 @@ namespace soup
 		std::vector<ActiveKey> keys{};
 
 		auto report = device.pollReport();
-		StringRefReader sr(report);
-		uint8_t scancode, value;
+		StringRefReader sr(report, false);
+		uint16_t scancode;
+		uint8_t value;
 		while (sr.hasMore()
-			&& sr.skip(1) // scancode is sent as 16-bit value, but the high 8 bits always seem to be 0
-			&& sr.u8(scancode)
+			&& sr.u16(scancode)
 			&& scancode != 0 // report is always same size, but the after active keys is just 0 bytes
 			&& sr.u8(value)
 			)
@@ -87,14 +87,14 @@ namespace soup
 			// some keys seem to be getting reported multiple times, so just use last reported value
 			for (auto& key : keys)
 			{
-				if (key.scancode == static_cast<UsbHidScancode>(scancode))
+				if (key.scancode == scancode)
 				{
 					key.value = value;
 					goto _no_emplace;
 				}
 			}
 			keys.emplace_back(ActiveKey{
-				static_cast<UsbHidScancode>(scancode),
+				scancode,
 				value
 			});
 		_no_emplace:;
