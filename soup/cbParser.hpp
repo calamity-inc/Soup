@@ -28,9 +28,10 @@ namespace soup
 	public:
 		bool checkTrigger(const std::string& trigger);
 		bool checkTriggers(const std::vector<std::string>& triggers);
-	private:
 		bool checkTriggerWord(const std::string& trigger);
 		bool checkTriggerPhrase(const std::vector<std::string>& trigger);
+		bool checkTriggerSymbol(const char trigger);
+		bool checkTriggerSymbols(const char* triggers);
 
 		void seekEndOfCurrentWord(std::string::iterator& i) const noexcept;
 		void seekStartOfNextWord(std::string::iterator& i) const noexcept;
@@ -41,6 +42,7 @@ namespace soup
 
 		[[nodiscard]] std::string::iterator getWordAfterCommandEnd() const noexcept;
 		[[nodiscard]] std::string getWord(std::string::iterator i) const noexcept;
+		[[nodiscard]] std::string getWord(std::string::iterator i, std::string::const_iterator end) const noexcept;
 
 	public:
 		[[nodiscard]] std::string getTrigger() const noexcept;

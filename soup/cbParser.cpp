@@ -121,6 +121,32 @@ namespace soup
 		return false;
 	}
 
+	bool cbParser::checkTriggerSymbol(const char trigger)
+	{
+		for (auto i = text.begin(); i != text.end(); ++i)
+		{
+			if (*i == trigger)
+			{
+				command_begin = i;
+				command_end = i + 1;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool cbParser::checkTriggerSymbols(const char* triggers)
+	{
+		for (; *triggers; ++triggers)
+		{
+			if (checkTriggerSymbol(*triggers))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void cbParser::seekEndOfCurrentWord(std::string::iterator& i) const noexcept
 	{
 		while (i != text.end() && *i != ' ')
@@ -177,11 +203,16 @@ namespace soup
 
 	std::string cbParser::getWord(std::string::iterator i) const noexcept
 	{
+		return getWord(i, text.end());
+	}
+
+	std::string cbParser::getWord(std::string::iterator i, std::string::const_iterator end) const noexcept
+	{
 		bool last_word = true;
 
 		StringBuilder buf;
 		buf.beginCopy(text, i);
-		for (; i != text.end(); ++i)
+		for (; i != end; ++i)
 		{
 			if (*i == ' ')
 			{
@@ -190,7 +221,7 @@ namespace soup
 			}
 		}
 		buf.endCopy(text, i);
-		
+
 		std::string arg = std::move(buf);
 		if (last_word)
 		{
@@ -221,7 +252,7 @@ namespace soup
 		if (i != text.begin())
 		{
 			seekPreviousWord(i);
-			return getWord(i);
+			return getWord(i, command_begin);
 		}
 		return {};
 	}
@@ -280,7 +311,7 @@ namespace soup
 		for (auto i = command_begin; i != text.begin(); )
 		{
 			seekPreviousWord(i);
-			auto arg = getWord(i);
+			auto arg = getWord(i, command_begin);
 			if (string::isNumeric(arg))
 			{
 				return arg;

@@ -10,7 +10,7 @@ namespace soup
 	{
 		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
 		{
-			return p.checkTriggers({ "+", "-", "*", "/" });
+			return p.checkTriggerSymbols("+" "-" "*" "/");
 		}
 
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
