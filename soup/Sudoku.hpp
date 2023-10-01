@@ -136,6 +136,8 @@ namespace soup
 			return cells[getCellIndex(x, y)];
 		}
 
+		[[nodiscard]] count_t getNumValues() const noexcept;
+
 		[[nodiscard]] mask_t getValuesInBox(index_t i) const noexcept;
 		[[nodiscard]] mask_t getValuesInBox(index_t bx, index_t by) const noexcept;
 		[[nodiscard]] mask_t getValuesInRow(index_t y) const noexcept;

@@ -160,6 +160,19 @@ namespace soup
 		}
 	}
 
+	count_t Sudoku::getNumValues() const noexcept
+	{
+		count_t count = 0;
+		for (index_t y = 0; y != 9; ++y)
+		{
+			for (index_t x = 0; x != 9; ++x)
+			{
+				count += !!getCell(x, y).value_bf;
+			}
+		}
+		return count;
+	}
+
 	mask_t Sudoku::getValuesInBox(index_t i) const noexcept
 	{
 		index_t bx = i % 3;
