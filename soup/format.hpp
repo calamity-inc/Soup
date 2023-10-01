@@ -12,6 +12,12 @@ namespace soup
 	// Otherwise, use whichever makes you more productive.
 
 	template <typename In>
+	std::string format_toString(const char v)
+	{
+		return std::string(1, v);
+	}
+	
+	template <typename In>
 	std::string format_toString(const char* v)
 	{
 		return v;
