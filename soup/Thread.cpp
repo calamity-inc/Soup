@@ -17,12 +17,6 @@ namespace soup
 		start(std::move(func));
 	}
 
-	struct CaptureThreadCreate
-	{
-		void(*f)(Capture&&);
-		Capture cap;
-	};
-
 	static void
 #if SOUP_WINDOWS
 		__stdcall
@@ -30,20 +24,17 @@ namespace soup
 		threadCreateCallback(void* handover)
 	{
 		auto t = reinterpret_cast<Thread*>(handover);
-		auto& cap = t->create_capture.get<CaptureThreadCreate>();
-		cap.f(std::move(cap.cap));
+		t->f(std::move(t->f_cap));
 #if !SOUP_WINDOWS
 		t->running = false;
 #endif
-		t->create_capture.reset();
+		t->f_cap.reset();
 	}
 
 	void Thread::start(void(*f)(Capture&&), Capture&& cap)
 	{
-		create_capture = CaptureThreadCreate{
-			f,
-			std::move(cap)
-		};
+		this->f = f;
+		this->f_cap = std::move(cap);
 #if SOUP_WINDOWS
 		// It's possible that Thread::stop was just called; this state is not immediately reflected.
 		//SOUP_ASSERT(!isRunning());

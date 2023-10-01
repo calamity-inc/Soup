@@ -26,7 +26,8 @@ namespace soup
 		bool running = false;
 		bool joined = true;
 #endif
-		Capture create_capture;
+		void(*f)(Capture&&);
+		Capture f_cap;
 
 		explicit Thread() noexcept = default;
 		explicit Thread(void(*f)(Capture&&), Capture&& cap = {}) noexcept;
