@@ -50,6 +50,6 @@ namespace soup
 		void stop() noexcept;
 
 		void awaitCompletion() noexcept;
-		static void awaitCompletion(std::vector<UniquePtr<Thread>>& threads) noexcept;
+		static void awaitCompletion(const std::vector<UniquePtr<Thread>>& threads) noexcept;
 	};
 }

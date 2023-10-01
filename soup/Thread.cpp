@@ -137,7 +137,7 @@ namespace soup
 #endif
 	}
 
-	void Thread::awaitCompletion(std::vector<UniquePtr<Thread>>& threads) noexcept
+	void Thread::awaitCompletion(const std::vector<UniquePtr<Thread>>& threads) noexcept
 	{
 #if SOUP_WINDOWS
 		std::vector<HANDLE> handles{};
