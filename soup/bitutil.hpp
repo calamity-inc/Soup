@@ -43,7 +43,7 @@ namespace soup
 			return out;
 		}
 
-		[[nodiscard]] static constexpr uint8_t getBitsNeededToEncodeRange(size_t range_size) // aka. ceil(log2(range_size))
+		[[nodiscard]] static constexpr uint8_t getBitsNeededToEncodeRange(size_t range_size)
 		{
 #if SOUP_CPP20
 			if (std::is_constant_evaluated()
