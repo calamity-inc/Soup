@@ -75,6 +75,13 @@ namespace soup
 			{
 			}
 
+			void reset() noexcept
+			{
+				value_bf = 0;
+				value_was_given = false;
+				candidates_bf = 0b111'111'111;
+			}
+
 			void setGiven(value_t value) noexcept
 			{
 				this->value_bf = valueToMask(value);
@@ -95,6 +102,8 @@ namespace soup
 
 		Cell cells[9 * 9]{};
 
+		Sudoku() = default;
+
 		Sudoku(value_t values[9 * 9])
 		{
 			for (index_t i = 0; i != 9 * 9; ++i)
@@ -105,6 +114,10 @@ namespace soup
 				}
 			}
 		}
+
+		void reset() noexcept;
+
+		void setGivenFromString(const char* str) noexcept;
 
 		[[nodiscard]] Cell& getCell(index_t x, index_t y) noexcept
 		{

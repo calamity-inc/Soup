@@ -70,6 +70,33 @@ namespace soup
 		}
 	}
 
+	void Sudoku::reset() noexcept
+	{
+		for (auto& cell : cells)
+		{
+			cell.reset();
+		}
+	}
+
+	void Sudoku::setGivenFromString(const char* str) noexcept
+	{
+		for (index_t y = 0; y != 9; ++y)
+		{
+			for (index_t x = 0; x != 9; ++x)
+			{
+				if (*str == '\0')
+				{
+					break;
+				}
+				if (*str >= '1' && *str <= '9')
+				{
+					getCell(x, y).setGiven(*str - '0');
+				}
+				++str;
+			}
+		}
+	}
+
 	mask_t Sudoku::getValuesInBox(index_t i) const noexcept
 	{
 		index_t bx = i % 3;
