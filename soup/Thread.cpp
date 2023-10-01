@@ -40,7 +40,9 @@ namespace soup
 
 	void Thread::start(void(*f)(Capture&&), Capture&& cap)
 	{
-		SOUP_ASSERT(!isRunning());
+		// It's possible that Thread::stop was just called; this state is not immediately reflected (at least on Windows).
+		//SOUP_ASSERT(!isRunning());
+
 		create_capture = CaptureThreadCreate{
 			f,
 			std::move(cap)
