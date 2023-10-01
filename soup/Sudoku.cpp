@@ -389,6 +389,7 @@ namespace soup
 			|| stepLockedCandidates()
 			|| stepHiddenPair()
 			|| stepXWing()
+			|| stepContradictionIfCandidateRemoved()
 			;
 	}
 
@@ -698,6 +699,42 @@ namespace soup
 							}
 						}
 					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// Needed to make progress in this situation: 870406325040300170003700409610038704000104030384675291490003007020000043536847912 (from this puzzle: 800006305040000070000000000010038704000104000300070290000003000020000040506800002)
+	bool Sudoku::stepContradictionIfCandidateRemoved() noexcept
+	{
+		SOUP_ASSERT(isSolvable());
+		for (value_t value = 1; value != 10; ++value)
+		{
+			const auto value_bf = valueToMask(value);
+
+			// Only checking rows for candidates because chains are usually across rows, columns, and boxes, so I think checking any would yield all.
+			for (index_t y = 0; y != 9; ++y)
+			{
+				auto candidates = getCandidatesInRow(value_bf, y);
+				if (bitutil::getNumSetBits(candidates) == 2)
+				{
+					do
+					{
+						index_t x = bitutil::getLeastSignificantSetBit(candidates);
+						Sudoku cpy(*this);
+						cpy.getField(x, y).candidates_bf &= ~value_bf;
+						while (cpy.stepNakedSingle() || cpy.stepHiddenSingle())
+						{
+							cpy.eliminateImpossibleCandiates();
+						}
+						if (!cpy.isSolvable())
+						{
+							// Removing the candidate from the cell broke the Sudoku. Therefore, the candidate is the only option for the cell.
+							getField(x, y).candidates_bf = value_bf;
+							return true;
+						}
+					} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 				}
 			}
 		}

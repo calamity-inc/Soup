@@ -149,6 +149,7 @@ namespace soup
 		bool stepLockedCandidates() noexcept;
 		bool stepHiddenPair() noexcept;
 		bool stepXWing() noexcept;
+		bool stepContradictionIfCandidateRemoved() noexcept; // No idea what to call this. Similar idea to "Simple Colouring" and "X-Cycles".
 
 		// Note: Might not actually be able to solve the puzzle. No bifurcation will be attempted.
 		void solve() noexcept
