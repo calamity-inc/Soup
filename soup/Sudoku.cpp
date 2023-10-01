@@ -745,7 +745,7 @@ namespace soup
 					for (index_t r2y = 0; r2y != 9; ++r2y)
 					{
 						if (r1y != r2y
-							&& c_candidates == getCandidatesInColumn(value_bf, r2y)
+							&& c_candidates == getCandidatesInRow(value_bf, r2y)
 							)
 						{
 							bool changed = false;
