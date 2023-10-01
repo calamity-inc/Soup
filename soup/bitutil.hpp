@@ -69,8 +69,10 @@ namespace soup
 #endif
 		}
 
-		[[nodiscard]] static unsigned int getLeastSignificantSetBit(unsigned int mask) noexcept // UB if mask = 0
+		[[nodiscard]] static unsigned int getLeastSignificantSetBit(unsigned int mask) noexcept
 		{
+			SOUP_ASSERT_ARG(mask != 0); // UB!
+
 			// These intrinsic functions just use the bsf instruction.
 #if defined(_MSC_VER) && !defined(__clang__)
 			unsigned long ret;
@@ -87,8 +89,10 @@ namespace soup
 			val &= (val - 1);
 		}
 
-		[[nodiscard]] static unsigned int getMostSignificantSetBit(unsigned int mask) noexcept // UB if mask = 0
+		[[nodiscard]] static unsigned int getMostSignificantSetBit(unsigned int mask) noexcept
 		{
+			SOUP_ASSERT_ARG(mask != 0); // UB!
+
 #if defined(_MSC_VER) && !defined(__clang__)
 			unsigned long ret;
 			_BitScanReverse(&ret, mask);

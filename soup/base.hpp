@@ -163,6 +163,10 @@ namespace soup
 #define SOUP_ASSERT(x, ...) SOUP_IF_UNLIKELY (!(x)) { ::soup::throwAssertionFailed(__VA_ARGS__); }
 #define SOUP_ASSERT_UNREACHABLE ::soup::throwAssertionFailed();
 
-#define SOUP_ASSERT_ARG(x) SOUP_ASSERT(x)
+#ifndef NDEBUG
+	#define SOUP_ASSERT_ARG(x) SOUP_ASSERT(x)
+#else
+	#define SOUP_ASSERT_ARG(x) ;
+#endif
 
 template <typename T> SOUP_FORCEINLINE void SOUP_UNUSED(T&&) {}
