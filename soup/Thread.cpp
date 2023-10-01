@@ -40,14 +40,14 @@ namespace soup
 
 	void Thread::start(void(*f)(Capture&&), Capture&& cap)
 	{
-		// It's possible that Thread::stop was just called; this state is not immediately reflected (at least on Windows).
-		//SOUP_ASSERT(!isRunning());
-
 		create_capture = CaptureThreadCreate{
 			f,
 			std::move(cap)
 		};
 #if SOUP_WINDOWS
+		// It's possible that Thread::stop was just called; this state is not immediately reflected.
+		//SOUP_ASSERT(!isRunning());
+
 		if (handle != INVALID_HANDLE_VALUE)
 		{
 			CloseHandle(handle);
@@ -58,6 +58,8 @@ namespace soup
 			SOUP_THROW(Exception(format("Failed to create thread: {}", GetLastError())));
 		}
 #else
+		SOUP_ASSERT(!isRunning());
+		awaitCompletion();
 		running = true;
 		joined = false;
 		pthread_attr_t attr;

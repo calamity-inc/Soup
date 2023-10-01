@@ -24,17 +24,11 @@ namespace soup
 #else
 		pthread_t handle{};
 		bool running = false;
-		bool joined = false;
+		bool joined = true;
 #endif
 		Capture create_capture;
 
-		explicit Thread() noexcept
-#if !SOUP_WINDOWS
-			: running(false), joined(true)
-#endif
-		{
-		}
-
+		explicit Thread() noexcept = default;
 		explicit Thread(void(*f)(Capture&&), Capture&& cap = {}) noexcept;
 		explicit Thread(std::function<void()>&& func) noexcept;
 		explicit Thread(const Thread& b) = delete;
