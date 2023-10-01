@@ -111,6 +111,13 @@ namespace soup
 		return value_bf;
 	}
 
+	mask_t Sudoku::getCandidatesInBox(mask_t value_bf, index_t i) const noexcept
+	{
+		index_t bx = i % 3;
+		index_t by = i / 3;
+		return getCandidatesInBox(value_bf, bx, by);
+	}
+
 	mask_t Sudoku::getCandidatesInBox(mask_t value_bf, index_t bx, index_t by) const noexcept
 	{
 		return ((1 << 0) * getField((bx * 3) + 0, (by * 3) + 0).isCandidateMask(value_bf))
@@ -320,6 +327,59 @@ namespace soup
 			}
 		}
 		return changed;
+	}
+
+	bool Sudoku::isSolvable() const noexcept
+	{
+		// Rows
+		for (index_t y = 0; y != 9; ++y)
+		{
+			const auto values = getValuesInRow(y);
+			for (value_t value = 1; value != 10; ++value)
+			{
+				const auto mask = valueToMask(value);
+				if ((values & mask) == 0
+					&& !getCandidatesInRow(mask, y)
+					)
+				{
+					return false;
+				}
+			}
+		}
+
+		// Columns
+		for (index_t x = 0; x != 9; ++x)
+		{
+			const auto values = getValuesInColumn(x);
+			for (value_t value = 1; value != 10; ++value)
+			{
+				const auto mask = valueToMask(value);
+				if ((values & mask) == 0
+					&& !getCandidatesInColumn(mask, x)
+					)
+				{
+					return false;
+				}
+			}
+		}
+
+		// Boxes
+		for (index_t i = 0; i != 9; ++i)
+		{
+			const auto values = getValuesInBox(i);
+			for (value_t value = 1; value != 10; ++value)
+			{
+				const auto mask = valueToMask(value);
+				if ((values & mask) == 0
+					&& !getCandidatesInBox(mask, i)
+					)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	bool Sudoku::stepAny() noexcept

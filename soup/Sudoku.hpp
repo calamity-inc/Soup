@@ -123,6 +123,7 @@ namespace soup
 		[[nodiscard]] mask_t getValuesInRow(index_t y) const noexcept;
 		[[nodiscard]] mask_t getValuesInColumn(index_t x) const noexcept;
 
+		[[nodiscard]] mask_t getCandidatesInBox(mask_t value_bf, index_t i) const noexcept;
 		[[nodiscard]] mask_t getCandidatesInBox(mask_t value_bf, index_t bx, index_t by) const noexcept;
 		[[nodiscard]] mask_t getCandidatesInRow(mask_t value_bf, index_t y) const noexcept;
 		[[nodiscard]] mask_t getCandidatesInColumn(mask_t value_bf, index_t x) const noexcept;
@@ -139,6 +140,8 @@ namespace soup
 		bool narrowCandidatesInBoxToColumn(mask_t value_bf, index_t bx, index_t by, index_t pin_x) noexcept;
 		bool eliminateCandidatesInRow(mask_t value_bf, index_t y, index_t exclude_x1, index_t exclude_x2) noexcept;
 		bool eliminateCandidatesInColumn(mask_t value_bf, index_t x, index_t exclude_y1, index_t exclude_y2) noexcept;
+
+		[[nodiscard]] bool isSolvable() const noexcept; // Returns true if all missing digits have candidates.
 
 		bool stepAny() noexcept;
 		bool stepNakedSingle() noexcept; // Fill in a digit with only 1 candidate if possible.
