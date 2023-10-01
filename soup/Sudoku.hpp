@@ -118,17 +118,22 @@ namespace soup
 		void reset() noexcept;
 
 		void setGivenFromString(const char* str) noexcept;
+		void setGivenFromBinary(const std::string& str);
+
+		[[nodiscard]] static index_t getCellIndex(index_t x, index_t y) noexcept
+		{
+			//SOUP_ASSERT(x < 9 && y < 9);
+			return x + (y * 9);
+		}
 
 		[[nodiscard]] Cell& getCell(index_t x, index_t y) noexcept
 		{
-			//SOUP_ASSERT(x < 9 && y < 9);
-			return cells[x + (y * 9)];
+			return cells[getCellIndex(x, y)];
 		}
 
 		[[nodiscard]] const Cell& getCell(index_t x, index_t y) const noexcept
 		{
-			//SOUP_ASSERT(x < 9 && y < 9);
-			return cells[x + (y * 9)];
+			return cells[getCellIndex(x, y)];
 		}
 
 		[[nodiscard]] mask_t getValuesInBox(index_t i) const noexcept;
@@ -176,5 +181,8 @@ namespace soup
 		void draw(RenderTarget& rt, bool no_candidates = false) const; // Requires a (15 * 9) by (15 * 9) pixel area.
 
 		[[nodiscard]] std::string toString() const;
+		[[nodiscard]] std::string toBinary() const;
+		[[nodiscard]] std::string toBinaryV0() const;
+		[[nodiscard]] std::string toBinaryV1() const;
 	};
 }

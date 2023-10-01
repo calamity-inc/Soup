@@ -1,9 +1,14 @@
 #include "Sudoku.hpp"
 
+#include "BigBitset.hpp"
+#include "BitReader.hpp"
 #include "bitutil.hpp"
+#include "BitWriter.hpp"
 #include "RasterFont.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
+#include "StringRefReader.hpp"
+#include "StringWriter.hpp"
 
 namespace soup
 {
@@ -98,6 +103,60 @@ namespace soup
 				}
 				++str;
 			}
+		}
+	}
+
+	void Sudoku::setGivenFromBinary(const std::string& str)
+	{
+		StringRefReader r(str);
+		BitReader br(&r);
+		uint8_t version;
+		br.u8(3, version);
+		if (version == 0)
+		{
+			uint8_t pad;
+			br.u8(1, pad);
+			for (index_t y = 0; y != 9; ++y)
+			{
+				for (index_t x = 0; x != 9; ++x)
+				{
+					uint8_t value;
+					br.u8(4, value);
+					getCell(x, y).setGiven(value);
+				}
+			}
+		}
+		else if (version == 1)
+		{
+			BigBitset<81 / 8> bs{};
+			for (index_t y = 0; y != 9; ++y)
+			{
+				for (index_t x = 0; x != 9; ++x)
+				{
+					bool on = false;
+					br.b(on);
+					if (on)
+					{
+						bs.enable(getCellIndex(x, y));
+					}
+				}
+			}
+			for (index_t y = 0; y != 9; ++y)
+			{
+				for (index_t x = 0; x != 9; ++x)
+				{
+					if (bs.get(getCellIndex(x, y)))
+					{
+						uint8_t value;
+						br.u8(4, value);
+						getCell(x, y).setGiven(value);
+					}
+				}
+			}
+		}
+		else
+		{
+			SOUP_ASSERT_UNREACHABLE;
 		}
 	}
 
@@ -795,5 +854,61 @@ namespace soup
 			}
 		}
 		return str;
+	}
+
+	std::string Sudoku::toBinary() const
+	{
+		auto v0 = toBinaryV0();
+		auto v1 = toBinaryV1();
+		if (v1.length() < v0.length())
+		{
+			return v1;
+		}
+		return v0;
+	}
+
+	std::string Sudoku::toBinaryV0() const
+	{
+		StringWriter w;
+		BitWriter bw(&w);
+		bw.u8(3, 0); // version
+		bw.u8(1, 0); // pad
+		for (index_t y = 0; y != 9; ++y)
+		{
+			for (index_t x = 0; x != 9; ++x)
+			{
+				bw.u8(4, getCell(x, y).getValue());
+			}
+		}
+#ifdef _DEBUG
+		SOUP_ASSERT(bw.isByteAligned());
+#endif
+		return w.data;
+	}
+
+	std::string Sudoku::toBinaryV1() const
+	{
+		StringWriter w;
+		BitWriter bw(&w);
+		bw.u8(3, 1);
+		for (index_t y = 0; y != 9; ++y)
+		{
+			for (index_t x = 0; x != 9; ++x)
+			{
+				bw.b(!!getCell(x, y).value_bf);
+			}
+		}
+		for (index_t y = 0; y != 9; ++y)
+		{
+			for (index_t x = 0; x != 9; ++x)
+			{
+				if (getCell(x, y).value_bf)
+				{
+					bw.u8(4, getCell(x, y).getValue());
+				}
+			}
+		}
+		bw.finishByte();
+		return w.data;
 	}
 }
