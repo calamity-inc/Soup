@@ -654,4 +654,25 @@ namespace soup
 			}
 		}
 	}
+
+	std::string Sudoku::toString() const
+	{
+		std::string str{};
+		str.reserve(9 * 9);
+		for (index_t y = 0; y != 9; ++y)
+		{
+			for (index_t x = 0; x != 9; ++x)
+			{
+				if (getField(x, y).value_bf)
+				{
+					str.push_back('0' + getField(x, y).getValue());
+				}
+				else
+				{
+					str.push_back('0');
+				}
+			}
+		}
+		return str;
+	}
 }

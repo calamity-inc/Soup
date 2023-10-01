@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 #include "fwd.hpp"
 
@@ -156,5 +157,7 @@ namespace soup
 		}
 
 		void draw(RenderTarget& rt) const; // Requires a (15 * 9) by (15 * 9) pixel area.
+
+		[[nodiscard]] std::string toString() const;
 	};
 }
