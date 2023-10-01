@@ -588,16 +588,17 @@ namespace soup
 			// Check rows to eliminate candidates in respective columns
 			for (index_t r1y = 0; r1y != 9; ++r1y)
 			{
-				auto candidates = getCandidatesInRow(value_bf, r1y);
-				if (bitutil::getNumSetBits(candidates) == 2)
+				const auto c_candidates = getCandidatesInRow(value_bf, r1y);
+				if (bitutil::getNumSetBits(c_candidates) == 2)
 				{
 					for (index_t r2y = 0; r2y != 9; ++r2y)
 					{
 						if (r1y != r2y
-							&& candidates == getCandidatesInColumn(value_bf, r2y)
+							&& c_candidates == getCandidatesInColumn(value_bf, r2y)
 							)
 						{
 							bool changed = false;
+							auto candidates = c_candidates;
 							do
 							{
 								index_t x = bitutil::getLeastSignificantSetBit(candidates);
@@ -615,16 +616,17 @@ namespace soup
 			// Check columns to eliminate candidates in respective rows
 			for (index_t c1x = 0; c1x != 9; ++c1x)
 			{
-				auto candidates = getCandidatesInColumn(value_bf, c1x);
-				if (bitutil::getNumSetBits(candidates) == 2)
+				const auto c_candidates = getCandidatesInColumn(value_bf, c1x);
+				if (bitutil::getNumSetBits(c_candidates) == 2)
 				{
 					for (index_t c2x = 0; c2x != 9; ++c2x)
 					{
 						if (c1x != c2x
-							&& candidates == getCandidatesInColumn(value_bf, c2x)
+							&& c_candidates == getCandidatesInColumn(value_bf, c2x)
 							)
 						{
 							bool changed = false;
+							auto candidates = c_candidates;
 							do 
 							{
 								index_t y = bitutil::getLeastSignificantSetBit(candidates);

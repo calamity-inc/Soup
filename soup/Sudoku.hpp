@@ -107,11 +107,13 @@ namespace soup
 
 		[[nodiscard]] Field& getField(index_t x, index_t y) noexcept
 		{
+			//SOUP_ASSERT(x < 9 && y < 9);
 			return fields[x + (y * 9)];
 		}
 
 		[[nodiscard]] const Field& getField(index_t x, index_t y) const noexcept
 		{
+			//SOUP_ASSERT(x < 9 && y < 9);
 			return fields[x + (y * 9)];
 		}
 
