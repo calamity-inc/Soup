@@ -119,6 +119,7 @@ namespace soup
 		{
 			pthread_cancel(handle);
 			pthread_join(handle, nullptr);
+			running = false;
 			joined = true;
 		}
 #endif
