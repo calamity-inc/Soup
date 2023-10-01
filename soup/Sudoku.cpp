@@ -14,7 +14,11 @@ namespace soup
 
 	value_t Sudoku::Cell::getValue() const noexcept
 	{
-		return bitutil::getLeastSignificantSetBit(value_bf) + 1;
+		SOUP_IF_LIKELY (value_bf != 0)
+		{
+			return bitutil::getLeastSignificantSetBit(value_bf) + 1;
+		}
+		return 0;
 	}
 
 	count_t Sudoku::Cell::getNumCandidates() const noexcept
@@ -787,14 +791,7 @@ namespace soup
 		{
 			for (index_t x = 0; x != 9; ++x)
 			{
-				if (getCell(x, y).value_bf)
-				{
-					str.push_back('0' + getCell(x, y).getValue());
-				}
-				else
-				{
-					str.push_back('0');
-				}
+				str.push_back('0' + getCell(x, y).getValue());
 			}
 		}
 		return str;
