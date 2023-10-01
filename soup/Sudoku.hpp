@@ -64,13 +64,13 @@ namespace soup
 			return (1 << (value - 1));
 		}
 
-		struct Field
+		struct Cell
 		{
 			uint32_t value_bf : 9;
 			uint32_t value_was_given : 1;
 			uint32_t candidates_bf : 9;
 
-			Field()
+			Cell()
 				: value_bf(0), value_was_given(false), candidates_bf(0b111'111'111)
 			{
 			}
@@ -93,7 +93,7 @@ namespace soup
 			void draw(RenderTarget& rt, int x, int y) const;
 		};
 
-		Field fields[9 * 9]{};
+		Cell cells[9 * 9]{};
 
 		Sudoku(value_t values[9 * 9])
 		{
@@ -101,21 +101,21 @@ namespace soup
 			{
 				if (values[i] != 0)
 				{
-					fields[i].setGiven(values[i]);
+					cells[i].setGiven(values[i]);
 				}
 			}
 		}
 
-		[[nodiscard]] Field& getField(index_t x, index_t y) noexcept
+		[[nodiscard]] Cell& getCell(index_t x, index_t y) noexcept
 		{
 			//SOUP_ASSERT(x < 9 && y < 9);
-			return fields[x + (y * 9)];
+			return cells[x + (y * 9)];
 		}
 
-		[[nodiscard]] const Field& getField(index_t x, index_t y) const noexcept
+		[[nodiscard]] const Cell& getCell(index_t x, index_t y) const noexcept
 		{
 			//SOUP_ASSERT(x < 9 && y < 9);
-			return fields[x + (y * 9)];
+			return cells[x + (y * 9)];
 		}
 
 		[[nodiscard]] mask_t getValuesInBox(index_t i) const noexcept;

@@ -12,17 +12,17 @@ namespace soup
 	using mask_t = Sudoku::mask_t;
 	using count_t = Sudoku::count_t;
 
-	value_t Sudoku::Field::getValue() const noexcept
+	value_t Sudoku::Cell::getValue() const noexcept
 	{
 		return bitutil::getLeastSignificantSetBit(value_bf) + 1;
 	}
 
-	count_t Sudoku::Field::getNumCandidates() const noexcept
+	count_t Sudoku::Cell::getNumCandidates() const noexcept
 	{
 		return bitutil::getNumSetBits(candidates_bf);
 	}
 
-	void Sudoku::Field::draw(RenderTarget& rt, int x, int y) const
+	void Sudoku::Cell::draw(RenderTarget& rt, int x, int y) const
 	{
 		rt.drawRect(x, y, 15, 15, Rgb::BLACK);
 		if (value_bf != 0)
@@ -79,15 +79,15 @@ namespace soup
 
 	mask_t Sudoku::getValuesInBox(index_t bx, index_t by) const noexcept
 	{
-		return getField((bx * 3) + 0, (by * 3) + 0).value_bf
-			|  getField((bx * 3) + 1, (by * 3) + 0).value_bf
-			|  getField((bx * 3) + 2, (by * 3) + 0).value_bf
-			|  getField((bx * 3) + 0, (by * 3) + 1).value_bf
-			|  getField((bx * 3) + 1, (by * 3) + 1).value_bf
-			|  getField((bx * 3) + 2, (by * 3) + 1).value_bf
-			|  getField((bx * 3) + 0, (by * 3) + 2).value_bf
-			|  getField((bx * 3) + 1, (by * 3) + 2).value_bf
-			|  getField((bx * 3) + 2, (by * 3) + 2).value_bf
+		return getCell((bx * 3) + 0, (by * 3) + 0).value_bf
+			|  getCell((bx * 3) + 1, (by * 3) + 0).value_bf
+			|  getCell((bx * 3) + 2, (by * 3) + 0).value_bf
+			|  getCell((bx * 3) + 0, (by * 3) + 1).value_bf
+			|  getCell((bx * 3) + 1, (by * 3) + 1).value_bf
+			|  getCell((bx * 3) + 2, (by * 3) + 1).value_bf
+			|  getCell((bx * 3) + 0, (by * 3) + 2).value_bf
+			|  getCell((bx * 3) + 1, (by * 3) + 2).value_bf
+			|  getCell((bx * 3) + 2, (by * 3) + 2).value_bf
 			;
 	}
 
@@ -96,7 +96,7 @@ namespace soup
 		mask_t value_bf = 0;
 		for (uint8_t x = 0; x != 9; ++x)
 		{
-			value_bf |= getField(x, y).value_bf;
+			value_bf |= getCell(x, y).value_bf;
 		}
 		return value_bf;
 	}
@@ -106,7 +106,7 @@ namespace soup
 		mask_t value_bf = 0;
 		for (uint8_t y = 0; y != 9; ++y)
 		{
-			value_bf |= getField(x, y).value_bf;
+			value_bf |= getCell(x, y).value_bf;
 		}
 		return value_bf;
 	}
@@ -120,15 +120,15 @@ namespace soup
 
 	mask_t Sudoku::getCandidatesInBox(mask_t value_bf, index_t bx, index_t by) const noexcept
 	{
-		return ((1 << 0) * getField((bx * 3) + 0, (by * 3) + 0).isCandidateMask(value_bf))
-			|  ((1 << 1) * getField((bx * 3) + 1, (by * 3) + 0).isCandidateMask(value_bf))
-			|  ((1 << 2) * getField((bx * 3) + 2, (by * 3) + 0).isCandidateMask(value_bf))
-			|  ((1 << 3) * getField((bx * 3) + 0, (by * 3) + 1).isCandidateMask(value_bf))
-			|  ((1 << 4) * getField((bx * 3) + 1, (by * 3) + 1).isCandidateMask(value_bf))
-			|  ((1 << 5) * getField((bx * 3) + 2, (by * 3) + 1).isCandidateMask(value_bf))
-			|  ((1 << 6) * getField((bx * 3) + 0, (by * 3) + 2).isCandidateMask(value_bf))
-			|  ((1 << 7) * getField((bx * 3) + 1, (by * 3) + 2).isCandidateMask(value_bf))
-			|  ((1 << 8) * getField((bx * 3) + 2, (by * 3) + 2).isCandidateMask(value_bf))
+		return ((1 << 0) * getCell((bx * 3) + 0, (by * 3) + 0).isCandidateMask(value_bf))
+			|  ((1 << 1) * getCell((bx * 3) + 1, (by * 3) + 0).isCandidateMask(value_bf))
+			|  ((1 << 2) * getCell((bx * 3) + 2, (by * 3) + 0).isCandidateMask(value_bf))
+			|  ((1 << 3) * getCell((bx * 3) + 0, (by * 3) + 1).isCandidateMask(value_bf))
+			|  ((1 << 4) * getCell((bx * 3) + 1, (by * 3) + 1).isCandidateMask(value_bf))
+			|  ((1 << 5) * getCell((bx * 3) + 2, (by * 3) + 1).isCandidateMask(value_bf))
+			|  ((1 << 6) * getCell((bx * 3) + 0, (by * 3) + 2).isCandidateMask(value_bf))
+			|  ((1 << 7) * getCell((bx * 3) + 1, (by * 3) + 2).isCandidateMask(value_bf))
+			|  ((1 << 8) * getCell((bx * 3) + 2, (by * 3) + 2).isCandidateMask(value_bf))
 			;
 	}
 
@@ -137,7 +137,7 @@ namespace soup
 		mask_t candidates_bf = 0;
 		for (uint8_t x = 0; x != 9; ++x)
 		{
-			if (getField(x, y).isCandidateMask(value_bf))
+			if (getCell(x, y).isCandidateMask(value_bf))
 			{
 				candidates_bf |= (1 << x);
 			}
@@ -150,7 +150,7 @@ namespace soup
 		mask_t candidates_bf = 0;
 		for (uint8_t y = 0; y != 9; ++y)
 		{
-			if (getField(x, y).isCandidateMask(value_bf))
+			if (getCell(x, y).isCandidateMask(value_bf))
 			{
 				candidates_bf |= (1 << y);
 			}
@@ -160,15 +160,15 @@ namespace soup
 
 	count_t Sudoku::getNumCandidatesInBox(mask_t value_bf, index_t bx, index_t by) const noexcept
 	{
-		return getField((bx * 3) + 0, (by * 3) + 0).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 1, (by * 3) + 0).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 2, (by * 3) + 0).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 0, (by * 3) + 1).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 1, (by * 3) + 1).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 2, (by * 3) + 1).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 0, (by * 3) + 2).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 1, (by * 3) + 2).isCandidateMask(value_bf)
-			+  getField((bx * 3) + 2, (by * 3) + 2).isCandidateMask(value_bf)
+		return getCell((bx * 3) + 0, (by * 3) + 0).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 1, (by * 3) + 0).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 2, (by * 3) + 0).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 0, (by * 3) + 1).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 1, (by * 3) + 1).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 2, (by * 3) + 1).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 0, (by * 3) + 2).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 1, (by * 3) + 2).isCandidateMask(value_bf)
+			+  getCell((bx * 3) + 2, (by * 3) + 2).isCandidateMask(value_bf)
 			;
 	}
 
@@ -177,7 +177,7 @@ namespace soup
 		count_t res = 0;
 		for (index_t x = 0; x != 9; ++x)
 		{
-			res += getField(x, y).isCandidateMask(value_bf);
+			res += getCell(x, y).isCandidateMask(value_bf);
 		}
 		return res;
 	}
@@ -187,7 +187,7 @@ namespace soup
 		count_t res = 0;
 		for (index_t y = 0; y != 9; ++y)
 		{
-			res += getField(x, y).isCandidateMask(value_bf);
+			res += getCell(x, y).isCandidateMask(value_bf);
 		}
 		return res;
 	}
@@ -198,18 +198,18 @@ namespace soup
 		{
 			for (index_t x = 0; x != 9; ++x)
 			{
-				if (getField(x, y).value_bf != 0)
+				if (getCell(x, y).value_bf != 0)
 				{
-					getField(x, y).candidates_bf = 0;
+					getCell(x, y).candidates_bf = 0;
 				}
 				else
 				{
 					index_t bx = x / 3;
 					index_t by = y / 3;
 
-					getField(x, y).candidates_bf &= ~getValuesInBox(bx, by);
-					getField(x, y).candidates_bf &= ~getValuesInRow(y);
-					getField(x, y).candidates_bf &= ~getValuesInColumn(x);
+					getCell(x, y).candidates_bf &= ~getValuesInBox(bx, by);
+					getCell(x, y).candidates_bf &= ~getValuesInRow(y);
+					getCell(x, y).candidates_bf &= ~getValuesInColumn(x);
 				}
 			}
 		}
@@ -217,9 +217,9 @@ namespace soup
 
 	bool Sudoku::eliminateCandidate(mask_t value_bf, index_t x, index_t y) noexcept
 	{
-		if (getField(x, y).candidates_bf & value_bf)
+		if (getCell(x, y).candidates_bf & value_bf)
 		{
-			getField(x, y).candidates_bf &= ~value_bf;
+			getCell(x, y).candidates_bf &= ~value_bf;
 			return true;
 		}
 		return false;
@@ -397,9 +397,9 @@ namespace soup
 	{
 		for (index_t i = 0; i != 9 * 9; ++i)
 		{
-			if (fields[i].getNumCandidates() == 1)
+			if (cells[i].getNumCandidates() == 1)
 			{
-				fields[i].value_bf = fields[i].candidates_bf;
+				cells[i].value_bf = cells[i].candidates_bf;
 				return true;
 			}
 		}
@@ -415,7 +415,7 @@ namespace soup
 				index_t bx = x / 3;
 				index_t by = y / 3;
 
-				auto candidates_bf = getField(x, y).candidates_bf;
+				auto candidates_bf = getCell(x, y).candidates_bf;
 				while (candidates_bf)
 				{
 					value_t value = bitutil::getLeastSignificantSetBit(candidates_bf) + 1;
@@ -426,7 +426,7 @@ namespace soup
 						|| getNumCandidatesInColumn(value_bf, x) == 1
 						)
 					{
-						getField(x, y).value_bf = value_bf;
+						getCell(x, y).value_bf = value_bf;
 						return true;
 					}
 
@@ -723,7 +723,7 @@ namespace soup
 					{
 						index_t x = bitutil::getLeastSignificantSetBit(candidates);
 						Sudoku cpy(*this);
-						cpy.getField(x, y).candidates_bf &= ~value_bf;
+						cpy.getCell(x, y).candidates_bf &= ~value_bf;
 						while (cpy.stepNakedSingle() || cpy.stepHiddenSingle())
 						{
 							cpy.eliminateImpossibleCandiates();
@@ -731,7 +731,7 @@ namespace soup
 						if (!cpy.isSolvable())
 						{
 							// Removing the candidate from the cell broke the Sudoku. Therefore, the candidate is the only option for the cell.
-							getField(x, y).candidates_bf = value_bf;
+							getCell(x, y).candidates_bf = value_bf;
 							return true;
 						}
 					} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
@@ -747,7 +747,7 @@ namespace soup
 		{
 			for (index_t x = 0; x != 9; ++x)
 			{
-				getField(x, y).draw(rt, x * 15, y * 15);
+				getCell(x, y).draw(rt, x * 15, y * 15);
 			}
 		}
 	}
@@ -760,9 +760,9 @@ namespace soup
 		{
 			for (index_t x = 0; x != 9; ++x)
 			{
-				if (getField(x, y).value_bf)
+				if (getCell(x, y).value_bf)
 				{
-					str.push_back('0' + getField(x, y).getValue());
+					str.push_back('0' + getCell(x, y).getValue());
 				}
 				else
 				{
