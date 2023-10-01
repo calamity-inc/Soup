@@ -4,11 +4,6 @@
 
 namespace soup
 {
-	bool BitWriter::finishByte()
-	{
-		return bit_idx == 0 || commitByte();
-	}
-
 	bool BitWriter::commitByte()
 	{
 		bool ret = w->u8(byte);

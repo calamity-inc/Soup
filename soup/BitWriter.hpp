@@ -28,7 +28,11 @@ namespace soup
 			return bit_idx == 0;
 		}
 
-		bool finishByte();
+		bool finishByte()
+		{
+			return isByteAligned() || commitByte();
+		}
+
 	protected:
 		bool commitByte();
 
