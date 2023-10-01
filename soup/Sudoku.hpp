@@ -90,7 +90,7 @@ namespace soup
 				return candidates_bf & mask;
 			}
 
-			void draw(RenderTarget& rt, int x, int y) const;
+			void draw(RenderTarget& rt, bool no_candidates, int x, int y) const;
 		};
 
 		Cell cells[9 * 9]{};
@@ -160,7 +160,7 @@ namespace soup
 			} while (stepAny());
 		}
 
-		void draw(RenderTarget& rt) const; // Requires a (15 * 9) by (15 * 9) pixel area.
+		void draw(RenderTarget& rt, bool no_candidates = false) const; // Requires a (15 * 9) by (15 * 9) pixel area.
 
 		[[nodiscard]] std::string toString() const;
 	};

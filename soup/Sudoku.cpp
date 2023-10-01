@@ -22,14 +22,14 @@ namespace soup
 		return bitutil::getNumSetBits(candidates_bf);
 	}
 
-	void Sudoku::Cell::draw(RenderTarget& rt, int x, int y) const
+	void Sudoku::Cell::draw(RenderTarget& rt, bool no_candidates, int x, int y) const
 	{
 		rt.drawRect(x, y, 15, 15, Rgb::BLACK);
 		if (value_bf != 0)
 		{
 			rt.drawText(x + 3, y, std::u32string(1, '0' + getValue()), RasterFont::simple5(), value_was_given ? Rgb::WHITE : Rgb::BLUE, 3);
 		}
-		else
+		else if (!no_candidates)
 		{
 			if (candidates_bf & (1 << 0))
 			{
@@ -741,13 +741,13 @@ namespace soup
 		return false;
 	}
 
-	void Sudoku::draw(RenderTarget& rt) const
+	void Sudoku::draw(RenderTarget& rt, bool no_candidates) const
 	{
 		for (index_t y = 0; y != 9; ++y)
 		{
 			for (index_t x = 0; x != 9; ++x)
 			{
-				getCell(x, y).draw(rt, x * 15, y * 15);
+				getCell(x, y).draw(rt, no_candidates, x * 15, y * 15);
 			}
 		}
 	}
