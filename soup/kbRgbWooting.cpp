@@ -108,149 +108,158 @@ namespace soup
 	}
 
 	// https://github.com/WootingKb/wooting-rgb-sdk/blob/master/resources/keyboard-matrix-rows-columns.png
-	[[nodiscard]] static const Rgb& getColourForPos(const Rgb(&colours)[NUM_KEYS], uint8_t row, uint8_t column)
+	[[nodiscard]] static uint8_t getKeyForPos(uint8_t row, uint8_t column)
 	{
 		if (row == 0)
 		{
 			switch (column)
 			{
-			case 0: return colours[KEY_ESCAPE];
-			case 2: return colours[KEY_F1];
-			case 3: return colours[KEY_F2];
-			case 4: return colours[KEY_F3];
-			case 5: return colours[KEY_F4];
-			case 6: return colours[KEY_F5];
-			case 7: return colours[KEY_F6];
-			case 8: return colours[KEY_F7];
-			case 9: return colours[KEY_F8];
-			case 10: return colours[KEY_F9];
-			case 11: return colours[KEY_F10];
-			case 12: return colours[KEY_F11];
-			case 13: return colours[KEY_F12];
-			case 14: return colours[KEY_PRINT_SCREEN];
-			case 15: return colours[KEY_PAUSE];
-			case 16: return colours[KEY_SCROLL_LOCK];
+			case 0: return KEY_ESCAPE;
+			case 2: return KEY_F1;
+			case 3: return KEY_F2;
+			case 4: return KEY_F3;
+			case 5: return KEY_F4;
+			case 6: return KEY_F5;
+			case 7: return KEY_F6;
+			case 8: return KEY_F7;
+			case 9: return KEY_F8;
+			case 10: return KEY_F9;
+			case 11: return KEY_F10;
+			case 12: return KEY_F11;
+			case 13: return KEY_F12;
+			case 14: return KEY_PRINT_SCREEN;
+			case 15: return KEY_PAUSE;
+			case 16: return KEY_SCROLL_LOCK;
 			}
 		}
 		else if (row == 1)
 		{
 			switch (column)
 			{
-			case 0: return colours[KEY_BACKQUOTE];
-			case 1: return colours[KEY_1];
-			case 2: return colours[KEY_2];
-			case 3: return colours[KEY_3];
-			case 4: return colours[KEY_4];
-			case 5: return colours[KEY_5];
-			case 6: return colours[KEY_6];
-			case 7: return colours[KEY_7];
-			case 8: return colours[KEY_8];
-			case 9: return colours[KEY_9];
-			case 10: return colours[KEY_0];
-			case 11: return colours[KEY_MINUS];
-			case 12: return colours[KEY_EQUALS];
-			case 13: return colours[KEY_BACKSPACE];
-			case 14: return colours[KEY_INSERT];
-			case 15: return colours[KEY_HOME];
-			case 16: return colours[KEY_PAGE_UP];
-			case 17: return colours[KEY_NUM_LOCK];
-			case 18: return colours[KEY_NUMPAD_DIVIDE];
-			case 19: return colours[KEY_NUMPAD_MULTIPLY];
-			case 20: return colours[KEY_NUMPAD_SUBTRACT];
+			case 0: return KEY_BACKQUOTE;
+			case 1: return KEY_1;
+			case 2: return KEY_2;
+			case 3: return KEY_3;
+			case 4: return KEY_4;
+			case 5: return KEY_5;
+			case 6: return KEY_6;
+			case 7: return KEY_7;
+			case 8: return KEY_8;
+			case 9: return KEY_9;
+			case 10: return KEY_0;
+			case 11: return KEY_MINUS;
+			case 12: return KEY_EQUALS;
+			case 13: return KEY_BACKSPACE;
+			case 14: return KEY_INSERT;
+			case 15: return KEY_HOME;
+			case 16: return KEY_PAGE_UP;
+			case 17: return KEY_NUM_LOCK;
+			case 18: return KEY_NUMPAD_DIVIDE;
+			case 19: return KEY_NUMPAD_MULTIPLY;
+			case 20: return KEY_NUMPAD_SUBTRACT;
 			}
 		}
 		else if (row == 2)
 		{
 			switch (column)
 			{
-			case 0: return colours[KEY_TAB];
-			case 1: return colours[KEY_Q];
-			case 2: return colours[KEY_W];
-			case 3: return colours[KEY_E];
-			case 4: return colours[KEY_R];
-			case 5: return colours[KEY_T];
-			case 6: return colours[KEY_Y];
-			case 7: return colours[KEY_U];
-			case 8: return colours[KEY_I];
-			case 9: return colours[KEY_O];
-			case 10: return colours[KEY_P];
-			case 11: return colours[KEY_BRACKET_LEFT];
-			case 12: return colours[KEY_BRACKET_RIGHT];
-			case 13: return colours[KEY_BACKSLASH]; // ISO
-			case 14: return colours[KEY_DEL];
-			case 15: return colours[KEY_END];
-			case 16: return colours[KEY_PAGE_DOWN];
-			case 17: return colours[KEY_NUMPAD7];
-			case 18: return colours[KEY_NUMPAD8];
-			case 19: return colours[KEY_NUMPAD9];
-			case 20: return colours[KEY_NUMPAD_ADD];
+			case 0: return KEY_TAB;
+			case 1: return KEY_Q;
+			case 2: return KEY_W;
+			case 3: return KEY_E;
+			case 4: return KEY_R;
+			case 5: return KEY_T;
+			case 6: return KEY_Y;
+			case 7: return KEY_U;
+			case 8: return KEY_I;
+			case 9: return KEY_O;
+			case 10: return KEY_P;
+			case 11: return KEY_BRACKET_LEFT;
+			case 12: return KEY_BRACKET_RIGHT;
+			case 13: return KEY_BACKSLASH;
+			case 14: return KEY_DEL;
+			case 15: return KEY_END;
+			case 16: return KEY_PAGE_DOWN;
+			case 17: return KEY_NUMPAD7;
+			case 18: return KEY_NUMPAD8;
+			case 19: return KEY_NUMPAD9;
+			case 20: return KEY_NUMPAD_ADD;
 			}
 		}
 		else if (row == 3)
 		{
 			switch (column)
 			{
-			case 0: return colours[KEY_CAPS_LOCK];
-			case 1: return colours[KEY_A];
-			case 2: return colours[KEY_S];
-			case 3: return colours[KEY_D];
-			case 4: return colours[KEY_F];
-			case 5: return colours[KEY_G];
-			case 6: return colours[KEY_H];
-			case 7: return colours[KEY_J];
-			case 8: return colours[KEY_K];
-			case 9: return colours[KEY_L];
-			case 10: return colours[KEY_SEMICOLON];
-			case 11: return colours[KEY_QUOTE];
-			case 12: return colours[KEY_BACKSLASH];
-			case 13: return colours[KEY_ENTER];
-			case 17: return colours[KEY_NUMPAD4];
-			case 18: return colours[KEY_NUMPAD5];
-			case 19: return colours[KEY_NUMPAD6];
+			case 0: return KEY_CAPS_LOCK;
+			case 1: return KEY_A;
+			case 2: return KEY_S;
+			case 3: return KEY_D;
+			case 4: return KEY_F;
+			case 5: return KEY_G;
+			case 6: return KEY_H;
+			case 7: return KEY_J;
+			case 8: return KEY_K;
+			case 9: return KEY_L;
+			case 10: return KEY_SEMICOLON;
+			case 11: return KEY_QUOTE;
+			case 12: return KEY_BACKSLASH;
+			case 13: return KEY_ENTER;
+			case 17: return KEY_NUMPAD4;
+			case 18: return KEY_NUMPAD5;
+			case 19: return KEY_NUMPAD6;
 			}
 		}
 		else if (row == 4)
 		{
 			switch (column)
 			{
-			case 0: return colours[KEY_LSHIFT];
-			case 1: return colours[KEY_INTL_BACKSLASH];
-			case 2: return colours[KEY_Z];
-			case 3: return colours[KEY_X];
-			case 4: return colours[KEY_C];
-			case 5: return colours[KEY_V];
-			case 6: return colours[KEY_B];
-			case 7: return colours[KEY_N];
-			case 8: return colours[KEY_M];
-			case 9: return colours[KEY_COMMA];
-			case 10: return colours[KEY_PERIOD];
-			case 11: return colours[KEY_SLASH];
-			case 13: return colours[KEY_RSHIFT];
-			case 15: return colours[KEY_ARROW_UP];
-			case 17: return colours[KEY_NUMPAD1];
-			case 18: return colours[KEY_NUMPAD2];
-			case 19: return colours[KEY_NUMPAD3];
-			case 20: return colours[KEY_NUMPAD_ENTER];
+			case 0: return KEY_LSHIFT;
+			case 1: return KEY_INTL_BACKSLASH;
+			case 2: return KEY_Z;
+			case 3: return KEY_X;
+			case 4: return KEY_C;
+			case 5: return KEY_V;
+			case 6: return KEY_B;
+			case 7: return KEY_N;
+			case 8: return KEY_M;
+			case 9: return KEY_COMMA;
+			case 10: return KEY_PERIOD;
+			case 11: return KEY_SLASH;
+			case 13: return KEY_RSHIFT;
+			case 15: return KEY_ARROW_UP;
+			case 17: return KEY_NUMPAD1;
+			case 18: return KEY_NUMPAD2;
+			case 19: return KEY_NUMPAD3;
+			case 20: return KEY_NUMPAD_ENTER;
 			}
 		}
 		else if (row == 5)
 		{
 			switch (column)
 			{
-			case 0: return colours[KEY_LCTRL];
-			case 1: return colours[KEY_LMETA];
-			case 2: return colours[KEY_LALT];
-			case 6: return colours[KEY_SPACE];
-			case 10: return colours[KEY_RALT];
-			case 11: return colours[KEY_RMETA];
-			case 12: return colours[KEY_FN];
-			case 13: return colours[KEY_RCTRL];
-			case 14: return colours[KEY_ARROW_LEFT];
-			case 15: return colours[KEY_ARROW_DOWN];
-			case 16: return colours[KEY_ARROW_RIGHT];
-			case 18: return colours[KEY_NUMPAD0];
-			case 19: return colours[KEY_NUMPAD_DECIMAL];
+			case 0: return KEY_LCTRL;
+			case 1: return KEY_LMETA;
+			case 2: return KEY_LALT;
+			case 6: return KEY_SPACE;
+			case 10: return KEY_RALT;
+			case 11: return KEY_RMETA;
+			case 12: return KEY_FN;
+			case 13: return KEY_RCTRL;
+			case 14: return KEY_ARROW_LEFT;
+			case 15: return KEY_ARROW_DOWN;
+			case 16: return KEY_ARROW_RIGHT;
+			case 18: return KEY_NUMPAD0;
+			case 19: return KEY_NUMPAD_DECIMAL;
 			}
+		}
+		return KEY_NONE;
+	}
+
+	[[nodiscard]] static const Rgb& getColourForPos(const Rgb(&colours)[NUM_KEYS], uint8_t row, uint8_t column)
+	{
+		if (auto sk = getKeyForPos(row, column))
+		{
+			return colours[sk];
 		}
 		return Rgb::BLACK;
 	}
