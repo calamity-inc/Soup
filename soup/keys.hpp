@@ -8,7 +8,21 @@ namespace soup
 	{
 		KEY_NONE = 0xff,
 
-		KEY_BACKQUOTE = 0,
+		KEY_ESCAPE = 0,
+		KEY_F1,
+		KEY_F2,
+		KEY_F3,
+		KEY_F4,
+		KEY_F5,
+		KEY_F6,
+		KEY_F7,
+		KEY_F8,
+		KEY_F9,
+		KEY_F10,
+		KEY_F11,
+		KEY_F12,
+
+		KEY_BACKQUOTE,
 		KEY_1,
 		KEY_2,
 		KEY_3,
@@ -70,6 +84,22 @@ namespace soup
 		KEY_RMETA,
 		KEY_FN,
 		KEY_RCTRL,
+
+		KEY_PRINT_SCREEN,
+		KEY_PAUSE,
+		KEY_SCROLL_LOCK,
+
+		KEY_INSERT,
+		KEY_HOME,
+		KEY_PAGE_UP,
+		KEY_DEL,
+		KEY_END,
+		KEY_PAGE_DOWN,
+
+		KEY_ARROW_UP,
+		KEY_ARROW_LEFT,
+		KEY_ARROW_DOWN,
+		KEY_ARROW_RIGHT,
 
 		KEY_NUM_LOCK,
 		KEY_NUMPAD_DIVIDE,

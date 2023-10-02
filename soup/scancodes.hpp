@@ -162,7 +162,21 @@ namespace soup
 	{
 		switch (scancode)
 		{
+		case HID_ESCAPE: return KEY_ESCAPE;
+		case HID_F1: return KEY_F1;
+		case HID_F2: return KEY_F2;
+		case HID_F3: return KEY_F3;
+		case HID_F4: return KEY_F4;
+		case HID_F5: return KEY_F5;
+		case HID_F6: return KEY_F6;
+		case HID_F7: return KEY_F7;
+		case HID_F8: return KEY_F8;
+		case HID_F9: return KEY_F9;
+		case HID_F10: return KEY_F10;
+		case HID_F11: return KEY_F11;
+		case HID_F12: return KEY_F12;
 		case HID_BACKQUOTE: return KEY_BACKQUOTE;
+
 		case HID_1: return KEY_1;
 		case HID_2: return KEY_2;
 		case HID_3: return KEY_3;
@@ -224,6 +238,23 @@ namespace soup
 		case HID_META_RIGHT: return KEY_RMETA;
 			// no HID for KEY_FN
 		case HID_CONTROL_RIGHT: return KEY_RCTRL;
+
+		case HID_PRINT_SCREEN: return KEY_PRINT_SCREEN;
+		case HID_PAUSE: return KEY_PAUSE;
+		case HID_SCROLL_LOCK: return KEY_SCROLL_LOCK;
+
+		case HID_INSERT: return KEY_INSERT;
+		case HID_HOME: return KEY_HOME;
+		case HID_PAGE_UP: return KEY_PAGE_UP;
+		case HID_DEL: return KEY_DEL;
+		case HID_END: return KEY_END;
+		case HID_PAGE_DOWN: return KEY_PAGE_DOWN;
+
+		case HID_ARROW_UP: return KEY_ARROW_UP;
+		case HID_ARROW_LEFT: return KEY_ARROW_LEFT;
+		case HID_ARROW_DOWN: return KEY_ARROW_DOWN;
+		case HID_ARROW_RIGHT: return KEY_ARROW_RIGHT;
+
 		case HID_NUM_LOCK: return KEY_NUM_LOCK;
 		case HID_NUMPAD_DIVIDE: return KEY_NUMPAD_DIVIDE;
 		case HID_NUMPAD_MULTIPLY: return KEY_NUMPAD_MULTIPLY;

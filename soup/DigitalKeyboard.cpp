@@ -47,6 +47,20 @@ namespace soup
 		uint8_t state[256];
 		if (SUCCEEDED(pKeyboard->GetDeviceState(sizeof(state), state)))
 		{
+			keys[KEY_ESCAPE] = state[DIK_ESCAPE];
+			keys[KEY_F1] = state[DIK_F1];
+			keys[KEY_F2] = state[DIK_F2];
+			keys[KEY_F3] = state[DIK_F3];
+			keys[KEY_F4] = state[DIK_F4];
+			keys[KEY_F5] = state[DIK_F5];
+			keys[KEY_F6] = state[DIK_F6];
+			keys[KEY_F7] = state[DIK_F7];
+			keys[KEY_F8] = state[DIK_F8];
+			keys[KEY_F9] = state[DIK_F9];
+			keys[KEY_F10] = state[DIK_F10];
+			keys[KEY_F11] = state[DIK_F11];
+			keys[KEY_F12] = state[DIK_F12];
+
 			keys[KEY_BACKQUOTE] = state[DIK_GRAVE];
 			keys[KEY_1] = state[DIK_1];
 			keys[KEY_2] = state[DIK_2];
@@ -107,6 +121,23 @@ namespace soup
 			keys[KEY_RALT] = state[DIK_RMENU];
 			keys[KEY_RMETA] = state[DIK_RWIN];
 			keys[KEY_RCTRL] = state[DIK_RCONTROL];
+
+			keys[KEY_PRINT_SCREEN] = GetAsyncKeyState(VK_SNAPSHOT) & 0x8000;
+			keys[KEY_PAUSE] = state[DIK_PAUSE];
+			keys[KEY_SCROLL_LOCK] = state[DIK_SCROLL];
+
+			keys[KEY_INSERT] = state[DIK_INSERT];
+			keys[KEY_HOME] = state[DIK_HOME];
+			keys[KEY_PAGE_UP] = state[DIK_PRIOR];
+			keys[KEY_DEL] = state[DIK_DELETE];
+			keys[KEY_END] = state[DIK_END];
+			keys[KEY_PAGE_DOWN] = state[DIK_NEXT];
+
+			keys[KEY_ARROW_UP] = state[DIK_UPARROW];
+			keys[KEY_ARROW_LEFT] = state[DIK_LEFTARROW];
+			keys[KEY_ARROW_DOWN] = state[DIK_DOWNARROW];
+			keys[KEY_ARROW_RIGHT] = state[DIK_RIGHTARROW];
+
 			keys[KEY_NUM_LOCK] = state[DIK_NUMLOCK];
 			keys[KEY_NUMPAD_DIVIDE] = state[DIK_DIVIDE];
 			keys[KEY_NUMPAD_MULTIPLY] = state[DIK_MULTIPLY];
