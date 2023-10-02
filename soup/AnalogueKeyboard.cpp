@@ -2,7 +2,6 @@
 
 #if SOUP_WINDOWS
 
-#include "Packet.hpp"
 #include "StringRefReader.hpp"
 
 namespace soup
