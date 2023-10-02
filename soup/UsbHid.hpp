@@ -31,6 +31,8 @@ namespace soup
 
 		[[nodiscard]] static std::vector<UsbHid> getAll();
 
+		[[nodiscard]] std::string getSerialNumber() const;
+
 		[[nodiscard]] std::string pollReport() const; // blocking
 		[[nodiscard]] Buffer pollReportBuffer() const; // blocking
 
