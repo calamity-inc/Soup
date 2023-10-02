@@ -71,7 +71,7 @@ namespace soup
 		[[nodiscard]] double getDurationSeconds() const noexcept final;
 	};
 
-	struct Morse
+	struct morse
 	{
 		[[nodiscard]] static const char* encodeLetter(char16_t c);
 		[[nodiscard]] static std::string encodeWord(const std::string& word);

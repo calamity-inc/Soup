@@ -138,7 +138,7 @@ namespace soup
 		{/* Ü */ 0xDC, "..--"},
 	};
 
-	const char* Morse::encodeLetter(char16_t c)
+	const char* morse::encodeLetter(char16_t c)
 	{
 		if (c >= 'a' && c <= 'z')
 		{
@@ -154,7 +154,7 @@ namespace soup
 		return nullptr;
 	}
 
-	std::string Morse::encodeWord(const std::string& word)
+	std::string morse::encodeWord(const std::string& word)
 	{
 		std::string str;
 		for (const auto& c : word)
@@ -168,7 +168,7 @@ namespace soup
 		return str;
 	}
 
-	std::string Morse::encode(const std::string& text)
+	std::string morse::encode(const std::string& text)
 	{
 		std::string str;
 		for (const auto& word : string::explode<std::string>(text, ' '))
@@ -182,7 +182,7 @@ namespace soup
 		return str;
 	}
 
-	std::string Morse::decode(const std::string& pattern)
+	std::string morse::decode(const std::string& pattern)
 	{
 		std::string str;
 		for (const auto& word_pattern : string::explode<std::string>(pattern, " / "))
@@ -208,13 +208,13 @@ namespace soup
 		return str;
 	}
 
-	MorseSequence Morse::patternToSequence(const std::string& pattern)
+	MorseSequence morse::patternToSequence(const std::string& pattern)
 	{
 		MorseTiming timing;
 		return patternToSequence(pattern, timing);
 	}
 
-	MorseSequence Morse::patternToSequence(const std::string& pattern, const MorseTiming& timing)
+	MorseSequence morse::patternToSequence(const std::string& pattern, const MorseTiming& timing)
 	{
 		MorseSequence ms;
 		for (auto i = pattern.begin(); i != pattern.end(); ++i)

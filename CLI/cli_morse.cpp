@@ -38,7 +38,7 @@ void cli_morse_key(bool silent)
 	{
 		rt.fill(Rgb::BLACK);
 		auto pattern = mk.seq.toPattern();
-		rt.drawText(5, 50, Morse::decode(pattern), RasterFont::simple5(), Rgb::WHITE, 5);
+		rt.drawText(5, 50, morse::decode(pattern), RasterFont::simple5(), Rgb::WHITE, 5);
 		string::replaceAll(pattern, "-", "_");
 		rt.drawText(5, 5, pattern, RasterFont::simple5(), Rgb::WHITE, 5);
 	});
@@ -68,9 +68,9 @@ void cli_morse_key(bool silent)
 
 void cli_morse_encode(const char* arg, bool silent)
 {
-	auto pattern = Morse::encode(arg);
+	auto pattern = morse::encode(arg);
 	std::cout << pattern << "\n";
-	auto seq = Morse::patternToSequence(pattern);
+	auto seq = morse::patternToSequence(pattern);
 	seq.alterndur.pop_back(); // stop instantly
 	/*for (const auto& dur : seq.alterndur)
 	{
