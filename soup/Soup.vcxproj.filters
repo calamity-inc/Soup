@@ -1500,6 +1500,9 @@
     <ClInclude Include="keys.hpp">
       <Filter>os\input</Filter>
     </ClInclude>
+    <ClInclude Include="DigitalKeyboard.hpp">
+      <Filter>os\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2187,6 +2190,9 @@
     </ClCompile>
     <ClCompile Include="visKeyboard.cpp">
       <Filter>vis</Filter>
+    </ClCompile>
+    <ClCompile Include="DigitalKeyboard.cpp">
+      <Filter>os\input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

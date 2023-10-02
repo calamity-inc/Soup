@@ -477,6 +477,7 @@
     <ClInclude Include="DetourHook.hpp" />
     <ClInclude Include="dhcp.hpp" />
     <ClInclude Include="DhcpMessage.hpp" />
+    <ClInclude Include="DigitalKeyboard.hpp" />
     <ClInclude Include="dnsCacheResolver.hpp" />
     <ClInclude Include="dnsServerService.hpp" />
     <ClInclude Include="drAdaptor.hpp" />
@@ -959,6 +960,7 @@
     <ClCompile Include="DetourHook.cpp" />
     <ClCompile Include="dhcp.cpp" />
     <ClCompile Include="Diff.cpp" />
+    <ClCompile Include="DigitalKeyboard.cpp" />
     <ClCompile Include="dnsCacheResolver.cpp" />
     <ClCompile Include="dnsHttpResolver.cpp" />
     <ClCompile Include="dnsName.cpp" />
