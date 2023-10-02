@@ -64,6 +64,8 @@ namespace soup
 		static void expandHex(std::string& hex);
 		[[nodiscard]] std::string toHex() const;
 
+		[[nodiscard]] static Rgb fromHsv(double hue, double saturation, double value);
+
 		[[nodiscard]] static std::optional<Rgb> fromName(const std::string& name);
 
 		[[nodiscard]] static Rgb lerp(Rgb a, Rgb b, float t)

@@ -52,6 +52,70 @@ namespace soup
 		return str;
 	}
 
+	Rgb Rgb::fromHsv(double hue, double saturation, double value)
+	{
+		// Adapted from https://stackoverflow.com/a/6930407/4796321
+
+		double r, g, b;
+		if (saturation <= 0.0) // < is bogus, just shuts up warnings
+		{
+			r = value;
+			g = value;
+			b = value;
+		}
+		else
+		{
+			while (hue >= 360.0)
+			{
+				hue -= 360.0;
+			}
+			hue /= 60.0;
+			long i = (long)hue;
+			double ff = hue - i;
+			double p = value * (1.0 - saturation);
+			double q = value * (1.0 - (saturation * ff));
+			double t = value * (1.0 - (saturation * (1.0 - ff)));
+
+			switch (i)
+			{
+			case 0:
+				r = value;
+				g = (float)t;
+				b = (float)p;
+				break;
+			case 1:
+				r = (float)q;
+				g = value;
+				b = (float)p;
+				break;
+			case 2:
+				r = (float)p;
+				g = value;
+				b = (float)t;
+				break;
+
+			case 3:
+				r = (float)p;
+				g = (float)q;
+				b = value;
+				break;
+			case 4:
+				r = (float)t;
+				g = (float)p;
+				b = value;
+				break;
+			case 5:
+			default:
+				r = value;
+				g = (float)p;
+				b = (float)q;
+				break;
+			}
+		}
+
+		return Rgb(r * 255, g * 255, b * 255);
+	}
+
 	std::optional<Rgb> Rgb::fromName(const std::string& name)
 	{
 		switch (joaat::hash(name))
