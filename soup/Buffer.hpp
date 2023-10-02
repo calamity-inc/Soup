@@ -15,10 +15,11 @@ namespace soup
 	// This extremely simple implementation outperforms std::vector & std::string, barring magic optimisations, e.g. clang with std::string::push_back.
 	class Buffer
 	{
+	private:
+		uint8_t* m_data = nullptr;
+		size_t m_size = 0;
+		size_t m_capacity = 0;
 	public:
-		uint8_t* data = nullptr;
-		size_t size = 0;
-		size_t capacity = 0;
 #if SOUP_BUFFER_NO_RESIZE
 		bool no_resize = false;
 #endif
@@ -26,7 +27,7 @@ namespace soup
 		Buffer() noexcept = default;
 
 		Buffer(size_t capacity) noexcept
-			: data(reinterpret_cast<uint8_t*>(malloc(capacity))), capacity(capacity)
+			: m_data(reinterpret_cast<uint8_t*>(malloc(capacity))), m_capacity(capacity)
 		{
 #if SOUP_BUFFER_NO_RESIZE
 			no_resize = true;
@@ -34,17 +35,17 @@ namespace soup
 		}
 
 		Buffer(const Buffer& b) noexcept
-			: Buffer(b.size)
+			: Buffer(b.m_size)
 		{
 			append(b);
 		}
 
 		Buffer(Buffer&& b) noexcept
-			: data(b.data), size(b.size), capacity(b.capacity)
+			: m_data(b.m_data), m_size(b.m_size), m_capacity(b.m_capacity)
 		{
-			b.data = nullptr;
-			b.size = 0;
-			b.capacity = 0;
+			b.m_data = nullptr;
+			b.m_size = 0;
+			b.m_capacity = 0;
 		}
 
 		~Buffer() noexcept
@@ -52,11 +53,31 @@ namespace soup
 			reset();
 		}
 
+		[[nodiscard]] uint8_t* data() noexcept
+		{
+			return m_data;
+		}
+
+		[[nodiscard]] const uint8_t* data() const noexcept
+		{
+			return m_data;
+		}
+
+		[[nodiscard]] size_t size() const noexcept
+		{
+			return m_size;
+		}
+		
+		[[nodiscard]] size_t capacity() const noexcept
+		{
+			return m_capacity;
+		}
+
 		void resize(size_t desired_size) noexcept
 		{
-			if (size > desired_size)
+			if (m_size > desired_size)
 			{
-				size = desired_size;
+				m_size = desired_size;
 			}
 			resizeInner(desired_size);
 		}
@@ -64,7 +85,7 @@ namespace soup
 	private:
 		void ensureSpace(size_t desired_size) noexcept
 		{
-			SOUP_IF_UNLIKELY (capacity < desired_size)
+			SOUP_IF_UNLIKELY (m_capacity < desired_size)
 			{
 #if SOUP_BUFFER_NO_RESIZE
 				throw Exception("soup::Buffer constructed with specific size, but it did not suffice!");
@@ -77,20 +98,20 @@ namespace soup
 		void resizeInner(size_t new_capacity) noexcept
 		{
 			auto new_data = malloc(new_capacity);
-			if (data != nullptr)
+			if (m_data != nullptr)
 			{
-				memcpy(new_data, data, size);
-				free(data);
+				memcpy(new_data, m_data, m_size);
+				free(m_data);
 			}
-			data = reinterpret_cast<uint8_t*>(new_data);
-			capacity = new_capacity;
+			m_data = reinterpret_cast<uint8_t*>(new_data);
+			m_capacity = new_capacity;
 		}
 
 	public:
 		void push_back(uint8_t elm) noexcept
 		{
-			ensureSpace(size + 1);
-			data[size++] = elm;
+			ensureSpace(m_size + 1);
+			m_data[m_size++] = elm;
 		}
 
 		void emplace_back(uint8_t elm) noexcept
@@ -100,35 +121,35 @@ namespace soup
 
 		void append(const void* src_data, size_t src_size) noexcept
 		{
-			ensureSpace(size + src_size);
-			memcpy(&data[size], src_data, src_size);
-			size += src_size;
+			ensureSpace(m_size + src_size);
+			memcpy(&m_data[m_size], src_data, src_size);
+			m_size += src_size;
 		}
 
 		void append(const Buffer& src) noexcept
 		{
-			append(src.data, src.size);
+			append(src.m_data, src.m_size);
 		}
 
 		void clear() noexcept
 		{
-			size = 0;
+			m_size = 0;
 		}
 
 		[[nodiscard]] uint8_t* release() noexcept
 		{
-			uint8_t* const d = data;
-			data = nullptr;
+			uint8_t* const d = m_data;
+			m_data = nullptr;
 			return d;
 		}
 
 	private:
 		void reset() noexcept
 		{
-			if (data != nullptr)
+			if (m_data != nullptr)
 			{
-				free(data);
-				data = nullptr;
+				free(m_data);
+				m_data = nullptr;
 			}
 		}
 	};

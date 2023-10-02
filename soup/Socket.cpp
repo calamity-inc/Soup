@@ -1389,7 +1389,7 @@ namespace soup
 
 	bool Socket::transport_send(const Buffer& buf) const noexcept
 	{
-		return transport_send(buf.data, buf.size);
+		return transport_send(buf.data(), buf.size());
 	}
 
 	bool Socket::transport_send(const std::string& data) const noexcept
