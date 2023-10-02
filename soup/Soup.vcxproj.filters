@@ -894,13 +894,13 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="BigBitset.hpp">
-      <Filter>bit</Filter>
+      <Filter>data\bit</Filter>
     </ClInclude>
     <ClInclude Include="bitmask.hpp">
-      <Filter>bit</Filter>
+      <Filter>data\bit</Filter>
     </ClInclude>
     <ClInclude Include="Bitset.hpp">
-      <Filter>bit</Filter>
+      <Filter>data\bit</Filter>
     </ClInclude>
     <ClInclude Include="deleter.hpp">
       <Filter>util</Filter>
@@ -951,7 +951,7 @@
       <Filter>data</Filter>
     </ClInclude>
     <ClInclude Include="bitutil.hpp">
-      <Filter>bit</Filter>
+      <Filter>data\bit</Filter>
     </ClInclude>
     <ClInclude Include="RaiiEmulator.hpp">
       <Filter>mem</Filter>
@@ -1965,7 +1965,7 @@
       <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="bitutil.cpp">
-      <Filter>bit</Filter>
+      <Filter>data\bit</Filter>
     </ClCompile>
     <ClCompile Include="BigintId.cpp">
       <Filter>crypto</Filter>
@@ -2349,9 +2349,6 @@
     <Filter Include="crypto\proof_of_work">
       <UniqueIdentifier>{cc6c3a53-3611-43fc-b49e-801934a47954}</UniqueIdentifier>
     </Filter>
-    <Filter Include="bit">
-      <UniqueIdentifier>{ac847a74-1be1-4a22-85b0-0868b78cd418}</UniqueIdentifier>
-    </Filter>
     <Filter Include="util\time">
       <UniqueIdentifier>{37497716-d60c-41ab-a70e-892939e68678}</UniqueIdentifier>
     </Filter>
@@ -2426,6 +2423,9 @@
     </Filter>
     <Filter Include="hardware\keyboard">
       <UniqueIdentifier>{350adf99-141c-4765-8d24-9c61d0b5981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\bit">
+      <UniqueIdentifier>{ac847a74-1be1-4a22-85b0-0868b78cd418}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
