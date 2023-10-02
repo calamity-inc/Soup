@@ -73,6 +73,16 @@ namespace soup
 			return m_capacity;
 		}
 
+		[[nodiscard]] uint8_t& at(size_t i) noexcept
+		{
+			return m_data[i];
+		}
+
+		[[nodiscard]] const uint8_t& at(size_t i) const noexcept
+		{
+			return m_data[i];
+		}
+
 		void resize(size_t desired_size) noexcept
 		{
 			if (m_size > desired_size)
@@ -88,11 +98,17 @@ namespace soup
 			SOUP_IF_UNLIKELY (m_capacity < desired_size)
 			{
 #if SOUP_BUFFER_NO_RESIZE
-				throw Exception("soup::Buffer constructed with specific size, but it did not suffice!");
+				SOUP_THROW(Exception("soup::Buffer constructed with specific size, but it did not suffice!"));
 #endif
 				auto new_capacity = desired_size + (desired_size >> 1); // 1.5x
 				resizeInner(new_capacity);
 			}
+		}
+
+		void grow(size_t amount) noexcept
+		{
+			m_size += amount;
+			ensureSpace(m_size);
 		}
 
 		void resizeInner(size_t new_capacity) noexcept
@@ -119,6 +135,20 @@ namespace soup
 			push_back(elm);
 		}
 
+		void insert_front(size_t count, char value) noexcept
+		{
+			grow(count);
+			memcpy(&m_data[count], &m_data[0], count);
+			memset(&m_data[0], value, count);
+		}
+
+		void insert_back(size_t count, char value) noexcept
+		{
+			const auto s = m_size;
+			grow(count);
+			memset(&m_data[s], value, count);
+		}
+
 		void append(const void* src_data, size_t src_size) noexcept
 		{
 			ensureSpace(m_size + src_size);
@@ -129,6 +159,12 @@ namespace soup
 		void append(const Buffer& src) noexcept
 		{
 			append(src.m_data, src.m_size);
+		}
+
+		void erase(size_t pos, size_t len) noexcept
+		{
+			memmove(&m_data[pos], &m_data[pos + len], m_size - len);
+			m_size -= len;
 		}
 
 		void clear() noexcept

@@ -1,7 +1,6 @@
 #include "UsbHid.hpp"
 
 #if SOUP_WINDOWS
-
 // Based on https://github.com/libusb/hidapi/blob/master/windows/hid.c
 // Could also use SetupDiEnumDeviceInterfaces & SetupDiGetDeviceInterfaceDetailW to iterate devices,
 // but allocating it all in one go is preferable.
@@ -11,9 +10,11 @@
 
 #pragma comment(lib, "CfgMgr32.lib")
 #pragma comment(lib, "hid.lib")
+#endif
 
 namespace soup
 {
+#if SOUP_WINDOWS
 	[[nodiscard]] static HANDLE open_device(const wchar_t* path)
 	{
 		return CreateFileW(
@@ -24,13 +25,14 @@ namespace soup
 			OPEN_EXISTING,
 			0,
 			NULL
-		);;
+		);
 	}
+#endif
 
 	std::vector<UsbHid> UsbHid::getAll()
 	{
 		std::vector<UsbHid> res{};
-
+#if SOUP_WINDOWS
 		GUID HIDGuid;
 #if true
 		HidD_GetHidGuid(&HIDGuid);
@@ -99,6 +101,8 @@ namespace soup
 					{
 						hid.usage_page = caps.UsagePage;
 						hid.input_report_byte_length = caps.InputReportByteLength;
+						hid.output_report_byte_length = caps.OutputReportByteLength;
+						hid.feature_report_byte_length = caps.FeatureReportByteLength;
 
 						res.emplace_back(std::move(hid));
 					}
@@ -108,12 +112,13 @@ namespace soup
 		}
 
 		free(device_interface_list);
-
+#endif
 		return res;
 	}
 
 	std::string UsbHid::pollReport() const
 	{
+#if SOUP_WINDOWS
 		std::string buf(input_report_byte_length, '\0');
 		DWORD bytesRead;
 		if (ReadFile(handle, buf.data(), input_report_byte_length, &bytesRead, NULL))
@@ -129,8 +134,57 @@ namespace soup
 			}
 			return buf;
 		}
+#endif
 		return {};
 	}
-}
 
+	Buffer UsbHid::pollReportBuffer() const
+	{
+#if SOUP_WINDOWS
+		Buffer buf;
+		buf.insert_back(input_report_byte_length, '\0');
+		DWORD bytesRead;
+		if (ReadFile(handle, buf.data(), input_report_byte_length, &bytesRead, NULL))
+		{
+			buf.resize(bytesRead);
+
+			// Windows puts a report id at the front, but we want the raw data, so erasing it.
+			if (bytesRead != 0
+				//&& buf.at(0) == '\0'
+				)
+			{
+				buf.erase(0, 1);
+			}
+			return buf;
+		}
 #endif
+		return {};
+	}
+
+	void UsbHid::sendReport(Buffer&& buf) const
+	{
+#if SOUP_WINDOWS
+		// On Windows, the output report has to be at least as long as output_report_byte_length.
+		if (buf.size() < output_report_byte_length)
+		{
+			buf.insert_back(output_report_byte_length - buf.size(), '\0');
+		}
+
+		DWORD bytesWritten;
+		SOUP_ASSERT(WriteFile(handle, buf.data(), buf.size(), &bytesWritten, nullptr) && bytesWritten == buf.size());
+#endif
+	}
+
+	void UsbHid::sendFeatureReport(Buffer&& buf) const
+	{
+#if SOUP_WINDOWS
+		// On Windows, the feature report has to be at least as long as feature_report_byte_length.
+		if (buf.size() < feature_report_byte_length)
+		{
+			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
+		}
+
+		SOUP_ASSERT(HidD_SetFeature(handle, buf.data(), buf.size()));
+#endif
+	}
+}

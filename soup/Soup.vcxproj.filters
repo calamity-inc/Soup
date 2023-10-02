@@ -1503,6 +1503,15 @@
     <ClInclude Include="keys.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
+    <ClInclude Include="BufferRefReader.hpp">
+      <Filter>io\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="kbRgbWooting.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
+    <ClInclude Include="kbRgb.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2194,6 +2203,12 @@
     <ClCompile Include="DigitalKeyboard.cpp">
       <Filter>hardware\keyboard</Filter>
     </ClCompile>
+    <ClCompile Include="kbRgbWooting.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
+    <ClCompile Include="kbRgb.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2426,6 +2441,9 @@
     </Filter>
     <Filter Include="data\bit">
       <UniqueIdentifier>{ac847a74-1be1-4a22-85b0-0868b78cd418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\keyboard\rgb">
+      <UniqueIdentifier>{aade056e-91d5-44ee-aaa2-d9dea1caa7b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
