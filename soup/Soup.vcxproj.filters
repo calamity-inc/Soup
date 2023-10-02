@@ -1485,23 +1485,23 @@
     <ClInclude Include="Sudoku.hpp">
       <Filter>misc</Filter>
     </ClInclude>
-    <ClInclude Include="UsbHid.hpp">
-      <Filter>os\input</Filter>
-    </ClInclude>
-    <ClInclude Include="AnalogueKeyboard.hpp">
-      <Filter>os\input</Filter>
-    </ClInclude>
     <ClInclude Include="visKeyboard.hpp">
       <Filter>vis</Filter>
     </ClInclude>
-    <ClInclude Include="scancodes.hpp">
-      <Filter>os\input</Filter>
+    <ClInclude Include="UsbHid.hpp">
+      <Filter>hardware</Filter>
     </ClInclude>
-    <ClInclude Include="keys.hpp">
-      <Filter>os\input</Filter>
+    <ClInclude Include="scancodes.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="AnalogueKeyboard.hpp">
+      <Filter>hardware\keyboard</Filter>
     </ClInclude>
     <ClInclude Include="DigitalKeyboard.hpp">
-      <Filter>os\input</Filter>
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="keys.hpp">
+      <Filter>hardware\keyboard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2182,17 +2182,17 @@
     <ClCompile Include="Sudoku.cpp">
       <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="UsbHid.cpp">
-      <Filter>os\input</Filter>
-    </ClCompile>
-    <ClCompile Include="AnalogueKeyboard.cpp">
-      <Filter>os\input</Filter>
-    </ClCompile>
     <ClCompile Include="visKeyboard.cpp">
       <Filter>vis</Filter>
     </ClCompile>
+    <ClCompile Include="UsbHid.cpp">
+      <Filter>hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="AnalogueKeyboard.cpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClCompile>
     <ClCompile Include="DigitalKeyboard.cpp">
-      <Filter>os\input</Filter>
+      <Filter>hardware\keyboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2388,9 +2388,6 @@
     <Filter Include="data\cat">
       <UniqueIdentifier>{4293b753-209b-4d22-97a7-c54e2f1e9384}</UniqueIdentifier>
     </Filter>
-    <Filter Include="os\input">
-      <UniqueIdentifier>{350adf99-141c-4765-8d24-9c61d0b5981c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="util\tree">
       <UniqueIdentifier>{d96d8487-d3a5-4b49-9ede-1ed0a920b12d}</UniqueIdentifier>
     </Filter>
@@ -2423,6 +2420,12 @@
     </Filter>
     <Filter Include="misc\chess">
       <UniqueIdentifier>{4a2a3fea-b914-4a9e-b7c3-c051aa854664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware">
+      <UniqueIdentifier>{bdf5fc38-a930-40cf-8437-ee0c8827dee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\keyboard">
+      <UniqueIdentifier>{350adf99-141c-4765-8d24-9c61d0b5981c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
