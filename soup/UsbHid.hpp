@@ -31,8 +31,8 @@ namespace soup
 
 		[[nodiscard]] static std::vector<UsbHid> getAll();
 
-		[[nodiscard]] std::string pollReport() const;
-		[[nodiscard]] Buffer pollReportBuffer() const;
+		[[nodiscard]] std::string pollReport() const; // blocking
+		[[nodiscard]] Buffer pollReportBuffer() const; // blocking
 
 		[[nodiscard]] uint16_t getReportLength() const noexcept
 		{
