@@ -26,6 +26,7 @@ namespace soup
 		{
 			if (FAILED(DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pDI, NULL)))
 			{
+				pDI = nullptr;
 				return;
 			}
 		}
@@ -39,6 +40,7 @@ namespace soup
 			if (FAILED(pKeyboard->SetDataFormat(&c_dfDIKeyboard)))
 			{
 				pKeyboard->Release();
+				pKeyboard = nullptr;
 				return;
 			}
 			pKeyboard->Acquire();
