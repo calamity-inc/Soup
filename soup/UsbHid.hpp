@@ -44,4 +44,3 @@ namespace soup
 		void sendFeatureReport(Buffer&& buf) const;
 	};
 }
-
