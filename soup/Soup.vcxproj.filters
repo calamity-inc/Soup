@@ -1497,6 +1497,9 @@
     <ClInclude Include="scancodes.hpp">
       <Filter>os\input</Filter>
     </ClInclude>
+    <ClInclude Include="keys.hpp">
+      <Filter>os\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
