@@ -17,6 +17,7 @@ namespace soup
 		virtual void init() = 0;
 		virtual void deinit() = 0;
 
+		virtual void setKey(uint8_t key, Rgb colour) = 0;
 		virtual void setKeys(const Rgb(&colours)[NUM_KEYS]) = 0;
 		virtual void setAllKeys(Rgb colour);
 	};
