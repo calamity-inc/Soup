@@ -23,6 +23,23 @@ namespace soup
 			uint16_t scancode;
 			uint8_t value;
 
+			[[nodiscard]] uint8_t getSoupKey() const noexcept
+			{
+				if (hasUsbHidScancode())
+				{
+					return usb_hid_scancode_to_soup_key(getUsbHidScancode());
+				}
+				else
+				{
+					// It do be like that on my Wooting Two HE
+					if (scancode == 0x409)
+					{
+						return KEY_FN;
+					}
+				}
+				return KEY_NONE;
+			}
+
 			[[nodiscard]] bool hasUsbHidScancode() const noexcept
 			{
 				return scancode <= 0xFF;

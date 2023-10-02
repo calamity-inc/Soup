@@ -6,6 +6,8 @@ namespace soup
 {
 	enum keys : uint8_t
 	{
+		KEY_NONE = 0xff,
+
 		KEY_BACKQUOTE = 0,
 		KEY_1,
 		KEY_2,

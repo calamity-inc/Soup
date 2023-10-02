@@ -38,13 +38,9 @@ void cli_keyboard()
 				for (const auto& key : keys)
 				{
 					//std::cout << std::hex << "Scancode " << (int)key.scancode << ", VK " << key.getVk() << ", VKT " << key.getVkTranslated() << "\n";
-					if (key.hasUsbHidScancode())
+					if (auto sk = key.getSoupKey(); sk != KEY_NONE)
 					{
-						viskbd.set(key.getUsbHidScancode(), key.value);
-					}
-					else if (key.scancode == 0x409)
-					{
-						viskbd.values[KEY_FN] = key.value;
+						viskbd.values[sk] = key.value;
 					}
 				}
 				w.redraw();

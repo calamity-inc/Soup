@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "keys.hpp"
+
 namespace soup
 {
 	/*
@@ -155,6 +157,93 @@ namespace soup
 		HID_ALT_RIGHT = 0xe6,
 		HID_META_RIGHT = 0xe7,
 	};
+
+	[[nodiscard]] constexpr uint8_t usb_hid_scancode_to_soup_key(uint8_t scancode) noexcept
+	{
+		switch (scancode)
+		{
+		case HID_BACKQUOTE: return KEY_BACKQUOTE;
+		case HID_1: return KEY_1;
+		case HID_2: return KEY_2;
+		case HID_3: return KEY_3;
+		case HID_4: return KEY_4;
+		case HID_5: return KEY_5;
+		case HID_6: return KEY_6;
+		case HID_7: return KEY_7;
+		case HID_8: return KEY_8;
+		case HID_9: return KEY_9;
+		case HID_0: return KEY_0;
+		case HID_MINUS: return KEY_MINUS;
+		case HID_EQUALS: return KEY_EQUALS;
+		case HID_BACKSPACE: return KEY_BACKSPACE;
+		case HID_TAB: return KEY_TAB;
+		case HID_Q: return KEY_Q;
+		case HID_W: return KEY_W;
+		case HID_E: return KEY_E;
+		case HID_R: return KEY_R;
+		case HID_T: return KEY_T;
+		case HID_Y: return KEY_Y;
+		case HID_U: return KEY_U;
+		case HID_I: return KEY_I;
+		case HID_O: return KEY_O;
+		case HID_P: return KEY_P;
+		case HID_BRACKET_LEFT: return KEY_BRACKET_LEFT;
+		case HID_BRACKET_RIGHT: return KEY_BRACKET_RIGHT;
+		case HID_ENTER: return KEY_ENTER;
+		case HID_CAPS_LOCK: return KEY_CAPS_LOCK;
+		case HID_A: return KEY_A;
+		case HID_S: return KEY_S;
+		case HID_D: return KEY_D;
+		case HID_F: return KEY_F;
+		case HID_G: return KEY_G;
+		case HID_H: return KEY_H;
+		case HID_J: return KEY_J;
+		case HID_K: return KEY_K;
+		case HID_L: return KEY_L;
+		case HID_SEMICOLON: return KEY_SEMICOLON;
+		case HID_QUOTE: return KEY_QUOTE;
+		case HID_BACKSLASH: return KEY_BACKSLASH;
+		case HID_SHIFT_LEFT: return KEY_LSHIFT;
+		case HID_INTL_BACKSLASH: return KEY_INTL_BACKSLASH;
+		case HID_Z: return KEY_Z;
+		case HID_X: return KEY_X;
+		case HID_C: return KEY_C;
+		case HID_V: return KEY_V;
+		case HID_B: return KEY_B;
+		case HID_N: return KEY_N;
+		case HID_M: return KEY_M;
+		case HID_COMMA: return KEY_COMMA;
+		case HID_PERIOD: return KEY_PERIOD;
+		case HID_SLASH: return KEY_SLASH;
+		case HID_SHIFT_RIGHT: return KEY_RSHIFT;
+		case HID_CONTROL_LEFT: return KEY_LCTRL;
+		case HID_META_LEFT: return KEY_LMETA;
+		case HID_ALT_LEFT: return KEY_LALT;
+		case HID_SPACE: return KEY_SPACE;
+		case HID_ALT_RIGHT: return KEY_RALT;
+		case HID_META_RIGHT: return KEY_RMETA;
+			// no HID for KEY_FN
+		case HID_CONTROL_RIGHT: return KEY_RCTRL;
+		case HID_NUM_LOCK: return KEY_NUM_LOCK;
+		case HID_NUMPAD_DIVIDE: return KEY_NUMPAD_DIVIDE;
+		case HID_NUMPAD_MULTIPLY: return KEY_NUMPAD_MULTIPLY;
+		case HID_NUMPAD_SUBTRACT: return KEY_NUMPAD_SUBTRACT;
+		case HID_NUMPAD7: return KEY_NUMPAD7;
+		case HID_NUMPAD8: return KEY_NUMPAD8;
+		case HID_NUMPAD9: return KEY_NUMPAD9;
+		case HID_NUMPAD_ADD: return KEY_NUMPAD_ADD;
+		case HID_NUMPAD4: return KEY_NUMPAD4;
+		case HID_NUMPAD5: return KEY_NUMPAD5;
+		case HID_NUMPAD6: return KEY_NUMPAD6;
+		case HID_NUMPAD1: return KEY_NUMPAD1;
+		case HID_NUMPAD2: return KEY_NUMPAD2;
+		case HID_NUMPAD3: return KEY_NUMPAD3;
+		case HID_NUMPAD_ENTER: return KEY_NUMPAD_ENTER;
+		case HID_NUMPAD0: return KEY_NUMPAD0;
+		case HID_NUMPAD_DECIMAL: return KEY_NUMPAD_DECIMAL;
+		}
+		return KEY_NONE;
+	}
 
 	// My PCs haven't had a PS/2 port in a few generations, but... Windows. :)
 	enum Ps2Scancode : uint16_t
