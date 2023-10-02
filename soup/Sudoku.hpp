@@ -64,6 +64,8 @@ namespace soup
 			return (1 << (value - 1));
 		}
 
+		[[nodiscard]] static value_t maskToValue(mask_t mask) noexcept;
+
 		struct Cell
 		{
 			uint32_t value_bf : 9;
@@ -136,6 +138,23 @@ namespace soup
 			return cells[getCellIndex(x, y)];
 		}
 
+		[[nodiscard]] static constexpr char getRowName(index_t y) noexcept
+		{
+			return 'A' + y;
+		}
+
+		[[nodiscard]] static constexpr char getColumnName(index_t x) noexcept
+		{
+			return '1' + x;
+		}
+		
+		[[nodiscard]] static std::string getCellName(index_t x, index_t y)
+		{
+			std::string str(1, getRowName(y));
+			str.push_back(getColumnName(x));
+			return str;
+		}
+
 		[[nodiscard]] count_t getNumValues() const noexcept;
 
 		[[nodiscard]] mask_t getValuesInBox(index_t i) const noexcept;
@@ -154,22 +173,24 @@ namespace soup
 
 		void eliminateImpossibleCandiates() noexcept;
 		bool eliminateCandidate(mask_t value_bf, index_t x, index_t y) noexcept;
-		bool narrowCandidatesInRowToBox(mask_t value_bf, index_t y, index_t pin_bx) noexcept;
-		bool narrowCandidatesInColumnToBox(mask_t value_bf, index_t x, index_t pin_by) noexcept;
-		bool narrowCandidatesInBoxToRow(mask_t value_bf, index_t bx, index_t by, index_t pin_y) noexcept;
-		bool narrowCandidatesInBoxToColumn(mask_t value_bf, index_t bx, index_t by, index_t pin_x) noexcept;
+		bool narrowCandidatesInRowToBox(mask_t value_bf, index_t y, index_t pin_bx, std::string* explanation);
+		bool narrowCandidatesInColumnToBox(mask_t value_bf, index_t x, index_t pin_by, std::string* explanation);
+		bool narrowCandidatesInBoxToRow(mask_t value_bf, index_t bx, index_t by, index_t pin_y, std::string* explanation);
+		bool narrowCandidatesInBoxToColumn(mask_t value_bf, index_t bx, index_t by, index_t pin_x, std::string* explanation);
 		bool eliminateCandidatesInRow(mask_t value_bf, index_t y, index_t exclude_x1, index_t exclude_x2) noexcept;
 		bool eliminateCandidatesInColumn(mask_t value_bf, index_t x, index_t exclude_y1, index_t exclude_y2) noexcept;
 
 		[[nodiscard]] bool isSolvable() const noexcept; // Returns true if all missing digits have candidates.
 
-		bool stepAny() noexcept;
-		bool stepNakedSingle() noexcept; // Fill in a digit with only 1 candidate if possible.
-		bool stepHiddenSingle() noexcept; // Fill in a digit that can only be in that place within a house if possible.
-		bool stepLockedCandidates() noexcept;
-		bool stepHiddenPair() noexcept;
-		bool stepXWing() noexcept;
-		bool stepContradictionIfCandidateRemoved() noexcept; // No idea what to call this. Similar idea to "Simple Colouring" and "X-Cycles".
+		bool stepAny(std::string* explanation = nullptr);
+		bool stepNakedSingle(std::string* explanation = nullptr); // Fill in a digit with only 1 candidate if possible.
+		bool stepHiddenSingle(std::string* explanation = nullptr); // Fill in a digit that can only be in that place within a house if possible.
+		bool stepLockedCandidates(std::string* explanation = nullptr);
+		bool stepHiddenPair(std::string* explanation = nullptr);
+		bool stepXWing(std::string* explanation = nullptr);
+		bool stepContradictionIfCandidateRemoved(std::string* explanation = nullptr); // No idea what to call this. Similar idea to "Simple Colouring" and "X-Cycles".
+
+		bool solveCell(std::string* explanation = nullptr);
 
 		// Note: Might not actually be able to solve the puzzle. No bifurcation will be attempted.
 		void solve() noexcept

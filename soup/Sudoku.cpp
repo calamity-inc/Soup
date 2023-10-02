@@ -4,6 +4,7 @@
 #include "BitReader.hpp"
 #include "bitutil.hpp"
 #include "BitWriter.hpp"
+#include "format.hpp"
 #include "RasterFont.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
@@ -17,11 +18,16 @@ namespace soup
 	using mask_t = Sudoku::mask_t;
 	using count_t = Sudoku::count_t;
 
+	value_t Sudoku::maskToValue(mask_t mask) noexcept
+	{
+		return bitutil::getLeastSignificantSetBit(mask) + 1;
+	}
+
 	value_t Sudoku::Cell::getValue() const noexcept
 	{
 		SOUP_IF_LIKELY (value_bf != 0)
 		{
-			return bitutil::getLeastSignificantSetBit(value_bf) + 1;
+			return maskToValue(value_bf);
 		}
 		return 0;
 	}
@@ -328,7 +334,9 @@ namespace soup
 		return false;
 	}
 
-	bool Sudoku::narrowCandidatesInRowToBox(mask_t value_bf, index_t y, index_t pin_bx) noexcept
+	static const char* bx_names[] = { "left", "centre", "right" };
+
+	bool Sudoku::narrowCandidatesInRowToBox(mask_t value_bf, index_t y, index_t pin_bx, std::string* explanation)
 	{
 		bool changed = false;
 		for (index_t x = 0; x != 9; ++x)
@@ -340,10 +348,16 @@ namespace soup
 				changed |= eliminateCandidate(value_bf, x, y);
 			}
 		}
+		if (explanation && changed)
+		{
+			*explanation = format("{} in row {} can only be in {} box.", maskToValue(value_bf), getRowName(y), bx_names[pin_bx]);
+		}
 		return changed;
 	}
 
-	bool Sudoku::narrowCandidatesInColumnToBox(mask_t value_bf, index_t x, index_t pin_by) noexcept
+	static const char* by_names[] = { "top", "centre", "bottom" };
+
+	bool Sudoku::narrowCandidatesInColumnToBox(mask_t value_bf, index_t x, index_t pin_by, std::string* explanation)
 	{
 		bool changed = false;
 		for (index_t y = 0; y != 9; ++y)
@@ -355,10 +369,14 @@ namespace soup
 				changed |= eliminateCandidate(value_bf, x, y);
 			}
 		}
+		if (explanation && changed)
+		{
+			*explanation = format("{} in column {} can only be in {} box.", maskToValue(value_bf), getColumnName(x), by_names[pin_by]);
+		}
 		return changed;
 	}
 
-	bool Sudoku::narrowCandidatesInBoxToRow(mask_t value_bf, index_t bx, index_t by, index_t pin_y) noexcept
+	bool Sudoku::narrowCandidatesInBoxToRow(mask_t value_bf, index_t bx, index_t by, index_t pin_y, std::string* explanation)
 	{
 		bool changed = false;
 		if ((by * 3) + 0 != pin_y)
@@ -379,10 +397,14 @@ namespace soup
 			changed |= eliminateCandidate(value_bf, (bx * 3) + 1, (by * 3) + 2);
 			changed |= eliminateCandidate(value_bf, (bx * 3) + 2, (by * 3) + 2);
 		}
+		if (explanation && changed)
+		{
+			*explanation = format("{} in {}, {} box can only be in row {}.", maskToValue(value_bf), by_names[by], bx_names[bx], getRowName(pin_y));
+		}
 		return changed;
 	}
 
-	bool Sudoku::narrowCandidatesInBoxToColumn(mask_t value_bf, index_t bx, index_t by, index_t pin_x) noexcept
+	bool Sudoku::narrowCandidatesInBoxToColumn(mask_t value_bf, index_t bx, index_t by, index_t pin_x, std::string* explanation)
 	{
 		bool changed = false;
 		if ((bx * 3) + 0 != pin_x)
@@ -402,6 +424,10 @@ namespace soup
 			changed |= eliminateCandidate(value_bf, (bx * 3) + 2, (by * 3) + 0);
 			changed |= eliminateCandidate(value_bf, (bx * 3) + 2, (by * 3) + 1);
 			changed |= eliminateCandidate(value_bf, (bx * 3) + 2, (by * 3) + 2);
+		}
+		if (explanation && changed)
+		{
+			*explanation = format("{} in {}, {} box can only be in column {}.", maskToValue(value_bf), by_names[by], bx_names[bx], getColumnName(pin_x));
 		}
 		return changed;
 	}
@@ -485,31 +511,37 @@ namespace soup
 		return true;
 	}
 
-	bool Sudoku::stepAny() noexcept
+	bool Sudoku::stepAny(std::string* explanation)
 	{
-		return stepNakedSingle()
-			|| stepHiddenSingle()
-			|| stepLockedCandidates()
-			|| stepHiddenPair()
-			|| stepXWing()
-			|| stepContradictionIfCandidateRemoved()
+		return stepNakedSingle(explanation)
+			|| stepHiddenSingle(explanation)
+			|| stepLockedCandidates(explanation)
+			|| stepHiddenPair(explanation)
+			|| stepXWing(explanation)
+			|| stepContradictionIfCandidateRemoved(explanation)
 			;
 	}
 
-	bool Sudoku::stepNakedSingle() noexcept
+	bool Sudoku::stepNakedSingle(std::string* explanation)
 	{
 		for (index_t i = 0; i != 9 * 9; ++i)
 		{
 			if (cells[i].getNumCandidates() == 1)
 			{
 				cells[i].value_bf = cells[i].candidates_bf;
+				if (explanation)
+				{
+					index_t x = i % 9;
+					index_t y = i / 9;
+					*explanation = format("{} can only be a {}.", getCellName(x, y), cells[i].getValue());
+				}
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool Sudoku::stepHiddenSingle() noexcept
+	bool Sudoku::stepHiddenSingle(std::string* explanation)
 	{
 		for (index_t y = 0; y != 9; ++y)
 		{
@@ -524,12 +556,31 @@ namespace soup
 					value_t value = bitutil::getLeastSignificantSetBit(candidates_bf) + 1;
 					const auto value_bf = valueToMask(value);
 
-					if (getNumCandidatesInBox(value_bf, bx, by) == 1
-						|| getNumCandidatesInRow(value_bf, y) == 1
-						|| getNumCandidatesInColumn(value_bf, x) == 1
-						)
+					if (getNumCandidatesInBox(value_bf, bx, by) == 1)
 					{
 						getCell(x, y).value_bf = value_bf;
+						if (explanation)
+						{
+							*explanation = format("{} is the only place where a {} can go in the {}, {} box.", getCellName(x, y), getCell(x, y).getValue(), by_names[by], bx_names[bx]);
+						}
+						return true;
+					}
+					if (getNumCandidatesInRow(value_bf, y) == 1)
+					{
+						getCell(x, y).value_bf = value_bf;
+						if (explanation)
+						{
+							*explanation = format("{} is the only place where a {} can go in row {}.", getCellName(x, y), getCell(x, y).getValue(), getRowName(y));
+						}
+						return true;
+					}
+					if (getNumCandidatesInColumn(value_bf, x) == 1)
+					{
+						getCell(x, y).value_bf = value_bf;
+						if (explanation)
+						{
+							*explanation = format("{} is the only place where a {} can go in column {}.", getCellName(x, y), getCell(x, y).getValue(), getColumnName(x));
+						}
 						return true;
 					}
 
@@ -540,7 +591,7 @@ namespace soup
 		return false;
 	}
 
-	bool Sudoku::stepLockedCandidates() noexcept
+	bool Sudoku::stepLockedCandidates(std::string* explanation)
 	{
 		for (value_t value = 1; value != 10; ++value)
 		{
@@ -556,7 +607,7 @@ namespace soup
 						&& ((candidates & 0b111'111'000) == 0)
 						)
 					{
-						if (narrowCandidatesInRowToBox(value_bf, (by * 3) + 0, bx))
+						if (narrowCandidatesInRowToBox(value_bf, (by * 3) + 0, bx, explanation))
 						{
 							return true;
 						}
@@ -565,7 +616,7 @@ namespace soup
 						&& ((candidates & 0b111'000'111) == 0)
 						)
 					{
-						if (narrowCandidatesInRowToBox(value_bf, (by * 3) + 1, bx))
+						if (narrowCandidatesInRowToBox(value_bf, (by * 3) + 1, bx, explanation))
 						{
 							return true;
 						}
@@ -574,7 +625,7 @@ namespace soup
 						&& ((candidates & 0b000'111'111) == 0)
 						)
 					{
-						if (narrowCandidatesInRowToBox(value_bf, (by * 3) + 2, bx))
+						if (narrowCandidatesInRowToBox(value_bf, (by * 3) + 2, bx, explanation))
 						{
 							return true;
 						}
@@ -583,7 +634,7 @@ namespace soup
 						&& ((candidates & 0b110'110'110) == 0)
 						)
 					{
-						if (narrowCandidatesInColumnToBox(value_bf, (bx * 3) + 0, by))
+						if (narrowCandidatesInColumnToBox(value_bf, (bx * 3) + 0, by, explanation))
 						{
 							return true;
 						}
@@ -592,7 +643,7 @@ namespace soup
 						&& ((candidates & 0b101'101'101) == 0)
 						)
 					{
-						if (narrowCandidatesInColumnToBox(value_bf, (bx * 3) + 1, by))
+						if (narrowCandidatesInColumnToBox(value_bf, (bx * 3) + 1, by, explanation))
 						{
 							return true;
 						}
@@ -601,7 +652,7 @@ namespace soup
 						&& ((candidates & 0b011'011'011) == 0)
 						)
 					{
-						if (narrowCandidatesInColumnToBox(value_bf, (bx * 3) + 2, by))
+						if (narrowCandidatesInColumnToBox(value_bf, (bx * 3) + 2, by, explanation))
 						{
 							return true;
 						}
@@ -619,7 +670,7 @@ namespace soup
 					&& ((candidates & 0b111'111'000) == 0)
 					)
 				{
-					if (narrowCandidatesInBoxToRow(value_bf, 0, by, y))
+					if (narrowCandidatesInBoxToRow(value_bf, 0, by, y, explanation))
 					{
 						return true;
 					}
@@ -628,7 +679,7 @@ namespace soup
 					&& ((candidates & 0b111'000'111) == 0)
 					)
 				{
-					if (narrowCandidatesInBoxToRow(value_bf, 1, by, y))
+					if (narrowCandidatesInBoxToRow(value_bf, 1, by, y, explanation))
 					{
 						return true;
 					}
@@ -637,7 +688,7 @@ namespace soup
 					&& ((candidates & 0b000'111'111) == 0)
 					)
 				{
-					if (narrowCandidatesInBoxToRow(value_bf, 2, by, y))
+					if (narrowCandidatesInBoxToRow(value_bf, 2, by, y, explanation))
 					{
 						return true;
 					}
@@ -653,7 +704,7 @@ namespace soup
 					&& ((candidates & 0b111'111'000) == 0)
 					)
 				{
-					if (narrowCandidatesInBoxToColumn(value_bf, bx, 0, x))
+					if (narrowCandidatesInBoxToColumn(value_bf, bx, 0, x, explanation))
 					{
 						return true;
 					}
@@ -662,7 +713,7 @@ namespace soup
 					&& ((candidates & 0b111'000'111) == 0)
 					)
 				{
-					if (narrowCandidatesInBoxToColumn(value_bf, bx, 1, x))
+					if (narrowCandidatesInBoxToColumn(value_bf, bx, 1, x, explanation))
 					{
 						return true;
 					}
@@ -671,7 +722,7 @@ namespace soup
 					&& ((candidates & 0b000'111'111) == 0)
 					)
 				{
-					if (narrowCandidatesInBoxToColumn(value_bf, bx, 2, x))
+					if (narrowCandidatesInBoxToColumn(value_bf, bx, 2, x, explanation))
 					{
 						return true;
 					}
@@ -681,7 +732,7 @@ namespace soup
 		return false;
 	}
 
-	bool Sudoku::stepHiddenPair() noexcept
+	bool Sudoku::stepHiddenPair(std::string* explanation)
 	{
 		for (value_t value1 = 1; value1 != 10; ++value1)
 		{
@@ -709,6 +760,10 @@ namespace soup
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
 							{
+								if (explanation)
+								{
+									*explanation = format("There's a hidden pair on {}s and {}s in row {}.", value1, value2, getRowName(y));
+								}
 								return true;
 							}
 						}
@@ -731,6 +786,10 @@ namespace soup
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
 							{
+								if (explanation)
+								{
+									*explanation = format("There's a hidden pair on {}s and {}s in column {}.", value1, value2, getColumnName(x));
+								}
 								return true;
 							}
 						}
@@ -743,7 +802,7 @@ namespace soup
 		return false;
 	}
 
-	bool Sudoku::stepXWing() noexcept
+	bool Sudoku::stepXWing(std::string* explanation)
 	{
 		for (value_t value = 1; value != 10; ++value)
 		{
@@ -770,6 +829,10 @@ namespace soup
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
 							{
+								if (explanation)
+								{
+									*explanation = format("There's an X-Wing on {}s in row {} and {}.", value, getRowName(r1y), getRowName(r2y));
+								}
 								return true;
 							}
 						}
@@ -798,6 +861,7 @@ namespace soup
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
 							{
+								*explanation = format("There's an X-Wing on {}s in column {} and {}.", value, getColumnName(c1x), getColumnName(c2x));
 								return true;
 							}
 						}
@@ -809,7 +873,7 @@ namespace soup
 	}
 
 	// Needed to make progress in this situation: 870406325040300170003700409610038704000104030384675291490003007020000043536847912 (from this puzzle: 800006305040000070000000000010038704000104000300070290000003000020000040506800002)
-	bool Sudoku::stepContradictionIfCandidateRemoved() noexcept
+	bool Sudoku::stepContradictionIfCandidateRemoved(std::string* explanation)
 	{
 		SOUP_ASSERT(isSolvable());
 		for (value_t value = 1; value != 10; ++value)
@@ -835,6 +899,10 @@ namespace soup
 						{
 							// Removing the candidate from the cell broke the Sudoku. Therefore, the candidate is the only option for the cell.
 							getCell(x, y).candidates_bf = value_bf;
+							if (explanation)
+							{
+								*explanation = format("There are a lot of {}s chained together. If we imagine that the {} in {} were removed, we'd find that the chain implies there must be a {} there.", value, value, getCellName(x, y), value);
+							}
 							return true;
 						}
 					} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
@@ -842,6 +910,47 @@ namespace soup
 			}
 		}
 		return false;
+	}
+
+	bool Sudoku::solveCell(std::string* explanation)
+	{
+		if (explanation)
+		{
+			eliminateImpossibleCandiates();
+			if (!stepNakedSingle(explanation) && !stepHiddenSingle(explanation))
+			{
+				std::vector<std::string> steps;
+				do
+				{
+					if (!stepAny(&steps.emplace_back()))
+					{
+						return false;
+					}
+					eliminateImpossibleCandiates();
+				}
+				while (!stepNakedSingle(explanation) && !stepHiddenSingle(explanation));
+				explanation->insert(0, "Now, we can see ");
+				for (auto i = steps.rbegin(); i != steps.rend(); ++i)
+				{
+					explanation->insert(0, 1, ' ');
+					explanation->insert(0, *i);
+				}
+			}
+			return true;
+		}
+		else
+		{
+			const auto values = getNumValues();
+			do
+			{
+				if (getNumValues() != values)
+				{
+					return true;
+				}
+				eliminateImpossibleCandiates();
+			} while (stepAny());
+			return false;
+		}
 	}
 
 	void Sudoku::draw(RenderTarget& rt, bool no_candidates) const
