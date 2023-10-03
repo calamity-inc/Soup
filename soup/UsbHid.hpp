@@ -34,8 +34,7 @@ namespace soup
 		[[nodiscard]] std::string getProductName() const;
 		[[nodiscard]] std::string getSerialNumber() const;
 
-		[[nodiscard]] std::string pollReport() const; // blocking
-		[[nodiscard]] Buffer pollReportBuffer() const; // blocking
+		[[nodiscard]] Buffer pollReport() const; // blocking
 
 		[[nodiscard]] uint16_t getReportLength() const noexcept
 		{

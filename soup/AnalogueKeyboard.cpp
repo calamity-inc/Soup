@@ -2,7 +2,7 @@
 
 #if SOUP_WINDOWS
 
-#include "StringRefReader.hpp"
+#include "BufferRefReader.hpp"
 #include "Window.hpp"
 
 namespace soup
@@ -84,7 +84,7 @@ namespace soup
 		}
 		else
 		{
-			StringRefReader sr(report, false);
+			BufferRefReader sr(report, false);
 			uint16_t scancode;
 			uint8_t value;
 			while (sr.hasMore()

@@ -144,29 +144,7 @@ namespace soup
 		return ret;
 	}
 
-	std::string UsbHid::pollReport() const
-	{
-#if SOUP_WINDOWS
-		std::string buf(input_report_byte_length, '\0');
-		DWORD bytesRead;
-		if (ReadFile(handle, buf.data(), input_report_byte_length, &bytesRead, NULL))
-		{
-			buf.resize(bytesRead);
-
-			// Windows puts a report id at the front, but we want the raw data, so erasing it.
-			if (bytesRead != 0
-				//&& buf.at(0) == '\0'
-				)
-			{
-				buf.erase(0, 1);
-			}
-			return buf;
-		}
-#endif
-		return {};
-	}
-
-	Buffer UsbHid::pollReportBuffer() const
+	Buffer UsbHid::pollReport() const
 	{
 #if SOUP_WINDOWS
 		Buffer buf;
