@@ -118,6 +118,19 @@ namespace soup
 		return res;
 	}
 
+	std::string UsbHid::getProductName() const
+	{
+		std::string ret{};
+#if SOUP_WINDOWS
+		wchar_t buf[256];
+		if (HidD_GetProductString(handle, buf, sizeof(buf)))
+		{
+			ret = unicode::utf16_to_utf8<std::wstring>(buf);
+		}
+#endif
+		return ret;
+	}
+
 	std::string UsbHid::getSerialNumber() const
 	{
 		std::string ret{};
