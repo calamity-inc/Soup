@@ -14,6 +14,7 @@ namespace soup
 	{
 		const char* name;
 		UsbHid device;
+		bool disconnected = false;
 
 		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll();
 
@@ -103,7 +104,7 @@ namespace soup
 		};
 
 		// Polls the latest report from the device and parses it.
-		[[nodiscard]] std::vector<ActiveKey> getActiveKeys() const;
+		[[nodiscard]] std::vector<ActiveKey> getActiveKeys();
 	};
 }
 

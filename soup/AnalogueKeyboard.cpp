@@ -71,34 +71,41 @@ namespace soup
 
 	using ActiveKey = AnalogueKeyboard::ActiveKey;
 
-	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeys() const
+	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeys()
 	{
 		std::vector<ActiveKey> keys{};
 
 		auto report = device.pollReport();
-		StringRefReader sr(report, false);
-		uint16_t scancode;
-		uint8_t value;
-		while (sr.hasMore()
-			&& sr.u16(scancode)
-			&& scancode != 0 // report is always same size, but the after active keys is just 0 bytes
-			&& sr.u8(value)
-			)
+		SOUP_IF_UNLIKELY (report.empty())
 		{
-			// some keys seem to be getting reported multiple times, so just use last reported value
-			for (auto& key : keys)
+			disconnected = true;
+		}
+		else
+		{
+			StringRefReader sr(report, false);
+			uint16_t scancode;
+			uint8_t value;
+			while (sr.hasMore()
+				&& sr.u16(scancode)
+				&& scancode != 0 // report is always same size, but the after active keys is just 0 bytes
+				&& sr.u8(value)
+				)
 			{
-				if (key.scancode == scancode)
+				// some keys seem to be getting reported multiple times, so just use last reported value
+				for (auto& key : keys)
 				{
-					key.value = value;
-					goto _no_emplace;
+					if (key.scancode == scancode)
+					{
+						key.value = value;
+						goto _no_emplace;
+					}
 				}
+				keys.emplace_back(ActiveKey{
+					scancode,
+					value
+					});
+			_no_emplace:;
 			}
-			keys.emplace_back(ActiveKey{
-				scancode,
-				value
-			});
-		_no_emplace:;
 		}
 
 		return keys;
