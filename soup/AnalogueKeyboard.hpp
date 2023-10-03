@@ -77,9 +77,9 @@ namespace soup
 		private:
 			[[nodiscard]] int getVkPrecheck() const noexcept
 			{
-				// MapVirtualKeyA would return VK_INSERT instead of VK_NUMPAD0 etc.
 				switch (scancode)
 				{
+					// MapVirtualKeyA would return VK_INSERT instead of VK_NUMPAD0 etc.
 				case HID_NUMPAD0: return VK_NUMPAD0;
 				case HID_NUMPAD1: return VK_NUMPAD1;
 				case HID_NUMPAD2: return VK_NUMPAD2;
@@ -91,6 +91,8 @@ namespace soup
 				case HID_NUMPAD8: return VK_NUMPAD8;
 				case HID_NUMPAD9: return VK_NUMPAD9;
 				case HID_NUMPAD_DECIMAL: return VK_DECIMAL;
+					// There is no PS/2 mapping for this key.
+				case HID_PAUSE: return VK_PAUSE;
 				default:;
 				}
 				return 0;
