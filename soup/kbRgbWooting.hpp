@@ -2,18 +2,13 @@
 
 #include "kbRgb.hpp"
 
-#include "UsbHid.hpp"
-
 namespace soup
 {
 	struct kbRgbWooting : public kbRgb
 	{
-		UsbHid hid;
+		using kbRgb::kbRgb;
 
-		kbRgbWooting(UsbHid&& hid)
-			: hid(std::move(hid))
-		{
-		}
+		[[nodiscard]] uint8_t getNumColumns() const noexcept;
 
 		void init() final;
 		void deinit() final;

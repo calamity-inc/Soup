@@ -13,7 +13,7 @@ namespace soup
 	struct AnalogueKeyboard
 	{
 		const char* name;
-		UsbHid device;
+		UsbHid hid;
 		bool disconnected = false;
 
 		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll();
@@ -32,7 +32,7 @@ namespace soup
 				}
 				else
 				{
-					// It do be like that on my Wooting Two HE
+					// Correct for Wooting Two & Wooting Two HE
 					if (scancode == 0x409)
 					{
 						return KEY_FN;

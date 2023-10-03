@@ -3,6 +3,7 @@
 #if SOUP_WINDOWS
 
 #include "StringRefReader.hpp"
+#include "Window.hpp"
 
 namespace soup
 {
@@ -24,13 +25,14 @@ namespace soup
 			}
 			else if (hid.vendor_id == 0x31E3)
 			{
+				// Last nibble is for gamepad mode: 0 = Xbox, 1 = Classic, 2 = None
 				if ((hid.product_id & 0xFFF0) == 0x1100)
 				{
-					return "Wooting One V2";
+					return "Wooting One (V2)";
 				}
 				if ((hid.product_id & 0xFFF0) == 0x1200)
 				{
-					return "Wooting Two V2";
+					return "Wooting Two (V2)";
 				}
 				if ((hid.product_id & 0xFFF0) == 0x1210)
 				{
@@ -75,7 +77,7 @@ namespace soup
 	{
 		std::vector<ActiveKey> keys{};
 
-		auto report = device.pollReport();
+		auto report = hid.pollReport();
 		SOUP_IF_UNLIKELY (report.empty())
 		{
 			disconnected = true;

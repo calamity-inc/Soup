@@ -378,6 +378,11 @@ namespace soup
 		return 255;
 	}
 
+	uint8_t kbRgbWooting::getNumColumns() const noexcept
+	{
+		return has_numpad ? 21 : 17;
+	}
+
 	void kbRgbWooting::init()
 	{
 		{
@@ -442,7 +447,7 @@ namespace soup
 		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
 		for (uint8_t row = 0; row != 6; ++row)
 		{
-			for (uint8_t column = 0; column != 21; ++column)
+			for (uint8_t column = 0; column != getNumColumns(); ++column)
 			{
 				const Rgb& colour = getColourForPos(colours, row, column);
 				auto encoded = encodeColor(colour.r, colour.g, colour.b);
@@ -462,7 +467,7 @@ namespace soup
 		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
 		for (uint8_t row = 0; row != 6; ++row)
 		{
-			for (uint8_t column = 0; column != 21; ++column)
+			for (uint8_t column = 0; column != getNumColumns(); ++column)
 			{
 				auto encoded = encodeColor(colour.r, colour.g, colour.b);
 				buf.push_back(encoded & 0xff);

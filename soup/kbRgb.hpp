@@ -5,11 +5,21 @@
 #include "keys.hpp"
 #include "Rgb.hpp"
 #include "UniquePtr.hpp"
+#include "UsbHid.hpp"
 
 namespace soup
 {
 	struct kbRgb
 	{
+		const char* name;
+		bool has_numpad = false;
+		UsbHid hid;
+
+		kbRgb(const char* name, bool has_numpad, UsbHid&& hid)
+			: name(name), has_numpad(has_numpad), hid(std::move(hid))
+		{
+		}
+
 		[[nodiscard]] static std::vector<UniquePtr<kbRgb>> getAll();
 
 		virtual ~kbRgb() = default;
