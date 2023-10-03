@@ -99,7 +99,7 @@ namespace soup
 			}
 		};
 
-		// Polls the latest report from the device and parses it.
+		// Polls the latest report from the device and parses it. (Blocking)
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeys();
 	};
 }
