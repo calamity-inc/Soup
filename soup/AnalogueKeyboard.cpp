@@ -110,6 +110,16 @@ namespace soup
 
 		return keys;
 	}
+
+	int AnalogueKeyboard::ActiveKey::getVkTranslated() const noexcept
+	{
+		if (int vk = getVkPrecheck())
+		{
+			return vk;
+		}
+		const auto layout = GetKeyboardLayout(Window::getFocused().getOwnerTid());
+		return MapVirtualKeyExA(getPs2Scancode(), MAPVK_VSC_TO_VK_EX, layout);
+	}
 }
 
 #endif

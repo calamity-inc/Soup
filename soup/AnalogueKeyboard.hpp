@@ -56,6 +56,7 @@ namespace soup
 				return hasUsbHidScancode() ? usb_hid_scancode_to_ps2_scancode(scancode) : 0;
 			}
 
+			// E.g., if the key to the right of T (KEY_Y) is pressed, will return 'Y'.
 			[[nodiscard]] int getVk() const noexcept
 			{
 				if (int vk = getVkPrecheck())
@@ -65,15 +66,8 @@ namespace soup
 				return MapVirtualKeyA(getPs2Scancode(), MAPVK_VSC_TO_VK_EX);
 			}
 
-			// I have no idea what the difference is between an "untranslated" VK.
-			[[nodiscard]] int getVkTranslated() const noexcept
-			{
-				if (int vk = getVkPrecheck())
-				{
-					return vk;
-				}
-				return MapVirtualKeyExA(getPs2Scancode(), MAPVK_VSC_TO_VK_EX, GetKeyboardLayout(0));
-			}
+			// E.g. if the key to the right of T (KEY_Y) is pressed, may return 'Y' or 'Z' depending on user's layout.
+			[[nodiscard]] int getVkTranslated() const noexcept;
 
 			[[nodiscard]] float getFValue() const noexcept
 			{
