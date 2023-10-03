@@ -113,13 +113,7 @@ namespace soup
 
 		void resizeInner(size_t new_capacity) noexcept
 		{
-			auto new_data = malloc(new_capacity);
-			if (m_data != nullptr)
-			{
-				memcpy(new_data, m_data, m_size);
-				free(m_data);
-			}
-			m_data = reinterpret_cast<uint8_t*>(new_data);
+			m_data = reinterpret_cast<uint8_t*>(m_data ? realloc(m_data, new_capacity) : malloc(new_capacity));
 			m_capacity = new_capacity;
 		}
 

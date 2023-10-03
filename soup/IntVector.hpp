@@ -152,21 +152,15 @@ namespace soup
 			if (max_elms == 0)
 			{
 				max_elms = (0x1000 / sizeof(T));
-				data = (T*)malloc(max_elms * sizeof(T));
+				data = reinterpret_cast<T*>(malloc(max_elms * sizeof(T)));
 			}
 		}
 
 	protected:
 		void makeSpaceForMoreElements() noexcept
 		{
-			const auto old_data = data;
 			max_elms += (0x1000 / sizeof(T));
-			data = (T*)malloc(max_elms * sizeof(T));
-			if (old_data != nullptr)
-			{
-				memcpy(data, old_data, num_elms * sizeof(T));
-				::free(old_data);
-			}
+			data = reinterpret_cast<T*>(data ? realloc(data, max_elms * sizeof(T)) : malloc(max_elms * sizeof(T)));
 		}
 
 	public:
