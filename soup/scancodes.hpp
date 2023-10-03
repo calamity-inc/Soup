@@ -421,6 +421,7 @@ namespace soup
 		case HID_F12: return PS2_F12;
 		case 0x46: return 0xE037; // Print Screen (Note 1)
 		case 0x47: return 0x0046; // Scroll Lock
+		case HID_PAUSE: return 0xE11D; // this works for Windows, not sure how universal it is, tho.
 		case 0x49: return 0xE052; // Insert (Note 1)
 		case 0x4A: return 0xE047; // Home (Note 1)
 		case 0x4B: return 0xE049; // Page Up (Note 1)
