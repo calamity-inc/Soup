@@ -55,10 +55,10 @@ namespace soup
 
 		void resizeNearestNeighbour(unsigned int desired_width, unsigned int desired_height); // Resizes the canvas and its contents, works for all changes.
 
-		[[nodiscard]] std::string toString(bool explicit_nl = false) const;
-		[[nodiscard]] std::string toStringDoublewidth(bool explicit_nl = false) const;
-		[[nodiscard]] std::u16string toStringDownsampled(bool explicit_nl = false);
-		[[nodiscard]] std::u16string toStringDownsampledDoublewidth(bool explicit_nl = false);
+		[[nodiscard]] std::string toString(bool explicit_nl) const;
+		[[nodiscard]] std::string toStringDoublewidth(bool explicit_nl) const;
+		[[nodiscard]] std::u16string toStringDownsampled(bool explicit_nl);
+		[[nodiscard]] std::u16string toStringDownsampledDoublewidth(bool explicit_nl);
 	private:
 		[[nodiscard]] static char16_t downsampleChunkToChar(uint8_t chunkset) noexcept;
 

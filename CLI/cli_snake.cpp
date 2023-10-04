@@ -64,7 +64,7 @@ static void placeFruit()
 static void render()
 {
 	soup::console.setCursorPos(0, 0);
-	soup::console << soup::unicode::utf16_to_utf8(c.toStringDownsampledDoublewidth());
+	soup::console << soup::unicode::utf16_to_utf8(c.toStringDownsampledDoublewidth(false));
 	soup::console.setCursorPos(0, 0);
 }
 

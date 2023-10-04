@@ -132,7 +132,7 @@ static void render()
 	console.setCursorPos(0, 0);
 
 	auto print_time = time::millis();
-	console << c.toString();
+	console << c.toString(false);
 	print_time = time::millis() - print_time;
 
 	console.setCursorPos(0, 0);
