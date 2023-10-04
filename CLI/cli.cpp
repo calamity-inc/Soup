@@ -5,6 +5,7 @@
 #include <audDevice.hpp>
 #include <audPlayback.hpp>
 #include <Canvas.hpp>
+#include <Chatbot.hpp>
 #include <ChessCli.hpp>
 #include <CompiledExecutable.hpp>
 #include <country_names.hpp>
@@ -35,6 +36,29 @@ int main(int argc, const char** argv)
 		if (subcommand == "3d")
 		{
 			cli_3d();
+			return 0;
+		}
+
+		if (subcommand == "chatbot")
+		{
+			while (true)
+			{
+				std::cout << "> ";
+				std::string line;
+				if (!std::getline(std::cin, line))
+				{
+					break;
+				}
+				try
+				{
+					std::cout << Chatbot::process(line).response;
+				}
+				catch (std::exception& e)
+				{
+					std::cout << "Error: " << e.what();
+				}
+				std::cout << std::endl;
+			}
 			return 0;
 		}
 
@@ -347,6 +371,7 @@ int main(int argc, const char** argv)
 
 Available tools:
 - 3d
+- chatbot
 - chatgpt [token] <model>
 - chess <FEN>
 - datareflection
