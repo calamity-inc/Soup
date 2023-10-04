@@ -272,6 +272,19 @@ namespace soup
 			return true;
 		}
 
+		static void appendPresentably(std::string& str, char c) noexcept
+		{
+			switch (c)
+			{
+			case '\r': str.append("\\r"); return;
+			case '\n': str.append("\\n"); return;
+			case '\t': str.append("\\t"); return;
+			case '\f': str.append("\\f"); return;
+			case '\v': str.append("\\v"); return;
+			}
+			str.push_back(c);
+		}
+
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			std::string str(1, '[');
@@ -297,15 +310,15 @@ namespace soup
 						const uint8_t range_len = (range_end - range_begin);
 						if (range_len > 3)
 						{
-							str.push_back(range_begin);
+							appendPresentably(str, range_begin);
 							str.push_back('-');
-							str.push_back(range_end - 1);
+							appendPresentably(str, range_end - 1);
 						}
 						else
 						{
 							for (uint16_t j = range_begin; j != range_end; ++j)
 							{
-								str.push_back(j);
+								appendPresentably(str, j);
 							}
 						}
 						range_begin = 0x100;
@@ -318,15 +331,15 @@ namespace soup
 				const uint8_t range_len = (range_end - range_begin);
 				if (range_len > 3)
 				{
-					str.push_back(range_begin);
+					appendPresentably(str, range_begin);
 					str.push_back('-');
-					str.push_back((char)(range_end - 1));
+					appendPresentably(str, (char)(range_end - 1));
 				}
 				else
 				{
 					for (uint16_t j = range_begin; j != range_end; ++j)
 					{
-						str.push_back(j);
+						appendPresentably(str, j);
 					}
 				}
 			}

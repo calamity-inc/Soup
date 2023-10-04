@@ -178,6 +178,16 @@ namespace soup
 					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
+				else if (*s.it == 's')
+				{
+					const char arr[] = { '\r', '\n', '\t', '\f', '\v', ' ' };
+					auto upC = soup::make_unique<RegexRangeConstraint>(arr);
+					auto pC = upC.get();
+					a.constraints.emplace_back(std::move(upC));
+					success_transitions.setTransitionTo(pC);
+					success_transitions.emplace(&pC->success_transition);
+					continue;
+				}
 			}
 			else
 			{
