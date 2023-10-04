@@ -321,5 +321,10 @@ namespace soup
 		{
 			return 1;
 		}
+
+		[[nodiscard]] UniquePtr<RegexConstraint> clone() const final
+		{
+			return soup::make_unique<RegexRangeConstraint>(*this);
+		}
 	};
 }

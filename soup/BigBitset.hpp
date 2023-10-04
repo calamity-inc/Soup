@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring> // memcpy
 
 namespace soup
 {
@@ -9,6 +10,13 @@ namespace soup
 	struct BigBitset
 	{
 		uint8_t data[Bytes]{};
+		
+		BigBitset() = default;
+
+		BigBitset(const BigBitset<Bytes>& b)
+		{
+			memcpy(data, b.data, sizeof(data));
+		}
 
 		[[nodiscard]] static BigBitset<Bytes>* at(void* dp) noexcept
 		{

@@ -14,6 +14,13 @@ namespace soup
 		const RegexConstraintTransitionable* rollback_transition = nullptr;
 		const RegexGroup* group = nullptr;
 
+		RegexConstraint() = default;
+
+		RegexConstraint(const RegexConstraint& b)
+		{
+			// We want the pointers to be nullptr so transitions are not copied by `clone`.
+		}
+
 		virtual ~RegexConstraint() = default;
 
 		[[nodiscard]] virtual const RegexConstraintTransitionable* getTransition() const noexcept = 0;
