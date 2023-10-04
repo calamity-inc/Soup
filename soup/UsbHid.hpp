@@ -36,12 +36,6 @@ namespace soup
 
 		[[nodiscard]] Buffer pollReport() const; // blocking
 
-		[[nodiscard]] uint16_t getReportLength() const noexcept
-		{
-			// Excluding report id added by Windows.
-			return input_report_byte_length - 1;
-		}
-
 		void sendReport(Buffer&& buf) const;
 		void sendFeatureReport(Buffer&& buf) const;
 	};
