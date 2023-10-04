@@ -400,6 +400,7 @@ namespace soup
 
 	Buffer UsbHid::pollReport() const
 	{
+		SOUP_ASSERT(havePermission());
 #if SOUP_WINDOWS
 		Buffer buf(input_report_byte_length);
 		DWORD bytes_read;
