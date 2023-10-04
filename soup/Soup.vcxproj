@@ -550,7 +550,7 @@
     <ClInclude Include="textmate_grammar.hpp" />
     <ClInclude Include="TransientToken.hpp" />
     <ClInclude Include="UniqueList.hpp" />
-    <ClInclude Include="UsbHid.hpp" />
+    <ClInclude Include="hwHid.hpp" />
     <ClInclude Include="Uuid.hpp" />
     <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
@@ -1025,7 +1025,7 @@
     <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="tridText.cpp" />
-    <ClCompile Include="UsbHid.cpp" />
+    <ClCompile Include="hwHid.cpp" />
     <ClCompile Include="Uuid.cpp" />
     <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="visKeyboard.cpp" />

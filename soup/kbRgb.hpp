@@ -5,7 +5,7 @@
 #include "keys.hpp"
 #include "Rgb.hpp"
 #include "UniquePtr.hpp"
-#include "UsbHid.hpp"
+#include "hwHid.hpp"
 
 namespace soup
 {
@@ -13,9 +13,9 @@ namespace soup
 	{
 		const char* name;
 		bool has_numpad = false;
-		UsbHid hid;
+		hwHid hid;
 
-		kbRgb(const char* name, bool has_numpad, UsbHid&& hid)
+		kbRgb(const char* name, bool has_numpad, hwHid&& hid)
 			: name(name), has_numpad(has_numpad), hid(std::move(hid))
 		{
 		}

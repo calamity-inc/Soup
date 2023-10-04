@@ -8,7 +8,7 @@ namespace soup
 	{
 		std::vector<UniquePtr<kbRgb>> res{};
 
-		for (auto& hid : UsbHid::getAll())
+		for (auto& hid : hwHid::getAll())
 		{
 			if (include_no_permission || hid.havePermission())
 			{

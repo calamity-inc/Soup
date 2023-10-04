@@ -1488,7 +1488,7 @@
     <ClInclude Include="visKeyboard.hpp">
       <Filter>vis</Filter>
     </ClInclude>
-    <ClInclude Include="UsbHid.hpp">
+    <ClInclude Include="hwHid.hpp">
       <Filter>hardware</Filter>
     </ClInclude>
     <ClInclude Include="scancodes.hpp">
@@ -2194,7 +2194,7 @@
     <ClCompile Include="visKeyboard.cpp">
       <Filter>vis</Filter>
     </ClCompile>
-    <ClCompile Include="UsbHid.cpp">
+    <ClCompile Include="hwHid.cpp">
       <Filter>hardware</Filter>
     </ClCompile>
     <ClCompile Include="AnalogueKeyboard.cpp">

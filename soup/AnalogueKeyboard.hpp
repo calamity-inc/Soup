@@ -5,14 +5,14 @@
 #include <vector>
 
 #include "scancodes.hpp"
-#include "UsbHid.hpp"
+#include "hwHid.hpp"
 
 namespace soup
 {
 	struct AnalogueKeyboard
 	{
 		const char* name;
-		UsbHid hid;
+		hwHid hid;
 		bool disconnected = false;
 
 		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll(bool include_no_permission = false);
@@ -25,9 +25,9 @@ namespace soup
 
 			[[nodiscard]] uint8_t getSoupKey() const noexcept
 			{
-				if (hasUsbHidScancode())
+				if (hasHidScancode())
 				{
-					return usb_hid_scancode_to_soup_key(getUsbHidScancode());
+					return hid_scancode_to_soup_key(getHidScancode());
 				}
 				else
 				{
@@ -40,19 +40,19 @@ namespace soup
 				return KEY_NONE;
 			}
 
-			[[nodiscard]] bool hasUsbHidScancode() const noexcept
+			[[nodiscard]] bool hasHidScancode() const noexcept
 			{
 				return scancode <= 0xFF;
 			}
 
-			[[nodiscard]] UsbHidScancode getUsbHidScancode() const noexcept
+			[[nodiscard]] HidScancode getHidScancode() const noexcept
 			{
-				return (UsbHidScancode)scancode;
+				return (HidScancode)scancode;
 			}
 
 			[[nodiscard]] uint16_t getPs2Scancode() const noexcept
 			{
-				return hasUsbHidScancode() ? usb_hid_scancode_to_ps2_scancode(scancode) : 0;
+				return hasHidScancode() ? usb_hid_scancode_to_ps2_scancode(scancode) : 0;
 			}
 
 			[[nodiscard]] float getFValue() const noexcept

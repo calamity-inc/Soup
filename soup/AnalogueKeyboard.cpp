@@ -7,7 +7,7 @@
 
 namespace soup
 {
-	[[nodiscard]] static const char* checkDeviceName(const UsbHid& hid)
+	[[nodiscard]] static const char* checkDeviceName(const hwHid& hid)
 	{
 		// Wooting, https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-plugin/src/lib.rs
 		if (hid.usage_page == 0xFF54)
@@ -60,7 +60,7 @@ namespace soup
 	{
 		std::vector<AnalogueKeyboard> res{};
 
-		for (auto& hid : UsbHid::getAll())
+		for (auto& hid : hwHid::getAll())
 		{
 			if (include_no_permission || hid.havePermission())
 			{

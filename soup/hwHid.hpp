@@ -11,7 +11,7 @@
 namespace soup
 {
 	// A human interface device.
-	class UsbHid
+	class hwHid
 	{
 	public:
 		uint16_t vendor_id;
@@ -30,7 +30,7 @@ namespace soup
 		HandleRaii handle;
 
 	public:
-		[[nodiscard]] static std::vector<UsbHid> getAll();
+		[[nodiscard]] static std::vector<hwHid> getAll();
 
 #if SOUP_WINDOWS
 		[[nodiscard]] std::string getProductName() const;

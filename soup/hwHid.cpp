@@ -1,10 +1,10 @@
-#include "UsbHid.hpp"
+#include "hwHid.hpp"
 
 // Based on hidapi:
 // - https://github.com/libusb/hidapi/blob/master/windows/hid.c
 // - https://github.com/libusb/hidapi/blob/master/linux/hid.c
 
-// If you want to use UsbHid on Linux, you need to `sudo apt install libudev-dev`
+// If you want to use hwHid on Linux, you need to `sudo apt install libudev-dev`
 // and add `arg -DSOUP_HAVE_LIBUDEV_DEV` to Soup's .sun file.
 
 #if SOUP_WINDOWS
@@ -233,9 +233,9 @@ namespace soup
 	}
 #endif
 
-	std::vector<UsbHid> UsbHid::getAll()
+	std::vector<hwHid> hwHid::getAll()
 	{
-		std::vector<UsbHid> res{};
+		std::vector<hwHid> res{};
 #if SOUP_WINDOWS
 		GUID HIDGuid;
 #if true
@@ -284,7 +284,7 @@ namespace soup
 
 		for (wchar_t* device_interface = device_interface_list; *device_interface; device_interface += wcslen(device_interface) + 1)
 		{
-			UsbHid hid{};
+			hwHid hid{};
 
 			hid.handle = CreateFileW(
 				device_interface,
@@ -341,7 +341,7 @@ namespace soup
 			{
 				const char* path = udev_list_entry_get_name(entry); // same as udev_device_get_syspath, /sys/devices/...
 
-				UsbHid hid{};
+				hwHid hid{};
 				if (parse_uevent_info(get_uevent_from_sysfs(path), hid.vendor_id, hid.product_id, hid.product_name, hid.serial_number))
 				{
 					hidraw_report_descriptor report_desc;
@@ -371,7 +371,7 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
-	std::string UsbHid::getProductName() const
+	std::string hwHid::getProductName() const
 	{
 		std::string ret{};
 
@@ -384,7 +384,7 @@ namespace soup
 		return ret;
 	}
 
-	std::string UsbHid::getSerialNumber() const
+	std::string hwHid::getSerialNumber() const
 	{
 		std::string ret{};
 
@@ -398,7 +398,7 @@ namespace soup
 	}
 #endif
 
-	Buffer UsbHid::pollReport() const
+	Buffer hwHid::pollReport() const
 	{
 		SOUP_ASSERT(havePermission());
 #if SOUP_WINDOWS
@@ -430,7 +430,7 @@ namespace soup
 		return {};
 	}
 
-	void UsbHid::sendReport(Buffer&& buf) const
+	void hwHid::sendReport(Buffer&& buf) const
 	{
 #if SOUP_WINDOWS
 		// On Windows, the output report has to be at least as long as output_report_byte_length.
@@ -446,7 +446,7 @@ namespace soup
 #endif
 	}
 
-	void UsbHid::sendFeatureReport(Buffer&& buf) const
+	void hwHid::sendFeatureReport(Buffer&& buf) const
 	{
 #if SOUP_WINDOWS
 		// On Windows, the feature report has to be at least as long as feature_report_byte_length.

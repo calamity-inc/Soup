@@ -12,7 +12,7 @@ namespace soup
 	*
 	* Instead of "scancodes" they might be called "Usage IDs" as on page 53 of https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
 	*/
-	enum UsbHidScancode : uint8_t
+	enum HidScancode : uint8_t
 	{
 		HID_A = 0x04,
 		HID_B = 0x05,
@@ -158,7 +158,7 @@ namespace soup
 		HID_META_RIGHT = 0xe7,
 	};
 
-	[[nodiscard]] constexpr uint8_t usb_hid_scancode_to_soup_key(uint8_t scancode) noexcept
+	[[nodiscard]] constexpr uint8_t hid_scancode_to_soup_key(uint8_t scancode) noexcept
 	{
 		switch (scancode)
 		{
@@ -479,7 +479,7 @@ namespace soup
 		return 0;
 	}
 
-	[[nodiscard]] constexpr uint16_t usb_hid_scancode_to_ps2_scancode(UsbHidScancode scancode) noexcept
+	[[nodiscard]] constexpr uint16_t usb_hid_scancode_to_ps2_scancode(HidScancode scancode) noexcept
 	{
 		return usb_hid_scancode_to_ps2_scancode(static_cast<uint8_t>(scancode));
 	}
