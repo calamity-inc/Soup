@@ -3,6 +3,7 @@
 #include "cbCmd.hpp"
 
 #include "Canvas.hpp"
+#include "format.hpp"
 #include "QrCode.hpp"
 
 namespace soup
