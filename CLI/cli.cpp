@@ -43,6 +43,7 @@ int main(int argc, const char** argv)
 		{
 			while (true)
 			{
+				console.init(false);
 				std::cout << "> ";
 				std::string line;
 				if (!std::getline(std::cin, line))
@@ -51,13 +52,17 @@ int main(int argc, const char** argv)
 				}
 				try
 				{
-					std::cout << Chatbot::process(line).response;
+					auto res = Chatbot::process(line);
+					std::cout << res.response << std::endl;
+					if (res.type == CB_RES_IMAGE)
+					{
+						std::cout << res.extra.getCanvas().toStringDownsampledDoublewidthUtf8(true);
+					}
 				}
 				catch (std::exception& e)
 				{
-					std::cout << "Error: " << e.what();
+					std::cout << "Error: " << e.what() << std::endl;
 				}
-				std::cout << std::endl;
 			}
 			return 0;
 		}

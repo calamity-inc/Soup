@@ -374,4 +374,77 @@ namespace soup
 	{
 		return cbUnitFromString(getArgWord());
 	}
+
+	std::string cbParser::getArgPhrase() const noexcept
+	{
+		// First, look if the user put anything into quotes.
+		auto i = getWordAfterCommandEnd();
+		while (i != text.end())
+		{
+			if (*i == '"' || *i == '\'')
+			{
+				const auto beg = i;
+				const char quot = *i++;
+				StringBuilder sb;
+				sb.beginCopy(text, i);
+				for (; i != text.end(); ++i)
+				{
+					if (*i == quot)
+					{
+						sb.endCopy(text, i);
+						return sb;
+					}
+				}
+				// Quote was not terminated, continue looking.
+				i = beg;
+			}
+			seekNextWord(i);
+		}
+
+		// Nothing, use everything after trigger word.
+		auto phrase = text.substr(getWordAfterCommandEnd() - text.begin());
+
+		// Omit verbage, specifically for cbCmdQrcode.
+		if (phrase.substr(0, 5) == "that ")
+		{
+			phrase.erase(0, 5);
+			if (phrase.substr(0, 6) == "reads ")
+			{
+				phrase.erase(0, 6);
+			}
+			else if (phrase.substr(0, 5) == "says ")
+			{
+				phrase.erase(0, 5);
+			}
+			else if (phrase.substr(0, 9) == "contains ")
+			{
+				phrase.erase(0, 9);
+			}
+			else if (phrase.substr(0, 8) == "encodes ")
+			{
+				phrase.erase(0, 8);
+			}
+		}
+		else
+		{
+			if (phrase.substr(0, 8) == "reading ")
+			{
+				phrase.erase(0, 8);
+			}
+			else if (phrase.substr(0, 7) == "saying ")
+			{
+				phrase.erase(0, 7);
+			}
+			else if (phrase.substr(0, 11) == "containing ")
+			{
+				phrase.erase(0, 11);
+			}
+			else if (phrase.substr(0, 9) == "encoding ")
+			{
+				phrase.erase(0, 9);
+			}
+		}
+
+		return phrase;
+	}
 }

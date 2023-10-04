@@ -60,5 +60,7 @@ namespace soup
 		[[nodiscard]] cbMeasurement getArgMeasurementLefthand() const noexcept;
 
 		[[nodiscard]] cbUnit getArgUnit() const noexcept;
+
+		[[nodiscard]] std::string getArgPhrase() const noexcept;
 	};
 }

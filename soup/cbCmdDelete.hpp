@@ -14,13 +14,13 @@ namespace soup
 		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
 		{
 			auto s = p.getArgNumeric();
-			long i;
-			// Not ideal because std::stol may throw.
+			long long i;
+			// Not ideal because std::stoll may throw.
 #if SOUP_EXCEPTIONS
 			try
 #endif
 			{
-				i = std::stol(s);
+				i = std::stoll(s);
 			}
 #if SOUP_EXCEPTIONS
 			catch (...)
@@ -29,7 +29,7 @@ namespace soup
 			}
 #endif
 			cbResult res(CB_RES_DELETE);
-			res.delete_args.num = i;
+			res.extra = static_cast<int64_t>(i);
 			return res;
 		}
 	};

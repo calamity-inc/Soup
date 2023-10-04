@@ -826,7 +826,7 @@ static void test_chatbot_implementables()
 	{
 		auto res = Chatbot::process("delete 10");
 		assert(res.type == CB_RES_DELETE);
-		assert(res.getDeleteArgs().num == 10);
+		assert(res.getDeleteNum() == 10);
 	}
 }
 

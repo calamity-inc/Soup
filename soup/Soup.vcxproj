@@ -459,6 +459,7 @@
     <ClInclude Include="cbCmdJoke.hpp" />
     <ClInclude Include="cbCmdOpinion.hpp" />
     <ClInclude Include="cbCmdOpinionFollowup.hpp" />
+    <ClInclude Include="cbCmdQrcode.hpp" />
     <ClInclude Include="cbCmdRand.hpp" />
     <ClInclude Include="cbCmdThanks.hpp" />
     <ClInclude Include="cbParser.hpp" />

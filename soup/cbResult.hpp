@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "base.hpp"
+#include "Mixed.hpp"
 
 namespace soup
 {
@@ -11,21 +12,14 @@ namespace soup
 		CB_RES_BUILTIN = 0,
 		CB_RES_CAPABILITIES, // "What can you do?"
 		CB_RES_DELETE,
+		CB_RES_IMAGE,
 	};
 
 	struct cbResult
 	{
-		struct DeleteArgs
-		{
-			int num;
-		};
-
 		cbResultType type;
 		std::string response;
-		union
-		{
-			DeleteArgs delete_args;
-		};
+		Mixed extra;
 
 		cbResult(const char* response)
 			: type(CB_RES_BUILTIN), response(response)
@@ -52,15 +46,9 @@ namespace soup
 			return type == CB_RES_DELETE;
 		}
 
-		[[nodiscard]] const DeleteArgs& getDeleteArgs() const
-		{
-			SOUP_ASSERT(isDelete());
-			return delete_args;
-		}
-
 		[[nodiscard]] int getDeleteNum() const
 		{
-			return getDeleteArgs().num;
+			return static_cast<int>(extra.getInt());
 		}
 	};
 }
