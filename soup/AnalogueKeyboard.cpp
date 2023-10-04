@@ -108,7 +108,7 @@ namespace soup
 				keys.emplace_back(ActiveKey{
 					scancode,
 					value
-					});
+				});
 			_no_emplace:;
 			}
 		}
