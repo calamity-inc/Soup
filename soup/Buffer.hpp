@@ -90,11 +90,11 @@ namespace soup
 
 		void resize(size_t desired_size) noexcept
 		{
-			if (m_size > desired_size)
+			m_size = desired_size;
+			//if (m_capacity < desired_size)
 			{
-				m_size = desired_size;
+				resizeInner(desired_size);
 			}
-			resizeInner(desired_size);
 		}
 
 	private:

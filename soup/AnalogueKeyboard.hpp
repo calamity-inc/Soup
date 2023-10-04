@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-#if SOUP_WINDOWS
 
 #include <vector>
 
@@ -45,7 +44,7 @@ namespace soup
 			{
 				return scancode <= 0xFF;
 			}
-			
+
 			[[nodiscard]] UsbHidScancode getUsbHidScancode() const noexcept
 			{
 				return (UsbHidScancode)scancode;
@@ -56,6 +55,12 @@ namespace soup
 				return hasUsbHidScancode() ? usb_hid_scancode_to_ps2_scancode(scancode) : 0;
 			}
 
+			[[nodiscard]] float getFValue() const noexcept
+			{
+				return static_cast<float>(value) / 255.0f;
+			}
+
+#if SOUP_WINDOWS
 			// E.g., if the key to the right of T (KEY_Y) is pressed, will return 'Y'.
 			[[nodiscard]] int getVk() const noexcept
 			{
@@ -68,11 +73,6 @@ namespace soup
 
 			// E.g. if the key to the right of T (KEY_Y) is pressed, may return 'Y' or 'Z' depending on user's layout.
 			[[nodiscard]] int getVkTranslated() const noexcept;
-
-			[[nodiscard]] float getFValue() const noexcept
-			{
-				return static_cast<float>(value) / 255.0f;
-			}
 
 		private:
 			[[nodiscard]] int getVkPrecheck() const noexcept
@@ -95,11 +95,10 @@ namespace soup
 				}
 				return 0;
 			}
+#endif
 		};
 
 		// Polls the latest report from the device and parses it. (Blocking)
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeys();
 	};
 }
-
-#endif
