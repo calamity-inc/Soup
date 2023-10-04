@@ -92,7 +92,7 @@ namespace soup
 				}
 				else if (*flags == 'U')
 				{
-					res |= RE_DOLLAR_ENDONLY;
+					res |= RE_UNGREEDY;
 				}
 			}
 			return res;
