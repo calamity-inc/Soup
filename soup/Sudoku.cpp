@@ -981,6 +981,13 @@ namespace soup
 		}
 	}
 
+	bool Sudoku::canSolve(uint8_t strategies) const
+	{
+		Sudoku cpy = *this;
+		cpy.solve(strategies);
+		return cpy.getNumValues() == COUNT(cells);
+	}
+
 	void Sudoku::draw(RenderTarget& rt, bool no_candidates) const
 	{
 		for (index_t y = 0; y != 9; ++y)

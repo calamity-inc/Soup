@@ -191,13 +191,15 @@ namespace soup
 			X_WING = (1 << 4),
 			CONTRADICTION_IF_CANDIDATE_REMOVED = (1 << 5),
 
+			TRIVIAL = NAKED_SINGLE | HIDDEN_SINGLE,
+			EASY = TRIVIAL | LOCKED_CANDIDATES | HIDDEN_PAIR,
 			ALL = 0xff,
 		};
 
 		bool step(uint8_t strategies = ALL, std::string* explanation = nullptr);
 		bool stepNakedSingle(std::string* explanation = nullptr); // Fill in a digit with only 1 candidate if possible.
 		bool stepHiddenSingle(std::string* explanation = nullptr); // Fill in a digit that can only be in that place within a house if possible.
-		bool stepLockedCandidates(std::string* explanation = nullptr);
+		bool stepLockedCandidates(std::string* explanation = nullptr); // Aka. pointing pairs/triples
 		bool stepHiddenPair(std::string* explanation = nullptr);
 		bool stepXWing(std::string* explanation = nullptr);
 		bool stepContradictionIfCandidateRemoved(std::string* explanation = nullptr); // No idea what to call this. Similar idea to "Simple Colouring" and "X-Cycles".
@@ -205,13 +207,15 @@ namespace soup
 		bool solveCell(std::string* explanation = nullptr);
 
 		// Note: Might not actually be able to solve the puzzle. No bifurcation will be attempted.
-		void solve(uint8_t strategies = ALL) noexcept
+		void solve(uint8_t strategies = ALL)
 		{
 			do
 			{
 				eliminateImpossibleCandiates();
 			} while (step(strategies));
 		}
+
+		[[nodiscard]] bool canSolve(uint8_t strategies = ALL) const;
 
 		void draw(RenderTarget& rt, bool no_candidates = false) const; // Requires a (15 * 9) by (15 * 9) pixel area.
 
