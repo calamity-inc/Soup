@@ -12,27 +12,16 @@ namespace soup
 		// Wooting, https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-plugin/src/lib.rs
 		if (hid.usage_page == 0xFF54)
 		{
-			if (hid.vendor_id == 0x03EB)
-			{
-				if (hid.product_id == 0xFF01)
-				{
-					return "Wooting One";
-				}
-				if (hid.product_id == 0xFF02)
-				{
-					return "Wooting Two";
-				}
-			}
-			else if (hid.vendor_id == 0x31E3)
+			if (hid.vendor_id == 0x31E3)
 			{
 				// Last nibble is for gamepad mode: 0 = Xbox, 1 = Classic, 2 = None
 				if ((hid.product_id & 0xFFF0) == 0x1100)
 				{
-					return "Wooting One (V2)";
+					return "Wooting One";
 				}
 				if ((hid.product_id & 0xFFF0) == 0x1200)
 				{
-					return "Wooting Two (V2)";
+					return "Wooting Two";
 				}
 				if ((hid.product_id & 0xFFF0) == 0x1210)
 				{
@@ -49,6 +38,17 @@ namespace soup
 				if ((hid.product_id & 0xFFF0) == 0x1310)
 				{
 					return "Wooting 60 HE ARM";
+				}
+			}
+			else if (hid.vendor_id == 0x03EB)
+			{
+				if (hid.product_id == 0xFF01)
+				{
+					return "Wooting One (Old Firmware)";
+				}
+				if (hid.product_id == 0xFF02)
+				{
+					return "Wooting Two (Old Firmware)";
 				}
 			}
 		}

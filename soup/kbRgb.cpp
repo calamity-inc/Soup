@@ -19,11 +19,11 @@ namespace soup
 					if ((hid.product_id & 0xFFF0) == 0x1100)
 					{
 						// Untested
-						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting One (V2)", false, std::move(hid)));
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting One", false, std::move(hid)));
 					}
 					else if ((hid.product_id & 0xFFF0) == 0x1200)
 					{
-						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Two (V2)", true, std::move(hid)));
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Two", true, std::move(hid)));
 					}
 					else if ((hid.product_id & 0xFFF0) == 0x1220)
 					{
