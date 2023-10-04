@@ -445,8 +445,11 @@ namespace soup
 	Window Window::create(const std::string& title, unsigned int width, unsigned int height) noexcept
 	{
 		const X11Api& x = X11Api::get();
-		// NOTE: "Title" is currently ignored.
 		auto h = x.createSimpleWindow(x.display, x.defaultRootWindow(x.display), 100, 100, width, height, 0, 0, 0);
+		SOUP_IF_LIKELY (!title.empty())
+		{
+			x.storeName(x.display, h, title.c_str());
+		}
 		window_configs.emplace(h, Window::Config{});
 		x.mapWindow(x.display, h);
 		return Window{ h };
