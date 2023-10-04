@@ -1021,6 +1021,27 @@ namespace soup
 		}
 	}
 
+	void Sudoku::removeRandomDigit()
+	{
+		const count_t size = getNumValues();
+		if (size != 0)
+		{
+			const auto to_erase = soup::rand.t<count_t>(0, size - 1);
+			count_t i = 0;
+			for (auto& cell : cells)
+			{
+				if (cell.value_bf)
+				{
+					if (++i == to_erase)
+					{
+						cell.reset();
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	std::string Sudoku::toString() const
 	{
 		std::string str{};
