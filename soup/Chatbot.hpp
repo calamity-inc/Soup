@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "cbResult.hpp"
+
 namespace soup
 {
 	struct Chatbot
