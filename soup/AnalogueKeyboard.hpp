@@ -15,7 +15,7 @@ namespace soup
 		UsbHid hid;
 		bool disconnected = false;
 
-		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll();
+		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll(bool include_no_permission = false);
 
 		class ActiveKey
 		{
@@ -97,6 +97,11 @@ namespace soup
 			}
 #endif
 		};
+
+		[[nodiscard]] bool havePermission() const noexcept
+		{
+			return hid.havePermission();
+		}
 
 		// Polls the latest report from the device and parses it. (Blocking)
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeys();

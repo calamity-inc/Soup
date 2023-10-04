@@ -56,13 +56,13 @@ namespace soup
 		return nullptr;
 	}
 
-	std::vector<AnalogueKeyboard> AnalogueKeyboard::getAll()
+	std::vector<AnalogueKeyboard> AnalogueKeyboard::getAll(bool include_no_permission)
 	{
 		std::vector<AnalogueKeyboard> res{};
 
 		for (auto& hid : UsbHid::getAll())
 		{
-			if (hid.havePermission())
+			if (include_no_permission || hid.havePermission())
 			{
 				if (auto name = checkDeviceName(hid))
 				{

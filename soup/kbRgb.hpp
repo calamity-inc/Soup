@@ -20,7 +20,12 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] static std::vector<UniquePtr<kbRgb>> getAll();
+		[[nodiscard]] static std::vector<UniquePtr<kbRgb>> getAll(bool include_no_permission = false);
+
+		[[nodiscard]] bool havePermission() const noexcept
+		{
+			return hid.havePermission();
+		}
 
 		virtual ~kbRgb() = default;
 

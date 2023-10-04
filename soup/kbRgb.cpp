@@ -4,13 +4,13 @@
 
 namespace soup
 {
-	std::vector<UniquePtr<kbRgb>> kbRgb::getAll()
+	std::vector<UniquePtr<kbRgb>> kbRgb::getAll(bool include_no_permission)
 	{
 		std::vector<UniquePtr<kbRgb>> res{};
 
 		for (auto& hid : UsbHid::getAll())
 		{
-			if (hid.havePermission())
+			if (include_no_permission || hid.havePermission())
 			{
 				if (hid.usage_page == 0x1337
 					&& hid.vendor_id == 0x31E3
