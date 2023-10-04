@@ -4,6 +4,9 @@
 // - https://github.com/libusb/hidapi/blob/master/windows/hid.c
 // - https://github.com/libusb/hidapi/blob/master/linux/hid.c
 
+// If you want to use UsbHid on Linux, you need to `sudo apt install libudev-dev`
+// and add `arg -DSOUP_HAVE_LIBUDEV_DEV` to Soup's .sun file.
+
 #if SOUP_WINDOWS
 #include <cfgmgr32.h>
 #include <hidsdi.h>
@@ -12,12 +15,12 @@
 #pragma comment(lib, "hid.lib")
 
 #include "unicode.hpp"
-#else
+#elif defined(SOUP_HAVE_LIBUDEV_DEV)
 #include <sys/stat.h> // open
 #include <fcntl.h> // O_RDWR etc
 #include <unistd.h> // read
 
-#include <libudev.h> // sudo apt install libudev-dev
+#include <libudev.h>
 #pragma comment(lib, "udev")
 
 #include <linux/hidraw.h>
@@ -27,7 +30,7 @@
 
 namespace soup
 {
-#if !SOUP_WINDOWS
+#if !SOUP_WINDOWS && defined(SOUP_HAVE_LIBUDEV_DEV)
 	[[nodiscard]] static bool parse_uevent_info(std::string uevent, unsigned short& vendor_id, unsigned short& product_id, std::string& product_name_utf8, std::string& serial_number_utf8)
 	{
 		char* saveptr = NULL;
@@ -323,7 +326,7 @@ namespace soup
 		}
 
 		free(device_interface_list);
-#else
+#elif defined(SOUP_HAVE_LIBUDEV_DEV)
 		if (udev* udev = udev_new())
 		{
 			udev_enumerate* enumerate = udev_enumerate_new(udev);
@@ -414,7 +417,7 @@ namespace soup
 
 			return buf;
 		}
-#else
+#elif defined(SOUP_HAVE_LIBUDEV_DEV)
 		Buffer buf(1024); // We don't have a input_report_byte_length, so 1024 ought to be enough.
 		int bytes_read = ::read(handle, buf.data(), buf.capacity());
 		if (bytes_read >= 0)
@@ -437,7 +440,7 @@ namespace soup
 
 		DWORD bytesWritten;
 		SOUP_ASSERT(WriteFile(handle, buf.data(), buf.size(), &bytesWritten, nullptr) && bytesWritten == buf.size());
-#else
+#elif defined(SOUP_HAVE_LIBUDEV_DEV)
 		// TODO
 #endif
 	}
@@ -452,7 +455,7 @@ namespace soup
 		}
 
 		SOUP_ASSERT(HidD_SetFeature(handle, buf.data(), buf.size()));
-#else
+#elif defined(SOUP_HAVE_LIBUDEV_DEV)
 		// TODO
 #endif
 	}
