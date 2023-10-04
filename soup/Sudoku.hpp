@@ -207,7 +207,8 @@ namespace soup
 
 		[[nodiscard]] std::string toString() const;
 		[[nodiscard]] std::string toBinary() const;
-		[[nodiscard]] std::string toBinaryV0() const;
-		[[nodiscard]] std::string toBinaryV1() const;
+		[[nodiscard]] std::string toBinaryV0() const; // very simple encoding, always takes up 41 bytes.
+		[[nodiscard]] std::string toBinaryV1() const; // optimised for sparse grids, takes up 10,5 bytes plus 0,5 bytes per populated cell.
+		[[nodiscard]] std::string toBinaryV2() const; // optimised for full grids, encoding them in only 25 bytes, but can encode other grids in 41 bytes or less.
 	};
 }

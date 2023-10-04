@@ -161,6 +161,33 @@ namespace soup
 				}
 			}
 		}
+		else if (version == 2)
+		{
+			bool include_zero;
+			br.b(include_zero);
+			for (index_t y = 0; y != 9; ++y)
+			{
+				std::vector<value_t> candidates{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+				if (include_zero)
+				{
+					candidates.insert(candidates.cbegin(), 0);
+				}
+				for (index_t x = 0; x != 9; ++x)
+				{
+					uint8_t i = 0;
+					if (candidates.size() != 1)
+					{
+						br.u8(bitutil::getBitsNeededToEncodeRange(candidates.size()), i);
+					}
+					const value_t value = candidates.at(i);
+					getCell(x, y).setGiven(value);
+					if (value != 0)
+					{
+						candidates.erase(candidates.cbegin() + i);
+					}
+				}
+			}
+		}
 		else
 		{
 			SOUP_ASSERT_UNREACHABLE;
@@ -1010,13 +1037,13 @@ namespace soup
 
 	std::string Sudoku::toBinary() const
 	{
-		auto v0 = toBinaryV0();
+		auto v2 = toBinaryV2();
 		auto v1 = toBinaryV1();
-		if (v1.length() < v0.length())
+		if (v2.length() > v1.length())
 		{
 			return v1;
 		}
-		return v0;
+		return v2;
 	}
 
 	std::string Sudoku::toBinaryV0() const
@@ -1057,6 +1084,60 @@ namespace soup
 				if (getCell(x, y).value_bf)
 				{
 					bw.u8(4, getCell(x, y).getValue());
+				}
+			}
+		}
+		bw.finishByte();
+		return w.data;
+	}
+
+	[[nodiscard]] static index_t value2index(const std::vector<value_t>& candidates, value_t val)
+	{
+		for (index_t i = 0; i != candidates.size(); ++i)
+		{
+			if (candidates[i] == val)
+			{
+				return i;
+			}
+		}
+		SOUP_ASSERT_UNREACHABLE;
+	}
+
+	std::string Sudoku::toBinaryV2() const
+	{
+		bool include_zero = false;
+		for (const auto& cell : cells)
+		{
+			if (cell.value_bf == 0)
+			{
+				include_zero = true;
+				break;
+			}
+		}
+
+		StringWriter w;
+		BitWriter bw(&w);
+		bw.u8(3, 2);
+		bw.b(include_zero);
+		for (index_t y = 0; y != 9; ++y)
+		{
+			std::vector<value_t> candidates{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+			if (include_zero)
+			{
+				candidates.insert(candidates.cbegin(), 0);
+			}
+			for (index_t x = 0; x != 9; ++x)
+			{
+				if (candidates.size() == 1)
+				{
+					break;
+				}
+				const value_t value = getCell(x, y).getValue();
+				index_t i = value2index(candidates, value);
+				bw.u8(bitutil::getBitsNeededToEncodeRange(candidates.size()), i);
+				if (value != 0)
+				{
+					candidates.erase(candidates.cbegin() + i);
 				}
 			}
 		}
