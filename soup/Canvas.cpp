@@ -295,6 +295,11 @@ namespace soup
 		return str;
 	}
 
+	std::string Canvas::toStringDownsampledDoublewidthUtf8(bool explicit_nl)
+	{
+		return unicode::utf16_to_utf8(toStringDownsampledDoublewidth(explicit_nl));
+	}
+
 	char16_t Canvas::downsampleChunkToChar(uint8_t chunkset) noexcept
 	{
 		switch (chunkset)
