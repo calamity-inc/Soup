@@ -539,14 +539,14 @@ namespace soup
 		return true;
 	}
 
-	bool Sudoku::stepAny(std::string* explanation)
+	bool Sudoku::step(uint8_t strategies, std::string* explanation)
 	{
-		return stepNakedSingle(explanation)
-			|| stepHiddenSingle(explanation)
-			|| stepLockedCandidates(explanation)
-			|| stepHiddenPair(explanation)
-			|| stepXWing(explanation)
-			|| stepContradictionIfCandidateRemoved(explanation)
+		return ((strategies & NAKED_SINGLE) && stepNakedSingle(explanation))
+			|| ((strategies & HIDDEN_SINGLE) && stepHiddenSingle(explanation))
+			|| ((strategies & LOCKED_CANDIDATES) && stepLockedCandidates(explanation))
+			|| ((strategies & HIDDEN_PAIR) && stepHiddenPair(explanation))
+			|| ((strategies & X_WING) && stepXWing(explanation))
+			|| ((strategies & CONTRADICTION_IF_CANDIDATE_REMOVED) && stepContradictionIfCandidateRemoved(explanation))
 			;
 	}
 
@@ -950,7 +950,7 @@ namespace soup
 				std::vector<std::string> steps;
 				do
 				{
-					if (!stepAny(&steps.emplace_back()))
+					if (!step(ALL, &steps.emplace_back()))
 					{
 						return false;
 					}
@@ -976,7 +976,7 @@ namespace soup
 					return true;
 				}
 				eliminateImpossibleCandiates();
-			} while (stepAny());
+			} while (step());
 			return false;
 		}
 	}

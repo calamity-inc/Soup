@@ -50,7 +50,7 @@ namespace soup
 		console << c.toStringDownsampledDoublewidth(true);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	} while (s.stepAny());
+	} while (s.step());
 	*/
 	struct Sudoku
 	{
@@ -182,7 +182,19 @@ namespace soup
 
 		[[nodiscard]] bool isSolvable() const noexcept; // Returns true if all missing digits have candidates.
 
-		bool stepAny(std::string* explanation = nullptr);
+		enum Strategies : uint8_t
+		{
+			NAKED_SINGLE = (1 << 0),
+			HIDDEN_SINGLE = (1 << 1),
+			LOCKED_CANDIDATES = (1 << 2),
+			HIDDEN_PAIR = (1 << 3),
+			X_WING = (1 << 4),
+			CONTRADICTION_IF_CANDIDATE_REMOVED = (1 << 5),
+
+			ALL = 0xff,
+		};
+
+		bool step(uint8_t strategies = ALL, std::string* explanation = nullptr);
 		bool stepNakedSingle(std::string* explanation = nullptr); // Fill in a digit with only 1 candidate if possible.
 		bool stepHiddenSingle(std::string* explanation = nullptr); // Fill in a digit that can only be in that place within a house if possible.
 		bool stepLockedCandidates(std::string* explanation = nullptr);
@@ -193,12 +205,12 @@ namespace soup
 		bool solveCell(std::string* explanation = nullptr);
 
 		// Note: Might not actually be able to solve the puzzle. No bifurcation will be attempted.
-		void solve() noexcept
+		void solve(uint8_t strategies = ALL) noexcept
 		{
 			do
 			{
 				eliminateImpossibleCandiates();
-			} while (stepAny());
+			} while (step(strategies));
 		}
 
 		void draw(RenderTarget& rt, bool no_candidates = false) const; // Requires a (15 * 9) by (15 * 9) pixel area.
