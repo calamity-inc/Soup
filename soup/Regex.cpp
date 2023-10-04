@@ -180,17 +180,13 @@ namespace soup
 	std::string Regex::unparseFlags(uint16_t flags)
 	{
 		std::string str{};
-		if (flags & RE_DOTALL)
-		{
-			str.push_back('s');
-		}
 		if (flags & RE_MULTILINE)
 		{
 			str.push_back('m');
 		}
-		if (flags & RE_DOLLAR_ENDONLY)
+		if (flags & RE_DOTALL)
 		{
-			str.push_back('D');
+			str.push_back('s');
 		}
 		if (flags & RE_UNICODE)
 		{
@@ -199,6 +195,10 @@ namespace soup
 		if (flags & RE_UNGREEDY)
 		{
 			str.push_back('U');
+		}
+		if (flags & RE_DOLLAR_ENDONLY)
+		{
+			str.push_back('D');
 		}
 		return str;
 	}

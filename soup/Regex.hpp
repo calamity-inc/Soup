@@ -74,17 +74,13 @@ namespace soup
 			uint16_t res = 0;
 			for (; *flags != '\0'; ++flags)
 			{
-				if (*flags == 's')
-				{
-					res |= RE_DOTALL;
-				}
-				else if (*flags == 'm')
+				if (*flags == 'm')
 				{
 					res |= RE_MULTILINE;
 				}
-				else if (*flags == 'D')
+				else if (*flags == 's')
 				{
-					res |= RE_DOLLAR_ENDONLY;
+					res |= RE_DOTALL;
 				}
 				else if (*flags == 'u')
 				{
@@ -93,6 +89,10 @@ namespace soup
 				else if (*flags == 'U')
 				{
 					res |= RE_UNGREEDY;
+				}
+				else if (*flags == 'D')
+				{
+					res |= RE_DOLLAR_ENDONLY;
 				}
 			}
 			return res;
