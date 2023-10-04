@@ -532,7 +532,7 @@ namespace soup
 				}
 				else if (*s.it == '[')
 				{
-					auto upC = soup::make_unique<RegexRangeConstraint>(s.it, s.end);
+					auto upC = soup::make_unique<RegexRangeConstraint>(s.it, s.end, s.hasFlag(RE_INSENSITIVE));
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);
@@ -731,6 +731,11 @@ namespace soup
 					c.push_back(*s.it);
 				} while (s.it + 1 != s.end && UTF8_IS_CONTINUATION(*++s.it));
 				upC = soup::make_unique<RegexCodepointConstraint>(std::move(c));
+			}
+			else if (s.hasFlag(RE_INSENSITIVE) && string::lower_char(*s.it) != string::upper_char(*s.it))
+			{
+				const char arr[] = { string::lower_char(*s.it), string::upper_char(*s.it) };
+				upC = soup::make_unique<RegexRangeConstraint>(arr);
 			}
 			else
 			{

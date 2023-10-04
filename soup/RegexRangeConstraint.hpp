@@ -13,7 +13,7 @@ namespace soup
 		BigBitset<0x100 / 8> mask{};
 		bool inverted = false;
 
-		RegexRangeConstraint(std::string::const_iterator& it, std::string::const_iterator end)
+		RegexRangeConstraint(std::string::const_iterator& it, std::string::const_iterator end, bool insensitive)
 		{
 			if (++it == end)
 			{
@@ -229,6 +229,23 @@ namespace soup
 				}
 				mask.enable(*it);
 				range_begin = (*it) + 1;
+			}
+			if (insensitive)
+			{
+				for (uint8_t c = 'a'; c != 'z' + 1; ++c)
+				{
+					if (mask.get(c))
+					{
+						mask.enable(c - 'a' + 'A');
+					}
+				}
+				for (uint8_t c = 'A'; c != 'Z' + 1; ++c)
+				{
+					if (mask.get(c))
+					{
+						mask.enable(c - 'A' + 'a');
+					}
+				}
 			}
 		}
 

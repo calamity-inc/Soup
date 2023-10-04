@@ -82,6 +82,10 @@ namespace soup
 				{
 					res |= RE_DOTALL;
 				}
+				else if (*flags == 'i')
+				{
+					res |= RE_INSENSITIVE;
+				}
 				else if (*flags == 'u')
 				{
 					res |= RE_UNICODE;

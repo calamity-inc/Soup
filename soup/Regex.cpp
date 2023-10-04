@@ -188,6 +188,10 @@ namespace soup
 		{
 			str.push_back('s');
 		}
+		if (flags & RE_INSENSITIVE)
+		{
+			str.push_back('i');
+		}
 		if (flags & RE_UNICODE)
 		{
 			str.push_back('u');
