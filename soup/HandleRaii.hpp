@@ -56,10 +56,15 @@ namespace soup
 
 		~HandleRaii() noexcept
 		{
-			if (handle != -1)
+			if (isValid())
 			{
 				::close(handle);
 			}
+		}
+
+		[[nodiscard]] bool isValid() const noexcept
+		{
+			return handle >= 0;
 		}
 
 		void operator=(int handle) noexcept

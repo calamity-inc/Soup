@@ -55,7 +55,7 @@ namespace soup
 #if SOUP_WINDOWS
 			return true;
 #else
-			return handle >= 0;
+			return handle.isValid();
 #endif
 		}
 
