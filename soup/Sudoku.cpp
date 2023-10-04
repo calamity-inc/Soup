@@ -889,7 +889,10 @@ namespace soup
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
 							{
-								*explanation = format("There's an X-Wing on {}s in column {} and {}.", value, getColumnName(c1x), getColumnName(c2x));
+								if (explanation)
+								{
+									*explanation = format("There's an X-Wing on {}s in column {} and {}.", value, getColumnName(c1x), getColumnName(c2x));
+								}
 								return true;
 							}
 						}
