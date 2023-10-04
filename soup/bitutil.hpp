@@ -43,7 +43,7 @@ namespace soup
 			return out;
 		}
 
-		[[nodiscard]] static constexpr uint8_t getBitsNeededToEncodeRange(size_t range_size)
+		[[nodiscard]] static constexpr uint8_t getBitsNeededToEncodeRange(size_t range_size) // aka. ceil(log2(range_size))
 		{
 #if SOUP_CPP20
 			if (std::is_constant_evaluated()
@@ -63,8 +63,11 @@ namespace soup
 			}
 			else
 			{
-				SOUP_ASSERT(range_size != 0);
-				return getMostSignificantSetBit((uint32_t)range_size) + 1;
+				SOUP_IF_LIKELY (range_size > 1)
+				{
+					return getMostSignificantSetBit((uint32_t)range_size - 1) + 1;
+				}
+				return 0;
 			}
 #endif
 		}
