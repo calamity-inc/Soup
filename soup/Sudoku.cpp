@@ -1004,7 +1004,10 @@ namespace soup
 
 	void Sudoku::fill()
 	{
-		eliminateImpossibleCandiates();
+		do
+		{
+			eliminateImpossibleCandiates();
+		} while (stepNakedSingle() || stepHiddenSingle());
 		Sudoku cpy = *this;
 	_retry:;
 		for (auto& c : cells)
@@ -1027,7 +1030,10 @@ namespace soup
 				bitutil::unsetLeastSignificantSetBit(bf);
 			}
 			c.setGiven(bitutil::getLeastSignificantSetBit(bf) + 1);
-			eliminateImpossibleCandiates();
+			do
+			{
+				eliminateImpossibleCandiates();
+			} while (stepNakedSingle() || stepHiddenSingle());
 		}
 	}
 
