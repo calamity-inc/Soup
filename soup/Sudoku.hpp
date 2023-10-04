@@ -203,6 +203,8 @@ namespace soup
 
 		void draw(RenderTarget& rt, bool no_candidates = false) const; // Requires a (15 * 9) by (15 * 9) pixel area.
 
+		void fill(); // Fills the grid with random, valid digits until every cell is occupied.
+
 		[[nodiscard]] std::string toString() const;
 		[[nodiscard]] std::string toBinary() const;
 		[[nodiscard]] std::string toBinaryV0() const;

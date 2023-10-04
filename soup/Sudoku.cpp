@@ -5,6 +5,7 @@
 #include "bitutil.hpp"
 #include "BitWriter.hpp"
 #include "format.hpp"
+#include "rand.hpp"
 #include "RasterFont.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
@@ -961,6 +962,35 @@ namespace soup
 			{
 				getCell(x, y).draw(rt, no_candidates, x * 15, y * 15);
 			}
+		}
+	}
+
+	void Sudoku::fill()
+	{
+		eliminateImpossibleCandiates();
+		Sudoku cpy = *this;
+	_retry:;
+		for (auto& c : cells)
+		{
+			if (c.value_bf)
+			{
+				continue;
+			}
+			auto bf = c.candidates_bf;
+			uint32_t bits = bitutil::getNumSetBits(bf);
+			if (bits == 0)
+			{
+				// Oops, this cell has no candidates.
+				*this = cpy;
+				goto _retry;
+			}
+			int32_t bit = soup::rand(0, bits - 1);
+			while (bit--)
+			{
+				bitutil::unsetLeastSignificantSetBit(bf);
+			}
+			c.setGiven(bitutil::getLeastSignificantSetBit(bf) + 1);
+			eliminateImpossibleCandiates();
 		}
 	}
 
