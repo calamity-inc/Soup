@@ -26,7 +26,7 @@ namespace soup
 	[[nodiscard]] static std::vector<UniquePtr<cbCmd>> getAllCommandsImpl()
 	{
 		std::vector<UniquePtr<cbCmd>> cmds{};
-		
+
 		// Commands
 		cmds.emplace_back(soup::make_unique<cbCmdCoinflip>());
 		cmds.emplace_back(soup::make_unique<cbCmdRand>());
