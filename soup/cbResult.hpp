@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "base.hpp"
+
 namespace soup
 {
 	enum cbResultType : uint8_t
