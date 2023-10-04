@@ -364,6 +364,10 @@ namespace soup
 					}
 					else
 					{
+						if (s.hasFlag(RE_EXPLICIT_CAPTURE) && name.empty())
+						{
+							non_capturing = true;
+						}
 						auto upGC = soup::make_unique<RegexGroupConstraint>(s, non_capturing);
 						upGC->group.parent = this;
 						upGC->group.name = std::move(name);

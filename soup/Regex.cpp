@@ -204,6 +204,10 @@ namespace soup
 		{
 			str.push_back('D');
 		}
+		if (flags & RE_EXPLICIT_CAPTURE)
+		{
+			str.push_back('n');
+		}
 		return str;
 	}
 }

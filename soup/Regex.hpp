@@ -98,6 +98,10 @@ namespace soup
 				{
 					res |= RE_DOLLAR_ENDONLY;
 				}
+				else if (*flags == 'n')
+				{
+					res |= RE_EXPLICIT_CAPTURE;
+				}
 			}
 			return res;
 		}

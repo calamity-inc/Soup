@@ -617,6 +617,9 @@ spanning over multiple lines */
 
 		assert(Regex("Abc", "i").matchesFully("abC"));
 		assert(Regex("[Abc]{3}", "i").matchesFully("abC"));
+
+		assert(Regex(R"((a)(?:b)(?'deez'c)").match("abc").toString() == R"(0="abc", 1="a", 2{deez}="c")");
+		assert(Regex(R"((a)(?:b)(?'deez'c)", "n").match("abc").toString() == R"(0="abc", 1{deez}="c")");
 	});
 }
 
