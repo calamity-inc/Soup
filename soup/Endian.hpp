@@ -34,11 +34,11 @@ namespace soup
 
 	struct Endianness
 	{
-		// C++23 will add std::byteswap
-
 		[[nodiscard]] static constexpr uint16_t invert(uint16_t val) noexcept
 		{
-#if defined(__GNUC__) || defined(__clang__)
+#if SOUP_CPP23
+			return std::byteswap<uint16_t>(val);
+#elif defined(__GNUC__) || defined(__clang__)
 			return __builtin_bswap16(val);
 #else
 			return (val << 8) | (val >> 8);
@@ -47,7 +47,9 @@ namespace soup
 		
 		[[nodiscard]] static constexpr uint32_t invert(uint32_t val) noexcept
 		{
-#if defined(__GNUC__) || defined(__clang__)
+#if SOUP_CPP23
+			return std::byteswap<uint32_t>(val);
+#elif defined(__GNUC__) || defined(__clang__)
 			return __builtin_bswap32(val);
 #else
 			return val << (32 - 8)
@@ -60,7 +62,9 @@ namespace soup
 
 		[[nodiscard]] static constexpr uint64_t invert(uint64_t val) noexcept
 		{
-#if defined(__GNUC__) || defined(__clang__)
+#if SOUP_CPP23
+			return std::byteswap<uint64_t>(val);
+#elif defined(__GNUC__) || defined(__clang__)
 			return __builtin_bswap64(val);
 #else
 			return val << (64 - 8)
