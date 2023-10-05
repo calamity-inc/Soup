@@ -454,6 +454,24 @@ namespace soup
 	}
 #endif
 
+	bool hwHid::hasReportId(uint8_t report_id) const noexcept
+	{
+		bool ret = false;
+#if SOUP_WINDOWS
+		PHIDP_PREPARSED_DATA pp_data = nullptr;
+		if (HidD_GetPreparsedData(handle, &pp_data))
+		{
+			Buffer buf(input_report_byte_length);
+			if (HidP_InitializeReportForID(HidP_Input, report_id, pp_data, (char*)buf.data(), buf.capacity()) == HIDP_STATUS_SUCCESS)
+			{
+				ret = true;
+			}
+			HidD_FreePreparsedData(pp_data);
+		}
+#endif
+		return ret;
+	}
+
 	Buffer hwHid::pollReport() const
 	{
 		SOUP_ASSERT(havePermission());
