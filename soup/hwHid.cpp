@@ -4,9 +4,6 @@
 // - https://github.com/libusb/hidapi/blob/master/windows/hid.c
 // - https://github.com/libusb/hidapi/blob/master/linux/hid.c
 
-// If you want to use hwHid on Linux, you need to `sudo apt install libudev-dev`
-// and add `arg -DSOUP_HAVE_LIBUDEV_DEV` to Soup's .sun file.
-
 #if SOUP_WINDOWS
 #include <cfgmgr32.h>
 #include <hidsdi.h>
@@ -15,24 +12,48 @@
 #pragma comment(lib, "hid.lib")
 
 #include "unicode.hpp"
-#elif defined(SOUP_HAVE_LIBUDEV_DEV)
+#else
 #include <sys/stat.h> // open
 #include <fcntl.h> // O_RDWR etc
 #include <unistd.h> // read
 
-#include <libudev.h>
-#pragma comment(lib, "udev")
-
 #include <linux/hidraw.h>
 
+#include "SharedLibrary.hpp"
 #include "string.hpp"
-#else
-#include "Exception.hpp"
+
+// https://github.com/systemd/systemd/blob/main/src/libudev/libudev.h
+
+struct udev;
+struct udev_enumerate;
+struct udev_list_entry;
+struct udev_device;
+
+using udev_new_t = udev*(*)();
+using udev_unref_t = udev*(*)(udev*);
+
+using udev_enumerate_unref_t = udev_enumerate*(*)(udev_enumerate*);
+using udev_enumerate_new_t = udev_enumerate*(*)(udev*);
+using udev_enumerate_add_match_subsystem_t = int(*)(udev_enumerate*, const char*);
+using udev_enumerate_scan_devices_t = int(*)(udev_enumerate*);
+using udev_enumerate_get_list_entry_t = udev_list_entry*(*)(udev_enumerate*);
+
+using udev_list_entry_get_next_t = udev_list_entry*(*)(udev_list_entry*);
+using udev_list_entry_get_name_t = const char*(*)(udev_list_entry*);
+
+using udev_device_unref_t = udev_device*(*)(udev_device*);
+using udev_device_new_from_syspath_t = udev_device*(*)(udev*, const char*);
+using udev_device_get_devnode_t = const char*(*)(udev_device*);
+
+#define udev_list_entry_foreach(list_entry, first_entry) \
+        for (list_entry = first_entry; \
+             list_entry; \
+             list_entry = udev_list_entry_get_next(list_entry))
 #endif
 
 namespace soup
 {
-#if !SOUP_WINDOWS && defined(SOUP_HAVE_LIBUDEV_DEV)
+#if !SOUP_WINDOWS
 	[[nodiscard]] static bool parse_uevent_info(std::string uevent, unsigned short& vendor_id, unsigned short& product_id, std::string& product_name_utf8, std::string& serial_number_utf8)
 	{
 		char* saveptr = NULL;
@@ -328,7 +349,28 @@ namespace soup
 		}
 
 		free(device_interface_list);
-#elif defined(SOUP_HAVE_LIBUDEV_DEV)
+#else
+		SharedLibrary libudev("libudev.so.1");
+		SOUP_ASSERT(libudev.isLoaded());
+
+#define use_udev_func(name) const auto name = (name ## _t)libudev.getAddress(#name);
+
+		use_udev_func(udev_new);
+		use_udev_func(udev_unref);
+
+		use_udev_func(udev_enumerate_unref);
+		use_udev_func(udev_enumerate_new);
+		use_udev_func(udev_enumerate_add_match_subsystem);
+		use_udev_func(udev_enumerate_scan_devices);
+		use_udev_func(udev_enumerate_get_list_entry);
+
+		use_udev_func(udev_list_entry_get_next);
+		use_udev_func(udev_list_entry_get_name);
+
+		use_udev_func(udev_device_unref);
+		use_udev_func(udev_device_new_from_syspath);
+		use_udev_func(udev_device_get_devnode);
+
 		if (udev* udev = udev_new())
 		{
 			udev_enumerate* enumerate = udev_enumerate_new(udev);
@@ -368,8 +410,6 @@ namespace soup
 			udev_enumerate_unref(enumerate);
 			udev_unref(udev);
 		}
-#else
-		SOUP_THROW(Exception("Please see hwHid.cpp for setup required to use this API on Linux."));
 #endif
 		return res;
 	}
@@ -422,7 +462,7 @@ namespace soup
 
 			return buf;
 		}
-#elif defined(SOUP_HAVE_LIBUDEV_DEV)
+#else
 		Buffer buf(1024); // We don't have a input_report_byte_length, so 1024 ought to be enough.
 		int bytes_read = ::read(handle, buf.data(), buf.capacity());
 		if (bytes_read >= 0)
@@ -445,7 +485,7 @@ namespace soup
 
 		DWORD bytesWritten;
 		SOUP_ASSERT(WriteFile(handle, buf.data(), buf.size(), &bytesWritten, nullptr) && bytesWritten == buf.size());
-#elif defined(SOUP_HAVE_LIBUDEV_DEV)
+#else
 		// TODO
 #endif
 	}
@@ -460,7 +500,7 @@ namespace soup
 		}
 
 		SOUP_ASSERT(HidD_SetFeature(handle, buf.data(), buf.size()));
-#elif defined(SOUP_HAVE_LIBUDEV_DEV)
+#else
 		// TODO
 #endif
 	}
