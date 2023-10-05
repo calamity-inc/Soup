@@ -231,7 +231,7 @@ namespace soup
 		return false;
 	}
 
-	[[nodiscard]] static uint16_t get_hid_usage(const uint8_t* report_descriptor, uint32_t size)
+	static void get_hid_usage(hwHid& hid, const uint8_t* report_descriptor, uint32_t size)
 	{
 		unsigned int pos = 0;
 		while (pos < size)
@@ -245,14 +245,27 @@ namespace soup
 				break;
 			}
 
-			if ((key & 0xfc) == 0x04)
+			switch (key & 0xfc)
 			{
-				return get_hid_report_bytes(report_descriptor, size, data_len, pos);
+			case 0x4: /* Usage Page 6.2.2.7 (Global) */
+				hid.usage_page = get_hid_report_bytes(report_descriptor, size, data_len, pos);
+				break;
+
+			case 0x8: /* Usage 6.2.2.8 (Local) */
+				if (data_len == 4) /* Usages 5.5 / Usage Page 6.2.2.7 */
+				{
+					hid.usage_page = get_hid_report_bytes(report_descriptor, size, 2, pos + 2);
+					hid.usage = get_hid_report_bytes(report_descriptor, size, 2, pos);
+				}
+				else
+				{
+					hid.usage = get_hid_report_bytes(report_descriptor, size, data_len, pos);
+				}
+				break;
 			}
 
 			pos += data_len + key_size;
 		}
-		return 0;
 	}
 #endif
 
@@ -336,6 +349,7 @@ namespace soup
 					HIDP_CAPS caps;
 					if (HidP_GetCaps(pp_data, &caps) == HIDP_STATUS_SUCCESS)
 					{
+						hid.usage = caps.Usage;
 						hid.usage_page = caps.UsagePage;
 						hid.input_report_byte_length = caps.InputReportByteLength;
 						hid.output_report_byte_length = caps.OutputReportByteLength;
@@ -391,18 +405,16 @@ namespace soup
 					hidraw_report_descriptor report_desc;
 					if (get_hid_report_descriptor_from_sysfs(path, &report_desc) >= 0)
 					{
-						hid.usage_page = get_hid_usage(report_desc.value, report_desc.size);
-						if (hid.usage_page != 0)
-						{
-							udev_device* device = udev_device_new_from_syspath(udev, path);
-							const char* dev_path = udev_device_get_devnode(device); // /dev/hidraw0 etc
+						get_hid_usage(hid, report_desc.value, report_desc.size);
 
-							hid.handle = ::open(dev_path, O_RDWR | O_CLOEXEC);
+						udev_device* device = udev_device_new_from_syspath(udev, path);
+						const char* dev_path = udev_device_get_devnode(device); // /dev/hidraw0 etc
 
-							res.emplace_back(std::move(hid));
+						hid.handle = ::open(dev_path, O_RDWR | O_CLOEXEC);
 
-							udev_device_unref(device);
-						}
+						res.emplace_back(std::move(hid));
+
+						udev_device_unref(device);
 					}
 				}
 			}

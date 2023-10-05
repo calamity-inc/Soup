@@ -16,6 +16,7 @@ namespace soup
 	public:
 		uint16_t vendor_id;
 		uint16_t product_id;
+		uint16_t usage;
 		uint16_t usage_page;
 
 	private:
