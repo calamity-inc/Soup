@@ -12,7 +12,7 @@
 #pragma comment(lib, "hid.lib")
 
 #include "unicode.hpp"
-#else
+#elif SOUP_LINUX
 #include <sys/stat.h> // open
 #include <fcntl.h> // O_RDWR etc
 #include <unistd.h> // read
@@ -53,7 +53,7 @@ using udev_device_get_devnode_t = const char*(*)(udev_device*);
 
 namespace soup
 {
-#if !SOUP_WINDOWS
+#if SOUP_LINUX
 	[[nodiscard]] static bool parse_uevent_info(std::string uevent, unsigned short& vendor_id, unsigned short& product_id, std::string& product_name_utf8, std::string& serial_number_utf8)
 	{
 		char* saveptr = NULL;
@@ -349,7 +349,7 @@ namespace soup
 		}
 
 		free(device_interface_list);
-#else
+#elif SOUP_LINUX
 		SharedLibrary libudev("libudev.so.1");
 		SOUP_ASSERT(libudev.isLoaded());
 
@@ -462,7 +462,7 @@ namespace soup
 
 			return buf;
 		}
-#else
+#elif SOUP_LINUX
 		Buffer buf(1024); // We don't have a input_report_byte_length, so 1024 ought to be enough.
 		int bytes_read = ::read(handle, buf.data(), buf.capacity());
 		if (bytes_read >= 0)
@@ -485,7 +485,7 @@ namespace soup
 
 		DWORD bytesWritten;
 		SOUP_ASSERT(WriteFile(handle, buf.data(), buf.size(), &bytesWritten, nullptr) && bytesWritten == buf.size());
-#else
+#elif SOUP_LINUX
 		// TODO
 #endif
 	}
@@ -500,7 +500,7 @@ namespace soup
 		}
 
 		SOUP_ASSERT(HidD_SetFeature(handle, buf.data(), buf.size()));
-#else
+#elif SOUP_LINUX
 		// TODO
 #endif
 	}
