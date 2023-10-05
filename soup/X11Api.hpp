@@ -94,6 +94,8 @@ namespace soup
 			defaultScreen = (XDefaultScreen_t)getAddress("XDefaultScreen");
 			rootWindow = (XRootWindow_t)getAddress("XRootWindow");
 
+			((void(*)())getAddress("XInitThreads"))();
+
 			display = openDisplay(nullptr); // Note: We're never calling XCloseDisplay
 		}
 

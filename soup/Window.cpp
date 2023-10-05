@@ -411,13 +411,27 @@ namespace soup
 		SetForegroundWindow(h);
 		return *this;
 	}
+#endif
 
 	Window& Window::redraw() noexcept
 	{
+#if SOUP_WINDOWS
 		InvalidateRect(h, NULL, FALSE);
+#else
+		Window::Config& wc = getConfig();
+		if (wc.draw_func)
+		{
+			const X11Api& x = X11Api::get();
+			RenderTargetWindow rt(h, x.createGc(x.display, h, 0, nullptr));
+			wc.draw_func(*this, rt);
+			x.freeGc(x.display, rt.gc);
+			x.flush(x.display);
+		}
+#endif
 		return *this;
 	}
 
+#if SOUP_WINDOWS
 	Window& Window::setInvisibleColour(Rgb rgb) noexcept
 	{
 		SetWindowLong(h, GWL_EXSTYLE, GetWindowLong(h, GWL_EXSTYLE) | WS_EX_LAYERED);
@@ -490,14 +504,7 @@ namespace soup
 			if (event.type == X11Api::Expose)
 			{
 				//std::cout << "Got expose event for " << event.xexpose.window << "\n";
-				Window w{ event.xexpose.window };
-				Window::Config& wc = w.getConfig();
-				if (wc.draw_func)
-				{
-					RenderTargetWindow rt(event.xexpose.window, x.createGc(x.display, event.xexpose.window, 0, nullptr));
-					wc.draw_func(w, rt);
-					x.freeGc(x.display, rt.gc);
-				}
+				Window{ event.xexpose.window }.redraw();
 			}
 		}
 	}

@@ -14,21 +14,24 @@
 
 #define FORCE_DIGITAL false
 
-#if SOUP_WINDOWS
 using namespace soup;
 
 static bool running = true;
+#if SOUP_WINDOWS
 static const char* kbd_name = "Digital Keyboard";
+#else
+static const char* kbd_name = "No Analogue Keyboard Detected";
+#endif
 static Window w;
 static visKeyboard viskbd;
-#endif
 
 void cli_keyboard()
 {
-#if SOUP_WINDOWS
 	Thread t([]
 	{
+#if SOUP_WINDOWS
 		DigitalKeyboard digital_kbd;
+#endif
 		AnalogueKeyboard* analogue_kbd = nullptr;
 
 		while (running)
@@ -42,7 +45,12 @@ void cli_keyboard()
 					delete analogue_kbd;
 					analogue_kbd = nullptr;
 
+#if SOUP_WINDOWS
 					kbd_name = "Digital Keyboard";
+#else
+					kbd_name = "No Analogue Keyboard Detected";
+					w.redraw();
+#endif
 				}
 				else
 				{
@@ -67,6 +75,7 @@ void cli_keyboard()
 #endif
 				if (analogue_kbds.empty())
 				{
+#if SOUP_WINDOWS
 					digital_kbd.update();
 
 					uint8_t dblbuf[NUM_KEYS];
@@ -80,6 +89,7 @@ void cli_keyboard()
 						memcpy(viskbd.values, dblbuf, sizeof(dblbuf));
 						w.redraw();
 					}
+#endif
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				}
@@ -104,18 +114,23 @@ void cli_keyboard()
 	w = Window::create("Soup", 195 * 5, (3 * 8) + 18 + 50 * 5);
 	w.setDrawFunc([](Window, RenderTarget& rt)
 	{
+#if SOUP_WINDOWS
 		rt.fill(Rgb::GREEN);
+#else
+		rt.fill(Rgb::GREY);
+#endif
 		rt.drawText(9, 9, kbd_name, RasterFont::simple8(), Rgb::WHITE, 3);
 		viskbd.draw(rt, 0, (3 * 8) + 18, 5);
 	});
+#if SOUP_WINDOWS
 	w.setInvisibleColour(Rgb::GREEN);
 	w.setTopmost(true);
+#endif
 	w.runMessageLoop();
 
 	running = false;
+#if SOUP_WINDOWS
 	CancelSynchronousIo(t.handle);
-	t.awaitCompletion();
-#else
-	std::cout << "Sorry, this only works on Windows (for now).\n";
 #endif
+	t.awaitCompletion();
 }

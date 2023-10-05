@@ -100,8 +100,10 @@ namespace soup
 		Window& setResizable(bool b) noexcept;
 
 		Window& bringToFront() noexcept;
+#endif
 		Window& redraw() noexcept;
 
+#if SOUP_WINDOWS
 		Window& setInvisibleColour(Rgb rgb) noexcept; // Windows is weird. When the invisible colour is black or { 1, 0, 0 }, you can only drag visible pixels, but if it's red or { 1, 1, 1 }, you can drag everywhere.
 		Window& setTransparency(int a) noexcept; // 0-100. 100 is fully invisible.
 		Window& setTopmost(bool on) noexcept;
