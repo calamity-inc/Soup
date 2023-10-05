@@ -14,6 +14,7 @@
 #include <Editor.hpp>
 #include <FileReader.hpp>
 #include <HttpRequest.hpp>
+#include <hwHid.hpp>
 #include <InquiryLang.hpp>
 #include <netIntel.hpp>
 #include <os.hpp>
@@ -203,6 +204,26 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "hid")
+		{
+			std::cout << std::hex;
+			std::cout << "VID\tPID\n";
+			for (const auto& hid : hwHid::getAll())
+			{
+				std::cout << hid.vendor_id << "\t" << hid.product_id << "\t" << hid.getProductName() << "\n";
+				std::cout << "\t\t- Usage: " << hid.usage<< "\n";
+				std::cout << "\t\t- Usage Page: " << hid.usage_page << "\n";
+#if !SOUP_WINDOWS
+				std::cout << "\t\t- Have Permission? " << (hid.havePermission() ? "Yes" : "No") << "\n";
+#endif
+				if (auto serial = hid.getSerialNumber(); !serial.empty())
+				{
+					std::cout << "\t\t- Serial: " << serial << "\n";
+				}
+			}
+			return 0;
+		}
+
 		if (subcommand == "http")
 		{
 			if (argc != 3)
@@ -386,6 +407,7 @@ Available tools:
 - dvd
 - edit [files...]
 - geoip [ip]
+- hid
 - http [uri]
 - inquire
 - ircserver
