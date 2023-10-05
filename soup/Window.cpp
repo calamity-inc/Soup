@@ -6,9 +6,10 @@
 
 #include <unordered_map>
 
+#include "RenderTargetWindow.hpp"
+
 #if SOUP_WINDOWS
 #include "rand.hpp"
-#include "RenderTargetWindow.hpp"
 #include "unicode.hpp"
 #endif
 
@@ -266,13 +267,13 @@ namespace soup
 		return getConfig().custom_data;
 	}
 
-#if SOUP_WINDOWS
 	Window& Window::setDrawFunc(draw_func_t draw_func)
 	{
 		getConfig().draw_func = draw_func;
 		return *this;
 	}
 
+#if SOUP_WINDOWS
 	Window& Window::setMouseInformer(mouse_informer_t mouse_informer)
 	{
 		getConfig().mouse_informer = mouse_informer;
@@ -445,28 +446,57 @@ namespace soup
 	Window Window::create(const std::string& title, unsigned int width, unsigned int height) noexcept
 	{
 		const X11Api& x = X11Api::get();
-		auto h = x.createSimpleWindow(x.display, x.defaultRootWindow(x.display), 100, 100, width, height, 0, 0, 0);
+		int screen = x.defaultScreen(x.display);
+		auto h = x.createSimpleWindow(x.display, x.rootWindow(x.display, screen), 100, 100, width, height, 0, 0, 0);
 		SOUP_IF_LIKELY (!title.empty())
 		{
 			x.storeName(x.display, h, title.c_str());
 		}
 		window_configs.emplace(h, Window::Config{});
+		x.selectInput(x.display, h, X11Api::ExposureMask);
 		x.mapWindow(x.display, h);
+		x.flush(x.display); // if user doesn't call runMessageLoop, this allows the window to still appear.
 		return Window{ h };
 	}
+
+	struct XExposeEvent
+	{
+		int type;		/* Expose */
+		unsigned long serial;	/* # of last request processed by server */
+		X11Api::Bool send_event;	/* true if this came from a SendEvent request */
+		X11Api::Display *display;	/* Display the event was read from */
+		X11Api::Window window;
+		int x, y;
+		int width, height;
+		int count;		/* if nonzero, at least this many more */
+	};
+
+	union XEvent
+	{
+		int type;
+		XExposeEvent xexpose;
+		long pad[24];
+	};
 
 	void Window::runMessageLoop() noexcept
 	{
 		const X11Api& x = X11Api::get();
-		void* event = alloca(24 * 8);
+		XEvent event;
 		while (true)
 		{
-			// I figure this is relevant for actually getting events:
-			// XSelectInput(display, window, KeyPressMask | ButtonPressMask | ExposureMask);
-
-			// And for actually drawing to the window, might wanna look at this: https://github.com/QMonkey/Xlib-demo/blob/master/src/simple-drawing.c#L87
-
-			x.nextEvent(x.display, event);
+			x.nextEvent(x.display, &event);
+			if (event.type == X11Api::Expose)
+			{
+				//std::cout << "Got expose event for " << event.xexpose.window << "\n";
+				Window w{ event.xexpose.window };
+				Window::Config& wc = w.getConfig();
+				if (wc.draw_func)
+				{
+					RenderTargetWindow rt(event.xexpose.window, x.createGc(x.display, event.xexpose.window, 0, nullptr));
+					wc.draw_func(w, rt);
+					x.freeGc(x.display, rt.gc);
+				}
+			}
 		}
 	}
 #endif

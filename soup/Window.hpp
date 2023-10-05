@@ -24,9 +24,9 @@ namespace soup
 		using handle_t = X11Api::Window;
 #endif
 
-#if SOUP_WINDOWS
 		using callback_t = void(*)(Window);
 		using draw_func_t = void(*)(Window, RenderTarget&);
+#if SOUP_WINDOWS
 		using on_click_t = void(*)(Window, unsigned int, unsigned int);
 		using mouse_informer_t = on_click_t(*)(Window, unsigned int, unsigned int);
 		using char_callback_t = void(*)(Window, char32_t);
@@ -36,8 +36,8 @@ namespace soup
 		struct Config
 		{
 			Capture custom_data;
-#if SOUP_WINDOWS
 			draw_func_t draw_func = nullptr;
+#if SOUP_WINDOWS
 			bool resizable = false;
 			mouse_informer_t mouse_informer = nullptr;
 			char_callback_t char_callback = nullptr;
@@ -76,8 +76,8 @@ namespace soup
 
 		[[nodiscard]] Window::Config& getConfig();
 		Capture& customData();
-#if SOUP_WINDOWS
 		Window& setDrawFunc(draw_func_t draw_func);
+#if SOUP_WINDOWS
 		Window& setMouseInformer(mouse_informer_t mouse_informer);
 		Window& setCharCallback(char_callback_t char_callback);
 		Window& setKeyCallback(key_callback_t key_callback);

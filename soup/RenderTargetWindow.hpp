@@ -2,15 +2,21 @@
 
 #include "RenderTarget.hpp"
 
-#include <Windows.h>
-
+#include "base.hpp"
 #include "Rgb.hpp"
 #include "Vector2.hpp"
+
+#if SOUP_WINDOWS
+#include <Windows.h>
+#else
+#include "X11Api.hpp"
+#endif
 
 namespace soup
 {
 	struct RenderTargetWindow : public RenderTarget
 	{
+#if SOUP_WINDOWS
 		HDC hdc;
 
 		RenderTargetWindow(LONG width, LONG height, HDC hdc)
@@ -64,5 +70,22 @@ namespace soup
 			auto col = GetPixel(hdc, x, y);
 			return Rgb{ GetRValue(col), GetGValue(col), GetBValue(col) };
 		}
+#else
+		X11Api::Window w;
+		X11Api::GC gc;
+
+		RenderTargetWindow(X11Api::Window w, X11Api::GC gc)
+			// TODO: Pass on Window's width & height
+			: RenderTarget(-1, -1), w(w), gc(gc)
+		{
+		}
+
+		void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) final
+		{
+			const auto& xapi = X11Api::get();
+			xapi.setForeground(xapi.display, gc, colour.toInt());
+			xapi.fillRectangle(xapi.display, w, gc, x, y, width, height);
+		}
+#endif
 	};
 }
