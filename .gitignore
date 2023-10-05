@@ -8,3 +8,7 @@ web/libsoup.wasm
 *.pdb
 *.dll
 *.exp
+
+# Linux
+CLI/CLI
+*.a
