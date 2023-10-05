@@ -97,6 +97,7 @@ namespace soup
 			((void(*)())getAddress("XInitThreads"))();
 
 			display = openDisplay(nullptr); // Note: We're never calling XCloseDisplay
+			SOUP_ASSERT(display, "System is headless");
 		}
 
 		[[nodiscard]] static const X11Api& get()
