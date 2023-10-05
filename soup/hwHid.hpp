@@ -63,6 +63,7 @@ namespace soup
 		[[nodiscard]] bool hasReportId(uint8_t report_id) const noexcept;
 
 		[[nodiscard]] Buffer pollReport() const; // blocking
+		void getFeatureReport(Buffer& buf) const;
 
 		void sendReport(Buffer&& buf) const;
 		void sendFeatureReport(Buffer&& buf) const;

@@ -504,6 +504,20 @@ namespace soup
 		return {};
 	}
 
+	void hwHid::getFeatureReport(Buffer& buf) const
+	{
+#if SOUP_WINDOWS
+		if (buf.size() < feature_report_byte_length)
+		{
+			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
+		}
+
+		SOUP_ASSERT(HidD_GetFeature(handle, buf.data(), buf.size()));
+#elif SOUP_LINUX
+		// TODO
+#endif
+	}
+
 	void hwHid::sendReport(Buffer&& buf) const
 	{
 #if SOUP_WINDOWS
