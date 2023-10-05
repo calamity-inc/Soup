@@ -5,7 +5,6 @@
 #include "fwd.hpp"
 
 #include "keys.hpp"
-#include "scancodes.hpp"
 
 namespace soup
 {

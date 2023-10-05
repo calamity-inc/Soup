@@ -1491,9 +1491,6 @@
     <ClInclude Include="hwHid.hpp">
       <Filter>hardware</Filter>
     </ClInclude>
-    <ClInclude Include="scancodes.hpp">
-      <Filter>hardware\keyboard</Filter>
-    </ClInclude>
     <ClInclude Include="AnalogueKeyboard.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
@@ -1520,6 +1517,12 @@
     </ClInclude>
     <ClInclude Include="buttons.hpp">
       <Filter>hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="HidScancode.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="Ps2Scancode.hpp">
+      <Filter>hardware\keyboard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

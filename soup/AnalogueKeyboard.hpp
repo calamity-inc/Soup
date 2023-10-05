@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "scancodes.hpp"
 #include "hwHid.hpp"
+#include "keys.hpp"
 
 namespace soup
 {
@@ -20,39 +20,19 @@ namespace soup
 		class ActiveKey
 		{
 		public:
-			uint16_t scancode;
+			uint8_t sk;
 			uint8_t value;
 
-			[[nodiscard]] uint8_t getSoupKey() const noexcept
+			uint8_t getSoupKey() const noexcept
 			{
-				if (hasHidScancode())
-				{
-					return hid_scancode_to_soup_key(getHidScancode());
-				}
-				else
-				{
-					// Correct for Wooting Two & Wooting Two HE
-					if (scancode == 0x409)
-					{
-						return KEY_FN;
-					}
-				}
-				return KEY_NONE;
+				return sk;
 			}
 
-			[[nodiscard]] bool hasHidScancode() const noexcept
-			{
-				return scancode <= 0xFF;
-			}
-
-			[[nodiscard]] HidScancode getHidScancode() const noexcept
-			{
-				return (HidScancode)scancode;
-			}
+			[[nodiscard]] uint8_t getHidScancode() const noexcept;
 
 			[[nodiscard]] uint16_t getPs2Scancode() const noexcept
 			{
-				return hasHidScancode() ? usb_hid_scancode_to_ps2_scancode(scancode) : 0;
+				return soup_key_to_ps2_scancode(sk);
 			}
 
 			[[nodiscard]] float getFValue() const noexcept
@@ -78,19 +58,19 @@ namespace soup
 			[[nodiscard]] int getVkPrecheck() const noexcept
 			{
 				// MapVirtualKeyA would return VK_INSERT instead of VK_NUMPAD0 etc.
-				switch (scancode)
+				switch (getSoupKey())
 				{
-				case HID_NUMPAD0: return VK_NUMPAD0;
-				case HID_NUMPAD1: return VK_NUMPAD1;
-				case HID_NUMPAD2: return VK_NUMPAD2;
-				case HID_NUMPAD3: return VK_NUMPAD3;
-				case HID_NUMPAD4: return VK_NUMPAD4;
-				case HID_NUMPAD5: return VK_NUMPAD5;
-				case HID_NUMPAD6: return VK_NUMPAD6;
-				case HID_NUMPAD7: return VK_NUMPAD7;
-				case HID_NUMPAD8: return VK_NUMPAD8;
-				case HID_NUMPAD9: return VK_NUMPAD9;
-				case HID_NUMPAD_DECIMAL: return VK_DECIMAL;
+				case KEY_NUMPAD0: return VK_NUMPAD0;
+				case KEY_NUMPAD1: return VK_NUMPAD1;
+				case KEY_NUMPAD2: return VK_NUMPAD2;
+				case KEY_NUMPAD3: return VK_NUMPAD3;
+				case KEY_NUMPAD4: return VK_NUMPAD4;
+				case KEY_NUMPAD5: return VK_NUMPAD5;
+				case KEY_NUMPAD6: return VK_NUMPAD6;
+				case KEY_NUMPAD7: return VK_NUMPAD7;
+				case KEY_NUMPAD8: return VK_NUMPAD8;
+				case KEY_NUMPAD9: return VK_NUMPAD9;
+				case KEY_NUMPAD_DECIMAL: return VK_DECIMAL;
 				default:;
 				}
 				return 0;

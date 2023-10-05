@@ -496,6 +496,7 @@
     <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="fnv.hpp" />
     <ClInclude Include="Hashmap.hpp" />
+    <ClInclude Include="HidScancode.hpp" />
     <ClInclude Include="hwGamepad.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
@@ -511,6 +512,7 @@
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
     <ClInclude Include="PointerAndBool.hpp" />
+    <ClInclude Include="Ps2Scancode.hpp" />
     <ClInclude Include="punycode.hpp" />
     <ClInclude Include="Regex.hpp" />
     <ClInclude Include="RegexAlternative.hpp" />
@@ -541,7 +543,6 @@
     <ClInclude Include="RegexStartConstraint.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="RegexWordCharConstraint.hpp" />
-    <ClInclude Include="scancodes.hpp" />
     <ClInclude Include="SelfDeletingThread.hpp" />
     <ClInclude Include="Serialiser.hpp" />
     <ClInclude Include="ServerServiceUdp.hpp" />

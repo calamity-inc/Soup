@@ -1,6 +1,7 @@
 #include "AnalogueKeyboard.hpp"
 
 #include "BufferRefReader.hpp"
+#include "HidScancode.hpp"
 #if SOUP_WINDOWS
 #include "Window.hpp"
 #endif
@@ -96,17 +97,18 @@ namespace soup
 				&& r.u8(value)
 				)
 			{
-				// some keys seem to be getting reported multiple times, so just use last reported value
+				const uint8_t sk = (scancode == 0x409 ? KEY_FN : hid_scancode_to_soup_key(scancode));
+				// some keys seem to be getting reported multiple times on older firmware, so just use last reported value
 				for (auto& key : keys)
 				{
-					if (key.scancode == scancode)
+					if (key.getSoupKey() == sk)
 					{
 						key.value = value;
 						goto _no_emplace;
 					}
 				}
 				keys.emplace_back(ActiveKey{
-					scancode,
+					sk,
 					value
 				});
 			_no_emplace:;
@@ -114,6 +116,11 @@ namespace soup
 		}
 
 		return keys;
+	}
+
+	uint8_t AnalogueKeyboard::ActiveKey::getHidScancode() const noexcept
+	{
+		return soup_key_to_hid_scancode(sk);
 	}
 
 #if SOUP_WINDOWS
