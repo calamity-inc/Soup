@@ -1515,6 +1515,12 @@
     <ClInclude Include="cbCmdQrcode.hpp">
       <Filter>ling\chatbot</Filter>
     </ClInclude>
+    <ClInclude Include="hwGamepad.hpp">
+      <Filter>hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="buttons.hpp">
+      <Filter>hardware</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2211,6 +2217,9 @@
     </ClCompile>
     <ClCompile Include="kbRgb.cpp">
       <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
+    <ClCompile Include="hwGamepad.cpp">
+      <Filter>hardware</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

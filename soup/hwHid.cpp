@@ -484,7 +484,7 @@ namespace soup
 
 			// Windows puts a report id at the front, but we want the raw data, so erasing it.
 			if (bytes_read != 0
-				//&& buf.at(0) == '\0'
+				&& buf.at(0) == '\0'
 				)
 			{
 				buf.erase(0, 1);

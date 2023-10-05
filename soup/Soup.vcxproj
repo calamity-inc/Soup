@@ -441,6 +441,7 @@
     <ClInclude Include="BufferRefReader.hpp" />
     <ClInclude Include="BufferRefWriter.hpp" />
     <ClInclude Include="BufferWriter.hpp" />
+    <ClInclude Include="buttons.hpp" />
     <ClInclude Include="ByteTraits.hpp" />
     <ClInclude Include="CApiUtil.hpp" />
     <ClInclude Include="cat.hpp" />
@@ -495,6 +496,7 @@
     <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="fnv.hpp" />
     <ClInclude Include="Hashmap.hpp" />
+    <ClInclude Include="hwGamepad.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
     <ClInclude Include="kbRgb.hpp" />
@@ -982,6 +984,7 @@
     <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />
+    <ClCompile Include="hwGamepad.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="IpcSocket.cpp" />
     <ClCompile Include="Jokebook.cpp" />
