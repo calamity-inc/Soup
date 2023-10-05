@@ -87,13 +87,13 @@ namespace soup
 		}
 		else
 		{
-			BufferRefReader sr(report, false);
+			BufferRefReader r(report, false);
 			uint16_t scancode;
 			uint8_t value;
-			while (sr.hasMore()
-				&& sr.u16(scancode)
+			while (r.hasMore()
+				&& r.u16(scancode)
 				&& scancode != 0 // report is always same size, but the after active keys is just 0 bytes
-				&& sr.u8(value)
+				&& r.u8(value)
 				)
 			{
 				// some keys seem to be getting reported multiple times, so just use last reported value
