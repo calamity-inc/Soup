@@ -238,7 +238,25 @@ namespace soup
 		});
 		return w;
 	}
+#else
+	Window Window::create(const std::string& title, unsigned int width, unsigned int height) noexcept
+	{
+		const X11Api& x = X11Api::get();
+		int screen = x.defaultScreen(x.display);
+		auto h = x.createSimpleWindow(x.display, x.rootWindow(x.display, screen), 100, 100, width, height, 0, 0, 0);
+		SOUP_IF_LIKELY (!title.empty())
+		{
+			x.storeName(x.display, h, title.c_str());
+		}
+		window_configs.emplace(h, Window::Config{});
+		x.selectInput(x.display, h, X11Api::ExposureMask);
+		x.mapWindow(x.display, h);
+		x.flush(x.display); // if user doesn't call runMessageLoop, this allows the window to still appear.
+		return Window{ h };
+	}
+#endif
 
+#if SOUP_WINDOWS
 	Window Window::getFocused() noexcept
 	{
 		return Window{ GetForegroundWindow() };
@@ -443,22 +461,6 @@ namespace soup
 		PostMessage(h, WM_DESTROY, 0, 0);
 	}
 #else
-	Window Window::create(const std::string& title, unsigned int width, unsigned int height) noexcept
-	{
-		const X11Api& x = X11Api::get();
-		int screen = x.defaultScreen(x.display);
-		auto h = x.createSimpleWindow(x.display, x.rootWindow(x.display, screen), 100, 100, width, height, 0, 0, 0);
-		SOUP_IF_LIKELY (!title.empty())
-		{
-			x.storeName(x.display, h, title.c_str());
-		}
-		window_configs.emplace(h, Window::Config{});
-		x.selectInput(x.display, h, X11Api::ExposureMask);
-		x.mapWindow(x.display, h);
-		x.flush(x.display); // if user doesn't call runMessageLoop, this allows the window to still appear.
-		return Window{ h };
-	}
-
 	struct XExposeEvent
 	{
 		int type;		/* Expose */
