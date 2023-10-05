@@ -26,6 +26,8 @@
 #include <linux/hidraw.h>
 
 #include "string.hpp"
+#else
+#include "Exception.hpp"
 #endif
 
 namespace soup
@@ -366,6 +368,8 @@ namespace soup
 			udev_enumerate_unref(enumerate);
 			udev_unref(udev);
 		}
+#else
+		SOUP_THROW(Exception("Please see hwHid.cpp for setup required to use this API on Linux."));
 #endif
 		return res;
 	}
