@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring> // memcpy
+#include <string>
 
 #ifndef SOUP_BUFFER_NO_RESIZE
 #define SOUP_BUFFER_NO_RESIZE false
@@ -169,6 +170,11 @@ namespace soup
 		void clear() noexcept
 		{
 			m_size = 0;
+		}
+
+		[[nodiscard]] std::string toString() const
+		{
+			return std::string((const char*)data(), size());
 		}
 
 		[[nodiscard]] uint8_t* release() noexcept
