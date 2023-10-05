@@ -125,7 +125,7 @@ namespace soup
 		NUM_KEYS
 	};
 
-	[[nodiscard]] constexpr uint16_t soup_key_to_ps2_scancode(uint8_t key)
+	[[nodiscard]] constexpr uint16_t soup_key_to_ps2_scancode(uint8_t key) noexcept
 	{
 		switch (key)
 		{

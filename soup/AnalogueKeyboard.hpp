@@ -23,7 +23,7 @@ namespace soup
 			uint8_t sk;
 			uint8_t value;
 
-			uint8_t getSoupKey() const noexcept
+			[[nodiscard]] uint8_t getSoupKey() const noexcept
 			{
 				return sk;
 			}

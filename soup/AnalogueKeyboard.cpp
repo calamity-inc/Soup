@@ -93,7 +93,7 @@ namespace soup
 
 	using ActiveKey = AnalogueKeyboard::ActiveKey;
 
-	static uint8_t razer_scancode_to_soup_key(uint8_t scancode)
+	[[nodiscard]] static uint8_t razer_scancode_to_soup_key(uint8_t scancode) noexcept
 	{
 		switch (scancode)
 		{
