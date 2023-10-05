@@ -137,8 +137,9 @@ namespace soup
 
 		void insert_front(size_t count, char value) noexcept
 		{
+			const auto s = m_size;
 			grow(count);
-			memcpy(&m_data[count], &m_data[0], count);
+			memcpy(&m_data[count], &m_data[0], s);
 			memset(&m_data[0], value, count);
 		}
 
