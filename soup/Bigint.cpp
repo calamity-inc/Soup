@@ -681,12 +681,13 @@ namespace soup
 
 	void Bigint::subUnsigned(const Bigint& subtrahend)
 	{
-		if (cmpUnsigned(subtrahend) == 0)
+		const auto cmp_res = cmp(subtrahend);
+		if (cmp_res == 0)
 		{
 			reset();
 			return;
 		}
-		if (cmp(subtrahend) < 0)
+		if (cmp_res < 0)
 		{
 			Bigint res(subtrahend);
 			res.subUnsigned(*this);
