@@ -442,11 +442,6 @@ namespace soup
 		negative = false;
 	}
 
-	bool Bigint::isZero() const noexcept
-	{
-		return getNumChunks() == 0;
-	}
-
 	Bigint::operator bool() const noexcept
 	{
 		return !isZero();

@@ -137,7 +137,7 @@ namespace soup
 #endif
 
 		void reset() noexcept;
-		[[nodiscard]] bool isZero() const noexcept;
+		[[nodiscard]] constexpr bool isZero() const noexcept { return getNumChunks() == 0; }
 		[[nodiscard]] operator bool() const noexcept;
 		operator int() const noexcept = delete;
 
