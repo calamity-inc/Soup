@@ -304,6 +304,10 @@ namespace soup
 
 	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string&)
 	{
+		if (chain.certs.at(0).valid_to < time::unixSeconds())
+		{
+			return false;
+		}
 		const auto ts = TrustStore::fromMozilla();
 		// TODO: Support alternative common names so we can check if cert was issued for the server we are connecting to without false-negatives.
 		return chain.verify(ts);
