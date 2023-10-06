@@ -39,10 +39,12 @@ namespace soup
 		// It's possible that Thread::stop was just called; this state is not immediately reflected.
 		//SOUP_ASSERT(!isRunning());
 
+		// if we still have a handle, relinquish it
 		if (handle != INVALID_HANDLE_VALUE)
 		{
 			CloseHandle(handle);
 		}
+
 		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(__stdcall*)(LPVOID)>(&threadCreateCallback), this, 0, nullptr);
 		SOUP_IF_UNLIKELY (handle == NULL)
 		{
@@ -50,13 +52,15 @@ namespace soup
 		}
 #else
 		SOUP_ASSERT(!isRunning());
+
+		// if we still have a handle, relinquish it
 		awaitCompletion();
-		running = true;
-		joined = false;
+
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
-		//pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-		pthread_create(&handle, &attr, reinterpret_cast<void* (*)(void*)>(&threadCreateCallback), this);
+		SOUP_ASSERT(pthread_create(&handle, &attr, reinterpret_cast<void* (*)(void*)>(&threadCreateCallback), this) == 0);
+		have_handle = true;
+		running = true;
 #endif
 	}
 
@@ -74,10 +78,10 @@ namespace soup
 		TerminateThread(handle, 0);
 		CloseHandle(handle);
 #else
-		if (!joined)
+		if (have_handle)
 		{
+			pthread_detach(handle);
 			pthread_cancel(handle);
-			pthread_join(handle, nullptr);
 		}
 #endif
 	}
@@ -108,12 +112,12 @@ namespace soup
 #if SOUP_WINDOWS
 		TerminateThread(handle, 0);
 #else
-		if (!joined)
+		if (have_handle)
 		{
+			pthread_detach(handle);
 			pthread_cancel(handle);
-			pthread_join(handle, nullptr);
+			have_handle = false;
 			running = false;
-			joined = true;
 		}
 #endif
 	}
@@ -123,10 +127,10 @@ namespace soup
 #if SOUP_WINDOWS
 		WaitForSingleObject(handle, INFINITE);
 #else
-		if (!joined)
+		if (have_handle)
 		{
 			pthread_join(handle, nullptr);
-			joined = true;
+			have_handle = false;
 		}
 #endif
 	}

@@ -23,8 +23,8 @@ namespace soup
 		HANDLE handle = INVALID_HANDLE_VALUE;
 #else
 		pthread_t handle{};
+		bool have_handle = false;
 		bool running = false;
-		bool joined = true;
 #endif
 		void(*f)(Capture&&);
 		Capture f_cap;
