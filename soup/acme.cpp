@@ -143,6 +143,7 @@ namespace soup
 
 	std::string AcmeClient::getCertchain(const AcmeAccount& acct, const AcmeOrder& order)
 	{
+		SOUP_ASSERT(order.certificate.has_value());
 		return executeRequest(acct, *order.certificate, {}).body;
 	}
 
@@ -308,6 +309,13 @@ namespace soup
 		{
 			std::cout << "Finalising order...\n";
 			finaliseOrder(acct, order, priv);
+			std::cout << "Order status: " << order.status << "\n";
+			while (order.status == "processing")
+			{
+				std::this_thread::sleep_for(std::chrono::seconds(5));
+				order = getOrder(acct, order.uri);
+				std::cout << "Order status: " << order.status << "\n";
+			}
 			return getCertchain(acct, order);
 		}
 		return {};
