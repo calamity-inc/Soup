@@ -630,22 +630,30 @@ namespace soup
 
 	void Bigint::addUnsigned(const Bigint& b)
 	{
-		if (cmp(b) < 0)
-		{
-			Bigint res(b);
-			res.addUnsigned(*this);
-			chunks = std::move(res.chunks);
-			return;
-		}
 		chunk_t carry = 0;
-		const size_t j = getNumChunks();
-		for (size_t i = 0; i != j; ++i)
+		if (cmp(b) >= 0)
 		{
-			const size_t x = getChunkInbounds(i);
-			const size_t y = b.getChunk(i);
-			size_t res = (x + y + carry);
-			setChunkInbounds(i, (chunk_t)res);
-			carry = getCarry(res);
+			const size_t j = getNumChunks();
+			for (size_t i = 0; i != j; ++i)
+			{
+				const size_t x = getChunkInbounds(i);
+				const size_t y = b.getChunk(i);
+				size_t res = (x + y + carry);
+				setChunkInbounds(i, (chunk_t)res);
+				carry = getCarry(res);
+			}
+		}
+		else
+		{
+			const size_t j = b.getNumChunks();
+			for (size_t i = 0; i != j; ++i)
+			{
+				const size_t x = b.getChunkInbounds(i);
+				const size_t y = getChunk(i);
+				size_t res = (x + y + carry);
+				setChunk(i, (chunk_t)res);
+				carry = getCarry(res);
+			}
 		}
 		if (carry != 0)
 		{
