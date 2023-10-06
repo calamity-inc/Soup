@@ -129,4 +129,19 @@ namespace soup
 		}
 		return true;
 	}
+
+	std::string X509Certchain::toString() const
+	{
+		std::string str{};
+		if (!certs.empty())
+		{
+			for (const auto& cert : certs)
+			{
+				str.append(cert.subject.getCommonName());
+				str.append(" < ");
+			}
+			str.append(certs.back().issuer.getCommonName());
+		}
+		return str;
+	}
 }

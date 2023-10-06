@@ -22,5 +22,7 @@ namespace soup
 		[[nodiscard]] bool verifyTrust(const TrustStore& ts) const;
 		[[nodiscard]] bool isAnyInTrustStore(const TrustStore& ts) const;
 		[[nodiscard]] bool verifySignatures() const;
+
+		[[nodiscard]] std::string toString() const;
 	};
 }
