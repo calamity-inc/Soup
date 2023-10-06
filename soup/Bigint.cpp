@@ -755,7 +755,7 @@ namespace soup
 	std::pair<Bigint, Bigint> Bigint::divideUnsigned(const Bigint& divisor) const
 	{
 		std::pair<Bigint, Bigint> res{};
-		if (!divisor.isZero())
+		SOUP_IF_LIKELY (!divisor.isZero())
 		{
 			if (divisor == Bigint((chunk_t)2u))
 			{
