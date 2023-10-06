@@ -646,12 +646,18 @@ namespace soup
 		else
 		{
 			const size_t j = b.getNumChunks();
+
+			for (auto delta = j - getNumChunks(); delta--; )
+			{
+				addChunk(0);
+			}
+
 			for (size_t i = 0; i != j; ++i)
 			{
 				const size_t x = b.getChunkInbounds(i);
-				const size_t y = getChunk(i);
+				const size_t y = getChunkInbounds(i);
 				size_t res = (x + y + carry);
-				setChunk(i, (chunk_t)res);
+				setChunkInbounds(i, (chunk_t)res);
 				carry = getCarry(res);
 			}
 		}
