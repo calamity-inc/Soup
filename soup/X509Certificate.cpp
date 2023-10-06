@@ -13,11 +13,6 @@ namespace soup
 		return load(Asn1Sequence::fromDer(str));
 	}
 
-	bool X509Certificate::fromDer(std::istream& s)
-	{
-		return load(Asn1Sequence::fromDer(s));
-	}
-
 	bool X509Certificate::load(const Asn1Sequence& cert)
 	{
 #if SOUP_EXCEPTIONS

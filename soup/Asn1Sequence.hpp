@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ctime>
-#include <istream>
 #include <vector>
 
 #include "fwd.hpp"
@@ -16,7 +15,7 @@ namespace soup
 		explicit Asn1Sequence(std::string data); // expects DER-encoded data without prefix
 
 		[[nodiscard]] static Asn1Sequence fromDer(const std::string& str); // expects DER-encoded data with prefix
-		[[nodiscard]] static Asn1Sequence fromDer(std::istream& s); // expects DER-encoded data with prefix
+		[[nodiscard]] static Asn1Sequence fromDer(Reader& r); // expects DER-encoded data with prefix
 
 		[[nodiscard]] size_t countChildren() const;
 
@@ -40,8 +39,8 @@ namespace soup
 		[[nodiscard]] std::string toDerNoPrefix() const;
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const;
 
-		static Asn1Identifier readIdentifier(std::istream& s);
-		[[nodiscard]] static size_t readLength(std::istream& s);
+		static Asn1Identifier readIdentifier(Reader& r);
+		[[nodiscard]] static size_t readLength(Reader& r);
 		[[nodiscard]] static std::string encodeLength(size_t len);
 	};
 }

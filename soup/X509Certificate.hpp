@@ -35,7 +35,6 @@ namespace soup
 		std::time_t valid_to;
 
 		bool fromDer(const std::string& str);
-		bool fromDer(std::istream& s);
 		bool load(const Asn1Sequence& cert);
 	protected:
 		[[nodiscard]] static X509RelativeDistinguishedName readRelativeDistinguishedName(const Asn1Sequence& seq);

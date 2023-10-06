@@ -5,9 +5,9 @@
 #include "Asn1Type.hpp"
 #include "Bigint.hpp"
 #include "Exception.hpp"
-#include "IstreamReader.hpp"
 #include "Oid.hpp"
 #include "string.hpp"
+#include "StringReader.hpp"
 #include "time.hpp"
 
 namespace soup
@@ -20,37 +20,37 @@ namespace soup
 	Asn1Sequence::Asn1Sequence(std::string data)
 		: Asn1Sequence()
 	{
-		std::istringstream s{ std::move(data) };
-		while (s.peek() != EOF)
+		StringReader r{ std::move(data) };
+		while (r.hasMore())
 		{
-			auto id = readIdentifier(s);
-			auto len = readLength(s);
+			auto id = readIdentifier(r);
+			auto len = readLength(r);
 			SOUP_IF_UNLIKELY (len > 10000)
 			{
-				SOUP_THROW(Exception("Asn1Sequence is unreasonably long"));
+				SOUP_THROW(Exception("Asn1Element is unreasonably long"));
 			}
-			std::string buf(len, '\0');
-			s.read(buf.data(), len);
+			std::string buf;
+			r.str(len, buf);
 			emplace_back(Asn1Element{ std::move(id), std::move(buf) });
 		}
 	}
 
 	Asn1Sequence Asn1Sequence::fromDer(const std::string& str)
 	{
-		std::istringstream s{ str };
-		return fromDer(s);
+		StringReader r{ str };
+		return fromDer(r);
 	}
 
-	Asn1Sequence Asn1Sequence::fromDer(std::istream& s)
+	Asn1Sequence Asn1Sequence::fromDer(Reader& r)
 	{
-		readIdentifier(s);
-		auto len = readLength(s);
+		SOUP_ASSERT(readIdentifier(r).type == Asn1Type::SEQUENCE);
+		auto len = readLength(r);
 		SOUP_IF_UNLIKELY (len > 10000)
 		{
 			SOUP_THROW(Exception("Asn1Sequence is unreasonably long"));
 		}
-		std::string buf(len, '\0');
-		s.read(buf.data(), len);
+		std::string buf;
+		r.str(len, buf);
 		return Asn1Sequence{ std::move(buf) };
 	}
 
@@ -327,10 +327,15 @@ namespace soup
 			}
 			else
 			{
+#if true
+				ret.push_back(' ');
+				ret.append(string::bin2hex(c.data));
+#else
 				ret.push_back('\n');
 				std::string rp = prefix;
 				rp.push_back('\t');
 				ret.append(Asn1Sequence(c.data).toString(rp));
+#endif
 			}
 		}
 		if (!ret.empty())
@@ -340,41 +345,41 @@ namespace soup
 		return ret;
 	}
 
-	Asn1Identifier Asn1Sequence::readIdentifier(std::istream& s)
+	Asn1Identifier Asn1Sequence::readIdentifier(Reader& r)
 	{
 		Asn1Identifier ret{};
-		auto first = (uint8_t)s.get();
+		uint8_t first;
+		r.u8(first);
 		ret.m_class = (first >> 6);
 		ret.constructed = (first >> 5) & 1;
 		ret.type = (first & 0b11111);
 		if (ret.type > 30)
 		{
-			IstreamReader r(s);
 			r.om<uint32_t>(ret.type);
 		}
 		return ret;
 	}
 
-	size_t Asn1Sequence::readLength(std::istream& s)
+	size_t Asn1Sequence::readLength(Reader& r)
 	{
-		size_t length = s.get();
-		if (length == EOF)
+		uint8_t b;
+		if (!r.u8(b))
 		{
 			return 0;
 		}
+		size_t length = b;
 		if (length & 0x80)
 		{
 			auto length_bytes = (length & 0x7F);
 			length = 0;
 			for (auto i = 0; i != length_bytes; ++i)
 			{
-				auto r = s.get();
-				if (r == EOF)
+				if (!r.u8(b))
 				{
 					break;
 				}
 				length <<= 8;
-				length |= (uint8_t)r;
+				length |= (uint8_t)b;
 			}
 		}
 		return length;
