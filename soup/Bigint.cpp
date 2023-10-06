@@ -294,6 +294,19 @@ namespace soup
 
 	void Bigint::setBit(const size_t i, const bool v)
 	{
+#if true
+		auto chunk_i = i / getBitsPerChunk();
+		auto j = i % getBitsPerChunk();
+
+		if (chunk_i < chunks.size())
+		{
+			Bitset<chunk_t>::at(chunks[chunk_i]).set(j, v);
+		}
+		else if (v)
+		{
+			addChunk(1 << j);
+		}
+#else
 		if (v)
 		{
 			enableBit(i);
@@ -302,6 +315,7 @@ namespace soup
 		{
 			disableBit(i);
 		}
+#endif
 	}
 
 	void Bigint::enableBit(const size_t i)
