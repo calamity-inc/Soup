@@ -7,7 +7,7 @@
 #endif
 
 #ifndef SOUP_BIGINT_USE_INTRIN
-#define SOUP_BIGINT_USE_INTRIN (SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS)
+#define SOUP_BIGINT_USE_INTRIN (SOUP_X86 && SOUP_BITS == 64)
 #endif
 
 #include <string>
@@ -19,7 +19,11 @@
 #include "fwd.hpp"
 
 #if SOUP_BIGINT_USE_INTRIN
+#if SOUP_WINDOWS
 #include <intrin.h>
+#else
+#include <emmintrin.h>
+#endif
 #endif
 
 #if SOUP_BIGINT_USE_INTVECTOR
