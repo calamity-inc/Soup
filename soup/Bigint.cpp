@@ -453,19 +453,9 @@ namespace soup
 		{
 			return branchless::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
 		}
-		if (negative)
+		if (negative ^ b.negative)
 		{
-			if (!b.negative)
-			{
-				return -1;
-			}
-		}
-		else
-		{
-			if (b.negative)
-			{
-				return +1;
-			}
+			return branchless::trinary(negative, -1, +1);
 		}
 		size_t i = chunks.size();
 		while (i != 0)
