@@ -270,12 +270,16 @@ namespace soup
 			{
 				str.append(1, '0');
 			}
-			else do
+			else
 			{
-				auto res = quotient.divide((chunk_t)10u);
-				str.insert(0, 1, (char)('0' + res.second.getChunk(0)));
-				quotient = std::move(res.first);
-			} while (!quotient.isZero());
+				const Bigint TEN = (chunk_t)10u;
+				do
+				{
+					auto res = quotient.divideUnsigned(TEN);
+					str.insert(0, 1, (char)('0' + res.second.getChunk(0)));
+					quotient = std::move(res.first);
+				} while (!quotient.isZero());
+			}
 			if (negative)
 			{
 				str.insert(0, 1, '-');
