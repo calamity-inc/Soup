@@ -12,27 +12,28 @@ namespace soup
 	class IntVector
 	{
 	public:
-		size_t num_elms = 0;
-		size_t max_elms = 0;
-		T* data;
+		T* m_data = nullptr;
+		size_t m_capacity = 0;
+		size_t m_size = 0;
 
 		explicit constexpr IntVector() noexcept = default;
 
 		explicit IntVector(const IntVector<T>& b) noexcept
-			: num_elms(b.num_elms), max_elms(b.max_elms)
+			: m_capacity(b.m_capacity), m_size(b.m_size)
 		{
-			if (max_elms != 0)
+			if (m_capacity != 0)
 			{
-				data = (T*)malloc(max_elms * sizeof(T));
-				memcpy(data, b.data, num_elms * sizeof(T));
+				m_data = (T*)malloc(m_capacity * sizeof(T));
+				memcpy(m_data, b.m_data, m_size * sizeof(T));
 			}
 		}
 
 		explicit IntVector(IntVector<T>&& b) noexcept
-			: num_elms(b.num_elms), max_elms(b.max_elms), data(b.data)
+			: m_data(b.m_data), m_capacity(b.m_capacity), m_size(b.m_size)
 		{
-			b.num_elms = 0;
-			b.max_elms = 0;
+			b.m_data = nullptr;
+			b.m_capacity = 0;
+			b.m_size = 0;
 		}
 
 		~IntVector() noexcept
@@ -44,17 +45,17 @@ namespace soup
 		{
 			free();
 
-			num_elms = b.num_elms;
-			max_elms = b.max_elms;
+			m_size = b.m_size;
+			m_capacity = b.m_capacity;
 
-			if (max_elms != 0)
+			if (m_capacity != 0)
 			{
-				data = (T*)malloc(max_elms * sizeof(T));
-				memcpy(data, b.data, num_elms * sizeof(T));
+				m_data = (T*)malloc(m_capacity * sizeof(T));
+				memcpy(m_data, b.m_data, m_size * sizeof(T));
 			}
 			else
 			{
-				data = nullptr;
+				m_data = nullptr;
 			}
 		}
 
@@ -62,38 +63,44 @@ namespace soup
 		{
 			free();
 
-			num_elms = b.num_elms;
-			max_elms = b.max_elms;
-			data = b.data;
+			m_data = b.m_data;
+			m_size = b.m_size;
+			m_capacity = b.m_capacity;
 
-			b.num_elms = 0;
-			b.max_elms = 0;
+			b.m_data = nullptr;
+			b.m_capacity = 0;
+			b.m_size = 0;
 		}
 
 		[[nodiscard]] constexpr size_t size() const noexcept
 		{
-			return num_elms;
+			return m_size;
+		}
+
+		[[nodiscard]] constexpr size_t capacity() const noexcept
+		{
+			return m_capacity;
 		}
 
 		[[nodiscard]] SOUP_FORCEINLINE T& operator[](size_t idx) noexcept
 		{
-			return data[idx];
+			return m_data[idx];
 		}
 
 		[[nodiscard]] SOUP_FORCEINLINE const T& operator[](size_t idx) const noexcept
 		{
-			return data[idx];
+			return m_data[idx];
 		}
 
 		[[nodiscard]] T& at(size_t idx)
 		{
 #ifdef _DEBUG
-			SOUP_IF_UNLIKELY (idx >= size())
+			SOUP_IF_UNLIKELY(idx >= size())
 			{
 				throw Exception("Out of range");
 			}
 #endif
-			return data[idx];
+			return m_data[idx];
 		}
 
 		[[nodiscard]] const T& at(size_t idx) const
@@ -104,88 +111,88 @@ namespace soup
 				throw Exception("Out of range");
 			}
 #endif
-			return data[idx];
+			return m_data[idx];
 		}
 
 		void emplaceZeroesFront(size_t elms) noexcept
 		{
-			SOUP_IF_UNLIKELY (num_elms + elms > max_elms)
+			SOUP_IF_UNLIKELY (m_size + elms > m_capacity)
 			{
 				// not optimal for performance, we'd memcpy twice, luckily this path is pretty cold
 				makeSpaceForMoreElements();
-				if (num_elms + elms > max_elms)
+				if (m_size + elms > m_capacity)
 				{
 					// this is also a possibility if elms >= 0x1000, shit will hit the fan...
 				}
 			}
-			memmove(&data[elms], &data[0], num_elms * sizeof(T));
-			memset(&data[0], 0, elms * sizeof(T));
-			num_elms += elms;
+			memmove(&m_data[elms], &m_data[0], m_size * sizeof(T));
+			memset(&m_data[0], 0, elms * sizeof(T));
+			m_size += elms;
 		}
 
 		void emplace_back(T val) noexcept
 		{
-			if (num_elms == max_elms)
+			if (m_size == m_capacity)
 			{
 				makeSpaceForMoreElements();
 			}
-			data[num_elms] = val;
-			++num_elms;
+			m_data[m_size] = val;
+			++m_size;
 		}
 
 		void erase(size_t idx) noexcept
 		{
-			if (--num_elms != idx)
+			if (--m_size != idx)
 			{
-				memcpy(&data[idx], &data[idx + 1], (num_elms - idx) * sizeof(T));
+				memcpy(&m_data[idx], &m_data[idx + 1], (m_size - idx) * sizeof(T));
 			}
 		}
 
 		void eraseFirst(size_t num) noexcept
 		{
-			num_elms -= num;
-			memcpy(&data[0], &data[num], num_elms * sizeof(T));
+			m_size -= num;
+			memcpy(&m_data[0], &m_data[num], m_size * sizeof(T));
 		}
 
 		void preallocate() noexcept
 		{
-			if (max_elms == 0)
+			if (m_capacity == 0)
 			{
-				max_elms = (0x1000 / sizeof(T));
-				data = reinterpret_cast<T*>(malloc(max_elms * sizeof(T)));
+				m_capacity = (0x1000 / sizeof(T));
+				m_data = reinterpret_cast<T*>(malloc(m_capacity * sizeof(T)));
 			}
 		}
 
 	protected:
 		void makeSpaceForMoreElements() noexcept
 		{
-			max_elms += (0x1000 / sizeof(T));
-			data = reinterpret_cast<T*>(data ? realloc(data, max_elms * sizeof(T)) : malloc(max_elms * sizeof(T)));
+			m_capacity += (0x1000 / sizeof(T));
+			m_data = reinterpret_cast<T*>(m_data ? realloc(m_data, m_capacity * sizeof(T)) : malloc(m_capacity * sizeof(T)));
 		}
 
 	public:
 		void clear() noexcept
 		{
-			num_elms = 0;
+			m_size = 0;
 		}
 
 		void reset() noexcept
 		{
 			clear();
-			if (max_elms != 0)
+			if (m_capacity != 0)
 			{
-				max_elms = 0;
-				::free(data);
-				data = nullptr;
+				m_capacity = 0;
+				::free(m_data);
+				m_data = nullptr;
 			}
 		}
 
 	protected:
 		void free() noexcept
 		{
-			if (max_elms != 0)
+			if (m_capacity != 0)
 			{
-				::free(data);
+				::free(m_data);
 			}
 		}
 	};
