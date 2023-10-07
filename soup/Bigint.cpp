@@ -769,6 +769,10 @@ namespace soup
 				remainder = (chunk_t)getBit(0);
 				*this >>= 1u;
 			}
+			else if (divisor.getNumChunks() == 1)
+			{
+				remainder = divideUnsignedSmall(divisor.getChunkInbounds(0));
+			}
 			else
 			{
 				for (size_t i = getNumBits(); i-- != 0; )
@@ -789,6 +793,28 @@ namespace soup
 				shrink();
 			}
 		}
+	}
+
+	chunk_t Bigint::divideUnsignedSmall(chunk_t divisor)
+	{
+		size_t remainder = 0;
+		for (size_t i = getNumBits(); i-- != 0; )
+		{
+			const auto b = getBitInbounds(i);
+			remainder <<= 1;
+			Bitset<size_t>::at(remainder).set(0, b);
+			if (remainder >= divisor)
+			{
+				remainder -= divisor;
+				enableBitInbounds(i);
+			}
+			else
+			{
+				disableBitInbounds(i);
+			}
+		}
+		shrink();
+		return (chunk_t)remainder;
 	}
 
 	Bigint Bigint::mod(const Bigint& m) const

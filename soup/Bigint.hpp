@@ -176,6 +176,7 @@ namespace soup
 		[[nodiscard]] std::pair<Bigint, Bigint> divide(const Bigint& divisor) const; // (Quotient, Remainder)
 		[[nodiscard]] std::pair<Bigint, Bigint> divideUnsigned(const Bigint& divisor) const; // (Quotient, Remainder)
 		void divideUnsigned(const Bigint& divisor, Bigint& remainder);
+		[[nodiscard]] chunk_t divideUnsignedSmall(chunk_t divisor);
 		[[nodiscard]] Bigint mod(const Bigint& m) const;
 		[[nodiscard]] Bigint modUnsigned(const Bigint& m) const;
 		[[nodiscard]] Bigint modUnsignedPowerof2(const Bigint& m) const;
