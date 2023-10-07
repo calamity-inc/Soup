@@ -66,7 +66,7 @@ namespace soup
 		std::string str = "CPUID Support Level: ";
 		str.append(std::to_string(cpuid_max_eax));
 		str.append("\nVendor: ");
-		str.append(vendor_id);
+		str.append(vendor_id.c_str());
 		str.push_back('\n');
 
 		if (cpuid_max_eax >= 0x01)

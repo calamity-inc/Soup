@@ -3,13 +3,15 @@
 #include <cstdint>
 #include <string>
 
+#include "ShortString.hpp"
+
 namespace soup
 {
 	class CpuInfo
 	{
 	public:
 		uint32_t cpuid_max_eax;
-		std::string vendor_id;
+		ShortString<16> vendor_id;
 
 		uint8_t stepping_id;
 		uint8_t model;
