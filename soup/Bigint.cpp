@@ -1655,18 +1655,8 @@ namespace soup
 	Bigint Bigint::modMulInv(const Bigint& m) const
 	{
 		Bigint x, y;
-		if (gcd(m, x, y) == Bigint((chunk_t)1u)) // Is coprime?
-		{
-			return (x % m + m) % m;
-		}
-
-		for (Bigint res = Bigint((chunk_t)1u);; ++res)
-		{
-			if (((*this * res) % m) == Bigint((chunk_t)1u))
-			{
-				return res;
-			}
-		}
+		SOUP_ASSERT(gcd(m, x, y) == Bigint((chunk_t)1u)); // Integers must be coprime otherwise an inverse doesn't exist.
+		return (x % m + m) % m;
 	}
 
 	void Bigint::modMulInv2Coprimes(const Bigint& a, const Bigint& m, Bigint& x, Bigint& y)
