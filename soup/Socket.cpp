@@ -631,33 +631,33 @@ namespace soup
 			|| handshaker->ecdhe_curve == NamedCurves::secp384r1
 			)
 		{
-			EccCurve curve;
+			const EccCurve* curve;
 			if (handshaker->ecdhe_curve != NamedCurves::secp384r1)
 			{
-				curve = EccCurve::secp256r1();
+				curve = &EccCurve::secp256r1();
 			}
 			else
 			{
-				curve = EccCurve::secp384r1();
+				curve = &EccCurve::secp384r1();
 			}
-			size_t csize = curve.getBytesPerAxis();
+			size_t csize = curve->getBytesPerAxis();
 
-			auto my_priv = curve.generatePrivate();
+			auto my_priv = curve->generatePrivate();
 
 			EccPoint their_pub(
 				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, csize)),
 				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(csize, csize))
 			);
-			SOUP_ASSERT(curve.validate(their_pub));
+			SOUP_ASSERT(curve->validate(their_pub));
 
-			auto shared_point = curve.multiply(their_pub, my_priv);
+			auto shared_point = curve->multiply(their_pub, my_priv);
 			auto shared_secret = shared_point.getX().toBinary();
 			SOUP_ASSERT(shared_secret.size() == csize);
 			handshaker->pre_master_secret.fulfil(std::move(shared_secret));
 
-			auto my_pub = curve.derivePublic(my_priv);
+			auto my_pub = curve->derivePublic(my_priv);
 
-			cke = curve.encodePointUncompressed(my_pub);
+			cke = curve->encodePointUncompressed(my_pub);
 			cke.insert(0, 1, 1 + csize + csize);
 		}
 		else
