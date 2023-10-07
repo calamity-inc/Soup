@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "fwd.hpp"
+
 namespace soup
 {
 	struct Oid
@@ -25,7 +27,7 @@ namespace soup
 		}
 
 		[[nodiscard]] static Oid fromBinary(const std::string& str);
-		[[nodiscard]] static Oid fromBinary(std::istream& s);
+		[[nodiscard]] static Oid fromBinary(Reader& r);
 
 		[[nodiscard]] bool operator ==(const Oid& b) const noexcept;
 		[[nodiscard]] bool operator !=(const Oid& b) const noexcept;

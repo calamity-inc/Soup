@@ -2,9 +2,8 @@
 
 #include <cstring> // memcmp
 #include <istream>
-#include <sstream>
 
-#include "IstreamReader.hpp"
+#include "StringRefReader.hpp"
 #include "StringRefWriter.hpp"
 
 namespace soup
@@ -19,19 +18,18 @@ namespace soup
 
 	Oid Oid::fromBinary(const std::string& str)
 	{
-		std::istringstream s{ str };
+		StringRefReader s{ str };
 		return fromBinary(s);
 	}
 
-	Oid Oid::fromBinary(std::istream& s)
+	Oid Oid::fromBinary(Reader& r)
 	{
 		Oid ret{};
-		if (auto first = s.get(); first != EOF)
+		if (uint8_t first; r.u8(first))
 		{
 			ret.path.reserve(2);
 			ret.path.push_back(first / 40);
 			ret.path.push_back(first % 40);
-			IstreamReader r(s);
 			while (r.hasMore())
 			{
 				uint32_t comp;
