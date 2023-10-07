@@ -51,6 +51,7 @@ namespace soup
 			}
 			tbsCertDer = tbsCert.toDer();
 			sig = cert.getString(2);
+			sig.erase(0, 1); // trim leading zero
 
 			hash = joaat::hash(cert.at(0).data);
 
@@ -59,7 +60,7 @@ namespace soup
 			auto pubCrypto = pubType.getOid(0);
 
 			std::string pubKeyStr = pubInfo.getString(1);
-			pubKeyStr.erase(0, 1);
+			pubKeyStr.erase(0, 1); // trim leading zero
 
 			if (pubCrypto == Oid::RSA_ENCRYPTION)
 			{
@@ -217,7 +218,7 @@ namespace soup
 				return false;
 			}
 			{
-				auto seq = Asn1Sequence(sig.substr(1)).getSeq(0);
+				auto seq = Asn1Sequence(sig).getSeq(0);
 				auto r = seq.getInt(0);
 				auto s = seq.getInt(1);
 				return issuer.curve->verify(issuer.key, sha256::hash(tbsCertDer), r, s);
