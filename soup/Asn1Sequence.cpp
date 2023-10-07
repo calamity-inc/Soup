@@ -7,7 +7,6 @@
 #include "Exception.hpp"
 #include "Oid.hpp"
 #include "string.hpp"
-#include "StringReader.hpp"
 #include "StringRefReader.hpp"
 #include "time.hpp"
 
@@ -18,10 +17,10 @@ namespace soup
 	{
 	}
 
-	Asn1Sequence::Asn1Sequence(std::string data)
+	Asn1Sequence::Asn1Sequence(const std::string& data)
 		: Asn1Sequence()
 	{
-		StringReader r{ std::move(data) };
+		StringRefReader r{ data };
 		while (r.hasMore())
 		{
 			auto id = readIdentifier(r);

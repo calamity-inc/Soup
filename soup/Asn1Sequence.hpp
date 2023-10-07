@@ -12,7 +12,7 @@ namespace soup
 	struct Asn1Sequence : public std::vector<Asn1Element>
 	{
 		Asn1Sequence();
-		explicit Asn1Sequence(std::string data); // expects DER-encoded data without prefix
+		explicit Asn1Sequence(const std::string& data); // expects DER-encoded data without prefix
 
 		[[nodiscard]] static Asn1Sequence fromDer(const std::string& str); // expects DER-encoded data with prefix
 		[[nodiscard]] static Asn1Sequence fromDer(Reader& r); // expects DER-encoded data with prefix
