@@ -30,6 +30,7 @@ namespace soup
 		uint32_t hash;
 		X509RelativeDistinguishedName issuer;
 		X509RelativeDistinguishedName subject;
+		std::vector<std::string> subject_alt_names;
 		RsaPublicKey key;
 		std::time_t valid_from;
 		std::time_t valid_to;

@@ -64,6 +64,11 @@ namespace soup
 		return at(child_idx).identifier;
 	}
 
+	std::string& Asn1Sequence::getString(const size_t child_idx)
+	{
+		return at(child_idx).data;
+	}
+
 	const std::string& Asn1Sequence::getString(const size_t child_idx) const
 	{
 		return at(child_idx).data;

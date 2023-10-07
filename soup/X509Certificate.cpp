@@ -2,6 +2,8 @@
 
 #include <cstring> // memcmp
 
+#include "Asn1Type.hpp"
+#include "IpAddr.hpp"
 #include "joaat.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
@@ -77,6 +79,36 @@ namespace soup
 			valid_from = validityPeriod.getUtctime(0);
 			valid_to = validityPeriod.getUtctime(1);
 
+			Asn1Sequence extensions = tbsCert.getSeq(7).getSeq(0);
+			for (size_t i = 0; i != extensions.countChildren(); ++i)
+			{
+				Asn1Sequence ext = extensions.getSeq(i);
+				if (ext.getOid(0) == Oid::SUBJECT_ALT_NAME)
+				{
+					size_t data_idx = ((ext.at(1).identifier.type == Asn1Type::_BOOLEAN) ? 2 : 1);
+					// RFC 2459, page 33
+					Asn1Sequence data = Asn1Sequence::fromDer(ext.getString(data_idx));
+					for (size_t j = 0; j != data.countChildren(); ++j)
+					{
+						if (data.getChildType(j).type == 2) // DNS Name
+						{
+							subject_alt_names.emplace_back(std::move(data.getString(j)));
+						}
+						else if (data.getChildType(j).type == 7) // IP Address
+						{
+							if (data.getString(j).size() == 4)
+							{
+								subject_alt_names.emplace_back(IpAddr(*(network_u32_t*)data.getString(j).data()).toString4());
+							}
+							else if (data.getString(j).size() == 16)
+							{
+								subject_alt_names.emplace_back(IpAddr((uint8_t*)data.getString(j).data()).toString6());
+							}
+						}
+					}
+				}
+			}
+
 			return true;
 		}
 #if SOUP_EXCEPTIONS
@@ -90,7 +122,7 @@ namespace soup
 	X509RelativeDistinguishedName X509Certificate::readRelativeDistinguishedName(const Asn1Sequence& seq)
 	{
 		X509RelativeDistinguishedName ret{};
-		for (auto i = 0; i != seq.countChildren(); ++i)
+		for (size_t i = 0; i != seq.countChildren(); ++i)
 		{
 			auto kv = seq.getSeq(i).getSeq(0);
 			ret.emplace_back(kv.getOid(0), kv.getString(1));

@@ -12,6 +12,7 @@ namespace soup
 		static Oid COMMON_NAME;
 		static Oid RSA_ENCRYPTION;
 		static Oid SHA256_WITH_RSA_ENCRYPTION;
+		static Oid SUBJECT_ALT_NAME;
 
 		constexpr Oid() = default;
 
