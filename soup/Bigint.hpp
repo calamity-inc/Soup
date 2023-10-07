@@ -175,6 +175,7 @@ namespace soup
 		void operator%=(const Bigint& divisor);
 		[[nodiscard]] std::pair<Bigint, Bigint> divide(const Bigint& divisor) const; // (Quotient, Remainder)
 		[[nodiscard]] std::pair<Bigint, Bigint> divideUnsigned(const Bigint& divisor) const; // (Quotient, Remainder)
+		void divideUnsigned(const Bigint& divisor, Bigint& remainder);
 		[[nodiscard]] Bigint mod(const Bigint& m) const;
 		[[nodiscard]] Bigint modUnsigned(const Bigint& m) const;
 		[[nodiscard]] Bigint modUnsignedPowerof2(const Bigint& m) const;
@@ -274,11 +275,11 @@ namespace soup
 			else
 			{
 				const Bigint TEN = (chunk_t)10u;
+				Bigint remainder;
 				do
 				{
-					auto res = quotient.divideUnsigned(TEN);
-					str.insert(0, 1, (char)('0' + res.second.getChunk(0)));
-					quotient = std::move(res.first);
+					quotient.divideUnsigned(TEN, remainder);
+					str.insert(0, 1, (char)('0' + remainder.getChunk(0)));
 				} while (!quotient.isZero());
 			}
 			if (negative)

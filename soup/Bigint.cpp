@@ -780,6 +780,38 @@ namespace soup
 		return res;
 	}
 
+	void Bigint::divideUnsigned(const Bigint& divisor, Bigint& remainder)
+	{
+		remainder.reset();
+		SOUP_IF_LIKELY (!divisor.isZero())
+		{
+			if (divisor == Bigint((chunk_t)2u))
+			{
+				remainder = (chunk_t)getBit(0);
+				*this >>= 1u;
+			}
+			else
+			{
+				for (size_t i = getNumBits(); i-- != 0; )
+				{
+					const auto b = getBitInbounds(i);
+					remainder.leftShiftOne();
+					remainder.setBit(0, b);
+					if (remainder >= divisor)
+					{
+						remainder -= divisor;
+						enableBitInbounds(i);
+					}
+					else
+					{
+						disableBitInbounds(i);
+					}
+				}
+				shrink();
+			}
+		}
+	}
+
 	Bigint Bigint::mod(const Bigint& m) const
 	{
 		return divide(m).second;
