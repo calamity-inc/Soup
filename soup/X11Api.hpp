@@ -71,30 +71,30 @@ namespace soup
 		X11Api()
 			: SharedLibrary("libX11.so.6")
 		{
-			SOUP_ASSERT(isLoaded());
+			SOUP_ASSERT(isLoaded(), "Failed to load libX11.so.6");
 
-			openDisplay = (XOpenDisplay_t)getAddress("XOpenDisplay");
-			//defaultRootWindow = (XDefaultRootWindow_t)getAddress("XDefaultRootWindow");
-			createSimpleWindow = (XCreateSimpleWindow_t)getAddress("XCreateSimpleWindow");
-			storeName = (XStoreName_t)getAddress("XStoreName");
-			selectInput = (XSelectInput_t)getAddress("XSelectInput");
-			mapWindow = (XMapWindow_t)getAddress("XMapWindow");
-			nextEvent = (XNextEvent_t)getAddress("XNextEvent");
+			openDisplay = (XOpenDisplay_t)getAddressMandatory("XOpenDisplay");
+			//defaultRootWindow = (XDefaultRootWindow_t)getAddressMandatory("XDefaultRootWindow");
+			createSimpleWindow = (XCreateSimpleWindow_t)getAddressMandatory("XCreateSimpleWindow");
+			storeName = (XStoreName_t)getAddressMandatory("XStoreName");
+			selectInput = (XSelectInput_t)getAddressMandatory("XSelectInput");
+			mapWindow = (XMapWindow_t)getAddressMandatory("XMapWindow");
+			nextEvent = (XNextEvent_t)getAddressMandatory("XNextEvent");
 
-			flush = (XFlush_t)getAddress("XFlush");
-			//sync = (XSync_t)getAddress("XSync");
+			flush = (XFlush_t)getAddressMandatory("XFlush");
+			//sync = (XSync_t)getAddressMandatory("XSync");
 
-			createGc = (XCreateGC_t)getAddress("XCreateGC");
-			freeGc = (XFreeGC_t)getAddress("XFreeGC");
-			setForeground = (XSetForeground_t)getAddress("XSetForeground");
-			//setBackground = (XSetBackground_t)getAddress("XSetBackground");
-			//setFillStyle = (XSetFillStyle_t)getAddress("XSetFillStyle");
-			fillRectangle = (XFillRectangle_t)getAddress("XFillRectangle");
+			createGc = (XCreateGC_t)getAddressMandatory("XCreateGC");
+			freeGc = (XFreeGC_t)getAddressMandatory("XFreeGC");
+			setForeground = (XSetForeground_t)getAddressMandatory("XSetForeground");
+			//setBackground = (XSetBackground_t)getAddressMandatory("XSetBackground");
+			//setFillStyle = (XSetFillStyle_t)getAddressMandatory("XSetFillStyle");
+			fillRectangle = (XFillRectangle_t)getAddressMandatory("XFillRectangle");
 
-			defaultScreen = (XDefaultScreen_t)getAddress("XDefaultScreen");
-			rootWindow = (XRootWindow_t)getAddress("XRootWindow");
+			defaultScreen = (XDefaultScreen_t)getAddressMandatory("XDefaultScreen");
+			rootWindow = (XRootWindow_t)getAddressMandatory("XRootWindow");
 
-			((void(*)())getAddress("XInitThreads"))();
+			((void(*)())getAddressMandatory("XInitThreads"))();
 
 			display = openDisplay(nullptr); // Note: We're never calling XCloseDisplay
 			SOUP_ASSERT(display, "System is headless");

@@ -816,7 +816,7 @@ namespace soup
 		uint16_t set = 0;
 		uint16_t unset = 0;
 		getFlags(set, unset);
-		SOUP_ASSERT((set & unset) == 0);
+		SOUP_ASSERT((set & unset) == 0, "RegexGroup has contradicting flags");
 		return set;
 	}
 

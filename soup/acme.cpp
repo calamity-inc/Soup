@@ -143,7 +143,7 @@ namespace soup
 
 	std::string AcmeClient::getCertchain(const AcmeAccount& acct, const AcmeOrder& order)
 	{
-		SOUP_ASSERT(order.certificate.has_value());
+		SOUP_ASSERT(order.certificate.has_value(), "Attempt to get certificate from order that is still processing");
 		return executeRequest(acct, *order.certificate, {}).body;
 	}
 

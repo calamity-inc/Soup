@@ -35,5 +35,6 @@ namespace soup
 		void forget();
 
 		[[nodiscard]] void* getAddress(const char* name) const noexcept;
+		[[nodiscard]] void* getAddressMandatory(const char* name) const;
 	};
 }

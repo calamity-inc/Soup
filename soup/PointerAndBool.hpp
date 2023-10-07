@@ -14,13 +14,13 @@ namespace soup
 		PointerAndBool(T ptr)
 			: data(reinterpret_cast<uintptr_t>(ptr))
 		{
-			SOUP_ASSERT((data & 1) == 0);
+			//SOUP_ASSERT((data & 1) == 0);
 		}
 
 		PointerAndBool(T ptr, bool b)
 			: data(reinterpret_cast<uintptr_t>(ptr))
 		{
-			SOUP_ASSERT((data & 1) == 0);
+			//SOUP_ASSERT((data & 1) == 0);
 			data |= (uintptr_t)b;
 		}
 

@@ -1,5 +1,7 @@
 #include "SharedLibrary.hpp"
 
+#include "Exception.hpp"
+
 namespace soup
 {
 	SharedLibrary::SharedLibrary(const std::string& path)
@@ -59,7 +61,7 @@ namespace soup
 
 	void* SharedLibrary::getAddress(const char* name) const noexcept
 	{
-		if (!isLoaded())
+		SOUP_IF_UNLIKELY (!isLoaded())
 		{
 			return nullptr;
 		}
@@ -68,5 +70,16 @@ namespace soup
 #else
 		return dlsym(handle, name);
 #endif
+	}
+
+	void* SharedLibrary::getAddressMandatory(const char* name) const
+	{
+		SOUP_IF_LIKELY (auto addr = getAddress(name))
+		{
+			return addr;
+		}
+		std::string msg = "Failed to find mandatory symbol: ";
+		msg.append(name);
+		SOUP_THROW(Exception(std::move(msg)));
 	}
 }

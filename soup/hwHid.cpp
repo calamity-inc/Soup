@@ -365,9 +365,9 @@ namespace soup
 		free(device_interface_list);
 #elif SOUP_LINUX
 		SharedLibrary libudev("libudev.so.1");
-		SOUP_ASSERT(libudev.isLoaded());
+		SOUP_ASSERT(libudev.isLoaded(), "Failed to load libudev.so.1");
 
-#define use_udev_func(name) const auto name = (name ## _t)libudev.getAddress(#name);
+#define use_udev_func(name) const auto name = (name ## _t)libudev.getAddressMandatory(#name);
 
 		use_udev_func(udev_new);
 		use_udev_func(udev_unref);
@@ -474,7 +474,7 @@ namespace soup
 
 	Buffer hwHid::pollReport() const
 	{
-		SOUP_ASSERT(havePermission());
+		SOUP_ASSERT(havePermission(), "Attempt to poll report from HID without having the needed permissions");
 #if SOUP_WINDOWS
 		Buffer buf(input_report_byte_length);
 		DWORD bytes_read;

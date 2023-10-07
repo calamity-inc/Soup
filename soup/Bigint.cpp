@@ -4,6 +4,8 @@
 #include "branchless.hpp"
 #include "CpuInfo.hpp"
 #include "Endian.hpp"
+#include "Exception.hpp"
+#include "ObfusString.hpp"
 #include "rand.hpp"
 #include "RngInterface.hpp"
 #include "string.hpp"
@@ -1687,7 +1689,10 @@ namespace soup
 	Bigint Bigint::modMulInv(const Bigint& m) const
 	{
 		Bigint x, y;
-		SOUP_ASSERT(gcd(m, x, y) == Bigint((chunk_t)1u)); // Integers must be coprime otherwise an inverse doesn't exist.
+		SOUP_IF_UNLIKELY (gcd(m, x, y) != Bigint((chunk_t)1u))
+		{
+			SOUP_THROW(Exception(ObfusString("Modular multiplicative inverse does not exist as the numbers are not coprime").str()));
+		}
 		return (x % m + m) % m;
 	}
 

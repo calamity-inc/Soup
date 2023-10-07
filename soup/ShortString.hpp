@@ -3,6 +3,8 @@
 #include <cstring>
 #include <string>
 
+#include "base.hpp"
+
 namespace soup
 {
 	template <size_t S>
@@ -39,7 +41,7 @@ namespace soup
 
 		void operator =(const char* b) noexcept
 		{
-			//SOUP_ASSERT(strlen(b) <= S);
+			SOUP_ASSERT_ARG(strlen(b) <= S);
 			strncpy(data(), b, S);
 		}
 

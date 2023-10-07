@@ -1,9 +1,7 @@
 #include "Thread.hpp"
 
-#if SOUP_WINDOWS
 #include "Exception.hpp"
 #include "format.hpp"
-#endif
 
 namespace soup
 {
@@ -58,7 +56,11 @@ namespace soup
 
 		pthread_attr_t attr;
 		pthread_attr_init(&attr);
-		SOUP_ASSERT(pthread_create(&handle, &attr, reinterpret_cast<void* (*)(void*)>(&threadCreateCallback), this) == 0);
+		auto ret = pthread_create(&handle, &attr, reinterpret_cast<void*(*)(void*)>(&threadCreateCallback), this);
+		SOUP_IF_UNLIKELY (ret != 0)
+		{
+			SOUP_THROW(Exception(format("Failed to create thread: {}", ret)));
+		}
 		have_handle = true;
 		running = true;
 #endif
