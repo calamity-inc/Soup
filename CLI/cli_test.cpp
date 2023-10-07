@@ -4,11 +4,14 @@
 
 #include <x64.hpp>
 
+// crypto
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
 #include <ecc.hpp>
+#include <X509Certificate.hpp>
 
+// data
 #include <base32.hpp>
 #include <base58.hpp>
 #include <base64.hpp>
@@ -222,6 +225,13 @@ static void unit_crypto()
 			assert(p.getY() == "0x40780D7BB9E2E068879F443E05B21B8FC0B62C9C811008064D988856077E35E7"_b);
 		});
 	}
+
+	test("X509Certificate::matchDomain", []
+	{
+		assert(X509Certificate::matchDomain("deez.nuts", "deez.nuts") == true);
+		assert(X509Certificate::matchDomain("www.deez.nuts", "*.deez.nuts") == true);
+		assert(X509Certificate::matchDomain("what.are.deez.nuts", "*.deez.nuts") == false);
+	});
 }
 
 static void unit_data()

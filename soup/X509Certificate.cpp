@@ -7,6 +7,7 @@
 #include "joaat.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
+#include "string.hpp"
 
 namespace soup
 {
@@ -177,5 +178,41 @@ namespace soup
 		case UNK_WITH_UNK:;
 		}
 		return false;
+	}
+
+	bool X509Certificate::isValidForDomain(const std::string& domain) const
+	{
+		if (matchDomain(domain, subject.getCommonName()))
+		{
+			return true;
+		}
+		for (const auto& name : subject_alt_names)
+		{
+			if (matchDomain(domain, name))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool X509Certificate::matchDomain(const std::string& domain, const std::string& name)
+	{
+		auto domain_parts = string::explode(domain, '.');
+		auto name_parts = string::explode(name, '.');
+		if (domain_parts.size() != name_parts.size())
+		{
+			return false;
+		}
+		for (size_t i = 0; i != domain_parts.size(); ++i)
+		{
+			if (name_parts.at(i) != "*"
+				&& name_parts.at(i) != domain_parts.at(i)
+				)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }

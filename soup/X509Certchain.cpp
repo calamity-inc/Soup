@@ -63,13 +63,9 @@ namespace soup
 
 	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts) const
 	{
-		return isValidForDomain(domain)
-			&& verify(ts);
-	}
-
-	bool X509Certchain::isValidForDomain(const std::string& domain) const
-	{
-		return certs.at(0).subject.getCommonName() == domain;
+		return certs.at(0).isValidForDomain(domain)
+			&& verify(ts)
+			;
 	}
 
 	bool X509Certchain::verify(const TrustStore& ts) const

@@ -302,18 +302,17 @@ namespace soup
 		return true;
 	}
 
-	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string&)
+	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string& domain)
 	{
 		if (chain.certs.at(0).valid_to < time::unixSeconds())
 		{
 			return false;
 		}
 		const auto ts = TrustStore::fromMozilla();
-		// TODO: Support alternative common names so we can check if cert was issued for the server we are connecting to without false-negatives.
-		return chain.verify(ts);
+		return chain.verify(domain, ts);
 	}
 
-	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& name)
+	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& domain)
 	{
 		for (const auto& cert : chain.certs)
 		{
@@ -322,7 +321,7 @@ namespace soup
 				return false;
 			}
 		}
-		return certchain_validator_relaxed(chain, name);
+		return certchain_validator_relaxed(chain, domain);
 	}
 
 	template <typename T>

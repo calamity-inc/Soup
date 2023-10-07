@@ -114,7 +114,7 @@ namespace soup
 
 		static bool certchain_validator_none(const X509Certchain&, const std::string&); // Accepts everything.
 		static bool certchain_validator_relaxed(const X509Certchain&, const std::string&); // [Default] Verifies what can be verified, accepts the rest.
-		static bool certchain_validator_strict(const X509Certchain&, const std::string&); // Not recommended right now, but if you want actual peer identity verification, and you're okay with needing proper common name (no alternative common name) and full RSA chains.
+		static bool certchain_validator_strict(const X509Certchain&, const std::string&); // Not recommended right now, but if you want actual peer identity verification, and you're okay with needing full RSA chains.
 
 		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap = {});
 	protected:

@@ -46,5 +46,8 @@ namespace soup
 		[[nodiscard]] bool canBeVerified() const noexcept;
 		[[nodiscard]] bool verify(const X509Certificate& issuer) const;
 		[[nodiscard]] bool verify(const RsaPublicKey& issuer) const;
+
+		[[nodiscard]] bool isValidForDomain(const std::string& domain) const;
+		[[nodiscard]] static bool matchDomain(const std::string& domain, const std::string& name);
 	};
 }
