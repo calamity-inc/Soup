@@ -1381,18 +1381,27 @@ namespace soup
 
 	Bigint Bigint::gcd(Bigint b, Bigint& x, Bigint& y) const
 	{
-		if (isZero())
+		x.reset();
+		y = Bigint((chunk_t)1u);
+
+		Bigint u = Bigint((chunk_t)1u), v, m, n, q, r;
+		Bigint a = *this;
+
+		while (!a.isZero())
 		{
-			//x.reset();
-			y = Bigint((chunk_t)1u);
-			return b;
+			auto [q, r] = b.divide(a);
+			m = x - u * q;
+			n = y - v * q;
+
+			b = std::move(a);
+			a = std::move(r);
+			x = std::move(u);
+			y = std::move(v);
+			u = std::move(m);
+			v = std::move(n);
 		}
-		auto d = b.divide(*this);
-		Bigint xr, yr;
-		auto g = d.second.gcd(*this, xr, yr);
-		x = (yr - (d.first * xr));
-		y = std::move(xr);
-		return g;
+
+		return b;
 	}
 
 	bool Bigint::isPrimePrecheck(bool& ret) const
