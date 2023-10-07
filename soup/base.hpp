@@ -143,8 +143,9 @@
 #endif
 
 // === Platform-specific types
-// This is the only thing soup puts into the global namespace
 
+namespace soup
+{
 #if SOUP_BITS == 64
 	using halfintmax_t = int32_t;
 	using halfsize_t = uint32_t;
@@ -152,6 +153,7 @@
 	using halfintmax_t = int16_t;
 	using halfsize_t = uint16_t;
 #endif
+}
 
 // === Development helper macros
 
