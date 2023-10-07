@@ -1,5 +1,6 @@
 #include "Oid.hpp"
 
+#include <cstring> // memcmp
 #include <istream>
 #include <sstream>
 
@@ -47,14 +48,7 @@ namespace soup
 		{
 			return false;
 		}
-		for (auto i = path.rbegin(), j = b.path.rbegin(); i != path.rend(); ++i, ++j)
-		{
-			if (*i != *j)
-			{
-				return false;
-			}
-		}
-		return true;
+		return memcmp(path.data(), b.path.data(), path.size() * sizeof(*path.data())) == 0;
 	}
 
 	bool Oid::operator!=(const Oid& b) const noexcept
