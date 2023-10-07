@@ -766,8 +766,9 @@ namespace soup
 			{
 				for (size_t i = getNumBits(); i-- != 0; )
 				{
+					const auto b = getBitInbounds(i);
 					res.second.leftShiftOne();
-					res.second.setBit(0, getBitInbounds(i));
+					res.second.setBit(0, b);
 					if (res.second >= divisor)
 					{
 						res.second -= divisor;
@@ -804,8 +805,9 @@ namespace soup
 		Bigint remainder{};
 		for (size_t i = getNumBits(); i-- != 0; )
 		{
+			const auto b = getBitInbounds(i);
 			remainder.leftShiftOne();
-			remainder.setBit(0, getBitInbounds(i));
+			remainder.setBit(0, b);
 			if (remainder >= divisor)
 			{
 				remainder.subUnsigned(divisor);
