@@ -603,7 +603,8 @@ namespace soup
 			}
 
 			TlsEncryptedPreMasterSecret epms{};
-			epms.data = handshaker->certchain.certs.at(0).key.encryptPkcs1(pms).toBinary();
+			SOUP_ASSERT(handshaker->certchain.certs.at(0).isRsa());
+			epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
 			cke = epms.toBinaryString();
 
 			handshaker->pre_master_secret.fulfil(std::move(pms));

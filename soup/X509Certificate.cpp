@@ -50,27 +50,53 @@ namespace soup
 				break;
 			}
 			tbsCertDer = tbsCert.toDer();
-			sig = cert.getInt(2);
+			sig = cert.getString(2);
 
 			hash = joaat::hash(cert.at(0).data);
 
 			auto pubInfo = tbsCert.getSeq(6);
-			auto oid_bin = pubInfo.getString(0);
+			auto pubType = pubInfo.getSeq(0);
+			auto pubCrypto = pubType.getOid(0);
 
-			const unsigned char rsa_oid[] = {
-				0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, // OID 1.2.840.113549.1.1.1
-				0x05, 0x00 // NULL
-			};
-			if (oid_bin.size() == sizeof(rsa_oid) && memcmp(oid_bin.data(), rsa_oid, sizeof(rsa_oid)) == 0)
+			std::string pubKeyStr = pubInfo.getString(1);
+			pubKeyStr.erase(0, 1);
+
+			if (pubCrypto == Oid::RSA_ENCRYPTION)
 			{
-				std::string pubKeyStr = pubInfo.getString(1);
-				while (pubKeyStr.at(0) == '\0')
-				{
-					pubKeyStr.erase(0, 1);
-				}
+				is_ec = false;
+
 				auto pubKey = Asn1Sequence::fromDer(pubKeyStr);
-				key.n = pubKey.getInt(0);
-				key.e = pubKey.getInt(1);
+				setRsaPublicKey(
+					pubKey.getInt(0),
+					pubKey.getInt(1)
+				);
+			}
+			else if (pubCrypto == Oid::EC_PUBLIC_KEY)
+			{
+				is_ec = true;
+
+				auto pubCurve = pubType.getOid(1);
+				if (pubCurve == Oid::PRIME256V1)
+				{
+					curve = &EccCurve::secp256r1();
+				}
+				else if (pubCurve == Oid::ANSIP384R1)
+				{
+					curve = &EccCurve::secp384r1();
+				}
+				else
+				{
+					curve = nullptr;
+				}
+
+				if (curve)
+				{
+					key = curve->decodePoint(pubKeyStr);
+				}
+			}
+			else
+			{
+				SOUP_ASSERT_UNREACHABLE;
 			}
 
 			issuer = readRelativeDistinguishedName(tbsCert.getSeq(3));
@@ -133,12 +159,22 @@ namespace soup
 
 	bool X509Certificate::isRsa() const noexcept
 	{
-		return !key.n.isZero();
+		return !is_ec;
 	}
 
 	bool X509Certificate::isEc() const noexcept
 	{
-		return !isRsa();
+		return is_ec;
+	}
+
+	void X509Certificate::setRsaPublicKey(Bigint&& n, Bigint&& e)
+	{
+		key = EccPoint(std::move(n), std::move(e));
+	}
+
+	RsaPublicKey X509Certificate::getRsaPublicKey() const
+	{
+		return RsaPublicKey(key.getX(), key.getY());
 	}
 
 	bool X509Certificate::canBeVerified() const noexcept
@@ -147,6 +183,7 @@ namespace soup
 		{
 		case RSA_WITH_SHA1:
 		case RSA_WITH_SHA256:
+		case ECDSA_WITH_SHA256:
 			return true;
 
 		default:;
@@ -156,24 +193,40 @@ namespace soup
 
 	bool X509Certificate::verify(const X509Certificate& issuer) const
 	{
-		return verify(issuer.key);
-	}
-
-	bool X509Certificate::verify(const RsaPublicKey& issuer) const
-	{
 		switch (sig_type)
 		{
 		case RSA_WITH_SHA1:
-			return issuer.verify<soup::sha1>(tbsCertDer, sig);
+			if (!issuer.isRsa())
+			{
+				return false;
+			}
+			return issuer.getRsaPublicKey().verify<soup::sha1>(tbsCertDer, Bigint::fromBinary(sig));
 
 		case RSA_WITH_SHA256:
-			return issuer.verify<soup::sha256>(tbsCertDer, sig);
+			if (!issuer.isRsa())
+			{
+				return false;
+			}
+			return issuer.getRsaPublicKey().verify<soup::sha256>(tbsCertDer, Bigint::fromBinary(sig));
 
-		case RSA_WITH_SHA384:
-		case RSA_WITH_SHA512:
 		case ECDSA_WITH_SHA256:
-		case ECDSA_WITH_SHA384:
-			return true; // TODO
+			if (!issuer.isEc()
+				|| !issuer.curve
+				)
+			{
+				return false;
+			}
+			{
+				auto seq = Asn1Sequence(sig.substr(1)).getSeq(0);
+				auto r = seq.getInt(0);
+				auto s = seq.getInt(1);
+				return issuer.curve->verify(issuer.key, sha256::hash(tbsCertDer), r, s);
+			}
+
+			// TODO: Implement SHA384 & SHA512
+		case RSA_WITH_SHA384: return issuer.isRsa();
+		case RSA_WITH_SHA512: return issuer.isRsa();
+		case ECDSA_WITH_SHA384: return issuer.isEc();
 
 		case UNK_WITH_UNK:;
 		}

@@ -6,7 +6,7 @@ namespace soup
 {
 	using namespace literals;
 
-	EccCurve EccCurve::secp256k1()
+	[[nodiscard]] static EccCurve construct_secp256k1()
 	{
 		// https://asecuritysite.com/encryption/secp256k1p
 		EccCurve curve;
@@ -21,7 +21,7 @@ namespace soup
 		return curve;
 	}
 
-	EccCurve EccCurve::secp256r1()
+	[[nodiscard]] static EccCurve construct_secp256r1()
 	{
 		// https://asecuritysite.com/ecc/p256p
 		EccCurve curve;
@@ -36,7 +36,7 @@ namespace soup
 		return curve;
 	}
 
-	EccCurve EccCurve::secp384r1()
+	[[nodiscard]] static EccCurve construct_secp384r1()
 	{
 		// https://asecuritysite.com/ecc/ecc_points2, https://www.secg.org/sec2-v2.pdf
 		EccCurve curve;
@@ -49,6 +49,24 @@ namespace soup
 		);
 		curve.n = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973"_b;
 		return curve;
+	}
+
+	const EccCurve& EccCurve::secp256k1()
+	{
+		static EccCurve s_secp256k1 = construct_secp256k1();
+		return s_secp256k1;
+	}
+
+	const EccCurve& EccCurve::secp256r1()
+	{
+		static EccCurve s_secp256r1 = construct_secp256r1();
+		return s_secp256r1;
+	}
+
+	const EccCurve& EccCurve::secp384r1()
+	{
+		static EccCurve s_secp384r1 = construct_secp384r1();
+		return s_secp384r1;
 	}
 
 	Bigint EccCurve::generatePrivate() const

@@ -102,7 +102,10 @@ namespace soup
 		{
 			if (auto entry = ts.findCommonName(i->subject.getCommonName()))
 			{
-				if (entry->key.n == i->key.n)
+				if (entry->isEc() == i->isEc()
+					&& entry->key.getX() == i->key.getX()
+					&& entry->key.getY() == i->key.getY()
+					)
 				{
 					return true;
 				}

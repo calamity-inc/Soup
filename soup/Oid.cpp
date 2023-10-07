@@ -12,6 +12,9 @@ namespace soup
 	Oid Oid::RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 1 };
 	Oid Oid::SHA256_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 11 };
 	Oid Oid::SUBJECT_ALT_NAME = { 2, 5, 29, 17 };
+	Oid Oid::EC_PUBLIC_KEY = { 1, 2, 840, 10045, 2, 1 };
+	Oid Oid::PRIME256V1 = { 1, 2, 840, 10045, 3, 1, 7 };
+	Oid Oid::ANSIP384R1 = { 1, 3, 132, 0, 34 };
 
 	Oid Oid::fromBinary(const std::string& str)
 	{

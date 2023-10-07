@@ -3,6 +3,7 @@
 #include <ctime>
 
 #include "Asn1Sequence.hpp"
+#include "ecc.hpp"
 #include "rsa.hpp"
 #include "X509RelativeDistinguishedName.hpp"
 
@@ -10,7 +11,7 @@ namespace soup
 {
 	class X509Certificate
 	{
-	protected:
+	public:
 		enum SigType : uint8_t
 		{
 			UNK_WITH_UNK,
@@ -24,14 +25,17 @@ namespace soup
 
 		std::string tbsCertDer;
 		SigType sig_type;
-		Bigint sig;
+		std::string sig;
 
-	public:
 		uint32_t hash;
 		X509RelativeDistinguishedName issuer;
 		X509RelativeDistinguishedName subject;
 		std::vector<std::string> subject_alt_names;
-		RsaPublicKey key;
+
+		bool is_ec;
+		EccPoint key;
+		const EccCurve* curve;
+
 		std::time_t valid_from;
 		std::time_t valid_to;
 
@@ -43,9 +47,13 @@ namespace soup
 	public:
 		[[nodiscard]] bool isRsa() const noexcept;
 		[[nodiscard]] bool isEc() const noexcept;
+		[[nodiscard]] RsaPublicKey getRsaPublicKey() const;
+	protected:
+		void setRsaPublicKey(Bigint&& n, Bigint&& e);
+
+	public:
 		[[nodiscard]] bool canBeVerified() const noexcept;
 		[[nodiscard]] bool verify(const X509Certificate& issuer) const;
-		[[nodiscard]] bool verify(const RsaPublicKey& issuer) const;
 
 		[[nodiscard]] bool isValidForDomain(const std::string& domain) const;
 		[[nodiscard]] static bool matchDomain(const std::string& domain, const std::string& name);

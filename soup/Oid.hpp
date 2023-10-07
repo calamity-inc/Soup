@@ -13,6 +13,9 @@ namespace soup
 		static Oid RSA_ENCRYPTION;
 		static Oid SHA256_WITH_RSA_ENCRYPTION;
 		static Oid SUBJECT_ALT_NAME;
+		static Oid EC_PUBLIC_KEY;
+		static Oid PRIME256V1; // aka. secp256r1
+		static Oid ANSIP384R1; // aka. secp384r1
 
 		constexpr Oid() = default;
 
