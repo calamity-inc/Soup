@@ -1160,10 +1160,12 @@ namespace soup
 
 	Bigint Bigint::operator*(const Bigint& b) const
 	{
-		/*if (getNumBits() >= 1024 && b.getNumBits() >= 1024)
+		// Karatsuba's method is supposed to be faster for 1024-bit integers, but here it seems to only be effective starting at 0x4000 bits.
+		SOUP_IF_UNLIKELY (getNumBits() >= 0x4000 && b.getNumBits() >= 0x4000)
 		{
 			return multiplyKaratsuba(b);
-		}*/
+		}
+
 		return multiplySimple(b);
 	}
 
@@ -1202,32 +1204,16 @@ namespace soup
 
 	Bigint Bigint::multiplyKaratsuba(const Bigint& b) const
 	{
-		if (negative)
-		{
-			Bigint cpy(*this);
-			cpy.negative = false;
-			auto product = cpy.multiplyKaratsuba(b);
-			product.negative ^= true;
-			return product;
-		}
-		if (b.negative)
-		{
-			Bigint cpy(b);
-			cpy.negative = false;
-			auto product = cpy.multiplyKaratsuba(*this);
-			product.negative ^= true;
-			return product;
-		}
-		return multiplyKaratsubaUnsigned(b);
+		auto product = multiplyKaratsubaUnsigned(b);
+		product.negative = (negative ^ b.negative);
+		return product;
 	}
 
 	Bigint Bigint::multiplyKaratsubaUnsigned(const Bigint& b/*, size_t recursions*/) const
 	{
 		//std::cout << std::string(recursions * 2, ' ') << toString() << " * " << b.toString() << "\n";
 
-		if (getNumChunks() < 2
-			|| b.getNumChunks() < 2
-			)
+		if (getNumBits() < 0x1000 || b.getNumBits() < 0x1000)
 		{
 			return multiplySimple(b);
 		}
@@ -1238,8 +1224,6 @@ namespace soup
 		auto [high1, low1] = splitAt(half);
 		auto [high2, low2] = b.splitAt(half);
 
-		// Future consideration: Call into main multiply function and let it decide if karatsuba is still best to recurse further.
-		// Then could also remove base-case here.
 		Bigint p1 = high1.multiplyKaratsubaUnsigned(high2/*, recursions + 1*/);
 		Bigint p2 = low1.multiplyKaratsubaUnsigned(low2/*, recursions + 1*/);
 		Bigint p3 = (low1 + high1).multiplyKaratsubaUnsigned(low2 + high2/*, recursions + 1*/);
@@ -1247,11 +1231,11 @@ namespace soup
 		p3.subUnsigned(p1);
 		p3.subUnsigned(p2);
 
-		Bigint res = (p1 << half_bits);
-		res.addUnsigned(p3);
-		res <<= half_bits;
-		res.addUnsigned(p2);
-		return res;
+		p1 <<= half_bits;
+		p1.addUnsigned(p3);
+		p1 <<= half_bits;
+		p1.addUnsigned(p2);
+		return p1;
 	}
 
 	Bigint Bigint::operator/(const Bigint& b) const

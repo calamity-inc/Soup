@@ -199,7 +199,6 @@ namespace soup
 		[[nodiscard]] Bigint operator--(int);
 		[[nodiscard]] Bigint operator*(const Bigint& b) const;
 		[[nodiscard]] Bigint multiplySimple(const Bigint& b) const;
-		// Karatsuba's method is supposed to be faster for 1024-bit integers, tho it's exponentially slower here. Maybe if it relied less on recursions?
 		[[nodiscard]] Bigint multiplyKaratsuba(const Bigint& b) const;
 		[[nodiscard]] Bigint multiplyKaratsubaUnsigned(const Bigint& b/*, size_t recursions = 0*/) const;
 		[[nodiscard]] Bigint operator/(const Bigint& b) const;
