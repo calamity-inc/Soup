@@ -204,4 +204,63 @@ namespace soup
 	{
 		return p.getNumBytes();
 	}
+
+	std::pair<Bigint, Bigint> EccCurve::sign(const Bigint& d, const std::string& e) const
+	{
+		const auto z = e2z(e);
+
+		Bigint k, r, s;
+		do
+		{
+			do
+			{
+				k = Bigint::random(getBytesPerAxis()); // let's hope we never use the same k twice if we don't want to leak the d :)
+				r = (multiply(G, k).getX() % n);
+			} while (r.isZero());
+			s = ((k.modMulInv(n) * (z + (r * d))) % n);
+		} while (s.isZero());
+
+		return std::pair<Bigint, Bigint>{ std::move(r), std::move(s) };
+	}
+
+	bool EccCurve::verify(const EccPoint& Q, const std::string& e, const Bigint& r, const Bigint& s) const
+	{
+		SOUP_ASSERT(validate(Q));
+
+		if (r.isNegative() || r.isZero() || r >= n
+			|| s.isNegative() || s.isZero() || s >= n
+			)
+		{
+			return false;
+		}
+
+		const auto z = e2z(e);
+		const auto sinv = s.modMulInv(n);
+		const auto u1 = ((z * sinv) % n);
+		const auto u2 = ((r * sinv) % n);
+		auto p = multiply(G, u1);
+		p = add(p, multiply(Q, u2));
+		if (p.isIdentityElement())
+		{
+			return false;
+		}
+		const auto x1 = (p.getX() % n);
+		return x1 == r;
+	}
+
+	Bigint EccCurve::deriveD(const std::string& e1, const std::string& e2, const Bigint& r, const Bigint& s1, const Bigint& s2) const
+	{
+		const auto z1 = e2z(e1);
+		const auto z2 = e2z(e2);
+
+		const auto z_delta = ((z1 - z2) % n);
+		const auto s_delta = ((s1 - s2) % n);
+		const auto derived_k = z_delta.modDiv(s_delta, n);
+		return ((s1 * derived_k) - z1).modDiv(r, n);
+	}
+
+	Bigint EccCurve::e2z(const std::string& e) const
+	{
+		return Bigint::fromBinary(e.substr(0, getBytesPerAxis()));
+	}
 }

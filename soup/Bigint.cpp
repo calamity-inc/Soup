@@ -1748,6 +1748,11 @@ namespace soup
 		return res;
 	}
 
+	Bigint Bigint::modDiv(const Bigint& divisor, const Bigint& m) const
+	{
+		return (*this * divisor.modMulInv(m)) % m;
+	}
+
 	// We need a positive integer r such that r >= m && r.isCoprime(m)
 	// We assume an odd modulus, so any power of 2 will be coprime to it.
 

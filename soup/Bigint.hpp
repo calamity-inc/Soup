@@ -244,6 +244,7 @@ namespace soup
 		[[nodiscard]] Bigint modPowMontgomery(const Bigint& e, const Bigint& m) const;
 		[[nodiscard]] Bigint modPowMontgomery(const Bigint& e, size_t re, const Bigint& r, const Bigint& m, const Bigint& r_mod_mul_inv, const Bigint& m_mod_mul_inv, const Bigint& one_mont) const;
 		[[nodiscard]] Bigint modPowBasic(const Bigint& e, const Bigint& m) const;
+		[[nodiscard]] Bigint modDiv(const Bigint& divisor, const Bigint& m) const;
 
 		// Montgomery operations, assuming an odd modulus
 		[[nodiscard]] size_t montgomeryREFromM() const;
