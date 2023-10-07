@@ -15,19 +15,19 @@ namespace soup
 		{
 		}
 
-		StringReader(std::string data, Endian endian = LITTLE_ENDIAN)
+		StringReader(std::string&& data, Endian endian = LITTLE_ENDIAN)
 			: ioSeekableReader(endian), data(std::move(data))
 		{
 		}
 		
-		StringReader(std::string data, bool little_endian)
+		StringReader(std::string&& data, bool little_endian)
 			: ioSeekableReader(little_endian), data(std::move(data))
 		{
 		}
 
 		~StringReader() final = default;
 
-		void operator =(std::string new_data) noexcept
+		void operator =(std::string&& new_data) noexcept
 		{
 			data = std::move(new_data);
 			offset = 0;

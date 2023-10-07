@@ -8,6 +8,7 @@
 #include "Oid.hpp"
 #include "string.hpp"
 #include "StringReader.hpp"
+#include "StringRefReader.hpp"
 #include "time.hpp"
 
 namespace soup
@@ -37,7 +38,7 @@ namespace soup
 
 	Asn1Sequence Asn1Sequence::fromDer(const std::string& str)
 	{
-		StringReader r{ str };
+		StringRefReader r{ str };
 		return fromDer(r);
 	}
 
