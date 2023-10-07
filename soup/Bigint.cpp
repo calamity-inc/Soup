@@ -754,29 +754,8 @@ namespace soup
 	std::pair<Bigint, Bigint> Bigint::divideUnsigned(const Bigint& divisor) const
 	{
 		std::pair<Bigint, Bigint> res{};
-		SOUP_IF_LIKELY (!divisor.isZero())
-		{
-			if (divisor == Bigint((chunk_t)2u))
-			{
-				res.first = *this;
-				res.first >>= 1u;
-				res.second = (chunk_t)getBit(0);
-			}
-			else
-			{
-				for (size_t i = getNumBits(); i-- != 0; )
-				{
-					const auto b = getBitInbounds(i);
-					res.second.leftShiftOne();
-					res.second.setBit(0, b);
-					if (res.second >= divisor)
-					{
-						res.second -= divisor;
-						res.first.enableBit(i);
-					}
-				}
-			}
-		}
+		res.first = *this;
+		res.first.divideUnsigned(divisor, res.second);
 		return res;
 	}
 
