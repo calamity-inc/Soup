@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "SharedPtr.hpp"
+
 namespace soup
 {
 	class audMixer
@@ -13,7 +15,7 @@ namespace soup
 	public:
 		struct PlayingSound
 		{
-			audSound* sound;
+			SharedPtr<audSound> sound;
 			bool loop;
 			double start = 0.0;
 		};
@@ -24,7 +26,7 @@ namespace soup
 
 		void setOutput(audPlayback& pb);
 
-		void playSound(audSound* sound, bool loop = false);
+		void playSound(SharedPtr<audSound> sound, bool loop = false);
 
 	protected:
 		[[nodiscard]] double getAmplitude(audPlayback& pb) noexcept;

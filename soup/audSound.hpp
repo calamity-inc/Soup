@@ -6,6 +6,8 @@ namespace soup
 {
 	struct audSound
 	{
+		virtual ~audSound() = default;
+
 		[[nodiscard]] virtual double getAmplitude(double t) const = 0;
 
 		[[nodiscard]] virtual double getDurationSeconds() const noexcept

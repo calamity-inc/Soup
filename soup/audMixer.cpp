@@ -24,9 +24,9 @@ namespace soup
 		pb.user_data = this;
 	}
 
-	void audMixer::playSound(audSound* sound, bool loop)
+	void audMixer::playSound(SharedPtr<audSound> sound, bool loop)
 	{
-		playing_sounds.emplace_back(PlayingSound{ sound, loop });
+		playing_sounds.emplace_back(PlayingSound{ std::move(sound), loop });
 	}
 
 	double audMixer::getAmplitude(audPlayback& pb) noexcept

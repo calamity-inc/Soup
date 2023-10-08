@@ -19,7 +19,7 @@ using namespace soup;
 void cli_morse_key(bool silent)
 {
 #if SOUP_WINDOWS
-	static MorseKey mk;
+	static SharedPtr<MorseKey> mk = soup::make_shared<MorseKey>();
 
 	UniquePtr<audPlayback> pb;
 	audMixer mix;
@@ -29,7 +29,7 @@ void cli_morse_key(bool silent)
 		std::cout << "Playing on " << dev.getName() << "\n";
 		pb = dev.open();
 		mix.setOutput(*pb);
-		mix.playSound(&mk);
+		mix.playSound(SharedPtr<MorseKey>(mk));
 	}
 
 	auto w = Window::create("Soup Morse Key", 500, 100);
@@ -37,7 +37,7 @@ void cli_morse_key(bool silent)
 	w.setDrawFunc([](Window w, RenderTarget& rt)
 	{
 		rt.fill(Rgb::BLACK);
-		auto pattern = mk.seq.toPattern();
+		auto pattern = mk->seq.toPattern();
 		rt.drawText(5, 50, morse::decode(pattern), RasterFont::simple5(), Rgb::WHITE, 5);
 		string::replaceAll(pattern, "-", "_");
 		rt.drawText(5, 5, pattern, RasterFont::simple5(), Rgb::WHITE, 5);
@@ -46,15 +46,15 @@ void cli_morse_key(bool silent)
 	{
 		if (!repeat)
 		{
-			if (mk.isDown() != down)
+			if (mk->isDown() != down)
 			{
 				if (down)
 				{
-					mk.down();
+					mk->down();
 				}
 				else
 				{
-					mk.up();
+					mk->up();
 				}
 				w.redraw();
 			}
@@ -70,8 +70,8 @@ void cli_morse_encode(const char* arg, bool silent)
 {
 	auto pattern = morse::encode(arg);
 	std::cout << pattern << "\n";
-	auto seq = morse::patternToSequence(pattern);
-	seq.alterndur.pop_back(); // stop instantly
+	auto seq = soup::make_shared<MorseSequence>(morse::patternToSequence(pattern));
+	seq->alterndur.pop_back(); // stop instantly
 	/*for (const auto& dur : seq.alterndur)
 	{
 		std::cout << dur << " ";
@@ -86,7 +86,7 @@ void cli_morse_encode(const char* arg, bool silent)
 		audMixer mix;
 		mix.stop_playback_when_done = true;
 		mix.setOutput(*pb);
-		mix.playSound(&seq);
+		mix.playSound(std::move(seq));
 		pb->awaitCompletion();
 	}
 #endif
