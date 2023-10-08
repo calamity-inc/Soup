@@ -582,6 +582,7 @@ spanning over multiple lines */
 		assert(Regex("(abc|)").matchesFully("abc") == true);
 		assert(Regex("(abc|)").matchesFully("") == true);
 		assert(Regex("(abc|)").matchesFully("abcdef") == false);
+		assert(Regex("a(z|)b").matchesFully("ab") == true);
 
 		assert(Regex(".*B").match("ABAB").toString() == R"(0="ABAB")");
 		assert(Regex(".*?B").match("ABAB").toString() == R"(0="AB")");

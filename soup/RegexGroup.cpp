@@ -89,6 +89,22 @@ namespace soup
 		}
 	};
 
+	static void discharge_alternative(RegexGroup& g, TransitionsVector& success_transitions, RegexAlternative& a)
+	{
+		// Ensure all alternatives have at least one constraint so we can set up transitions
+		if (a.constraints.empty())
+		{
+			auto upC = soup::make_unique<RegexDummyConstraint>();
+			auto pC = upC.get();
+			a.constraints.emplace_back(std::move(upC));
+			success_transitions.setTransitionTo(pC);
+			success_transitions.emplace(&pC->success_transition);
+		}
+
+		g.alternatives.emplace_back(std::move(a));
+		a.constraints.clear();
+	}
+
 	RegexGroup::RegexGroup(const ConstructorState& s, bool non_capturing)
 		: index(non_capturing ? -1 : s.next_index++)
 	{
@@ -198,8 +214,7 @@ namespace soup
 				}
 				else if (*s.it == '|')
 				{
-					alternatives.emplace_back(std::move(a));
-					a.constraints.clear();
+					discharge_alternative(*this, success_transitions, a);
 					success_transitions.discharge(alternatives_transitions);
 					continue;
 				}
@@ -760,20 +775,11 @@ namespace soup
 			success_transitions.setTransitionTo(pC);
 			success_transitions.emplace(&pC->success_transition);
 		}
-		alternatives.emplace_back(std::move(a));
+		discharge_alternative(*this, success_transitions, a);
 		success_transitions.discharge(alternatives_transitions);
 
 		if (alternatives.size() > 1)
 		{
-			// Ensure all alternatives have at least one constraint so we can set up transitions
-			for (auto& a : alternatives)
-			{
-				if (a.constraints.empty())
-				{
-					a.constraints.emplace_back(soup::make_unique<RegexDummyConstraint>());
-				}
-			}
-
 			// Set up rollback transitions for the first constraint in each alternative to jump to next alternative
 			for (size_t i = 0; i + 1 != alternatives.size(); ++i)
 			{
