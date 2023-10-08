@@ -461,12 +461,7 @@ namespace soup
 		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT toInt(const char* str, IntT fallback) noexcept
 		{
-			auto res = toInt<IntT, Flags>(str);
-			if (res.has_value())
-			{
-				return res.value();
-			}
-			return fallback;
+			return toInt<IntT, Flags>(str).value_or(fallback);
 		}
 		
 		template <typename IntT, uint8_t Flags = 0>
@@ -478,12 +473,7 @@ namespace soup
 		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT toInt(const wchar_t* str, IntT fallback) noexcept
 		{
-			auto res = toInt<IntT, Flags>(str);
-			if (res.has_value())
-			{
-				return res.value();
-			}
-			return fallback;
+			return toInt<IntT, Flags>(str).value_or(fallback);
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
@@ -584,12 +574,7 @@ namespace soup
 		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT hexToInt(const char* str, IntT fallback) noexcept
 		{
-			auto res = hexToInt<IntT, Flags>(str);
-			if (res.has_value())
-			{
-				return res.value();
-			}
-			return fallback;
+			return hexToInt<IntT, Flags>(str).value_or(fallback);
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
@@ -601,12 +586,7 @@ namespace soup
 		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT hexToInt(const wchar_t* str, IntT fallback) noexcept
 		{
-			auto res = hexToInt<IntT, Flags>(str);
-			if (res.has_value())
-			{
-				return res.value();
-			}
-			return fallback;
+			return hexToInt<IntT, Flags>(str).value_or(fallback);
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
