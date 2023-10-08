@@ -59,9 +59,11 @@ namespace soup
 
 		~UniqueList()
 		{
-			for (auto node = head; node; node = node->unique_list_link.next)
+			for (auto node = head; node; )
 			{
+				auto next = node->unique_list_link.next;
 				delete node;
+				node = next;
 			}
 		}
 
