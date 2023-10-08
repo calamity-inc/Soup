@@ -131,6 +131,7 @@ namespace soup
 	class Server;
 	struct ServerService;
 	struct ServerServiceUdp;
+	class ServerWebService;
 	class Socket;
 	struct SocketAddr;
 
