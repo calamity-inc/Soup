@@ -53,7 +53,7 @@ namespace soup
 
 		for (;; ++i)
 		{
-			if (*i == ' ' || i == text.end())
+			if (i == text.end() || *i == ' ')
 			{
 				buf.endCopy(text, i);
 
@@ -89,7 +89,7 @@ namespace soup
 
 		for (;; ++i)
 		{
-			if (*i == ' ' || i == text.end())
+			if (i == text.end() || *i == ' ')
 			{
 				buf.endCopy(text, i);
 
