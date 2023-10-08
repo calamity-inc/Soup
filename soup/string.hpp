@@ -832,6 +832,7 @@ namespace soup
 		template <typename T>
 		static void truncateWithEllipsis(T& str, size_t max_len)
 		{
+			SOUP_ASSERT_ARG(max_len >= 3);
 			if (str.size() > max_len)
 			{
 				str.resize(max_len);
