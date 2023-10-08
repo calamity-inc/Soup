@@ -1524,6 +1524,9 @@
     <ClInclude Include="Ps2Scancode.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
+    <ClInclude Include="Optional.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

@@ -95,23 +95,16 @@ namespace soup
 			}
 			else if (is_float)
 			{
-				// Not ideal because std::stod may throw.
-#if SOUP_EXCEPTIONS
-				try
-#endif
+				char* str_end;
+				auto val = std::strtod(buf.c_str(), &str_end);
+				if (str_end != buf.c_str() && val != HUGE_VAL)
 				{
-					auto val = std::stod(buf);
 					if (exponent != 0)
 					{
 						val *= std::pow(10.0, exponent);
 					}
 					return soup::make_unique<JsonFloat>(val);
 				}
-#if SOUP_EXCEPTIONS
-				catch (...)
-				{
-				}
-#endif
 			}
 			else if (buf == "true")
 			{

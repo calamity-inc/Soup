@@ -209,7 +209,7 @@ namespace soup
 		std::string buf{};
 		HttpResponse resp{};
 		Status status = CODE;
-		unsigned long long bytes_remain = 0;
+		uint64_t bytes_remain = 0;
 
 		void(*on_body_part)(Socket&, const std::string&, const Capture&) = nullptr;
 		void(*callback)(Socket&, std::optional<HttpResponse>&&, Capture&&) = nullptr;
@@ -304,18 +304,14 @@ namespace soup
 								if (auto len = self.resp.header_fields.find(ObfusString("Content-Length")); len != self.resp.header_fields.end())
 								{
 									self.status = BODY_LEN;
-									// Not ideal because std::stoull may throw.
-#if SOUP_EXCEPTIONS
-									try
-#endif
+									if (auto opt = string::toInt<uint64_t, string::TI_FULL>(len->second); opt.has_value())
 									{
-										self.bytes_remain = std::stoull(len->second);
+										self.bytes_remain = opt.value();
 									}
-#if SOUP_EXCEPTIONS
-									catch (...)
+									else
 									{
 #if LOGGING
-										logWriteLine("Exception reading content length");
+										logWriteLine("Error parsing content length");
 #endif
 										if (self.callback)
 										{
@@ -323,7 +319,6 @@ namespace soup
 										}
 										return;
 									}
-#endif
 								}
 								else
 								{
@@ -354,18 +349,14 @@ namespace soup
 							{
 								break;
 							}
-							// Not ideal because std::stoull may throw.
-#if SOUP_EXCEPTIONS
-							try
-#endif
+							if (auto opt = string::hexToInt<int64_t>(self.buf.substr(0, i)); opt.has_value())
 							{
-								self.bytes_remain = std::stoull(self.buf.substr(0, i), nullptr, 16);
+								self.bytes_remain = opt.value();
 							}
-#if SOUP_EXCEPTIONS
-							catch (...)
+							else
 							{
 #if LOGGING
-								logWriteLine("Exception reading chunk length");
+								logWriteLine("Error parsing chunk length");
 #endif
 								if (self.callback)
 								{
@@ -373,7 +364,6 @@ namespace soup
 								}
 								return;
 							}
-#endif
 							self.buf.erase(0, i + 2);
 							if (self.bytes_remain == 0)
 							{

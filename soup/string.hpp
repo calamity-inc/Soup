@@ -5,13 +5,13 @@
 #include <cstdint>
 #include <cstring> // strlen
 #include <filesystem>
-#include <optional>
 #include <string>
 #include <vector>
 
-#undef min
-
 #include "base.hpp"
+#include "Optional.hpp"
+
+#undef min
 
 namespace soup
 {
@@ -361,7 +361,7 @@ namespace soup
 		}
 
 		template <typename IntT, typename CharT>
-		[[nodiscard]] static std::optional<IntT> toIntOpt(const CharT*& it) noexcept
+		[[nodiscard]] static Optional<IntT> toIntOpt(const CharT*& it) noexcept
 		{
 			bool had_number_char = false;
 			IntT val = 0;
@@ -409,7 +409,7 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0, typename CharT>
-		[[nodiscard]] static std::optional<IntT> toInt(const CharT* it) noexcept
+		[[nodiscard]] static Optional<IntT> toInt(const CharT* it) noexcept
 		{
 			bool neg = false;
 			if (*it == '\0')
@@ -443,17 +443,17 @@ namespace soup
 			{
 				val *= -1;
 			}
-			return std::optional<IntT>(std::move(val));
+			return Optional<IntT>(std::move(val));
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> toInt(const std::string& str) noexcept
+		[[nodiscard]] static Optional<IntT> toInt(const std::string& str) noexcept
 		{
 			return toInt<IntT, Flags>(str.c_str());
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> toInt(const std::wstring& str) noexcept
+		[[nodiscard]] static Optional<IntT> toInt(const std::wstring& str) noexcept
 		{
 			return toInt<IntT, Flags>(str.c_str());
 		}
@@ -538,7 +538,7 @@ namespace soup
 		}
 
 		template <typename IntT, uint8_t Flags = 0, typename CharT>
-		[[nodiscard]] static std::optional<IntT> hexToInt(const CharT* it) noexcept
+		[[nodiscard]] static Optional<IntT> hexToInt(const CharT* it) noexcept
 		{
 			if (*it == '\0')
 			{
@@ -556,17 +556,17 @@ namespace soup
 					return std::nullopt;
 				}
 			}
-			return std::optional<IntT>(std::move(val));
+			return Optional<IntT>(std::move(val));
 		}
 
 		template <typename IntT, uint8_t Flags = 0>
-		[[nodiscard]] static std::optional<IntT> hexToInt(const std::string& str) noexcept
+		[[nodiscard]] static Optional<IntT> hexToInt(const std::string& str) noexcept
 		{
 			return hexToInt<IntT, Flags>(str.c_str());
 		}
 
 		template <typename IntT, uint8_t Flags>
-		[[nodiscard]] static std::optional<IntT> hexToInt(const std::wstring& str) noexcept
+		[[nodiscard]] static Optional<IntT> hexToInt(const std::wstring& str) noexcept
 		{
 			return hexToInt<IntT, Flags>(str.c_str());
 		}
