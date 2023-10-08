@@ -108,4 +108,12 @@ namespace soup
 
 		[[nodiscard]] static std::string unparseFlags(uint16_t flags);
 	};
+
+	namespace literals
+	{
+		inline Regex operator ""_r(const char* str, size_t len)
+		{
+			return Regex(std::string(str, len));
+		}
+	}
 }
