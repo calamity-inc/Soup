@@ -43,7 +43,7 @@ namespace soup
 
 	Asn1Sequence Asn1Sequence::fromDer(Reader& r)
 	{
-		SOUP_ASSERT(readIdentifier(r).type == Asn1Type::SEQUENCE);
+		SOUP_ASSERT(readIdentifier(r).type == ASN1_SEQUENCE);
 		auto len = readLength(r);
 		SOUP_IF_UNLIKELY (len > 10000)
 		{
@@ -117,7 +117,7 @@ namespace soup
 			bin.insert(0, 1, '\0');
 		}
 		emplace_back(Asn1Element{
-			Asn1Identifier{ 0, false, Asn1Type::INTEGER },
+			Asn1Identifier{ 0, false, ASN1_INTEGER },
 			std::move(bin)
 		});
 	}
@@ -125,7 +125,7 @@ namespace soup
 	void Asn1Sequence::addOid(const Oid& val)
 	{
 		emplace_back(Asn1Element{
-			Asn1Identifier{ 0, false, Asn1Type::OID },
+			Asn1Identifier{ 0, false, ASN1_OID },
 			val.toDer()
 		});
 	}
@@ -133,7 +133,7 @@ namespace soup
 	void Asn1Sequence::addNull()
 	{
 		emplace_back(Asn1Element{
-			Asn1Identifier{ 0, false, Asn1Type::_NULL },
+			Asn1Identifier{ 0, false, ASN1_NULL },
 			{}
 		});
 	}
@@ -142,7 +142,7 @@ namespace soup
 	{
 		val.insert(0, 1, '\0'); // idk why there's a preceeding 0 but there is so I guess we just do the same...
 		emplace_back(Asn1Element{
-			Asn1Identifier{ 0, false, Asn1Type::BITSTRING },
+			Asn1Identifier{ 0, false, ASN1_BITSTRING },
 			std::move(val)
 		});
 	}
@@ -150,7 +150,7 @@ namespace soup
 	void Asn1Sequence::addUtf8String(std::string val)
 	{
 		emplace_back(Asn1Element{
-			Asn1Identifier{ 0, false, Asn1Type::UTF8STRING },
+			Asn1Identifier{ 0, false, ASN1_UTF8STRING },
 			std::move(val)
 		});
 	}
@@ -158,7 +158,7 @@ namespace soup
 	void Asn1Sequence::addSeq(const Asn1Sequence& seq)
 	{
 		emplace_back(Asn1Element{
-			Asn1Identifier{ 0, true, Asn1Type::SEQUENCE },
+			Asn1Identifier{ 0, true, ASN1_SEQUENCE },
 			seq.toDerNoPrefix()
 		});
 	}
@@ -166,7 +166,7 @@ namespace soup
 	void Asn1Sequence::addSet(const Asn1Sequence& seq)
 	{
 		emplace_back(Asn1Element{
-			Asn1Identifier{ 0, true, Asn1Type::SET },
+			Asn1Identifier{ 0, true, ASN1_SET },
 			seq.toDerNoPrefix()
 		});
 	}
@@ -193,7 +193,7 @@ namespace soup
 	{
 		std::string res = toDerNoPrefix();
 		res.insert(0, encodeLength(res.size()));
-		res.insert(0, Asn1Identifier{ 0, true, Asn1Type::SEQUENCE }.toDer());
+		res.insert(0, Asn1Identifier{ 0, true, ASN1_SEQUENCE }.toDer());
 		return res;
 	}
 
@@ -229,51 +229,51 @@ namespace soup
 					ret.append(std::to_string(c.identifier.type));
 					break;
 
-				case Asn1Type::_BOOLEAN:
+				case ASN1_BOOLEAN:
 					ret.append("BOOLEAN");
 					break;
 
-				case Asn1Type::INTEGER:
+				case ASN1_INTEGER:
 					ret.append("INTEGER");
 					break;
 
-				case Asn1Type::BITSTRING:
+				case ASN1_BITSTRING:
 					ret.append("BIT STRING");
 					break;
 
-				case Asn1Type::STRING_OCTET:
+				case ASN1_STRING_OCTET:
 					ret.append("OCTET STRING");
 					break;
 
-				case Asn1Type::UTF8STRING:
+				case ASN1_UTF8STRING:
 					ret.append("UTF8 STRING");
 					break;
 
-				case Asn1Type::_NULL:
+				case ASN1_NULL:
 					ret.append("NULL");
 					break;
 
-				case Asn1Type::OID:
+				case ASN1_OID:
 					ret.append("OID");
 					break;
 
-				case Asn1Type::SEQUENCE:
+				case ASN1_SEQUENCE:
 					ret.append("SEQUENCE");
 					break;
 
-				case Asn1Type::SET:
+				case ASN1_SET:
 					ret.append("SET");
 					break;
 
-				case Asn1Type::STRING_PRINTABLE:
+				case ASN1_STRING_PRINTABLE:
 					ret.append("PrintableString");
 					break;
 
-				case Asn1Type::STRING_IA5:
+				case ASN1_STRING_IA5:
 					ret.append("IA5String");
 					break;
 
-				case Asn1Type::UTCTIME:
+				case ASN1_UTCTIME:
 					ret.append("UTCTime");
 					break;
 				}
@@ -302,8 +302,8 @@ namespace soup
 			}
 			ret.push_back(':');
 			if (c.identifier.m_class == 0
-				&& c.identifier.type != Asn1Type::SEQUENCE
-				&& c.identifier.type != Asn1Type::SET
+				&& c.identifier.type != ASN1_SEQUENCE
+				&& c.identifier.type != ASN1_SET
 				)
 			{
 				ret.push_back(' ');
@@ -313,19 +313,19 @@ namespace soup
 					ret.append(string::bin2hex(c.data));
 					break;
 
-				case Asn1Type::INTEGER:
-				//case Asn1Type::BITSTRING:
+				case ASN1_INTEGER:
+				//case ASN1_BITSTRING:
 					ret.append(Bigint::fromBinary(c.data).toString());
 					break;
 
-				case Asn1Type::OID:
+				case ASN1_OID:
 					ret.append(Oid::fromBinary(c.data).toString());
 					break;
 
-				case Asn1Type::UTF8STRING:
-				case Asn1Type::STRING_PRINTABLE:
-				case Asn1Type::STRING_IA5:
-				case Asn1Type::UTCTIME: // yyMMddHHmmssZ
+				case ASN1_UTF8STRING:
+				case ASN1_STRING_PRINTABLE:
+				case ASN1_STRING_IA5:
+				case ASN1_UTCTIME: // yyMMddHHmmssZ
 					ret.append(c.data);
 					break;
 				}

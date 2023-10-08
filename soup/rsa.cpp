@@ -179,7 +179,7 @@ namespace soup
 
 	RsaPrivateKey RsaPrivateKey::fromAsn1(const Asn1Sequence& seq)
 	{
-		if (seq.getChildType(1).type != Asn1Type::INTEGER)
+		if (seq.getChildType(1).type != ASN1_INTEGER)
 		{
 			// assuming that seq[1] is sequence containing OID 1.2.840.113549.1.1.1
 			return fromAsn1(Asn1Sequence::fromDer(seq.getString(2)));

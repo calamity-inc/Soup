@@ -113,7 +113,7 @@ namespace soup
 				Asn1Sequence ext = extensions.getSeq(i);
 				if (ext.getOid(0) == Oid::SUBJECT_ALT_NAME)
 				{
-					size_t data_idx = ((ext.at(1).identifier.type == Asn1Type::_BOOLEAN) ? 2 : 1);
+					size_t data_idx = ((ext.at(1).identifier.type == ASN1_BOOLEAN) ? 2 : 1);
 					// RFC 2459, page 33
 					Asn1Sequence data = Asn1Sequence::fromDer(ext.getString(data_idx));
 					for (size_t j = 0; j != data.countChildren(); ++j)
