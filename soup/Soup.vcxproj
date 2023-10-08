@@ -556,6 +556,7 @@
     <ClInclude Include="TransientToken.hpp" />
     <ClInclude Include="UniqueList.hpp" />
     <ClInclude Include="hwHid.hpp" />
+    <ClInclude Include="UniqueListLink.hpp" />
     <ClInclude Include="Uuid.hpp" />
     <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />

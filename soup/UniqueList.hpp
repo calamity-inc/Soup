@@ -5,7 +5,7 @@
 namespace soup
 {
 	// Like std::vector<UniquePtr<T>> but more intrusive for less allocations.
-	// Requires the following in T: struct { T* next; T* prev; } unique_list_link;
+	// Requires the following in T: soup::UniqueListLink<T> unique_list_link;
 	template <typename T>
 	struct UniqueList
 	{

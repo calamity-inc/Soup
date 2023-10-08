@@ -1527,6 +1527,9 @@
     <ClInclude Include="Optional.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="UniqueListLink.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
