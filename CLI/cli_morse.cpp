@@ -70,6 +70,7 @@ void cli_morse_encode(const char* arg, bool silent)
 {
 	auto pattern = morse::encode(arg);
 	std::cout << pattern << "\n";
+#if SOUP_WINDOWS
 	auto seq = soup::make_shared<MorseSequence>(morse::patternToSequence(pattern));
 	seq->alterndur.pop_back(); // stop instantly
 	/*for (const auto& dur : seq.alterndur)
@@ -77,7 +78,6 @@ void cli_morse_encode(const char* arg, bool silent)
 		std::cout << dur << " ";
 	}
 	std::cout << "\n";*/
-#if SOUP_WINDOWS
 	if (!silent)
 	{
 		auto dev = audDevice::getDefault();
