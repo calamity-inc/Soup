@@ -260,10 +260,23 @@ namespace soup
 		{
 			if (e.data == as)
 			{
-				res.emplace_back(soup::make_unique<CidrSubnet4Interface>(
+				UniquePtr<CidrSubnet4Interface> newElement = soup::make_unique<CidrSubnet4Interface>(
 					IpAddr((native_u32_t)e.lower),
-					(31 - bitutil::getMostSignificantSetBit(/* e.upper - e.lower */ e.lower ^ e.upper))
-				));
+					(31 - bitutil::getMostSignificantSetBit(e.lower ^ e.upper))
+				);
+
+				auto it = std::find_if(res.begin(), res.end(), [&](const UniquePtr<CidrSubnetInterface>& element) {
+					return element->getAddr() == newElement->getAddr();
+					});
+
+				if (it != res.end()) {
+					if ((*it)->getSize() < newElement->getSize()) {
+						*it = std::move(newElement);
+					}
+				}
+				else {
+					res.emplace_back(std::move(newElement));
+				}
 			}
 		}
 
@@ -274,10 +287,23 @@ namespace soup
 				auto delta = Ipv6Maths::fromIpAddr(e.lower);
 				Ipv6Maths::xorEq(delta, Ipv6Maths::fromIpAddr(e.upper));
 
-				res.emplace_back(soup::make_unique<CidrSubnet6Interface>(
+				UniquePtr<CidrSubnet6Interface> newElement = soup::make_unique<CidrSubnet6Interface>(
 					e.lower,
 					(127 - Ipv6Maths::getMostSignificantSetBit(delta))
-				));
+				);
+
+				auto it = std::find_if(res.begin(), res.end(), [&](const UniquePtr<CidrSubnetInterface>& element) {
+					return element->getAddr() == newElement->getAddr();
+				});
+
+				if (it != res.end()) {
+					if ((*it)->getSize() < newElement->getSize()) {
+						*it = std::move(newElement);
+					}
+				}
+				else {
+					res.emplace_back(std::move(newElement));
+				}
 			}
 		}
 
