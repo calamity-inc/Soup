@@ -41,10 +41,12 @@ namespace soup
 
 	double audWav::getAmplitude(double t) const
 	{
+		// Handle looping
 		if (!r.hasMore())
 		{
 			r.seek(data_begin);
 		}
+
 		int16_t sample;
 		r.i16(sample);
 		return (double)sample / AUD_MAX_SAMPLE;
