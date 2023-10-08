@@ -1,0 +1,1 @@
+php lua.php > ../soup-apigen.lua

@@ -23,6 +23,8 @@
 	typedef void QrCode;
 	typedef void RsaKeypair;
 	typedef void Scheduler;
+	typedef void ServerService;
+	typedef void ServerWebService;
 	typedef void Totp;
 	typedef void YubikeyValidator;
 
@@ -76,6 +78,7 @@ SOUP_CEXPORT stdstring* Hotp_generateSecret(size_t bytes);
 // HttpRequest
 SOUP_CEXPORT HttpRequest* HttpRequest_new(const char* uri);
 SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data);
+SOUP_CEXPORT const char* HttpRequest_getPath(HttpRequest* x);
 // HttpRequestTask
 SOUP_CEXPORT void* HttpRequestTask_newFromRequest(const HttpRequest* hr);
 SOUP_CEXPORT void* HttpRequestTask_newFromUrl(const char* url);
@@ -110,6 +113,15 @@ SOUP_CEXPORT void Scheduler_setDontMakeReusableSockets(Scheduler* sched);
 SOUP_CEXPORT void Scheduler_add(Scheduler* sched, void* spWorker);
 SOUP_CEXPORT bool Scheduler_shouldKeepRunning(Scheduler* sched);
 SOUP_CEXPORT void Scheduler_tick(Scheduler* sched);
+// Server
+SOUP_CEXPORT void Server_bind(Scheduler* serv, int port, ServerService* srv);
+// ServerWebService
+SOUP_CEXPORT ServerWebService* ServerWebService_new();
+SOUP_CEXPORT bool ServerWebService_hasPendingRequest(ServerWebService* x);
+SOUP_CEXPORT HttpRequest* ServerWebService_getPendingRequest(ServerWebService* x);
+SOUP_CEXPORT void ServerWebService_ignoreRequest(ServerWebService* x);
+SOUP_CEXPORT void ServerWebService_replyWithHtml(ServerWebService* x, const char* html);
+SOUP_CEXPORT void ServerWebService_replyWith404(ServerWebService* x);
 // Totp
 SOUP_CEXPORT Totp* Totp_new(const stdstring* secret);
 SOUP_CEXPORT const char* Totp_getQrCodeUri(const Totp* x, const char* label, const char* issuer);

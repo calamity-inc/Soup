@@ -14,7 +14,8 @@
 		"HttpRequest": {
 			"__parent": "MimeMessage",
 			"new": "HttpRequest_new",
-			"setPayload": "HttpRequest_setPayload"
+			"setPayload": "HttpRequest_setPayload",
+			"getPath": "HttpRequest_getPath"
 		},
 		"HttpRequestTask": {
 			"__parent": "Worker",
@@ -37,6 +38,16 @@
 			"shouldKeepRunning": "Scheduler_shouldKeepRunning",
 			"tick": "Scheduler_tick"
 		},
+		"ServerService": {},
+		"ServerWebService": {
+			"__parent": "ServerService",
+			"new": "ServerWebService_new",
+			"hasPendingRequest": "ServerWebService_hasPendingRequest",
+			"getPendingRequest": "ServerWebService_getPendingRequest",
+			"ignoreRequest": "ServerWebService_ignoreRequest",
+			"replyWithHtml": "ServerWebService_replyWithHtml",
+			"replyWith404": "ServerWebService_replyWith404"
+		},
 		"Socket": {
 			"__parent": "Worker"
 		},
@@ -57,6 +68,9 @@
 	"namespaces": {
 		"Hotp": {
 			"generateSecret": "Hotp_generateSecret"
+		},
+		"Server": {
+			"bind": "Server_bind"
 		}
 	},
 	"functions": {
@@ -87,6 +101,10 @@
 			"void",
 			["HttpRequest", "x"],
 			["string", "data"]
+		],
+		"HttpRequest_getPath": [
+			"string",
+			["HttpRequest", "x"]
 		],
 		"HttpRequestTask_newFromRequest": [
 			"HttpRequestTask",
@@ -125,6 +143,36 @@
 		"Scheduler_tick": [
 			"void",
 			["Scheduler", "sched"]
+		],
+		"Server_bind": [
+			"void",
+			["Scheduler", "serv"],
+			["int", "port"],
+			["ServerService", "srv"]
+		],
+		"ServerWebService_new": [
+			"ServerWebService"
+		],
+		"ServerWebService_hasPendingRequest": [
+			"bool",
+			["ServerWebService", "x"]
+		],
+		"ServerWebService_getPendingRequest": [
+			"HttpRequest",
+			["ServerWebService", "x"]
+		],
+		"ServerWebService_ignoreRequest": [
+			"void",
+			["ServerWebService", "x"]
+		],
+		"ServerWebService_replyWithHtml": [
+			"void",
+			["ServerWebService", "x"],
+			["string", "html"]
+		],
+		"ServerWebService_replyWith404": [
+			"void",
+			["ServerWebService", "x"]
 		],
 		"Totp_new": [
 			"Totp",

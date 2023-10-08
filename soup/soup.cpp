@@ -34,9 +34,12 @@ typedef void (*void_func_t)();
 #include "KeyGenId.hpp"
 #include "MimeMessage.hpp"
 #include "Mixed.hpp"
+#include "Notifyable.hpp"
 #include "Promise.hpp"
 #include "QrCode.hpp"
 #include "rsa.hpp"
+#include "Server.hpp"
+#include "ServerWebService.hpp"
 #include "Totp.hpp"
 #include "Uri.hpp"
 #include "WebSocketMessage.hpp"
@@ -271,6 +274,15 @@ SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data)
 #endif
 }
 
+SOUP_CEXPORT const char* HttpRequest_getPath(HttpRequest* x)
+{
+#if !SOUP_WASM
+	return x->path.c_str();
+#else
+	return nullptr;
+#endif
+}
+
 // HttpRequestTask
 
 SOUP_CEXPORT void* HttpRequestTask_newFromRequest(const HttpRequest* hr)
@@ -419,6 +431,103 @@ SOUP_CEXPORT bool Scheduler_shouldKeepRunning(Scheduler* sched)
 SOUP_CEXPORT void Scheduler_tick(Scheduler* sched)
 {
 	heap.get(sched).tick();
+}
+
+// Server
+
+SOUP_CEXPORT void Server_bind(Scheduler* serv, int port, ServerService* srv)
+{
+#if !SOUP_WASM
+	static_assert(sizeof(Scheduler) == sizeof(Server));
+	heap.get<Server>(serv).bind(static_cast<uint16_t>(port), srv);
+#endif
+}
+
+// ServerWebService
+
+#if !SOUP_WASM
+class ServerWebServiceFfi : public ServerWebService
+{
+public:
+	HttpRequest* pending_request = nullptr;
+	Socket* pending_request_socket;
+private:
+	Notifyable notifyable;
+
+public:
+	ServerWebServiceFfi()
+		: ServerWebService(&onRequest)
+	{
+	}
+
+private:
+	static void onRequest(Socket& s, HttpRequest&& hr, ServerWebService& _self)
+	{
+		ServerWebServiceFfi& self = static_cast<ServerWebServiceFfi&>(_self);
+		self.pending_request = &hr;
+		self.pending_request_socket = &s;
+		self.notifyable.wait();
+	}
+
+public:
+	void setRequestHandled()
+	{
+		pending_request = nullptr;
+		notifyable.notify_all();
+	}
+};
+#endif
+
+SOUP_CEXPORT ServerWebService* ServerWebService_new()
+{
+#if !SOUP_WASM
+	return heap.add(new ServerWebServiceFfi());
+#else
+	return nullptr;
+#endif
+}
+
+SOUP_CEXPORT bool ServerWebService_hasPendingRequest(ServerWebService* x)
+{
+#if !SOUP_WASM
+	return heap.get<ServerWebServiceFfi>(x).pending_request != nullptr;
+#else
+	return false;
+#endif
+}
+
+SOUP_CEXPORT HttpRequest* ServerWebService_getPendingRequest(ServerWebService* x)
+{
+#if !SOUP_WASM
+	return heap.get<ServerWebServiceFfi>(x).pending_request;
+#else
+	return nullptr;
+#endif
+}
+
+SOUP_CEXPORT void ServerWebService_ignoreRequest(ServerWebService* x)
+{
+#if !SOUP_WASM
+	heap.get<ServerWebServiceFfi>(x).setRequestHandled();
+#endif
+}
+
+SOUP_CEXPORT void ServerWebService_replyWithHtml(ServerWebService* x, const char* html)
+{
+#if !SOUP_WASM
+	auto& srv = heap.get<ServerWebServiceFfi>(x);
+	ServerWebService::sendHtml(*srv.pending_request_socket, html);
+	srv.setRequestHandled();
+#endif
+}
+
+SOUP_CEXPORT void ServerWebService_replyWith404(ServerWebService* x)
+{
+#if !SOUP_WASM
+	auto& srv = heap.get<ServerWebServiceFfi>(x);
+	ServerWebService::send404(*srv.pending_request_socket);
+	srv.setRequestHandled();
+#endif
 }
 
 // Totp

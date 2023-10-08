@@ -29,6 +29,13 @@ soup = {
 			return initClass(soup.stdstring, { addr = libsoup:call("Hotp_generateSecret", bytes) })
 		end,
 	},
+	Server = {
+		bind = function(serv, port, srv)
+			assert(getmetatable(serv) == soup.Scheduler or getmetatable(serv) == soup.DetachedScheduler)
+			assert(getmetatable(srv) == soup.ServerService or getmetatable(srv) == soup.ServerWebService)
+			libsoup:call("Server_bind", serv.addr, port, srv.addr)
+		end,
+	},
 	stdstring = {
 		__name = "soup.stdstring",
 		__gc = function(self)
@@ -85,6 +92,9 @@ soup = {
 		end,
 		setPayload = function(self, data)
 			libsoup:call("HttpRequest_setPayload", self.addr, data)
+		end,
+		getPath = function(self)
+			return libsoup:callString("HttpRequest_getPath", self.addr)
 		end,
 		addHeader = function(self, key, value)
 			libsoup:call("MimeMessage_addHeader", self.addr, key, value)
@@ -153,6 +163,36 @@ soup = {
 		end,
 		tick = function(self)
 			libsoup:call("Scheduler_tick", self.addr)
+		end,
+	},
+	ServerService = {
+		__name = "soup.ServerService",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+	},
+	ServerWebService = {
+		__name = "soup.ServerWebService",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		new = function()
+			return initClass(soup.ServerWebService, { addr = libsoup:call("ServerWebService_new") })
+		end,
+		hasPendingRequest = function(self)
+			return 0 ~= libsoup:call("ServerWebService_hasPendingRequest", self.addr)
+		end,
+		getPendingRequest = function(self)
+			return initClass(soup.HttpRequest, { addr = libsoup:call("ServerWebService_getPendingRequest", self.addr) })
+		end,
+		ignoreRequest = function(self)
+			libsoup:call("ServerWebService_ignoreRequest", self.addr)
+		end,
+		replyWithHtml = function(self, html)
+			libsoup:call("ServerWebService_replyWithHtml", self.addr, html)
+		end,
+		replyWith404 = function(self)
+			libsoup:call("ServerWebService_replyWith404", self.addr)
 		end,
 	},
 	Socket = {
