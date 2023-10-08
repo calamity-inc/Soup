@@ -1086,6 +1086,11 @@ static void unit_util_string()
 		assert(string::hexToInt<int, string::TI_FULL>(L"1337", 0) == 0x1337);
 		assert(string::hexToInt<int, string::TI_FULL>(L"1337.", 0) == 0);
 	});
+	test("truncateWithEllipsis", []
+	{
+		assert(string::truncateWithEllipsis<std::string>("Hello, world!", 12) == "Hello, wo...");
+		assert(string::truncateWithEllipsis<std::string>("Hello, world!", 13) == "Hello, world!");
+	});
 }
 
 static void unit_util_time()

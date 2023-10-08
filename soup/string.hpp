@@ -829,6 +829,26 @@ namespace soup
 		}
 #endif
 
+		template <typename T>
+		static void truncateWithEllipsis(T& str, size_t max_len)
+		{
+			if (str.size() > max_len)
+			{
+				str.resize(max_len);
+				auto* data = str.data();
+				data[max_len - 3] = '.';
+				data[max_len - 2] = '.';
+				data[max_len - 1] = '.';
+			}
+		}
+
+		template <typename T>
+		[[nodiscard]] static T truncateWithEllipsis(T&& str, size_t max_len)
+		{
+			truncateWithEllipsis(str, max_len);
+			return str;
+		}
+
 		// char mutation
 
 		template <typename Char>
