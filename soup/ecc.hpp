@@ -32,7 +32,7 @@ namespace soup
 		[[nodiscard]] EccPoint derivePublic(const Bigint& d) const;
 
 		[[nodiscard]] EccPoint add(const EccPoint& P, const EccPoint& Q) const;
-		[[nodiscard]] EccPoint multiply(EccPoint G, const Bigint& d) const;
+		[[nodiscard]] EccPoint multiply(const EccPoint& G, const Bigint& d) const;
 		[[nodiscard]] EccPoint multiplyAndAdd(const EccPoint& G, const Bigint& u1, const EccPoint& Q, const Bigint& u2) const;
 
 		[[nodiscard]] std::string encodePointUncompressed(const EccPoint& P) const;
