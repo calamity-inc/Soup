@@ -32,6 +32,7 @@ namespace soup
 		HttpRequest hr;
 		DelayedCtor<netConnectTask> connector;
 		SharedPtr<Socket> sock;
+		time_t awaiting_response_since;
 
 		HttpRequestTask(HttpRequest&& hr);
 		HttpRequestTask(const Uri& uri);

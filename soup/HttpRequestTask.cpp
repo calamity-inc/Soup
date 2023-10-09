@@ -3,6 +3,7 @@
 #if !SOUP_WASM
 #include "ReuseTag.hpp"
 #include "Scheduler.hpp"
+#include "time.hpp"
 #else
 #include <emscripten/fetch.h>
 #endif
@@ -44,6 +45,7 @@ namespace soup
 					{
 						sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
 						state = AWAIT_RESPONSE;
+						awaiting_response_since = time::unixSeconds();
 						sendRequest();
 					}
 					break;
@@ -62,6 +64,7 @@ namespace soup
 			{
 				sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
 				state = AWAIT_RESPONSE;
+				awaiting_response_since = time::unixSeconds();
 				sendRequest();
 			}
 			break;
@@ -94,6 +97,7 @@ namespace soup
 					}
 				}
 				state = AWAIT_RESPONSE;
+				awaiting_response_since = time::unixSeconds();
 				if (hr.use_tls)
 				{
 					sock->enableCryptoClient(hr.getHost(), [](Socket&, Capture&& cap)
@@ -109,7 +113,9 @@ namespace soup
 			break;
 
 		case AWAIT_RESPONSE:
-			if (sock->isWorkDoneOrClosed())
+			if (sock->isWorkDoneOrClosed()
+				|| time::unixSecondsSince(awaiting_response_since) > 10
+				)
 			{
 				sock.reset();
 				setWorkDone();
