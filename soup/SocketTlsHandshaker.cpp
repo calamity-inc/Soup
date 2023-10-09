@@ -27,15 +27,15 @@ namespace soup
 
 	std::string SocketTlsHandshaker::getMasterSecret()
 	{
-		if (pre_master_secret.isFulfilled())
+		if (!pre_master_secret.empty())
 		{
 			master_secret = sha256::tls_prf(
 				ObfusString("master secret"),
 				48,
-				std::move(pre_master_secret.getResult()),
+				std::move(pre_master_secret),
 				std::string(client_random).append(server_random)
 			);
-			pre_master_secret.reset();
+			pre_master_secret.clear();
 		}
 		return master_secret;
 	}

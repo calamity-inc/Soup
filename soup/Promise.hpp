@@ -98,7 +98,7 @@ namespace soup
 	};
 
 	template <>
-	class Promise<void>
+	class Promise<void> : public PromiseBase
 	{
 	private:
 		std::atomic_bool fulfiled = false;
@@ -127,5 +127,23 @@ namespace soup
 		{
 			fulfiled = true;
 		}
+
+		void fulfilOffThread(void(*f)(Capture&&), Capture&& cap = {})
+		{
+			new SelfDeletingThread([](Capture&& _cap)
+			{
+				auto& cap = _cap.get<CaptureFulfillOffThread>();
+				cap.f(std::move(cap.cap));
+				cap.promise.fulfil();
+			}, CaptureFulfillOffThread{ *this, f, std::move(cap) });
+		}
+
+	protected:
+		struct CaptureFulfillOffThread
+		{
+			Promise& promise;
+			void(*f)(Capture&&);
+			Capture cap;
+		};
 	};
 }

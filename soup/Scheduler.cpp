@@ -193,9 +193,9 @@ namespace soup
 				}
 				fireHoldupCallback(w);
 			}
-			else //if (w.holdup_type == Worker::PROMISE)
+			else //if (w.holdup_type == Worker::PROMISE_VOID)
 			{
-				if (!reinterpret_cast<PromiseBase*>(w.holdup_data)->isPending())
+				if (!reinterpret_cast<Promise<void>*>(w.holdup_data)->isPending())
 				{
 					fireHoldupCallback(w);
 				}

@@ -582,7 +582,7 @@ namespace soup
 			epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
 			cke = epms.toBinaryString();
 
-			handshaker->pre_master_secret.fulfil(std::move(pms));
+			handshaker->pre_master_secret = std::move(pms);
 		}
 		else if (handshaker->ecdhe_curve == NamedCurves::x25519)
 		{
@@ -594,7 +594,7 @@ namespace soup
 
 			uint8_t shared_secret[Curve25519::SHARED_SIZE];
 			Curve25519::x25519(shared_secret, my_priv, their_pub);
-			handshaker->pre_master_secret.fulfil(std::string((const char*)shared_secret, sizeof(shared_secret)));
+			handshaker->pre_master_secret = std::string((const char*)shared_secret, sizeof(shared_secret));
 
 			uint8_t my_pub[Curve25519::KEY_SIZE];
 			Curve25519::derivePublic(my_pub, my_priv);
@@ -628,7 +628,7 @@ namespace soup
 			auto shared_point = curve->multiply(their_pub, my_priv);
 			auto shared_secret = shared_point.x.toBinary();
 			SOUP_ASSERT(shared_secret.size() == csize);
-			handshaker->pre_master_secret.fulfil(std::move(shared_secret));
+			handshaker->pre_master_secret = std::move(shared_secret);
 
 			auto my_pub = curve->derivePublic(my_priv);
 
@@ -801,10 +801,10 @@ namespace soup
 				}
 				data.erase(0, 2); // length prefix
 
-				handshaker->pre_master_secret.fulfilOffThread([](Capture&& _cap) -> std::string
+				handshaker->promise.fulfilOffThread([](Capture&& _cap)
 				{
 					auto& cap = _cap.get<CaptureDecryptPreMasterSecret>();
-					return cap.handshaker->rsa_data.private_key.decryptPkcs1(cap.data);
+					cap.handshaker->pre_master_secret = cap.handshaker->rsa_data.private_key.decryptPkcs1(cap.data);
 				}, CaptureDecryptPreMasterSecret{
 					handshaker.get(),
 					Bigint::fromBinary(data)
@@ -819,8 +819,7 @@ namespace soup
 
 					UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
-					PromiseBase* p = &handshaker->pre_master_secret;
-
+					auto* p = &handshaker->promise;
 					s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap)
 					{
 						w.holdup_type = Worker::NONE;

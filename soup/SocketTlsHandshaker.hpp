@@ -6,11 +6,11 @@
 #include "type.hpp"
 
 #include "Capture.hpp"
-#include "X509Certchain.hpp"
 #include "Promise.hpp"
 #include "SocketTlsEncrypter.hpp"
 #include "TlsServerRsaData.hpp"
 #include "TlsCipherSuite.hpp"
+#include "X509Certchain.hpp"
 #include "X509Certificate.hpp"
 
 namespace soup
@@ -25,9 +25,10 @@ namespace soup
 		std::string layer_bytes{};
 		std::string client_random{};
 		std::string server_random{};
-		Promise<std::string> pre_master_secret{};
+		std::string pre_master_secret{};
 		std::string master_secret{};
 		std::string expected_finished_verify_data{};
+		Promise<> promise{};
 
 		// client
 		X509Certchain certchain{};
