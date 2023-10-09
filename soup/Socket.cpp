@@ -619,10 +619,10 @@ namespace soup
 
 			auto my_priv = curve->generatePrivate();
 
-			EccPoint their_pub(
+			EccPoint their_pub{
 				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, csize)),
 				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(csize, csize))
-			);
+			};
 			SOUP_ASSERT(curve->validate(their_pub));
 
 			auto shared_point = curve->multiply(their_pub, my_priv);

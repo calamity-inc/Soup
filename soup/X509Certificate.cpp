@@ -174,7 +174,7 @@ namespace soup
 
 	void X509Certificate::setRsaPublicKey(Bigint&& n, Bigint&& e)
 	{
-		key = EccPoint(std::move(n), std::move(e));
+		key = EccPoint{ std::move(n), std::move(e) };
 	}
 
 	RsaPublicKey X509Certificate::getRsaPublicKey() const
