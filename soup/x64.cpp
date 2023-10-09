@@ -250,7 +250,7 @@ namespace soup
 			SOUP_ASSERT(deref_size == 32); // We had '['?
 			++str;
 		}
-		
+
 		SOUP_ASSERT(*str == '\0');
 	}
 
@@ -409,7 +409,7 @@ namespace soup
 
 		if (operation->getNumModrmOperands() != 0)
 		{
-			uint8_t modrm = (operation->distinguish << 5);
+			uint8_t modrm = ((operation->distinguish & 0b111) << 3);
 			if (operands[0].deref_size == 0)
 			{
 				modrm |= (0b11 << 6); // direct
@@ -435,7 +435,14 @@ namespace soup
 		if (operation->getOprEncoding(1) == I)
 		{
 			static_assert(NATIVE_ENDIAN == LITTLE_ENDIAN);
-			res.append((const char*)&operands[1].val, sizeof(operands[1].val));
+			if (operands[0].access_type == ACCESS_64)
+			{
+				res.append((const char*)&operands[1].val, 8);
+			}
+			else
+			{
+				res.append((const char*)&operands[1].val, 4);
+			}
 		}
 
 		return res;
