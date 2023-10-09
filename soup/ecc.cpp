@@ -282,10 +282,10 @@ namespace soup
 			return false;
 		}
 
-		const auto z = e2z(e);
-		const auto sinv = s.modMulInv(n);
-		const auto u1 = ((z * sinv) % n);
-		const auto u2 = ((r * sinv) % n);
+		auto u1 = e2z(e);
+		auto u2 = s.modMulInv(n);
+		u1 *= u2; u1 %= n;
+		u2 *= r; u2 %= n;
 #if true
 		// Shamir's trick
 		auto p = multiplyAndAdd(G, u1, Q, u2);
@@ -297,8 +297,8 @@ namespace soup
 		{
 			return false;
 		}
-		const auto x1 = (p.x % n);
-		return x1 == r;
+		p.x %= n;
+		return p.x == r;
 	}
 
 	Bigint EccCurve::deriveD(const std::string& e1, const std::string& e2, const Bigint& r, const Bigint& s1, const Bigint& s2) const
