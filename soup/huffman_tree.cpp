@@ -7,8 +7,8 @@ namespace soup
 {
 	void htNode::serialise(BitWriter& bw, void(*serialise_data_node)(BitWriter&, const htNode&)) const
 	{
-		reinterpret_cast<const htLinkNode*>(this)->left->serialiseImpl(bw, serialise_data_node);
-		reinterpret_cast<const htLinkNode*>(this)->right->serialiseImpl(bw, serialise_data_node);
+		static_cast<const htLinkNode*>(this)->left->serialiseImpl(bw, serialise_data_node);
+		static_cast<const htLinkNode*>(this)->right->serialiseImpl(bw, serialise_data_node);
 	}
 
 	void htNode::serialiseImpl(BitWriter& bw, void(*serialise_data_node)(BitWriter&, const htNode&)) const
@@ -37,14 +37,14 @@ namespace soup
 
 		std::vector<bool> lp = path;
 		lp.emplace_back(true);
-		if (auto res = reinterpret_cast<const htLinkNode*>(this)->left->find(ud, compare_data_node, std::move(lp)); res.has_value())
+		if (auto res = static_cast<const htLinkNode*>(this)->left->find(ud, compare_data_node, std::move(lp)); res.has_value())
 		{
 			return res;
 		}
 
 		std::vector<bool> rp = std::move(path);
 		rp.emplace_back(false);
-		return reinterpret_cast<const htLinkNode*>(this)->right->find(ud, compare_data_node, std::move(rp));
+		return static_cast<const htLinkNode*>(this)->right->find(ud, compare_data_node, std::move(rp));
 	}
 
 	void htNode::encode(BitWriter& bw, const void* ud, bool(*compare_data_node)(const htNode&, const void*)) const

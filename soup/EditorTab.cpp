@@ -8,7 +8,7 @@ namespace soup
 {
 	void EditorTab::onClick(MouseButton b, unsigned int x, unsigned int y)
 	{
-		auto& edit = *reinterpret_cast<Editor*>(getApp());
+		auto& edit = *static_cast<Editor*>(getApp());
 		if (isActive(edit))
 		{
 			return;

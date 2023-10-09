@@ -78,7 +78,7 @@ namespace soup
 			if (child->is_text)
 			{
 				//str.push_back('{');
-				std::string contents = reinterpret_cast<XmlText*>(child.get())->contents;
+				std::string contents = static_cast<XmlText*>(child.get())->contents;
 				string::replaceAll(contents, "&", "&amp;");
 				string::replaceAll(contents, "<", "&lt;");
 				string::replaceAll(contents, ">", "&gt;");
@@ -87,7 +87,7 @@ namespace soup
 			}
 			else
 			{
-				str.append(reinterpret_cast<XmlTag*>(child.get())->encode());
+				str.append(static_cast<XmlTag*>(child.get())->encode());
 			}
 		}
 		str.append("</");

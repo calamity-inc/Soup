@@ -22,7 +22,7 @@ namespace soup
 		auto node = popLefthand();
 		if (!node->isValue())
 		{
-			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
+			std::string err = static_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 			err.append(" expected lefthand value, found ");
 			err.append(node->toString());
 			SOUP_THROW(ParseError(std::move(err)));
@@ -48,7 +48,7 @@ namespace soup
 
 	void ParserState::throwExpectedRighthandValue(const UniquePtr<astNode>& node)
 	{
-		std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
+		std::string err = static_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 		err.append(" expected righthand value, found ");
 		err.append(node->toString());
 		SOUP_THROW(ParseError(std::move(err)));
@@ -89,7 +89,7 @@ namespace soup
 	{
 		if (i == b->children.begin())
 		{
-			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
+			std::string err = static_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 			err.append(" expected lefthand, found start of block");
 			SOUP_THROW(ParseError(std::move(err)));
 		}
@@ -125,7 +125,7 @@ namespace soup
 	{
 		auto b = soup::make_unique<astBlock>();
 		for (UniquePtr<astNode> node;
-			node = popRighthand(), node->type != astNode::LEXEME || reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != end_token;
+			node = popRighthand(), node->type != astNode::LEXEME || static_cast<LexemeNode*>(node.get())->lexeme.token_keyword != end_token;
 			)
 		{
 			b->children.emplace_back(std::move(node));
@@ -135,14 +135,14 @@ namespace soup
 
 	const Token& ParserState::getToken() const
 	{
-		return ld->getToken(reinterpret_cast<LexemeNode*>(i->get())->lexeme);
+		return ld->getToken(static_cast<LexemeNode*>(i->get())->lexeme);
 	}
 
 	void ParserState::checkRighthand() const
 	{
 		if ((i + 1) == b->children.end())
 		{
-			std::string err = reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
+			std::string err = static_cast<LexemeNode*>(i->get())->lexeme.token_keyword;
 			err.append(" expected righthand, found end of block");
 			SOUP_THROW(ParseError(std::move(err)));
 		}
@@ -151,7 +151,7 @@ namespace soup
 	void ParserState::ensureValidIterator() const
 	{
 		SOUP_ASSERT((*i)->type == astNode::LEXEME
-			&& reinterpret_cast<LexemeNode*>(i->get())->lexeme.token_keyword != Lexeme::VAL
+			&& static_cast<LexemeNode*>(i->get())->lexeme.token_keyword != Lexeme::VAL
 		);
 	}
 }

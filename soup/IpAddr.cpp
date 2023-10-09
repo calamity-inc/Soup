@@ -94,7 +94,7 @@ namespace soup
 		{
 			if (record->type == DNS_PTR)
 			{
-				return reinterpret_cast<dnsPtrRecord*>(record.get())->data;
+				return static_cast<dnsPtrRecord*>(record.get())->data;
 			}
 		}
 		return {};

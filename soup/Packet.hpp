@@ -52,7 +52,7 @@ namespace soup
 		template <typename Reader = Reader>
 		bool read(Reader& r)
 		{
-			return reinterpret_cast<T*>(this)->template io<Reader>(r);
+			return static_cast<T*>(this)->template io<Reader>(r);
 		}
 
 		[[nodiscard]] Buffer toBinary(Endian endian = BIG_ENDIAN)
@@ -88,7 +88,7 @@ namespace soup
 		template <typename Writer = Writer>
 		bool write(Writer& w)
 		{
-			return reinterpret_cast<T*>(this)->template io<Writer>(w);
+			return static_cast<T*>(this)->template io<Writer>(w);
 		}
 	};
 }

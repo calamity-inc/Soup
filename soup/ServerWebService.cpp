@@ -23,7 +23,7 @@ namespace soup
 			// causing it to be removed from the scheduler, causing the port to be unavailable.
 			s.disallowRecursion();
 
-			reinterpret_cast<ServerWebService&>(srv).httpRecv(s);
+			static_cast<ServerWebService&>(srv).httpRecv(s);
 		}), handle_request(handle_request)
 	{
 	}

@@ -11,15 +11,15 @@ namespace soup
 	{
 		if (type == astNode::BLOCK)
 		{
-			return reinterpret_cast<const astBlock*>(this)->toString(prefix);
+			return static_cast<const astBlock*>(this)->toString(prefix);
 		}
 		else if (type == astNode::LEXEME)
 		{
-			return reinterpret_cast<const LexemeNode*>(this)->toString(prefix);
+			return static_cast<const LexemeNode*>(this)->toString(prefix);
 		}
 		else //if (type == ParseTreeNode::OP)
 		{
-			return reinterpret_cast<const OpNode*>(this)->toString(prefix);
+			return static_cast<const OpNode*>(this)->toString(prefix);
 		}
 	}
 
@@ -28,8 +28,8 @@ namespace soup
 		switch (type)
 		{
 		case astNode::LEXEME:
-			return reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::LITERAL // variable name
-				|| reinterpret_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::VAL // rvalue
+			return static_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::LITERAL // variable name
+				|| static_cast<const LexemeNode*>(this)->lexeme.token_keyword == Lexeme::VAL // rvalue
 				;
 
 		case astNode::OP: // result of an expression
@@ -46,15 +46,15 @@ namespace soup
 	{
 		if (type == astNode::BLOCK)
 		{
-			reinterpret_cast<const astBlock*>(this)->compile(w);
+			static_cast<const astBlock*>(this)->compile(w);
 		}
 		else if (type == astNode::LEXEME)
 		{
-			reinterpret_cast<const LexemeNode*>(this)->compile(w);
+			static_cast<const LexemeNode*>(this)->compile(w);
 		}
 		else //if (type == ParseTreeNode::OP)
 		{
-			reinterpret_cast<const OpNode*>(this)->compile(w);
+			static_cast<const OpNode*>(this)->compile(w);
 		}
 	}
 
@@ -66,7 +66,7 @@ namespace soup
 		{
 			if (child->type == astNode::BLOCK)
 			{
-				reinterpret_cast<const astBlock*>(child.get())->checkUnexpected();
+				static_cast<const astBlock*>(child.get())->checkUnexpected();
 			}
 			else if (child->type == astNode::LEXEME)
 			{

@@ -111,7 +111,7 @@ namespace soup
 		{
 			if (r->type == DNS_A)
 			{
-				res.emplace_back(reinterpret_cast<dnsARecord*>(r.get())->data);
+				res.emplace_back(static_cast<dnsARecord*>(r.get())->data);
 			}
 		}
 		return res;
@@ -124,7 +124,7 @@ namespace soup
 		{
 			if (r->type == DNS_AAAA)
 			{
-				res.emplace_back(reinterpret_cast<dnsAaaaRecord*>(r.get())->data);
+				res.emplace_back(static_cast<dnsAaaaRecord*>(r.get())->data);
 			}
 		}
 		return res;

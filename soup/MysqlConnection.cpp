@@ -104,17 +104,17 @@ namespace soup
 						
 						if (status == 0)
 						{
-							cap.on_success(reinterpret_cast<MysqlConnection&>(sock));
+							cap.on_success(static_cast<MysqlConnection&>(sock));
 						}
 						else //if (status == 0xFF)
 						{
-							cap.on_error(reinterpret_cast<MysqlConnection&>(sock), mysqlHumaniseErrPacket(std::move(data)));
+							cap.on_error(static_cast<MysqlConnection&>(sock), mysqlHumaniseErrPacket(std::move(data)));
 						}
 					});
 				}
 				else //if (status == 0xFF)
 				{
-					cap.on_error(reinterpret_cast<MysqlConnection&>(con), mysqlHumaniseErrPacket(std::move(data)));
+					cap.on_error(static_cast<MysqlConnection&>(con), mysqlHumaniseErrPacket(std::move(data)));
 				}
 			}, std::move(_cap));
 		}, CaptureMysqlAuthenticate{
@@ -550,7 +550,7 @@ namespace soup
 
 		recv([](Socket& sock, std::string&& data, Capture&& _cap)
 		{
-			auto& con = reinterpret_cast<MysqlConnection&>(sock);
+			auto& con = static_cast<MysqlConnection&>(sock);
 			auto& cap = _cap.get<CaptureMysqlRecv>();
 
 			con.recv_buf.append(data);

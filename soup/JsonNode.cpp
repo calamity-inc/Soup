@@ -197,6 +197,8 @@ namespace soup
 		return type == JSON_STRING;
 	}
 
+	// Using reinterpret_cast instead of static_cast because not all of these types are known in this compilation unit
+
 	JsonArray& JsonNode::reinterpretAsArr() noexcept
 	{
 		return *reinterpret_cast<JsonArray*>(this);

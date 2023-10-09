@@ -11,9 +11,9 @@ namespace soup
 		lyoElement* elm = this;
 		while (elm->parent != nullptr)
 		{
-			elm = reinterpret_cast<lyoElement*>(elm->parent); // We don't know that lyoContainer extends lyoElement
+			elm = static_cast<lyoElement*>(elm->parent);
 		}
-		return *reinterpret_cast<lyoDocument*>(this);
+		return *reinterpret_cast<lyoDocument*>(this); // using reinterpret_cast because lyoDocument is not known in this compilation unit
 	}
 
 	bool lyoElement::matchesSelector(const std::string& selector) const noexcept

@@ -263,8 +263,8 @@ namespace soup
 				auto workers_i = workers.begin() + (i - pollfds.begin());
 				if (i->revents & ~POLLIN)
 				{
-					reinterpret_cast<Socket*>(workers_i->get())->remote_closed = true;
-					processClosedSocket(*reinterpret_cast<Socket*>(workers_i->get()));
+					static_cast<Socket*>(workers_i->get())->remote_closed = true;
+					processClosedSocket(*static_cast<Socket*>(workers_i->get()));
 				}
 				else
 				{

@@ -43,7 +43,7 @@ namespace soup
 		template <typename Data>
 		[[nodiscard]] const htDataNode<Data>& asDataNode() const noexcept
 		{
-			return *reinterpret_cast<const htDataNode<Data>*>(this);
+			return *static_cast<const htDataNode<Data>*>(this);
 		}
 
 		template <typename Data>
@@ -91,10 +91,10 @@ namespace soup
 	{
 		if (is_data)
 		{
-			return reinterpret_cast<const htWeightedDataNode<Data, Weight>&>(*this).weight;
+			return static_cast<const htWeightedDataNode<Data, Weight>&>(*this).weight;
 		}
-		return reinterpret_cast<const htLinkNode*>(this)->left->getWeight<Data, Weight>()
-			+ reinterpret_cast<const htLinkNode*>(this)->right->getWeight<Data, Weight>();
+		return static_cast<const htLinkNode*>(this)->left->getWeight<Data, Weight>()
+			+ static_cast<const htLinkNode*>(this)->right->getWeight<Data, Weight>();
 	}
 
 	template <typename Data, typename Weight>
@@ -176,7 +176,7 @@ namespace soup
 		}
 		if (node.is_data)
 		{
-			std::cout << reinterpret_cast<const htDataNode<Data>&>(node).data << "\n";
+			std::cout << static_cast<const htDataNode<Data>&>(node).data << "\n";
 		}
 		else
 		{
@@ -185,8 +185,8 @@ namespace soup
 			std::string p2 = prefix;
 			p2.append("\t");
 
-			htPrint<Data, Weight>(*reinterpret_cast<const htLinkNode&>(node).left, p2);
-			htPrint<Data, Weight>(*reinterpret_cast<const htLinkNode&>(node).right, p2);
+			htPrint<Data, Weight>(*static_cast<const htLinkNode&>(node).left, p2);
+			htPrint<Data, Weight>(*static_cast<const htLinkNode&>(node).right, p2);
 		}
 	}
 

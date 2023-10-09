@@ -231,12 +231,12 @@ namespace soup
 		{
 			if ((*ps.i)->type == astNode::BLOCK)
 			{
-				parseBlockRecurse(ps, t, reinterpret_cast<astBlock*>(ps.i->get()));
+				parseBlockRecurse(ps, t, static_cast<astBlock*>(ps.i->get()));
 				++ps.i;
 			}
 			else if ((*ps.i)->type == astNode::LEXEME)
 			{
-				if (t == reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword)
+				if (t == static_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword)
 				{
 					t.parse(ps);
 					ps.i = ps.b->children.erase(ps.i);	
@@ -256,30 +256,30 @@ namespace soup
 				}
 				else
 				{
-					if (reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword == Lexeme::VAL
-						&& reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.isAstBlock()
+					if (static_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword == Lexeme::VAL
+						&& static_cast<LexemeNode*>(ps.i->get())->lexeme.val.isAstBlock()
 						)
 					{
-						parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(ps.i->get())->lexeme.val.getAstBlock());
+						parseBlockRecurse(ps, t, &static_cast<LexemeNode*>(ps.i->get())->lexeme.val.getAstBlock());
 					}
 					++ps.i;
 				}
 			}
 			else //if ((*ps.i)->type == Node::OP)
 			{
-				for (const auto& arg : reinterpret_cast<OpNode*>(ps.i->get())->op.args)
+				for (const auto& arg : static_cast<OpNode*>(ps.i->get())->op.args)
 				{
 					/*if (arg->type == Node::BLOCK)
 					{
-						parseBlockRecurse(ps, t, reinterpret_cast<Block*>(arg.get()));
+						parseBlockRecurse(ps, t, static_cast<Block*>(arg.get()));
 					}
 					else*/ if (arg->type == astNode::LEXEME)
 					{
-						if (reinterpret_cast<LexemeNode*>(arg.get())->lexeme.token_keyword == Lexeme::VAL
-							&& reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.isAstBlock()
+						if (static_cast<LexemeNode*>(arg.get())->lexeme.token_keyword == Lexeme::VAL
+							&& static_cast<LexemeNode*>(arg.get())->lexeme.val.isAstBlock()
 							)
 						{
-							parseBlockRecurse(ps, t, &reinterpret_cast<LexemeNode*>(arg.get())->lexeme.val.getAstBlock());
+							parseBlockRecurse(ps, t, &static_cast<LexemeNode*>(arg.get())->lexeme.val.getAstBlock());
 						}
 					}
 				}

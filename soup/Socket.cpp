@@ -1027,7 +1027,7 @@ namespace soup
 
 			sockaddr_in6 sa;
 			socklen_t sal = sizeof(sa);
-			data.resize(::recvfrom(reinterpret_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal));
+			data.resize(::recvfrom(static_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal));
 
 			SocketAddr sender;
 			if (sal == sizeof(sa))
@@ -1041,7 +1041,7 @@ namespace soup
 				sender.port = network_u16_t(reinterpret_cast<sockaddr_in*>(&sa)->sin_port);
 			}
 
-			cap.callback(reinterpret_cast<Socket&>(w), std::move(sender), std::move(data), std::move(cap.cap));
+			cap.callback(static_cast<Socket&>(w), std::move(sender), std::move(data), std::move(cap.cap));
 		}, CaptureSocketUdpRecv{ callback, std::move(cap) });
 	}
 
@@ -1457,7 +1457,7 @@ namespace soup
 		{
 			w.holdup_type = Worker::NONE;
 			auto& cap = _cap.get<CaptureSocketTransportRecv>();
-			reinterpret_cast<Socket&>(w).transport_recv(cap.bytes, cap.callback, std::move(cap.cap));
+			static_cast<Socket&>(w).transport_recv(cap.bytes, cap.callback, std::move(cap.cap));
 		}, CaptureSocketTransportRecv{ max_bytes, callback, std::move(cap) });
 	}
 
@@ -1495,7 +1495,7 @@ namespace soup
 		{
 			w.holdup_type = Worker::NONE;
 			auto& cap = _cap.get<CaptureSocketTransportRecvExact>();
-			reinterpret_cast<Socket&>(w).transport_recvExact(cap.bytes, cap.callback, std::move(cap.cap), std::move(cap.buf));
+			static_cast<Socket&>(w).transport_recvExact(cap.bytes, cap.callback, std::move(cap.cap), std::move(cap.buf));
 		}, CaptureSocketTransportRecvExact(bytes, callback, std::move(cap), std::move(pre)));
 	}
 

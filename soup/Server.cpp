@@ -183,7 +183,7 @@ namespace soup
 		s.holdup_type = Worker::SOCKET;
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
-			auto& s = reinterpret_cast<Socket&>(w);
+			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPort>().processAccept(s.accept6(), s.peer.port);
 		};
 	}
@@ -193,7 +193,7 @@ namespace soup
 		s.holdup_type = Worker::SOCKET;
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
-			auto& s = reinterpret_cast<Socket&>(w);
+			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept6(), s.peer.port);
 		};
 	}
@@ -204,7 +204,7 @@ namespace soup
 		s.holdup_type = Worker::SOCKET;
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
-			auto& s = reinterpret_cast<Socket&>(w);
+			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPort>().processAccept(s.accept4(), s.peer.port);
 		};
 	}
@@ -214,7 +214,7 @@ namespace soup
 		s.holdup_type = Worker::SOCKET;
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
 		{
-			auto& s = reinterpret_cast<Socket&>(w);
+			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept4(), s.peer.port);
 		};
 	}

@@ -12,12 +12,12 @@ namespace soup
 	private:
 		[[nodiscard]] void* _addr() const noexcept
 		{
-			return reinterpret_cast<const This*>(this)->addr();
+			return static_cast<const This*>(this)->addr();
 		}
 
 		[[nodiscard]] constexpr uintptr_t _offset() const noexcept
 		{
-			return reinterpret_cast<const This*>(this)->offset();
+			return static_cast<const This*>(this)->offset();
 		}
 
 	public:

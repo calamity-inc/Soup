@@ -43,12 +43,12 @@ namespace soup
 				SOUP_THROW(ParseError(std::move(err)));
 			}
 			UniquePtr<astNode> var_name_literal{};
-			if (reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword == Lexeme::LITERAL)
+			if (static_cast<LexemeNode*>(node.get())->lexeme.token_keyword == Lexeme::LITERAL)
 			{
 				var_name_literal = std::move(node);
 				node = ps.popRighthand();
 			}
-			if (reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "(")
+			if (static_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "(")
 			{
 				std::string err = "'function' expected righthand '(', found ";
 				err.append(node->toString());
@@ -57,7 +57,7 @@ namespace soup
 
 			node = ps.popRighthand();
 			if (node->type != astNode::LEXEME
-				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != Lexeme::LITERAL
+				|| static_cast<LexemeNode*>(node.get())->lexeme.token_keyword != Lexeme::LITERAL
 				)
 			{
 				std::string err = "'function' expected righthand ')' or parameter list, found ";
@@ -65,7 +65,7 @@ namespace soup
 				SOUP_THROW(ParseError(std::move(err)));
 			}
 			std::vector<UniquePtr<astNode>> param_literals{};
-			if (reinterpret_cast<LexemeNode*>(node.get())->lexeme.val.getString() != ")")
+			if (static_cast<LexemeNode*>(node.get())->lexeme.val.getString() != ")")
 			{
 				while (true)
 				{
@@ -73,11 +73,11 @@ namespace soup
 
 					node = ps.popRighthand();
 					if (node->type != astNode::LEXEME
-						|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(",")
+						|| !static_cast<LexemeNode*>(node.get())->lexeme.isLiteral(",")
 						)
 					{
 						if (node->type == astNode::LEXEME
-							&& reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+							&& static_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
 							)
 						{
 							break;
@@ -89,7 +89,7 @@ namespace soup
 
 					node = ps.popRighthand();
 					if (node->type != astNode::LEXEME
-						|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != Lexeme::LITERAL
+						|| static_cast<LexemeNode*>(node.get())->lexeme.token_keyword != Lexeme::LITERAL
 						)
 					{
 						std::string err = "Parameter list expected righthand parameter after ',', found ";
@@ -107,16 +107,16 @@ namespace soup
 				SOUP_THROW(ParseError(std::move(err)));
 			}
 
-			reinterpret_cast<astBlock*>(node.get())->param_literals = std::move(param_literals);
+			static_cast<astBlock*>(node.get())->param_literals = std::move(param_literals);
 			if (var_name_literal)
 			{
 				ps.setOp(OP_ASSIGN);
 				ps.pushArgNode(std::move(var_name_literal));
-				ps.pushArg(reinterpret_cast<astBlock*>(node.release()));
+				ps.pushArg(static_cast<astBlock*>(node.release()));
 			}
 			else
 			{
-				ps.pushLefthand(reinterpret_cast<astBlock*>(node.release()));
+				ps.pushLefthand(static_cast<astBlock*>(node.release()));
 			}
 		});
 		ld.addToken("[", [](ParserState& ps)
@@ -127,7 +127,7 @@ namespace soup
 
 			if (auto node = ps.popRighthand();
 				node->type != astNode::LEXEME
-				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral("]")
+				|| !static_cast<LexemeNode*>(node.get())->lexeme.isLiteral("]")
 				)
 			{
 				std::string err = "'[' expected ']' after index/key, found ";
@@ -158,7 +158,7 @@ namespace soup
 			ps.setOp(OP_IF);
 			auto node = ps.popRighthand();
 			if (node->type != astNode::LEXEME
-				|| reinterpret_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "("
+				|| static_cast<LexemeNode*>(node.get())->lexeme.token_keyword != "("
 				)
 			{
 				std::string err = "'if' expected righthand '(', found ";
@@ -170,7 +170,7 @@ namespace soup
 
 			node = ps.popRighthand();
 			if (node->type != astNode::LEXEME
-				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+				|| !static_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
 				)
 			{
 				std::string err = "'if(cond' expected righthand ')', found ";
@@ -182,7 +182,7 @@ namespace soup
 			if (node->type != astNode::BLOCK
 				&& (
 					node->type != astNode::LEXEME
-					|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(":")
+					|| !static_cast<LexemeNode*>(node.get())->lexeme.isLiteral(":")
 					)
 				)
 			{
@@ -200,14 +200,14 @@ namespace soup
 				err.append(node->toString());
 				SOUP_THROW(ParseError(std::move(err)));
 			}
-			ps.pushArg(reinterpret_cast<astBlock*>(node.release()));
+			ps.pushArg(static_cast<astBlock*>(node.release()));
 		});
 		ld.addToken("endif");
 		ld.addToken("else", Rgb::RED, [](ParserState& ps)
 		{
 			auto node = ps.popLefthand();
 			if (node->type != astNode::OP
-				|| reinterpret_cast<OpNode*>(node.get())->op.type != OP_IF
+				|| static_cast<OpNode*>(node.get())->op.type != OP_IF
 				)
 			{
 				std::string err = "'else' expected lefthand OP_IF, found ";
@@ -215,7 +215,7 @@ namespace soup
 				SOUP_THROW(ParseError(std::move(err)));
 			}
 			ps.setOp(OP_IF_ELSE);
-			ps.setArgs(std::move(reinterpret_cast<OpNode*>(node.get())->op.args));
+			ps.setArgs(std::move(static_cast<OpNode*>(node.get())->op.args));
 
 			node = ps.popRighthand();
 			if (node->type != astNode::BLOCK)
@@ -224,7 +224,7 @@ namespace soup
 				err.append(node->toString());
 				SOUP_THROW(ParseError(std::move(err)));
 			}
-			ps.pushArg(reinterpret_cast<astBlock*>(node.release()));
+			ps.pushArg(static_cast<astBlock*>(node.release()));
 		});
 		ld.addToken("(", [](ParserState& ps)
 		{
@@ -235,7 +235,7 @@ namespace soup
 
 			auto node = ps.popRighthand();
 			if (node->type != astNode::LEXEME
-				|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+				|| !static_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
 				)
 			{
 				while (true)
@@ -250,11 +250,11 @@ namespace soup
 
 					node = ps.popRighthand();
 					if (node->type != astNode::LEXEME
-						|| !reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(",")
+						|| !static_cast<LexemeNode*>(node.get())->lexeme.isLiteral(",")
 						)
 					{
 						if (node->type == astNode::LEXEME
-							&& reinterpret_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
+							&& static_cast<LexemeNode*>(node.get())->lexeme.isLiteral(")")
 							)
 						{
 							break;

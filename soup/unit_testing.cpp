@@ -56,7 +56,7 @@ namespace soup
 		{
 			try
 			{
-				Test::currently_running = reinterpret_cast<Test*>(this);
+				Test::currently_running = static_cast<Test*>(this);
 				Test::currently_running->test();
 			}
 			catch (const AssertionFailed&)
@@ -66,12 +66,12 @@ namespace soup
 			catch (const std::exception& e)
 			{
 				++failed_tests;
-				reinterpret_cast<Test*>(this)->setException(e.what());
+				static_cast<Test*>(this)->setException(e.what());
 			}
 			catch (...)
 			{
 				++failed_tests;
-				reinterpret_cast<Test*>(this)->setException("exception occurred");
+				static_cast<Test*>(this)->setException("exception occurred");
 			}
 			++total_tests;
 			Test::currently_running = nullptr;
@@ -88,7 +88,7 @@ namespace soup
 		{
 			if ((*i)->is_test)
 			{
-				if (reinterpret_cast<Test*>(*i)->err.empty())
+				if (static_cast<Test*>(*i)->err.empty())
 				{
 					//delete *i; // who cares? we're gonna exit soon anyway
 					i = children.erase(i);
@@ -118,7 +118,7 @@ namespace soup
 		std::cout << prefix << name;
 		if (is_test)
 		{
-			std::cout << ": " << reinterpret_cast<const Test*>(this)->err;
+			std::cout << ": " << static_cast<const Test*>(this)->err;
 		}
 		std::cout << "\n";
 		prefix.append("  ");

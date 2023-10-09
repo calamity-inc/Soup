@@ -13,7 +13,7 @@ namespace soup
 	dnsServerService::dnsServerService(on_query_t on_query)
 		: ServerServiceUdp([](Socket& s, SocketAddr&& addr, std::string&& data, ServerServiceUdp& srv)
 		{
-			reinterpret_cast<dnsServerService&>(srv).handle(s, std::move(addr), std::move(data));
+			static_cast<dnsServerService&>(srv).handle(s, std::move(addr), std::move(data));
 		}), on_query(on_query)
 	{
 	}

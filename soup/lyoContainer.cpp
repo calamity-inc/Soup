@@ -18,7 +18,7 @@ namespace soup
 
 	lyoTextElement* lyoContainer::addText(std::u32string text)
 	{
-		return reinterpret_cast<lyoTextElement*>(children.emplace_back(soup::make_unique<lyoTextElement>(this, std::move(text))).get());
+		return static_cast<lyoTextElement*>(children.emplace_back(soup::make_unique<lyoTextElement>(this, std::move(text))).get());
 	}
 
 	lyoElement* lyoContainer::querySelector(const std::string& selector)

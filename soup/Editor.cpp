@@ -119,7 +119,7 @@ namespace soup
 			auto& edit = *inst;
 			for (auto i = edit.tabsBegin(); i != edit.tabsEnd(); ++i)
 			{
-				auto& tab = *reinterpret_cast<EditorTab*>(i->get());
+				auto& tab = *static_cast<EditorTab*>(i->get());
 				if (tab.isActive(edit))
 				{
 					tab.reclaimFile(edit);
@@ -179,11 +179,11 @@ namespace soup
 		{
 			x += (*i)->width;
 		}
-		return *reinterpret_cast<EditorTab*>(children.emplace_back(soup::make_unique<EditorTab>(this, x, 0, std::move(name), std::move(text))).get());
+		return *static_cast<EditorTab*>(children.emplace_back(soup::make_unique<EditorTab>(this, x, 0, std::move(name), std::move(text))).get());
 	}
 
 	EditorText& Editor::getTextChild() const noexcept
 	{
-		return *reinterpret_cast<EditorText*>(children.at(0).get());
+		return *static_cast<EditorText*>(children.at(0).get());
 	}
 }

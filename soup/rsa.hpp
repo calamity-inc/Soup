@@ -45,12 +45,12 @@ namespace soup
 
 		[[nodiscard]] Bigint encryptUnpadded(const std::string& msg) const // deterministic
 		{
-			return reinterpret_cast<const T*>(this)->modPow(Bigint::fromBinary(msg));
+			return static_cast<const T*>(this)->modPow(Bigint::fromBinary(msg));
 		}
 
 		[[nodiscard]] std::string decryptUnpadded(const Bigint& enc) const
 		{
-			return reinterpret_cast<const T*>(this)->modPow(enc).toBinary();
+			return static_cast<const T*>(this)->modPow(enc).toBinary();
 		}
 
 		// With 2048-bit private key, OpenSSL takes ~0.001 ms. Soup takes ~12.4 ms. What the fuck?

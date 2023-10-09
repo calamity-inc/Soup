@@ -54,7 +54,7 @@ namespace soup
 			{
 				continue;
 			}
-			const XmlTag& node = reinterpret_cast<const XmlTag&>(*_node);
+			const XmlTag& node = static_cast<const XmlTag&>(*_node);
 			switch (joaat::hash(node.name))
 			{
 			case joaat::hash("line"):
