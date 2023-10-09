@@ -510,6 +510,7 @@
     <ClInclude Include="netIntelOnDisk.hpp" />
     <ClInclude Include="Optional.hpp" />
     <ClInclude Include="osRegistry.hpp" />
+    <ClInclude Include="parallel.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
     <ClInclude Include="PointerAndBool.hpp" />
@@ -1010,6 +1011,7 @@
     <ClCompile Include="MacAddr.cpp" />
     <ClCompile Include="netIntelOnDisk.cpp" />
     <ClCompile Include="osRegistry.cpp" />
+    <ClCompile Include="parallel.cpp" />
     <ClCompile Include="plist.cpp" />
     <ClCompile Include="Promise.cpp" />
     <ClCompile Include="punycode.cpp" />

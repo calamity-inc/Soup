@@ -1530,6 +1530,9 @@
     <ClInclude Include="UniqueListLink.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="parallel.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2229,6 +2232,9 @@
     </ClCompile>
     <ClCompile Include="hwGamepad.cpp">
       <Filter>hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="parallel.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
