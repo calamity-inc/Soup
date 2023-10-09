@@ -145,7 +145,7 @@
 			["Scheduler", "sched"]
 		],
 		"Server_bind": [
-			"void",
+			"bool",
 			["Scheduler", "serv"],
 			["int", "port"],
 			["ServerService", "srv"]

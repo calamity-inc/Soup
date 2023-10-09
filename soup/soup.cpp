@@ -435,11 +435,13 @@ SOUP_CEXPORT void Scheduler_tick(Scheduler* sched)
 
 // Server
 
-SOUP_CEXPORT void Server_bind(Scheduler* serv, int port, ServerService* srv)
+SOUP_CEXPORT bool Server_bind(Scheduler* serv, int port, ServerService* srv)
 {
 #if !SOUP_WASM
 	static_assert(sizeof(Scheduler) == sizeof(Server));
-	heap.get<Server>(serv).bind(static_cast<uint16_t>(port), srv);
+	return heap.get<Server>(serv).bind(static_cast<uint16_t>(port), srv);
+#else
+	return false;
 #endif
 }
 

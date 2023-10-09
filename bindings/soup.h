@@ -114,7 +114,7 @@ SOUP_CEXPORT void Scheduler_add(Scheduler* sched, void* spWorker);
 SOUP_CEXPORT bool Scheduler_shouldKeepRunning(Scheduler* sched);
 SOUP_CEXPORT void Scheduler_tick(Scheduler* sched);
 // Server
-SOUP_CEXPORT void Server_bind(Scheduler* serv, int port, ServerService* srv);
+SOUP_CEXPORT bool Server_bind(Scheduler* serv, int port, ServerService* srv);
 // ServerWebService
 SOUP_CEXPORT ServerWebService* ServerWebService_new();
 SOUP_CEXPORT bool ServerWebService_hasPendingRequest(ServerWebService* x);

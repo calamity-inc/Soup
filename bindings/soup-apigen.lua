@@ -33,7 +33,7 @@ soup = {
 		bind = function(serv, port, srv)
 			assert(getmetatable(serv) == soup.Scheduler or getmetatable(serv) == soup.DetachedScheduler)
 			assert(getmetatable(srv) == soup.ServerService or getmetatable(srv) == soup.ServerWebService)
-			libsoup:call("Server_bind", serv.addr, port, srv.addr)
+			return 0 ~= libsoup:call("Server_bind", serv.addr, port, srv.addr)
 		end,
 	},
 	stdstring = {
