@@ -157,6 +157,10 @@ namespace soup
 			keys[KEY_NUMPAD_ENTER] = state[DIK_NUMPADENTER];
 			keys[KEY_NUMPAD0] = state[DIK_NUMPAD0];
 			keys[KEY_NUMPAD_DECIMAL] = state[DIK_DECIMAL];
+
+			keys[KEY_PREV_TRACK] = state[DIK_PREVTRACK];
+			keys[KEY_PLAY_PAUSE] = state[DIK_PLAYPAUSE];
+			keys[KEY_NEXT_TRACK] = state[DIK_NEXTTRACK];
 		}
 	}
 }
