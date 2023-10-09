@@ -88,12 +88,12 @@ namespace soup
 
 	EccPoint EccCurve::add(const EccPoint& P, const EccPoint& Q) const
 	{
-		if (P.point_at_infinity)
+		if (P.isPointAtInfinity())
 		{
 			// 0 + Q = Q
 			return Q;
 		}
-		if (Q.point_at_infinity)
+		if (Q.isPointAtInfinity())
 		{
 			// P + 0 = P
 			return P;
@@ -188,8 +188,8 @@ namespace soup
 		std::string str;
 		str.reserve(1 + bytes_per_axis + bytes_per_axis);
 		str.push_back('\x04');
-		str.append(P.getX().toBinary(bytes_per_axis));
-		str.append(P.getY().toBinary(bytes_per_axis));
+		str.append(P.x.toBinary(bytes_per_axis));
+		str.append(P.y.toBinary(bytes_per_axis));
 		return str;
 	}
 
@@ -198,8 +198,8 @@ namespace soup
 		const auto bytes_per_axis = getBytesPerAxis();
 		std::string str;
 		str.reserve(1 + bytes_per_axis);
-		str.push_back(P.getY().isOdd() ? '\x03' : '\x02');
-		str.append(P.getX().toBinary(bytes_per_axis));
+		str.push_back(P.y.isOdd() ? '\x03' : '\x02');
+		str.append(P.x.toBinary(bytes_per_axis));
 		return str;
 	}
 
@@ -260,7 +260,7 @@ namespace soup
 			do
 			{
 				k = Bigint::random(getBytesPerAxis()); // let's hope we never use the same k twice if we don't want to leak the d :)
-				r = (multiply(G, k).getX() % n);
+				r = (multiply(G, k).x % n);
 			} while (r.isZero());
 			s = ((k.modMulInv(n) * (z + (r * d))) % n);
 		} while (s.isZero());
@@ -290,11 +290,11 @@ namespace soup
 		auto p = multiply(G, u1);
 		p = add(p, multiply(Q, u2));
 #endif
-		if (p.isIdentityElement())
+		if (p.isPointAtInfinity())
 		{
 			return false;
 		}
-		const auto x1 = (p.getX() % n);
+		const auto x1 = (p.x % n);
 		return x1 == r;
 	}
 

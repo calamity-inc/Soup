@@ -115,8 +115,8 @@ namespace soup
 			if (auto entry = ts.findCommonName(i->subject.getCommonName()))
 			{
 				if (entry->isEc() == i->isEc()
-					&& entry->key.getX() == i->key.getX()
-					&& entry->key.getY() == i->key.getY()
+					&& entry->key.x == i->key.x
+					&& entry->key.y == i->key.y
 					)
 				{
 					return true;

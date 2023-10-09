@@ -643,7 +643,7 @@ namespace soup
 			SOUP_ASSERT(curve->validate(their_pub));
 
 			auto shared_point = curve->multiply(their_pub, my_priv);
-			auto shared_secret = shared_point.getX().toBinary();
+			auto shared_secret = shared_point.x.toBinary();
 			SOUP_ASSERT(shared_secret.size() == csize);
 			handshaker->pre_master_secret.fulfil(std::move(shared_secret));
 

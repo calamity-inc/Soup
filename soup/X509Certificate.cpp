@@ -179,7 +179,7 @@ namespace soup
 
 	RsaPublicKey X509Certificate::getRsaPublicKey() const
 	{
-		return RsaPublicKey(key.getX(), key.getY());
+		return RsaPublicKey(key.x, key.y);
 	}
 
 	bool X509Certificate::canBeVerified() const noexcept

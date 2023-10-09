@@ -6,35 +6,14 @@ namespace soup
 {
 	struct EccPoint
 	{
-	protected:
-		bool point_at_infinity = true;
 		Bigint x{};
 		Bigint y{};
 
-	public:
-		EccPoint() = default;
-
-		EccPoint(Bigint x, Bigint y)
-			: point_at_infinity(false), x(std::move(x)), y(std::move(y))
-		{
-		}
-
-		[[nodiscard]] const Bigint& getX() const
-		{
-			return x;
-		}
-
-		[[nodiscard]] const Bigint& getY() const
-		{
-			return y;
-		}
-
-		[[nodiscard]] bool isIdentityElement() const noexcept
+		// aka. identity element, denoted as O.
+		[[nodiscard]] bool isPointAtInfinity() const noexcept
 		{
 			return x.isZero() && y.isZero();
 		}
-
-		friend struct EccCurve;
 	};
 
 	struct EccCurve
