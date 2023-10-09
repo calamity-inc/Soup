@@ -2236,6 +2236,9 @@
     <ClCompile Include="parallel.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="keys.cpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

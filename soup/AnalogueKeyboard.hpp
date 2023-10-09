@@ -45,36 +45,13 @@ namespace soup
 			// E.g., if the key to the right of T (KEY_Y) is pressed, will return 'Y'.
 			[[nodiscard]] int getVk() const noexcept
 			{
-				if (int vk = getVkPrecheck())
-				{
-					return vk;
-				}
-				return MapVirtualKeyA(getPs2Scancode(), MAPVK_VSC_TO_VK_EX);
+				return soup_key_to_virtual_key(getSoupKey());
 			}
 
 			// E.g. if the key to the right of T (KEY_Y) is pressed, may return 'Y' or 'Z' depending on user's layout.
-			[[nodiscard]] int getVkTranslated() const noexcept;
-
-		private:
-			[[nodiscard]] int getVkPrecheck() const noexcept
+			[[nodiscard]] int getVkTranslated() const noexcept
 			{
-				// MapVirtualKeyA would return VK_INSERT instead of VK_NUMPAD0 etc.
-				switch (getSoupKey())
-				{
-				case KEY_NUMPAD0: return VK_NUMPAD0;
-				case KEY_NUMPAD1: return VK_NUMPAD1;
-				case KEY_NUMPAD2: return VK_NUMPAD2;
-				case KEY_NUMPAD3: return VK_NUMPAD3;
-				case KEY_NUMPAD4: return VK_NUMPAD4;
-				case KEY_NUMPAD5: return VK_NUMPAD5;
-				case KEY_NUMPAD6: return VK_NUMPAD6;
-				case KEY_NUMPAD7: return VK_NUMPAD7;
-				case KEY_NUMPAD8: return VK_NUMPAD8;
-				case KEY_NUMPAD9: return VK_NUMPAD9;
-				case KEY_NUMPAD_DECIMAL: return VK_DECIMAL;
-				default:;
-				}
-				return 0;
+				return soup_key_to_translated_virtual_key(getSoupKey());
 			}
 #endif
 		};

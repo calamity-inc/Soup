@@ -995,6 +995,7 @@
     <ClCompile Include="kbRgb.cpp" />
     <ClCompile Include="kbRgbWooting.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
+    <ClCompile Include="keys.cpp" />
     <ClCompile Include="LcgRng.cpp" />
     <ClCompile Include="LexemeParser.cpp" />
     <ClCompile Include="log.cpp" />

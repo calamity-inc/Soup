@@ -2,9 +2,6 @@
 
 #include "BufferRefReader.hpp"
 #include "HidScancode.hpp"
-#if SOUP_WINDOWS
-#include "Window.hpp"
-#endif
 
 namespace soup
 {
@@ -281,16 +278,4 @@ namespace soup
 	{
 		return soup_key_to_hid_scancode(sk);
 	}
-
-#if SOUP_WINDOWS
-	int AnalogueKeyboard::ActiveKey::getVkTranslated() const noexcept
-	{
-		if (int vk = getVkPrecheck())
-		{
-			return vk;
-		}
-		const auto layout = GetKeyboardLayout(Window::getFocused().getOwnerTid());
-		return MapVirtualKeyExA(getPs2Scancode(), MAPVK_VSC_TO_VK_EX, layout);
-	}
-#endif
 }
