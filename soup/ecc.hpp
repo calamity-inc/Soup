@@ -12,7 +12,7 @@ namespace soup
 		// aka. identity element, denoted as O.
 		[[nodiscard]] bool isPointAtInfinity() const noexcept
 		{
-			return x.isZero() && y.isZero();
+			return x.isZero() /*&& y.isZero()*/;
 		}
 	};
 
