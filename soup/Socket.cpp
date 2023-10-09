@@ -304,12 +304,9 @@ namespace soup
 
 	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string& domain)
 	{
-		if (chain.certs.at(0).valid_to < time::unixSeconds())
-		{
-			return false;
-		}
-		const auto ts = TrustStore::fromMozilla();
-		return chain.verify(domain, ts);
+		return chain.certs.at(0).valid_to >= time::unixSeconds()
+			&& chain.verify(domain, TrustStore::fromMozilla())
+			;
 	}
 
 	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& domain)
