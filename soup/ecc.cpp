@@ -119,19 +119,19 @@ namespace soup
 		return res;
 	}
 
-	EccPoint EccCurve::multiply(EccPoint G, Bigint d) const
+	EccPoint EccCurve::multiply(EccPoint G, const Bigint& d) const
 	{
 #if true
 		// Double-and-add
 		EccPoint R;
-		while (!d.isZero())
+		const auto bl = d.getBitLength();
+		for (size_t i = 0; i != bl; ++i)
 		{
-			if (d.isOdd())
+			if (d.getBitInbounds(i))
 			{
 				R = add(R, G);
 			}
 			G = add(G, G);
-			d >>= 1;
 		}
 		return R;
 #else
