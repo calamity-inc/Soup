@@ -40,6 +40,9 @@ namespace soup
 		static void changeProtection(void* addr, size_t len, int prot);
 
 #if SOUP_WINDOWS
+		static void simulateKeyPress(Key key);
+		static void simulateKeyPress(bool ctrl, bool shift, bool alt, Key key);
+
 		[[nodiscard]] static size_t getMemoryUsage();
 
 		[[nodiscard]] static bool isWine();

@@ -52,6 +52,9 @@ namespace soup
 	struct XmlTag;
 	struct XmlText;
 
+	// hardware.keyboard
+	enum Key : uint8_t;
+
 	// io.bits
 	class BitReader;
 	class BitWriter;

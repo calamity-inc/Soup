@@ -12,6 +12,7 @@
 #pragma comment(lib, "Shell32.lib") // SHGetFolderPathW
 
 #include "Exception.hpp"
+#include "Key.hpp"
 #include "ObfusString.hpp"
 #else
 #include <sys/mman.h>
@@ -207,6 +208,68 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
+	void os::simulateKeyPress(Key key)
+	{
+		const int vk = soup_key_to_virtual_key(key);
+
+		INPUT input[2];
+
+		input[0].type = INPUT_KEYBOARD;
+		input[0].ki.wVk = vk;
+		input[0].ki.wScan = 0;
+		input[0].ki.dwFlags = 0;
+		input[0].ki.time = 0;
+		input[0].ki.dwExtraInfo = 0;
+
+		input[1].type = INPUT_KEYBOARD;
+		input[1].ki.wVk = vk;
+		input[1].ki.wScan = 0;
+		input[1].ki.dwFlags = KEYEVENTF_KEYUP;
+		input[1].ki.time = 0;
+		input[1].ki.dwExtraInfo = 0;
+
+		SendInput(2, input, sizeof(INPUT));
+	}
+
+	void os::simulateKeyPress(bool ctrl, bool shift, bool alt, Key key)
+	{
+		const int vk = soup_key_to_virtual_key(key);
+
+		std::vector<int> keys{};
+		keys.reserve(4);
+		if (ctrl) keys.emplace_back(VK_CONTROL);
+		if (shift) keys.emplace_back(VK_SHIFT);
+		if (alt) keys.emplace_back(VK_SHIFT);
+		keys.emplace_back(vk);
+
+		std::vector<INPUT> inputs{};
+		inputs.reserve(keys.size() * 2);
+
+		for (auto i = keys.cbegin(); i != keys.cend(); ++i)
+		{
+			INPUT& input = inputs.emplace_back();
+			input.type = INPUT_KEYBOARD;
+			input.ki.wVk = *i;
+			input.ki.wScan = 0;
+			input.ki.dwFlags = 0;
+			input.ki.time = 0;
+			input.ki.dwExtraInfo = 0;
+		}
+
+		for (auto i = keys.crbegin(); i != keys.crend(); ++i)
+		{
+			INPUT& input = inputs.emplace_back();
+			input.type = INPUT_KEYBOARD;
+			input.ki.wVk = *i;
+			input.ki.wScan = 0;
+			input.ki.dwFlags = KEYEVENTF_KEYUP;
+			input.ki.time = 0;
+			input.ki.dwExtraInfo = 0;
+		}
+
+		SendInput(inputs.size(), inputs.data(), sizeof(INPUT));
+	}
+
 	size_t os::getMemoryUsage()
 	{
 		PROCESS_MEMORY_COUNTERS_EX pmc;
