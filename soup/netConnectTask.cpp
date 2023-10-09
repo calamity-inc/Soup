@@ -11,7 +11,7 @@ namespace soup
 {
 	static DetachedScheduler async_connect_sched;
 
-	netConnectTask::netConnectTask(const std::string& host, uint16_t port)
+	netConnectTask::netConnectTask(const std::string& host, uint16_t port, bool prefer_ipv6)
 	{
 		if (IpAddr ip; ip.fromString(host))
 		{
@@ -19,7 +19,8 @@ namespace soup
 		}
 		else
 		{
-			lookup = netConfig::get().dns_resolver->makeLookupTask(DNS_A, host);
+			lookup = netConfig::get().dns_resolver->makeLookupTask(prefer_ipv6 ? DNS_AAAA : DNS_A, host);
+			current_lookup_is_ipv6 = prefer_ipv6;
 
 			// In case we get no A records, we need enough data to start AAAA query.
 			this->host = host;
@@ -35,33 +36,34 @@ namespace soup
 		{
 			if (lookup->tickUntilDone())
 			{
-				if (ipv6_lookup)
+				if (lookup->result.empty())
 				{
-					// IPv6 Result
-					if (lookup->result.empty())
+					if (second_lookup)
 					{
 						// No DNS results, bail
+						lookup.reset();
 						setWorkDone();
 					}
 					else
 					{
-						proceedToConnect(rand(dnsResolver::simplifyIPv6LookupResults(lookup->result)), port);
-						lookup.reset();
+						current_lookup_is_ipv6 = !current_lookup_is_ipv6;
+						lookup = netConfig::get().dns_resolver->makeLookupTask(current_lookup_is_ipv6 ? DNS_AAAA : DNS_A, host);
+						second_lookup = true;
 					}
 				}
 				else
 				{
-					// IPv4 Result
-					if (lookup->result.empty())
+					std::vector<IpAddr> results{};
+					if (current_lookup_is_ipv6)
 					{
-						lookup = netConfig::get().dns_resolver->makeLookupTask(DNS_AAAA, host);
-						ipv6_lookup = true;
+						results = dnsResolver::simplifyIPv6LookupResults(lookup->result);
 					}
 					else
 					{
-						proceedToConnect(rand(dnsResolver::simplifyIPv4LookupResults(lookup->result)), port);
-						lookup.reset();
+						results = dnsResolver::simplifyIPv4LookupResults(lookup->result);
 					}
+					lookup.reset();
+					proceedToConnect(rand(results), port);
 				}
 			}
 		}

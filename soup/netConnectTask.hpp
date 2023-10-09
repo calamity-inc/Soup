@@ -34,15 +34,16 @@ namespace soup
 		UniquePtr<dnsLookupTask> lookup;
 		SharedPtr<BlockingConnectTask> connect;
 		uint16_t port;
-		bool ipv6_lookup = false;
+		bool current_lookup_is_ipv6 = false;
+		bool second_lookup = false;
 
 	public:
-		netConnectTask(const char* host, uint16_t port)
-			: netConnectTask(std::string(host), port)
+		netConnectTask(const char* host, uint16_t port, bool prefer_ipv6 = false)
+			: netConnectTask(std::string(host), port, prefer_ipv6)
 		{
 		}
 
-		netConnectTask(const std::string& host, uint16_t port);
+		netConnectTask(const std::string& host, uint16_t port, bool prefer_ipv6 = false);
 
 		netConnectTask(const IpAddr& addr, uint16_t port)
 		{
