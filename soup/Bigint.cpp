@@ -727,7 +727,7 @@ namespace soup
 	{
 		if (*this >= divisor)
 		{
-			*this = divide(divisor).second;
+			*this = mod(divisor);
 		}
 	}
 
@@ -825,6 +825,10 @@ namespace soup
 
 	Bigint Bigint::mod(const Bigint& m) const
 	{
+		if (!negative && !m.negative)
+		{
+			return modUnsigned(m);
+		}
 		return divide(m).second;
 	}
 
