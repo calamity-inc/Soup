@@ -5,7 +5,7 @@
 
 #include <dinput.h>
 
-#include "keys.hpp"
+#include "Key.hpp"
 
 namespace soup
 {

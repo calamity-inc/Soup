@@ -1497,7 +1497,7 @@
     <ClInclude Include="DigitalKeyboard.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
-    <ClInclude Include="keys.hpp">
+    <ClInclude Include="Key.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
     <ClInclude Include="BufferRefReader.hpp">
@@ -2236,7 +2236,7 @@
     <ClCompile Include="parallel.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="keys.cpp">
+    <ClCompile Include="Key.cpp">
       <Filter>hardware\keyboard</Filter>
     </ClCompile>
   </ItemGroup>

@@ -94,7 +94,7 @@ namespace soup
 
 	using ActiveKey = AnalogueKeyboard::ActiveKey;
 
-	[[nodiscard]] static uint8_t razer_scancode_to_soup_key(uint8_t scancode) noexcept
+	[[nodiscard]] static Key razer_scancode_to_soup_key(uint8_t scancode) noexcept
 	{
 		switch (scancode)
 		{
@@ -234,7 +234,7 @@ namespace soup
 					&& r.u8(value)
 					)
 				{
-					const uint8_t sk = (scancode == 0x409 ? KEY_FN : hid_scancode_to_soup_key(scancode));
+					const Key sk = (scancode == 0x409 ? KEY_FN : hid_scancode_to_soup_key(scancode));
 					// some keys seem to be getting reported multiple times on older firmware, so just use last reported value
 					for (auto& key : keys)
 					{

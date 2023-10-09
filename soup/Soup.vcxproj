@@ -502,7 +502,7 @@
     <ClInclude Include="EmailAddress.hpp" />
     <ClInclude Include="kbRgb.hpp" />
     <ClInclude Include="kbRgbWooting.hpp" />
-    <ClInclude Include="keys.hpp" />
+    <ClInclude Include="Key.hpp" />
     <ClInclude Include="memProtFlags.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
@@ -995,7 +995,7 @@
     <ClCompile Include="kbRgb.cpp" />
     <ClCompile Include="kbRgbWooting.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
-    <ClCompile Include="keys.cpp" />
+    <ClCompile Include="Key.cpp" />
     <ClCompile Include="LcgRng.cpp" />
     <ClCompile Include="LexemeParser.cpp" />
     <ClCompile Include="log.cpp" />

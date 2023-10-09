@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "hwHid.hpp"
-#include "keys.hpp"
+#include "Key.hpp"
 
 namespace soup
 {
@@ -21,10 +21,10 @@ namespace soup
 		class ActiveKey
 		{
 		public:
-			uint8_t sk;
+			Key sk;
 			uint8_t value;
 
-			[[nodiscard]] uint8_t getSoupKey() const noexcept
+			[[nodiscard]] Key getSoupKey() const noexcept
 			{
 				return sk;
 			}

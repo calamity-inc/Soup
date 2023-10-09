@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "keys.hpp"
+#include "Key.hpp"
 
 namespace soup
 {
@@ -158,7 +158,7 @@ namespace soup
 		HID_META_RIGHT = 0xe7,
 	};
 
-	[[nodiscard]] constexpr uint8_t hid_scancode_to_soup_key(uint8_t scancode) noexcept
+	[[nodiscard]] constexpr Key hid_scancode_to_soup_key(uint8_t scancode) noexcept
 	{
 		switch (scancode)
 		{
