@@ -8,6 +8,6 @@ namespace soup
 	{
 		Benchmark::State state;
 		bm(state);
-		std::cout << name << ": " << (state.its / num_millis) << " iterations/ms\n";
+		std::cout << name << ": " << ((float)state.its / num_millis) << " iterations/ms\n";
 	}
 }
