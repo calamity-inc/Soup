@@ -334,6 +334,13 @@ namespace soup
 		return TLS_GREASE_15;
 	}
 
+	struct CaptureValidateCertchain
+	{
+		Socket& s;
+		SocketTlsHandshaker* handshaker;
+		certchain_validator_t certchain_validator;
+	};
+
 	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap)
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
@@ -448,84 +455,105 @@ namespace soup
 						s.tls_close(TlsAlertDescription::decode_error);
 						return;
 					}
-					if (!handshaker->certchain.fromDer(cert.asn1_certs)
-						|| (handshaker->certchain.cleanup(), !netConfig::get().certchain_validator(handshaker->certchain, handshaker->server_name))
-						)
+					if (!handshaker->certchain.fromDer(cert.asn1_certs))
 					{
 						s.tls_close(TlsAlertDescription::bad_certificate);
 						return;
 					}
 
-					switch (handshaker->cipher_suite)
+					// Validating an ECC cert on my i9-13900K takes around 61 ms, which is time the scheduler could be spending doing more useful things.
+					handshaker->promise.fulfilOffThread([](Capture&& _cap)
 					{
-					default:
-						s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
-						break;
-
-					case TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
-					case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256:
-					case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
-					case TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
-					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
-					case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
-					case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
-					case TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:
-						s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
+						auto& cap = _cap.get<CaptureValidateCertchain>();
+						if (!cap.certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name))
 						{
-							if (handshake_type != TlsHandshake::server_key_exchange)
-							{
-								s.tls_close(TlsAlertDescription::unexpected_message);
-								return;
-							}
-							TlsServerKeyExchange ske;
-							if (!ske.fromBinary(data))
-							{
-								s.tls_close(TlsAlertDescription::decode_error);
-								return;
-							}
-							if (ske.named_curve == NamedCurves::x25519)
-							{
-								if (ske.point.size() != Curve25519::KEY_SIZE)
-								{
-									s.tls_close(TlsAlertDescription::handshake_failure);
-									return;
-								}
-							}
-							else if (ske.named_curve == NamedCurves::secp256r1)
-							{
-								if (ske.point.size() != 65 // first byte for compression format (4 for uncompressed) + 32 for X + 32 for Y
-									|| ske.point.at(0) != 4
-									)
-								{
-									s.tls_close(TlsAlertDescription::handshake_failure);
-									return;
-								}
-								ske.point.erase(0, 1); // leave only X + Y
-							}
-							else if (ske.named_curve == NamedCurves::secp384r1)
-							{
-								if (ske.point.size() != 97 // first byte for compression format (4 for uncompressed) + 48 for X + 48 for Y
-									|| ske.point.at(0) != 4
-									)
-								{
-									s.tls_close(TlsAlertDescription::handshake_failure);
-									return;
-								}
-								ske.point.erase(0, 1); // leave only X + Y
-							}
-							else
-							{
-								s.tls_close(TlsAlertDescription::handshake_failure);
-								return;
-							}
-							// TODO: Validate signature
-							handshaker->ecdhe_curve = ske.named_curve;
-							handshaker->ecdhe_public_key = std::move(ske.point);
+							cap.s.tls_close(TlsAlertDescription::bad_certificate);
+						}
+					}, CaptureValidateCertchain{
+						s,
+						handshaker.get(),
+						netConfig::get().certchain_validator
+					});
 
+					auto* p = &handshaker->promise;
+					s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap)
+					{
+						w.holdup_type = Worker::NONE;
+
+						auto& s = static_cast<Socket&>(w);
+						UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
+
+						switch (handshaker->cipher_suite)
+						{
+						default:
 							s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
-						});
-						break;
-					}
+							break;
+
+						case TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
+						case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256:
+						case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
+						case TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
+						case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256:
+						case TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
+						case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
+						case TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256:
+							s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
+							{
+								if (handshake_type != TlsHandshake::server_key_exchange)
+								{
+									s.tls_close(TlsAlertDescription::unexpected_message);
+									return;
+								}
+								TlsServerKeyExchange ske;
+								if (!ske.fromBinary(data))
+								{
+									s.tls_close(TlsAlertDescription::decode_error);
+									return;
+								}
+								if (ske.named_curve == NamedCurves::x25519)
+								{
+									if (ske.point.size() != Curve25519::KEY_SIZE)
+									{
+										s.tls_close(TlsAlertDescription::handshake_failure);
+										return;
+									}
+								}
+								else if (ske.named_curve == NamedCurves::secp256r1)
+								{
+									if (ske.point.size() != 65 // first byte for compression format (4 for uncompressed) + 32 for X + 32 for Y
+										|| ske.point.at(0) != 4
+										)
+									{
+										s.tls_close(TlsAlertDescription::handshake_failure);
+										return;
+									}
+									ske.point.erase(0, 1); // leave only X + Y
+								}
+								else if (ske.named_curve == NamedCurves::secp384r1)
+								{
+									if (ske.point.size() != 97 // first byte for compression format (4 for uncompressed) + 48 for X + 48 for Y
+										|| ske.point.at(0) != 4
+										)
+									{
+										s.tls_close(TlsAlertDescription::handshake_failure);
+										return;
+									}
+									ske.point.erase(0, 1); // leave only X + Y
+								}
+								else
+								{
+									s.tls_close(TlsAlertDescription::handshake_failure);
+									return;
+								}
+								// TODO: Validate signature
+								handshaker->ecdhe_curve = ske.named_curve;
+								handshaker->ecdhe_public_key = std::move(ske.point);
+
+								s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
+							});
+							break;
+						}
+					}, std::move(handshaker));
 				});
 			});
 		}
@@ -824,7 +852,7 @@ namespace soup
 					{
 						w.holdup_type = Worker::NONE;
 
-						auto& s = reinterpret_cast<Socket&>(w);
+						auto& s = static_cast<Socket&>(w);
 						UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
 						handshaker->getKeys(
