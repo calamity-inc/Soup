@@ -128,6 +128,11 @@ namespace soup
 			fulfiled = true;
 		}
 
+		void reset() noexcept
+		{
+			fulfiled = false;
+		}
+
 		void fulfilOffThread(void(*f)(Capture&&), Capture&& cap = {})
 		{
 			new SelfDeletingThread([](Capture&& _cap)
