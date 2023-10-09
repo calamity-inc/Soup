@@ -45,6 +45,7 @@ void cli_keyboard()
 					delete analogue_kbd;
 					analogue_kbd = nullptr;
 
+					viskbd.has_ctx_key = false;
 #if SOUP_WINDOWS
 					kbd_name = "Digital Keyboard";
 #else
@@ -98,6 +99,7 @@ void cli_keyboard()
 					std::cout << "Found " << analogue_kbds.at(0).name << ", switching to analogue mode.\n";
 
 					kbd_name = analogue_kbds.at(0).name;
+					viskbd.has_ctx_key = analogue_kbds.at(0).has_ctx_key;
 					w.redraw();
 
 					analogue_kbd = new AnalogueKeyboard(std::move(analogue_kbds.at(0)));

@@ -12,6 +12,7 @@ namespace soup
 	{
 	public:
 		uint8_t values[NUM_KEYS];
+		bool has_ctx_key = false;
 
 		visKeyboard() noexcept
 		{

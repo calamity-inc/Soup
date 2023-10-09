@@ -68,8 +68,16 @@ namespace soup
 		drawKey(rt, scale, nullptr, values[KEY_LALT], x + 24 * scale, y + 40 * scale, 12);
 		drawKey(rt, scale, nullptr, values[KEY_SPACE], x + 36 * scale, y + 40 * scale, 65);
 		drawKey(rt, scale, nullptr, values[KEY_RALT], x + 101 * scale, y + 40 * scale, 12);
-		drawKey(rt, scale, nullptr, values[KEY_RMETA], x + 113 * scale, y + 40 * scale, 12);
-		drawKey(rt, scale, nullptr, values[KEY_FN], x + 125 * scale, y + 40 * scale, 12);
+		if (!has_ctx_key)
+		{
+			drawKey(rt, scale, nullptr, values[KEY_RMETA], x + 113 * scale, y + 40 * scale, 12);
+			drawKey(rt, scale, nullptr, values[KEY_FN], x + 125 * scale, y + 40 * scale, 12);
+		}
+		else
+		{
+			drawKey(rt, scale, nullptr, values[KEY_FN], x + 113 * scale, y + 40 * scale, 12);
+			drawKey(rt, scale, nullptr, values[KEY_CTX], x + 125 * scale, y + 40 * scale, 12);
+		}
 		drawKey(rt, scale, nullptr, values[KEY_RCTRL], x + 137 * scale, y + 40 * scale, 12);
 
 		x += 155 * scale;

@@ -82,7 +82,11 @@ namespace soup
 						|| hid.hasReportId(7) // Razer - Synapse may be needed to get these reports
 						)
 					{
-						res.emplace_back(AnalogueKeyboard{ name, std::move(hid) });
+						res.emplace_back(AnalogueKeyboard{
+							name,
+							std::move(hid),
+							hid.vendor_id == 0x1532 // Has context key? Wooting - false, Razer - true.
+						});
 					}
 				}
 			}

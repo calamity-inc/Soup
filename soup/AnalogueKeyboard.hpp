@@ -13,6 +13,7 @@ namespace soup
 	{
 		const char* name;
 		hwHid hid;
+		bool has_ctx_key;
 		bool disconnected = false;
 
 		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll(bool include_no_permission = false);
