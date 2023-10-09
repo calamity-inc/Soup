@@ -3,6 +3,7 @@
 
 #include "DetachedScheduler.hpp"
 #include "netConfig.hpp"
+#include "ObfusString.hpp"
 #include "rand.hpp"
 #include "Scheduler.hpp"
 
@@ -72,7 +73,10 @@ namespace soup
 			}
 			else
 			{
-				SOUP_ASSERT(async_connect_sched.isActive());
+				SOUP_IF_UNLIKELY (!async_connect_sched.isActive())
+				{
+					SOUP_THROW(ObfusString("netConnectTask can't continue due to a race condition"));
+				}
 			}
 		}
 	}

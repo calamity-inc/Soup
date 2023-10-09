@@ -23,20 +23,18 @@ namespace soup
 	{
 		auto t = reinterpret_cast<Thread*>(handover);
 		t->f(std::move(t->f_cap));
-#if !SOUP_WINDOWS
 		t->running = false;
-#endif
 		t->f_cap.reset();
 	}
 
 	void Thread::start(void(*f)(Capture&&), Capture&& cap)
 	{
+		SOUP_ASSERT(!isRunning());
+
 		this->f = f;
 		this->f_cap = std::move(cap);
-#if SOUP_WINDOWS
-		// It's possible that Thread::stop was just called; this state is not immediately reflected.
-		//SOUP_ASSERT(!isRunning());
 
+#if SOUP_WINDOWS
 		// if we still have a handle, relinquish it
 		if (handle != INVALID_HANDLE_VALUE)
 		{
@@ -49,8 +47,6 @@ namespace soup
 			SOUP_THROW(Exception(format("Failed to create thread: {}", GetLastError())));
 		}
 #else
-		SOUP_ASSERT(!isRunning());
-
 		// if we still have a handle, relinquish it
 		awaitCompletion();
 
@@ -62,8 +58,9 @@ namespace soup
 			SOUP_THROW(Exception(format("Failed to create thread: {}", ret)));
 		}
 		have_handle = true;
-		running = true;
 #endif
+
+		running = true;
 	}
 
 	void Thread::start(std::function<void()>&& func)
@@ -97,22 +94,11 @@ namespace soup
 #endif
 	}
 
-	bool Thread::isRunning() const noexcept
-	{
-#if SOUP_WINDOWS
-		DWORD exit_code = 0;
-		return GetExitCodeThread(handle, &exit_code)
-			&& exit_code == STILL_ACTIVE
-			;
-#else
-		return running;
-#endif
-	}
-
 	void Thread::stop() noexcept
 	{
 #if SOUP_WINDOWS
 		TerminateThread(handle, 0);
+		running = false;
 #else
 		if (have_handle)
 		{

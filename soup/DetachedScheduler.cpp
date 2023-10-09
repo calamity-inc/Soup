@@ -20,11 +20,6 @@ namespace soup
 		return Scheduler::addWorker(std::move(w));
 	}
 
-	bool DetachedScheduler::isActive() const noexcept
-	{
-		return thrd.isRunning();
-	}
-
 	struct UpdateConfigTask : public Task
 	{
 		Callback<void(netConfig&)> cb;

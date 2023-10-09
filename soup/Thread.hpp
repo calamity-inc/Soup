@@ -24,8 +24,8 @@ namespace soup
 #else
 		pthread_t handle{};
 		bool have_handle = false;
-		bool running = false;
 #endif
+		bool running = false;
 		void(*f)(Capture&&);
 		Capture f_cap;
 
@@ -41,7 +41,7 @@ namespace soup
 
 		void setTimeCritical() noexcept;
 
-		[[nodiscard]] bool isRunning() const noexcept;
+		[[nodiscard]] bool isRunning() const noexcept { return running; }
 		void stop() noexcept;
 
 		void awaitCompletion() noexcept;
