@@ -188,6 +188,9 @@ namespace soup
 		void leftShiftOne();
 	public:
 		void operator>>=(const size_t b);
+	private:
+		void rightShiftSmall(const size_t b);
+	public:
 		void operator|=(const Bigint& b);
 		void operator&=(const Bigint& b);
 

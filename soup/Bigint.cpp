@@ -245,16 +245,20 @@ namespace soup
 
 	void Bigint::shrink() noexcept
 	{
-		for (size_t i = chunks.size(); i-- != 0; )
+		size_t i = chunks.size();
+		for (; i != 0; --i)
 		{
-			if (chunks[i] != 0)
+			if (chunks[i - 1] != 0)
 			{
 				break;
 			}
+		}
+		if (i != chunks.size())
+		{
 #if SOUP_BIGINT_USE_INTVECTOR
-			chunks.erase(i);
+			chunks.erase(i, chunks.size());
 #else
-			chunks.erase(chunks.cbegin() + i);
+			chunks.erase(chunks.cbegin() + i, chunks.cend());
 #endif
 		}
 	}
@@ -994,21 +998,7 @@ namespace soup
 		{
 			if (b <= getBitsPerChunk())
 			{
-				const auto nc = getNumChunks();
-				if (nc != 0)
-				{
-					chunk_t carry = 0;
-					for (size_t i = nc; i-- != 0; )
-					{
-						chunk_t c[2];
-						c[0] = 0;
-						c[1] = getChunkInbounds(i);
-						*reinterpret_cast<size_t*>(&c[0]) = (*reinterpret_cast<size_t*>(&c[0]) >> b);
-						setChunkInbounds(i, c[1] | carry);
-						carry = c[0];
-					}
-					shrink();
-				}
+				rightShiftSmall(b);
 				return;
 			}
 		}
@@ -1045,6 +1035,57 @@ namespace soup
 				shrink();
 			}
 		}
+	}
+
+	void Bigint::rightShiftSmall(const size_t b)
+	{
+		auto i = getNumChunks();
+		chunk_t carry = 0;
+#if false
+		for (; i >= 4; i -= 4)
+		{
+			chunk_t c0[2];
+			chunk_t c1[2];
+			chunk_t c2[2];
+			chunk_t c3[2];
+
+			c0[0] = 0;
+			c0[1] = getChunkInbounds(i - 1);
+			c1[0] = 0;
+			c1[1] = getChunkInbounds(i - 2);
+			c2[0] = 0;
+			c2[1] = getChunkInbounds(i - 3);
+			c3[0] = 0;
+			c3[1] = getChunkInbounds(i - 4);
+
+			*reinterpret_cast<size_t*>(&c0[0]) = (*reinterpret_cast<size_t*>(&c0[0]) >> b);
+			*reinterpret_cast<size_t*>(&c1[0]) = (*reinterpret_cast<size_t*>(&c1[0]) >> b);
+			*reinterpret_cast<size_t*>(&c2[0]) = (*reinterpret_cast<size_t*>(&c2[0]) >> b);
+			*reinterpret_cast<size_t*>(&c3[0]) = (*reinterpret_cast<size_t*>(&c3[0]) >> b);
+
+			c0[1] |= carry;
+			c1[1] |= c0[0];
+			c2[1] |= c1[0];
+			c3[1] |= c2[0];
+
+			setChunkInbounds(i - 1, c0[1]);
+			setChunkInbounds(i - 2, c1[1]);
+			setChunkInbounds(i - 3, c2[1]);
+			setChunkInbounds(i - 4, c3[1]);
+
+			carry = c3[0];
+		}
+#endif
+		while (i--)
+		{
+			chunk_t c[2];
+			c[0] = 0;
+			c[1] = getChunkInbounds(i);
+			*reinterpret_cast<size_t*>(&c[0]) = (*reinterpret_cast<size_t*>(&c[0]) >> b);
+			setChunkInbounds(i, c[1] | carry);
+			carry = c[0];
+		}
+		shrink();
 	}
 
 	void Bigint::operator|=(const Bigint& b)

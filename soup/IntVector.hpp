@@ -140,11 +140,13 @@ namespace soup
 			++m_size;
 		}
 
-		void erase(size_t idx) noexcept
+		void erase(size_t first, size_t last) noexcept
 		{
-			if (--m_size != idx)
+			const auto count = (last - first);
+			m_size -= count;
+			if (m_size != first)
 			{
-				memcpy(&m_data[idx], &m_data[idx + 1], (m_size - idx) * sizeof(T));
+				memcpy(&m_data[first], &m_data[last], (m_size - first) * sizeof(T));
 			}
 		}
 

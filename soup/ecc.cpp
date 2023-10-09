@@ -155,6 +155,33 @@ namespace soup
 #endif
 	}
 
+	EccPoint EccCurve::multiplyAndAdd(EccPoint G, Bigint u1, EccPoint Q, Bigint u2) const
+	{
+		EccPoint R;
+		while (!u1.isZero() || !u2.isZero())
+		{
+			if (u1.isOdd() && u2.isOdd())
+			{
+				R = add(add(R, G), Q);
+			}
+			else if (u1.isOdd())
+			{
+				R = add(R, G);
+			}
+			else if (u2.isOdd())
+			{
+				R = add(R, Q);
+			}
+
+			G = add(G, G);
+			Q = add(Q, Q);
+			u1 >>= 1;
+			u2 >>= 1;
+		}
+		return R;
+
+	}
+
 	std::string EccCurve::encodePointUncompressed(const EccPoint& P) const
 	{
 		const auto bytes_per_axis = getBytesPerAxis();
@@ -256,8 +283,13 @@ namespace soup
 		const auto sinv = s.modMulInv(n);
 		const auto u1 = ((z * sinv) % n);
 		const auto u2 = ((r * sinv) % n);
+#if false
+		// Shamir's trick
+		auto p = multiplyAndAdd(G, u1, Q, u2);
+#else
 		auto p = multiply(G, u1);
 		p = add(p, multiply(Q, u2));
+#endif
 		if (p.isIdentityElement())
 		{
 			return false;
