@@ -13,7 +13,7 @@ namespace soup
 	{
 		LPDIRECTINPUT8A pDI = nullptr;
 		LPDIRECTINPUTDEVICE8A pKeyboard = nullptr;
-		bool keys[NUM_KEYS];
+		bool keys[NUM_KEYS]{};
 
 		~DigitalKeyboard() noexcept;
 
