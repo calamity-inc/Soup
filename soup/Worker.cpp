@@ -5,12 +5,6 @@
 
 namespace soup
 {
-	void Worker::fireHoldupCallback()
-	{
-		recursions = 0;
-		holdup_callback(*this);
-	}
-
 	void Worker::awaitPromiseCompletion(PromiseBase* p)
 	{
 		if (p->isPending())
@@ -55,26 +49,6 @@ namespace soup
 			CaptureAwaitPromiseCompletion& cs = cap.get<CaptureAwaitPromiseCompletion>();
 			cs.f(w, *cs.p, std::move(cs.cap));
 		}, std::move(cs));
-	}
-
-	bool Worker::isWorkDone() const noexcept
-	{
-		return holdup_type == NONE;
-	}
-
-	void Worker::setWorkDone() noexcept
-	{
-		holdup_type = NONE;
-	}
-
-	void Worker::disallowRecursion() noexcept
-	{
-		recursions = 19;
-	}
-
-	bool Worker::canRecurse() noexcept
-	{
-		return ++recursions != 20;
 	}
 
 	std::string Worker::toString() const

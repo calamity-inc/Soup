@@ -48,16 +48,21 @@ namespace soup
 
 		Worker& operator=(Worker&& b) noexcept = default;
 
-		void fireHoldupCallback();
+		void fireHoldupCallback()
+		{
+			recursions = 0;
+			holdup_callback(*this);
+		}
+
 		void awaitPromiseCompletion(PromiseBase* p);
 		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap = {});
 		void awaitPromiseCompletion(UniquePtr<PromiseBase>&& p, void(*f)(Worker&, PromiseBase&, Capture&&), Capture&& cap = {});
 
-		[[nodiscard]] bool isWorkDone() const noexcept;
-		void setWorkDone() noexcept;
+		[[nodiscard]] bool isWorkDone() const noexcept { return holdup_type == NONE; }
+		void setWorkDone() noexcept { holdup_type = NONE; }
 
-		void disallowRecursion() noexcept;
-		[[nodiscard]] bool canRecurse() noexcept;
+		void disallowRecursion() noexcept { recursions = 19; }
+		[[nodiscard]] bool canRecurse() noexcept { return ++recursions != 20; }
 
 		[[nodiscard]] std::string toString() const;
 	};
