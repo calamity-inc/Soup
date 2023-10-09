@@ -1,6 +1,9 @@
 #include "HttpRequestTask.hpp"
 
 #if !SOUP_WASM
+#include "format.hpp"
+#include "log.hpp"
+#include "ObfusString.hpp"
 #include "ReuseTag.hpp"
 #include "Scheduler.hpp"
 #include "time.hpp"
@@ -37,21 +40,37 @@ namespace soup
 				sock = Scheduler::get()->findReusableSocketForHost(hr.getHost());
 				if (sock)
 				{
-					if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
-					{
-						state = WAIT_TO_REUSE;
-					}
-					else
-					{
-						sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
-						state = AWAIT_RESPONSE;
-						awaiting_response_since = time::unixSeconds();
-						sendRequest();
-					}
+					doRecycle();
+					break;
+				}
+				if (Scheduler::get()->pending_reusable_sockets.find(hr.getHost()) != Scheduler::get()->pending_reusable_sockets.end())
+				{
+					state = WAIT_FOR_OTHER_TASK_CONNECTING;
 					break;
 				}
 			}
 			cannotRecycle(); // transition to CONNECTING state
+			break;
+
+		case WAIT_FOR_OTHER_TASK_CONNECTING:
+			if (Scheduler::get()->pending_reusable_sockets.find(hr.getHost()) == Scheduler::get()->pending_reusable_sockets.end())
+			{
+				// Need to give another tick for Socket to go from being a "pending worker" to being a "worker."
+				state = CHECK_REUSABLE_SOCKET;
+			}
+			break;
+
+		case CHECK_REUSABLE_SOCKET:
+			sock = Scheduler::get()->findReusableSocketForHost(hr.getHost());
+			if (sock)
+			{
+				doRecycle();
+			}
+			else
+			{
+				// We were promised a reusable socket... attempting to connect will likely result in failure, but we'll try anyway.
+				cannotRecycle();
+			}
 			break;
 
 		case WAIT_TO_REUSE:
@@ -72,6 +91,7 @@ namespace soup
 		case CONNECTING:
 			if (connector->tickUntilDone())
 			{
+				Scheduler::get()->pending_reusable_sockets.erase(hr.getHost());
 				if (!connector->wasSuccessful())
 				{
 					setWorkDone();
@@ -81,19 +101,15 @@ namespace soup
 				connector.destroy();
 				if (shouldRecycle())
 				{
-					// Tag socket we just created for reuse if permitted by scheduler and no other reusable socket for the host exists.
-					if (Scheduler::get()->dont_make_reusable_sockets
-						|| Scheduler::get()->findReusableSocketForHost(hr.getHost())
-						)
+					// Tag socket we just created for reuse.
+					SOUP_IF_UNLIKELY (Scheduler::get()->findReusableSocketForHost(hr.getHost()))
 					{
+						logWriteLine(soup::format(ObfusString("UNEXPECTED: HttpRequestTask failed to reuse socket for {}"), hr.getHost()));
 						hr.setClose();
 					}
 					else
 					{
-						if (!sock->custom_data.isStructInMap(ReuseTag))
-						{
-							sock->custom_data.getStructFromMap(ReuseTag).host = hr.getHost();
-						}
+						sock->custom_data.getStructFromMap(ReuseTag).host = hr.getHost();
 					}
 				}
 				state = AWAIT_RESPONSE;
@@ -126,13 +142,32 @@ namespace soup
 
 	bool HttpRequestTask::shouldRecycle() const noexcept
 	{
-		return hr.use_tls && hr.port == 443;
+		return hr.use_tls
+			&& hr.port == 443
+			&& !Scheduler::get()->dont_make_reusable_sockets
+			;
+	}
+
+	void HttpRequestTask::doRecycle()
+	{
+		if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
+		{
+			state = WAIT_TO_REUSE;
+		}
+		else
+		{
+			sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
+			state = AWAIT_RESPONSE;
+			awaiting_response_since = time::unixSeconds();
+			sendRequest();
+		}
 	}
 
 	void HttpRequestTask::cannotRecycle()
 	{
 		state = CONNECTING;
 		connector.construct(hr.getHost(), hr.port);
+		Scheduler::get()->pending_reusable_sockets.emplace(hr.getHost());
 	}
 
 	void HttpRequestTask::sendRequest()
