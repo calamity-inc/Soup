@@ -87,7 +87,6 @@ namespace soup
 		PS2_RMETA = 0xE05C,
 
 		PS2_PRINT_SCREEN = 0xE037,
-		PS2_PAUSE = 0xE11D, // this works for Windows, not sure how universal it is, tho.
 		PS2_SCROLL_LOCK = 0x0046,
 
 		PS2_INSERT = 0xE052,
@@ -119,5 +118,14 @@ namespace soup
 		PS2_NUMPAD_ENTER = 0xE01C,
 		PS2_NUMPAD0 = 0x0052,
 		PS2_NUMPAD_DECIMAL = 0x0053,
+
+		// The following keys were obtained via MapVirtualKeyA(..., MAPVK_VK_TO_VSC_EX)
+		// However, I'm not sure how universal they are.
+
+		PS2_PAUSE = 0xE11D,
+
+		PS2_PREV_TRACK = 0xE010,
+		PS2_PLAY_PAUSE = 0xE022,
+		PS2_NEXT_TRACK = 0xE019,
 	};
 }

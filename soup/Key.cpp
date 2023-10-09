@@ -164,6 +164,10 @@ namespace soup
 		case KEY_NUMPAD_ENTER: return PS2_NUMPAD_ENTER;
 		case KEY_NUMPAD0: return PS2_NUMPAD0;
 		case KEY_NUMPAD_DECIMAL: return PS2_NUMPAD_DECIMAL;
+
+		case KEY_PREV_TRACK: return PS2_PREV_TRACK;
+		case KEY_PLAY_PAUSE: return PS2_PLAY_PAUSE;
+		case KEY_NEXT_TRACK: return PS2_NEXT_TRACK;
 		}
 		return 0;
 	}
