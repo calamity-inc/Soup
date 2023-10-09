@@ -116,15 +116,24 @@ namespace soup
 
 		void emplaceZeroesFront(size_t elms) noexcept
 		{
+#if true
 			SOUP_IF_UNLIKELY (m_size + elms > m_capacity)
 			{
-				// not optimal for performance, we'd memcpy twice, luckily this path is pretty cold
-				makeSpaceForMoreElements();
-				if (m_size + elms > m_capacity)
-				{
-					// this is also a possibility if elms >= 0x1000, shit will hit the fan...
-				}
+				m_capacity = m_size + elms;
+				auto data = reinterpret_cast<T*>(malloc(m_capacity * sizeof(T)));
+				memmove(&data[elms], &m_data[0], m_size * sizeof(T));
+				memset(&data[0], 0, elms * sizeof(T));
+				m_data = data;
+				m_size = m_capacity;
+				return;
 			}
+			
+#else
+			while (m_size + elms > m_capacity)
+			{
+				makeSpaceForMoreElements();
+			}
+#endif
 			memmove(&m_data[elms], &m_data[0], m_size * sizeof(T));
 			memset(&m_data[0], 0, elms * sizeof(T));
 			m_size += elms;
