@@ -25,6 +25,10 @@ namespace soup
 			auto tbsCert = cert.getSeq(0);
 			switch (joaat::hash(cert.getSeq(1).getOid(0).toString()))
 			{
+			default:
+				sig_type = UNK_WITH_UNK;
+				break;
+
 			case joaat::hash("1.2.840.113549.1.1.5"):
 				sig_type = RSA_WITH_SHA1;
 				break;
