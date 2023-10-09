@@ -182,8 +182,8 @@ soup = {
 		hasPendingRequest = function(self)
 			return 0 ~= libsoup:call("ServerWebService_hasPendingRequest", self.addr)
 		end,
-		getPendingRequest = function(self)
-			return initClass(soup.HttpRequest, { addr = libsoup:call("ServerWebService_getPendingRequest", self.addr) })
+		getPendingRequestPath = function(self)
+			return libsoup:callString("ServerWebService_getPendingRequestPath", self.addr)
 		end,
 		ignoreRequest = function(self)
 			libsoup:call("ServerWebService_ignoreRequest", self.addr)

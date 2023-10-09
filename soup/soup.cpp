@@ -277,7 +277,7 @@ SOUP_CEXPORT void HttpRequest_setPayload(HttpRequest* x, const char* data)
 SOUP_CEXPORT const char* HttpRequest_getPath(HttpRequest* x)
 {
 #if !SOUP_WASM
-	return x->path.c_str();
+	return heap.get(x).path.c_str();
 #else
 	return nullptr;
 #endif
@@ -496,10 +496,10 @@ SOUP_CEXPORT bool ServerWebService_hasPendingRequest(ServerWebService* x)
 #endif
 }
 
-SOUP_CEXPORT HttpRequest* ServerWebService_getPendingRequest(ServerWebService* x)
+SOUP_CEXPORT const char* ServerWebService_getPendingRequestPath(ServerWebService* x)
 {
 #if !SOUP_WASM
-	return heap.get<ServerWebServiceFfi>(x).pending_request;
+	return heap.get<ServerWebServiceFfi>(x).pending_request->path.c_str();
 #else
 	return nullptr;
 #endif

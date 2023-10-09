@@ -43,7 +43,7 @@
 			"__parent": "ServerService",
 			"new": "ServerWebService_new",
 			"hasPendingRequest": "ServerWebService_hasPendingRequest",
-			"getPendingRequest": "ServerWebService_getPendingRequest",
+			"getPendingRequestPath": "ServerWebService_getPendingRequestPath",
 			"ignoreRequest": "ServerWebService_ignoreRequest",
 			"replyWithHtml": "ServerWebService_replyWithHtml",
 			"replyWith404": "ServerWebService_replyWith404"
@@ -157,8 +157,8 @@
 			"bool",
 			["ServerWebService", "x"]
 		],
-		"ServerWebService_getPendingRequest": [
-			"HttpRequest",
+		"ServerWebService_getPendingRequestPath": [
+			"string",
 			["ServerWebService", "x"]
 		],
 		"ServerWebService_ignoreRequest": [

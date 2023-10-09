@@ -118,7 +118,7 @@ SOUP_CEXPORT void Server_bind(Scheduler* serv, int port, ServerService* srv);
 // ServerWebService
 SOUP_CEXPORT ServerWebService* ServerWebService_new();
 SOUP_CEXPORT bool ServerWebService_hasPendingRequest(ServerWebService* x);
-SOUP_CEXPORT HttpRequest* ServerWebService_getPendingRequest(ServerWebService* x);
+SOUP_CEXPORT const char* ServerWebService_getPendingRequestPath(ServerWebService* x);
 SOUP_CEXPORT void ServerWebService_ignoreRequest(ServerWebService* x);
 SOUP_CEXPORT void ServerWebService_replyWithHtml(ServerWebService* x, const char* html);
 SOUP_CEXPORT void ServerWebService_replyWith404(ServerWebService* x);
