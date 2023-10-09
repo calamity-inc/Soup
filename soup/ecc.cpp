@@ -155,31 +155,35 @@ namespace soup
 #endif
 	}
 
-	EccPoint EccCurve::multiplyAndAdd(EccPoint G, Bigint u1, EccPoint Q, Bigint u2) const
+	EccPoint EccCurve::multiplyAndAdd(const EccPoint& G, const Bigint& u1, const EccPoint& Q, const Bigint& u2) const
 	{
 		EccPoint R;
-		while (!u1.isZero() || !u2.isZero())
+
+		auto l1 = u1.getBitLength();
+		auto l2 = u2.getBitLength();
+
+		auto max_len = std::max(l1, l2);
+
+		EccPoint sum = add(G, Q);
+
+		const EccPoint* table[3];
+		table[0] = &G;
+		table[1] = &Q;
+		table[2] = &sum;
+
+		for (size_t i = max_len; i-- != 0; )
 		{
-			if (u1.isOdd() && u2.isOdd())
-			{
-				R = add(add(R, G), Q);
-			}
-			else if (u1.isOdd())
-			{
-				R = add(R, G);
-			}
-			else if (u2.isOdd())
-			{
-				R = add(R, Q);
-			}
+			R = add(R, R);
 
-			G = add(G, G);
-			Q = add(Q, Q);
-			u1 >>= 1;
-			u2 >>= 1;
+			uint8_t index = u1.getBit(i);
+			index += (u2.getBit(i) * 2);
+			if (index != 0)
+			{
+				R = add(R, *table[index - 1]);
+			}
 		}
-		return R;
 
+		return R;
 	}
 
 	std::string EccCurve::encodePointUncompressed(const EccPoint& P) const
@@ -283,7 +287,7 @@ namespace soup
 		const auto sinv = s.modMulInv(n);
 		const auto u1 = ((z * sinv) % n);
 		const auto u2 = ((r * sinv) % n);
-#if false
+#if true
 		// Shamir's trick
 		auto p = multiplyAndAdd(G, u1, Q, u2);
 #else

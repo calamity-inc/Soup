@@ -33,7 +33,7 @@ namespace soup
 
 		[[nodiscard]] EccPoint add(const EccPoint& P, const EccPoint& Q) const;
 		[[nodiscard]] EccPoint multiply(EccPoint G, const Bigint& d) const;
-		[[nodiscard]] EccPoint multiplyAndAdd(EccPoint G, Bigint u1, EccPoint Q, Bigint u2) const;
+		[[nodiscard]] EccPoint multiplyAndAdd(const EccPoint& G, const Bigint& u1, const EccPoint& Q, const Bigint& u2) const;
 
 		[[nodiscard]] std::string encodePointUncompressed(const EccPoint& P) const;
 		[[nodiscard]] std::string encodePointCompressed(const EccPoint& P) const;
