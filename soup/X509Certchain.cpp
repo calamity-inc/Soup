@@ -61,6 +61,18 @@ namespace soup
 		}
 	}
 
+	bool X509Certchain::canBeVerified() const noexcept
+	{
+		for (const auto& cert : certs)
+		{
+			if (!cert.canBeVerified())
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts) const
 	{
 		return certs.at(0).isValidForDomain(domain)

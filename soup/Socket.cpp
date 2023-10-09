@@ -314,14 +314,9 @@ namespace soup
 
 	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& domain)
 	{
-		for (const auto& cert : chain.certs)
-		{
-			if (!cert.canBeVerified())
-			{
-				return false;
-			}
-		}
-		return certchain_validator_relaxed(chain, domain);
+		return chain.canBeVerified()
+			&& certchain_validator_relaxed(chain, domain)
+			;
 	}
 
 	template <typename T>
