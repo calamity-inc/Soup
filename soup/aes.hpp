@@ -17,22 +17,12 @@ namespace soup
 		static void pkcs7Pad(std::string& encrypted);
 		static void pkcs7Unpad(std::string& decrypted);
 
-		[[nodiscard]] static std::string encryptCBC(const std::string& in, const std::string& key, const std::string& iv);
-		[[nodiscard]] static std::string decryptCBC(const std::string& in, const std::string& key, const std::string& iv);
-		[[nodiscard]] static std::string encryptCFB(const std::string& in, const std::string& key, const std::string& iv);
-		[[nodiscard]] static std::string decryptCFB(const std::string& in, const std::string& key, const std::string& iv);
-		[[nodiscard]] static std::string encryptECB(const std::string& in, const std::string& key);
-		[[nodiscard]] static std::string decryptECB(const std::string& in, const std::string& key);
-
-		[[nodiscard]] static std::vector<uint8_t> encryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
-		static void encryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
-		[[nodiscard]] static std::vector<uint8_t> decryptCBC(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
-		static void decryptCBCInplace(std::vector<uint8_t>& data, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
-		static void decryptCBCInplace(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
-		[[nodiscard]] static std::vector<uint8_t> encryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
-		[[nodiscard]] static std::vector<uint8_t> decryptCFB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv);
-		[[nodiscard]] static std::vector<uint8_t> encryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key);
-		[[nodiscard]] static std::vector<uint8_t> decryptECB(const std::vector<uint8_t>& in, const std::vector<uint8_t>& key);
+		static void cbcEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
+		static void cbcDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
+		static void cfbEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
+		static void cfbDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
+		static void ecbEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len);
+		static void ecbDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len);
 
 	private:
 		[[nodiscard]] static std::vector<uint8_t> expandKey(const uint8_t* key, size_t key_len);

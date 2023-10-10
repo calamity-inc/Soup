@@ -59,7 +59,7 @@ namespace soup
 
 			auto iv = rand.vec_u8(record_iv_length);
 			std::vector<uint8_t> key(cipher_key.begin(), cipher_key.end());
-			aes::encryptCBCInplace(
+			aes::cbcEncrypt(
 				data.data(), data.size(),
 				key.data(), key.size(),
 				iv.data()
