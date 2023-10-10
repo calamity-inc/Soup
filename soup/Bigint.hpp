@@ -19,11 +19,7 @@
 #include "fwd.hpp"
 
 #if SOUP_BIGINT_USE_INTRIN
-#if SOUP_WINDOWS
-#include <intrin.h>
-#else
 #include <emmintrin.h>
-#endif
 #endif
 
 #if SOUP_BIGINT_USE_INTVECTOR
