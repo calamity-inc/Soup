@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 namespace soup
 {
@@ -25,7 +24,7 @@ namespace soup
 		static void ecbDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len);
 
 	private:
-		[[nodiscard]] static std::vector<uint8_t> expandKey(const uint8_t* key, size_t key_len);
+		static void expandKey(uint8_t w[240], const uint8_t* key, size_t key_len);
 		[[nodiscard]] static int getNk(size_t key_len);
 		[[nodiscard]] static int getNr(size_t key_len);
 		[[nodiscard]] static int getNr(const int Nk);
