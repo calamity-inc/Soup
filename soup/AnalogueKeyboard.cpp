@@ -35,6 +35,15 @@ namespace soup
 			{
 				return "Wooting 60 HE ARM";
 			}
+			if ((hid.product_id & 0xFFF0) == 0x1500)
+			{
+				return "Wooting UwU";
+			}
+			if ((hid.product_id & 0xFFF0) == 0x1510)
+			{
+				return "Wooting UwU RGB";
+			}
+			return "Unknown Wooting Keyboard";
 		}
 		else if (hid.vendor_id == 0x03EB)
 		{
