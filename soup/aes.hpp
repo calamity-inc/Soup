@@ -38,7 +38,7 @@ namespace soup
 		static void subWord(uint8_t* a);
 		static void rotWord(uint8_t* a);
 		static void xorWords(uint8_t* a, uint8_t* b, uint8_t* c);
-		static void getRoundConstant(uint8_t* a, int n);
+		[[nodiscard]] static uint8_t getRoundConstant(int n);
 		static void invSubBytes(uint8_t** state);
 		static void invMixColumns(uint8_t** state);
 		static void invShiftRows(uint8_t** state);

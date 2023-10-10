@@ -4,6 +4,16 @@
 
 #include "base.hpp"
 
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
+#define AES_USE_ASM true
+#else
+#define AES_USE_ASM false
+#endif
+
+#if AES_USE_ASM
+#include "CpuInfo.hpp"
+#endif
+
 namespace soup
 {
 	static constexpr int Nb = 4;
@@ -383,15 +393,34 @@ namespace soup
 		}
 	}
 
+#if AES_USE_ASM
+	extern void aes_helper_expand_key_128(uint8_t w[176], const uint8_t key[16]);
+	extern void aes_helper_expand_key_256(uint8_t w[240], const uint8_t key[32]);
+#endif
+
 	void aes::expandKey(uint8_t w[240], const uint8_t* key, size_t key_len)
 	{
+#if AES_USE_ASM
+		if (CpuInfo::get().supportsAESNI())
+		{
+			if (key_len == 16)
+			{
+				return aes_helper_expand_key_128(w, key);
+			}
+			else if (key_len == 32)
+			{
+				return aes_helper_expand_key_256(w, key);
+			}
+		}
+#endif
+
 		const auto Nk = getNk(key_len);
 		const auto Nr = getNr(Nk);
 
 		SOUP_ASSUME((4 * Nb * (Nr + 1)) <= 240);
 
 		uint8_t temp[4];
-		uint8_t rcon[4];
+		uint8_t rcon[4]{};
 
 		int i = 0;
 		while (i < 4 * Nk)
@@ -412,7 +441,7 @@ namespace soup
 			{
 				rotWord(temp);
 				subWord(temp);
-				getRoundConstant(rcon, i / (Nk * 4));
+				rcon[0] = getRoundConstant(i / (Nk * 4));
 				xorWords(temp, rcon, temp);
 			}
 			else if (Nk > 6 && i / 4 % Nk == 4)
@@ -547,17 +576,14 @@ namespace soup
 		}
 	}
 
-	void aes::getRoundConstant(uint8_t* a, int n)
+	uint8_t aes::getRoundConstant(int n)
 	{
-		int i;
 		uint8_t c = 1;
-		for (i = 0; i < n - 1; i++)
+		for (int i = 0; i < n - 1; i++)
 		{
 			c = xtime(c);
 		}
-
-		a[0] = c;
-		a[1] = a[2] = a[3] = 0;
+		return c;
 	}
 
 	void aes::invSubBytes(uint8_t** state)
