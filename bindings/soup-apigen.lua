@@ -1,5 +1,3 @@
--- See also: https://github.com/calamity-inc/Soup-Lua-Bindings
-
 local ffi = require("luaffi") -- https://github.com/calamity-inc/luaffi
 if not SOUP_WORKING_DIR then
 	SOUP_WORKING_DIR = ""
