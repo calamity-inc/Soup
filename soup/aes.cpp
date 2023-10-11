@@ -237,7 +237,7 @@ namespace soup
 		uint8_t last_block[blockBytesLen];
 		memcpy(last_block, iv, blockBytesLen);
 
-		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
+		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			xorBlocks(last_block, &data[i], last_block, blockBytesLen);
 			encryptBlock(last_block, &data[i], roundKeys, Nr);
@@ -260,7 +260,7 @@ namespace soup
 		memcpy(last_block, iv, blockBytesLen);
 
 		uint8_t* this_block = block_heap_b;
-		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
+		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			memcpy(this_block, &data[i], blockBytesLen);
 			decryptBlock(&data[i], &data[i], roundKeys, Nr);
@@ -279,7 +279,7 @@ namespace soup
 		uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
 		memcpy(block, iv, blockBytesLen);
-		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
+		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			encryptBlock(block, encryptedBlock, roundKeys, Nr);
 			xorBlocks(&data[i], encryptedBlock, &data[i], blockBytesLen);
@@ -300,7 +300,7 @@ namespace soup
 		const auto Nr = getNr(key_len);
 		uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
-		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
+		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			encryptBlock(&data[i], &data[i], roundKeys, Nr);
 		}
@@ -313,7 +313,7 @@ namespace soup
 		const auto Nr = getNr(key_len);
 		uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
-		for (unsigned int i = 0; i < data_len; i += blockBytesLen)
+		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			decryptBlock(&data[i], &data[i], roundKeys, Nr);
 		}
