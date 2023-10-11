@@ -2,11 +2,26 @@
 
 The swiss army knife for C++ programmers with a focus on being compatible & bindable.
 
+> [!NOTE]
+> If you're looking to use Soup from a language other than C++, have a look at [the bindings](https://github.com/calamity-inc/Soup/tree/senpai/bindings).
+
+## Building
+
+### Windows
+
+Simply open up Soup.sln using Visual Studio 2022 and run a batch build for the Soup project to compile the static libraries, then you can use it in your own projects by adding a compiler and linker include, respectively.
+
+### All Operating Systems
+
+Soup can be built using our own build system, [Sun](https://github.com/calamity-inc/Sun). To include it in your own projects, we recommend the directory structure such that your own project and Soup share the same parent, then you can simply add the following to the .sun file for your project:
+
+```
+require ../Soup/soup include_dir=../Soup
+```
+
+This will make it so that you have to use `#include <soup/NAME.hpp>` in your code, which we recommend to avoid name clashes, similar to opting not to use `using namespace`. However, if you omit the `include_dir` part, you can use `#include <NAME.hpp>` directly.
+
 ## Getting Started
-
-The recommended way to interact with this codebase is Visual Studio 2022.
-
-There are no external dependencies, so all you have to do is run a batch build for the Soup project, then you can use it in your own projects by adding a compiler and linker include, respectively.
 
 If you want some ideas as to how start using Soup, check out [the docs](https://docs.soup.do/).
 
