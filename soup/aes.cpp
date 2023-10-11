@@ -228,6 +228,8 @@ namespace soup
 
 	void aes::cbcEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16])
 	{
+		data_len -= (data_len % blockBytesLen);
+
 		const auto Nr = getNr(key_len);
 		uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
@@ -245,6 +247,8 @@ namespace soup
 
 	void aes::cbcDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16])
 	{
+		data_len -= (data_len % blockBytesLen);
+
 		const auto Nr = getNr(key_len);
 		uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
@@ -267,6 +271,8 @@ namespace soup
 
 	void aes::cfbEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16])
 	{
+		data_len -= (data_len % blockBytesLen);
+
 		uint8_t block[blockBytesLen]{};
 		uint8_t encryptedBlock[blockBytesLen]{};
 		const auto Nr = getNr(key_len);
@@ -289,6 +295,8 @@ namespace soup
 
 	void aes::ecbEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len)
 	{
+		data_len -= (data_len % blockBytesLen);
+
 		const auto Nr = getNr(key_len);
 		uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
@@ -300,6 +308,8 @@ namespace soup
 
 	void aes::ecbDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len)
 	{
+		data_len -= (data_len % blockBytesLen);
+
 		const auto Nr = getNr(key_len);
 		uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
