@@ -33,5 +33,5 @@ namespace soup
 	};
 }
 
-#define BENCHMARK(name, block) Benchmark::run(name, [](Benchmark::State& _benchmark_state) { block });
-#define BENCHMARK_LOOP(block) while (true) { SOUP_IF_UNLIKELY (!_benchmark_state.canContinue()) { break; } block }
+#define BENCHMARK(name, ...) Benchmark::run(name, [](Benchmark::State& _benchmark_state) { __VA_ARGS__ });
+#define BENCHMARK_LOOP(...) while (true) { SOUP_IF_UNLIKELY (!_benchmark_state.canContinue()) { break; } __VA_ARGS__ }
