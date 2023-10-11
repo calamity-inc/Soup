@@ -74,10 +74,12 @@ namespace soup
 	void ModuleHider::enable(void* base_addr)
 	{
 		const auto Ldr = reinterpret_cast<PebLdrData*>(os::getCurrentPeb()->Ldr);
-
-		hideInLinkedList(base_addr, InLoadOrderModuleList_links, InLoadOrderModuleList_pNext, &Ldr->InLoadOrderModuleList.Flink, offsetof(LdrDataTableEntry, InLoadOrderLinks));
-		hideInLinkedList(base_addr, InMemoryOrderModuleList_links, InMemoryOrderModuleList_pNext, &Ldr->InMemoryOrderModuleList.Flink, offsetof(LdrDataTableEntry, InMemoryOrderLinks));
-		//hideInLinkedList(base_addr, InInitializationOrderModuleList_links, InInitializationOrderModuleList_pNext, &Ldr->InInitializationOrderModuleList.Flink, offsetof(LdrDataTableEntry, InInitializationOrderLinks));
+		if (Ldr->Length == 88)
+		{
+			hideInLinkedList(base_addr, InLoadOrderModuleList_links, InLoadOrderModuleList_pNext, &Ldr->InLoadOrderModuleList.Flink, offsetof(LdrDataTableEntry, InLoadOrderLinks));
+			hideInLinkedList(base_addr, InMemoryOrderModuleList_links, InMemoryOrderModuleList_pNext, &Ldr->InMemoryOrderModuleList.Flink, offsetof(LdrDataTableEntry, InMemoryOrderLinks));
+			//hideInLinkedList(base_addr, InInitializationOrderModuleList_links, InInitializationOrderModuleList_pNext, &Ldr->InInitializationOrderModuleList.Flink, offsetof(LdrDataTableEntry, InInitializationOrderLinks));
+		}
 	}
 #pragma clang diagnostic pop
 
