@@ -319,7 +319,7 @@ namespace soup
 		}
 	}
 
-	void aes::encryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
+	void aes::encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr)
 	{
 		uint8_t state_0[4 * Nb];
 		uint8_t* state[4];
@@ -362,7 +362,7 @@ namespace soup
 		}
 	}
 
-	void aes::decryptBlock(const uint8_t in[], uint8_t out[], uint8_t* roundKeys, const int Nr)
+	void aes::decryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr)
 	{
 		uint8_t state_0[4 * Nb];
 		uint8_t* state[4];
@@ -547,7 +547,7 @@ namespace soup
 		}
 	}
 
-	void aes::addRoundKey(uint8_t** state, uint8_t* key)
+	void aes::addRoundKey(uint8_t** state, const uint8_t* key)
 	{
 		int i, j;
 		for (i = 0; i < 4; i++)

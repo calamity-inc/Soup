@@ -34,7 +34,7 @@ namespace soup
 		static void shiftRows(uint8_t** state);
 		static uint8_t xtime(uint8_t b);    // multiply on x
 		static void mixColumns(uint8_t** state);
-		static void addRoundKey(uint8_t** state, uint8_t* key);
+		static void addRoundKey(uint8_t** state, const uint8_t* key);
 		static void subWord(uint8_t* a);
 		static void rotWord(uint8_t* a);
 		static void xorWords(uint8_t* a, uint8_t* b, uint8_t* c);
@@ -42,8 +42,8 @@ namespace soup
 		static void invSubBytes(uint8_t** state);
 		static void invMixColumns(uint8_t** state);
 		static void invShiftRows(uint8_t** state);
-		static void encryptBlock(const uint8_t in[], uint8_t out[], uint8_t key[], const int Nr);
-		static void decryptBlock(const uint8_t in[], uint8_t out[], uint8_t key[], const int Nr);
+		static void encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr);
+		static void decryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr);
 		static void xorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len);
 		static void incCounter(uint8_t* counter);
 	};
