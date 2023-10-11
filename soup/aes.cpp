@@ -239,7 +239,7 @@ namespace soup
 
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
-			xorBlocks(last_block, &data[i], last_block, blockBytesLen);
+			xorBlocks(last_block, &data[i]);
 			encryptBlock(last_block, &data[i], roundKeys, Nr);
 			memcpy(last_block, &data[i], blockBytesLen);
 		}
@@ -264,7 +264,7 @@ namespace soup
 		{
 			memcpy(this_block, &data[i], blockBytesLen);
 			decryptBlock(&data[i], &data[i], roundKeys, Nr);
-			xorBlocks(last_block, &data[i], &data[i], blockBytesLen);
+			xorBlocks(&data[i], last_block);
 			std::swap(this_block, last_block);
 		}
 	}
@@ -282,7 +282,7 @@ namespace soup
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			encryptBlock(block, encryptedBlock, roundKeys, Nr);
-			xorBlocks(&data[i], encryptedBlock, &data[i], blockBytesLen);
+			xorBlocks(&data[i], encryptedBlock);
 			memcpy(block, &data[i], blockBytesLen);
 		}
 	}
@@ -691,11 +691,11 @@ namespace soup
 		shiftRow(state, 3, Nb - 3);
 	}
 
-	void aes::xorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len)
+	void aes::xorBlocks(uint8_t a[16], const uint8_t b[16])
 	{
-		for (unsigned int i = 0; i < len; i++)
+		for (unsigned int i = 0; i != 16; ++i)
 		{
-			c[i] = a[i] ^ b[i];
+			a[i] ^= b[i];
 		}
 	}
 }

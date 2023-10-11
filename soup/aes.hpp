@@ -44,6 +44,6 @@ namespace soup
 		static void invShiftRows(uint8_t** state);
 		static void encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr);
 		static void decryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr);
-		static void xorBlocks(const uint8_t* a, const uint8_t* b, uint8_t* c, unsigned int len);
+		static void xorBlocks(uint8_t a[16], const uint8_t b[16]);
 	};
 }
