@@ -698,15 +698,4 @@ namespace soup
 			c[i] = a[i] ^ b[i];
 		}
 	}
-
-	void aes::incCounter(uint8_t* counter)
-	{
-		for (unsigned int i = 0; i != blockBytesLen; ++i)
-		{
-			if (++counter[i] != 0)
-			{
-				break;
-			}
-		}
-	}
 }
