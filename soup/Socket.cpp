@@ -15,8 +15,10 @@
 #include "Curve25519.hpp"
 #include "dnsResolver.hpp"
 #include "ecc.hpp"
+#include "Exception.hpp"
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
+#include "ObfusString.hpp"
 #include "plusaes.hpp"
 #include "rand.hpp"
 #include "SocketTlsHandshaker.hpp"
@@ -606,7 +608,10 @@ namespace soup
 			}
 
 			TlsEncryptedPreMasterSecret epms{};
-			SOUP_ASSERT(handshaker->certchain.certs.at(0).isRsa());
+			SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
+			{
+				SOUP_THROW(Exception(ObfusString("Server picked an RSA ciphersuite but did not provide an appropriate certificate").str()));
+			}
 			epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
 			cke = epms.toBinaryString();
 
@@ -651,11 +656,13 @@ namespace soup
 				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, csize)),
 				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(csize, csize))
 			};
-			SOUP_ASSERT(curve->validate(their_pub));
+			SOUP_IF_UNLIKELY (!curve->validate(their_pub))
+			{
+				SOUP_THROW(Exception(ObfusString("Server provided an invalid point for ECDHE").str()));
+			}
 
 			auto shared_point = curve->multiply(their_pub, my_priv);
-			auto shared_secret = shared_point.x.toBinary();
-			SOUP_ASSERT(shared_secret.size() == csize);
+			auto shared_secret = shared_point.x.toBinary(csize);
 			handshaker->pre_master_secret = std::move(shared_secret);
 
 			auto my_pub = curve->derivePublic(my_priv);
@@ -665,7 +672,7 @@ namespace soup
 		}
 		else
 		{
-			SOUP_ASSERT_UNREACHABLE;
+			SOUP_ASSERT_UNREACHABLE; // This would be a logic error on our end since we (should) reject other curves earlier
 		}
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_key_exchange, std::move(cke))
 			&& tls_sendRecord(TlsContentType::change_cipher_spec, "\1")

@@ -1,5 +1,7 @@
 #include "ecc.hpp"
 
+#include "Exception.hpp"
+#include "ObfusString.hpp"
 #include "rand.hpp"
 
 namespace soup
@@ -273,7 +275,10 @@ namespace soup
 
 	bool EccCurve::verify(const EccPoint& Q, const std::string& e, const Bigint& r, const Bigint& s) const
 	{
-		SOUP_ASSERT(validate(Q));
+		SOUP_IF_UNLIKELY (!validate(Q))
+		{
+			SOUP_THROW(Exception(ObfusString("Public key provided to EccCurve::verify is not on the curve").str()));
+		}
 
 		if (r.isNegative() || r.isZero() || r >= n
 			|| s.isNegative() || s.isZero() || s >= n
