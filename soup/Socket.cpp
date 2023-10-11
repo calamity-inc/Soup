@@ -462,6 +462,7 @@ namespace soup
 						s.tls_close(TlsAlertDescription::bad_certificate);
 						return;
 					}
+					handshaker->certchain.cleanup();
 
 					// Validating an ECC cert on my i9-13900K takes around 61 ms, which is time the scheduler could be spending doing more useful things.
 					handshaker->promise.fulfilOffThread([](Capture&& _cap)
