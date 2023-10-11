@@ -319,8 +319,32 @@ namespace soup
 		}
 	}
 
+#if AES_USE_ASM
+	extern void aes_helper_encrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]);
+	extern void aes_helper_encrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]);
+	extern void aes_helper_encrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]);
+#endif
+
 	void aes::encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr)
 	{
+#if AES_USE_ASM
+		if (CpuInfo::get().supportsAESNI())
+		{
+			if (Nr == 10)
+			{
+				return aes_helper_encrypt_block_128(in, out, roundKeys);
+			}
+			else if (Nr == 12)
+			{
+				return aes_helper_encrypt_block_192(in, out, roundKeys);
+			}
+			else if (Nr == 14)
+			{
+				return aes_helper_encrypt_block_256(in, out, roundKeys);
+			}
+		}
+#endif
+
 		uint8_t state_0[4 * Nb];
 		uint8_t* state[4];
 		state[0] = state_0;
