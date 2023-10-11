@@ -1,2 +1,5 @@
 +*.cpp
 static
+
+require ../Intrin
+arg -DSOUP_USE_INTRIN

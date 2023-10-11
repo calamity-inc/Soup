@@ -3,15 +3,15 @@
 #include "base.hpp"
 #include "sha_commons.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
-#define SHA1_USE_ASM true
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_INTRIN)
+#define SHA1_USE_INTRIN true
 #else
-#define SHA1_USE_ASM false
+#define SHA1_USE_INTRIN false
 #endif
 
 #include <sstream>
 
-#if SHA1_USE_ASM
+#if SHA1_USE_INTRIN
 #include "CpuInfo.hpp"
 #include "Endian.hpp"
 #endif
@@ -185,7 +185,7 @@ namespace soup
 		return hash(is);
 	}
 
-#if SHA1_USE_ASM
+#if SHA1_USE_INTRIN
 	extern void sha1_transform_intrin(uint32_t state[5], const uint8_t data[]);
 #endif
 
@@ -215,7 +215,7 @@ namespace soup
 			{
 				break;
 			}
-#if SHA1_USE_ASM
+#if SHA1_USE_INTRIN
 			if constexpr (intrin)
 			{
 				sha1_transform_intrin(digest, (const uint8_t*)buffer.data());
@@ -249,7 +249,7 @@ namespace soup
 
 		if (orig_size > sha1::BLOCK_BYTES - 8)
 		{
-#if SHA1_USE_ASM
+#if SHA1_USE_INTRIN
 			if constexpr (intrin)
 			{
 				sha1_transform_intrin(digest, (const uint8_t*)block);
@@ -266,7 +266,7 @@ namespace soup
 		}
 
 		/* Append total_bits, split this uint64_t into two uint32_t */
-#if SHA1_USE_ASM
+#if SHA1_USE_INTRIN
 		if constexpr (intrin)
 		{
 			block[BLOCK_INTS - 1] = Endianness::invert((uint32_t)total_bits);
@@ -295,7 +295,7 @@ namespace soup
 
 	std::string sha1::hash(std::istream& is)
 	{
-#if SHA1_USE_ASM
+#if SHA1_USE_INTRIN
 		const CpuInfo& cpu_info = CpuInfo::get();
 		if (cpu_info.supportsSSSE3()
 			&& cpu_info.supportsSHA()

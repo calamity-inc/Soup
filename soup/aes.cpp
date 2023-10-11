@@ -4,13 +4,13 @@
 
 #include "base.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
-#define AES_USE_ASM true
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_INTRIN)
+#define AES_USE_INTRIN true
 #else
-#define AES_USE_ASM false
+#define AES_USE_INTRIN false
 #endif
 
-#if AES_USE_ASM
+#if AES_USE_INTRIN
 #include "CpuInfo.hpp"
 #endif
 
@@ -377,7 +377,7 @@ namespace soup
 		return true;
 	}
 
-#if AES_USE_ASM
+#if AES_USE_INTRIN
 	extern void aes_helper_encrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]);
 	extern void aes_helper_encrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]);
 	extern void aes_helper_encrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]);
@@ -385,7 +385,7 @@ namespace soup
 
 	void aes::encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr)
 	{
-#if AES_USE_ASM
+#if AES_USE_INTRIN
 		if (CpuInfo::get().supportsAESNI())
 		{
 			if (Nr == 10)
@@ -444,7 +444,7 @@ namespace soup
 		}
 	}
 
-#if AES_USE_ASM
+#if AES_USE_INTRIN
 	extern void aes_helper_decrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]);
 	extern void aes_helper_decrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]);
 	extern void aes_helper_decrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]);
@@ -452,7 +452,7 @@ namespace soup
 
 	void aes::decryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr)
 	{
-#if AES_USE_ASM
+#if AES_USE_INTRIN
 		if (CpuInfo::get().supportsAESNI())
 		{
 			if (Nr == 10)
@@ -509,14 +509,14 @@ namespace soup
 		}
 	}
 
-#if AES_USE_ASM
+#if AES_USE_INTRIN
 	extern void aes_helper_expand_key_128(uint8_t w[176], const uint8_t key[16]);
 	extern void aes_helper_expand_key_256(uint8_t w[240], const uint8_t key[32]);
 #endif
 
 	void aes::expandKey(uint8_t w[240], const uint8_t* key, size_t key_len)
 	{
-#if AES_USE_ASM
+#if AES_USE_INTRIN
 		if (CpuInfo::get().supportsAESNI())
 		{
 			if (key_len == 16)

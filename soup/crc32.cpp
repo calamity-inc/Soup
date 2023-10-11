@@ -2,13 +2,13 @@
 
 #include "base.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_ASM)
-#define CRC32_USE_ASM true
+#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_INTRIN)
+#define CRC32_USE_INTRIN true
 #else
-#define CRC32_USE_ASM false
+#define CRC32_USE_INTRIN false
 #endif
 
-#if CRC32_USE_ASM
+#if CRC32_USE_INTRIN
 #include "CpuInfo.hpp"
 #endif
 #include "Endian.hpp"
@@ -92,7 +92,7 @@ namespace soup
 		return ~checksum;
 	}
 
-#if CRC32_USE_ASM
+#if CRC32_USE_INTRIN
 	extern uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc);
 
 	static uint32_t crc32_sse41_simd(const uint8_t* data, size_t size, uint32_t init)
@@ -110,7 +110,7 @@ namespace soup
 
 	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init)
 	{
-#if CRC32_USE_ASM
+#if CRC32_USE_INTRIN
 		const CpuInfo& cpu_info = CpuInfo::get();
 		if (cpu_info.supportsPCLMULQDQ()
 			&& cpu_info.supportsSSE4_1()
