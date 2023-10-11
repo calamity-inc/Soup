@@ -26,10 +26,10 @@ namespace soup
 		void closeReusableSockets();
 
 	protected:
-		void run();
+		virtual void run() { Scheduler::run(); }
 
-		virtual void onPreRun();
-		virtual void onPostRun();
+	private:
+		void threadFunc();
 	};
 }
 

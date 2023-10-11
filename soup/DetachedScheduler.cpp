@@ -14,7 +14,7 @@ namespace soup
 		{
 			thrd.start([](Capture&& cap)
 			{
-				cap.get<DetachedScheduler*>()->run();
+				cap.get<DetachedScheduler*>()->threadFunc();
 			}, this);
 		}
 		return Scheduler::addWorker(std::move(w));
@@ -65,26 +65,16 @@ namespace soup
 		}
 	}
 
-	void DetachedScheduler::run()
+	void DetachedScheduler::threadFunc()
 	{
 		do
 		{
 			netConfig::get() = std::move(conf);
-			onPreRun();
-			Scheduler::run();
-			onPostRun();
+			run();
 			workers.clear();
 			passive_workers = 0;
 			conf = std::move(netConfig::get());
 		} while (!pending_workers.empty());
-	}
-
-	void DetachedScheduler::onPreRun()
-	{
-	}
-
-	void DetachedScheduler::onPostRun()
-	{
 	}
 }
 
