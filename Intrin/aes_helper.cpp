@@ -4,12 +4,12 @@
 
 namespace soup
 {
-	[[nodiscard]] static consteval uint8_t xtime(uint8_t b)
+	[[nodiscard]] static constexpr uint8_t xtime(uint8_t b)
 	{
 		return (b << 1) ^ (((b >> 7) & 1) * 0x1b);
 	}
 
-	[[nodiscard]] static consteval int rcon(int n)
+	[[nodiscard]] static constexpr int rcon(int n)
 	{
 		uint8_t c = 1;
 		for (int i = 0; i < n - 1; i++)
