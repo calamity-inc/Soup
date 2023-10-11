@@ -1,7 +1,6 @@
 #include "SocketTlsEncrypter.hpp"
 
 #include "aes.hpp"
-#include "plusaes.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
@@ -80,14 +79,12 @@ namespace soup
 			std::vector<uint8_t> data(content.begin(), content.end());
 
 			uint8_t tag[cipher_bytes];
-			SOUP_ASSERT(
-				plusaes::encrypt_gcm(
-					data.data(), data.size(),
-					(const uint8_t*)ad.data(), ad.size(),
-					cipher_key.data(), cipher_key.size(),
-					iv.data(), iv.size(),
-					tag, sizeof(tag)
-				) == plusaes::kErrorOk
+			aes::gcmEncrypt(
+				data.data(), data.size(),
+				(const uint8_t*)ad.data(), ad.size(),
+				cipher_key.data(), cipher_key.size(),
+				iv.data(), iv.size(),
+				tag
 			);
 
 			data.insert(data.end(), tag, tag + cipher_bytes);

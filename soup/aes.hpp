@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace soup
 {
@@ -22,6 +23,8 @@ namespace soup
 		static void cfbDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
 		static void ecbEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len);
 		static void ecbDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len);
+		static void gcmEncrypt(uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t* key, size_t key_len, const uint8_t* iv, size_t iv_len, uint8_t tag[16]);
+		static bool gcmDecrypt(uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t* key, size_t key_len, const uint8_t* iv, size_t iv_len, const uint8_t tag[16]);
 
 	private:
 		static void expandKey(uint8_t w[240], const uint8_t* key, size_t key_len);
@@ -45,5 +48,13 @@ namespace soup
 		static void encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr);
 		static void decryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr);
 		static void xorBlocks(uint8_t a[16], const uint8_t b[16]);
+		static void xorBlocks(uint8_t a[16], const uint8_t b[16], unsigned int len);
+
+		static void ghash(uint8_t res[16], const uint8_t h[16], const std::vector<uint8_t>& x);
+		static void calcH(uint8_t h[16], uint8_t roundKeys[240], const int Nr);
+		static void calcJ0(uint8_t j0[16], const uint8_t h[16], const uint8_t* iv, size_t iv_len);
+		static void inc32(uint8_t block[16]);
+		static void gctr(uint8_t* data, size_t data_len, const uint8_t roundKeys[240], const int Nr, const uint8_t icb[8]);
+		static void calcGcmTag(uint8_t tag[16], uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t roundKeys[16], const int Nr, const uint8_t h[16], const uint8_t j0[16]);
 	};
 }

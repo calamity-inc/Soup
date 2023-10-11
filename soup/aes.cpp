@@ -14,6 +14,9 @@
 #include "CpuInfo.hpp"
 #endif
 
+#include "Endian.hpp"
+#include "plusaes.hpp"
+
 namespace soup
 {
 	static constexpr int Nb = 4;
@@ -317,6 +320,61 @@ namespace soup
 		{
 			decryptBlock(&data[i], &data[i], roundKeys, Nr);
 		}
+	}
+
+	void aes::gcmEncrypt(uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t* key, size_t key_len, const uint8_t* iv, size_t iv_len, uint8_t tag[16])
+	{
+		const auto Nr = getNr(key_len);
+		uint8_t roundKeys[240];
+		aes::expandKey(roundKeys, key, key_len);
+
+		uint8_t h[16];
+		calcH(h, roundKeys, Nr);
+
+		uint8_t j0[16];
+		calcJ0(j0, h, iv, iv_len);
+
+		// encrypt
+		{
+			uint8_t icb[16];
+			memcpy(icb, j0, 16);
+			inc32(icb);
+
+			gctr(data, data_len, roundKeys, Nr, icb);
+		}
+
+		calcGcmTag(tag, data, data_len, aadata, aadata_len, roundKeys, Nr, h, j0);
+	}
+
+	bool aes::gcmDecrypt(uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t* key, size_t key_len, const uint8_t* iv, size_t iv_len, const uint8_t tag[16])
+	{
+		const auto Nr = getNr(key_len);
+		uint8_t roundKeys[240];
+		aes::expandKey(roundKeys, key, key_len);
+
+		uint8_t h[16];
+		calcH(h, roundKeys, Nr);
+
+		uint8_t j0[16];
+		calcJ0(j0, h, iv, iv_len);
+
+		uint8_t ctag[16];
+		calcGcmTag(ctag, data, data_len, aadata, aadata_len, roundKeys, Nr, h, j0);
+		if (memcmp(ctag, tag, 16) != 0)
+		{
+			return false;
+		}
+
+		// decrypt
+		{
+			uint8_t icb[16];
+			memcpy(icb, j0, 16);
+			inc32(icb);
+
+			gctr(data, data_len, roundKeys, Nr, icb);
+		}
+
+		return true;
 	}
 
 #if AES_USE_ASM
@@ -697,5 +755,105 @@ namespace soup
 		{
 			a[i] ^= b[i];
 		}
+	}
+
+	void aes::xorBlocks(uint8_t a[16], const uint8_t b[16], unsigned int len)
+	{
+		for (unsigned int i = 0; i != len; ++i)
+		{
+			a[i] ^= b[i];
+		}
+	}
+
+	void aes::ghash(uint8_t res[16], const uint8_t h[16], const std::vector<uint8_t>& x)
+	{
+		plusaes::detail::gcm::Block bH(h, 16);
+		auto bRes = plusaes::detail::gcm::ghash(bH, x);
+		memcpy(res, bRes.data(), 16);
+	}
+
+	void aes::calcH(uint8_t h[16], uint8_t roundKeys[240], const int Nr)
+	{
+		memset(h, 0, 16);
+		aes::encryptBlock(h, h, roundKeys, Nr);
+	}
+
+	void aes::calcJ0(uint8_t j0[16], const uint8_t h[16], const uint8_t* iv, size_t iv_len)
+	{
+		if (iv_len == 12)
+		{
+			memcpy(j0, iv, iv_len);
+			j0[12] = 0;
+			j0[13] = 0;
+			j0[14] = 0;
+			j0[15] = 1;
+		}
+		else
+		{
+			const auto len_iv = iv_len * 8;
+			const auto s = 128 * plusaes::detail::gcm::ceil(len_iv / 128.0) - len_iv;
+			std::vector<uint8_t> ghash_in;
+			plusaes::detail::gcm::push_back(ghash_in, iv, iv_len);
+			plusaes::detail::gcm::push_back_zero_bits(ghash_in, s + 64);
+			plusaes::detail::gcm::push_back(ghash_in, std::bitset<64>(len_iv));
+
+			return ghash(j0, h, ghash_in);
+		}
+	}
+
+	void aes::inc32(uint8_t block[16])
+	{
+		uint32_t counter = reinterpret_cast<uint32_t*>(block)[3];
+		if constexpr (NATIVE_ENDIAN != BIG_ENDIAN)
+		{
+			counter = Endianness::invert(counter);
+		}
+		++counter;
+		if constexpr (NATIVE_ENDIAN != BIG_ENDIAN)
+		{
+			counter = Endianness::invert(counter);
+		}
+		reinterpret_cast<uint32_t*>(block)[3] = counter;
+	}
+
+	void aes::gctr(uint8_t* data, size_t data_len, const uint8_t roundKeys[240], const int Nr, const uint8_t icb[8])
+	{
+		uint8_t cb[16];
+		memcpy(cb, icb, 16);
+
+		uint8_t ecb[16];
+
+		size_t i = 0;
+		for (; i < data_len - (data_len % 16); i += 16)
+		{
+			encryptBlock(cb, ecb, roundKeys, Nr);
+			xorBlocks(&data[i], ecb);
+			inc32(cb);
+		}
+
+		if (data_len % 16)
+		{
+			encryptBlock(cb, ecb, roundKeys, Nr);
+			xorBlocks(&data[i], ecb, data_len % 16);
+		}
+	}
+
+	void aes::calcGcmTag(uint8_t tag[16], uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t roundKeys[16], const int Nr, const uint8_t h[16], const uint8_t j0[16])
+	{
+		const auto lenC = data_len * 8;
+		const auto lenA = aadata_len * 8;
+		const std::size_t u = 128 * plusaes::detail::gcm::ceil(lenC / 128.0) - lenC;
+		const std::size_t v = 128 * plusaes::detail::gcm::ceil(lenA / 128.0) - lenA;
+
+		std::vector<unsigned char> ghash_in;
+		ghash_in.reserve((aadata_len + v / 8) + (data_len + u / 8) + 8 + 8);
+		plusaes::detail::gcm::push_back(ghash_in, aadata, aadata_len);
+		plusaes::detail::gcm::push_back_zero_bits(ghash_in, v);
+		plusaes::detail::gcm::push_back(ghash_in, data, data_len);
+		plusaes::detail::gcm::push_back_zero_bits(ghash_in, u);
+		plusaes::detail::gcm::push_back(ghash_in, std::bitset<64>(lenA));
+		plusaes::detail::gcm::push_back(ghash_in, std::bitset<64>(lenC));
+		ghash(tag, h, ghash_in);
+		gctr(tag, 16, roundKeys, Nr, j0);
 	}
 }

@@ -19,7 +19,6 @@
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
 #include "ObfusString.hpp"
-#include "plusaes.hpp"
 #include "rand.hpp"
 #include "SocketTlsHandshaker.hpp"
 #include "time.hpp"
@@ -1345,6 +1344,13 @@ namespace soup
 						}
 
 						auto tag = data.substr(data.length() - cipher_bytes);
+
+						if (tag.size() != cipher_bytes)
+						{
+							s.tls_close(TlsAlertDescription::bad_record_mac);
+							return;
+						}
+
 						data.erase(data.length() - cipher_bytes);
 
 						auto iv = s.tls_encrypter_recv.implicit_iv;
@@ -1354,13 +1360,13 @@ namespace soup
 
 						auto ad = s.tls_encrypter_recv.calculateMacBytes(cap.content_type, data);
 
-						if (plusaes::decrypt_gcm(
+						if (aes::gcmDecrypt(
 							(uint8_t*)data.data(), data.size(),
 							(const uint8_t*)ad.data(), ad.size(),
 							s.tls_encrypter_recv.cipher_key.data(), s.tls_encrypter_recv.cipher_key.size(),
 							iv.data(), iv.size(),
-							(const uint8_t*)tag.data(), tag.size()
-						) != plusaes::kErrorOk)
+							(const uint8_t*)tag.data()
+						) != true)
 						{
 							s.tls_close(TlsAlertDescription::bad_record_mac);
 							return;
