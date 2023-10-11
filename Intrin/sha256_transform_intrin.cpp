@@ -1,6 +1,6 @@
 #include <cstdint>
 
-#include <intrin.h>
+#include <immintrin.h>
 
 namespace soup
 {

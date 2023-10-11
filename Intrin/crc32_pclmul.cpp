@@ -1,6 +1,7 @@
 #include <cstdint>
 
-#include <intrin.h>
+#include <smmintrin.h> // _mm_extract_epi32
+#include <wmmintrin.h> // _mm_clmulepi64_si128
 
 namespace soup
 {
