@@ -18,7 +18,9 @@
 		},
 		"HttpRequestTask": {
 			"__parent": "Worker",
-			"newFromRequest": "HttpRequestTask_newFromRequest"
+			"newFromRequest": "HttpRequestTask_newFromRequest",
+			"newFromUrl": "HttpRequestTask_newFromUrl",
+			"getResponseBodyCStr": "HttpRequestTask_getResponseBodyCStr"
 		},
 		"MimeMessage": {
 			"addHeader": "MimeMessage_addHeader"
@@ -124,6 +126,14 @@
 		"HttpRequestTask_newFromRequest": [
 			"HttpRequestTask",
 			["HttpRequest", "hr"]
+		],
+		"HttpRequestTask_newFromUrl": [
+			"HttpRequestTask",
+			["string", "url"]
+		],
+		"HttpRequestTask_getResponseBodyCStr": [
+			"string",
+			["HttpRequestTask", "x"]
 		],
 		"MimeMessage_addHeader": [
 			"void",

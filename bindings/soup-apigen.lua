@@ -110,6 +110,12 @@ soup = {
 			assert(getmetatable(hr) == soup.HttpRequest)
 			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromRequest", hr.addr) })
 		end,
+		newFromUrl = function(url)
+			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromUrl", url) })
+		end,
+		getResponseBodyCStr = function(self)
+			return libsoup:callString("HttpRequestTask_getResponseBodyCStr", self.addr)
+		end,
 		isWorkDone = function(self)
 			return 0 ~= libsoup:call("Worker_isWorkDone", self.addr)
 		end,
