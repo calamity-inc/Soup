@@ -39,6 +39,9 @@ namespace soup
 		static void virtualFree(void* addr, size_t len);
 		static void changeProtection(void* addr, size_t len, int prot);
 
+		[[nodiscard]] static void* createFileMapping(std::filesystem::path path, size_t& out_len);
+		static void destroyFileMapping(void* addr, size_t len);
+
 #if SOUP_WINDOWS
 		static void simulateKeyPress(Key key);
 		static void simulateKeyPress(bool ctrl, bool shift, bool alt, Key key);
