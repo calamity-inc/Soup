@@ -19,6 +19,18 @@ soup = {
 			error(err)
 		end
 	end,
+	aes = {
+		ecbEncrypt = function(data, key)
+			assert(getmetatable(data) == soup.stdstring)
+			assert(getmetatable(key) == soup.stdstring)
+			libsoup:call("aes_ecbEncrypt", data.addr, key.addr)
+		end,
+		ecbDecrypt = function(data, key)
+			assert(getmetatable(data) == soup.stdstring)
+			assert(getmetatable(key) == soup.stdstring)
+			libsoup:call("aes_ecbDecrypt", data.addr, key.addr)
+		end,
+	},
 	base64 = {
 		encode = function(x)
 			assert(getmetatable(x) == soup.stdstring)

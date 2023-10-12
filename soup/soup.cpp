@@ -16,6 +16,7 @@ typedef void (*void_func_t)();
 
 #include "RaiiEmulator.hpp"
 
+#include "aes.hpp"
 #include "base32.hpp"
 #include "base40.hpp"
 #include "base64.hpp"
@@ -106,6 +107,28 @@ SOUP_CEXPORT void throwException(const char* msg)
 SOUP_CEXPORT const char* getCountryName(const char* country_code, const char* language_code)
 {
 	return soup::getCountryName(country_code, language_code);
+}
+
+// aes
+
+SOUP_CEXPORT void aes_ecbEncrypt(stdstring* data, const stdstring* key)
+{
+	heap.validate(data);
+	heap.validate(key);
+	aes::ecbEncrypt(
+		reinterpret_cast<uint8_t*>(data->data()), data->size(),
+		reinterpret_cast<const uint8_t*>(key->data()), key->size()
+	);
+}
+
+SOUP_CEXPORT void aes_ecbDecrypt(stdstring* data, const stdstring* key)
+{
+	heap.validate(data);
+	heap.validate(key);
+	aes::ecbDecrypt(
+		reinterpret_cast<uint8_t*>(data->data()), data->size(),
+		reinterpret_cast<const uint8_t*>(key->data()), key->size()
+	);
 }
 
 // base32

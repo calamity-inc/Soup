@@ -108,16 +108,23 @@ namespace soup
 		}
 
 		template <typename T>
-		[[nodiscard]] T& get(T* inst)
+		void validate(T* inst)
 		{
 			for (auto& scope : scopes)
 			{
 				if (auto e = scope.find((void*)inst); e != scope.objects.end())
 				{
-					return *inst;
+					return;
 				}
 			}
 			throw Exception("Attempt to use an instance I don't manage (use-after-free?)");
+		}
+
+		template <typename T>
+		[[nodiscard]] T& get(T* inst)
+		{
+			validate(inst);
+			return *inst;
 		}
 
 		template <typename T>

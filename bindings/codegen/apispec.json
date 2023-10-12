@@ -72,6 +72,10 @@
 		}
 	},
 	"namespaces": {
+		"aes": {
+			"ecbEncrypt": "aes_ecbEncrypt",
+			"ecbDecrypt": "aes_ecbDecrypt"
+		},
 		"base64": {
 			"encode": "base64_encode",
 			"decode": "base64_decode"
@@ -84,6 +88,16 @@
 		}
 	},
 	"functions": {
+		"aes_ecbEncrypt": [
+			"void",
+			["stdstring", "data"],
+			["stdstring", "key"]
+		],
+		"aes_ecbDecrypt": [
+			"void",
+			["stdstring", "data"],
+			["stdstring", "key"]
+		],
 		"base64_encode": [
 			"string",
 			["stdstring", "x"]

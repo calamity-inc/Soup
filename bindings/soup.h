@@ -42,6 +42,9 @@ SOUP_CEXPORT void endLifetime(void* inst);
 SOUP_CEXPORT const char* tryCatch(void_func_t f);
 SOUP_CEXPORT void throwException(const char* msg);
 SOUP_CEXPORT const char* getCountryName(const char* country_code, const char* language_code);
+// aes
+SOUP_CEXPORT void aes_ecbEncrypt(stdstring* data, const stdstring* key);
+SOUP_CEXPORT void aes_ecbDecrypt(stdstring* data, const stdstring* key);
 // base32
 SOUP_CEXPORT const char* base32_encode(const stdstring* x, bool pad);
 SOUP_CEXPORT stdstring* base32_decode(const char* x);
