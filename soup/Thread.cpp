@@ -44,6 +44,7 @@ namespace soup
 		handle = CreateThread(nullptr, 0, reinterpret_cast<DWORD(__stdcall*)(LPVOID)>(&threadCreateCallback), this, 0, nullptr);
 		SOUP_IF_UNLIKELY (handle == NULL)
 		{
+			handle = INVALID_HANDLE_VALUE;
 			SOUP_THROW(Exception(format("Failed to create thread: {}", GetLastError())));
 		}
 #else
@@ -74,8 +75,14 @@ namespace soup
 	Thread::~Thread() noexcept
 	{
 #if SOUP_WINDOWS
-		TerminateThread(handle, 0);
-		CloseHandle(handle);
+		if (handle != INVALID_HANDLE_VALUE)
+		{
+			if (running)
+			{
+				TerminateThread(handle, 0);
+			}
+			CloseHandle(handle);
+		}
 #else
 		if (have_handle)
 		{
