@@ -1,6 +1,6 @@
 # Soup
 
-The swiss army knife for C++ programmers with a focus on being compatible & bindable.
+The everything library for C++ 17 and beyond with bindings for other languages.
 
 > [!NOTE]
 > If you're looking to use Soup from a language other than C++, have a look at [the bindings](https://github.com/calamity-inc/Soup/tree/senpai/bindings).
