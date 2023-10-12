@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fwd.hpp"
 #include "CryptoHashAlgo.hpp"
 
 namespace soup
@@ -10,8 +11,7 @@ namespace soup
 		static constexpr auto DIGEST_BYTES = 32u;
 		static constexpr auto BLOCK_BYTES = 64u;
 
-		[[nodiscard]] static std::string hash(const std::string& s);
-		[[nodiscard]] static std::string hash(std::string&& s);
-		[[nodiscard]] static std::string hash(std::istream& is);
+		[[nodiscard]] static std::string hash(const std::string& str);
+		[[nodiscard]] static std::string hash(ioSeekableReader& r);
 	};
 }

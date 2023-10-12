@@ -10,7 +10,8 @@
 #endif
 
 #include <cstring> // memcpy
-#include <sstream>
+
+#include "StringRefReader.hpp"
 
 #if SHA256_USE_INTRIN
 #include "CpuInfo.hpp"
@@ -115,16 +116,10 @@ namespace soup
 		}
 	}
 
-	std::string sha256::hash(const std::string& s)
+	std::string sha256::hash(const std::string& str)
 	{
-		std::istringstream is(s);
-		return hash(is);
-	}
-
-	std::string sha256::hash(std::string&& s)
-	{
-		std::istringstream is(std::move(s));
-		return hash(is);
+		StringRefReader r(str);
+		return hash(r);
 	}
 
 #if SHA256_USE_INTRIN
@@ -132,7 +127,7 @@ namespace soup
 #endif
 
 	template <bool intrin>
-	static std::string sha256_hash_impl(std::istream& is)
+	static std::string sha256_hash_impl(ioSeekableReader& r)
 	{
 		// init
 		uint32_t digest[] = {
@@ -150,16 +145,12 @@ namespace soup
 		std::string buffer{};
 		uint64_t transforms = 0;
 
+		size_t in_len = r.getRemainingBytes();
+
 		// update
-		while (true)
+		for (; in_len >= sha256::BLOCK_BYTES; in_len -= sha256::BLOCK_BYTES)
 		{
-			char sbuf[sha256::BLOCK_BYTES];
-			is.read(sbuf, sha256::BLOCK_BYTES - buffer.size());
-			buffer.append(sbuf, (std::size_t)is.gcount());
-			if (buffer.size() != sha256::BLOCK_BYTES)
-			{
-				break;
-			}
+			r.str(sha256::BLOCK_BYTES, buffer);
 #if SHA256_USE_INTRIN
 			if constexpr (intrin)
 			{
@@ -175,6 +166,8 @@ namespace soup
 			buffer.clear();
 			++transforms;
 		}
+
+		r.str(in_len, buffer);
 
 		// final
 
@@ -238,7 +231,7 @@ namespace soup
 		return bin;
 	}
 
-	std::string sha256::hash(std::istream& is)
+	std::string sha256::hash(ioSeekableReader& r)
 	{
 #if SHA256_USE_INTRIN
 		const CpuInfo& cpu_info = CpuInfo::get();
@@ -246,9 +239,9 @@ namespace soup
 			&& cpu_info.supportsSHA()
 			)
 		{
-			return sha256_hash_impl<true>(is);
+			return sha256_hash_impl<true>(r);
 		}
 #endif
-		return sha256_hash_impl<false>(is);
+		return sha256_hash_impl<false>(r);
 	}
 }

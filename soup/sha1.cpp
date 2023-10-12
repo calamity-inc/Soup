@@ -9,7 +9,7 @@
 #define SHA1_USE_INTRIN false
 #endif
 
-#include <sstream>
+#include "StringRefReader.hpp"
 
 #if SHA1_USE_INTRIN
 #include "CpuInfo.hpp"
@@ -173,16 +173,10 @@ namespace soup
 		digest[4] += e;
 	}
 
-	std::string sha1::hash(const std::string& s)
+	std::string sha1::hash(const std::string& str)
 	{
-		std::istringstream is(s);
-		return hash(is);
-	}
-
-	std::string sha1::hash(std::string&& s)
-	{
-		std::istringstream is(std::move(s));
-		return hash(is);
+		StringRefReader r(str);
+		return hash(r);
 	}
 
 #if SHA1_USE_INTRIN
@@ -190,7 +184,7 @@ namespace soup
 #endif
 
 	template <bool intrin>
-	static std::string sha1_hash_impl(std::istream& is)
+	static std::string sha1_hash_impl(ioSeekableReader& r)
 	{
 		// init
 		uint32_t digest[] = {
@@ -205,16 +199,12 @@ namespace soup
 		std::string buffer{};
 		uint64_t transforms = 0;
 
+		size_t in_len = r.getRemainingBytes();
+
 		// update
-		while (true)
+		for (; in_len >= sha1::BLOCK_BYTES; in_len -= sha1::BLOCK_BYTES)
 		{
-			char sbuf[sha1::BLOCK_BYTES];
-			is.read(sbuf, sha1::BLOCK_BYTES - buffer.size());
-			buffer.append(sbuf, (std::size_t)is.gcount());
-			if (buffer.size() != sha1::BLOCK_BYTES)
-			{
-				break;
-			}
+			r.str(sha1::BLOCK_BYTES, buffer);
 #if SHA1_USE_INTRIN
 			if constexpr (intrin)
 			{
@@ -227,9 +217,10 @@ namespace soup
 				buffer_to_block<BLOCK_INTS, intrin>(buffer, block);
 				transform(digest, block);
 			}
-			buffer.clear();
 			++transforms;
 		}
+
+		r.str(in_len, buffer);
 
 		// final
 
@@ -293,7 +284,7 @@ namespace soup
 		return bin;
 	}
 
-	std::string sha1::hash(std::istream& is)
+	std::string sha1::hash(ioSeekableReader& r)
 	{
 #if SHA1_USE_INTRIN
 		const CpuInfo& cpu_info = CpuInfo::get();
@@ -301,9 +292,9 @@ namespace soup
 			&& cpu_info.supportsSHA()
 			)
 		{
-			return sha1_hash_impl<true>(is);
+			return sha1_hash_impl<true>(r);
 		}
 #endif
-		return sha1_hash_impl<false>(is);
+		return sha1_hash_impl<false>(r);
 	}
 }

@@ -25,5 +25,14 @@ namespace soup
 		}
 
 		virtual void seekEnd() = 0;
+
+		[[nodiscard]] size_t getRemainingBytes()
+		{
+			const size_t pos = getPosition();
+			seekEnd();
+			const size_t remaining = (getPosition() - pos);
+			seek(pos);
+			return remaining;
+		}
 	};
 }
