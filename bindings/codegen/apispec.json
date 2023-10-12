@@ -1,6 +1,5 @@
 {
 	"classes": {
-		"stdstring": {},
 		"DetachedScheduler": {
 			"__parent": "Scheduler",
 			"new": "DetachedScheduler_new",
@@ -63,9 +62,17 @@
 		},
 		"Worker": {
 			"isWorkDone": "Worker_isWorkDone"
+		},
+		"stdstring": {
+			"new": "stdstring_new",
+			"c_str": "stdstring_c_str"
 		}
 	},
 	"namespaces": {
+		"base64": {
+			"encode": "base64_encode",
+			"decode": "base64_decode"
+		},
 		"Hotp": {
 			"generateSecret": "Hotp_generateSecret"
 		},
@@ -74,6 +81,14 @@
 		}
 	},
 	"functions": {
+		"base64_encode": [
+			"string",
+			["stdstring", "x"]
+		],
+		"base64_decode": [
+			"stdstring",
+			["string", "x"]
+		],
 		"DetachedScheduler_new": [
 			"DetachedScheduler"
 		],
@@ -200,6 +215,15 @@
 		"Worker_isWorkDone": [
 			"bool",
 			["Worker", "x"]
+		],
+		"stdstring_new": [
+			"stdstring",
+			["string", "data"],
+			["int", "len"]
+		],
+		"stdstring_c_str": [
+			"string",
+			["stdstring", "x"]
 		]
 	}
 }

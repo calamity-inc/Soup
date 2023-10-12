@@ -139,6 +139,11 @@ SOUP_CEXPORT const char* base64_encode(const stdstring* x)
 	returnString(base64::encode(heap.get(x)));
 }
 
+SOUP_CEXPORT stdstring* base64_decode(const char* x)
+{
+	return heap.add(new std::string(base64::decode(x)));
+}
+
 // Bigint
 
 SOUP_CEXPORT const char* Bigint_toString(const Bigint* x)
@@ -592,6 +597,18 @@ SOUP_CEXPORT const char* YubikeyValidator_validate(const YubikeyValidator* x, co
 #else
 	returnString(heap.get(x).validate(otp).device_id);
 #endif
+}
+
+// std::string
+
+SOUP_CEXPORT stdstring* stdstring_new(const char* data, size_t len)
+{
+	return heap.add(new std::string(data, len));
+}
+
+SOUP_CEXPORT const char* stdstring_c_str(const stdstring* x)
+{
+	return heap.get(x).c_str();
 }
 
 // std::exception

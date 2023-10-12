@@ -19,6 +19,15 @@ soup = {
 			error(err)
 		end
 	end,
+	base64 = {
+		encode = function(x)
+			assert(getmetatable(x) == soup.stdstring)
+			return libsoup:callString("base64_encode", x.addr)
+		end,
+		decode = function(x)
+			return initClass(soup.stdstring, { addr = libsoup:call("base64_decode", x) })
+		end,
+	},
 	Hotp = {
 		generateSecret = function(bytes)
 			if bytes == nil then
@@ -32,12 +41,6 @@ soup = {
 			assert(getmetatable(serv) == soup.Scheduler or getmetatable(serv) == soup.DetachedScheduler)
 			assert(getmetatable(srv) == soup.ServerService or getmetatable(srv) == soup.ServerWebService)
 			return 0 ~= libsoup:call("Server_bind", serv.addr, port, srv.addr)
-		end,
-	},
-	stdstring = {
-		__name = "soup.stdstring",
-		__gc = function(self)
-			libsoup:call("endLifetime", self.addr)
 		end,
 	},
 	DetachedScheduler = {
@@ -243,6 +246,18 @@ soup = {
 		end,
 		isWorkDone = function(self)
 			return 0 ~= libsoup:call("Worker_isWorkDone", self.addr)
+		end,
+	},
+	stdstring = {
+		__name = "soup.stdstring",
+		__gc = function(self)
+			libsoup:call("endLifetime", self.addr)
+		end,
+		new = function(data, len)
+			return initClass(soup.stdstring, { addr = libsoup:call("stdstring_new", data, len) })
+		end,
+		c_str = function(self)
+			return libsoup:callString("stdstring_c_str", self.addr)
 		end,
 	},
 }

@@ -50,6 +50,7 @@ SOUP_CEXPORT const char* base40_encode(const stdstring* x);
 SOUP_CEXPORT stdstring* base40_decode(const char* x);
 // base64
 SOUP_CEXPORT const char* base64_encode(const stdstring* x);
+SOUP_CEXPORT stdstring* base64_decode(const char* x);
 // Bigint
 SOUP_CEXPORT const char* Bigint_toString(const Bigint* x);
 // Canvas
@@ -134,6 +135,9 @@ SOUP_CEXPORT bool Worker_isWorkDone(void* x);
 // YubikeyValidator
 SOUP_CEXPORT YubikeyValidator* YubikeyValidator_new(const char* id, const char* secret);
 SOUP_CEXPORT const char* YubikeyValidator_validate(const YubikeyValidator* x, const char* otp);
+// stdstring
+SOUP_CEXPORT stdstring* stdstring_new(const char* data, size_t len);
+SOUP_CEXPORT const char* stdstring_c_str(const stdstring* x);
 // exception
 SOUP_CEXPORT const char* exception_what(const stdexception* x);
 
