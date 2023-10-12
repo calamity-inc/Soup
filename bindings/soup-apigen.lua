@@ -113,6 +113,9 @@ soup = {
 		newFromUrl = function(url)
 			return initClass(soup.HttpRequestTask, { addr = libsoup:call("HttpRequestTask_newFromUrl", url) })
 		end,
+		getResponseBody = function(self)
+			return initClass(soup.stdstring, { addr = libsoup:call("HttpRequestTask_getResponseBody", self.addr) })
+		end,
 		getResponseBodyCStr = function(self)
 			return libsoup:callString("HttpRequestTask_getResponseBodyCStr", self.addr)
 		end,

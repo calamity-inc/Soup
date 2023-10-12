@@ -20,6 +20,7 @@
 			"__parent": "Worker",
 			"newFromRequest": "HttpRequestTask_newFromRequest",
 			"newFromUrl": "HttpRequestTask_newFromUrl",
+			"getResponseBody": "HttpRequestTask_getResponseBody",
 			"getResponseBodyCStr": "HttpRequestTask_getResponseBodyCStr"
 		},
 		"MimeMessage": {
@@ -130,6 +131,10 @@
 		"HttpRequestTask_newFromUrl": [
 			"HttpRequestTask",
 			["string", "url"]
+		],
+		"HttpRequestTask_getResponseBody": [
+			"stdstring",
+			["HttpRequestTask", "x"]
 		],
 		"HttpRequestTask_getResponseBodyCStr": [
 			"string",

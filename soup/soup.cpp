@@ -304,6 +304,11 @@ SOUP_CEXPORT void* HttpRequestTask_newFromUrl(const char* url)
 	return heap.add(new SharedPtr<HttpRequestTask>(new HttpRequestTask(Uri(url))));
 }
 
+SOUP_CEXPORT stdstring* HttpRequestTask_getResponseBody(void* hrt)
+{
+	return heap.add(new std::string(heap.get<SharedPtr<HttpRequestTask>>(hrt)->result->body));
+}
+
 SOUP_CEXPORT const char* HttpRequestTask_getResponseBodyCStr(void* hrt)
 {
 	return heap.get<SharedPtr<HttpRequestTask>>(hrt)->result->body.c_str();
