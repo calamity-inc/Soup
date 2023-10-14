@@ -3,9 +3,9 @@
 #include "base.hpp"
 #if !SOUP_WASM
 
-#include "fwd.hpp"
-
 #include <string>
+
+#include "IpAddr.hpp"
 
 namespace soup
 {
