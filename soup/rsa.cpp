@@ -121,13 +121,13 @@ namespace soup
 
 	Bigint RsaPublicKey::E_PREF = E_PREF_VAL;
 
-	RsaPublicKey::RsaPublicKey(const Bigint& n)
-		: RsaPublicKey(n, E_PREF_VAL)
+	RsaPublicKey::RsaPublicKey(Bigint n)
+		: RsaPublicKey(std::move(n), E_PREF_VAL)
 	{
 	}
 
-	RsaPublicKey::RsaPublicKey(const Bigint& n, const Bigint& e)
-		: RsaPublicKeyBase(n, e)
+	RsaPublicKey::RsaPublicKey(Bigint n, Bigint e)
+		: RsaPublicKeyBase(std::move(n), std::move(e))
 	{
 	}
 
@@ -138,13 +138,13 @@ namespace soup
 
 	// LonglivedPublicKey
 
-	RsaPublicKeyLonglived::RsaPublicKeyLonglived(const Bigint& n)
-		: RsaPublicKeyLonglived(n, E_PREF_VAL)
+	RsaPublicKeyLonglived::RsaPublicKeyLonglived(Bigint n)
+		: RsaPublicKeyLonglived(std::move(n), E_PREF_VAL)
 	{
 	}
 
-	RsaPublicKeyLonglived::RsaPublicKeyLonglived(const Bigint& n, const Bigint& e)
-		: RsaPublicKeyBase(n, e), mont_data(n)
+	RsaPublicKeyLonglived::RsaPublicKeyLonglived(Bigint n, Bigint e)
+		: RsaPublicKeyBase(std::move(n), std::move(e)), mont_data(this->n)
 	{
 	}
 
@@ -155,10 +155,10 @@ namespace soup
 
 	// PrivateKey
 
-	RsaPrivateKey::RsaPrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv)
-		: RsaKey(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv),
-		p_mont_data(p),
-		q_mont_data(q)
+	RsaPrivateKey::RsaPrivateKey(Bigint n, Bigint p, Bigint q, Bigint dp, Bigint dq, Bigint qinv)
+		: RsaKey(std::move(n)), p(std::move(p)), q(std::move(q)), dp(std::move(dp)), dq(std::move(dq)), qinv(std::move(qinv)),
+		p_mont_data(this->p),
+		q_mont_data(this->q)
 	{
 	}
 

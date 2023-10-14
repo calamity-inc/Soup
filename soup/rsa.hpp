@@ -13,8 +13,8 @@ namespace soup
 
 		RsaMod() = default;
 
-		RsaMod(const Bigint& n)
-			: n(n)
+		RsaMod(Bigint n)
+			: n(std::move(n))
 		{
 		}
 
@@ -69,8 +69,8 @@ namespace soup
 
 		RsaPublicKeyBase() = default;
 
-		RsaPublicKeyBase(const Bigint& n, const Bigint& e)
-			: RsaKey<T>(n), e(e)
+		RsaPublicKeyBase(Bigint n, Bigint e)
+			: RsaKey<T>(std::move(n)), e(std::move(e))
 		{
 		}
 
@@ -104,8 +104,8 @@ namespace soup
 		static Bigint E_PREF;
 
 		RsaPublicKey() = default;
-		RsaPublicKey(const Bigint& n);
-		RsaPublicKey(const Bigint& n, const Bigint& e);
+		RsaPublicKey(Bigint n);
+		RsaPublicKey(Bigint n, Bigint e);
 
 		[[nodiscard]] Bigint modPow(const Bigint& x) const;
 	};
@@ -134,8 +134,8 @@ namespace soup
 		RsaKeyMontgomeryData mont_data;
 
 		RsaPublicKeyLonglived() = default;
-		RsaPublicKeyLonglived(const Bigint& n);
-		RsaPublicKeyLonglived(const Bigint& n, const Bigint& e);
+		RsaPublicKeyLonglived(Bigint n);
+		RsaPublicKeyLonglived(Bigint n, Bigint e);
 
 		[[nodiscard]] Bigint modPow(const Bigint& x) const;
 	};
@@ -152,7 +152,7 @@ namespace soup
 		RsaKeyMontgomeryData q_mont_data;
 
 		RsaPrivateKey() = default;
-		RsaPrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv);
+		RsaPrivateKey(Bigint n, Bigint p, Bigint q, Bigint dp, Bigint dq, Bigint qinv);
 
 		[[nodiscard]] static RsaPrivateKey fromPrimes(Bigint p, Bigint q);
 
