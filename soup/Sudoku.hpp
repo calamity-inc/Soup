@@ -29,6 +29,13 @@ namespace soup
 	s.draw(rt);
 	console << c.toStringDownsampledDoublewidth(true);
 	*/
+	/* To have it explain the solve:
+	std::string explanation{};
+	while (s.solveCell(&explanation))
+	{
+		std::cout << explanation << "\n";
+	}
+	*/
 	/* To watch it slowly solve a Sudoku:
 	console.init(false);
 	Canvas c(15 * 9, 15 * 9);
