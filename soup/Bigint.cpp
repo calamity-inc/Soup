@@ -1026,7 +1026,11 @@ namespace soup
 		else
 		{
 			size_t nb = getNumBits();
-			if (nb != 0)
+			if (b >= nb)
+			{
+				reset();
+			}
+			else
 			{
 				for (size_t i = 0; i != nb; ++i)
 				{
