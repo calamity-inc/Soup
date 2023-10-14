@@ -102,7 +102,7 @@ namespace soup
 
 	// KeyMontgomeryData
 
-	RsaKeyMontgomeryData::RsaKeyMontgomeryData(const Bigint& n, const Bigint& e)
+	RsaKeyMontgomeryData::RsaKeyMontgomeryData(const Bigint& n)
 		: re(n.montgomeryREFromM()),
 		r(Bigint::montgomeryRFromRE(re)),
 		one_mont(r.modUnsignedNotpowerof2(n))
@@ -144,7 +144,7 @@ namespace soup
 	}
 
 	RsaPublicKeyLonglived::RsaPublicKeyLonglived(const Bigint& n, const Bigint& e)
-		: RsaPublicKeyBase(n, e), mont_data(n, e)
+		: RsaPublicKeyBase(n, e), mont_data(n)
 	{
 	}
 
@@ -157,8 +157,8 @@ namespace soup
 
 	RsaPrivateKey::RsaPrivateKey(const Bigint& n, const Bigint& p, const Bigint& q, const Bigint& dp, const Bigint& dq, const Bigint& qinv)
 		: RsaKey(n), p(p), q(q), dp(dp), dq(dq), qinv(qinv),
-		p_mont_data(p, dp),
-		q_mont_data(q, dq)
+		p_mont_data(p),
+		q_mont_data(q)
 	{
 	}
 

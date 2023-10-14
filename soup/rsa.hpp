@@ -119,7 +119,7 @@ namespace soup
 		Bigint one_mont{};
 
 		RsaKeyMontgomeryData() = default;
-		RsaKeyMontgomeryData(const Bigint& n, const Bigint& e);
+		RsaKeyMontgomeryData(const Bigint& n);
 
 		[[nodiscard]] Bigint modPow(const Bigint& n, const Bigint& e, const Bigint& x) const;
 	};
