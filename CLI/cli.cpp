@@ -286,6 +286,11 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "mesh")
+		{
+			return cli_mesh(argc - 2, &argv[2]);
+		}
+
 		if (subcommand == "morse")
 		{
 			cli_morse(argc - 2, &argv[2]);
@@ -413,6 +418,7 @@ Available tools:
 - ircserver
 - keyboard
 - maze
+- mesh [link <token>|list|dns-add-record [ip] [name] [type] [data]]
 - morse [key|encode [text]] <--silent>
 - qr [contents]
 - repl

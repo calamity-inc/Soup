@@ -1533,6 +1533,15 @@
     <ClInclude Include="parallel.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="netMesh.hpp">
+      <Filter>net\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="netMeshService.hpp">
+      <Filter>net\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="netMeshMsgType.hpp">
+      <Filter>net\mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2239,6 +2248,12 @@
     <ClCompile Include="Key.cpp">
       <Filter>hardware\keyboard</Filter>
     </ClCompile>
+    <ClCompile Include="netMesh.cpp">
+      <Filter>net\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="netMeshService.cpp">
+      <Filter>net\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2474,6 +2489,9 @@
     </Filter>
     <Filter Include="hardware\keyboard\rgb">
       <UniqueIdentifier>{aade056e-91d5-44ee-aaa2-d9dea1caa7b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\mesh">
+      <UniqueIdentifier>{a08f39b5-d0c9-4b21-8456-47713eed92af}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

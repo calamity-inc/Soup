@@ -1,0 +1,28 @@
+#pragma once
+
+#include "ServerService.hpp"
+
+#include <string>
+
+#include "netMeshMsgType.hpp"
+
+namespace soup
+{
+	class netMeshService : public ServerService
+	{
+	public:
+		using app_msg_handler_t = bool(*)(netMeshMsgType, std::string&& data);
+
+		uint64_t link_passnum = 0;
+		app_msg_handler_t app_msg_handler = nullptr;
+
+		netMeshService()
+			: ServerService(&onTunnelEstablished)
+		{
+		}
+
+	private:
+		static void onTunnelEstablished(Socket& s, ServerService&, Server&);
+	};
+	inline netMeshService g_mesh_service;
+}

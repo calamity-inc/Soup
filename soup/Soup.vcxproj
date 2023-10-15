@@ -508,6 +508,9 @@
     <ClInclude Include="MacAddr.hpp" />
     <ClInclude Include="netIntelLocationData4OnDisk.hpp" />
     <ClInclude Include="netIntelOnDisk.hpp" />
+    <ClInclude Include="netMesh.hpp" />
+    <ClInclude Include="netMeshMsgType.hpp" />
+    <ClInclude Include="netMeshService.hpp" />
     <ClInclude Include="Optional.hpp" />
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="parallel.hpp" />
@@ -1011,6 +1014,8 @@
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="MacAddr.cpp" />
     <ClCompile Include="netIntelOnDisk.cpp" />
+    <ClCompile Include="netMesh.cpp" />
+    <ClCompile Include="netMeshService.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="parallel.cpp" />
     <ClCompile Include="plist.cpp" />

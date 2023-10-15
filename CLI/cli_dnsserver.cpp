@@ -6,8 +6,11 @@
 #include <FileReader.hpp>
 
 #include "dnsServerService.hpp"
+#include "netMesh.hpp"
+#include "netMeshService.hpp"
 #include "Server.hpp"
 #include "string.hpp"
+#include "StringReader.hpp"
 #include "UniquePtr.hpp"
 
 using namespace soup;
@@ -78,6 +81,46 @@ void cli_dnsserver(int argc, const char** argv)
 	{
 		serv.bindUdp(53, &dns_srv);
 		std::cout << "Bound to UDP/53" << std::endl;
+	}
+
+	if (netMesh::isEnabled())
+	{
+		if (serv.bind(7106, &g_mesh_service))
+		{
+			g_mesh_service.app_msg_handler = [](netMeshMsgType msg_type, std::string&& data)
+			{
+				if (msg_type == MESH_MSG_DNS_ADD_RECORD)
+				{
+					StringReader sr(std::move(data));
+					if (uint16_t type; sr.u16(type))
+					{
+						if (auto factory = dnsRecord::getFactory((dnsType)type))
+						{
+							if (std::string name; sr.str_lp_u64_dyn(name))
+							{
+								if (auto e = records.find(name); e == records.end())
+								{
+									if (std::string data; sr.str_lp_u64_dyn(data))
+									{
+										if (auto rec = factory(std::string(name), 60, std::move(data)))
+										{
+											records.emplace(std::move(name), std::vector<SharedPtr<dnsRecord>>{ rec.release() });
+											return true;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				return false;
+			};
+			std::cout << "[Mesh] Listening for commands\n";
+		}
+		else
+		{
+			std::cout << "[Mesh] Failed to bind to TCP/7106\n";
+		}
 	}
 
 	serv.run();

@@ -9,6 +9,7 @@ void cli_dvd();
 int cli_ircserver();
 void cli_keyboard();
 void cli_maze();
+int cli_mesh(int argc, const char** argv);
 void cli_morse(int argc, const char** argv);
 void cli_repl();
 void cli_snake();
