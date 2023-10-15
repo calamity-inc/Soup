@@ -1,2 +1,3 @@
 +*.cpp
+name soup
 require ../soup

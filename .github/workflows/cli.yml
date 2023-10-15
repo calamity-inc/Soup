@@ -16,14 +16,14 @@ jobs:
       - name: Build CLI
         run: php linux_cli.php
 
-      - name: Run ./soupcli test
-        run: ./soupcli test
+      - name: Run ./soup test
+        run: ./CLI/soup test
 
-      - name: Upload soupcli
+      - name: Upload soup
         uses: actions/upload-artifact@v3
         with:
           name: "Ubuntu 22.04"
-          path: soupcli
+          path: soup
 
   ubuntu-20-04:
     runs-on: ubuntu-20.04
@@ -36,14 +36,14 @@ jobs:
       - name: Build CLI
         run: php linux_cli.php
 
-      - name: Run ./soupcli test
-        run: ./soupcli test
+      - name: Run ./soup test
+        run: ./CLI/soup test
 
-      - name: Upload soupcli
+      - name: Upload soup
         uses: actions/upload-artifact@v3
         with:
           name: "Debian 11, Ubuntu 20.04"
-          path: soupcli
+          path: soup
 
   debian-10:
     runs-on: [debian-10]
@@ -56,11 +56,11 @@ jobs:
       - name: Build CLI
         run: php linux_cli.php
 
-      - name: Run ./soupcli test
-        run: ./soupcli test
+      - name: Run ./soup test
+        run: ./CLI/soup test
 
-      - name: Upload soupcli
+      - name: Upload soup
         uses: actions/upload-artifact@v3
         with:
           name: "Debian 10"
-          path: soupcli
+          path: soup
