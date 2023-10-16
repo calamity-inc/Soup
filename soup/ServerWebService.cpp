@@ -190,11 +190,11 @@ namespace soup
 
 			ServerWebService& srv = *cap.get<ServerWebService*>();
 
-			if (auto upgrade_entry = req.header_fields.find("Upgrade"); upgrade_entry != req.header_fields.end())
+			if (auto upgrade_value = req.findHeader("Upgrade"))
 			{
-				if (upgrade_entry->second == "websocket")
+				if (*upgrade_value == "websocket")
 				{
-					if (auto key_entry = req.header_fields.find("Sec-WebSocket-Key"); key_entry != req.header_fields.end())
+					if (auto key_value = req.findHeader("Sec-WebSocket-Key"))
 					{
 						if (srv.should_accept_websocket_connection
 							&& srv.should_accept_websocket_connection(s, req, srv)
@@ -202,7 +202,7 @@ namespace soup
 						{
 							// Firefox throws a SkillIssueException if we say HTTP/1.0
 							std::string cont = "HTTP/1.1 101\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nServer: Soup\r\nSec-WebSocket-Accept: ";
-							cont.append(WebSocket::hashKey(key_entry->second));
+							cont.append(WebSocket::hashKey(*key_value));
 							cont.append("\r\n\r\n");
 							s.send(cont);
 

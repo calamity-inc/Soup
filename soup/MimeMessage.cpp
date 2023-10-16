@@ -84,6 +84,19 @@ namespace soup
 #endif
 	}
 
+	std::string* MimeMessage::findHeader(std::string key)
+	{
+		string::lower(key);
+		for (auto& e : header_fields)
+		{
+			if (string::lower(std::string(e.first)) == key)
+			{
+				return &e.second;
+			}
+		}
+		return nullptr;
+	}
+
 	void MimeMessage::addHeader(const std::string& line)
 	{
 		if (auto key_offset = line.find(": "); key_offset != std::string::npos)
