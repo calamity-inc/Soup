@@ -170,6 +170,7 @@ namespace soup
 	// task
 	class Capture;
 	class DetachedScheduler;
+	class PromiseBase;
 	template <typename T> class Promise;
 	class Scheduler;
 

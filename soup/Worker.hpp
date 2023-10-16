@@ -23,6 +23,7 @@ namespace soup
 			NONE,
 			SOCKET,
 			IDLE, // call holdup callback whenever the scheduler has some idle time
+			PROMISE_BASE,
 			PROMISE_VOID,
 		};
 
@@ -54,6 +55,7 @@ namespace soup
 			holdup_callback(*this);
 		}
 
+		void awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap = {});
 		void awaitPromiseCompletion(Promise<void>* p, void(*f)(Worker&, Capture&&), Capture&& cap = {});
 
 		[[nodiscard]] bool isWorkDone() const noexcept { return holdup_type == NONE; }

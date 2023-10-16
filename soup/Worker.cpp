@@ -5,6 +5,20 @@
 
 namespace soup
 {
+	void Worker::awaitPromiseCompletion(PromiseBase* p, void(*f)(Worker&, Capture&&), Capture&& cap)
+	{
+		if (!p->isPending() && canRecurse())
+		{
+			f(*this, std::move(cap));
+		}
+		else
+		{
+			holdup_type = PROMISE_BASE;
+			holdup_callback.set(f, std::move(cap));
+			holdup_data = p;
+		}
+	}
+
 	void Worker::awaitPromiseCompletion(Promise<void>* p, void(*f)(Worker&, Capture&&), Capture&& cap)
 	{
 		if (!p->isPending() && canRecurse())
