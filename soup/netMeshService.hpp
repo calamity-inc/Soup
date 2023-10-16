@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "ServerService.hpp"
 
 #include <string>
@@ -26,3 +29,5 @@ namespace soup
 	};
 	inline netMeshService g_mesh_service;
 }
+
+#endif

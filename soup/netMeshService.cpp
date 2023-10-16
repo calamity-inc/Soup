@@ -1,4 +1,5 @@
 #include "netMeshService.hpp"
+#if !SOUP_WASM
 
 #include <iostream>
 
@@ -92,3 +93,5 @@ namespace soup
 		});
 	}
 }
+
+#endif

@@ -1,5 +1,8 @@
 #include "netMesh.hpp"
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <iostream>
 
 #include "FileReader.hpp"
@@ -145,3 +148,5 @@ namespace soup
 		s.send(sw.data);
 	}
 }
+
+#endif
