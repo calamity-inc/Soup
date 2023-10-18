@@ -243,7 +243,23 @@ namespace soup
 					&& r.u8(value)
 					)
 				{
-					const Key sk = (scancode == 0x409 ? KEY_FN : hid_scancode_to_soup_key(scancode));
+					Key sk;
+					SOUP_IF_UNLIKELY ((scancode >> 8) != 0)
+					{
+						switch (scancode)
+						{
+						default: sk = KEY_NONE; break;
+						case 0x403: sk = KEY_OEM_1; break;
+						case 0x404: sk = KEY_OEM_2; break;
+						case 0x405: sk = KEY_OEM_3; break;
+						case 0x408: sk = KEY_OEM_4; break;
+						case 0x409: sk = KEY_FN; break;
+						}
+					}
+					else
+					{
+						sk = hid_scancode_to_soup_key(scancode);
+					}
 					// some keys seem to be getting reported multiple times on older firmware, so just use last reported value
 					for (auto& key : keys)
 					{
