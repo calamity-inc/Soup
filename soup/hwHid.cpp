@@ -446,6 +446,7 @@ namespace soup
 		std::string ret{};
 
 		wchar_t buf[256];
+		buf[0] = 0;
 		if (HidD_GetManufacturerString(handle, buf, sizeof(buf)))
 		{
 			ret = unicode::utf16_to_utf8<std::wstring>(buf);
@@ -459,6 +460,7 @@ namespace soup
 		std::string ret{};
 
 		wchar_t buf[256];
+		buf[0] = 0;
 		if (HidD_GetProductString(handle, buf, sizeof(buf)))
 		{
 			ret = unicode::utf16_to_utf8<std::wstring>(buf);
@@ -472,6 +474,7 @@ namespace soup
 		std::string ret{};
 
 		wchar_t buf[256];
+		buf[0] = 0;
 		if (HidD_GetSerialNumberString(handle, buf, sizeof(buf)))
 		{
 			ret = unicode::utf16_to_utf8<std::wstring>(buf);
