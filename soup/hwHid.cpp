@@ -548,7 +548,7 @@ namespace soup
 #endif
 	}
 
-	void hwHid::sendReport(Buffer&& buf) const
+	bool hwHid::sendReport(Buffer&& buf) const noexcept
 	{
 #if SOUP_WINDOWS
 		// On Windows, the output report has to be at least as long as output_report_byte_length.
@@ -558,13 +558,14 @@ namespace soup
 		}
 
 		DWORD bytesWritten;
-		SOUP_ASSERT(WriteFile(handle, buf.data(), buf.size(), &bytesWritten, nullptr) && bytesWritten == buf.size());
+		return WriteFile(handle, buf.data(), buf.size(), &bytesWritten, nullptr) && bytesWritten == buf.size();
 #elif SOUP_LINUX
 		// TODO
+		return false;
 #endif
 	}
 
-	void hwHid::sendFeatureReport(Buffer&& buf) const
+	bool hwHid::sendFeatureReport(Buffer&& buf) const noexcept
 	{
 #if SOUP_WINDOWS
 		// On Windows, the feature report has to be at least as long as feature_report_byte_length.
@@ -573,9 +574,10 @@ namespace soup
 			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
 		}
 
-		SOUP_ASSERT(HidD_SetFeature(handle, buf.data(), buf.size()));
+		return HidD_SetFeature(handle, buf.data(), buf.size());
 #elif SOUP_LINUX
 		// TODO
+		return false;
 #endif
 	}
 }

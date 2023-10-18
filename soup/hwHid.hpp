@@ -73,7 +73,7 @@ namespace soup
 		[[nodiscard]] Buffer pollReport() const; // blocking
 		void getFeatureReport(Buffer& buf) const;
 
-		void sendReport(Buffer&& buf) const;
-		void sendFeatureReport(Buffer&& buf) const;
+		bool sendReport(Buffer&& buf) const noexcept;
+		bool sendFeatureReport(Buffer&& buf) const noexcept;
 	};
 }

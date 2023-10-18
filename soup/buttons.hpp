@@ -17,17 +17,19 @@ namespace soup
 		BTN_ACT_LEFT,  // (X)       (◻)  (Y)
 		BTN_ACT_UP,    // (Y)       (△)  (X)
 
-		BTN_LBUMPER,
-		BTN_RBUMPER,
-		BTN_LTRIGGER,
-		BTN_RTRIGGER,
-		BTN_SHARE,
-		BTN_OPTIONS,
-		BTN_LSTICK,
-		BTN_RSTICK,
+		BTN_LBUMPER, // aka. L1
+		BTN_RBUMPER, // aka. R1
+		BTN_LTRIGGER, // aka. L2
+		BTN_RTRIGGER, // aka. R2
+		BTN_LSTICK, // aka. L3
+		BTN_RSTICK, // aka. R3
 
 		BTN_META,
-		BTN_TOUCHPAD,
+		BTN_TOUCHPAD, // DS4
+		BTN_SHARE, // "Capture" on Stadia
+		BTN_OPTIONS,
+		BTN_ASSISTANT, // Stadia
+		BTN_MENU, // Stadia
 
 		NUM_BUTTONS
 	};
