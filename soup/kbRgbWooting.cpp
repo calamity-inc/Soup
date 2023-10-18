@@ -107,8 +107,225 @@ namespace soup
 		return encoded;
 	}
 
+	[[nodiscard]] static uint8_t mapWootingKey(uint8_t sk)
+	{
+		switch (sk)
+		{
+		case KEY_ESCAPE: return 0 + (32 * 0);
+		case KEY_F1: return 2 + (32 * 0);
+		case KEY_F2: return 3 + (32 * 0);
+		case KEY_F3: return 4 + (32 * 0);
+		case KEY_F4: return 5 + (32 * 0);
+		case KEY_F5: return 6 + (32 * 0);
+		case KEY_F6: return 7 + (32 * 0);
+		case KEY_F7: return 8 + (32 * 0);
+		case KEY_F8: return 9 + (32 * 0);
+		case KEY_F9: return 10 + (32 * 0);
+		case KEY_F10: return 11 + (32 * 0);
+		case KEY_F11: return 12 + (32 * 0);
+		case KEY_F12: return 13 + (32 * 0);
+		case KEY_PRINT_SCREEN: return 14 + (32 * 0);
+		case KEY_PAUSE: return 15 + (32 * 0);
+		case KEY_SCROLL_LOCK: return 16 + (32 * 0);
+		case KEY_BACKQUOTE: return 0 + (32 * 1);
+		case KEY_1: return 1 + (32 * 1);
+		case KEY_2: return 2 + (32 * 1);
+		case KEY_3: return 3 + (32 * 1);
+		case KEY_4: return 4 + (32 * 1);
+		case KEY_5: return 5 + (32 * 1);
+		case KEY_6: return 6 + (32 * 1);
+		case KEY_7: return 7 + (32 * 1);
+		case KEY_8: return 8 + (32 * 1);
+		case KEY_9: return 9 + (32 * 1);
+		case KEY_0: return 10 + (32 * 1);
+		case KEY_MINUS: return 11 + (32 * 1);
+		case KEY_EQUALS: return 12 + (32 * 1);
+		case KEY_BACKSPACE: return 13 + (32 * 1);
+		case KEY_INSERT: return 14 + (32 * 1);
+		case KEY_HOME: return 15 + (32 * 1);
+		case KEY_PAGE_UP: return 16 + (32 * 1);
+		case KEY_NUM_LOCK: return 17 + (32 * 1);
+		case KEY_NUMPAD_DIVIDE: return 18 + (32 * 1);
+		case KEY_NUMPAD_MULTIPLY: return 19 + (32 * 1);
+		case KEY_NUMPAD_SUBTRACT: return 20 + (32 * 1);
+		case KEY_TAB: return 0 + (32 * 2);
+		case KEY_Q: return 1 + (32 * 2);
+		case KEY_W: return 2 + (32 * 2);
+		case KEY_E: return 3 + (32 * 2);
+		case KEY_R: return 4 + (32 * 2);
+		case KEY_T: return 5 + (32 * 2);
+		case KEY_Y: return 6 + (32 * 2);
+		case KEY_U: return 7 + (32 * 2);
+		case KEY_I: return 8 + (32 * 2);
+		case KEY_O: return 9 + (32 * 2);
+		case KEY_P: return 10 + (32 * 2);
+		case KEY_BRACKET_LEFT: return 11 + (32 * 2);
+		case KEY_BRACKET_RIGHT: return 12 + (32 * 2);
+		//case KEY_BACKSLASH: return 13 + (32 * 2); // ISO
+		case KEY_DEL: return 14 + (32 * 2);
+		case KEY_END: return 15 + (32 * 2);
+		case KEY_PAGE_DOWN: return 16 + (32 * 2);
+		case KEY_NUMPAD7: return 17 + (32 * 2);
+		case KEY_NUMPAD8: return 18 + (32 * 2);
+		case KEY_NUMPAD9: return 19 + (32 * 2);
+		case KEY_NUMPAD_ADD: return 20 + (32 * 2);
+		case KEY_CAPS_LOCK: return 0 + (32 * 3);
+		case KEY_A: return 1 + (32 * 3);
+		case KEY_S: return 2 + (32 * 3);
+		case KEY_D: return 3 + (32 * 3);
+		case KEY_F: return 4 + (32 * 3);
+		case KEY_G: return 5 + (32 * 3);
+		case KEY_H: return 6 + (32 * 3);
+		case KEY_J: return 7 + (32 * 3);
+		case KEY_K: return 8 + (32 * 3);
+		case KEY_L: return 9 + (32 * 3);
+		case KEY_SEMICOLON: return 10 + (32 * 3);
+		case KEY_QUOTE: return 11 + (32 * 3);
+		case KEY_BACKSLASH: return 12 + (32 * 3);
+		case KEY_ENTER: return 13 + (32 * 3);
+		case KEY_NUMPAD4: return 17 + (32 * 3);
+		case KEY_NUMPAD5: return 18 + (32 * 3);
+		case KEY_NUMPAD6: return 19 + (32 * 3);
+		case KEY_LSHIFT: return 0 + (32 * 4);
+		case KEY_INTL_BACKSLASH: return 1 + (32 * 4);
+		case KEY_Z: return 2 + (32 * 4);
+		case KEY_X: return 3 + (32 * 4);
+		case KEY_C: return 4 + (32 * 4);
+		case KEY_V: return 5 + (32 * 4);
+		case KEY_B: return 6 + (32 * 4);
+		case KEY_N: return 7 + (32 * 4);
+		case KEY_M: return 8 + (32 * 4);
+		case KEY_COMMA: return 9 + (32 * 4);
+		case KEY_PERIOD: return 10 + (32 * 4);
+		case KEY_SLASH: return 11 + (32 * 4);
+		case KEY_RSHIFT: return 13 + (32 * 4);
+		case KEY_ARROW_UP: return 15 + (32 * 4);
+		case KEY_NUMPAD1: return 17 + (32 * 4);
+		case KEY_NUMPAD2: return 18 + (32 * 4);
+		case KEY_NUMPAD3: return 19 + (32 * 4);
+		case KEY_NUMPAD_ENTER: return 20 + (32 * 4);
+		case KEY_LCTRL: return 0 + (32 * 5);
+		case KEY_LMETA: return 1 + (32 * 5);
+		case KEY_LALT: return 2 + (32 * 5);
+		case KEY_SPACE: return 6 + (32 * 5);
+		case KEY_RALT: return 10 + (32 * 5);
+		case KEY_RMETA: return 11 + (32 * 5);
+		case KEY_FN: return 12 + (32 * 5);
+		case KEY_RCTRL: return 13 + (32 * 5);
+		case KEY_ARROW_LEFT: return 14 + (32 * 5);
+		case KEY_ARROW_DOWN: return 15 + (32 * 5);
+		case KEY_ARROW_RIGHT: return 16 + (32 * 5);
+		case KEY_NUMPAD0: return 18 + (32 * 5);
+		case KEY_NUMPAD_DECIMAL: return 19 + (32 * 5);
+		}
+		return 255;
+	}
+
+	void kbRgbWooting::init()
+	{
+		{
+			Buffer buf(8);
+			buf.push_back(/* 0 */ 0); // HID report index
+			buf.push_back(/* 1 */ 0xD0); // Magic word
+			buf.push_back(/* 2 */ 0xDA); // Magic word
+			buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevInit);
+			buf.push_back(/* 4 */ 0);
+			buf.push_back(/* 5 */ 0);
+			buf.push_back(/* 6 */ 0);
+			buf.push_back(/* 7 */ 0);
+			hid.sendFeatureReport(std::move(buf));
+		}
+		SOUP_UNUSED(hid.pollReport());
+	}
+
+	void kbRgbWooting::deinit()
+	{
+		{
+			Buffer buf(8);
+			buf.push_back(/* 0 */ 0); // HID report index
+			buf.push_back(/* 1 */ 0xD0); // Magic word
+			buf.push_back(/* 2 */ 0xDA); // Magic word
+			buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevResetAll);
+			buf.push_back(/* 4 */ 0);
+			buf.push_back(/* 5 */ 0);
+			buf.push_back(/* 6 */ 0);
+			buf.push_back(/* 7 */ 0);
+			hid.sendFeatureReport(std::move(buf));
+		}
+		SOUP_UNUSED(hid.pollReport());
+	}
+
+	void kbRgbWooting::setKey(uint8_t key, Rgb colour)
+	{
+		key = mapWootingKey(key);
+		if (key != 255)
+		{
+			{
+				Buffer buf(8);
+				buf.push_back(/* 0 */ 0); // HID report index
+				buf.push_back(/* 1 */ 0xD0); // Magic word
+				buf.push_back(/* 2 */ 0xDA); // Magic word
+				buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevSingleColor);
+				buf.push_back(/* 4 */ colour.b);
+				buf.push_back(/* 5 */ colour.g);
+				buf.push_back(/* 6 */ colour.r);
+				buf.push_back(/* 7 */ key);
+				hid.sendFeatureReport(std::move(buf));
+			}
+			SOUP_UNUSED(hid.pollReport());
+		}
+	}
+
+	void kbRgbWooting::setKeys(const Rgb(&colours)[NUM_KEYS])
+	{
+		Buffer buf(256 + 1);
+		buf.push_back(/* 0 */ 0); // HID report index
+		buf.push_back(/* 1 */ 0xD0); // Magic word
+		buf.push_back(/* 2 */ 0xDA); // Magic word
+		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
+		for (uint8_t row = 0; row != 6; ++row)
+		{
+			for (uint8_t column = 0; column != getNumColumns(); ++column)
+			{
+				uint16_t encoded = 0;
+				if (auto sk = getKeyForPos(row, column); sk != KEY_NONE)
+				{
+					const Rgb& colour = colours[sk];
+					encoded = encodeColor(colour.r, colour.g, colour.b);
+				}
+				buf.push_back(encoded & 0xff);
+				buf.push_back(encoded >> 8);
+			}
+		}
+		hid.sendReport(std::move(buf));
+	}
+
+	void kbRgbWooting::setAllKeys(Rgb colour)
+	{
+		Buffer buf(256 + 1);
+		buf.push_back(/* 0 */ 0); // HID report index
+		buf.push_back(/* 1 */ 0xD0); // Magic word
+		buf.push_back(/* 2 */ 0xDA); // Magic word
+		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
+		for (uint8_t row = 0; row != 6; ++row)
+		{
+			for (uint8_t column = 0; column != getNumColumns(); ++column)
+			{
+				auto encoded = encodeColor(colour.r, colour.g, colour.b);
+				buf.push_back(encoded & 0xff);
+				buf.push_back(encoded >> 8);
+			}
+		}
+		hid.sendReport(std::move(buf));
+	}
+
+	uint8_t kbRgbWooting::getNumColumns() const noexcept
+	{
+		return has_numpad ? 21 : 17;
+	}
+
 	// https://github.com/WootingKb/wooting-rgb-sdk/blob/master/resources/keyboard-matrix-rows-columns.png
-	[[nodiscard]] static uint8_t getKeyForPos(uint8_t row, uint8_t column)
+	Key kbRgbWooting::getKeyForPos(uint8_t row, uint8_t column) const noexcept
 	{
 		if (row == 0)
 		{
@@ -253,228 +470,6 @@ namespace soup
 			}
 		}
 		return KEY_NONE;
-	}
-
-	[[nodiscard]] static const Rgb& getColourForPos(const Rgb(&colours)[NUM_KEYS], uint8_t row, uint8_t column)
-	{
-		if (auto sk = getKeyForPos(row, column))
-		{
-			return colours[sk];
-		}
-		return Rgb::BLACK;
-	}
-
-	[[nodiscard]] static uint8_t mapWootingKey(uint8_t sk)
-	{
-		switch (sk)
-		{
-		case KEY_ESCAPE: return 0 + (32 * 0);
-		case KEY_F1: return 2 + (32 * 0);
-		case KEY_F2: return 3 + (32 * 0);
-		case KEY_F3: return 4 + (32 * 0);
-		case KEY_F4: return 5 + (32 * 0);
-		case KEY_F5: return 6 + (32 * 0);
-		case KEY_F6: return 7 + (32 * 0);
-		case KEY_F7: return 8 + (32 * 0);
-		case KEY_F8: return 9 + (32 * 0);
-		case KEY_F9: return 10 + (32 * 0);
-		case KEY_F10: return 11 + (32 * 0);
-		case KEY_F11: return 12 + (32 * 0);
-		case KEY_F12: return 13 + (32 * 0);
-		case KEY_PRINT_SCREEN: return 14 + (32 * 0);
-		case KEY_PAUSE: return 15 + (32 * 0);
-		case KEY_SCROLL_LOCK: return 16 + (32 * 0);
-		case KEY_BACKQUOTE: return 0 + (32 * 1);
-		case KEY_1: return 1 + (32 * 1);
-		case KEY_2: return 2 + (32 * 1);
-		case KEY_3: return 3 + (32 * 1);
-		case KEY_4: return 4 + (32 * 1);
-		case KEY_5: return 5 + (32 * 1);
-		case KEY_6: return 6 + (32 * 1);
-		case KEY_7: return 7 + (32 * 1);
-		case KEY_8: return 8 + (32 * 1);
-		case KEY_9: return 9 + (32 * 1);
-		case KEY_0: return 10 + (32 * 1);
-		case KEY_MINUS: return 11 + (32 * 1);
-		case KEY_EQUALS: return 12 + (32 * 1);
-		case KEY_BACKSPACE: return 13 + (32 * 1);
-		case KEY_INSERT: return 14 + (32 * 1);
-		case KEY_HOME: return 15 + (32 * 1);
-		case KEY_PAGE_UP: return 16 + (32 * 1);
-		case KEY_NUM_LOCK: return 17 + (32 * 1);
-		case KEY_NUMPAD_DIVIDE: return 18 + (32 * 1);
-		case KEY_NUMPAD_MULTIPLY: return 19 + (32 * 1);
-		case KEY_NUMPAD_SUBTRACT: return 20 + (32 * 1);
-		case KEY_TAB: return 0 + (32 * 2);
-		case KEY_Q: return 1 + (32 * 2);
-		case KEY_W: return 2 + (32 * 2);
-		case KEY_E: return 3 + (32 * 2);
-		case KEY_R: return 4 + (32 * 2);
-		case KEY_T: return 5 + (32 * 2);
-		case KEY_Y: return 6 + (32 * 2);
-		case KEY_U: return 7 + (32 * 2);
-		case KEY_I: return 8 + (32 * 2);
-		case KEY_O: return 9 + (32 * 2);
-		case KEY_P: return 10 + (32 * 2);
-		case KEY_BRACKET_LEFT: return 11 + (32 * 2);
-		case KEY_BRACKET_RIGHT: return 12 + (32 * 2);
-		//case KEY_BACKSLASH: return 13 + (32 * 2); // ISO
-		case KEY_DEL: return 14 + (32 * 2);
-		case KEY_END: return 15 + (32 * 2);
-		case KEY_PAGE_DOWN: return 16 + (32 * 2);
-		case KEY_NUMPAD7: return 17 + (32 * 2);
-		case KEY_NUMPAD8: return 18 + (32 * 2);
-		case KEY_NUMPAD9: return 19 + (32 * 2);
-		case KEY_NUMPAD_ADD: return 20 + (32 * 2);
-		case KEY_CAPS_LOCK: return 0 + (32 * 3);
-		case KEY_A: return 1 + (32 * 3);
-		case KEY_S: return 2 + (32 * 3);
-		case KEY_D: return 3 + (32 * 3);
-		case KEY_F: return 4 + (32 * 3);
-		case KEY_G: return 5 + (32 * 3);
-		case KEY_H: return 6 + (32 * 3);
-		case KEY_J: return 7 + (32 * 3);
-		case KEY_K: return 8 + (32 * 3);
-		case KEY_L: return 9 + (32 * 3);
-		case KEY_SEMICOLON: return 10 + (32 * 3);
-		case KEY_QUOTE: return 11 + (32 * 3);
-		case KEY_BACKSLASH: return 12 + (32 * 3);
-		case KEY_ENTER: return 13 + (32 * 3);
-		case KEY_NUMPAD4: return 17 + (32 * 3);
-		case KEY_NUMPAD5: return 18 + (32 * 3);
-		case KEY_NUMPAD6: return 19 + (32 * 3);
-		case KEY_LSHIFT: return 0 + (32 * 4);
-		case KEY_INTL_BACKSLASH: return 1 + (32 * 4);
-		case KEY_Z: return 2 + (32 * 4);
-		case KEY_X: return 3 + (32 * 4);
-		case KEY_C: return 4 + (32 * 4);
-		case KEY_V: return 5 + (32 * 4);
-		case KEY_B: return 6 + (32 * 4);
-		case KEY_N: return 7 + (32 * 4);
-		case KEY_M: return 8 + (32 * 4);
-		case KEY_COMMA: return 9 + (32 * 4);
-		case KEY_PERIOD: return 10 + (32 * 4);
-		case KEY_SLASH: return 11 + (32 * 4);
-		case KEY_RSHIFT: return 13 + (32 * 4);
-		case KEY_ARROW_UP: return 15 + (32 * 4);
-		case KEY_NUMPAD1: return 17 + (32 * 4);
-		case KEY_NUMPAD2: return 18 + (32 * 4);
-		case KEY_NUMPAD3: return 19 + (32 * 4);
-		case KEY_NUMPAD_ENTER: return 20 + (32 * 4);
-		case KEY_LCTRL: return 0 + (32 * 5);
-		case KEY_LMETA: return 1 + (32 * 5);
-		case KEY_LALT: return 2 + (32 * 5);
-		case KEY_SPACE: return 6 + (32 * 5);
-		case KEY_RALT: return 10 + (32 * 5);
-		case KEY_RMETA: return 11 + (32 * 5);
-		case KEY_FN: return 12 + (32 * 5);
-		case KEY_RCTRL: return 13 + (32 * 5);
-		case KEY_ARROW_LEFT: return 14 + (32 * 5);
-		case KEY_ARROW_DOWN: return 15 + (32 * 5);
-		case KEY_ARROW_RIGHT: return 16 + (32 * 5);
-		case KEY_NUMPAD0: return 18 + (32 * 5);
-		case KEY_NUMPAD_DECIMAL: return 19 + (32 * 5);
-		}
-		return 255;
-	}
-
-	uint8_t kbRgbWooting::getNumColumns() const noexcept
-	{
-		return has_numpad ? 21 : 17;
-	}
-
-	void kbRgbWooting::init()
-	{
-		{
-			Buffer buf(8);
-			buf.push_back(/* 0 */ 0); // HID report index
-			buf.push_back(/* 1 */ 0xD0); // Magic word
-			buf.push_back(/* 2 */ 0xDA); // Magic word
-			buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevInit);
-			buf.push_back(/* 4 */ 0);
-			buf.push_back(/* 5 */ 0);
-			buf.push_back(/* 6 */ 0);
-			buf.push_back(/* 7 */ 0);
-			hid.sendFeatureReport(std::move(buf));
-		}
-		SOUP_UNUSED(hid.pollReport());
-	}
-
-	void kbRgbWooting::deinit()
-	{
-		{
-			Buffer buf(8);
-			buf.push_back(/* 0 */ 0); // HID report index
-			buf.push_back(/* 1 */ 0xD0); // Magic word
-			buf.push_back(/* 2 */ 0xDA); // Magic word
-			buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevResetAll);
-			buf.push_back(/* 4 */ 0);
-			buf.push_back(/* 5 */ 0);
-			buf.push_back(/* 6 */ 0);
-			buf.push_back(/* 7 */ 0);
-			hid.sendFeatureReport(std::move(buf));
-		}
-		SOUP_UNUSED(hid.pollReport());
-	}
-
-	void kbRgbWooting::setKey(uint8_t key, Rgb colour)
-	{
-		key = mapWootingKey(key);
-		if (key != 255)
-		{
-			{
-				Buffer buf(8);
-				buf.push_back(/* 0 */ 0); // HID report index
-				buf.push_back(/* 1 */ 0xD0); // Magic word
-				buf.push_back(/* 2 */ 0xDA); // Magic word
-				buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevSingleColor);
-				buf.push_back(/* 4 */ colour.b);
-				buf.push_back(/* 5 */ colour.g);
-				buf.push_back(/* 6 */ colour.r);
-				buf.push_back(/* 7 */ key);
-				hid.sendFeatureReport(std::move(buf));
-			}
-			SOUP_UNUSED(hid.pollReport());
-		}
-	}
-
-	void kbRgbWooting::setKeys(const Rgb(&colours)[NUM_KEYS])
-	{
-		Buffer buf(256 + 1);
-		buf.push_back(/* 0 */ 0); // HID report index
-		buf.push_back(/* 1 */ 0xD0); // Magic word
-		buf.push_back(/* 2 */ 0xDA); // Magic word
-		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
-		for (uint8_t row = 0; row != 6; ++row)
-		{
-			for (uint8_t column = 0; column != getNumColumns(); ++column)
-			{
-				const Rgb& colour = getColourForPos(colours, row, column);
-				auto encoded = encodeColor(colour.r, colour.g, colour.b);
-				buf.push_back(encoded & 0xff);
-				buf.push_back(encoded >> 8);
-			}
-		}
-		hid.sendReport(std::move(buf));
-	}
-
-	void kbRgbWooting::setAllKeys(Rgb colour)
-	{
-		Buffer buf(256 + 1);
-		buf.push_back(/* 0 */ 0); // HID report index
-		buf.push_back(/* 1 */ 0xD0); // Magic word
-		buf.push_back(/* 2 */ 0xDA); // Magic word
-		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
-		for (uint8_t row = 0; row != 6; ++row)
-		{
-			for (uint8_t column = 0; column != getNumColumns(); ++column)
-			{
-				auto encoded = encodeColor(colour.r, colour.g, colour.b);
-				buf.push_back(encoded & 0xff);
-				buf.push_back(encoded >> 8);
-			}
-		}
-		hid.sendReport(std::move(buf));
 	}
 
 	// Works on my Wooting Two HE

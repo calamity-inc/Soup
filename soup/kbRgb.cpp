@@ -45,4 +45,18 @@ namespace soup
 		}
 		setKeys(buf);
 	}
+
+	void kbRgb::mapPosToKeys(Rgb(&keys)[NUM_KEYS], Rgb* data, uint8_t rows, uint8_t columns)
+	{
+		for (uint8_t row = 0; row != rows; ++row)
+		{
+			for (uint8_t column = 0; column != columns; ++column)
+			{
+				if (auto sk = getKeyForPos(row, column); sk != KEY_NONE)
+				{
+					keys[sk] = data[row * columns + column];
+				}
+			}
+		}
+	}
 }
