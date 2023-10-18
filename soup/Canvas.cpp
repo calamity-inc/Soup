@@ -153,7 +153,9 @@ namespace soup
 			for (unsigned int x = 0; x != width; ++x)
 			{
 				const Rgb& colour = ref(x, y);
-				if (colour != prev)
+				if (colour != prev
+					|| explicit_nl // bandaid
+					)
 				{
 					prev = colour;
 					str.append(console.strSetForegroundColour<std::string>(colour.r, colour.g, colour.b));
@@ -179,7 +181,9 @@ namespace soup
 			for (unsigned int x = 0; x != width; ++x)
 			{
 				const Rgb& colour = ref(x, y);
-				if (colour != prev)
+				if (colour != prev
+					|| explicit_nl // bandaid
+					)
 				{
 					prev = colour;
 					str.append(console.strSetForegroundColour<std::string>(colour.r, colour.g, colour.b));
