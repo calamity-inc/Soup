@@ -10,5 +10,5 @@ web/libsoup.wasm
 *.exp
 
 # Linux
-CLI/CLI
+CLI/soup
 *.a
