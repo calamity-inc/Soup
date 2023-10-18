@@ -44,6 +44,8 @@ using udev_list_entry_get_name_t = const char*(*)(udev_list_entry*);
 using udev_device_unref_t = udev_device*(*)(udev_device*);
 using udev_device_new_from_syspath_t = udev_device*(*)(udev*, const char*);
 using udev_device_get_devnode_t = const char*(*)(udev_device*);
+using udev_device_get_parent_with_subsystem_devtype_t = udev_device*(*)(udev_device*, const char*, const char*);
+using udev_device_get_sysattr_value_t = const char*(*)(udev_device*, const char*);
 
 #define udev_list_entry_foreach(list_entry, first_entry) \
         for (list_entry = first_entry; \
@@ -76,7 +78,8 @@ namespace soup
 				*value = '\0';
 				value++;
 
-				if (strcmp(key, "HID_ID") == 0) {
+				if (strcmp(key, "HID_ID") == 0)
+				{
 					/**
 					 *        type vendor   product
 					 * HID_ID=0003:000005AC:00008242
@@ -87,11 +90,13 @@ namespace soup
 						found_id = true;
 					}
 				}
-				else if (strcmp(key, "HID_NAME") == 0) {
+				else if (strcmp(key, "HID_NAME") == 0)
+				{
 					product_name_utf8 = value;
 					found_name = true;
 				}
-				else if (strcmp(key, "HID_UNIQ") == 0) {
+				else if (strcmp(key, "HID_UNIQ") == 0)
+				{
 					serial_number_utf8 = value;
 					found_serial = true;
 				}
@@ -384,6 +389,8 @@ namespace soup
 		use_udev_func(udev_device_unref);
 		use_udev_func(udev_device_new_from_syspath);
 		use_udev_func(udev_device_get_devnode);
+		use_udev_func(udev_device_get_parent_with_subsystem_devtype);
+		use_udev_func(udev_device_get_sysattr_value);
 
 		if (udev* udev = udev_new())
 		{
@@ -412,6 +419,13 @@ namespace soup
 
 						hid.handle = ::open(dev_path, O_RDWR | O_CLOEXEC);
 
+						// The product string we got from `parse_uevent_info` is a bit bad because it is actually vendor string + product string.
+						if (auto usb_dev = udev_device_get_parent_with_subsystem_devtype(device, "usb", "usb_device"))
+						{
+							hid.manufacturer_name = udev_device_get_sysattr_value(usb_dev, "manufacturer");
+							hid.product_name = udev_device_get_sysattr_value(usb_dev, "product");
+						}
+
 						res.emplace_back(std::move(hid));
 
 						udev_device_unref(device);
@@ -427,6 +441,19 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
+	std::string hwHid::getManufacturerName() const
+	{
+		std::string ret{};
+
+		wchar_t buf[256];
+		if (HidD_GetManufacturerString(handle, buf, sizeof(buf)))
+		{
+			ret = unicode::utf16_to_utf8<std::wstring>(buf);
+		}
+
+		return ret;
+	}
+
 	std::string hwHid::getProductName() const
 	{
 		std::string ret{};

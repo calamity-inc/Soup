@@ -25,6 +25,7 @@ namespace soup
 		uint16_t output_report_byte_length;
 		uint16_t feature_report_byte_length;
 #else
+		std::string manufacturer_name;
 		std::string product_name;
 		std::string serial_number;
 #endif
@@ -34,9 +35,15 @@ namespace soup
 		[[nodiscard]] static std::vector<hwHid> getAll();
 
 #if SOUP_WINDOWS
+		[[nodiscard]] std::string getManufacturerName() const;
 		[[nodiscard]] std::string getProductName() const;
 		[[nodiscard]] std::string getSerialNumber() const;
 #else
+		[[nodiscard]] const std::string& getManufacturerName() const
+		{
+			return manufacturer_name;
+		}
+
 		[[nodiscard]] const std::string& getProductName() const
 		{
 			return product_name;
