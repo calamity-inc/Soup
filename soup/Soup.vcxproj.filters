@@ -1512,12 +1512,6 @@
     <ClInclude Include="cbCmdQrcode.hpp">
       <Filter>ling\chatbot</Filter>
     </ClInclude>
-    <ClInclude Include="hwGamepad.hpp">
-      <Filter>hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="buttons.hpp">
-      <Filter>hardware</Filter>
-    </ClInclude>
     <ClInclude Include="HidScancode.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
@@ -1541,6 +1535,12 @@
     </ClInclude>
     <ClInclude Include="netMeshMsgType.hpp">
       <Filter>net\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="hwGamepad.hpp">
+      <Filter>hardware\gamepad</Filter>
+    </ClInclude>
+    <ClInclude Include="buttons.hpp">
+      <Filter>hardware\gamepad</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2239,9 +2239,6 @@
     <ClCompile Include="kbRgb.cpp">
       <Filter>hardware\keyboard\rgb</Filter>
     </ClCompile>
-    <ClCompile Include="hwGamepad.cpp">
-      <Filter>hardware</Filter>
-    </ClCompile>
     <ClCompile Include="parallel.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -2253,6 +2250,9 @@
     </ClCompile>
     <ClCompile Include="netMeshService.cpp">
       <Filter>net\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="hwGamepad.cpp">
+      <Filter>hardware\gamepad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2492,6 +2492,9 @@
     </Filter>
     <Filter Include="net\mesh">
       <UniqueIdentifier>{a08f39b5-d0c9-4b21-8456-47713eed92af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\gamepad">
+      <UniqueIdentifier>{5c9b4e26-6f33-4af2-a73d-a360194d66a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
