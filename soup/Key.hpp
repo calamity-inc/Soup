@@ -126,6 +126,11 @@ namespace soup
 		KEY_PLAY_PAUSE,
 		KEY_NEXT_TRACK,
 
+		KEY_OEM_1,
+		KEY_OEM_2,
+		KEY_OEM_3,
+		KEY_OEM_4,
+
 		NUM_KEYS
 	};
 

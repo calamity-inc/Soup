@@ -127,6 +127,10 @@ namespace soup
 		case KEY_PRINT_SCREEN: return 14 + (32 * 0);
 		case KEY_PAUSE: return 15 + (32 * 0);
 		case KEY_SCROLL_LOCK: return 16 + (32 * 0);
+		case KEY_OEM_1: return 17 + (32 * 0);
+		case KEY_OEM_2: return 18 + (32 * 0);
+		case KEY_OEM_3: return 19 + (32 * 0);
+		case KEY_OEM_4: return 20 + (32 * 0);
 		case KEY_BACKQUOTE: return 0 + (32 * 1);
 		case KEY_1: return 1 + (32 * 1);
 		case KEY_2: return 2 + (32 * 1);
@@ -347,6 +351,10 @@ namespace soup
 			case 14: return KEY_PRINT_SCREEN;
 			case 15: return KEY_PAUSE;
 			case 16: return KEY_SCROLL_LOCK;
+			case 17: return KEY_OEM_1;
+			case 18: return KEY_OEM_2;
+			case 19: return KEY_OEM_3;
+			case 20: return KEY_OEM_4;
 			}
 		}
 		else if (row == 1)
