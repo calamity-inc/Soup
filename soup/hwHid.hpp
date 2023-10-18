@@ -35,6 +35,7 @@ namespace soup
 		[[nodiscard]] static std::vector<hwHid> getAll();
 
 #if SOUP_WINDOWS
+		// Note: Getting this information may require communicating with the device, which can be bad as some mice will shortly void input for this.
 		[[nodiscard]] std::string getManufacturerName() const;
 		[[nodiscard]] std::string getProductName() const;
 		[[nodiscard]] std::string getSerialNumber() const;
