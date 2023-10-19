@@ -38,7 +38,7 @@ namespace soup
 
 		// Some gamepads like the DS4 pretty much always have something to report,
 		// but the assumption should be that this will block until the user causes a change.
-		[[nodiscard]] Status pollStatus();
+		[[nodiscard]] Status receiveStatus();
 
 		[[nodiscard]] bool hasInvertedActionButtons() const noexcept { return false; }
 

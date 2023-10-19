@@ -109,7 +109,7 @@ namespace soup
 		}
 	};
 
-	Status hwGamepad::pollStatus()
+	Status hwGamepad::receiveStatus()
 	{
 		update();
 
