@@ -21,15 +21,18 @@ namespace soup
 
 	private:
 #if SOUP_WINDOWS
-		uint16_t input_report_byte_length;
 		uint16_t output_report_byte_length;
 		uint16_t feature_report_byte_length;
+		bool pending_read = false;
+		DWORD bytes_read{};
+		OVERLAPPED read_overlapped{};
 #else
 		std::string manufacturer_name;
 		std::string product_name;
 		std::string serial_number;
 #endif
 		HandleRaii handle;
+		Buffer read_buffer;
 
 	public:
 		[[nodiscard]] static std::vector<hwHid> getAll();
@@ -70,10 +73,16 @@ namespace soup
 
 		[[nodiscard]] bool hasReportId(uint8_t report_id) const noexcept;
 
-		[[nodiscard]] Buffer receiveReport() const; // blocking
+		[[nodiscard]] bool hasReport();
+		[[nodiscard]] const Buffer& receiveReport(); // blocking if !hasReport()
 		void receiveFeatureReport(Buffer& buf) const;
 
 		bool sendReport(Buffer&& buf) const noexcept;
 		bool sendFeatureReport(Buffer&& buf) const noexcept;
+
+	private:
+#if SOUP_WINDOWS
+		void kickOffRead();
+#endif
 	};
 }

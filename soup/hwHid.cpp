@@ -16,6 +16,7 @@
 #include <sys/stat.h> // open
 #include <fcntl.h> // O_RDWR etc
 #include <unistd.h> // read
+#include <poll.h>
 
 #include <linux/hidraw.h>
 
@@ -330,7 +331,7 @@ namespace soup
 				FILE_SHARE_READ | FILE_SHARE_WRITE,
 				NULL,
 				OPEN_EXISTING,
-				0,
+				FILE_FLAG_OVERLAPPED,
 				NULL
 			);
 			if (!hid.handle.isValid())
@@ -353,9 +354,9 @@ namespace soup
 					{
 						hid.usage = caps.Usage;
 						hid.usage_page = caps.UsagePage;
-						hid.input_report_byte_length = caps.InputReportByteLength;
 						hid.output_report_byte_length = caps.OutputReportByteLength;
 						hid.feature_report_byte_length = caps.FeatureReportByteLength;
+						hid.read_buffer.reserve(caps.InputReportByteLength);
 
 						res.emplace_back(std::move(hid));
 					}
@@ -423,6 +424,8 @@ namespace soup
 							hid.product_name = udev_device_get_sysattr_value(usb_dev, "product");
 						}
 
+						hid.read_buffer.reserve(1024); // We don't have a input_report_byte_length, so 1024 ought to be enough.
+
 						res.emplace_back(std::move(hid));
 
 						udev_device_unref(device);
@@ -488,8 +491,7 @@ namespace soup
 		PHIDP_PREPARSED_DATA pp_data = nullptr;
 		if (HidD_GetPreparsedData(handle, &pp_data))
 		{
-			Buffer buf(input_report_byte_length);
-			if (HidP_InitializeReportForID(HidP_Input, report_id, pp_data, (char*)buf.data(), buf.capacity()) == HIDP_STATUS_SUCCESS)
+			if (HidP_InitializeReportForID(HidP_Input, report_id, pp_data, (char*)read_buffer.data(), read_buffer.capacity()) == HIDP_STATUS_SUCCESS)
 			{
 				ret = true;
 			}
@@ -499,36 +501,53 @@ namespace soup
 		return ret;
 	}
 
-	Buffer hwHid::receiveReport() const
+	bool hwHid::hasReport()
+	{
+#if SOUP_WINDOWS
+		if (!pending_read)
+		{
+			kickOffRead();
+		}
+		return HasOverlappedIoCompleted(&read_overlapped);
+#else
+		pollfd pfd;
+		pfd.fd = handle;
+		pfd.events = POLLIN;
+		pfd.revents = 0;
+		return poll(&pfd, 1, 0) != 0;
+#endif
+	}
+
+	const Buffer& hwHid::receiveReport()
 	{
 		SOUP_ASSERT(havePermission(), "Attempt to read report from HID without having the needed permissions");
+		read_buffer.resize(0);
 #if SOUP_WINDOWS
-		Buffer buf(input_report_byte_length);
-		DWORD bytes_read;
-		if (ReadFile(handle, buf.data(), input_report_byte_length, &bytes_read, NULL))
+		if (!pending_read)
 		{
-			buf.resize(bytes_read);
+			kickOffRead();
+		}
+		if (GetOverlappedResult(handle, &read_overlapped, &bytes_read, TRUE))
+		{
+			read_buffer.resize(bytes_read);
 
 			// Windows puts a report id at the front, but we want the raw data, so erasing it.
 			if (bytes_read != 0
-				&& buf.at(0) == '\0'
+				&& read_buffer.at(0) == '\0'
 				)
 			{
-				buf.erase(0, 1);
+				read_buffer.erase(0, 1);
 			}
-
-			return buf;
 		}
+		pending_read = false;
 #elif SOUP_LINUX
-		Buffer buf(1024); // We don't have a input_report_byte_length, so 1024 ought to be enough.
-		int bytes_read = ::read(handle, buf.data(), buf.capacity());
+		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
 		if (bytes_read >= 0)
 		{
-			buf.resize(bytes_read);
-			return buf;
+			read_buffer.resize(bytes_read);
 		}
 #endif
-		return {};
+		return read_buffer;
 	}
 
 	void hwHid::receiveFeatureReport(Buffer& buf) const
@@ -554,8 +573,16 @@ namespace soup
 			buf.insert_back(output_report_byte_length - buf.size(), '\0');
 		}
 
+		OVERLAPPED overlapped{};
 		DWORD bytesWritten;
-		return WriteFile(handle, buf.data(), buf.size(), &bytesWritten, nullptr) && bytesWritten == buf.size();
+		BOOL result = WriteFile(handle, buf.data(), buf.size(), &bytesWritten, &overlapped);
+		if (result == FALSE
+			&& GetLastError() == ERROR_IO_PENDING
+			)
+		{
+			result = GetOverlappedResult(handle, &overlapped, &bytesWritten, TRUE);
+		}
+		return result && bytesWritten == buf.size();
 #elif SOUP_LINUX
 		// TODO
 		return false;
@@ -577,4 +604,12 @@ namespace soup
 		return false;
 #endif
 	}
+
+#if SOUP_WINDOWS
+	void hwHid::kickOffRead()
+	{
+		ReadFile(handle, read_buffer.data(), read_buffer.capacity(), &bytes_read, &read_overlapped);
+		pending_read = true;
+	}
+#endif
 }

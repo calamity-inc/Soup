@@ -495,7 +495,7 @@ namespace soup
 			buf.push_back(/* 7 */ 0);
 			hid.sendFeatureReport(std::move(buf));
 		}
-		auto buf = hid.receiveReport();
+		const Buffer& buf = hid.receiveReport();
 		return ((float)(uint8_t)buf.at(8) / 255.0f * 100.0f);
 	}
 }

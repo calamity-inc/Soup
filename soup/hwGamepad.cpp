@@ -115,7 +115,7 @@ namespace soup
 
 		Status status{};
 
-		auto report_data = hid.receiveReport();
+		const Buffer& report_data = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report_data.empty())
 		{
 			disconnected = true;
@@ -128,12 +128,12 @@ namespace soup
 			{
 				if (report_data.at(0) == 0x11)
 				{
-					report_data.erase(0, 3); // Bluetooth report starts with 11 C0 00
+					r.skip(3); // Bluetooth report starts with 11 C0 00
 					is_bluetooth = true;
 				}
 				else
 				{
-					report_data.erase(0, 1); // USB report starts with 05
+					r.skip(1); // USB report starts with 05
 					is_bluetooth = false;
 				}
 

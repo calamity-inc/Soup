@@ -92,7 +92,7 @@ namespace soup
 		void resize(size_t desired_size) noexcept
 		{
 			m_size = desired_size;
-			//if (m_capacity < desired_size)
+			if (m_capacity < desired_size)
 			{
 				resizeInner(desired_size);
 			}
@@ -124,6 +124,14 @@ namespace soup
 		}
 
 	public:
+		void reserve(size_t desired_capacity) noexcept
+		{
+			if (m_capacity < desired_capacity)
+			{
+				resizeInner(desired_capacity);
+			}
+		}
+
 		void push_back(uint8_t elm) noexcept
 		{
 			ensureSpace(m_size + 1);

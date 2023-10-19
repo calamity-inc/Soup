@@ -225,7 +225,7 @@ namespace soup
 	{
 		std::vector<ActiveKey> keys{};
 
-		auto report = hid.receiveReport();
+		const Buffer& report = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report.empty())
 		{
 			disconnected = true;
@@ -278,7 +278,7 @@ namespace soup
 			}
 			else // Razer, up to 11 keys
 			{
-				report.erase(0, 1); // remove report id (7)
+				r.skip(1); // ignore report id (7)
 
 				uint8_t scancode;
 				uint8_t value;
