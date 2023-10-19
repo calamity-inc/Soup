@@ -225,7 +225,7 @@ namespace soup
 	{
 		std::vector<ActiveKey> keys{};
 
-		auto report = hid.pollReport();
+		auto report = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report.empty())
 		{
 			disconnected = true;

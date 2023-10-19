@@ -239,7 +239,7 @@ namespace soup
 			buf.push_back(/* 7 */ 0);
 			hid.sendFeatureReport(std::move(buf));
 		}
-		SOUP_UNUSED(hid.pollReport());
+		SOUP_UNUSED(hid.receiveReport());
 	}
 
 	void kbRgbWooting::deinit()
@@ -256,7 +256,7 @@ namespace soup
 			buf.push_back(/* 7 */ 0);
 			hid.sendFeatureReport(std::move(buf));
 		}
-		SOUP_UNUSED(hid.pollReport());
+		SOUP_UNUSED(hid.receiveReport());
 	}
 
 	void kbRgbWooting::setKey(uint8_t key, Rgb colour)
@@ -276,7 +276,7 @@ namespace soup
 				buf.push_back(/* 7 */ key);
 				hid.sendFeatureReport(std::move(buf));
 			}
-			SOUP_UNUSED(hid.pollReport());
+			SOUP_UNUSED(hid.receiveReport());
 		}
 	}
 
@@ -495,7 +495,7 @@ namespace soup
 			buf.push_back(/* 7 */ 0);
 			hid.sendFeatureReport(std::move(buf));
 		}
-		auto buf = hid.pollReport();
+		auto buf = hid.receiveReport();
 		return ((float)(uint8_t)buf.at(8) / 255.0f * 100.0f);
 	}
 }

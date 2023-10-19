@@ -502,9 +502,9 @@ namespace soup
 		return ret;
 	}
 
-	Buffer hwHid::pollReport() const
+	Buffer hwHid::receiveReport() const
 	{
-		SOUP_ASSERT(havePermission(), "Attempt to poll report from HID without having the needed permissions");
+		SOUP_ASSERT(havePermission(), "Attempt to read report from HID without having the needed permissions");
 #if SOUP_WINDOWS
 		Buffer buf(input_report_byte_length);
 		DWORD bytes_read;
@@ -534,7 +534,7 @@ namespace soup
 		return {};
 	}
 
-	void hwHid::getFeatureReport(Buffer& buf) const
+	void hwHid::receiveFeatureReport(Buffer& buf) const
 	{
 #if SOUP_WINDOWS
 		if (buf.size() < feature_report_byte_length)

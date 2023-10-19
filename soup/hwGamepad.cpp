@@ -115,7 +115,7 @@ namespace soup
 
 		Status status{};
 
-		auto report_data = hid.pollReport();
+		auto report_data = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report_data.empty())
 		{
 			disconnected = true;
