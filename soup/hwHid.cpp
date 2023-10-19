@@ -509,7 +509,7 @@ namespace soup
 			kickOffRead();
 		}
 		return HasOverlappedIoCompleted(&read_overlapped);
-#else
+#elif SOUP_LINUX
 		pollfd pfd;
 		pfd.fd = handle;
 		pfd.events = POLLIN;
