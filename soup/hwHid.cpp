@@ -47,10 +47,7 @@ using udev_device_get_devnode_t = const char*(*)(udev_device*);
 using udev_device_get_parent_with_subsystem_devtype_t = udev_device*(*)(udev_device*, const char*, const char*);
 using udev_device_get_sysattr_value_t = const char*(*)(udev_device*, const char*);
 
-#define udev_list_entry_foreach(list_entry, first_entry) \
-        for (list_entry = first_entry; \
-             list_entry; \
-             list_entry = udev_list_entry_get_next(list_entry))
+#define udev_list_entry_foreach(list_entry, first_entry) for (list_entry = first_entry; list_entry; list_entry = udev_list_entry_get_next(list_entry))
 #endif
 
 namespace soup
