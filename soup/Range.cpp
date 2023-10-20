@@ -1,7 +1,7 @@
 #include "Range.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
-#include <intrin.h>
+#if SOUP_X86 && SOUP_BITS == 64
+#include <emmintrin.h>
 #endif
 
 #include "base.hpp"
@@ -57,7 +57,7 @@ namespace soup
 		{
 			return base;
 		}
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
+#if SOUP_X86 && SOUP_BITS == 64
 		SOUP_IF_LIKELY (data[0].has_value())
 		{
 			if (CpuInfo::get().supportsSSE2())
@@ -76,7 +76,7 @@ namespace soup
 		return nullptr;
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
+#if SOUP_X86 && SOUP_BITS == 64
 	Pointer Range::scanSimd(const Pattern& sig) const noexcept
 	{
 		auto data = sig.bytes.data();
@@ -107,7 +107,7 @@ namespace soup
 		{
 			return {};
 		}
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
+#if SOUP_X86 && SOUP_BITS == 64
 		SOUP_IF_LIKELY (data[0].has_value())
 		{
 			if (CpuInfo::get().supportsSSE2())
@@ -131,7 +131,7 @@ namespace soup
 		return result;
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
+#if SOUP_X86 && SOUP_BITS == 64
 	std::vector<Pointer> Range::scanAllSimd(const Pattern& sig, unsigned int limit) const
 	{
 		auto data = sig.bytes.data();
