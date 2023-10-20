@@ -291,17 +291,17 @@ namespace soup
 
 		// conversions
 
-		[[nodiscard]] static std::string bin2hex(const std::string& str)
+		[[nodiscard]] static std::string bin2hex(const std::string& str, bool spaces = false)
 		{
-			return bin2hexImpl(str, charset_hex);
+			return bin2hexImpl(str, spaces, charset_hex);
 		}
 
-		[[nodiscard]] static std::string bin2hexLower(const std::string& str)
+		[[nodiscard]] static std::string bin2hexLower(const std::string& str, bool spaces = false)
 		{
-			return bin2hexImpl(str, charset_hex_lower);
+			return bin2hexImpl(str, spaces, charset_hex_lower);
 		}
 
-		[[nodiscard]] static std::string bin2hexImpl(const std::string& str, const char* map)
+		[[nodiscard]] static std::string bin2hexImpl(const std::string& str, bool spaces, const char* map)
 		{
 			std::string res{};
 			res.reserve(str.size() * 2);
@@ -309,6 +309,14 @@ namespace soup
 			{
 				res.push_back(map[(unsigned char)c >> 4]);
 				res.push_back(map[c & 0b1111]);
+				if (spaces)
+				{
+					res.push_back(' ');
+				}
+			}
+			if (spaces && !res.empty())
+			{
+				res.pop_back();
 			}
 			return res;
 		}
