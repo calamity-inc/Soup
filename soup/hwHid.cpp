@@ -515,6 +515,8 @@ namespace soup
 		pfd.events = POLLIN;
 		pfd.revents = 0;
 		return poll(&pfd, 1, 0) != 0;
+#else
+		return true;
 #endif
 	}
 
@@ -586,6 +588,8 @@ namespace soup
 #elif SOUP_LINUX
 		// TODO
 		return false;
+#else
+		return false;
 #endif
 	}
 
@@ -601,6 +605,8 @@ namespace soup
 		return HidD_SetFeature(handle, buf.data(), buf.size());
 #elif SOUP_LINUX
 		// TODO
+		return false;
+#else
 		return false;
 #endif
 	}
