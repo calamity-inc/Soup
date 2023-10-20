@@ -5,8 +5,13 @@
 #include "Packet.hpp"
 #include "time.hpp"
 
-// https://gitlab.com/CalcProgrammer1/OpenRGB/-/blob/master/Controllers/SonyGamepadController/SonyDS4Controller.cpp?ref_type=heads
-// http://eleccelerator.com/wiki/index.php?title=DualShock_4
+// Useful resources for DS4:
+// - https://gitlab.com/CalcProgrammer1/OpenRGB/-/blob/master/Controllers/SonyGamepadController/SonyDS4Controller.cpp?ref_type=heads
+// - http://eleccelerator.com/wiki/index.php?title=DualShock_4
+
+// Useful resources for Switch:
+// - https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/blob/master/bluetooth_hid_notes.md
+// - https://wiki.handheldlegend.com/analog-stick-data
 
 namespace soup
 {
@@ -23,6 +28,12 @@ namespace soup
 				{
 					res.emplace_back(hwGamepad("DualShock 4", std::move(hid)));
 				}
+				else if (hid.vendor_id == 0x57e // Nintendo
+					&& hid.product_id == 0x2009 // Switch Pro Controller
+					)
+				{
+					res.emplace_back(hwGamepad("Nintendo Switch Pro Controller", std::move(hid))).switch_pro.has_calibration_data = false;
+				}
 				else if (hid.vendor_id == 0x18d1 // Google
 					&& hid.product_id == 0x9400 // Stadia Controller
 					)
@@ -30,7 +41,7 @@ namespace soup
 					Buffer buf;
 					buf.push_back(0x05);
 					bool is_bluetooth = !hid.sendReport(std::move(buf));
-					res.emplace_back(hwGamepad("Stadia Controller", std::move(hid), is_bluetooth));
+					res.emplace_back(hwGamepad("Stadia Controller", std::move(hid))).stadia.is_bluetooth = is_bluetooth;
 				}
 			}
 		}
@@ -122,19 +133,19 @@ namespace soup
 		}
 		else
 		{
-			BufferRefReader r(report_data);
-
 			if (hid.vendor_id == 0x54c) // DS4
 			{
+				BufferRefReader r(report_data);
+
 				if (report_data.at(0) == 0x11)
 				{
 					r.skip(3); // Bluetooth report starts with 11 C0 00
-					is_bluetooth = true;
+					ds4.is_bluetooth = true;
 				}
 				else
 				{
 					r.skip(1); // USB report starts with 05
-					is_bluetooth = false;
+					ds4.is_bluetooth = false;
 				}
 
 				Ds4Report report;
@@ -162,8 +173,83 @@ namespace soup
 				status.buttons[BTN_META] = (report.buttons_3_and_counter & (1 << 0));
 				status.buttons[BTN_TOUCHPAD] = (report.buttons_3_and_counter & (1 << 1));
 			}
+			else if (hid.vendor_id == 0x57e) // Nintendo Switch Pro Controller
+			{
+				SOUP_IF_UNLIKELY (!switch_pro.has_calibration_data)
+				{
+					calibrateSwitchProController();
+				}
+
+				uint16_t left_stick_x_raw, left_stick_y_raw, right_stick_x_raw, right_stick_y_raw;
+				if (report_data[0] == 0x3f) // something with bluetooth + steam causes this report format to appear
+				{
+					left_stick_x_raw = (report_data[4] | (report_data[5] << 8)) / 0xF;
+					left_stick_y_raw = (report_data[6] | (report_data[7] << 8)) / 0xF;
+					right_stick_x_raw = (report_data[8] | (report_data[9] << 8)) / 0xF;
+					right_stick_y_raw = (report_data[10] | (report_data[11] << 8)) / 0xF;
+
+					// [1]: 01 = act down, 02 = act right, 04 = act left, 08 = act up, 10 = L1, 20 = R1, 40 = L2, 80 = R2
+					// [2]: 01 = minus, 02 = plus, 04 = L3, 08 = R3, 10 = meta, 20 = capture
+					// [3]: DPAD
+
+					status.buttons[BTN_ACT_DOWN] = (report_data[1] & 0x01);
+					status.buttons[BTN_ACT_RIGHT] = (report_data[1] & 0x02);
+					status.buttons[BTN_ACT_LEFT] = (report_data[1] & 0x04);
+					status.buttons[BTN_ACT_UP] = (report_data[1] & 0x08);
+					status.buttons[BTN_LBUMPER] = (report_data[1] & 0x10);
+					status.buttons[BTN_RBUMPER] = (report_data[1] & 0x20);
+					status.buttons[BTN_LTRIGGER] = (report_data[1] & 0x40);
+					status.buttons[BTN_RTRIGGER] = (report_data[1] & 0x80);
+					status.buttons[BTN_MINUS] = (report_data[2] & 0x01);
+					status.buttons[BTN_PLUS] = (report_data[2] & 0x02);
+					status.buttons[BTN_LSTICK] = (report_data[2] & 0x04);
+					status.buttons[BTN_RSTICK] = (report_data[2] & 0x08);
+					status.buttons[BTN_META] = (report_data[2] & 0x10);
+					status.buttons[BTN_SHARE] = (report_data[2] & 0x20);
+					status.setDpad(report_data[3]);
+				}
+				else
+				{
+					left_stick_x_raw = report_data[6] | ((report_data[7] & 0xF) << 8);
+					left_stick_y_raw = (report_data[7] >> 4) | (report_data[8] << 4);
+					right_stick_x_raw = report_data[9] | ((report_data[10] & 0xF) << 8);
+					right_stick_y_raw = (report_data[10] >> 4) | (report_data[11] << 4);
+
+					// [3]: 01 = act left, 02 = act up, 04 = act down, 08 = act right, 40 = R1, 80 = R2
+					// [4]: 01 = minus, 02 = plus, 04 = R3, 08 = L3, 10 = meta, 20 = capture
+					// [5]: 01 = dpad down, 02 = dpad up, 04 = dpad right, 08 = dpad left, 40 = L1, 80 = L2
+
+					status.buttons[BTN_ACT_LEFT] = (report_data[3] & 0x01);
+					status.buttons[BTN_ACT_UP] = (report_data[3] & 0x02);
+					status.buttons[BTN_ACT_DOWN] = (report_data[3] & 0x04);
+					status.buttons[BTN_ACT_RIGHT] = (report_data[3] & 0x08);
+					status.buttons[BTN_RBUMPER] = (report_data[3] & 0x40);
+					status.buttons[BTN_RTRIGGER] = (report_data[3] & 0x80);
+					status.buttons[BTN_MINUS] = (report_data[4] & 0x01);
+					status.buttons[BTN_PLUS] = (report_data[4] & 0x02);
+					status.buttons[BTN_RSTICK] = (report_data[4] & 0x04);
+					status.buttons[BTN_LSTICK] = (report_data[4] & 0x08);
+					status.buttons[BTN_META] = (report_data[4] & 0x10);
+					status.buttons[BTN_SHARE] = (report_data[4] & 0x20);
+					status.buttons[BTN_DPAD_DOWN] = (report_data[5] & 0x01);
+					status.buttons[BTN_DPAD_UP] = (report_data[5] & 0x02);
+					status.buttons[BTN_DPAD_RIGHT] = (report_data[5] & 0x04);
+					status.buttons[BTN_DPAD_LEFT] = (report_data[5] & 0x08);
+					status.buttons[BTN_LBUMPER] = (report_data[5] & 0x40);
+					status.buttons[BTN_LTRIGGER] = (report_data[5] & 0x80);
+				}
+
+				status.left_stick_x = std::clamp(((float)(left_stick_x_raw - switch_pro.left_stick_x_min) / (float)switch_pro.left_stick_x_max_minus_min), 0.0f, 1.0f);
+				status.left_stick_y = std::clamp(((float)(left_stick_y_raw - switch_pro.left_stick_y_min) / (float)switch_pro.left_stick_y_max_minus_min), 0.0f, 1.0f);
+				status.right_stick_x = std::clamp(((float)(right_stick_x_raw - switch_pro.right_stick_x_min) / (float)switch_pro.right_stick_x_max_minus_min), 0.0f, 1.0f);
+				status.right_stick_y = std::clamp(((float)(right_stick_y_raw - switch_pro.right_stick_y_min) / (float)switch_pro.right_stick_y_max_minus_min), 0.0f, 1.0f);
+				status.left_trigger = status.buttons[BTN_LTRIGGER] ? 1.0f : 0.0f;
+				status.right_trigger = status.buttons[BTN_RTRIGGER] ? 1.0f : 0.0f;
+			}
 			else // Stadia Controller
 			{
+				BufferRefReader r(report_data);
+
 				StadiaReport report;
 				report.read(r);
 
@@ -202,6 +288,17 @@ namespace soup
 		return status;
 	}
 
+	bool hwGamepad::hasAnalogueTriggers() const noexcept
+	{
+		// Nintendo Switch Pro Controller does not have analogue triggers
+		return hid.vendor_id != 0x57e;
+	}
+
+	bool hwGamepad::hasInvertedActionButtons() const noexcept
+	{
+		return hid.vendor_id == 0x57e; // Nintendo Switch Pro Controller
+	}
+
 	// Should maybe be called "has programmable light" because Stadia Controller does have a light, we just can't modify it...
 	bool hwGamepad::hasLight() const noexcept
 	{
@@ -219,9 +316,13 @@ namespace soup
 
 	bool hwGamepad::canRumble() const noexcept
 	{
-		if (hid.vendor_id == 0x18d1) // Stadia Controller; rumble only works via USB
+		if (hid.vendor_id == 0x57e) // Nintendo Switch Pro Controller
 		{
-			return !is_bluetooth;
+			return false; // This thing *can* rumble, but I just can't be arsed with their format right now -- let's say it's a TODO. :)
+		}
+		else if (hid.vendor_id == 0x18d1) // Stadia Controller; rumble only works via USB
+		{
+			return !stadia.is_bluetooth;
 		}
 		return true;
 	}
@@ -300,7 +401,7 @@ namespace soup
 
 	void hwGamepad::sendReportDs4(Buffer&& buf) const
 	{
-		if (!is_bluetooth)
+		if (!ds4.is_bluetooth)
 		{
 			// Start data with 05
 			buf.insert_front(1, 0x05);
@@ -322,6 +423,66 @@ namespace soup
 			buf.push_back((0xFF000000 & crc) >> 24);
 		}
 		hid.sendReport(std::move(buf));
+	}
+
+	void hwGamepad::calibrateSwitchProController()
+	{
+		Buffer buf(0x40);
+		buf.push_back(0x01); // rumble + subcommand
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(0x10); // subcommand id: SPI flash read
+		buf.push_back(0x3D); // address: 0x0000603D (Analogue stick calibration data)
+		buf.push_back(0x60);
+		buf.push_back(0x00);
+		buf.push_back(0x00);
+		buf.push_back(9 + 9); // size
+		hid.sendReport(std::move(buf));
+		while (true)
+		{
+			const Buffer& report = hid.receiveReport();
+			if (report.at(0) == 0x21)
+			{
+				switch_pro.has_calibration_data = true;
+
+				const uint8_t* stick_cal = &report[20];
+
+				uint16_t x_max_above_centre = ((stick_cal[1] << 8) & 0xF00) | stick_cal[0];
+				uint16_t y_max_above_centre = (stick_cal[2] << 4) | (stick_cal[1] >> 4);
+				uint16_t x_centre = ((stick_cal[4] << 8) & 0xF00) | stick_cal[3];
+				uint16_t y_centre = (stick_cal[5] << 4) | (stick_cal[4] >> 4);
+				uint16_t x_min_below_centre = ((stick_cal[7] << 8) & 0xF00) | stick_cal[6];
+				uint16_t y_min_below_centre = (stick_cal[8] << 4) | (stick_cal[7] >> 4);
+
+				switch_pro.left_stick_x_min = x_centre - x_min_below_centre;
+				switch_pro.left_stick_x_max_minus_min = (x_centre + x_max_above_centre) - switch_pro.left_stick_x_min;
+				switch_pro.left_stick_y_min = y_centre - y_min_below_centre;
+				switch_pro.left_stick_y_max_minus_min = (y_centre + y_max_above_centre) - switch_pro.left_stick_y_min;
+
+				stick_cal = &report[20 + 9];
+
+				x_centre = ((stick_cal[1] << 8) & 0xF00) | stick_cal[0];
+				y_centre = (stick_cal[2] << 4) | (stick_cal[1] >> 4);
+				x_min_below_centre = ((stick_cal[4] << 8) & 0xF00) | stick_cal[3];
+				y_min_below_centre = (stick_cal[5] << 4) | (stick_cal[4] >> 4);
+				x_max_above_centre = ((stick_cal[7] << 8) & 0xF00) | stick_cal[6];
+				y_max_above_centre = (stick_cal[8] << 4) | (stick_cal[7] >> 4);
+
+				switch_pro.right_stick_x_min = x_centre - x_min_below_centre;
+				switch_pro.right_stick_x_max_minus_min = (x_centre + x_max_above_centre) - switch_pro.right_stick_x_min;
+				switch_pro.right_stick_y_min = y_centre - y_min_below_centre;
+				switch_pro.right_stick_y_max_minus_min = (y_centre + y_max_above_centre) - switch_pro.right_stick_y_min;
+
+				break;
+			}
+		}
 	}
 
 	void hwGamepad::Status::setDpad(uint8_t dpad)

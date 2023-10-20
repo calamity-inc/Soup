@@ -24,10 +24,12 @@ namespace soup
 		BTN_LSTICK, // aka. L3
 		BTN_RSTICK, // aka. R3
 
-		BTN_META,
+		BTN_META, // "Home" on Switch
 		BTN_TOUCHPAD, // DS4
-		BTN_SHARE, // "Capture" on Stadia
+		BTN_SHARE, // "Capture" on Switch & Stadia
 		BTN_OPTIONS,
+		BTN_MINUS, // Switch 
+		BTN_PLUS, // Switch
 		BTN_ASSISTANT, // Stadia
 		BTN_MENU, // Stadia
 

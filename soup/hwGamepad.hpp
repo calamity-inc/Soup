@@ -25,11 +25,30 @@ namespace soup
 
 		const char* name;
 		hwHid hid;
-		bool is_bluetooth;
 		bool disconnected = false;
+	protected:
+		union
+		{
+			struct
+			{
+				bool is_bluetooth;
+			} ds4, stadia;
+			struct
+			{
+				bool has_calibration_data;
+				uint16_t left_stick_x_min;
+				uint16_t left_stick_x_max_minus_min;
+				uint16_t left_stick_y_min;
+				uint16_t left_stick_y_max_minus_min;
+				uint16_t right_stick_x_min;
+				uint16_t right_stick_x_max_minus_min;
+				uint16_t right_stick_y_min;
+				uint16_t right_stick_y_max_minus_min;
+			} switch_pro;
+		};
 
-		hwGamepad(const char* name, hwHid&& hid, bool is_bluetooth = false)
-			: name(name), hid(std::move(hid)), is_bluetooth(is_bluetooth)
+		hwGamepad(const char* name, hwHid&& hid)
+			: name(name), hid(std::move(hid))
 		{
 		}
 
@@ -41,7 +60,8 @@ namespace soup
 		// You can use `hid.hasReport()` to check if this will block.
 		[[nodiscard]] Status receiveStatus();
 
-		[[nodiscard]] bool hasInvertedActionButtons() const noexcept { return false; }
+		[[nodiscard]] bool hasAnalogueTriggers() const noexcept;
+		[[nodiscard]] bool hasInvertedActionButtons() const noexcept;
 
 	protected:
 		Rgb colour = Rgb::BLACK;
@@ -61,5 +81,7 @@ namespace soup
 	private:
 		void sendReport();
 		void sendReportDs4(Buffer&& buf) const;
+
+		void calibrateSwitchProController();
 	};
 }

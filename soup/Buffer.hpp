@@ -79,6 +79,16 @@ namespace soup
 			return m_size == 0;
 		}
 
+		[[nodiscard]] uint8_t& operator[](size_t i) noexcept
+		{
+			return m_data[i];
+		}
+
+		[[nodiscard]] const uint8_t& operator[](size_t i) const noexcept
+		{
+			return m_data[i];
+		}
+
 		[[nodiscard]] uint8_t& at(size_t i) noexcept
 		{
 			return m_data[i];
