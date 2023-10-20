@@ -135,6 +135,9 @@ namespace soup
 		case 22099:
 			// Scaleway (Note that their ASN 29447 is reused for residential internet by its holding company)
 		case 12876:
+			// Bytedance
+		case 138699:
+		case 396986:
 			return true;
 		}
 		std::string slug = handle;
