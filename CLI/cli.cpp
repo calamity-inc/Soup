@@ -14,6 +14,7 @@
 #include <Editor.hpp>
 #include <FileReader.hpp>
 #include <HttpRequest.hpp>
+#include <hwGamepad.hpp>
 #include <hwHid.hpp>
 #include <InquiryLang.hpp>
 #include <netIntel.hpp>
@@ -153,6 +154,72 @@ int main(int argc, const char** argv)
 				}
 			}
 			edit.run();
+			return 0;
+		}
+
+		if (subcommand == "gamepad")
+		{
+			for (auto& gp : hwGamepad::getAll())
+			{
+				console.init(false);
+				std::cout << gp.name << " detected, awaiting input.\n";
+				hwGamepad::Status prev_status{};
+				while (true)
+				{
+					auto status = gp.receiveStatus();
+					if (gp.disconnected)
+					{
+						std::cout << gp.name << " disconnected.\n";
+						return 0;
+					}
+					if (memcmp(&status, &prev_status, sizeof(hwGamepad::Status)) != 0)
+					{
+						prev_status = status;
+						console.clearScreen();
+						console.setCursorPos(0, 0);
+						std::cout << gp.name << "\n";
+						std::cout << "Left Stick: " << status.left_stick_x << ", " << status.left_stick_y << "\n";
+						std::cout << "Right Stick: " << status.right_stick_x << ", " << status.right_stick_y << "\n";
+						std::cout << "Left Trigger: " << status.left_trigger << "\n";
+						std::cout << "Right Trigger: " << status.right_trigger << "\n";
+						std::cout << "Buttons: ";
+						std::vector<std::string> buttons{};
+						if (status.buttons[BTN_DPAD_UP]) buttons.emplace_back("DPAD UP");
+						if (status.buttons[BTN_DPAD_DOWN]) buttons.emplace_back("DPAD DOWN");
+						if (status.buttons[BTN_DPAD_LEFT]) buttons.emplace_back("DPAD LEFT");
+						if (status.buttons[BTN_DPAD_RIGHT]) buttons.emplace_back("DPAD RIGHT");
+						if (status.buttons[BTN_ACT_DOWN]) buttons.emplace_back("ACT DOWN");
+						if (status.buttons[BTN_ACT_RIGHT]) buttons.emplace_back("ACT RIGHT");
+						if (status.buttons[BTN_ACT_LEFT]) buttons.emplace_back("ACT LEFT");
+						if (status.buttons[BTN_ACT_UP]) buttons.emplace_back("ACT UP");
+						if (status.buttons[BTN_LBUMPER]) buttons.emplace_back("L1");
+						if (status.buttons[BTN_RBUMPER]) buttons.emplace_back("R1");
+						if (status.buttons[BTN_LTRIGGER]) buttons.emplace_back("L2");
+						if (status.buttons[BTN_RTRIGGER]) buttons.emplace_back("R2");
+						if (status.buttons[BTN_LSTICK]) buttons.emplace_back("L3");
+						if (status.buttons[BTN_RSTICK]) buttons.emplace_back("R3");
+						if (status.buttons[BTN_META]) buttons.emplace_back("META");
+						if (status.buttons[BTN_TOUCHPAD]) buttons.emplace_back("TOUCHPAD");
+						if (status.buttons[BTN_SHARE]) buttons.emplace_back("SHARE");
+						if (status.buttons[BTN_OPTIONS]) buttons.emplace_back("OPTIONS");
+						if (status.buttons[BTN_MINUS]) buttons.emplace_back("MINUS");
+						if (status.buttons[BTN_PLUS]) buttons.emplace_back("PLUS");
+						if (status.buttons[BTN_ASSISTANT]) buttons.emplace_back("ASSISTANT");
+						if (status.buttons[BTN_MENU]) buttons.emplace_back("MENU");
+						if (buttons.empty())
+						{
+							std::cout << "None";
+						}
+						else
+						{
+							std::cout << string::join(buttons, ", ");
+						}
+						std::cout << "\n";
+					}
+				}
+				break;
+			}
+			std::cout << "No gamepad detected.\n";
 			return 0;
 		}
 
@@ -411,6 +478,7 @@ Available tools:
 - dnsserver [file] <bind-ip>
 - dvd
 - edit [files...]
+- gamepad
 - geoip [ip]
 - hid
 - http [uri]
