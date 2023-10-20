@@ -61,7 +61,8 @@ namespace soup
 			return hid.havePermission();
 		}
 
-		// Polls the latest report from the device and parses it. (Blocking)
+		// Receives the latest report from the device and parses it.
+		// This will block unless `hid.hasReport()` is true.
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeys();
 	};
 }

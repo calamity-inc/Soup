@@ -36,8 +36,9 @@ namespace soup
 	public:
 		[[nodiscard]] static std::vector<hwGamepad> getAll();
 
-		// Some gamepads like the DS4 pretty much always have something to report,
+		// Some gamepads pretty much always have something to report,
 		// but the assumption should be that this will block until the user causes a change.
+		// You can use `hid.hasReport()` to check if this will block.
 		[[nodiscard]] Status receiveStatus();
 
 		[[nodiscard]] bool hasInvertedActionButtons() const noexcept { return false; }
