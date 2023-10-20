@@ -45,6 +45,8 @@ namespace soup
 		[[nodiscard]] RegexMatchResult search(const std::string& str) const noexcept;
 		[[nodiscard]] RegexMatchResult search(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
 
+		void replaceAll(std::string& str, const std::string& replacement) const;
+
 		[[nodiscard]] std::string toString() const noexcept
 		{
 			return group.toString();

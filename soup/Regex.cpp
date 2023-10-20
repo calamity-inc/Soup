@@ -177,6 +177,17 @@ namespace soup
 		return {};
 	}
 
+	void Regex::replaceAll(std::string& str, const std::string& replacement) const
+	{
+		RegexMatchResult match;
+		while (match = search(str), match.isSuccess())
+		{
+			const size_t offset = (match.groups.at(0).value().begin - str.begin());
+			str.erase(offset, match.length());
+			str.insert(offset, replacement);
+		}
+	}
+
 	std::string Regex::unparseFlags(uint16_t flags)
 	{
 		std::string str{};
