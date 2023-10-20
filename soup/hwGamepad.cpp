@@ -133,7 +133,7 @@ namespace soup
 		}
 		else
 		{
-			if (hid.vendor_id == 0x54c) // DS4
+			if (hid.vendor_id == 0x54c) // DS4, Y Down
 			{
 				BufferRefReader r(report_data);
 
@@ -173,7 +173,7 @@ namespace soup
 				status.buttons[BTN_META] = (report.buttons_3_and_counter & (1 << 0));
 				status.buttons[BTN_TOUCHPAD] = (report.buttons_3_and_counter & (1 << 1));
 			}
-			else if (hid.vendor_id == 0x57e) // Nintendo Switch Pro Controller
+			else if (hid.vendor_id == 0x57e) // Nintendo Switch Pro Controller, Y Up
 			{
 				SOUP_IF_UNLIKELY (!switch_pro.has_calibration_data)
 				{
@@ -240,13 +240,13 @@ namespace soup
 				}
 
 				status.left_stick_x = std::clamp(((float)(left_stick_x_raw - switch_pro.left_stick_x_min) / (float)switch_pro.left_stick_x_max_minus_min), 0.0f, 1.0f);
-				status.left_stick_y = std::clamp(((float)(left_stick_y_raw - switch_pro.left_stick_y_min) / (float)switch_pro.left_stick_y_max_minus_min), 0.0f, 1.0f);
+				status.left_stick_y = 1.0f - std::clamp(((float)(left_stick_y_raw - switch_pro.left_stick_y_min) / (float)switch_pro.left_stick_y_max_minus_min), 0.0f, 1.0f);
 				status.right_stick_x = std::clamp(((float)(right_stick_x_raw - switch_pro.right_stick_x_min) / (float)switch_pro.right_stick_x_max_minus_min), 0.0f, 1.0f);
-				status.right_stick_y = std::clamp(((float)(right_stick_y_raw - switch_pro.right_stick_y_min) / (float)switch_pro.right_stick_y_max_minus_min), 0.0f, 1.0f);
+				status.right_stick_y = 1.0f - std::clamp(((float)(right_stick_y_raw - switch_pro.right_stick_y_min) / (float)switch_pro.right_stick_y_max_minus_min), 0.0f, 1.0f);
 				status.left_trigger = status.buttons[BTN_LTRIGGER] ? 1.0f : 0.0f;
 				status.right_trigger = status.buttons[BTN_RTRIGGER] ? 1.0f : 0.0f;
 			}
-			else // Stadia Controller
+			else // Stadia Controller, Y Down
 			{
 				BufferRefReader r(report_data);
 

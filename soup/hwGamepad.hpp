@@ -13,9 +13,9 @@ namespace soup
 		struct Status
 		{
 			float left_stick_x;
-			float left_stick_y;
+			float left_stick_y; // Y Down -- Top is 0.0f, bottom is 1.0f.
 			float right_stick_x;
-			float right_stick_y;
+			float right_stick_y; // Y Down -- Top is 0.0f, bottom is 1.0f.
 			float left_trigger;
 			float right_trigger;
 			bool buttons[NUM_BUTTONS];
