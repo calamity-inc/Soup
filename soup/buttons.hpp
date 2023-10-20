@@ -27,7 +27,7 @@ namespace soup
 		BTN_META, // "Home" on Switch
 		BTN_TOUCHPAD, // DS4
 		BTN_SHARE, // "Capture" on Switch & Stadia
-		BTN_OPTIONS,
+		BTN_OPTIONS, // Not on Switch; check BTN_OPTIONS, BTN_MINUS & BTN_PLUS for "Escape Key" equivalent use cases.
 		BTN_MINUS, // Switch 
 		BTN_PLUS, // Switch
 		BTN_ASSISTANT, // Stadia
