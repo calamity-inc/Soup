@@ -55,8 +55,8 @@ namespace soup
 		[[nodiscard]] static std::vector<hwGamepad> getAll();
 
 		// Some gamepads pretty much always have something to report,
-		// but the assumption should be that this will block until the user causes a change.
-		// You can use `hid.hasReport()` to check if this will block.
+		// but the assumption should be that receiveStatus will block until the user causes a status update.
+		[[nodiscard]] bool hasStatusUpdate();
 		[[nodiscard]] Status receiveStatus();
 
 		[[nodiscard]] bool hasAnalogueTriggers() const noexcept;

@@ -19,6 +19,20 @@ namespace soup
 {
 	using Status = hwGamepad::Status;
 
+	// DS4 may stay connected via BT despite being "powered off", so check if this one is actually live.
+	[[nodiscard]] static bool isDs4StillAlive(hwHid& hid)
+	{
+		for (int i = 0; i != 5; ++i)
+		{
+			if (hid.hasReport())
+			{
+				return true;
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+		return false;
+	}
+
 	std::vector<hwGamepad> hwGamepad::getAll()
 	{
 		std::vector<hwGamepad> res{};
@@ -28,7 +42,10 @@ namespace soup
 			{
 				if (hid.vendor_id == 0x54c)
 				{
-					res.emplace_back(hwGamepad("DualShock 4", std::move(hid)));
+					if (isDs4StillAlive(hid))
+					{
+						res.emplace_back(hwGamepad("DualShock 4", std::move(hid)));
+					}
 				}
 				else if (hid.vendor_id == 0x57e // Nintendo
 					&& hid.product_id == 0x2009 // Switch Pro Controller
@@ -122,11 +139,27 @@ namespace soup
 		}
 	};
 
+	bool hwGamepad::hasStatusUpdate()
+	{
+		return hid.vendor_id == 0x54c
+			|| hid.hasReport()
+			;
+	}
+
 	Status hwGamepad::receiveStatus()
 	{
-		update();
-
 		Status status{};
+
+		if (hid.vendor_id == 0x54c)
+		{
+			if (!isDs4StillAlive(hid))
+			{
+				disconnected = true;
+				return status;
+			}
+		}
+
+		update();
 
 		const Buffer& report_data = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report_data.empty())
