@@ -1,6 +1,7 @@
 #include "hwGamepad.hpp"
 
 #include <algorithm> // clamp
+#include <thread>
 
 #include "BufferRefReader.hpp"
 #include "crc32.hpp"

@@ -1,6 +1,7 @@
 #include "cli.hpp"
 
 #include <iostream>
+#include <thread>
 
 #include <audDevice.hpp>
 #include <audPlayback.hpp>
