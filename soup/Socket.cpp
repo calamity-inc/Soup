@@ -5,6 +5,7 @@
 #if SOUP_LINUX
 #include <fcntl.h>
 #include <unistd.h> // close
+#include <poll.h>
 
 #include "signal.hpp"
 #endif
@@ -123,7 +124,9 @@ namespace soup
 		peer = addr;
 		if (addr.ip.isV4())
 		{
-			if (!init(AF_INET, SOCK_STREAM))
+			if (!init(AF_INET, SOCK_STREAM)
+				|| !setNonBlocking()
+				)
 			{
 				return false;
 			}
@@ -131,14 +134,13 @@ namespace soup
 			sa.sin_family = AF_INET;
 			sa.sin_port = addr.port;
 			sa.sin_addr.s_addr = addr.ip.getV4();
-			if (::connect(fd, (sockaddr*)&sa, sizeof(sa)) == -1)
-			{
-				return false;
-			}
+			::connect(fd, (sockaddr*)&sa, sizeof(sa));
 		}
 		else
 		{
-			if (!init(AF_INET6, SOCK_STREAM))
+			if (!init(AF_INET6, SOCK_STREAM)
+				|| !setNonBlocking()
+				)
 			{
 				return false;
 			}
@@ -146,12 +148,23 @@ namespace soup
 			sa.sin6_family = AF_INET6;
 			sa.sin6_port = addr.port;
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
-			if (::connect(fd, (sockaddr*)&sa, sizeof(sa)) == -1)
-			{
-				return false;
-			}
+			::connect(fd, (sockaddr*)&sa, sizeof(sa));
 		}
-		return setNonBlocking();
+		pollfd pfd;
+		pfd.fd = fd;
+		pfd.events = POLLOUT;
+		pfd.revents = 0;
+#if SOUP_WINDOWS
+		int res = ::WSAPoll(&pfd, 1, 3000);
+#else
+		int res = ::poll(&pfd, 1, 3000);
+#endif
+		SOUP_IF_UNLIKELY (res != 1)
+		{
+			transport_close();
+			return false;
+		}
+		return true;
 	}
 
 	bool Socket::connect(const IpAddr& ip, uint16_t port) noexcept
