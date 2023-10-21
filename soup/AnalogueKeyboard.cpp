@@ -260,20 +260,23 @@ namespace soup
 					{
 						sk = hid_scancode_to_soup_key(scancode);
 					}
-					// some keys seem to be getting reported multiple times on older firmware, so just use last reported value
-					for (auto& key : keys)
+					SOUP_IF_LIKELY (sk != KEY_NONE)
 					{
-						if (key.getSoupKey() == sk)
+						// some keys seem to be getting reported multiple times on older firmware, so just use last reported value
+						for (auto& key : keys)
 						{
-							key.value = value;
-							goto _no_emplace;
+							if (key.getSoupKey() == sk)
+							{
+								key.value = value;
+								goto _no_emplace;
+							}
 						}
+						keys.emplace_back(ActiveKey{
+							sk,
+							value
+						});
+						_no_emplace:;
 					}
-					keys.emplace_back(ActiveKey{
-						sk,
-						value
-					});
-				_no_emplace:;
 				}
 			}
 			else // Razer, up to 11 keys
@@ -288,10 +291,14 @@ namespace soup
 					&& r.u8(value)
 					)
 				{
-					keys.emplace_back(ActiveKey{
-						razer_scancode_to_soup_key(scancode),
-						value
-					});
+					const auto sk = razer_scancode_to_soup_key(scancode);
+					SOUP_IF_LIKELY (sk != KEY_NONE)
+					{
+						keys.emplace_back(ActiveKey{
+							sk,
+							value
+						});
+					}
 				}
 			}
 		}
