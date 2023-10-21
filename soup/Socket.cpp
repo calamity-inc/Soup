@@ -87,8 +87,10 @@ namespace soup
 
 	bool Socket::init(int af, int type)
 	{
-		close();
-		fd = ::socket(af, type, type == SOCK_STREAM ? IPPROTO_TCP : /* SOCK_DGRAM -> */ IPPROTO_UDP);
+		if (fd == -1)
+		{
+			fd = ::socket(af, type, type == SOCK_STREAM ? IPPROTO_TCP : /* SOCK_DGRAM -> */ IPPROTO_UDP);
+		}
 		return fd != -1;
 	}
 
@@ -931,21 +933,18 @@ namespace soup
 	bool Socket::udpClientSend(const SocketAddr& addr, const std::string& data) noexcept
 	{
 		peer = addr;
-		if (!isInited())
+		if (addr.ip.isV4())
 		{
-			if (addr.ip.isV4())
+			if (!init(AF_INET, SOCK_DGRAM))
 			{
-				if (!init(AF_INET, SOCK_DGRAM))
-				{
-					return false;
-				}
+				return false;
 			}
-			else
+		}
+		else
+		{
+			if (!init(AF_INET6, SOCK_DGRAM))
 			{
-				if (!init(AF_INET6, SOCK_DGRAM))
-				{
-					return false;
-				}
+				return false;
 			}
 		}
 		return udpServerSend(addr, data);

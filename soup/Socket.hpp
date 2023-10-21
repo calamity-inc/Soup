@@ -74,11 +74,6 @@ namespace soup
 			return fd != -1;
 		}
 
-		[[nodiscard]] constexpr bool isInited() const noexcept
-		{
-			return fd != -1;
-		}
-
 		bool init(int af, int type);
 
 		bool connect(const char* host, uint16_t port) noexcept; // blocking
