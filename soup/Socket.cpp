@@ -933,21 +933,9 @@ namespace soup
 	bool Socket::udpClientSend(const SocketAddr& addr, const std::string& data) noexcept
 	{
 		peer = addr;
-		if (addr.ip.isV4())
-		{
-			if (!init(AF_INET, SOCK_DGRAM))
-			{
-				return false;
-			}
-		}
-		else
-		{
-			if (!init(AF_INET6, SOCK_DGRAM))
-			{
-				return false;
-			}
-		}
-		return udpServerSend(addr, data);
+		return init(addr.ip.isV4() ? AF_INET : AF_INET6, SOCK_DGRAM)
+			&& udpServerSend(addr, data)
+			;
 	}
 
 	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept
