@@ -26,7 +26,6 @@ namespace soup
 		const char* name;
 		hwHid hid;
 		bool disconnected = false;
-	protected:
 		union
 		{
 			struct
