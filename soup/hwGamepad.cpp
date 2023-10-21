@@ -144,10 +144,15 @@ namespace soup
 					r.skip(3); // Bluetooth report starts with 11 C0 00
 					ds4.is_bluetooth = true;
 				}
-				else
+				else if (report_data.at(0) == 0x05)
 				{
 					r.skip(1); // USB report starts with 05
 					ds4.is_bluetooth = false;
+				}
+				else
+				{
+					r.skip(1); // Sometimes bluetooth report starts with 01 ?!
+					ds4.is_bluetooth = true;
 				}
 
 				Ds4Report report;
