@@ -215,6 +215,23 @@ int main(int argc, const char** argv)
 							std::cout << string::join(buttons, ", ");
 						}
 						std::cout << "\n";
+						if (gp.canRumble())
+						{
+							std::cout << "Press DPAD UP+LEFT to rumble: Left trigger to actuate weak motor, right trigger to actuate strong motor.\n";
+							if (status.buttons[BTN_DPAD_UP] && status.buttons[BTN_DPAD_LEFT])
+							{
+								gp.rumbleWeak(status.left_trigger * 255, 100);
+								gp.rumbleStrong(status.right_trigger * 255, 100);
+							}
+						}
+						if (gp.hasLight())
+						{
+							std::cout << "Press DPAD DOWN+RIGHT to change the light: Use right trigger to adjust hue and left trigger to adjust value.\n";
+							if (status.buttons[BTN_DPAD_DOWN] && status.buttons[BTN_DPAD_RIGHT])
+							{
+								gp.setLight(Rgb::fromHsv(status.right_trigger * 360.0, 1.0, /*1.0 -*/ status.left_trigger));
+							}
+						}
 						std::this_thread::sleep_for(std::chrono::milliseconds(7));
 					}
 				}
