@@ -180,8 +180,11 @@ int main(int argc, const char** argv)
 						std::cout << gp.name << "\n";
 						std::cout << "Left Stick: " << status.left_stick_x << ", " << status.left_stick_y << "\n";
 						std::cout << "Right Stick: " << status.right_stick_x << ", " << status.right_stick_y << "\n";
-						std::cout << "Left Trigger: " << status.left_trigger << "\n";
-						std::cout << "Right Trigger: " << status.right_trigger << "\n";
+						if (gp.hasAnalogueTriggers())
+						{
+							std::cout << "Left Trigger: " << status.left_trigger << "\n";
+							std::cout << "Right Trigger: " << status.right_trigger << "\n";
+						}
 						std::cout << "Buttons: ";
 						std::vector<std::string> buttons{};
 						if (status.buttons[BTN_DPAD_UP]) buttons.emplace_back("DPAD UP");
