@@ -5,35 +5,21 @@
 
 #include "Task.hpp"
 
-#include "DelayedCtor.hpp"
 #include "dnsLookupTask.hpp"
 #include "SharedPtr.hpp"
 #include "Socket.hpp"
+#include "time.hpp"
 
 namespace soup
 {
 	class netConnectTask : public Task
 	{
 	protected:
-		struct BlockingConnectTask : public Task
-		{
-			IpAddr addr;
-			uint16_t port;
-
-			Socket sock;
-
-			BlockingConnectTask(const IpAddr& addr, uint16_t port)
-				: addr(addr), port(port)
-			{
-			}
-
-			void onTick() final;
-		};
-
 		std::string host;
 		UniquePtr<dnsLookupTask> lookup;
-		SharedPtr<BlockingConnectTask> connect;
+		Socket sock;
 		uint16_t port;
+		time_t started_connect_at = 0;
 		bool current_lookup_is_ipv6 = false;
 		bool second_lookup = false;
 

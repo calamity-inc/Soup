@@ -1,7 +1,6 @@
 #include "netConnectTask.hpp"
 #if !SOUP_WASM
 
-#include "DetachedScheduler.hpp"
 #include "netConfig.hpp"
 #include "ObfusString.hpp"
 #include "rand.hpp"
@@ -9,8 +8,6 @@
 
 namespace soup
 {
-	static DetachedScheduler async_connect_sched;
-
 	netConnectTask::netConnectTask(const std::string& host, uint16_t port, bool prefer_ipv6)
 	{
 		if (IpAddr ip; ip.fromString(host))
@@ -69,23 +66,42 @@ namespace soup
 		}
 		else
 		{
-			if (connect->isWorkDone())
+			SOUP_ASSERT(sock.hasConnection());
+
+			pollfd pfd;
+			pfd.fd = sock.fd;
+			pfd.events = POLLOUT;
+			pfd.revents = 0;
+#if SOUP_WINDOWS
+			int res = ::WSAPoll(&pfd, 1, 0);
+#else
+			int res = ::poll(&pfd, 1, 0);
+#endif
+			if (res == 0)
 			{
-				setWorkDone();
+				// Pending
+				if (time::millisSince(started_connect_at) > 3000)
+				{
+					// Timeout
+					sock.transport_close();
+					setWorkDone();
+				}
 			}
 			else
 			{
-				SOUP_IF_UNLIKELY (!async_connect_sched.isActive())
+				if (res == -1)
 				{
-					SOUP_THROW(ObfusString("netConnectTask can't continue due to a race condition"));
+					// Error
+					sock.transport_close();
 				}
+				setWorkDone();
 			}
 		}
 	}
 
 	bool netConnectTask::wasSuccessful() const
 	{
-		return connect;
+		return sock.hasConnection();
 	}
 
 	SharedPtr<Socket> netConnectTask::getSocket()
@@ -95,24 +111,19 @@ namespace soup
 
 	SharedPtr<Socket> netConnectTask::getSocket(Scheduler& sched)
 	{
-		SOUP_ASSERT(connect);
-		auto sock = sched.addSocket(std::move(connect->sock));
-		connect.reset();
-		return sock;
+		SOUP_ASSERT(sock.hasConnection());
+		return sched.addSocket(std::move(this->sock));
 	}
 
 	void netConnectTask::proceedToConnect(const IpAddr& addr, uint16_t port)
 	{
-		connect = async_connect_sched.add<BlockingConnectTask>(addr, port);
-	}
-
-	void netConnectTask::BlockingConnectTask::onTick()
-	{
-		if (!sock.connect(addr, port))
+		if (sock.init(addr.isV4() ? AF_INET : AF_INET6, SOCK_STREAM)
+			&& sock.setNonBlocking()
+			)
 		{
-			sock.close();
+			sock.connect(addr, port);
 		}
-		setWorkDone();
+		started_connect_at = time::millis();
 	}
 }
 
