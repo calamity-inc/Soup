@@ -215,6 +215,7 @@ int main(int argc, const char** argv)
 							std::cout << string::join(buttons, ", ");
 						}
 						std::cout << "\n";
+						std::this_thread::sleep_for(std::chrono::milliseconds(7));
 					}
 				}
 				break;
