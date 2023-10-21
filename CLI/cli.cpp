@@ -224,8 +224,8 @@ int main(int argc, const char** argv)
 							std::cout << "Press DPAD UP+LEFT to rumble: Left trigger to actuate weak motor, right trigger to actuate strong motor.\n";
 							if (status.buttons[BTN_DPAD_UP] && status.buttons[BTN_DPAD_LEFT])
 							{
-								gp.rumbleWeak(status.left_trigger * 255, 100);
-								gp.rumbleStrong(status.right_trigger * 255, 100);
+								gp.rumbleWeak(static_cast<uint8_t>(status.left_trigger * 255), 100);
+								gp.rumbleStrong(static_cast<uint8_t>(status.right_trigger * 255), 100);
 							}
 						}
 						if (gp.hasLight())
