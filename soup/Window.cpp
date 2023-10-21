@@ -500,7 +500,14 @@ namespace soup
 		XEvent event;
 		while (true)
 		{
-			x.nextEvent(x.display, &event);
+			try
+			{
+				x.nextEvent(x.display, &event);
+			}
+			catch (const X11Api::IoError&)
+			{
+				break;
+			}
 			if (event.type == X11Api::Expose)
 			{
 				//std::cout << "Got expose event for " << event.xexpose.window << "\n";

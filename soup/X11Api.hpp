@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 
+#include "Exception.hpp"
 #include "SharedLibrary.hpp"
 
 namespace soup
@@ -98,7 +99,20 @@ namespace soup
 
 			display = openDisplay(nullptr); // Note: We're never calling XCloseDisplay
 			SOUP_ASSERT(display, "System is headless");
+
+			((int(*)(int(*handler)(Display*)))getAddressMandatory("XSetIOErrorHandler"))([](Display*) -> int
+			{
+				throw IoError();
+			});
 		}
+
+		struct IoError : public Exception
+		{
+			IoError()
+				: Exception("X11 IO Error")
+			{
+			}
+		};
 
 		[[nodiscard]] static const X11Api& get()
 		{
