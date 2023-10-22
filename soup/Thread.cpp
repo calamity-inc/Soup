@@ -2,6 +2,7 @@
 
 #include "Exception.hpp"
 #include "format.hpp"
+#include "SelfDeletingThread.hpp"
 
 namespace soup
 {
@@ -25,6 +26,10 @@ namespace soup
 		t->f(std::move(t->f_cap));
 		t->running = false;
 		t->f_cap.reset();
+		if (t->is_self_deleting)
+		{
+			delete static_cast<SelfDeletingThread*>(t);
+		}
 	}
 
 	void Thread::start(void(*f)(Capture&&), Capture&& cap)

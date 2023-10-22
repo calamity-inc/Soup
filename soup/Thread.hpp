@@ -26,6 +26,7 @@ namespace soup
 		bool have_handle = false;
 #endif
 		bool running = false;
+		bool is_self_deleting = false;
 		void(*f)(Capture&&);
 		Capture f_cap;
 

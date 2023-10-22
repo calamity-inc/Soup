@@ -26,6 +26,6 @@ namespace soup
 			logWriteLine(std::move(msg));
 		}
 #endif
-		delete t;
+		t->is_self_deleting = true;
 	}
 }
