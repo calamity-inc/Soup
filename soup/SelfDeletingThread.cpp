@@ -5,8 +5,9 @@
 namespace soup
 {
 	SelfDeletingThread::SelfDeletingThread(void(*f)(Capture&&), Capture&& cap) noexcept
-		: Thread(run, this), f(f), cap(std::move(cap))
+		: Thread(), f(f), cap(std::move(cap))
 	{
+		start(run, this);
 	}
 
 	void SelfDeletingThread::run(Capture&& cap)
