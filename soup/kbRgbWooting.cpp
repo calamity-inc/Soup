@@ -282,7 +282,7 @@ namespace soup
 
 	void kbRgbWooting::setKeys(const Rgb(&colours)[NUM_KEYS])
 	{
-		Buffer buf(256 + 1);
+		Buffer buf(257);
 		buf.push_back(/* 0 */ 0); // HID report index
 		buf.push_back(/* 1 */ 0xD0); // Magic word
 		buf.push_back(/* 2 */ 0xDA); // Magic word
@@ -302,12 +302,16 @@ namespace soup
 				buf.push_back(encoded >> 8);
 			}
 		}
+		if (buf.size() < 257)
+		{
+			buf.insert_back(257 - buf.size(), '\0');
+		}
 		hid.sendReport(std::move(buf));
 	}
 
 	void kbRgbWooting::setAllKeys(Rgb colour)
 	{
-		Buffer buf(256 + 1);
+		Buffer buf(257);
 		buf.push_back(/* 0 */ 0); // HID report index
 		buf.push_back(/* 1 */ 0xD0); // Magic word
 		buf.push_back(/* 2 */ 0xDA); // Magic word
@@ -321,6 +325,10 @@ namespace soup
 				buf.push_back(encoded & 0xff);
 				buf.push_back(encoded >> 8);
 			}
+		}
+		if (buf.size() < 257)
+		{
+			buf.insert_back(257 - buf.size(), '\0');
 		}
 		hid.sendReport(std::move(buf));
 	}

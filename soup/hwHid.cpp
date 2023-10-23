@@ -19,6 +19,7 @@
 #include <poll.h>
 
 #include <linux/hidraw.h>
+#include <sys/ioctl.h>
 
 #include "SharedLibrary.hpp"
 #include "string.hpp"
@@ -586,8 +587,7 @@ namespace soup
 		}
 		return result && bytesWritten == buf.size();
 #elif SOUP_LINUX
-		// TODO
-		return false;
+		return write(handle, buf.data(), buf.size()) ==  buf.size();
 #else
 		return false;
 #endif
@@ -604,8 +604,7 @@ namespace soup
 
 		return HidD_SetFeature(handle, buf.data(), buf.size());
 #elif SOUP_LINUX
-		// TODO
-		return false;
+		return ioctl(handle, HIDIOCSFEATURE(buf.size()), buf.data()) == buf.size();
 #else
 		return false;
 #endif
