@@ -38,7 +38,7 @@ namespace soup
 
 		[[nodiscard]] uint8_t getNumRows() const noexcept { return 6; }
 		[[nodiscard]] virtual uint8_t getNumColumns() const noexcept = 0;
-		[[nodiscard]] virtual Key getKeyForPos(uint8_t row, uint8_t column) const noexcept = 0;
+		[[nodiscard]] virtual Key mapPosToKey(uint8_t row, uint8_t column) const noexcept = 0;
 		void mapPosToKeys(Rgb(&keys)[NUM_KEYS], Rgb* data, uint8_t rows, uint8_t columns);
 	};
 }

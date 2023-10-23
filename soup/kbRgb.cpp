@@ -52,7 +52,7 @@ namespace soup
 		{
 			for (uint8_t column = 0; column != columns; ++column)
 			{
-				if (auto sk = getKeyForPos(row, column); sk != KEY_NONE)
+				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
 				{
 					keys[sk] = data[row * columns + column];
 				}

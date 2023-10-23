@@ -16,7 +16,7 @@ namespace soup
 		void setAllKeys(Rgb colour) final;
 
 		[[nodiscard]] uint8_t getNumColumns() const noexcept final;
-		[[nodiscard]] Key getKeyForPos(uint8_t row, uint8_t column) const noexcept final;
+		[[nodiscard]] Key mapPosToKey(uint8_t row, uint8_t column) const noexcept final;
 
 		[[nodiscard]] float getBrightness();
 	};

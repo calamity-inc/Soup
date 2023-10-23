@@ -292,7 +292,7 @@ namespace soup
 			for (uint8_t column = 0; column != getNumColumns(); ++column)
 			{
 				uint16_t encoded = 0;
-				if (auto sk = getKeyForPos(row, column); sk != KEY_NONE)
+				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
 				{
 					const Rgb& colour = colours[sk];
 					encoded = encodeColor(colour.r, colour.g, colour.b);
@@ -329,7 +329,7 @@ namespace soup
 	}
 
 	// https://github.com/WootingKb/wooting-rgb-sdk/blob/master/resources/keyboard-matrix-rows-columns.png
-	Key kbRgbWooting::getKeyForPos(uint8_t row, uint8_t column) const noexcept
+	Key kbRgbWooting::mapPosToKey(uint8_t row, uint8_t column) const noexcept
 	{
 		if (row == 0)
 		{
