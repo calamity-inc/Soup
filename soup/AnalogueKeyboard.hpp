@@ -6,6 +6,7 @@
 
 #include "hwHid.hpp"
 #include "Key.hpp"
+#include "Percentage.hpp"
 
 namespace soup
 {
@@ -22,7 +23,7 @@ namespace soup
 		{
 		public:
 			Key sk;
-			uint8_t value;
+			Percentage<uint8_t> value;
 
 			[[nodiscard]] Key getSoupKey() const noexcept
 			{
@@ -38,7 +39,7 @@ namespace soup
 
 			[[nodiscard]] float getFValue() const noexcept
 			{
-				return static_cast<float>(value) / 255.0f;
+				return value.toFloat();
 			}
 
 #if SOUP_WINDOWS
