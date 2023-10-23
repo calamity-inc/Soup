@@ -40,5 +40,6 @@ namespace soup
 		[[nodiscard]] virtual uint8_t getNumColumns() const noexcept = 0;
 		[[nodiscard]] virtual Key mapPosToKey(uint8_t row, uint8_t column) const noexcept = 0;
 		void mapPosToKeys(Rgb(&keys)[NUM_KEYS], Rgb* data, uint8_t rows, uint8_t columns);
+		[[nodiscard]] std::pair<uint8_t, uint8_t> mapKeyToPos(Key key) const noexcept;
 	};
 }
