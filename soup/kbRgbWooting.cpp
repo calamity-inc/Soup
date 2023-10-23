@@ -287,9 +287,10 @@ namespace soup
 		buf.push_back(/* 1 */ 0xD0); // Magic word
 		buf.push_back(/* 2 */ 0xDA); // Magic word
 		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
+		const uint8_t columns = getNumColumns();
 		for (uint8_t row = 0; row != 6; ++row)
 		{
-			for (uint8_t column = 0; column != getNumColumns(); ++column)
+			for (uint8_t column = 0; column != columns; ++column)
 			{
 				uint16_t encoded = 0;
 				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
@@ -311,9 +312,10 @@ namespace soup
 		buf.push_back(/* 1 */ 0xD0); // Magic word
 		buf.push_back(/* 2 */ 0xDA); // Magic word
 		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
+		const uint8_t columns = getNumColumns();
 		for (uint8_t row = 0; row != 6; ++row)
 		{
-			for (uint8_t column = 0; column != getNumColumns(); ++column)
+			for (uint8_t column = 0; column != columns; ++column)
 			{
 				auto encoded = encodeColor(colour.r, colour.g, colour.b);
 				buf.push_back(encoded & 0xff);
