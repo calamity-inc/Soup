@@ -133,6 +133,7 @@ namespace soup
 				|| time::unixSecondsSince(awaiting_response_since) > 10
 				)
 			{
+				sock->close();
 				sock.reset();
 				setWorkDone();
 			}
