@@ -810,7 +810,6 @@
     <ClInclude Include="szPreservationLevel.hpp" />
     <ClInclude Include="szMethod.hpp" />
     <ClInclude Include="SourceLocation.hpp" />
-    <ClInclude Include="Status.hpp" />
     <ClInclude Include="StringBuilder.hpp" />
     <ClInclude Include="StringMatch.hpp" />
     <ClInclude Include="structing.hpp" />

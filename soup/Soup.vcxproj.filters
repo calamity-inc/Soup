@@ -632,9 +632,6 @@
     <ClInclude Include="Token.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="Status.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.hpp">
       <Filter>math\3d\scene</Filter>
     </ClInclude>
