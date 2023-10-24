@@ -34,10 +34,10 @@ namespace soup
 		switch (state)
 		{
 		case START:
-			if (shouldRecycle())
+			if (!Scheduler::get()->dont_make_reusable_sockets)
 			{
 				hr.setKeepAlive();
-				sock = Scheduler::get()->findReusableSocketForHost(hr.getHost());
+				sock = Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls);
 				if (sock)
 				{
 					doRecycle();
@@ -61,7 +61,7 @@ namespace soup
 			break;
 
 		case CHECK_REUSABLE_SOCKET:
-			sock = Scheduler::get()->findReusableSocketForHost(hr.getHost());
+			sock = Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls);
 			if (sock)
 			{
 				doRecycle();
@@ -99,17 +99,17 @@ namespace soup
 				}
 				sock = connector->getSocket();
 				connector.destroy();
-				if (shouldRecycle())
+				if (!Scheduler::get()->dont_make_reusable_sockets)
 				{
 					// Tag socket we just created for reuse.
-					SOUP_IF_UNLIKELY (Scheduler::get()->findReusableSocketForHost(hr.getHost()))
+					SOUP_IF_UNLIKELY (Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls))
 					{
 						logWriteLine(soup::format(ObfusString("UNEXPECTED: HttpRequestTask failed to reuse socket for {}"), hr.getHost()));
 						hr.setClose();
 					}
 					else
 					{
-						sock->custom_data.getStructFromMap(ReuseTag).host = hr.getHost();
+						sock->custom_data.getStructFromMap(ReuseTag).init(hr.getHost(), hr.port, hr.use_tls);
 					}
 				}
 				state = AWAIT_RESPONSE;
@@ -138,14 +138,6 @@ namespace soup
 			}
 			break;
 		}
-	}
-
-	bool HttpRequestTask::shouldRecycle() const noexcept
-	{
-		return hr.use_tls
-			&& hr.port == 443
-			&& !Scheduler::get()->dont_make_reusable_sockets
-			;
 	}
 
 	void HttpRequestTask::doRecycle()

@@ -116,7 +116,7 @@ namespace soup
 
 		[[nodiscard]] SharedPtr<Worker> getShared(const Worker& w) const;
 #if !SOUP_WASM
-		[[nodiscard]] SharedPtr<Socket> findReusableSocketForHost(const std::string& host);
+		[[nodiscard]] SharedPtr<Socket> findReusableSocket(const std::string& host, uint16_t port, bool tls);
 		void closeReusableSockets();
 #endif
 

@@ -373,13 +373,15 @@ namespace soup
 	}
 
 #if !SOUP_WASM
-	SharedPtr<Socket> Scheduler::findReusableSocketForHost(const std::string& host)
+	SharedPtr<Socket> Scheduler::findReusableSocket(const std::string& host, uint16_t port, bool tls)
 	{
 		for (const auto& w : workers)
 		{
 			if (w->type == WORKER_TYPE_SOCKET
 				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
 				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).host == host
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).port == port
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).tls == tls
 				)
 			{
 				return w;

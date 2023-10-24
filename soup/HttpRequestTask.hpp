@@ -44,7 +44,6 @@ namespace soup
 		void onTick() final;
 
 	protected:
-		[[nodiscard]] bool shouldRecycle() const noexcept;
 		void doRecycle();
 		void cannotRecycle();
 
