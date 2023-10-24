@@ -155,9 +155,9 @@ namespace soup
 		pfd.events = POLLOUT;
 		pfd.revents = 0;
 #if SOUP_WINDOWS
-		int res = ::WSAPoll(&pfd, 1, 3000);
+		int res = ::WSAPoll(&pfd, 1, netConfig::get().connect_timeout_ms);
 #else
-		int res = ::poll(&pfd, 1, 3000);
+		int res = ::poll(&pfd, 1, netConfig::get().connect_timeout_ms);
 #endif
 		SOUP_IF_UNLIKELY (res != 1)
 		{

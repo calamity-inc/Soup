@@ -80,7 +80,7 @@ namespace soup
 			if (res == 0)
 			{
 				// Pending
-				if (time::millisSince(started_connect_at) > 3000)
+				if (time::millisSince(started_connect_at) > netConfig::get().connect_timeout_ms)
 				{
 					// Timeout
 					sock.transport_close();
