@@ -502,7 +502,7 @@ namespace soup
 		return ret;
 	}
 
-	bool hwHid::hasReport()
+	bool hwHid::hasReport() noexcept
 	{
 #if SOUP_WINDOWS
 		if (!pending_read)
@@ -521,9 +521,8 @@ namespace soup
 #endif
 	}
 
-	const Buffer& hwHid::receiveReport()
+	const Buffer& hwHid::receiveReport() noexcept
 	{
-		SOUP_ASSERT(havePermission(), "Attempt to read report from HID without having the needed permissions");
 		read_buffer.resize(0);
 #if SOUP_WINDOWS
 		if (!pending_read)
@@ -553,7 +552,7 @@ namespace soup
 		return read_buffer;
 	}
 
-	void hwHid::receiveFeatureReport(Buffer& buf) const
+	void hwHid::receiveFeatureReport(Buffer& buf) const noexcept
 	{
 #if SOUP_WINDOWS
 		if (buf.size() < feature_report_byte_length)
@@ -611,7 +610,7 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
-	void hwHid::kickOffRead()
+	void hwHid::kickOffRead() noexcept
 	{
 		ReadFile(handle, read_buffer.data(), read_buffer.capacity(), &bytes_read, &read_overlapped);
 		pending_read = true;

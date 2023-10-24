@@ -73,16 +73,16 @@ namespace soup
 
 		[[nodiscard]] bool hasReportId(uint8_t report_id) const noexcept;
 
-		[[nodiscard]] bool hasReport();
-		[[nodiscard]] const Buffer& receiveReport(); // blocking if !hasReport()
-		void receiveFeatureReport(Buffer& buf) const;
+		[[nodiscard]] bool hasReport() noexcept;
+		[[nodiscard]] const Buffer& receiveReport() noexcept; // blocking if !hasReport()
+		void receiveFeatureReport(Buffer& buf) const noexcept;
 
 		bool sendReport(Buffer&& buf) const noexcept;
 		bool sendFeatureReport(Buffer&& buf) const noexcept;
 
 	private:
 #if SOUP_WINDOWS
-		void kickOffRead();
+		void kickOffRead() noexcept;
 #endif
 	};
 }
