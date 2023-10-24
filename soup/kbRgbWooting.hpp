@@ -2,16 +2,23 @@
 
 #include "kbRgb.hpp"
 
+#include "hwHid.hpp"
+
 namespace soup
 {
 	struct kbRgbWooting : public kbRgb
 	{
-		using kbRgb::kbRgb;
+		bool has_numpad = false;
+		hwHid hid;
 
-		void init() final;
+		kbRgbWooting(const char* name, bool has_numpad, hwHid&& hid)
+			: kbRgb(name), has_numpad(has_numpad), hid(std::move(hid))
+		{
+		}
+
 		void deinit() final;
 
-		void setKey(uint8_t key, Rgb colour) final;
+		void setKey(Key key, Rgb colour) final;
 		void setKeys(const Rgb(&colours)[NUM_KEYS]) final;
 		void setAllKeys(Rgb colour) final;
 

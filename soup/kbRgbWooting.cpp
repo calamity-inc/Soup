@@ -96,18 +96,12 @@ namespace soup
 		RgbLayer = 27,
 	};
 
-	[[nodiscard]] static uint16_t encodeColor(uint8_t red, uint8_t green, uint8_t blue)
+	[[nodiscard]] static uint16_t encodeColour(Rgb colour) noexcept
 	{
-		uint16_t encoded = 0;
-
-		encoded |= (red & 0xf8) << 8;
-		encoded |= (green & 0xfc) << 3;
-		encoded |= (blue & 0xf8) >> 3;
-
-		return encoded;
+		return (colour.r & 0xf8) << 8 | (colour.g & 0xfc) << 3 | (colour.b & 0xf8) >> 3;
 	}
 
-	[[nodiscard]] static uint8_t mapWootingKey(uint8_t sk)
+	[[nodiscard]] static uint8_t mapWootingKey(Key sk) noexcept
 	{
 		switch (sk)
 		{
@@ -221,10 +215,13 @@ namespace soup
 		case KEY_ARROW_RIGHT: return 16 + (32 * 5);
 		case KEY_NUMPAD0: return 18 + (32 * 5);
 		case KEY_NUMPAD_DECIMAL: return 19 + (32 * 5);
+		default:;
 		}
 		return 255;
 	}
 
+	// Not needed at all, the firmware does this implicitly when a colour is set.
+#if false
 	void kbRgbWooting::init()
 	{
 		{
@@ -241,6 +238,7 @@ namespace soup
 		}
 		SOUP_UNUSED(hid.receiveReport());
 	}
+#endif
 
 	void kbRgbWooting::deinit()
 	{
@@ -259,10 +257,9 @@ namespace soup
 		SOUP_UNUSED(hid.receiveReport());
 	}
 
-	void kbRgbWooting::setKey(uint8_t key, Rgb colour)
+	void kbRgbWooting::setKey(Key key, Rgb colour)
 	{
-		key = mapWootingKey(key);
-		if (key != 255)
+		if (auto wk = mapWootingKey(key); wk != 255)
 		{
 			{
 				Buffer buf(8);
@@ -273,7 +270,7 @@ namespace soup
 				buf.push_back(/* 4 */ colour.b);
 				buf.push_back(/* 5 */ colour.g);
 				buf.push_back(/* 6 */ colour.r);
-				buf.push_back(/* 7 */ key);
+				buf.push_back(/* 7 */ wk);
 				hid.sendFeatureReport(std::move(buf));
 			}
 			SOUP_UNUSED(hid.receiveReport());
@@ -296,7 +293,7 @@ namespace soup
 				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
 				{
 					const Rgb& colour = colours[sk];
-					encoded = encodeColor(colour.r, colour.g, colour.b);
+					encoded = encodeColour(colour);
 				}
 				buf.push_back(encoded & 0xff);
 				buf.push_back(encoded >> 8);
@@ -321,7 +318,7 @@ namespace soup
 		{
 			for (uint8_t column = 0; column != columns; ++column)
 			{
-				auto encoded = encodeColor(colour.r, colour.g, colour.b);
+				auto encoded = encodeColour(colour);
 				buf.push_back(encoded & 0xff);
 				buf.push_back(encoded >> 8);
 			}

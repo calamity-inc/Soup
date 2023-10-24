@@ -130,6 +130,12 @@ namespace soup
 		KEY_OEM_2,
 		KEY_OEM_3,
 		KEY_OEM_4,
+		KEY_OEM_5,
+		KEY_OEM_6,
+		KEY_OEM_7,
+		KEY_OEM_8,
+		KEY_OEM_9,
+		KEY_OEM_10,
 
 		NUM_KEYS
 	};

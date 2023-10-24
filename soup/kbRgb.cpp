@@ -1,12 +1,20 @@
 #include "kbRgb.hpp"
 
+#include "kbRgbRazerChroma.hpp"
 #include "kbRgbWooting.hpp"
 
 namespace soup
 {
-	std::vector<UniquePtr<kbRgb>> kbRgb::getAll(bool include_no_permission)
+	std::vector<UniquePtr<kbRgb>> kbRgb::getAll(bool include_razer_chroma, bool include_no_permission)
 	{
 		std::vector<UniquePtr<kbRgb>> res{};
+
+		if (include_razer_chroma
+			&& kbRgbRazerChroma::isAvailable()
+			)
+		{
+			res.emplace_back(soup::make_unique<kbRgbRazerChroma>());
+		}
 
 		for (auto& hid : hwHid::getAll())
 		{

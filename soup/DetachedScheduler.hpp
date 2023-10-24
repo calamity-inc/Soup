@@ -20,6 +20,7 @@ namespace soup
 		SharedPtr<Worker> addWorker(SharedPtr<Worker>&& w) noexcept final;
 
 		[[nodiscard]] bool isActive() const noexcept { return thrd.isRunning(); }
+		void awaitCompletion() noexcept { return thrd.awaitCompletion(); }
 
 		void updateConfig(void fp(netConfig&, Capture&&), Capture&& cap = {});
 

@@ -1542,6 +1542,9 @@
     <ClInclude Include="Percentage.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="kbRgbRazerChroma.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2253,6 +2256,9 @@
     </ClCompile>
     <ClCompile Include="hwGamepad.cpp">
       <Filter>hardware\gamepad</Filter>
+    </ClCompile>
+    <ClCompile Include="kbRgbRazerChroma.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
