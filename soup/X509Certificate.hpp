@@ -40,7 +40,7 @@ namespace soup
 		std::time_t valid_to;
 
 		bool fromDer(const std::string& str);
-		bool load(const Asn1Sequence& cert);
+		bool load(const Asn1Sequence& cert) noexcept;
 	protected:
 		[[nodiscard]] static X509RelativeDistinguishedName readRelativeDistinguishedName(const Asn1Sequence& seq);
 

@@ -16,7 +16,7 @@ namespace soup
 		return load(Asn1Sequence::fromDer(str));
 	}
 
-	bool X509Certificate::load(const Asn1Sequence& cert)
+	bool X509Certificate::load(const Asn1Sequence& cert) noexcept
 	{
 #if SOUP_EXCEPTIONS
 		try
@@ -101,7 +101,7 @@ namespace soup
 			}
 			else
 			{
-				SOUP_ASSERT_UNREACHABLE;
+				return false;
 			}
 
 			issuer = readRelativeDistinguishedName(tbsCert.getSeq(3));
