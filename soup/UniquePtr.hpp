@@ -62,9 +62,13 @@ namespace soup
 
 		UniquePtr<T>& operator =(UniquePtr<T>&& b) noexcept
 		{
-			free();
+			const auto old_data = data;
 			data = b.data;
 			b.data = nullptr;
+			if (old_data != nullptr)
+			{
+				delete old_data;
+			}
 			return *this;
 		}
 
