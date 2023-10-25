@@ -43,6 +43,7 @@ namespace soup
 
 	protected:
 		void updateMaintainTask();
+		void ensureMaintainTask();
 		[[nodiscard]] MaintainTask& getMaintainTask();
 		void commitColours();
 

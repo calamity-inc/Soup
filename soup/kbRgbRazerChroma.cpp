@@ -19,18 +19,24 @@ namespace soup
 
 	void kbRgbRazerChroma::updateMaintainTask()
 	{
-		if (task)
+		if (task
+			&& task->isWorkDone()
+			)
 		{
-			if (task->isWorkDone())
-			{
-				task.reset();
-			}
+			task.reset();
 		}
 	}
 
-	kbRgbRazerChroma::MaintainTask& kbRgbRazerChroma::getMaintainTask()
+	void kbRgbRazerChroma::ensureMaintainTask()
 	{
-		updateMaintainTask();
+		SharedPtr<JsonObject> payload;
+		if (task
+			&& task->isWorkDone()
+			)
+		{
+			payload = std::move(task->payload);
+			task.reset();
+		}
 		if (!task)
 		{
 			std::string base;
@@ -57,11 +63,16 @@ namespace soup
 					base = jr->asObj().at("uri").asStr();
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			}
-			while (base.empty() || !kbRgbRazerChroma::isAvailable(Uri(base).port));
+			} while (base.empty() || !kbRgbRazerChroma::isAvailable(Uri(base).port));
 
 			task = sched.add<MaintainTask>(std::move(base));
+			task->payload = std::move(payload);
 		}
+	}
+
+	kbRgbRazerChroma::MaintainTask& kbRgbRazerChroma::getMaintainTask()
+	{
+		ensureMaintainTask();
 		return *task;
 	}
 
@@ -93,11 +104,14 @@ namespace soup
 		{
 			if (!deinit_requested)
 			{
-				hrt.construct(Uri(base + "/keyboard"));
-				hrt->hr.method = "PUT";
-				hrt->hr.addHeader("Content-Type: application/json");
 				auto payload{ this->payload };
-				hrt->hr.setPayload(payload->encode());
+				if (payload)
+				{
+					hrt.construct(Uri(base + "/keyboard"));
+					hrt->hr.method = "PUT";
+					hrt->hr.addHeader("Content-Type: application/json");
+					hrt->hr.setPayload(payload->encode());
+				}
 			}
 			else
 			{
@@ -107,7 +121,9 @@ namespace soup
 		}
 		else if (hrt->tickUntilDone())
 		{
-			SOUP_IF_UNLIKELY (deinit_requested && hrt->hr.method == "DELETE")
+			SOUP_IF_UNLIKELY (!hrt->result // Request failed?
+				|| (deinit_requested && hrt->hr.method == "DELETE") // This was deinit request?
+				)
 			{
 				setWorkDone();
 			}
@@ -141,6 +157,10 @@ namespace soup
 				colours[row * 22 + column] = encoded;
 				commitColours();
 			}
+			else
+			{
+				ensureMaintainTask();
+			}
 		}
 	}
 
@@ -165,6 +185,10 @@ namespace soup
 		if (changed)
 		{
 			commitColours();
+		}
+		else
+		{
+			ensureMaintainTask();
 		}
 	}
 
@@ -192,6 +216,10 @@ namespace soup
 			payload->add("param", std::move(param));
 
 			getMaintainTask().payload = std::move(payload);
+		}
+		else
+		{
+			ensureMaintainTask();
 		}
 	}
 
