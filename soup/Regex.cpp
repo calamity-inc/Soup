@@ -129,7 +129,7 @@ namespace soup
 #if REGEX_DEBUG_MATCH
 					std::cout << "rollback says we should succeed now\n";
 #endif
-					goto _match_success;
+					break;
 				}
 				continue;
 			}
@@ -140,7 +140,6 @@ namespace soup
 #endif
 			return {};
 		}
-	_match_success:
 		RegexMatchResult res;
 		res.groups = std::move(m.groups);
 
