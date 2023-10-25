@@ -3,6 +3,7 @@
 
 #include <thread>
 
+#include "hwHid.hpp"
 #include "json.hpp"
 
 namespace soup
@@ -134,6 +135,11 @@ namespace soup
 	[[nodiscard]] static uint32_t encodeColour(Rgb colour) noexcept
 	{
 		return (colour.b << 16) | (colour.g << 8) | colour.r;
+	}
+
+	bool kbRgbRazerChroma::controlsDevice(const hwHid& hid) const noexcept
+	{
+		return hid.vendor_id == 0x1532;
 	}
 
 	void kbRgbRazerChroma::deinit()

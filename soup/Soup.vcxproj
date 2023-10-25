@@ -504,6 +504,7 @@
     <ClInclude Include="kbRgbRazerChroma.hpp" />
     <ClInclude Include="kbRgbWooting.hpp" />
     <ClInclude Include="Key.hpp" />
+    <ClInclude Include="Keyboard.hpp" />
     <ClInclude Include="memProtFlags.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
@@ -999,6 +1000,7 @@
     <ClCompile Include="kbRgb.cpp" />
     <ClCompile Include="kbRgbRazerChroma.cpp" />
     <ClCompile Include="kbRgbWooting.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="KeyGenId.cpp" />
     <ClCompile Include="Key.cpp" />
     <ClCompile Include="LcgRng.cpp" />

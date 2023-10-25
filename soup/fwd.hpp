@@ -52,6 +52,9 @@ namespace soup
 	struct XmlTag;
 	struct XmlText;
 
+	// hardware
+	class hwHid;
+
 	// hardware.keyboard
 	enum Key : uint8_t;
 

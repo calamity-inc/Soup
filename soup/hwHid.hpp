@@ -59,6 +59,8 @@ namespace soup
 		}
 #endif
 
+		[[nodiscard]] bool isSamePhysicalDeviceAs(const hwHid& b) const;
+
 		// Do we have permission to send to and receive from the device?
 		// On Windows, always.
 		// On Linux, only as root or with special configuration: https://help.wooting.io/en/article/wootility-configuring-device-access-for-wootility-under-linux-udev-rules-r6lb2o/

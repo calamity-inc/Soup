@@ -1545,6 +1545,9 @@
     <ClInclude Include="kbRgbRazerChroma.hpp">
       <Filter>hardware\keyboard\rgb</Filter>
     </ClInclude>
+    <ClInclude Include="Keyboard.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2259,6 +2262,9 @@
     </ClCompile>
     <ClCompile Include="kbRgbRazerChroma.cpp">
       <Filter>hardware\keyboard\rgb</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>hardware\keyboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

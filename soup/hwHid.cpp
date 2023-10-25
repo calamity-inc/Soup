@@ -485,6 +485,14 @@ namespace soup
 	}
 #endif
 
+	bool hwHid::isSamePhysicalDeviceAs(const hwHid& b) const
+	{
+		return vendor_id == b.vendor_id
+			&& product_id == b.product_id
+			&& getSerialNumber() == b.getSerialNumber()
+			;
+	}
+
 	bool hwHid::hasReportId(uint8_t report_id) const noexcept
 	{
 		bool ret = false;

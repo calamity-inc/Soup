@@ -220,6 +220,11 @@ namespace soup
 		return 255;
 	}
 
+	bool kbRgbWooting::controlsDevice(const hwHid& hid) const noexcept
+	{
+		return this->hid.isSamePhysicalDeviceAs(hid);
+	}
+
 	// Not needed at all, the firmware does this implicitly when a colour is set.
 #if false
 	void kbRgbWooting::init()

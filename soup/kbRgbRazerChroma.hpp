@@ -48,6 +48,8 @@ namespace soup
 		void commitColours();
 
 	public:
+		[[nodiscard]] bool controlsDevice(const hwHid& hid) const noexcept final;
+
 		void deinit() final;
 
 		void setKey(Key key, Rgb colour) final;
