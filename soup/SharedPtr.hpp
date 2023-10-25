@@ -7,7 +7,7 @@
 #include "memory.hpp" // construct_at
 #include "type_traits.hpp"
 
-#ifndef SOUP_DEBUG_SHAREDPTR 
+#ifndef SOUP_DEBUG_SHAREDPTR
 #define SOUP_DEBUG_SHAREDPTR false
 #endif
 
@@ -39,20 +39,30 @@ namespace soup
 			Data(T* inst)
 				: inst(inst), refcount(1)
 			{
+#if SOUP_DEBUG_SHAREDPTR
+				SOUP_ASSERT(inst != nullptr);
+#endif
+#if SOUP_DEBUG_SHAREDPTR
+				if (managed_instances.contains(inst))
+				{
+					__debugbreak(); // Already managed by another SharedPtr instance
+				}
+				managed_instances.emplace(inst);
+				std::cout << (void*)inst << " :: New SharedPtr\n";
+#endif
 			}
 
 			void incref()
 			{
 #if SOUP_DEBUG_SHAREDPTR
-				const auto preinc = refcount.load();
-				if (preinc == 0)
+				const auto refcount_now = ++refcount;
+				if (refcount_now == 1)
 				{
 					__debugbreak(); // Attempt to revive the dead
 				}
-#endif
+				std::cout << (void*)inst << " :: Increment to " << refcount_now << "\n";
+#else
 				++refcount;
-#if SOUP_DEBUG_SHAREDPTR
-				std::cout << (void*)inst << " :: Increment to " << refcount.load() << " from " << preinc << "\n";
 #endif
 			}
 
@@ -64,7 +74,7 @@ namespace soup
 				if (--refcount == 0)
 				{
 #if SOUP_DEBUG_SHAREDPTR
-					std::cout << (void*)inst << " :: No more references\n";
+					std::cout << (void*)inst << " :: Decrement to 0; destroying instance\n";
 					managed_instances.erase(inst);
 #endif
 					if (was_created_with_make_shared)
@@ -83,7 +93,7 @@ namespace soup
 #if SOUP_DEBUG_SHAREDPTR
 				else
 				{
-					std::cout << (void*)inst << " :: Decrement to " << refcount.load() << " from " << predec << "\n";
+					std::cout << (void*)inst << " :: Decrement to " << refcount.load() << "\n";
 				}
 #endif
 			}
@@ -104,14 +114,6 @@ namespace soup
 		SharedPtr(T* inst)
 			: data(new Data(inst))
 		{
-#if SOUP_DEBUG_SHAREDPTR
-			if (managed_instances.contains(data->inst))
-			{
-				__debugbreak(); // Already managed by another SharedPtr instance
-			}
-			managed_instances.emplace(data->inst);
-			std::cout << (void*)data->inst << " :: New SharedPtr\n";
-#endif
 		}
 
 		SharedPtr(const SharedPtr<T>& b)
@@ -158,6 +160,9 @@ namespace soup
 			}
 			if (prev_data != nullptr)
 			{
+#if SOUP_DEBUG_SHAREDPTR
+				SOUP_ASSERT(prev_data != this->data);
+#endif
 				prev_data->decref();
 			}
 		}
@@ -169,6 +174,9 @@ namespace soup
 			b.data = nullptr;
 			if (prev_data != nullptr)
 			{
+#if SOUP_DEBUG_SHAREDPTR
+				SOUP_ASSERT(prev_data != this->data);
+#endif
 				prev_data->decref();
 			}
 		}
