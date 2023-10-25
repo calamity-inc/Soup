@@ -258,8 +258,13 @@ namespace soup
 		try
 #endif
 		{
+#if true
 			auto inst = soup::construct_at<>(reinterpret_cast<T*>(b), std::forward<Args>(args)...);
 			data = soup::construct_at<>(reinterpret_cast<typename SharedPtr<T>::Data*>(reinterpret_cast<uintptr_t>(b) + sizeof(T)), inst);
+#else
+			auto inst = soup::construct_at<>(reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(b) + sizeof(typename SharedPtr<T>::Data)), std::forward<Args>(args)...);
+			data = soup::construct_at<>(reinterpret_cast<typename SharedPtr<T>::Data*>(b), inst);
+#endif
 		}
 #if SOUP_EXCEPTIONS
 		catch (...)
