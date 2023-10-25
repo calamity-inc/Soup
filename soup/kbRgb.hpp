@@ -28,6 +28,9 @@ namespace soup
 		virtual void setKeys(const Rgb(&colours)[NUM_KEYS]) = 0;
 		virtual void setAllKeys(Rgb colour);
 
+		static constexpr uint8_t MAX_ROWS = 6;
+		static constexpr uint8_t MAX_COLUMNS = 22;
+
 		[[nodiscard]] uint8_t getNumRows() const noexcept { return 6; }
 		[[nodiscard]] virtual uint8_t getNumColumns() const noexcept = 0;
 		[[nodiscard]] virtual Key mapPosToKey(uint8_t row, uint8_t column) const noexcept = 0;
