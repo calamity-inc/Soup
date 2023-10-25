@@ -135,43 +135,64 @@ namespace soup
 		auto [row, column] = mapKeyToPos(key);
 		if (row != 0xff && column != 0xff)
 		{
-			colours[row * 22 + column] = encodeColour(colour);
-			commitColours();
+			const auto encoded = encodeColour(colour);
+			if (colours[row * 22 + column] != encoded)
+			{
+				colours[row * 22 + column] = encoded;
+				commitColours();
+			}
 		}
 	}
 
 	void kbRgbRazerChroma::setKeys(const Rgb(&colours)[NUM_KEYS])
 	{
+		bool changed = false;
 		for (uint8_t row = 0; row != 6; ++row)
 		{
 			for (uint8_t column = 0; column != 22; ++column)
 			{
 				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
 				{
-					this->colours[row * 22 + column] = encodeColour(colours[sk]);
+					const auto encoded = encodeColour(colours[sk]);
+					if (this->colours[row * 22 + column] != encoded)
+					{
+						this->colours[row * 22 + column] = encoded;
+						changed = true;
+					}
 				}
 			}
 		}
-		commitColours();
+		if (changed)
+		{
+			commitColours();
+		}
 	}
 
 	void kbRgbRazerChroma::setAllKeys(Rgb colour)
 	{
 		const auto encoded = encodeColour(colour);
 
+		bool changed = false;
 		for (auto& clr : this->colours)
 		{
-			clr = encoded;
+			if (clr != encoded)
+			{
+				clr = encoded;
+				changed = true;
+			}
 		}
 
-		auto payload = soup::make_shared<JsonObject>();
-		payload->add("effect", "CHROMA_STATIC");
+		if (changed)
+		{
+			auto payload = soup::make_shared<JsonObject>();
+			payload->add("effect", "CHROMA_STATIC");
 
-		auto param = soup::make_unique<JsonObject>();
-		param->add("color", soup::make_unique<JsonInt>(encoded));
-		payload->add("param", std::move(param));
+			auto param = soup::make_unique<JsonObject>();
+			param->add("color", soup::make_unique<JsonInt>(encoded));
+			payload->add("param", std::move(param));
 
-		getMaintainTask().payload = std::move(payload);
+			getMaintainTask().payload = std::move(payload);
+		}
 	}
 
 	uint8_t kbRgbRazerChroma::getNumColumns() const noexcept
