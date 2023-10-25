@@ -152,7 +152,6 @@ namespace soup
 			}
 		}
 		return R0;
-
 #endif
 	}
 
