@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "kbRgb.hpp"
 
 #include "DetachedScheduler.hpp"
@@ -54,3 +57,4 @@ namespace soup
 		[[nodiscard]] Key mapPosToKey(uint8_t row, uint8_t column) const noexcept final;
 	};
 }
+#endif

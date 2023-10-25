@@ -1,4 +1,5 @@
 #include "kbRgbRazerChroma.hpp"
+#if !SOUP_WASM
 
 #include <thread>
 
@@ -336,3 +337,4 @@ namespace soup
 
 	}
 }
+#endif

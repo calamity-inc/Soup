@@ -1,5 +1,8 @@
 #include "kbRgb.hpp"
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "kbRgbRazerChroma.hpp"
 #include "kbRgbWooting.hpp"
 
@@ -85,3 +88,4 @@ namespace soup
 		return { 0xff, 0xff };
 	}
 }
+#endif
