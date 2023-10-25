@@ -1,8 +1,6 @@
 name: Build CLI
 
-on:
-  push:
-    branches: [ "senpai" ]
+on: push
 
 jobs:
   ubuntu-22-04:

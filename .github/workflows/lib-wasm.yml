@@ -1,8 +1,6 @@
 name: Build WASM library
 
-on:
-  push:
-    branches: [ "senpai" ]
+on: push
 
 jobs:
   emscripten:
