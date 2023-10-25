@@ -1,5 +1,6 @@
 #include "ripemd160.hpp"
 
+#include <cstdint>
 #include <cstring>
 
 namespace soup
