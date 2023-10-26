@@ -378,8 +378,8 @@ namespace soup
 			case 3: return KEY_LALT;
 			case 7: return KEY_SPACE;
 			case 11: return KEY_RALT;
-			case 12: return KEY_RMETA;
-			case 13: return KEY_FN;
+			case 12: return KEY_FN;
+			case 13: return KEY_CTX;
 			case 14: return KEY_RCTRL;
 			case 15: return KEY_ARROW_LEFT;
 			case 16: return KEY_ARROW_DOWN;
