@@ -14,6 +14,8 @@ namespace soup
 
 		[[nodiscard]] static std::vector<Keyboard> getAll();
 
+		[[nodiscard]] std::string getName() const;
+
 	protected:
 		Keyboard(AnalogueKeyboard&& analogue)
 			: analogue(std::move(analogue))

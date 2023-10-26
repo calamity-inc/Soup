@@ -3,6 +3,8 @@
 #include "base.hpp"
 #if !SOUP_WASM
 
+#include "json.hpp"
+#include "kbRgbCorsairCue.hpp"
 #include "kbRgbRazerChroma.hpp"
 #include "kbRgbWooting.hpp"
 
@@ -43,6 +45,21 @@ namespace soup
 				}
 			}
 		}
+
+#if SOUP_WINDOWS
+		if (kbRgbCorsairCue::ensureConnected())
+		{
+			kbRgbCorsairCue::send(R"({"method":1,"params":{"deviceTypeMask":1,"sizeMax":10},"code":2})");
+			auto jr = json::decode(kbRgbCorsairCue::receive());
+			for (const auto& dev : jr->asObj().at("result").asObj().at("deviceInfos").asArr())
+			{
+				res.emplace_back(soup::make_unique<kbRgbCorsairCue>(
+					std::move(dev.asObj().at("id").asStr().value),
+					std::move(dev.asObj().at("model").asStr().value)
+				));
+			}
+		}
+#endif
 
 		return res;
 	}

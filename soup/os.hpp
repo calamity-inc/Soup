@@ -42,6 +42,8 @@ namespace soup
 		[[nodiscard]] static void* createFileMapping(std::filesystem::path path, size_t& out_len);
 		static void destroyFileMapping(void* addr, size_t len);
 
+		[[nodiscard]] static unsigned int getProcessId() noexcept;
+
 #if SOUP_WINDOWS
 		static void simulateKeyPress(Key key);
 		static void simulateKeyPress(bool ctrl, bool shift, bool alt, Key key);

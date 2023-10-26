@@ -1548,6 +1548,9 @@
     <ClInclude Include="Keyboard.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
+    <ClInclude Include="kbRgbCorsairCue.hpp">
+      <Filter>hardware\keyboard\rgb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2265,6 +2268,9 @@
     </ClCompile>
     <ClCompile Include="Keyboard.cpp">
       <Filter>hardware\keyboard</Filter>
+    </ClCompile>
+    <ClCompile Include="kbRgbCorsairCue.cpp">
+      <Filter>hardware\keyboard\rgb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

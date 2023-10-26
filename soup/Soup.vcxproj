@@ -501,6 +501,7 @@
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
     <ClInclude Include="kbRgb.hpp" />
+    <ClInclude Include="kbRgbCorsairCue.hpp" />
     <ClInclude Include="kbRgbRazerChroma.hpp" />
     <ClInclude Include="kbRgbWooting.hpp" />
     <ClInclude Include="Key.hpp" />
@@ -998,6 +999,7 @@
     <ClCompile Include="IpcSocket.cpp" />
     <ClCompile Include="Jokebook.cpp" />
     <ClCompile Include="kbRgb.cpp" />
+    <ClCompile Include="kbRgbCorsairCue.cpp" />
     <ClCompile Include="kbRgbRazerChroma.cpp" />
     <ClCompile Include="kbRgbWooting.cpp" />
     <ClCompile Include="Keyboard.cpp" />

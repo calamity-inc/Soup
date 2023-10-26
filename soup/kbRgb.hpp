@@ -11,10 +11,10 @@ namespace soup
 {
 	struct kbRgb
 	{
-		const char* name;
+		std::string name;
 
-		kbRgb(const char* name)
-			: name(name)
+		kbRgb(std::string name)
+			: name(std::move(name))
 		{
 		}
 

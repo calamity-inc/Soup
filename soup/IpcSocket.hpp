@@ -15,6 +15,11 @@ namespace soup
 			close();
 		}
 
+		[[nodiscard]] bool isConnected() const noexcept
+		{
+			return h != INVALID_HANDLE_VALUE;
+		}
+
 		bool bind(std::string name); // server
 		bool connect(std::string name); // client
 		bool accept() const noexcept; // server

@@ -255,6 +255,15 @@ namespace soup
 #endif
 	}
 
+	unsigned int os::getProcessId() noexcept
+	{
+#if SOUP_WINDOWS
+		return GetCurrentProcessId();
+#else
+		return ::getpid();
+#endif
+	}
+
 #if SOUP_WINDOWS
 	void os::simulateKeyPress(Key key)
 	{

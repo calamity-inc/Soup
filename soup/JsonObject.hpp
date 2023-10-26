@@ -49,6 +49,7 @@ namespace soup
 		void add(std::string k, int8_t v);
 		void add(std::string k, int16_t v);
 		void add(std::string k, int32_t v);
+		void add(std::string k, uint32_t v);
 		void add(std::string k, int64_t v);
 		void add(std::string k, bool v);
 

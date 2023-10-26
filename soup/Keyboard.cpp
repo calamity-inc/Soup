@@ -24,8 +24,9 @@ namespace soup
 			kbds.emplace_back(Keyboard(std::move(anlg), std::move(rgb)));
 		}
 
-		// Associate non-Razer analogue keyboards with their respective RGB interface.
 		auto rgbifs = kbRgb::getAll(false);
+
+		// Associate non-Razer analogue keyboards with their respective RGB interface.
 		for (auto& kbd : kbds)
 		{
 			if (kbd.analogue && !kbd.rgb)
@@ -44,6 +45,13 @@ namespace soup
 				}
 			}
 		}
+
+		// Create Keyboard instances for supported non-analogue RGB keyboards.
+		for (auto& rgbif : rgbifs)
+		{
+			kbds.emplace_back(Keyboard(std::move(rgbif)));
+		}
+		rgbifs.clear();
 
 		// Create a Keyboard instance with Razer Chroma if available & a non-analogue Razer keyboard is detected.
 		if (razer_chroma_available)
@@ -162,6 +170,19 @@ namespace soup
 		}
 
 		return kbds;
+	}
+
+	std::string Keyboard::getName() const
+	{
+		if (analogue)
+		{
+			return analogue->name;
+		}
+		if (rgb->name == "Razer Chroma")
+		{
+			return "Digital Razer Keyboard";
+		}
+		return rgb->name;
 	}
 }
 

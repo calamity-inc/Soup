@@ -251,6 +251,11 @@ namespace soup
 		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(v));
 	}
 
+	void JsonObject::add(std::string k, uint32_t v)
+	{
+		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(v));
+	}
+
 	void JsonObject::add(std::string k, int64_t v)
 	{
 		add(soup::make_unique<JsonString>(std::move(k)), soup::make_unique<JsonInt>(v));
