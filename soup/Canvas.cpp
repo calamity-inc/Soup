@@ -32,6 +32,11 @@ namespace soup
 		return pixels.at(x + (y * width));
 	}
 
+	Rgb& Canvas::ref(unsigned int x, unsigned int y)
+	{
+		return pixels.at(x + (y * width));
+	}
+
 	const Rgb& Canvas::ref(unsigned int x, unsigned int y) const
 	{
 		return pixels.at(x + (y * width));
@@ -349,12 +354,15 @@ namespace soup
 				&& header_size == 40
 				&& r.i32(width)
 				&& r.i32(height)
-				&& height < 0
 				//&& r.i16(planes)
 				//&& r.i16(bits_per_pixel)
 				)
 			{
-				height *= -1;
+				const bool y_inverted = (height >= 0);
+				if (!y_inverted)
+				{
+					height *= -1;
+				}
 
 				c.resize(width, height);
 				r.seek(data_start);
@@ -382,6 +390,17 @@ namespace soup
 							}
 						}
 						pixels_remaining_on_this_line = width;
+					}
+				}
+
+				if (y_inverted)
+				{
+					for (int y = 0; y != height / 2; ++y)
+					{
+						for (int x = 0; x != width; ++x)
+						{
+							std::swap(c.ref(x, y), c.ref(x, height - 1 - y));
+						}
 					}
 				}
 			}
