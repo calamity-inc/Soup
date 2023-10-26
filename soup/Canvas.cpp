@@ -148,6 +148,27 @@ namespace soup
 		*this = std::move(c);
 	}
 
+	Rgb Canvas::getAverageOfArea(unsigned int _x, unsigned int _y, unsigned int width, unsigned int height) const
+	{
+		unsigned long long r = 0;
+		unsigned long long g = 0;
+		unsigned long long b = 0;
+		for (int x = _x; x != _x + width; ++x)
+		{
+			for (int y = _y; y != _y + height; ++y)
+			{
+				Rgb colour = get(x, y);
+				r += colour.r;
+				g += colour.g;
+				b += colour.b;
+			}
+		}
+		r /= (width * height);
+		g /= (width * height);
+		b /= (width * height);
+		return Rgb(r, g, b);
+	}
+
 	std::string Canvas::toString(bool explicit_nl) const
 	{
 		std::string str{};

@@ -56,6 +56,8 @@ namespace soup
 
 		void resizeNearestNeighbour(unsigned int desired_width, unsigned int desired_height); // Resizes the canvas and its contents, works for all changes.
 
+		[[nodiscard]] Rgb getAverageOfArea(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const;
+
 		[[nodiscard]] std::string toString(bool explicit_nl) const;
 		[[nodiscard]] std::string toStringDoublewidth(bool explicit_nl) const;
 		[[nodiscard]] std::u16string toStringDownsampled(bool explicit_nl);
