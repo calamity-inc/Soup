@@ -424,6 +424,8 @@ namespace soup
 /* A little dummy server to test the SDK against:
 
 #include <IpcSocket.hpp>
+#include <json.hpp>
+#include <Thread.hpp>
 
 #include "iCUESDK.h"
 #include "iCUESDKLedIdEnum.h"
