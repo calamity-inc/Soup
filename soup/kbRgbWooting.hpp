@@ -6,15 +6,21 @@
 
 namespace soup
 {
-	struct kbRgbWooting : public kbRgb
+	class kbRgbWooting final : public kbRgb
 	{
+	public:
 		bool has_numpad = false;
 		hwHid hid;
+	protected:
+		bool inited = false;
 
+	public:
 		kbRgbWooting(const char* name, bool has_numpad, hwHid&& hid)
 			: kbRgb(name), has_numpad(has_numpad), hid(std::move(hid))
 		{
 		}
+
+		~kbRgbWooting() final;
 
 		[[nodiscard]] bool controlsDevice(const hwHid& hid) const noexcept final;
 

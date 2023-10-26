@@ -220,6 +220,14 @@ namespace soup
 		return 255;
 	}
 
+	kbRgbWooting::~kbRgbWooting()
+	{
+		if (inited)
+		{
+			deinit();
+		}
+	}
+
 	bool kbRgbWooting::controlsDevice(const hwHid& hid) const noexcept
 	{
 		return this->hid.isSamePhysicalDeviceAs(hid);
@@ -242,6 +250,7 @@ namespace soup
 			hid.sendFeatureReport(std::move(buf));
 		}
 		SOUP_UNUSED(hid.receiveReport());
+		inited = true;
 	}
 #endif
 
@@ -260,6 +269,7 @@ namespace soup
 			hid.sendFeatureReport(std::move(buf));
 		}
 		SOUP_UNUSED(hid.receiveReport());
+		inited = false;
 	}
 
 	void kbRgbWooting::setKey(Key key, Rgb colour)
@@ -279,6 +289,7 @@ namespace soup
 				hid.sendFeatureReport(std::move(buf));
 			}
 			SOUP_UNUSED(hid.receiveReport());
+			inited = true;
 		}
 	}
 
@@ -309,6 +320,7 @@ namespace soup
 			buf.insert_back(257 - buf.size(), '\0');
 		}
 		hid.sendReport(std::move(buf));
+		inited = true;
 	}
 
 	void kbRgbWooting::setAllKeys(Rgb colour)
@@ -333,6 +345,7 @@ namespace soup
 			buf.insert_back(257 - buf.size(), '\0');
 		}
 		hid.sendReport(std::move(buf));
+		inited = true;
 	}
 
 	uint8_t kbRgbWooting::getNumColumns() const noexcept
