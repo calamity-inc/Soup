@@ -291,10 +291,10 @@ namespace soup
 			case 14: return KEY_PRINT_SCREEN;
 			case 15: return KEY_PAUSE;
 			case 16: return KEY_SCROLL_LOCK;
-			case 17: return KEY_OEM_1;
-			case 18: return KEY_OEM_2;
-			case 19: return KEY_OEM_3;
-			case 20: return KEY_OEM_4;
+			case 17: return KEY_STOP_MEDIA;
+			case 18: return KEY_PREV_TRACK;
+			case 19: return KEY_PLAY_PAUSE;
+			case 20: return KEY_NEXT_TRACK;
 			}
 		}
 		else if (row == 1)
