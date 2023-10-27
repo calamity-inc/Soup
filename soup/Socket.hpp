@@ -91,6 +91,8 @@ namespace soup
 #endif
 		}
 
+		[[nodiscard]] static bool isPortLocallyBound(uint16_t port);
+
 		bool bind6(uint16_t port) noexcept;
 		bool bind4(uint16_t port) noexcept;
 		bool udpBind6(uint16_t port) noexcept;

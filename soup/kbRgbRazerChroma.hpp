@@ -39,7 +39,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] static bool isAvailable(uint16_t port = 54235);
+		[[nodiscard]] static bool isAvailable();
 
 	protected:
 		void updateMaintainTask();

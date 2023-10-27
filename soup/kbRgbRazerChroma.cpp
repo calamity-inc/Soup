@@ -8,14 +8,9 @@
 
 namespace soup
 {
-	bool kbRgbRazerChroma::isAvailable(uint16_t port)
+	bool kbRgbRazerChroma::isAvailable()
 	{
-		auto og = netConfig::get().connect_timeout_ms;
-		netConfig::get().connect_timeout_ms = 20;
-		Socket sock;
-		const bool ret = sock.connect(IpAddr(SOUP_IPV4(127, 0, 0, 1)), port);
-		netConfig::get().connect_timeout_ms = og;
-		return ret;
+		return Socket::isPortLocallyBound(54235);
 	}
 
 	void kbRgbRazerChroma::updateMaintainTask()
@@ -64,7 +59,7 @@ namespace soup
 					base = jr->asObj().at("uri").asStr();
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			} while (base.empty() || !kbRgbRazerChroma::isAvailable(Uri(base).port));
+			} while (base.empty() || !Socket::isPortLocallyBound(Uri(base).port));
 
 			task = sched.add<MaintainTask>(std::move(base));
 			task->payload = std::move(payload);
