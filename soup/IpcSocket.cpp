@@ -3,12 +3,18 @@
 
 #include "IpcSocket.hpp"
 
+#pragma comment(lib, "Advapi32.lib")
+
 namespace soup
 {
 	bool IpcSocket::bind(std::string name)
 	{
-		// Currently, IpcSocket created by privileged process can not be connected to by unprivileged processes.
-		// To rectify this, we should specify the appropriate security attributes: https://stackoverflow.com/a/57755632
+		// Allow unprivileged processes to connect to servers hosted by privileged processes. (https://stackoverflow.com/a/57755632)
+		SECURITY_DESCRIPTOR sd;
+		InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+		SetSecurityDescriptorDacl(&sd, TRUE, 0, FALSE);
+		SetSecurityDescriptorControl(&sd, SE_DACL_PROTECTED, SE_DACL_PROTECTED);
+		SECURITY_ATTRIBUTES sa = { sizeof(sa), &sd, FALSE };
 
 		name.insert(0, "\\\\.\\pipe\\");
 		close();
@@ -20,7 +26,7 @@ namespace soup
 			4096,
 			4096,
 			0x7fffffff,
-			nullptr
+			&sa
 		);
 		return h != INVALID_HANDLE_VALUE;
 	}
