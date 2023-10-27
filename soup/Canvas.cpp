@@ -435,7 +435,7 @@ namespace soup
 		std::string str = R"(<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width=")";
 		str.append(std::to_string(width * scale));
 		str.append(R"(" height=")");
-		str.append(std::to_string(width * scale));
+		str.append(std::to_string(height * scale));
 		str.append(R"(">)");
 
 		std::string rect_suffix = R"(" width=")";
