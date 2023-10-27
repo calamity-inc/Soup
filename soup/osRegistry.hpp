@@ -26,9 +26,10 @@ namespace soup
 			}
 
 			[[nodiscard]] bool hasSubkey(const char* name) const noexcept;
-			[[nodiscard]] Key createSubkey(const char* name);
+			[[nodiscard]] Key getSubkey(const char* name) const;
+			[[nodiscard]] Key createSubkey(const char* name) const;
 
-			void setValue(const std::string& value);
+			void setValue(const std::string& value) const;
 			void setValue(const char* key, const std::string& value) const;
 		};
 

@@ -23,7 +23,17 @@ namespace soup
 		return false;
 	}
 
-	Key Key::createSubkey(const char* name)
+	Key osRegistry::Key::getSubkey(const char* name) const
+	{
+		HKEY k;
+		if (RegOpenKeyA(h, name, &k) == ERROR_SUCCESS)
+		{
+			return Key{ k };
+		}
+		SOUP_THROW(Exception("Failed to open registry key"));
+	}
+
+	Key Key::createSubkey(const char* name) const
 	{
 		HKEY k;
 		if (RegCreateKeyExA(h, name, 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &k, nullptr) == ERROR_SUCCESS)
@@ -33,7 +43,7 @@ namespace soup
 		SOUP_THROW(Exception("Failed to create registry key"));
 	}
 
-	void osRegistry::Key::setValue(const std::string& value)
+	void osRegistry::Key::setValue(const std::string& value) const
 	{
 		setValue(nullptr, value);
 	}
