@@ -34,5 +34,7 @@ namespace soup
 		[[nodiscard]] Key mapPosToKey(uint8_t row, uint8_t column) const noexcept final;
 
 		[[nodiscard]] float getBrightness();
+
+		static void mapCanvasToKeys(Rgb(&keys)[NUM_KEYS], const Canvas& c);
 	};
 }

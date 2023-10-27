@@ -1,5 +1,7 @@
 #include "kbRgbWooting.hpp"
 
+#include "Canvas.hpp"
+
 namespace soup
 {
 	enum class WootingCommand : uint8_t
@@ -522,5 +524,132 @@ namespace soup
 		}
 		const Buffer& buf = hid.receiveReport();
 		return ((float)(uint8_t)buf.at(8) / 255.0f * 100.0f);
+	}
+
+	// https://github.com/calamity-inc/Soup/blob/senpai/soup/resources/keyboard-map.png
+	void kbRgbWooting::mapCanvasToKeys(Rgb(&keys)[NUM_KEYS], const Canvas& c)
+	{
+		SOUP_ASSERT(c.width >= 229 && c.height >= 65);
+
+		keys[KEY_ESCAPE] = c.getAverageOfArea(0, 0, 10, 10);
+		keys[KEY_F1] = c.getAverageOfArea(19, 0, 10, 10);
+		keys[KEY_F2] = c.getAverageOfArea(29, 0, 10, 10);
+		keys[KEY_F3] = c.getAverageOfArea(39, 0, 10, 10);
+		keys[KEY_F4] = c.getAverageOfArea(49, 0, 10, 10);
+		keys[KEY_F5] = c.getAverageOfArea(64, 0, 10, 10);
+		keys[KEY_F6] = c.getAverageOfArea(74, 0, 10, 10);
+		keys[KEY_F7] = c.getAverageOfArea(84, 0, 10, 10);
+		keys[KEY_F8] = c.getAverageOfArea(94, 0, 10, 10);
+		keys[KEY_F9] = c.getAverageOfArea(109, 0, 10, 10);
+		keys[KEY_F10] = c.getAverageOfArea(119, 0, 10, 10);
+		keys[KEY_F11] = c.getAverageOfArea(129, 0, 10, 10);
+		keys[KEY_F12] = c.getAverageOfArea(139, 0, 10, 10);
+
+		keys[KEY_BACKQUOTE] = c.getAverageOfArea(0, 15, 10, 10);
+		keys[KEY_1] = c.getAverageOfArea(10, 15, 10, 10);
+		keys[KEY_2] = c.getAverageOfArea(20, 15, 10, 10);
+		keys[KEY_3] = c.getAverageOfArea(30, 15, 10, 10);
+		keys[KEY_4] = c.getAverageOfArea(40, 15, 10, 10);
+		keys[KEY_5] = c.getAverageOfArea(50, 15, 10, 10);
+		keys[KEY_6] = c.getAverageOfArea(60, 15, 10, 10);
+		keys[KEY_7] = c.getAverageOfArea(70, 15, 10, 10);
+		keys[KEY_8] = c.getAverageOfArea(80, 15, 10, 10);
+		keys[KEY_9] = c.getAverageOfArea(90, 15, 10, 10);
+		keys[KEY_0] = c.getAverageOfArea(100, 15, 10, 10);
+		keys[KEY_MINUS] = c.getAverageOfArea(110, 15, 10, 10);
+		keys[KEY_EQUALS] = c.getAverageOfArea(120, 15, 10, 10);
+		keys[KEY_BACKSPACE] = c.getAverageOfArea(130, 15, 10, 10);
+
+		keys[KEY_TAB] = c.getAverageOfArea(0, 25, 15, 10);
+		keys[KEY_Q] = c.getAverageOfArea(15, 25, 10, 10);
+		keys[KEY_W] = c.getAverageOfArea(25, 25, 10, 10);
+		keys[KEY_E] = c.getAverageOfArea(35, 25, 10, 10);
+		keys[KEY_R] = c.getAverageOfArea(45, 25, 10, 10);
+		keys[KEY_T] = c.getAverageOfArea(55, 25, 10, 10);
+		keys[KEY_Y] = c.getAverageOfArea(65, 25, 10, 10);
+		keys[KEY_U] = c.getAverageOfArea(75, 25, 10, 10);
+		keys[KEY_I] = c.getAverageOfArea(85, 25, 10, 10);
+		keys[KEY_O] = c.getAverageOfArea(95, 25, 10, 10);
+		keys[KEY_P] = c.getAverageOfArea(105, 25, 10, 10);
+		keys[KEY_BRACKET_LEFT] = c.getAverageOfArea(115, 25, 10, 10);
+		keys[KEY_BRACKET_RIGHT] = c.getAverageOfArea(125, 25, 10, 10);
+
+		keys[KEY_ENTER] = c.getAverageOfArea(138, 30, 11, 10);
+
+		keys[KEY_CAPS_LOCK] = c.getAverageOfArea(0, 35, 18, 10);
+		keys[KEY_A] = c.getAverageOfArea(18, 35, 10, 10);
+		keys[KEY_S] = c.getAverageOfArea(28, 35, 10, 10);
+		keys[KEY_D] = c.getAverageOfArea(38, 35, 10, 10);
+		keys[KEY_F] = c.getAverageOfArea(48, 35, 10, 10);
+		keys[KEY_G] = c.getAverageOfArea(58, 35, 10, 10);
+		keys[KEY_H] = c.getAverageOfArea(68, 35, 10, 10);
+		keys[KEY_J] = c.getAverageOfArea(78, 35, 10, 10);
+		keys[KEY_K] = c.getAverageOfArea(88, 35, 10, 10);
+		keys[KEY_L] = c.getAverageOfArea(98, 35, 10, 10);
+		keys[KEY_SEMICOLON] = c.getAverageOfArea(108, 35, 10, 10);
+		keys[KEY_QUOTE] = c.getAverageOfArea(118, 35, 10, 10);
+		keys[KEY_BACKSLASH] = c.getAverageOfArea(128, 35, 10, 10);
+
+		keys[KEY_LSHIFT] = c.getAverageOfArea(0, 45, 12, 10);
+		keys[KEY_INTL_BACKSLASH] = c.getAverageOfArea(12, 45, 10, 10);
+		keys[KEY_Z] = c.getAverageOfArea(22, 45, 10, 10);
+		keys[KEY_X] = c.getAverageOfArea(32, 45, 10, 10);
+		keys[KEY_C] = c.getAverageOfArea(42, 45, 10, 10);
+		keys[KEY_V] = c.getAverageOfArea(52, 45, 10, 10);
+		keys[KEY_B] = c.getAverageOfArea(62, 45, 10, 10);
+		keys[KEY_N] = c.getAverageOfArea(72, 45, 10, 10);
+		keys[KEY_M] = c.getAverageOfArea(82, 45, 10, 10);
+		keys[KEY_COMMA] = c.getAverageOfArea(92, 45, 10, 10);
+		keys[KEY_PERIOD] = c.getAverageOfArea(102, 45, 10, 10);
+		keys[KEY_SLASH] = c.getAverageOfArea(112, 45, 10, 10);
+		keys[KEY_RSHIFT] = c.getAverageOfArea(112, 45, 27, 10);
+
+		keys[KEY_LCTRL] = c.getAverageOfArea(0, 55, 12, 10);
+		keys[KEY_LMETA] = c.getAverageOfArea(12, 55, 12, 10);
+		keys[KEY_LALT] = c.getAverageOfArea(24, 55, 12, 10);
+		keys[KEY_SPACE] = c.getAverageOfArea(58, 55, 11, 10);
+		keys[KEY_RALT] = c.getAverageOfArea(101, 55, 12, 10);
+		keys[KEY_RMETA] = c.getAverageOfArea(113, 55, 12, 10);
+		keys[KEY_FN] = c.getAverageOfArea(125, 55, 12, 10);
+		keys[KEY_RCTRL] = c.getAverageOfArea(137, 55, 12, 10);
+
+		keys[KEY_PRINT_SCREEN] = c.getAverageOfArea(154, 0, 10, 10);
+		keys[KEY_PAUSE] = c.getAverageOfArea(154 + 10, 0, 10, 10);
+		keys[KEY_SCROLL_LOCK] = c.getAverageOfArea(154 + 20, 0, 10, 10);
+
+		keys[KEY_INSERT] = c.getAverageOfArea(154, 15, 10, 10);
+		keys[KEY_HOME] = c.getAverageOfArea(154 + 10, 15, 10, 10);
+		keys[KEY_PAGE_UP] = c.getAverageOfArea(154 + 20, 15, 10, 10);
+		keys[KEY_DEL] = c.getAverageOfArea(154, 25, 10, 10);
+		keys[KEY_END] = c.getAverageOfArea(154 + 10, 25, 10, 10);
+		keys[KEY_PAGE_DOWN] = c.getAverageOfArea(154 + 20, 25, 10, 10);
+
+		keys[KEY_ARROW_UP] = c.getAverageOfArea(164, 45, 10, 10);
+		keys[KEY_ARROW_LEFT] = c.getAverageOfArea(154, 55, 10, 10);
+		keys[KEY_ARROW_DOWN] = c.getAverageOfArea(164, 55, 10, 10);
+		keys[KEY_ARROW_RIGHT] = c.getAverageOfArea(174, 55, 10, 10);
+
+		keys[KEY_NUM_LOCK] = c.getAverageOfArea(189, 15, 10, 10);
+		keys[KEY_NUMPAD_DIVIDE] = c.getAverageOfArea(199, 15, 10, 10);
+		keys[KEY_NUMPAD_MULTIPLY] = c.getAverageOfArea(209, 15, 10, 10);
+		keys[KEY_NUMPAD_SUBTRACT] = c.getAverageOfArea(219, 15, 10, 10);
+		keys[KEY_NUMPAD7] = c.getAverageOfArea(189, 25, 10, 10);
+		keys[KEY_NUMPAD8] = c.getAverageOfArea(199, 25, 10, 10);
+		keys[KEY_NUMPAD9] = c.getAverageOfArea(209, 25, 10, 10);
+		keys[KEY_NUMPAD_ADD] = c.getAverageOfArea(219, 25, 10, 20);
+		keys[KEY_NUMPAD4] = c.getAverageOfArea(189, 35, 10, 10);
+		keys[KEY_NUMPAD5] = c.getAverageOfArea(199, 35, 10, 10);
+		keys[KEY_NUMPAD6] = c.getAverageOfArea(209, 35, 10, 10);
+		keys[KEY_NUMPAD1] = c.getAverageOfArea(189, 45, 10, 10);
+		keys[KEY_NUMPAD2] = c.getAverageOfArea(199, 45, 10, 10);
+		keys[KEY_NUMPAD3] = c.getAverageOfArea(209, 45, 10, 10);
+		keys[KEY_NUMPAD_ENTER] = c.getAverageOfArea(219, 45, 10, 20);
+		keys[KEY_NUMPAD0] = c.getAverageOfArea(189, 55, 20, 10);
+		keys[KEY_NUMPAD_DECIMAL] = c.getAverageOfArea(209, 55, 10, 10);
+
+		keys[KEY_OEM_1] = c.getAverageOfArea(189, 0, 10, 10);
+		keys[KEY_OEM_2] = c.getAverageOfArea(199, 0, 10, 10);
+		keys[KEY_OEM_3] = c.getAverageOfArea(209, 0, 10, 10);
+		keys[KEY_OEM_4] = c.getAverageOfArea(219, 0, 10, 10);
 	}
 }
