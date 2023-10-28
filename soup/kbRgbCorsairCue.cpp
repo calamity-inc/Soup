@@ -341,7 +341,7 @@ namespace soup
 			case 10: return KEY_P;
 			case 11: return KEY_BRACKET_LEFT;
 			case 12: return KEY_BRACKET_RIGHT;
-			case 13: return KEY_BACKSLASH; // ISO
+			case 13: return KEY_BACKSLASH; // ANSI
 			case 14: return KEY_DEL;
 			case 15: return KEY_END;
 			case 16: return KEY_PAGE_DOWN;
@@ -367,7 +367,7 @@ namespace soup
 			case 9: return KEY_L;
 			case 10: return KEY_SEMICOLON;
 			case 11: return KEY_QUOTE;
-			case 12: return KEY_BACKSLASH;
+			case 12: return KEY_BACKSLASH; // ISO
 			case 13: return KEY_ENTER;
 			case 17: return KEY_NUMPAD4;
 			case 18: return KEY_NUMPAD5;
@@ -379,7 +379,7 @@ namespace soup
 			switch (column)
 			{
 			case 0: return KEY_LSHIFT;
-			case 1: return KEY_INTL_BACKSLASH;
+			case 1: return KEY_INTL_BACKSLASH; // ISO
 			case 2: return KEY_Z;
 			case 3: return KEY_X;
 			case 4: return KEY_C;

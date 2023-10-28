@@ -28,6 +28,10 @@ namespace soup
 		void deinit() final;
 
 		void setKey(Key key, Rgb colour) final;
+	protected:
+		void setKeyImpl(uint8_t wk, Rgb colour);
+		
+	public:
 		void setKeys(const Rgb(&colours)[NUM_KEYS]) final;
 
 		[[nodiscard]] uint8_t getNumColumns() const noexcept final;

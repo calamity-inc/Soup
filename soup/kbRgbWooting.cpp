@@ -161,7 +161,7 @@ namespace soup
 		case KEY_P: return 10 + (32 * 2);
 		case KEY_BRACKET_LEFT: return 11 + (32 * 2);
 		case KEY_BRACKET_RIGHT: return 12 + (32 * 2);
-		//case KEY_BACKSLASH: return 13 + (32 * 2); // ISO
+		//case KEY_BACKSLASH: return 13 + (32 * 2); // ANSI
 		case KEY_DEL: return 14 + (32 * 2);
 		case KEY_END: return 15 + (32 * 2);
 		case KEY_PAGE_DOWN: return 16 + (32 * 2);
@@ -181,13 +181,13 @@ namespace soup
 		case KEY_L: return 9 + (32 * 3);
 		case KEY_SEMICOLON: return 10 + (32 * 3);
 		case KEY_QUOTE: return 11 + (32 * 3);
-		case KEY_BACKSLASH: return 12 + (32 * 3);
+		//case KEY_BACKSLASH: return 12 + (32 * 3); // ISO
 		case KEY_ENTER: return 13 + (32 * 3);
 		case KEY_NUMPAD4: return 17 + (32 * 3);
 		case KEY_NUMPAD5: return 18 + (32 * 3);
 		case KEY_NUMPAD6: return 19 + (32 * 3);
 		case KEY_LSHIFT: return 0 + (32 * 4);
-		case KEY_INTL_BACKSLASH: return 1 + (32 * 4);
+		case KEY_INTL_BACKSLASH: return 1 + (32 * 4); // ISO
 		case KEY_Z: return 2 + (32 * 4);
 		case KEY_X: return 3 + (32 * 4);
 		case KEY_C: return 4 + (32 * 4);
@@ -276,23 +276,35 @@ namespace soup
 
 	void kbRgbWooting::setKey(Key key, Rgb colour)
 	{
-		if (auto wk = mapWootingKey(key); wk != 255)
+		if (key == KEY_BACKSLASH)
 		{
-			{
-				Buffer buf(8);
-				buf.push_back(/* 0 */ 0); // HID report index
-				buf.push_back(/* 1 */ 0xD0); // Magic word
-				buf.push_back(/* 2 */ 0xDA); // Magic word
-				buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevSingleColor);
-				buf.push_back(/* 4 */ colour.b);
-				buf.push_back(/* 5 */ colour.g);
-				buf.push_back(/* 6 */ colour.r);
-				buf.push_back(/* 7 */ wk);
-				hid.sendFeatureReport(std::move(buf));
-			}
-			SOUP_UNUSED(hid.receiveReport());
-			inited = true;
+			// We could check the keyboard layout: https://github.com/WootingKb/wooting-rgb-sdk/blob/6b00b1dea85693a0ed6b2fdcee55fd5377f53949/src/wooting-usb.c#L210
+		   // ... or we could just blind-fire it. :)
+			setKeyImpl(13 + (32 * 2), colour);
+			setKeyImpl(12 + (32 * 3), colour);
 		}
+		else if (auto wk = mapWootingKey(key); wk != 255)
+		{
+			setKeyImpl(wk, colour);
+		}
+	}
+
+	void kbRgbWooting::setKeyImpl(uint8_t wk, Rgb colour)
+	{
+		{
+			Buffer buf(8);
+			buf.push_back(/* 0 */ 0); // HID report index
+			buf.push_back(/* 1 */ 0xD0); // Magic word
+			buf.push_back(/* 2 */ 0xDA); // Magic word
+			buf.push_back(/* 3 */ (uint8_t)WootingCommand::WootDevSingleColor);
+			buf.push_back(/* 4 */ colour.b);
+			buf.push_back(/* 5 */ colour.g);
+			buf.push_back(/* 6 */ colour.r);
+			buf.push_back(/* 7 */ wk);
+			hid.sendFeatureReport(std::move(buf));
+		}
+		SOUP_UNUSED(hid.receiveReport());
+		inited = true;
 	}
 
 	void kbRgbWooting::setKeys(const Rgb(&colours)[NUM_KEYS])
@@ -414,7 +426,7 @@ namespace soup
 			case 10: return KEY_P;
 			case 11: return KEY_BRACKET_LEFT;
 			case 12: return KEY_BRACKET_RIGHT;
-			case 13: return KEY_BACKSLASH; // ISO
+			case 13: return KEY_BACKSLASH; // ANSI
 			case 14: return KEY_DEL;
 			case 15: return KEY_END;
 			case 16: return KEY_PAGE_DOWN;
@@ -440,7 +452,7 @@ namespace soup
 			case 9: return KEY_L;
 			case 10: return KEY_SEMICOLON;
 			case 11: return KEY_QUOTE;
-			case 12: return KEY_BACKSLASH;
+			case 12: return KEY_BACKSLASH; // ISO
 			case 13: return KEY_ENTER;
 			case 17: return KEY_NUMPAD4;
 			case 18: return KEY_NUMPAD5;
@@ -452,7 +464,7 @@ namespace soup
 			switch (column)
 			{
 			case 0: return KEY_LSHIFT;
-			case 1: return KEY_INTL_BACKSLASH;
+			case 1: return KEY_INTL_BACKSLASH; // ISO
 			case 2: return KEY_Z;
 			case 3: return KEY_X;
 			case 4: return KEY_C;

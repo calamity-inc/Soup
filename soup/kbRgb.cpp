@@ -103,8 +103,9 @@ namespace soup
 		}
 	}
 
-	std::pair<uint8_t, uint8_t> kbRgb::mapKeyToPos(Key key) const noexcept
+	std::vector<std::pair<uint8_t, uint8_t>> kbRgb::mapKeyToPos(Key key) const noexcept
 	{
+		std::vector<std::pair<uint8_t, uint8_t>> res;
 		const uint8_t rows = getNumRows();
 		const uint8_t columns = getNumColumns();
 		for (uint8_t row = 0; row != rows; ++row)
@@ -113,11 +114,15 @@ namespace soup
 			{
 				if (mapPosToKey(row, column) == key)
 				{
-					return { row, column };
+					res.emplace_back(row, column);
+					if (key != KEY_BACKSLASH || res.size() == 2)
+					{
+						return res;
+					}
 				}
 			}
 		}
-		return { 0xff, 0xff };
+		return res;
 	}
 }
 #endif

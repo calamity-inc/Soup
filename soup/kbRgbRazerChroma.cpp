@@ -149,8 +149,7 @@ namespace soup
 
 	void kbRgbRazerChroma::setKey(Key key, Rgb colour)
 	{
-		auto [row, column] = mapKeyToPos(key);
-		if (row != 0xff && column != 0xff)
+		for (const auto& [row, column] : mapKeyToPos(key))
 		{
 			const auto encoded = encodeColour(colour);
 			if (colours[row * 22 + column] != encoded)
@@ -304,7 +303,7 @@ namespace soup
 			case 11: return KEY_P;
 			case 12: return KEY_BRACKET_LEFT;
 			case 13: return KEY_BRACKET_RIGHT;
-			case 14: return KEY_BACKSLASH; // ISO
+			case 14: return KEY_BACKSLASH; // ANSI
 			case 15: return KEY_DEL;
 			case 16: return KEY_END;
 			case 17: return KEY_PAGE_DOWN;
@@ -331,7 +330,7 @@ namespace soup
 			case 10: return KEY_L;
 			case 11: return KEY_SEMICOLON;
 			case 12: return KEY_QUOTE;
-			case 13: return KEY_BACKSLASH;
+			case 13: return KEY_BACKSLASH; // ISO
 			case 14: return KEY_ENTER;
 			case 18: return KEY_NUMPAD4;
 			case 19: return KEY_NUMPAD5;
@@ -344,7 +343,7 @@ namespace soup
 			{
 			case 0: return KEY_OEM_9;
 			case 1: return KEY_LSHIFT;
-			case 2: return KEY_INTL_BACKSLASH;
+			case 2: return KEY_INTL_BACKSLASH; // ISO
 			case 3: return KEY_Z;
 			case 4: return KEY_X;
 			case 5: return KEY_C;
