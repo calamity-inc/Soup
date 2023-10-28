@@ -138,6 +138,9 @@ namespace soup
 			// Bytedance
 		case 138699:
 		case 396986:
+			// myLoc managed IT AG
+		case 24961:
+		case 41412:	
 			return true;
 		}
 		std::string slug = handle;
