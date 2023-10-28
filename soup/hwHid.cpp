@@ -516,6 +516,10 @@ namespace soup
 		if (!pending_read)
 		{
 			kickOffRead();
+			if (!pending_read)
+			{
+				return true;
+			}
 		}
 		return HasOverlappedIoCompleted(&read_overlapped);
 #elif SOUP_LINUX
@@ -537,7 +541,9 @@ namespace soup
 		{
 			kickOffRead();
 		}
-		if (GetOverlappedResult(handle, &read_overlapped, &bytes_read, TRUE))
+		if (pending_read
+			&& GetOverlappedResult(handle, &read_overlapped, &bytes_read, TRUE)
+			)
 		{
 			read_buffer.resize(bytes_read);
 
@@ -620,8 +626,12 @@ namespace soup
 #if SOUP_WINDOWS
 	void hwHid::kickOffRead() noexcept
 	{
-		ReadFile(handle, read_buffer.data(), read_buffer.capacity(), &bytes_read, &read_overlapped);
-		pending_read = true;
+		if (!ReadFile(handle, read_buffer.data(), read_buffer.capacity(), &bytes_read, &read_overlapped)
+			&& GetLastError() == ERROR_IO_PENDING
+			)
+		{
+			pending_read = true;
+		}
 	}
 #endif
 }
