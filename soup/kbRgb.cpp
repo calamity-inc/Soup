@@ -31,16 +31,31 @@ namespace soup
 				{
 					if ((hid.product_id & 0xFFF0) == 0x1100)
 					{
-						// Untested
-						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting One", false, std::move(hid)));
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting One", 17, false, std::move(hid)));
 					}
 					else if ((hid.product_id & 0xFFF0) == 0x1200)
 					{
-						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Two", true, std::move(hid)));
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Two", 21, false, std::move(hid)));
+					}
+					else if ((hid.product_id & 0xFFF0) == 0x1210)
+					{
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Lekker", 21, false, std::move(hid)));
 					}
 					else if ((hid.product_id & 0xFFF0) == 0x1220)
 					{
-						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Two HE", true, std::move(hid)));
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Two HE", 21, false, std::move(hid)));
+					}
+					else if ((hid.product_id & 0xFFF0) == 0x1230)
+					{
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting Two HE ARM", 21, true, std::move(hid)));
+					}
+					else if ((hid.product_id & 0xFFF0) == 0x1300)
+					{
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting 60HE", 14, false, std::move(hid)));
+					}
+					else if ((hid.product_id & 0xFFF0) == 0x1310)
+					{
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting 60HE ARM", 14, true, std::move(hid)));
 					}
 				}
 			}

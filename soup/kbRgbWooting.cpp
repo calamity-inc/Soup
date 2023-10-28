@@ -321,38 +321,24 @@ namespace soup
 		{
 			buf.insert_back(257 - buf.size(), '\0');
 		}
-		hid.sendReport(std::move(buf));
-		inited = true;
-	}
-
-	void kbRgbWooting::setAllKeys(Rgb colour)
-	{
-		Buffer buf(257);
-		buf.push_back(/* 0 */ 0); // HID report index
-		buf.push_back(/* 1 */ 0xD0); // Magic word
-		buf.push_back(/* 2 */ 0xDA); // Magic word
-		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
-		const uint8_t columns = getNumColumns();
-		for (uint8_t row = 0; row != 6; ++row)
+		if (arm_based)
 		{
-			for (uint8_t column = 0; column != columns; ++column)
+			for (uint8_t i = 0; i != 4; ++i)
 			{
-				auto encoded = encodeColour(colour);
-				buf.push_back(encoded & 0xff);
-				buf.push_back(encoded >> 8);
+				buf[i * 64] = 0;
+				hid.sendReport(&buf[i * 64], 65);
 			}
 		}
-		if (buf.size() < 257)
+		else
 		{
-			buf.insert_back(257 - buf.size(), '\0');
+			hid.sendReport(std::move(buf));
 		}
-		hid.sendReport(std::move(buf));
 		inited = true;
 	}
 
 	uint8_t kbRgbWooting::getNumColumns() const noexcept
 	{
-		return has_numpad ? 21 : 17;
+		return columns;
 	}
 
 	// https://github.com/WootingKb/wooting-rgb-sdk/blob/master/resources/keyboard-matrix-rows-columns.png

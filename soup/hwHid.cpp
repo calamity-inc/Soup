@@ -583,24 +583,31 @@ namespace soup
 	bool hwHid::sendReport(Buffer&& buf) const noexcept
 	{
 #if SOUP_WINDOWS
-		// On Windows, the output report has to be at least as long as output_report_byte_length.
+		// The output report has to be at least as long as output_report_byte_length.
+		// On Windows, we can make it work. On Linux, `write` will fail silently.
 		if (buf.size() < output_report_byte_length)
 		{
 			buf.insert_back(output_report_byte_length - buf.size(), '\0');
 		}
+#endif
+		return sendReport(buf.data(), buf.size());
+	}
 
+	bool hwHid::sendReport(const void* data, size_t size) const noexcept
+	{
+#if SOUP_WINDOWS
 		OVERLAPPED overlapped{};
 		DWORD bytesWritten;
-		BOOL result = WriteFile(handle, buf.data(), buf.size(), &bytesWritten, &overlapped);
+		BOOL result = WriteFile(handle, data, size, &bytesWritten, &overlapped);
 		if (result == FALSE
 			&& GetLastError() == ERROR_IO_PENDING
 			)
 		{
 			result = GetOverlappedResult(handle, &overlapped, &bytesWritten, TRUE);
 		}
-		return result && bytesWritten == buf.size();
+		return result && bytesWritten == size;
 #elif SOUP_LINUX
-		return write(handle, buf.data(), buf.size()) ==  buf.size();
+		return write(handle, data, size) == size;
 #else
 		return false;
 #endif

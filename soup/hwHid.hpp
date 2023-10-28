@@ -80,6 +80,7 @@ namespace soup
 		void receiveFeatureReport(Buffer& buf) const noexcept;
 
 		bool sendReport(Buffer&& buf) const noexcept;
+		bool sendReport(const void* data, size_t size) const noexcept;
 		bool sendFeatureReport(Buffer&& buf) const noexcept;
 
 	private:

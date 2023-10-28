@@ -9,14 +9,15 @@ namespace soup
 	class kbRgbWooting final : public kbRgb
 	{
 	public:
-		bool has_numpad = false;
 		hwHid hid;
+		uint8_t columns;
+		bool arm_based = false;
 	protected:
 		bool inited = false;
 
 	public:
-		kbRgbWooting(const char* name, bool has_numpad, hwHid&& hid)
-			: kbRgb(name), has_numpad(has_numpad), hid(std::move(hid))
+		kbRgbWooting(const char* name, uint8_t columns, bool arm_based, hwHid&& hid)
+			: kbRgb(name), hid(std::move(hid)), columns(columns), arm_based(arm_based)
 		{
 		}
 
@@ -28,7 +29,6 @@ namespace soup
 
 		void setKey(Key key, Rgb colour) final;
 		void setKeys(const Rgb(&colours)[NUM_KEYS]) final;
-		void setAllKeys(Rgb colour) final;
 
 		[[nodiscard]] uint8_t getNumColumns() const noexcept final;
 		[[nodiscard]] Key mapPosToKey(uint8_t row, uint8_t column) const noexcept final;
