@@ -16,5 +16,5 @@ jobs:
       - name: Build CLI
         run: php linux_cli.php
 
-      - name: Run ./soupcli test
-        run: ./soupcli test
+      - name: Run ./soup test
+        run: ./CLI/soup test
