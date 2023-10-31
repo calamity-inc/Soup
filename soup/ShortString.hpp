@@ -41,7 +41,7 @@ namespace soup
 
 		void operator =(const char* b) noexcept
 		{
-			SOUP_ASSERT_ARG(strlen(b) <= S);
+			SOUP_ASSERT_PRECOND(strlen(b) <= S);
 			strncpy(data(), b, S);
 		}
 

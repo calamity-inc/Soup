@@ -166,9 +166,9 @@ namespace soup
 #define SOUP_ASSERT_UNREACHABLE ::soup::throwAssertionFailed();
 
 #ifndef NDEBUG
-	#define SOUP_ASSERT_ARG(x) SOUP_ASSERT(x)
+	#define SOUP_ASSERT_PRECOND(x) SOUP_ASSERT(x)
 #else
-	#define SOUP_ASSERT_ARG(x) ;
+	#define SOUP_ASSERT_PRECOND(x) SOUP_ASSUME(X)
 #endif
 
 template <typename T> SOUP_FORCEINLINE void SOUP_UNUSED(T&&) {}
