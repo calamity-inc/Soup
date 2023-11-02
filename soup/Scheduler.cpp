@@ -396,7 +396,7 @@ namespace soup
 		{
 			if (w->type == WORKER_TYPE_SOCKET
 				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
-				&& !static_cast<Socket*>(w.get())->custom_data.getStructFromMap(ReuseTag).is_busy
+				&& !static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).is_busy
 				)
 			{
 				static_cast<Socket*>(w.get())->close();
