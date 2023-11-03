@@ -168,6 +168,10 @@ namespace soup
 		case KEY_PREV_TRACK: return PS2_PREV_TRACK;
 		case KEY_PLAY_PAUSE: return PS2_PLAY_PAUSE;
 		case KEY_NEXT_TRACK: return PS2_NEXT_TRACK;
+
+		case KEY_F13: return PS2_F13;
+		case KEY_F14: return PS2_F14;
+		case KEY_F15: return PS2_F15;
 		}
 		return 0;
 	}

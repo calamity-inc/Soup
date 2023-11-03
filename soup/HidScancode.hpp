@@ -272,6 +272,17 @@ namespace soup
 		case HID_NUMPAD_ENTER: return KEY_NUMPAD_ENTER;
 		case HID_NUMPAD0: return KEY_NUMPAD0;
 		case HID_NUMPAD_DECIMAL: return KEY_NUMPAD_DECIMAL;
+
+		case HID_F13: return KEY_F13;
+		case HID_F14: return KEY_F14;
+		case HID_F15: return KEY_F15;
+		case HID_F16: return KEY_F16;
+		case HID_F17: return KEY_F17;
+		case HID_F18: return KEY_F18;
+		case HID_F19: return KEY_F19;
+		case HID_F20: return KEY_F20;
+		case HID_F21: return KEY_F21;
+		case HID_F22: return KEY_F22;
 		}
 		return KEY_NONE;
 	}
@@ -390,6 +401,17 @@ namespace soup
 		case KEY_NUMPAD_ENTER: return HID_NUMPAD_ENTER;
 		case KEY_NUMPAD0: return HID_NUMPAD0;
 		case KEY_NUMPAD_DECIMAL: return HID_NUMPAD_DECIMAL;
+
+		case KEY_F13: return HID_F13;
+		case KEY_F14: return HID_F14;
+		case KEY_F15: return HID_F15;
+		case KEY_F16: return HID_F16;
+		case KEY_F17: return HID_F17;
+		case KEY_F18: return HID_F18;
+		case KEY_F19: return HID_F19;
+		case KEY_F20: return HID_F20;
+		case KEY_F21: return HID_F21;
+		case KEY_F22: return HID_F22;
 		}
 		return 0;
 	}

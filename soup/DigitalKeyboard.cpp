@@ -162,6 +162,10 @@ namespace soup
 			keys[KEY_PREV_TRACK] = state[DIK_PREVTRACK];
 			keys[KEY_PLAY_PAUSE] = state[DIK_PLAYPAUSE];
 			keys[KEY_NEXT_TRACK] = state[DIK_NEXTTRACK];
+
+			keys[KEY_F13] = state[DIK_F13];
+			keys[KEY_F14] = state[DIK_F14];
+			keys[KEY_F15] = state[DIK_F15];
 		}
 	}
 }

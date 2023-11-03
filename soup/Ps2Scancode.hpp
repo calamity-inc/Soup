@@ -119,6 +119,10 @@ namespace soup
 		PS2_NUMPAD0 = 0x0052,
 		PS2_NUMPAD_DECIMAL = 0x0053,
 
+		PS2_F13 = 0x005D,
+		PS2_F14 = 0x005E,
+		PS2_F15 = 0x005F,
+
 		// The following keys were obtained via MapVirtualKeyA(..., MAPVK_VK_TO_VSC_EX)
 		// However, I'm not sure how universal they are.
 

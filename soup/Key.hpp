@@ -127,6 +127,17 @@ namespace soup
 		KEY_PLAY_PAUSE,
 		KEY_NEXT_TRACK,
 
+		KEY_F13,
+		KEY_F14,
+		KEY_F15,
+		KEY_F16,
+		KEY_F17,
+		KEY_F18,
+		KEY_F19,
+		KEY_F20,
+		KEY_F21,
+		KEY_F22,
+
 		KEY_OEM_1,
 		KEY_OEM_2,
 		KEY_OEM_3,
