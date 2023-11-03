@@ -299,7 +299,20 @@ int main(int argc, const char** argv)
 			std::cout << "VID\tPID\n";
 			for (const auto& hid : hwHid::getAll())
 			{
-				std::cout << hid.vendor_id << "\t" << hid.product_id << "\t" << hid.getProductName() << "\n";
+				std::cout << hid.vendor_id << "\t" << hid.product_id << "\t";
+				if (auto name = hid.getProductName(); !name.empty())
+				{
+					std::cout << name;
+				}
+				else
+				{
+					if (auto vendor = hid.getManufacturerName(); !vendor.empty())
+					{
+						std::cout << vendor << " Device ";
+					}
+					std::cout << "[Product Name Not Provided]";
+				}
+				std::cout << "\n";
 				std::cout << "\t\t- Usage: " << hid.usage<< "\n";
 				std::cout << "\t\t- Usage Page: " << hid.usage_page << "\n";
 #if !SOUP_WINDOWS
