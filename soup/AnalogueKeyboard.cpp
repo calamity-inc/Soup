@@ -253,6 +253,10 @@ namespace soup
 						switch (scancode)
 						{
 						default: sk = KEY_NONE; break;
+						case 0x3B5: sk = KEY_NEXT_TRACK; break;
+						case 0x3B6: sk = KEY_PREV_TRACK; break;
+						case 0x3B7: sk = KEY_STOP_MEDIA; break;
+						case 0x3CD: sk = KEY_PLAY_PAUSE; break;
 						case 0x403: sk = KEY_OEM_1; break;
 						case 0x404: sk = KEY_OEM_2; break;
 						case 0x405: sk = KEY_OEM_3; break;
