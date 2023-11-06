@@ -314,10 +314,9 @@ namespace soup
 		buf.push_back(/* 1 */ 0xD0); // Magic word
 		buf.push_back(/* 2 */ 0xDA); // Magic word
 		buf.push_back(/* 3 */ (uint8_t)WootingReport::WootDevRawReport);
-		const uint8_t columns = getNumColumns();
 		for (uint8_t row = 0; row != 6; ++row)
 		{
-			for (uint8_t column = 0; column != columns; ++column)
+			for (uint8_t column = 0; column != 21; ++column)
 			{
 				uint16_t encoded = 0;
 				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
@@ -649,5 +648,10 @@ namespace soup
 		keys[KEY_OEM_2] = c.getAverageOfArea(199, 0, 10, 10);
 		keys[KEY_OEM_3] = c.getAverageOfArea(209, 0, 10, 10);
 		keys[KEY_OEM_4] = c.getAverageOfArea(219, 0, 10, 10);
+	}
+
+	bool kbRgbWooting::isUwu() const noexcept
+	{
+		return columns == 7;
 	}
 }

@@ -58,6 +58,9 @@ namespace soup
 	// hardware.keyboard
 	enum Key : uint8_t;
 
+	// hardware.keyboard.rgb
+	class kbRgbWooting;
+
 	// io.bits
 	class BitReader;
 	class BitWriter;

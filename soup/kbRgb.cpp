@@ -57,6 +57,10 @@ namespace soup
 					{
 						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting 60HE ARM", 14, true, std::move(hid)));
 					}
+					else if ((hid.product_id & 0xFFF0) == 0x1510)
+					{
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting UwU RGB", 7, true, std::move(hid)));
+					}
 				}
 			}
 		}
@@ -123,6 +127,11 @@ namespace soup
 			}
 		}
 		return res;
+	}
+
+	bool kbRgb::isWooting() const noexcept
+	{
+		return name.length() > 8 && name.substr(0, 8) == "Wooting ";
 	}
 }
 #endif
