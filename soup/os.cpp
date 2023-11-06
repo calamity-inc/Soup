@@ -296,7 +296,7 @@ namespace soup
 		keys.reserve(4);
 		if (ctrl) keys.emplace_back(VK_CONTROL);
 		if (shift) keys.emplace_back(VK_SHIFT);
-		if (alt) keys.emplace_back(VK_SHIFT);
+		if (alt) keys.emplace_back(VK_MENU);
 		keys.emplace_back(vk);
 
 		std::vector<INPUT> inputs{};
