@@ -290,10 +290,16 @@ namespace soup
 
 	void os::simulateKeyPress(bool ctrl, bool shift, bool alt, Key key)
 	{
+		return simulateKeyPress(false, ctrl, shift, alt, key);
+	}
+
+	void os::simulateKeyPress(bool meta, bool ctrl, bool shift, bool alt, Key key)
+	{
 		const int vk = soup_key_to_virtual_key(key);
 
 		std::vector<int> keys{};
-		keys.reserve(4);
+		keys.reserve(5);
+		if (meta) keys.emplace_back(VK_LWIN);
 		if (ctrl) keys.emplace_back(VK_CONTROL);
 		if (shift) keys.emplace_back(VK_SHIFT);
 		if (alt) keys.emplace_back(VK_MENU);

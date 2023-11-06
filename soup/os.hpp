@@ -47,6 +47,7 @@ namespace soup
 #if SOUP_WINDOWS
 		static void simulateKeyPress(Key key);
 		static void simulateKeyPress(bool ctrl, bool shift, bool alt, Key key);
+		static void simulateKeyPress(bool meta, bool ctrl, bool shift, bool alt, Key key);
 
 		[[nodiscard]] static size_t getMemoryUsage();
 
