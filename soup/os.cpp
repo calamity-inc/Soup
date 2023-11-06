@@ -290,7 +290,7 @@ namespace soup
 
 	void os::simulateKeyPress(bool ctrl, bool shift, bool alt, Key key)
 	{
-		return simulateKeyPress(false, ctrl, shift, alt, key);
+		return simulateKeyPress(ctrl, shift, alt, false, key);
 	}
 
 	void os::simulateKeyPress(bool ctrl, bool shift, bool alt, bool meta, Key key)
