@@ -14,15 +14,80 @@ namespace soup
 		using Drawable = Window;
 		using GC = long long;
 		using Bool = int;
+		using Time = time_t;
+		using KeySym = unsigned long;
 
 		enum EventMask : long
 		{
+			KeyPressMask = 0x0000'0001,
+			KeyReleaseMask = 0x0000'0002,
+			ButtonPressMask = 0x0000'0004,
+			ButtonReleaseMask = 0x0000'0008,
+			EnterWindowMask = 0x0000'0010,
+			LeaveWindowMask = 0x0000'0020,
+			PointerMotionMask = 0x0000'0040,
+			PointerMotionHintMask = 0x0000'0080,
+			Button1MotionMask = 0x0000'0100,
+			Button2MotionMask = 0x0000'0200,
+			Button3MotionMask = 0x0000'0400,
+			Button4MotionMask = 0x0000'0800,
+			Button5MotionMask = 0x0000'1000,
+			ButtonMotionMask = 0x0000'2000,
+			KeymapStateMask = 0x0000'4000,
 			ExposureMask = 0x0000'8000,
+			VisibilityChangeMask = 0x0001'0000,
+			StructureNotifyMask = 0x0002'0000,
+			ResizeRedirectMask = 0x0004'0000,
+			SubstructureNotifyMask = 0x0008'0000,
+			SubstructureRedirectMask = 0x0010'0000,
+			FocusChangeMask = 0x0020'0000,
+			PropertyChangeMask = 0x0040'0000,
+			ColormapChangeMask = 0x0080'0000,
+			OwnerGrabButtonMask = 0x010'00000,
 		};
 
 		enum EventType : int
 		{
+			KeyPress = 2,
+			KeyRelease = 3,
 			Expose = 12,
+		};
+
+		struct XKeyEvent
+		{
+			int type;		/* KeyPress or KeyRelease */
+			unsigned long serial;	/* # of last request processed by server */
+			X11Api::Bool send_event;	/* true if this came from a SendEvent request */
+			X11Api::Display *display;	/* Display the event was read from */
+			X11Api::Window window;		/* ``event'' window it is reported relative to */
+			X11Api::Window root;		/* root window that the event occurred on */
+			X11Api::Window subwindow;	/* child window */
+			X11Api::Time time;		/* milliseconds */
+			int x, y;		/* pointer x, y coordinates in event window */
+			int x_root, y_root;	/* coordinates relative to root */
+			unsigned int state;	/* key or button mask */
+			unsigned int keycode;	/* detail */
+			X11Api::Bool same_screen;	/* same screen flag */
+		};
+
+		struct XExposeEvent
+		{
+			int type;		/* Expose */
+			unsigned long serial;	/* # of last request processed by server */
+			X11Api::Bool send_event;	/* true if this came from a SendEvent request */
+			X11Api::Display *display;	/* Display the event was read from */
+			X11Api::Window window;
+			int x, y;
+			int width, height;
+			int count;		/* if nonzero, at least this many more */
+		};
+
+		union XEvent
+		{
+			int type;
+			XKeyEvent xkey;
+			XExposeEvent xexpose;
+			long pad[24];
 		};
 
 		using XOpenDisplay_t = Display*(*)(void*);
@@ -32,6 +97,7 @@ namespace soup
 		using XSelectInput_t = void(*)(Display*, Window, long);
 		using XMapWindow_t = void(*)(Display*, Window);
 		using XNextEvent_t = int(*)(Display*, void*);
+		using XLookupKeysym_t = KeySym(*)(XKeyEvent*, int index);
 
 		using XFlush_t = void(*)(Display*);
 		//using XSync_t = void(*)(Display*, Bool discard);
@@ -55,6 +121,7 @@ namespace soup
 		XSelectInput_t selectInput;
 		XMapWindow_t mapWindow;
 		XNextEvent_t nextEvent;
+		XLookupKeysym_t lookupKeysym;
 
 		XFlush_t flush;
 		//XSync_t sync;
@@ -81,6 +148,7 @@ namespace soup
 			selectInput = (XSelectInput_t)getAddressMandatory("XSelectInput");
 			mapWindow = (XMapWindow_t)getAddressMandatory("XMapWindow");
 			nextEvent = (XNextEvent_t)getAddressMandatory("XNextEvent");
+			lookupKeysym = (XLookupKeysym_t)getAddressMandatory("XLookupKeysym");
 
 			flush = (XFlush_t)getAddressMandatory("XFlush");
 			//sync = (XSync_t)getAddressMandatory("XSync");
@@ -104,6 +172,9 @@ namespace soup
 			{
 				throw IoError();
 			});
+
+			// This disables auto-repeat on the entire X11 server until XAutoRepeatOn is called.
+			//((int(*)(Display*))getAddressMandatory("XAutoRepeatOff"))(display);
 		}
 
 		struct IoError : public Exception

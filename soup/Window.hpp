@@ -26,22 +26,22 @@ namespace soup
 
 		using callback_t = void(*)(Window);
 		using draw_func_t = void(*)(Window, RenderTarget&);
+		using key_callback_t = void(*)(Window, char32_t, bool down, bool repeat);
 #if SOUP_WINDOWS
 		using on_click_t = void(*)(Window, unsigned int, unsigned int);
 		using mouse_informer_t = on_click_t(*)(Window, unsigned int, unsigned int);
 		using char_callback_t = void(*)(Window, char32_t);
-		using key_callback_t = void(*)(Window, char32_t, bool down, bool repeat);
 #endif
 
 		struct Config
 		{
 			Capture custom_data;
 			draw_func_t draw_func = nullptr;
+			key_callback_t key_callback = nullptr;
 #if SOUP_WINDOWS
 			bool resizable = false;
 			mouse_informer_t mouse_informer = nullptr;
 			char_callback_t char_callback = nullptr;
-			key_callback_t key_callback = nullptr;
 			std::vector<callback_t> hotkey_callbacks{};
 			callback_t on_focus = nullptr;
 			callback_t on_blur = nullptr;
@@ -77,10 +77,10 @@ namespace soup
 		[[nodiscard]] Window::Config& getConfig();
 		Capture& customData();
 		Window& setDrawFunc(draw_func_t draw_func);
+		Window& setKeyCallback(key_callback_t key_callback);
 #if SOUP_WINDOWS
 		Window& setMouseInformer(mouse_informer_t mouse_informer);
 		Window& setCharCallback(char_callback_t char_callback);
-		Window& setKeyCallback(key_callback_t key_callback);
 		Window& registerHotkey(bool meta, bool ctrl, bool shift, bool alt, unsigned int key, callback_t callback);
 		Window& onFocus(callback_t on_focus);
 		Window& onBlur(callback_t on_blur);

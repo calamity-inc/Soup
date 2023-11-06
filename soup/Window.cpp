@@ -249,7 +249,7 @@ namespace soup
 			x.storeName(x.display, h, title.c_str());
 		}
 		window_configs.emplace(h, Window::Config{});
-		x.selectInput(x.display, h, X11Api::ExposureMask);
+		x.selectInput(x.display, h, X11Api::KeyPressMask | X11Api::KeyReleaseMask | X11Api::ExposureMask);
 		x.mapWindow(x.display, h);
 		x.flush(x.display); // if user doesn't call runMessageLoop, this allows the window to still appear.
 		return Window{ h };
@@ -291,6 +291,12 @@ namespace soup
 		return *this;
 	}
 
+	Window& Window::setKeyCallback(key_callback_t key_callback)
+	{
+		getConfig().key_callback = key_callback;
+		return *this;
+	}
+
 #if SOUP_WINDOWS
 	Window& Window::setMouseInformer(mouse_informer_t mouse_informer)
 	{
@@ -301,12 +307,6 @@ namespace soup
 	Window& Window::setCharCallback(char_callback_t char_callback)
 	{
 		getConfig().char_callback = char_callback;
-		return *this;
-	}
-
-	Window& Window::setKeyCallback(key_callback_t key_callback)
-	{
-		getConfig().key_callback = key_callback;
 		return *this;
 	}
 
@@ -475,29 +475,10 @@ namespace soup
 		PostMessage(h, WM_DESTROY, 0, 0);
 	}
 #else
-	struct XExposeEvent
-	{
-		int type;		/* Expose */
-		unsigned long serial;	/* # of last request processed by server */
-		X11Api::Bool send_event;	/* true if this came from a SendEvent request */
-		X11Api::Display *display;	/* Display the event was read from */
-		X11Api::Window window;
-		int x, y;
-		int width, height;
-		int count;		/* if nonzero, at least this many more */
-	};
-
-	union XEvent
-	{
-		int type;
-		XExposeEvent xexpose;
-		long pad[24];
-	};
-
 	void Window::runMessageLoop() noexcept
 	{
 		const X11Api& x = X11Api::get();
-		XEvent event;
+		X11Api::XEvent event, prev_event;
 		while (true)
 		{
 			try
@@ -508,11 +489,20 @@ namespace soup
 			{
 				break;
 			}
-			if (event.type == X11Api::Expose)
+			if (event.type == X11Api::KeyPress || event.type == X11Api::KeyRelease)
+			{
+				// https://gist.github.com/baines/5a49f1334281b2685af5dcae81a6fa8a
+				const bool down = (event.type == X11Api::KeyPress);
+				const bool repeat = (down && prev_event.type == X11Api::KeyRelease && event.xkey.time == prev_event.xkey.time && event.xkey.keycode == prev_event.xkey.keycode);
+				Window w{ event.xkey.window };
+				w.getConfig().key_callback(w, x.lookupKeysym(&event.xkey, 0), down, repeat);
+			}
+			else if (event.type == X11Api::Expose)
 			{
 				//std::cout << "Got expose event for " << event.xexpose.window << "\n";
 				Window{ event.xexpose.window }.redraw();
 			}
+			prev_event = std::move(event);
 		}
 	}
 #endif
