@@ -21,7 +21,7 @@ namespace soup
 		[[nodiscard]] static std::vector<UniquePtr<kbRgb>> getAll(bool include_razer_chroma, bool include_no_permission = false);
 
 		virtual ~kbRgb() = default;
-	
+
 		[[nodiscard]] virtual bool controlsDevice(const hwHid& hid) const noexcept = 0;
 
 		void init() {} // Init is implicit when changing colours, but deinit should explicitly be called when you're done.
