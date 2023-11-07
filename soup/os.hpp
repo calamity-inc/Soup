@@ -48,6 +48,7 @@ namespace soup
 		static void simulateKeyPress(Key key);
 		static void simulateKeyPress(bool ctrl, bool shift, bool alt, Key key);
 		static void simulateKeyPress(bool ctrl, bool shift, bool alt, bool meta, Key key);
+		static void simulateKeyPress(const std::vector<Key>& keys);
 
 		[[nodiscard]] static size_t getMemoryUsage();
 
