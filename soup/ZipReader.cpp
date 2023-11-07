@@ -117,10 +117,10 @@ namespace soup
 
 	std::string ZipReader::getFileContents(const ZipIndexedFile& file) const
 	{
-		return getFileContents(file.offset);
+		return getFileContents(file.offset, file.compressed_size);
 	}
 
-	std::string ZipReader::getFileContents(uint32_t offset) const
+	std::string ZipReader::getFileContents(uint32_t offset, uint32_t compressed_size) const
 	{
 		std::string ret{};
 
@@ -140,6 +140,16 @@ namespace soup
 				else if (lfh.common.compression_method == 8)
 				{
 					// Deflate
+					if (lfh.common.compressed_size == 0
+						&& lfh.common.uncompressed_size != 0
+						)
+					{
+						if (compressed_size == 0)
+						{
+							SOUP_THROW(Exception("Compressed size is not in local file header, but it may be obtained via the file list."));
+						}
+						lfh.common.compressed_size = compressed_size;
+					}
 					is.str(lfh.common.compressed_size, ret);
 					ret = deflate::decompress(ret, lfh.common.uncompressed_size).decompressed;
 					if (ret.length() != lfh.common.uncompressed_size)
