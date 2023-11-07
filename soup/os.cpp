@@ -289,40 +289,47 @@ namespace soup
 
 	void os::simulateKeyPress(const std::vector<Key>& keys)
 	{
-		std::vector<INPUT> inputs{};
-		inputs.reserve(keys.size() * 2);
-
 		for (auto i = keys.cbegin(); i != keys.cend(); ++i)
 		{
-			INPUT& input = inputs.emplace_back();
-			input.type = INPUT_KEYBOARD;
-			input.ki.wVk = soup_key_to_virtual_key(*i);
-			input.ki.wScan = soup_key_to_ps2_scancode(*i);
-			input.ki.dwFlags = 0;
-			if (input.ki.wScan & 0xE000)
-			{
-				input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
-			}
-			input.ki.time = 0;
-			input.ki.dwExtraInfo = 0;
+			simulateKeyDown(*i);
 		}
 
 		for (auto i = keys.crbegin(); i != keys.crend(); ++i)
 		{
-			INPUT& input = inputs.emplace_back();
-			input.type = INPUT_KEYBOARD;
-			input.ki.wVk = soup_key_to_virtual_key(*i);
-			input.ki.wScan = soup_key_to_ps2_scancode(*i);
-			input.ki.dwFlags = KEYEVENTF_KEYUP;
-			if (input.ki.wScan & 0xE000)
-			{
-				input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
-			}
-			input.ki.time = 0;
-			input.ki.dwExtraInfo = 0;
+			simulateKeyRelease(*i);
 		}
+	}
 
-		SendInput(inputs.size(), inputs.data(), sizeof(INPUT));
+	void os::simulateKeyDown(Key key)
+	{
+		INPUT input;
+		input.type = INPUT_KEYBOARD;
+		input.ki.wVk = soup_key_to_virtual_key(key);
+		input.ki.wScan = soup_key_to_ps2_scancode(key);
+		input.ki.dwFlags = 0;
+		if (input.ki.wScan & 0xE000)
+		{
+			input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+		}
+		input.ki.time = 0;
+		input.ki.dwExtraInfo = 0;
+		SendInput(1, &input, sizeof(INPUT));
+	}
+
+	void os::simulateKeyRelease(Key key)
+	{
+		INPUT input;
+		input.type = INPUT_KEYBOARD;
+		input.ki.wVk = soup_key_to_virtual_key(key);
+		input.ki.wScan = soup_key_to_ps2_scancode(key);
+		input.ki.dwFlags = KEYEVENTF_KEYUP;
+		if (input.ki.wScan & 0xE000)
+		{
+			input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+		}
+		input.ki.time = 0;
+		input.ki.dwExtraInfo = 0;
+		SendInput(1, &input, sizeof(INPUT));
 	}
 
 	size_t os::getMemoryUsage()
