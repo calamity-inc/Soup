@@ -1,6 +1,6 @@
 #include "morse.hpp"
 
-#include "aud_math.hpp"
+#include "aud_maths.hpp"
 #include "string.hpp"
 #include "unicode.hpp"
 

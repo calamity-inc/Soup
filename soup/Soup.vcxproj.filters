@@ -1143,7 +1143,7 @@
     <ClInclude Include="morse.hpp">
       <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="aud_math.hpp">
+    <ClInclude Include="aud_maths.hpp">
       <Filter>audio</Filter>
     </ClInclude>
     <ClInclude Include="riff.hpp">
