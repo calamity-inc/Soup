@@ -64,7 +64,7 @@ namespace soup
 		return a;
 	}
 
-	double MorseSequence::getAmplitude(double t) const
+	double MorseSequence::getAmplitude(double t)
 	{
 		if (isOnAt(t * 1000.0))
 		{
@@ -73,7 +73,7 @@ namespace soup
 		return 0.0;
 	}
 
-	double MorseSequence::getDurationSeconds() const noexcept
+	double MorseSequence::getDurationSeconds() noexcept
 	{
 		return (double)getDuration() / 1000.0;
 	}
@@ -250,7 +250,7 @@ namespace soup
 		return ms;
 	}
 
-	double MorseKey::getAmplitude(double t) const
+	double MorseKey::getAmplitude(double t)
 	{
 		if (isDown())
 		{

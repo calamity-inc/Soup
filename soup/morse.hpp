@@ -67,8 +67,8 @@ namespace soup
 		[[nodiscard]] std::time_t getDuration() const noexcept;
 
 		// from audSound:
-		[[nodiscard]] double getAmplitude(double t) const final;
-		[[nodiscard]] double getDurationSeconds() const noexcept final;
+		[[nodiscard]] double getAmplitude(double t) final;
+		[[nodiscard]] double getDurationSeconds() noexcept final;
 	};
 
 	struct morse
@@ -113,6 +113,6 @@ namespace soup
 
 
 		// from audSound:
-		[[nodiscard]] double getAmplitude(double t) const final;
+		[[nodiscard]] double getAmplitude(double t) final;
 	};
 }

@@ -39,7 +39,7 @@ namespace soup
 		duration_seconds = (double)ck.data_size / fmt.avg_bytes_per_sec;
 	}
 
-	double audWav::getAmplitude(double t) const
+	double audWav::getAmplitude(double t)
 	{
 		// Handle looping
 		if (!r.hasMore())

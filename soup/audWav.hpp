@@ -18,9 +18,9 @@ namespace soup
 
 		audWav(ioSeekableReader& r);
 
-		double getAmplitude(double t) const final;
+		double getAmplitude(double t) final;
 
-		double getDurationSeconds() const noexcept final
+		double getDurationSeconds() noexcept final
 		{
 			return duration_seconds;
 		}
