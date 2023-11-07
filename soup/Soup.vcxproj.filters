@@ -1551,6 +1551,9 @@
     <ClInclude Include="kbRgbCorsairCue.hpp">
       <Filter>hardware\keyboard\rgb</Filter>
     </ClInclude>
+    <ClInclude Include="audNote.hpp">
+      <Filter>audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

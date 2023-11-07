@@ -427,10 +427,11 @@
     <ClInclude Include="AnalogueKeyboard.hpp" />
     <ClInclude Include="audDevice.hpp" />
     <ClInclude Include="audMixer.hpp" />
+    <ClInclude Include="audNote.hpp" />
     <ClInclude Include="audPlayback.hpp" />
     <ClInclude Include="audSound.hpp" />
     <ClInclude Include="audWav.hpp" />
-    <ClInclude Include="aud_math.hpp" />
+    <ClInclude Include="aud_maths.hpp" />
     <ClInclude Include="base40.hpp" />
     <ClInclude Include="BCanvas.hpp" />
     <ClInclude Include="Benchmark.hpp" />

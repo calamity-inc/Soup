@@ -17,6 +17,7 @@
     <ClCompile Include="cli_chatgpt.cpp" />
     <ClCompile Include="cli_keyboard.cpp" />
     <ClCompile Include="cli_mesh.cpp" />
+    <ClCompile Include="cli_midikeyboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

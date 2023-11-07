@@ -393,6 +393,12 @@ int main(int argc, const char** argv)
 			return cli_mesh(argc - 2, &argv[2]);
 		}
 
+		if (subcommand == "midikeyboard")
+		{
+			cli_midikeyboard();
+			return 0;
+		}
+
 		if (subcommand == "morse")
 		{
 			cli_morse(argc - 2, &argv[2]);
@@ -522,6 +528,7 @@ Available tools:
 - keyboard
 - maze
 - mesh [link <token>|list|dns-add-record [ip] [name] [type] [data]]
+- midikeyboard
 - morse [key|encode [text]] <--silent>
 - qr [contents]
 - repl
