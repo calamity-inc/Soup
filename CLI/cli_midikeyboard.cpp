@@ -2,8 +2,8 @@
 
 #include "base.hpp"
 
-#if SOUP_WINDOWS
 #include <iostream>
+#if SOUP_WINDOWS
 #include <thread>
 
 #include <aud_maths.hpp>
