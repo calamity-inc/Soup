@@ -1,4 +1,5 @@
 #include "CpuInfo.hpp"
+#if SOUP_X86
 
 #include "AllocRaiiVirtual.hpp"
 #include "os.hpp"
@@ -105,3 +106,5 @@ namespace soup
 #endif
 	}
 }
+
+#endif

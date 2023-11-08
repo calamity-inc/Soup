@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if SOUP_X86
+
 #include <cstdint>
 #include <string>
 
@@ -86,3 +89,5 @@ namespace soup
 		static void invokeCpuid(void* out, uint32_t eax);
 	};
 }
+
+#endif
