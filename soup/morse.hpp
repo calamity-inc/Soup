@@ -56,7 +56,7 @@ namespace soup
 		}
 	};
 
-	struct MorseSequence : public audSound
+	struct MorseSequence : public audSoundSimple
 	{
 		std::vector<uint16_t> alterndur{};
 
@@ -66,7 +66,7 @@ namespace soup
 		[[nodiscard]] bool isOnAt(std::time_t t) const noexcept;
 		[[nodiscard]] std::time_t getDuration() const noexcept;
 
-		// from audSound:
+		// from audSoundSimple:
 		[[nodiscard]] double getAmplitude(double t) final;
 		[[nodiscard]] double getDurationSeconds() noexcept final;
 	};
@@ -83,7 +83,7 @@ namespace soup
 		[[nodiscard]] static MorseSequence patternToSequence(const std::string& pattern, const MorseTiming& timing);
 	};
 
-	struct MorseKey : public audSound
+	struct MorseKey : public audSoundSimple
 	{
 		std::time_t t = 0;
 		MorseSequence seq;
@@ -112,7 +112,7 @@ namespace soup
 		}
 
 
-		// from audSound:
+		// from audSoundSimple:
 		[[nodiscard]] double getAmplitude(double t) final;
 	};
 }

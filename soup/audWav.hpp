@@ -14,16 +14,11 @@ namespace soup
 		ioSeekableReader& r;
 		uint16_t channels;
 		size_t data_begin;
-		double duration_seconds;
 
 		audWav(ioSeekableReader& r);
 
-		double getAmplitude(double t) final;
-
-		double getDurationSeconds() noexcept final
-		{
-			return duration_seconds;
-		}
+		[[nodiscard]] bool hasFinished() noexcept final;
+		double getAmplitude() final;
 	};
 }
 

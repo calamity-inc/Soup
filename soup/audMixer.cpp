@@ -29,28 +29,21 @@ namespace soup
 		// Some audSound descendents like audWav don't respect `t`.
 		for (const auto& ps : playing_sounds)
 		{
-			if (ps.sound.get() == sound.get())
+			if (ps.get() == sound.get())
 			{
 				SOUP_THROW(Exception("Sound is already playing"));
 			}
 		}
 
-		playing_sounds.emplace_back(PlayingSound{ std::move(sound) });
+		playing_sounds.emplace_back(std::move(sound));
 	}
 
 	double audMixer::getAmplitude(audPlayback& pb) noexcept
 	{
-		const double t = pb.getTime();
-
 		double a = 0.0;
 		for (auto i = playing_sounds.begin(); i != playing_sounds.end(); )
 		{
-			if (i->start == 0.0)
-			{
-				i->start = t;
-			}
-			double t_for_sound = (t - i->start);
-			if (t_for_sound >= i->sound->getDurationSeconds())
+			SOUP_IF_UNLIKELY ((*i)->hasFinished())
 			{
 				i = playing_sounds.erase(i);
 				if (stop_playback_when_done
@@ -61,7 +54,7 @@ namespace soup
 				}
 				continue;
 			}
-			a += i->sound->getAmplitude(t_for_sound);
+			a += (*i)->getAmplitude();
 			++i;
 		}
 		return a;

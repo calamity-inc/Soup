@@ -945,6 +945,7 @@
     <ClCompile Include="audDevice.cpp" />
     <ClCompile Include="audMixer.cpp" />
     <ClCompile Include="audPlayback.cpp" />
+    <ClCompile Include="audSound.cpp" />
     <ClCompile Include="audWav.cpp" />
     <ClCompile Include="base.cpp" />
     <ClCompile Include="base32.cpp" />

@@ -2275,6 +2275,7 @@
     <ClCompile Include="kbRgbCorsairCue.cpp">
       <Filter>hardware\keyboard\rgb</Filter>
     </ClCompile>
+    <ClCompile Include="audSound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

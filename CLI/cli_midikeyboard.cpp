@@ -18,7 +18,7 @@
 
 using namespace soup;
 
-struct KeyboardPiano : public audSound
+struct KeyboardPiano : public audSoundSimple
 {
 	DigitalKeyboard keyboard;
 

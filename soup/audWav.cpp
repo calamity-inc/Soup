@@ -36,10 +36,15 @@ namespace soup
 		{
 			SOUP_THROW(Exception("WAV file seems to be in an invalid format"));
 		}
-		duration_seconds = (double)ck.data_size / fmt.avg_bytes_per_sec;
+		//duration_seconds = (double)ck.data_size / fmt.avg_bytes_per_sec;
 	}
 
-	double audWav::getAmplitude(double t)
+	bool audWav::hasFinished() noexcept
+	{
+		return !r.hasMore();
+	}
+
+	double audWav::getAmplitude()
 	{
 		// Handle looping
 		if (!r.hasMore())

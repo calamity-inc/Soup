@@ -13,13 +13,7 @@ namespace soup
 	class audMixer
 	{
 	public:
-		struct PlayingSound
-		{
-			SharedPtr<audSound> sound;
-			double start = 0.0;
-		};
-
-		std::vector<PlayingSound> playing_sounds{};
+		std::vector<SharedPtr<audSound>> playing_sounds{};
 		bool stop_playback_when_done = false;
 		bool kill_pb_on_next_block = false;
 
