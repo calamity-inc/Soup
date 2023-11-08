@@ -7,14 +7,11 @@
 #include <Windows.h>
 #include <mmeapi.h>
 
+#include "aud_common.hpp"
 #include "Thread.hpp"
 
 namespace soup
 {
-	constexpr int AUD_SAMPLE_RATE = 44100;
-
-	constexpr double AUD_TIME_STEP = (1.0 / (double)AUD_SAMPLE_RATE);
-
 	struct waveOutData;
 
 	class audPlayback

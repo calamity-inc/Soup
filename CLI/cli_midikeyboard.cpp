@@ -6,7 +6,7 @@
 #if SOUP_WINDOWS
 #include <thread>
 
-#include <aud_maths.hpp>
+#include <aud_common.hpp>
 #include <audDevice.hpp>
 #include <audMixer.hpp>
 #include <audNote.hpp>

@@ -2,6 +2,8 @@
 
 #include "Packet.hpp"
 
+#include "aud_common.hpp"
+
 namespace soup
 {
 	SOUP_PACKET(WavFmtChunk)
@@ -28,7 +30,7 @@ namespace soup
 		{
 			return format_tag == 1 // WAVE_FORMAT_PCM
 				&& (channels == 2 || channels == 1)
-				&& sample_rate == 44100
+				&& sample_rate == AUD_SAMPLE_RATE
 				&& bits_per_sample == 16
 				;
 		}
