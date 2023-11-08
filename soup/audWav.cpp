@@ -40,6 +40,11 @@ namespace soup
 		//duration_seconds = (double)ck.data_size / fmt.avg_bytes_per_sec;
 	}
 
+	void audWav::prepare()
+	{
+		r.seek(data_begin);
+	}
+
 	bool audWav::hasFinished() noexcept
 	{
 		return r.getPosition() == data_end;
@@ -47,12 +52,6 @@ namespace soup
 
 	double audWav::getAmplitude()
 	{
-		// Handle looping
-		SOUP_IF_UNLIKELY (hasFinished())
-		{
-			r.seek(data_begin);
-		}
-
 		int16_t sample;
 		r.i16(sample);
 		return (double)sample / AUD_MAX_SAMPLE;

@@ -26,7 +26,6 @@ namespace soup
 
 	void audMixer::playSound(SharedPtr<audSound> sound)
 	{
-		// Some audSound descendents like audWav don't respect `t`.
 		for (const auto& ps : playing_sounds)
 		{
 			if (ps.get() == sound.get())
@@ -34,6 +33,8 @@ namespace soup
 				SOUP_THROW(Exception("Sound is already playing"));
 			}
 		}
+
+		sound->prepare();
 
 		playing_sounds.emplace_back(std::move(sound));
 	}

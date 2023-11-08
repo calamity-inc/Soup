@@ -18,6 +18,7 @@ namespace soup
 
 		audWav(ioSeekableReader& r);
 
+		void prepare() final;
 		[[nodiscard]] bool hasFinished() noexcept final;
 		double getAmplitude() final;
 	};
