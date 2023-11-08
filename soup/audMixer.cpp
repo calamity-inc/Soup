@@ -24,7 +24,7 @@ namespace soup
 		pb.user_data = this;
 	}
 
-	void audMixer::playSound(SharedPtr<audSound> sound, bool loop)
+	void audMixer::playSound(SharedPtr<audSound> sound)
 	{
 		// Some audSound descendents like audWav don't respect `t`.
 		for (const auto& ps : playing_sounds)
@@ -35,7 +35,7 @@ namespace soup
 			}
 		}
 
-		playing_sounds.emplace_back(PlayingSound{ std::move(sound), loop });
+		playing_sounds.emplace_back(PlayingSound{ std::move(sound) });
 	}
 
 	double audMixer::getAmplitude(audPlayback& pb) noexcept
@@ -52,19 +52,14 @@ namespace soup
 			double t_for_sound = (t - i->start);
 			if (t_for_sound >= i->sound->getDurationSeconds())
 			{
-				if (!i->loop)
+				i = playing_sounds.erase(i);
+				if (stop_playback_when_done
+					&& playing_sounds.empty()
+					)
 				{
-					i = playing_sounds.erase(i);
-					if (stop_playback_when_done
-						&& playing_sounds.empty()
-						)
-					{
-						kill_pb_on_next_block = true;
-					}
-					continue;
+					kill_pb_on_next_block = true;
 				}
-				i->start = t;
-				t_for_sound = 0.0;
+				continue;
 			}
 			a += i->sound->getAmplitude(t_for_sound);
 			++i;

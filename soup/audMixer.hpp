@@ -16,7 +16,6 @@ namespace soup
 		struct PlayingSound
 		{
 			SharedPtr<audSound> sound;
-			bool loop;
 			double start = 0.0;
 		};
 
@@ -26,7 +25,7 @@ namespace soup
 
 		void setOutput(audPlayback& pb);
 
-		void playSound(SharedPtr<audSound> sound, bool loop = false);
+		void playSound(SharedPtr<audSound> sound);
 
 	protected:
 		[[nodiscard]] double getAmplitude(audPlayback& pb) noexcept;
