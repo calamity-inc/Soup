@@ -1,18 +1,14 @@
 #include "CpuInfo.hpp"
 
-#include "base.hpp"
-
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS && defined(SOUP_USE_ASM)
-#define CPUINFO_USE_ASM true
-#else
-#define CPUINFO_USE_ASM false
-#endif
-
 #include "AllocRaiiVirtual.hpp"
 #include "os.hpp"
 #include "string.hpp"
 #include "UniquePtr.hpp"
 #include "x64.hpp"
+
+#ifndef _MSC_VER
+#include <cpuid.h>
+#endif
 
 namespace soup
 {
@@ -99,53 +95,13 @@ namespace soup
 		return str;
 	}
 
-	// Windows and Linux have entirely different calling conventions.
-	// And it seems the compiler doesn't care when I tell it to use __fastcall.
-	// This is all such fucking horrible garbage.
-
-#if CPUINFO_USE_ASM
-	extern "C" void __fastcall invoke_cpuid(void* out, uint32_t eax);
-#endif
-
 	void CpuInfo::invokeCpuid(void* out, uint32_t eax)
 	{
-#if CPUINFO_USE_ASM
-		invoke_cpuid(out, eax);
-#elif SOUP_WINDOWS
-		static UniquePtr<AllocRaiiVirtual> invoke_asm = os::allocateExecutable(x64Asm(
-			"push esi\n"
-#if SOUP_BITS == 64
-			"mov rsi, rcx\n"
+#ifdef _MSC_VER
+		__cpuid(((int*)out), eax);
+		std::swap(((int*)out)[2], ((int*)out)[3]);
 #else
-			"mov esi, ecx\n"
-#endif
-
-			"mov eax, edx\n"
-			"xor ecx, ecx\n"
-			"cpuid\n"
-
-			"mov [esi], eax\n"
-			"mov [esi+4], ebx\n"
-			"mov [esi+8], edx\n"
-			"mov [esi+12], ecx\n"
-
-			"pop esi\n"
-			"ret\n"
-		));
-		((void(__fastcall*)(void*, uint32_t))invoke_asm->addr)(out, eax);
-#else
-		static UniquePtr<AllocRaiiVirtual> invoke_asm = os::allocateExecutable(x64Asm(
-			"mov eax, esi\n"
-			"xor ecx, ecx\n"
-			"cpuid\n"
-
-			"mov [rdi], eax\n"
-			"mov [rdi+4], ebx\n"
-			"mov [rdi+8], edx\n"
-			"mov [rdi+12], ecx\n"
-			"ret\n"
-		));
-		((void(*)(void*, uint32_t))invoke_asm->addr)(out, eax);
+		__cpuid(eax, ((int*)out)[0], ((int*)out)[1], ((int*)out)[3], ((int*)out)[2]);
 #endif
 	}
 }
