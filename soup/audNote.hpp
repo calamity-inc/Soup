@@ -1,5 +1,7 @@
 #pragma once
 
+#include "base.hpp"
+
 namespace soup
 {
 	enum class audNote : uint8_t
@@ -28,6 +30,8 @@ namespace soup
 		A5,
 		ASHARP5,
 		B5,
+
+		SIZE
 	};
 
 	[[nodiscard]] constexpr float audNoteToHz(audNote note)
@@ -58,6 +62,8 @@ namespace soup
 		case audNote::A5: return 880.00f;
 		case audNote::ASHARP5: return 932.33f;
 		case audNote::B5: return 987.77f;
+		case audNote::SIZE:;
 		}
+		SOUP_ASSERT_UNREACHABLE;
 	}
 }

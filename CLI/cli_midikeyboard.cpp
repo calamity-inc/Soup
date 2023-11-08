@@ -3,95 +3,42 @@
 #include "base.hpp"
 
 #include <iostream>
-#if SOUP_WINDOWS
-#include <thread>
 
+#if SOUP_WINDOWS
 #include <aud_common.hpp>
 #include <audDevice.hpp>
 #include <audMixer.hpp>
 #include <audNote.hpp>
+#include <audNoteEnvelope.hpp>
 #include <audPlayback.hpp>
-#include <audSound.hpp>
 #include <DigitalKeyboard.hpp>
 #include <Key.hpp>
 #include <UniquePtr.hpp>
+#endif
 
 using namespace soup;
 
-struct KeyboardPiano : public audSoundSimple
+#if SOUP_WINDOWS
+static void maintainNote(audMixer& mix, SharedPtr<audNoteEnvelope>* sounds, audNote note, bool should_be_playing)
 {
-	DigitalKeyboard keyboard;
-
-	[[nodiscard]] double getAmplitude(double t) final
+	if (should_be_playing)
 	{
-		keyboard.update();
-		if (keyboard.keys[KEY_Z])
+		if (!sounds[static_cast<size_t>(note)])
 		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::C4)) * t);
+			auto sound = soup::make_shared<audNoteEnvelope>(note);
+			sounds[static_cast<size_t>(note)] = sound;
+			mix.playSound(std::move(sound));
 		}
-		if (keyboard.keys[KEY_S])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::CSHARP4)) * t);
-		}
-		if (keyboard.keys[KEY_X])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::D4)) * t);
-		}
-		if (keyboard.keys[KEY_C])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::E4)) * t);
-		}
-		if (keyboard.keys[KEY_V])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::F4)) * t);
-		}
-		if (keyboard.keys[KEY_G])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::FSHARP4)) * t);
-		}
-		if (keyboard.keys[KEY_B])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::G4)) * t);
-		}
-		if (keyboard.keys[KEY_H])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::GSHARP4)) * t);
-		}
-		if (keyboard.keys[KEY_N])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::A4)) * t);
-		}
-		if (keyboard.keys[KEY_J])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::ASHARP4)) * t);
-		}
-		if (keyboard.keys[KEY_M])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::B4)) * t);
-		}
-		if (keyboard.keys[KEY_COMMA])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::C5)) * t);
-		}
-		if (keyboard.keys[KEY_L])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::CSHARP5)) * t);
-		}
-		if (keyboard.keys[KEY_PERIOD])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::D5)) * t);
-		}
-		if (keyboard.keys[KEY_SEMICOLON])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::DSHARP5)) * t);
-		}
-		if (keyboard.keys[KEY_SLASH])
-		{
-			return sin(HZ_TO_ANGVEL(audNoteToHz(audNote::E5)) * t);
-		}
-		return 0;
 	}
-};
+	else
+	{
+		if (sounds[static_cast<size_t>(note)])
+		{
+			sounds[static_cast<size_t>(note)]->released = true;
+			sounds[static_cast<size_t>(note)].reset();
+		}
+	}
+}
 #endif
 
 void cli_midikeyboard()
@@ -102,9 +49,28 @@ void cli_midikeyboard()
 	auto pb = dev.open();
 	audMixer mix;
 	mix.setOutput(*pb);
-	auto piano = soup::make_shared<KeyboardPiano>();
-	mix.playSound(piano);
-	std::this_thread::sleep_for(std::chrono::years(INT_MAX));
+	DigitalKeyboard keyboard;
+	SharedPtr<audNoteEnvelope> sounds[static_cast<size_t>(audNote::SIZE)];
+	while (true)
+	{
+		keyboard.update();
+		maintainNote(mix, sounds, audNote::C4, keyboard.keys[KEY_Z]);
+		maintainNote(mix, sounds, audNote::CSHARP4, keyboard.keys[KEY_S]);
+		maintainNote(mix, sounds, audNote::D4, keyboard.keys[KEY_X]);
+		maintainNote(mix, sounds, audNote::E4, keyboard.keys[KEY_C]);
+		maintainNote(mix, sounds, audNote::F4, keyboard.keys[KEY_V]);
+		maintainNote(mix, sounds, audNote::FSHARP4, keyboard.keys[KEY_G]);
+		maintainNote(mix, sounds, audNote::G4, keyboard.keys[KEY_B]);
+		maintainNote(mix, sounds, audNote::GSHARP4, keyboard.keys[KEY_H]);
+		maintainNote(mix, sounds, audNote::A4, keyboard.keys[KEY_N]);
+		maintainNote(mix, sounds, audNote::ASHARP4, keyboard.keys[KEY_J]);
+		maintainNote(mix, sounds, audNote::B4, keyboard.keys[KEY_M]);
+		maintainNote(mix, sounds, audNote::C5, keyboard.keys[KEY_COMMA]);
+		maintainNote(mix, sounds, audNote::CSHARP5, keyboard.keys[KEY_L]);
+		maintainNote(mix, sounds, audNote::D5, keyboard.keys[KEY_PERIOD]);
+		maintainNote(mix, sounds, audNote::DSHARP5, keyboard.keys[KEY_SEMICOLON]);
+		maintainNote(mix, sounds, audNote::E5, keyboard.keys[KEY_SLASH]);
+	}
 #else
 	std::cout << "Sorry, this only works on Windows (for now).\n";
 #endif

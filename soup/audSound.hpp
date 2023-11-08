@@ -13,7 +13,7 @@ namespace soup
 
 	struct audSoundSimple : public audSound
 	{
-		double t = 0.0;
+		double t;
 
 		void prepare() final;
 		[[nodiscard]] bool hasFinished() noexcept final;

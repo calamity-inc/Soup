@@ -428,6 +428,7 @@
     <ClInclude Include="audDevice.hpp" />
     <ClInclude Include="audMixer.hpp" />
     <ClInclude Include="audNote.hpp" />
+    <ClInclude Include="audNoteEnvelope.hpp" />
     <ClInclude Include="audPlayback.hpp" />
     <ClInclude Include="audSound.hpp" />
     <ClInclude Include="audWav.hpp" />
@@ -944,6 +945,7 @@
     <ClCompile Include="AssemblyBuilder.cpp" />
     <ClCompile Include="audDevice.cpp" />
     <ClCompile Include="audMixer.cpp" />
+    <ClCompile Include="audNoteEnvelope.cpp" />
     <ClCompile Include="audPlayback.cpp" />
     <ClCompile Include="audSound.cpp" />
     <ClCompile Include="audWav.cpp" />

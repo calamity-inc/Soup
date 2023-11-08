@@ -1,6 +1,7 @@
 #include "audMixer.hpp"
-
 #if SOUP_WINDOWS
+
+#include <algorithm>
 
 #include "audPlayback.hpp"
 #include "audSound.hpp"
@@ -58,6 +59,10 @@ namespace soup
 			a += (*i)->getAmplitude();
 			++i;
 		}
+
+		// Prevent clipping if too many sounds are playing (at full volume)
+		a = std::clamp(a, -1.0, 1.0);
+
 		return a;
 	}
 }
