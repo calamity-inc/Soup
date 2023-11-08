@@ -99,7 +99,7 @@ namespace soup
 			}
 		};
 
-		Data* data;
+		std::atomic<Data*> data;
 
 		SharedPtr()
 			: data(nullptr)
@@ -117,16 +117,16 @@ namespace soup
 		}
 
 		SharedPtr(const SharedPtr<T>& b)
-			: data(b.data)
+			: data(b.data.load())
 		{
 			if (data != nullptr)
 			{
-				data->incref();
+				data.load()->incref();
 			}
 		}
 
 		SharedPtr(SharedPtr<T>&& b)
-			: data(b.data)
+			: data(b.data.load())
 		{
 			b.data = nullptr;
 		}
@@ -135,28 +135,29 @@ namespace soup
 
 		template <typename T2, SOUP_RESTRICT(std::is_base_of_v<T, T2> || std::is_base_of_v<T2, T>)>
 		SharedPtr(const SharedPtr<T2>& b) noexcept
-			: data(reinterpret_cast<Data*>(b.data))
+			: data(reinterpret_cast<Data*>(b.data.load()))
 		{
 			if (data != nullptr)
 			{
-				data->incref();
+				data.load()->incref();
 			}
 		}
 
 		template <typename T2, SOUP_RESTRICT(std::is_base_of_v<T, T2> || std::is_base_of_v<T2, T>)>
 		SharedPtr(SharedPtr<T2>&& b) noexcept
-			: data(reinterpret_cast<Data*>(b.data))
+			: data(reinterpret_cast<Data*>(b.data.load()))
 		{
 			b.data = nullptr;
 		}
 
 		void operator=(const SharedPtr<T>& b)
 		{
-			const auto prev_data = this->data;
-			this->data = b.data;
-			if (this->data != nullptr)
+			Data* const prev_data = this->data;
+			Data* const new_data = b.data;
+			this->data = new_data;
+			if (new_data != nullptr)
 			{
-				this->data->incref();
+				new_data->incref();
 			}
 			if (prev_data != nullptr)
 			{
@@ -169,8 +170,8 @@ namespace soup
 
 		void operator=(SharedPtr<T>&& b)
 		{
-			const auto prev_data = this->data;
-			this->data = b.data;
+			Data* const prev_data = this->data;
+			this->data = b.data.load();
 			b.data = nullptr;
 			if (prev_data != nullptr)
 			{
@@ -183,15 +184,15 @@ namespace soup
 
 		~SharedPtr()
 		{
-			if (data != nullptr)
+			if (data.load() != nullptr)
 			{
-				data->decref();
+				data.load()->decref();
 			}
 		}
 
 		void reset()
 		{
-			const auto data = this->data;
+			Data* const data = this->data;
 			if (data != nullptr)
 			{
 				this->data = nullptr;
@@ -211,6 +212,7 @@ namespace soup
 
 		[[nodiscard]] T* get() const noexcept
 		{
+			Data* const data = this->data;
 			if (data)
 			{
 				return data->inst;
@@ -235,7 +237,7 @@ namespace soup
 
 		[[nodiscard]] T* release()
 		{
-			const auto data = this->data;
+			Data* const data = this->data;
 			this->data = nullptr;
 			if (data->refcount.load() != 1)
 			{
