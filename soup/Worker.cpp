@@ -2,6 +2,7 @@
 
 #include "Promise.hpp"
 #include "Socket.hpp"
+#include "Task.hpp"
 
 namespace soup
 {
@@ -41,6 +42,13 @@ namespace soup
 			return static_cast<const Socket*>(this)->toString();
 		}
 #endif
+		if (type == WORKER_TYPE_TASK)
+		{
+			auto str = static_cast<const Task*>(this)->toString();
+			str.insert(0, 1, '[');
+			str.push_back(']');
+			return str;
+		}
 		return "[Worker]";
 	}
 }

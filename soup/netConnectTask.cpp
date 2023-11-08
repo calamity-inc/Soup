@@ -125,6 +125,28 @@ namespace soup
 		}
 		started_connect_at = time::millis();
 	}
+
+	std::string netConnectTask::toString() const
+	{
+		std::string str = ObfusString("netConnectTask");
+		str.append(": ");
+		if (lookup)
+		{
+			str.append(ObfusString("Lookup #").str());
+			str.push_back(second_lookup ? '2' : '1');
+			str.append(": ");
+			str.append(current_lookup_is_ipv6 ? ObfusString("AAAA") : ObfusString("A"));
+			str.append(": ");
+			str.push_back('[');
+			str.append(lookup->toString());
+			str.push_back(']');
+		}
+		else
+		{
+			str.append(ObfusString("Handshaking").str());
+		}
+		return str;
+	}
 }
 
 #endif

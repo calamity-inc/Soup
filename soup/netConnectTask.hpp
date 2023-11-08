@@ -44,6 +44,9 @@ namespace soup
 
 	protected:
 		void proceedToConnect(const IpAddr& addr, uint16_t port);
+		
+	public:
+		[[nodiscard]] std::string toString() const final;
 	};
 }
 

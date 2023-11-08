@@ -8,6 +8,7 @@
 #include "DelayedCtor.hpp"
 #include "HttpRequest.hpp"
 #include "HttpRequestTask.hpp"
+#include "ObfusString.hpp"
 #include "Scheduler.hpp"
 
 namespace soup
@@ -28,6 +29,11 @@ namespace soup
 				result = std::move(subtask->result);
 				setWorkDone();
 			}
+		}
+
+		[[nodiscard]] std::string toString() const final
+		{
+			return subtask->toString();
 		}
 	};
 
@@ -66,9 +72,9 @@ namespace soup
 
 		dnsHttpLookupTask(IpAddr&& server, dnsType qtype, const std::string& name)
 		{
-			std::string url = "https://";
+			std::string url = ObfusString("https://");
 			url.append(server.toString());
-			url.append("/dns-query?dns=");
+			url.append(ObfusString("/dns-query?dns=").str());
 			url.append(base64::urlEncode(dnsRawResolver::getQuery(qtype, name)));
 
 			http.construct(Uri(url));
@@ -84,6 +90,16 @@ namespace soup
 				}
 				setWorkDone();
 			}
+		}
+
+		[[nodiscard]] std::string toString() const final
+		{
+			std::string str = ObfusString("dnsHttpLookupTask");
+			str.append(": ");
+			str.push_back('[');
+			str.append(http->toString());
+			str.push_back(']');
+			return str;
 		}
 	};
 

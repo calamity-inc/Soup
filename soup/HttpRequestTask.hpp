@@ -48,6 +48,9 @@ namespace soup
 		void cannotRecycle();
 
 		void sendRequest();
+
+	public:
+		[[nodiscard]] std::string toString() const final;
 #else
 	public:
 		HttpRequestTask(const Uri& uri);

@@ -176,6 +176,34 @@ namespace soup
 			}
 		}, this);
 	}
+
+	std::string HttpRequestTask::toString() const
+	{
+		std::string str = ObfusString("HttpRequestTask");
+		str.push_back('(');
+		str.append(hr.getHost());
+		str.append(hr.path);
+		str.push_back(')');
+		str.append(": ");
+		switch (state)
+		{
+		case START: str.append(ObfusString("START").str()); break;
+		case WAIT_FOR_OTHER_TASK_CONNECTING: str.append(ObfusString("WAIT_FOR_OTHER_TASK_CONNECTING").str()); break;
+		case CHECK_REUSABLE_SOCKET: str.append(ObfusString("CHECK_REUSABLE_SOCKET").str()); break;
+		case WAIT_TO_REUSE: str.append(ObfusString("WAIT_TO_REUSE").str()); break;
+
+		case CONNECTING:
+			str.append(ObfusString("CONNECTING").str());
+			str.append(": ");
+			str.push_back('[');
+			str.append(connector->toString());
+			str.push_back(']');
+			break;
+
+		case AWAIT_RESPONSE: str.append(ObfusString("AWAIT_RESPONSE").str()); break;
+		}
+		return str;
+	}
 #else
 	HttpRequestTask::HttpRequestTask(const Uri& uri)
 	{

@@ -31,6 +31,11 @@ namespace soup
 		{
 			return NEUTRAL;
 		}
+
+		[[nodiscard]] virtual std::string toString() const
+		{
+			return "Task";
+		}
 	};
 
 	template <typename T>
