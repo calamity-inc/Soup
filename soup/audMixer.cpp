@@ -17,6 +17,7 @@ namespace soup
 				pb.stop();
 				return;
 			}
+			std::lock_guard lock(reinterpret_cast<audMixer*>(pb.user_data)->mtx);
 			pb.fillBlockImpl(block, [](audPlayback& pb)
 			{
 				return reinterpret_cast<audMixer*>(pb.user_data)->getAmplitude(pb);
@@ -27,6 +28,8 @@ namespace soup
 
 	void audMixer::playSound(SharedPtr<audSound> sound)
 	{
+		std::lock_guard lock(mtx);
+
 		for (const auto& ps : playing_sounds)
 		{
 			if (ps.get() == sound.get())
@@ -42,6 +45,8 @@ namespace soup
 
 	double audMixer::getAmplitude(audPlayback& pb) noexcept
 	{
+		// mtx should be locked
+
 		double a = 0.0;
 		for (auto i = playing_sounds.begin(); i != playing_sounds.end(); )
 		{
