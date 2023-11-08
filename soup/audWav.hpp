@@ -14,6 +14,7 @@ namespace soup
 		ioSeekableReader& r;
 		uint16_t channels;
 		size_t data_begin;
+		size_t data_end;
 
 		audWav(ioSeekableReader& r);
 

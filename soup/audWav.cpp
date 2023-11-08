@@ -32,6 +32,7 @@ namespace soup
 		channels = fmt.channels;
 		auto ck = rr.seekChunk("data");
 		data_begin = ck.data_offset;
+		data_end = data_begin + ck.data_size;
 		SOUP_IF_UNLIKELY (!ck.isValid())
 		{
 			SOUP_THROW(Exception("WAV file seems to be in an invalid format"));
@@ -41,13 +42,13 @@ namespace soup
 
 	bool audWav::hasFinished() noexcept
 	{
-		return !r.hasMore();
+		return r.getPosition() == data_end;
 	}
 
 	double audWav::getAmplitude()
 	{
 		// Handle looping
-		if (!r.hasMore())
+		SOUP_IF_UNLIKELY (hasFinished())
 		{
 			r.seek(data_begin);
 		}
