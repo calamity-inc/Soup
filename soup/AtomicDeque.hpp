@@ -122,6 +122,8 @@ namespace soup
 			return node;
 		}
 
+		// Iterators for this type are not a good idea because a node could be popped while an interator points to it.
+
 		/*using Iterator = LinkedIterator<Node, Data>;
 
 		[[nodiscard]] Iterator begin() const noexcept

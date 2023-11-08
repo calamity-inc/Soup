@@ -2,12 +2,12 @@
 
 namespace soup
 {
-	template <typename astNode, typename Data>
+	template <typename Node, typename Data>
 	struct LinkedIterator
 	{
-		astNode* node;
+		Node* node;
 
-		constexpr LinkedIterator(astNode* node) noexcept
+		constexpr LinkedIterator(Node* node) noexcept
 			: node(node)
 		{
 		}
