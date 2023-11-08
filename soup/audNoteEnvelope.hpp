@@ -11,10 +11,10 @@ namespace soup
 	{
 	protected:
 		double angvel;
-		double t;
-		double time_released;
+		double t = 0.0;
+		double time_released = 0.0;
 	public:
-		bool released;
+		bool released = false;
 
 		static constexpr double attack_time = 0.1;
 		static constexpr double decay_time = 0.1;
