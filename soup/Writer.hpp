@@ -181,6 +181,24 @@ namespace soup
 			return true;
 		}
 
+		// Length-prefixed string.
+		template <typename T>
+		bool str_lp(const std::string& v, const T max_len = -1)
+		{
+			size_t len = v.size();
+			if (len <= max_len)
+			{
+#pragma warning(push)
+#pragma warning(disable: 4267) // possible loss of data
+				auto tl = static_cast<T>(len);
+#pragma warning(pop)
+				ser<T>(tl);
+				write(v.data(), v.size());
+				return true;
+			}
+			return false;
+		}
+
 		// Length-prefixed string, using u64_dyn for the length prefix.
 		bool str_lp_u64_dyn(const std::string& v)
 		{
@@ -202,75 +220,31 @@ namespace soup
 		// Length-prefixed string, using u8 for the length prefix.
 		bool str_lp_u8(const std::string& v, const uint8_t max_len = 0xFF)
 		{
-			size_t len = v.size();
-			if (len <= max_len)
-			{
-				auto tl = (uint8_t)len;
-				u8(tl);
-				write(v.data(), v.size());
-				return true;
-			}
-			return false;
+			return str_lp<u8_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u16 for the length prefix.
 		bool str_lp_u16(const std::string& v, const uint16_t max_len = 0xFFFF)
 		{
-			size_t len = v.size();
-			if (len <= max_len)
-			{
-				auto tl = (uint16_t)len;
-				if (ioBase::u16(tl))
-				{
-					write(v.data(), v.size());
-					return true;
-				}
-			}
-			return false;
+			return str_lp<u16_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u24 for the length prefix.
 		bool str_lp_u24(const std::string& v, const uint32_t max_len = 0xFFFFFF)
 		{
-			size_t len = v.size();
-			if (len <= max_len)
-			{
-				auto tl = (uint32_t)len;
-				if (ioBase::u24(tl))
-				{
-					write(v.data(), v.size());
-					return true;
-				}
-			}
-			return false;
+			return str_lp<u24_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
 		bool str_lp_u32(const std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
-			size_t len = v.size();
-			if (len <= max_len)
-			{
-				auto tl = (uint32_t)len;
-				if (ioBase::u32(tl))
-				{
-					write(v.data(), v.size());
-					return true;
-				}
-			}
-			return false;
+			return str_lp<u32_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.
 		bool str_lp_u64(const std::string& v)
 		{
-			uint64_t len = v.size();
-			if (ioBase::u64(len))
-			{
-				write(v.data(), v.size());
-				return true;
-			}
-			return false;
+			return str_lp<u64_t>(v);
 		}
 
 		// String with known length.

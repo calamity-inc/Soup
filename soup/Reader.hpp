@@ -187,6 +187,14 @@ namespace soup
 			return true;
 		}
 
+		// Length-prefixed string.
+		template <typename T>
+		bool str_lp(std::string& v, const T max_len = -1)
+		{
+			T len;
+			return ser<T>(len) && len <= max_len && str_impl(v, len);
+		}
+
 		// Length-prefixed string, using u64_dyn for the length prefix.
 		bool str_lp_u64_dyn(std::string& v)
 		{
@@ -206,36 +214,31 @@ namespace soup
 		// Length-prefixed string, using u8 for the length prefix.
 		bool str_lp_u8(std::string& v, const uint8_t max_len = 0xFF)
 		{
-			uint8_t len;
-			return u8(len) && len <= max_len && str_impl(v, len);
+			return str_lp<u8_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u16 for the length prefix.
 		bool str_lp_u16(std::string& v, const uint16_t max_len = 0xFFFF)
 		{
-			uint16_t len;
-			return ioBase::u16(len) && len <= max_len && str_impl(v, len);
+			return str_lp<u16_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u24 for the length prefix.
 		bool str_lp_u24(std::string& v, const uint32_t max_len = 0xFFFFFF)
 		{
-			uint32_t len;
-			return ioBase::u24(len) && len <= max_len && str_impl(v, len);
+			return str_lp<u24_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
 		bool str_lp_u32(std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
-			uint32_t len;
-			return ioBase::u32(len) && len <= max_len && str_impl(v, len);
+			return str_lp<u32_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.
 		bool str_lp_u64(std::string& v)
 		{
-			uint64_t len;
-			return ioBase::u64(len) && str_impl(v, (size_t)len);
+			return str_lp<u64_t>(v);
 		}
 
 		// String with known length.

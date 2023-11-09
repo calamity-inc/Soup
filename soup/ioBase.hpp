@@ -5,9 +5,20 @@
 #include <vector>
 
 #include "Endian.hpp"
+#include "IntStruct.hpp"
 
 namespace soup
 {
+	using u8_t = uint8_t;
+	using u16_t = uint16_t;
+	using u32_t = uint32_t;
+	using u64_t = uint64_t;
+
+	SOUP_INT_STRUCT(u24_t, u32_t);
+	SOUP_INT_STRUCT(u40_t, u64_t);
+	SOUP_INT_STRUCT(u48_t, u64_t);
+	SOUP_INT_STRUCT(u56_t, u64_t);
+
 	class ioVirtualBase
 	{
 	protected:
@@ -175,6 +186,9 @@ namespace soup
 			return !isRead();
 		}
 
+		template <typename T>
+		bool ser(T& v);
+
 		bool u24(uint32_t& v)
 		{
 			if (isRead())
@@ -273,4 +287,16 @@ namespace soup
 			}
 		}
 	};
+
+#define IOBASE_SER_METHOD_IMPL(t) IOBASE_SER_METHOD_IMPL_2(t, true) IOBASE_SER_METHOD_IMPL_2(t, false)
+#define IOBASE_SER_METHOD_IMPL_2(t, is_read) template<> template<> inline bool ioBase<is_read>::ser<t ## _t>(t ## _t& v) { return t(v); }
+
+	IOBASE_SER_METHOD_IMPL(u8)
+	IOBASE_SER_METHOD_IMPL(u16)
+	IOBASE_SER_METHOD_IMPL(u24)
+	IOBASE_SER_METHOD_IMPL(u32)
+	IOBASE_SER_METHOD_IMPL(u40)
+	IOBASE_SER_METHOD_IMPL(u48)
+	IOBASE_SER_METHOD_IMPL(u56)
+	IOBASE_SER_METHOD_IMPL(u64)
 }
