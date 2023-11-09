@@ -2,7 +2,6 @@
 
 #if SOUP_WINDOWS
 
-#include <atomic>
 #include <chrono>
 #include <thread>
 
@@ -13,27 +12,6 @@ namespace soup
 	constexpr int NUM_BLOCKS = 8;
 
 	constexpr int HEAP_SIZE = (NUM_BLOCKS * (sizeof(WAVEHDR) + AUD_BLOCK_BYTES));
-
-	struct waveOutData
-	{
-		std::atomic_int free_blocks = 0;
-
-		void handleMessage(UINT msg)
-		{
-			if (msg == WOM_OPEN)
-			{
-				free_blocks = NUM_BLOCKS;
-			}
-			else if (msg == WOM_DONE)
-			{
-				++free_blocks;
-			}
-			else if (msg == WOM_CLOSE)
-			{
-				delete this;
-			}
-		}
-	};
 
 	audPlayback::audPlayback()
 		: heap(malloc(HEAP_SIZE)), thrd(&threadFuncStatic, this)
@@ -58,7 +36,7 @@ namespace soup
 
 	static void CALLBACK waveCallbackStatic(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 	{
-		reinterpret_cast<waveOutData*>(dwInstance)->handleMessage(uMsg);
+		reinterpret_cast<audPlayback*>(dwInstance)->handleMessage(uMsg);
 	}
 
 	void audPlayback::open(const audDevice& dev, int channels)
@@ -73,14 +51,10 @@ namespace soup
 
 	void audPlayback::open(const audDevice& dev, int channels, audFillBlock src, void* user_data)
 	{
-		SOUP_ASSERT(wod == nullptr);
-
 		this->dev = dev;
 		this->channels = channels;
 		this->src = src;
 		this->user_data = user_data;
-
-		wod = new waveOutData();
 
 		WAVEFORMATEX wfx;
 		wfx.wFormatTag = WAVE_FORMAT_PCM;
@@ -90,20 +64,20 @@ namespace soup
 		wfx.nBlockAlign = sizeof(audSample) * channels;
 		wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
 		wfx.cbSize = 0;
-		waveOutOpen(&hWaveOut, dev.i, &wfx, reinterpret_cast<DWORD_PTR>(&waveCallbackStatic), reinterpret_cast<DWORD_PTR>(wod), CALLBACK_FUNCTION);
+		waveOutOpen(&hWaveOut, dev.i, &wfx, reinterpret_cast<DWORD_PTR>(&waveCallbackStatic), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION);
 	}
 
 	bool audPlayback::isPlaying() const noexcept
 	{
 		return thrd.isRunning()
-			|| (!wod && wod->free_blocks != NUM_BLOCKS)
+			|| free_blocks != NUM_BLOCKS
 			;
 	}
 
 	void audPlayback::awaitCompletion() noexcept
 	{
 		thrd.awaitCompletion();
-		while (wod && wod->free_blocks != NUM_BLOCKS)
+		while (free_blocks != NUM_BLOCKS)
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
@@ -136,6 +110,18 @@ namespace soup
 		}
 	}
 
+	void audPlayback::handleMessage(UINT msg)
+	{
+		if (msg == WOM_OPEN)
+		{
+			free_blocks = NUM_BLOCKS;
+		}
+		else if (msg == WOM_DONE)
+		{
+			++free_blocks;
+		}
+	}
+
 	WAVEHDR* audPlayback::heapGetHeader(int i) const noexcept
 	{
 		return reinterpret_cast<WAVEHDR*>(reinterpret_cast<uintptr_t>(heap) + (i * sizeof(WAVEHDR)));
@@ -155,7 +141,7 @@ namespace soup
 	{
 		while (true)
 		{
-			while (!wod || wod->free_blocks == 0)
+			while (free_blocks == 0)
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			}
@@ -173,7 +159,7 @@ namespace soup
 			waveOutPrepareHeader(hWaveOut, hdr, sizeof(WAVEHDR));
 			waveOutWrite(hWaveOut, hdr, sizeof(WAVEHDR));
 
-			--wod->free_blocks;
+			--free_blocks;
 			current_block += 1;
 			current_block %= NUM_BLOCKS;
 		}

@@ -4,6 +4,8 @@
 
 #if SOUP_WINDOWS
 
+#include <atomic>
+
 #include <Windows.h>
 #include <mmeapi.h>
 
@@ -12,12 +14,10 @@
 
 namespace soup
 {
-	struct waveOutData;
-
 	class audPlayback
 	{
 	private:
-		waveOutData* wod = nullptr;
+		std::atomic_int free_blocks = 0;
 		int current_block = 0;
 		void* const heap;
 		double time = 0.0;
@@ -52,6 +52,8 @@ namespace soup
 		static void fillBlockSilence(audSample* block);
 		static void fillBlockSilenceSrc(audPlayback&, audSample* block);
 		void fillBlockImpl(audSample* block, audGetAmplitude src);
+
+		void handleMessage(UINT msg);
 
 	private:
 		[[nodiscard]] WAVEHDR* heapGetHeader(int i) const noexcept;
