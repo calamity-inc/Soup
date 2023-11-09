@@ -123,6 +123,6 @@ namespace soup
 
 	[[nodiscard]] constexpr float audNoteToHz(audNote_t note)
 	{
-		return 440.0f * std::powf(2.0f, (static_cast<float>(note) - static_cast<float>(AUDNOTE_A4)) / 12.0f);
+		return 440.0f * powf(2.0f, (static_cast<float>(note) - static_cast<float>(AUDNOTE_A4)) / 12.0f);
 	}
 }
