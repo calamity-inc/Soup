@@ -19,6 +19,14 @@ namespace soup
 	SOUP_INT_STRUCT(u48_t, u64_t);
 	SOUP_INT_STRUCT(u56_t, u64_t);
 
+	SOUP_INT_STRUCT(u16_be_t, u16_t);
+	SOUP_INT_STRUCT(u24_be_t, u32_t);
+	SOUP_INT_STRUCT(u32_be_t, u32_t);
+
+	SOUP_INT_STRUCT(u16_le_t, u16_t);
+	SOUP_INT_STRUCT(u24_le_t, u32_t);
+	SOUP_INT_STRUCT(u32_le_t, u32_t);
+
 	class ioVirtualBase
 	{
 	protected:
@@ -66,6 +74,22 @@ namespace soup
 
 		bool u16(uint16_t& v)
 		{
+			return u16(v, native_endianness);
+		}
+
+		bool u16_be(uint16_t& v)
+		{
+			return u16(v, NATIVE_ENDIAN == BIG_ENDIAN);
+		}
+
+		bool u16_le(uint16_t& v)
+		{
+			return u16(v, NATIVE_ENDIAN == LITTLE_ENDIAN);
+		}
+
+	protected:
+		bool u16(uint16_t& v, bool native_endianness)
+		{
 			if (native_endianness)
 			{
 				return u8(((uint8_t*)&v)[0])
@@ -78,7 +102,24 @@ namespace soup
 			}
 		}
 
+	public:
 		bool u32(uint32_t& v)
+		{
+			return u32(v, native_endianness);
+		}
+
+		bool u32_be(uint32_t& v)
+		{
+			return u32(v, NATIVE_ENDIAN == BIG_ENDIAN);
+		}
+
+		bool u32_le(uint32_t& v)
+		{
+			return u32(v, NATIVE_ENDIAN == LITTLE_ENDIAN);
+		}
+
+	protected:
+		bool u32(uint32_t& v, bool native_endianness)
 		{
 			if (native_endianness)
 			{
@@ -96,6 +137,7 @@ namespace soup
 			}
 		}
 
+	public:
 		bool u64(uint64_t& v)
 		{
 #if true
@@ -191,6 +233,22 @@ namespace soup
 
 		bool u24(uint32_t& v)
 		{
+			return u24(v, native_endianness);
+		}
+
+		bool u24_be(uint32_t& v)
+		{
+			return u24(v, NATIVE_ENDIAN == BIG_ENDIAN);
+		}
+
+		bool u24_le(uint32_t& v)
+		{
+			return u24(v, NATIVE_ENDIAN == LITTLE_ENDIAN);
+		}
+
+	protected:
+		bool u24(uint32_t& v, bool native_endianness)
+		{
 			if (isRead())
 			{
 				v = 0;
@@ -209,6 +267,7 @@ namespace soup
 			}
 		}
 
+	public:
 		bool u40(uint64_t& v)
 		{
 			if (isRead())
@@ -299,4 +358,12 @@ namespace soup
 	IOBASE_SER_METHOD_IMPL(u48)
 	IOBASE_SER_METHOD_IMPL(u56)
 	IOBASE_SER_METHOD_IMPL(u64)
+
+	IOBASE_SER_METHOD_IMPL(u16_be)
+	IOBASE_SER_METHOD_IMPL(u24_be)
+	IOBASE_SER_METHOD_IMPL(u32_be)
+
+	IOBASE_SER_METHOD_IMPL(u16_le)
+	IOBASE_SER_METHOD_IMPL(u24_le)
+	IOBASE_SER_METHOD_IMPL(u32_le)
 }

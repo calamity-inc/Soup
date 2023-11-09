@@ -10,37 +10,32 @@ namespace soup
 		uint32_t ticks_to_wait = 0;
 		StringReader sr;
 
-		MidiTrack()
-			: sr(BIG_ENDIAN)
-		{
-		}
+		MidiTrack() = default;
 	};
 
 	// https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
 	MidiComposition::MidiComposition(ioSeekableReader& r)
 	{
-		SOUP_ASSERT(r.isBigEndian(), "MIDI is big-endian, your reader should be too.");
-
 		uint32_t chunk_name;
-		r.u32(chunk_name);
+		r.u32_be(chunk_name);
 		SOUP_ASSERT(chunk_name == 'MThd', "Bad MIDI data");
 		uint32_t length;
-		r.u32(length);
+		r.u32_be(length);
 		SOUP_ASSERT(length >= 6, "Bad MIDI data");
 		uint16_t format, ntrks, division;
-		r.u16(format);
-		r.u16(ntrks);
-		r.u16(division);
+		r.u16_be(format);
+		r.u16_be(ntrks);
+		r.u16_be(division);
 		r.skip(length - 6);
 		const float ticks_per_quarter_note = static_cast<float>(division);
 
 		std::vector<MidiTrack> tracks{};
 		while (r.hasMore())
 		{
-			r.u32(chunk_name);
+			r.u32_be(chunk_name);
 			SOUP_ASSERT(chunk_name == 'MTrk', "Bad MIDI data");
 			MidiTrack& track = tracks.emplace_back();
-			r.str_lp<u32_t>(track.sr.data);
+			r.str_lp<u32_be_t>(track.sr.data);
 		}
 		SOUP_ASSERT(tracks.size() == ntrks, "Bad MIDI data");
 
@@ -74,7 +69,7 @@ namespace soup
 					{
 						r.skip(1);
 						uint32_t microseconds_per_beat;
-						r.u24(microseconds_per_beat);
+						r.u24_be(microseconds_per_beat);
 						float seconds_per_beat = static_cast<float>(microseconds_per_beat) / 1'000'000.0f;
 						bpm = (60.0f / seconds_per_beat);
 						//std::cout << "UPDATED BPM: " << bpm << " (" << microseconds_per_beat << " microseconds per beat)\n";

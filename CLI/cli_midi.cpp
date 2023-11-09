@@ -91,7 +91,7 @@ void cli_midi(int argc, const char** argv)
 			{
 				try
 				{
-					FileReader fr(argv[1], false);
+					FileReader fr(argv[1]);
 					MidiComposition c(fr);
 
 					auto dev = audDevice::getDefault();
@@ -122,13 +122,12 @@ void cli_midi(int argc, const char** argv)
 							break;
 						}
 					}
-
-					return;
 				}
 				catch (const std::exception& e)
 				{
 					std::cout << e.what() << std::endl;
 				}
+				return;
 			}
 		}
 	}
