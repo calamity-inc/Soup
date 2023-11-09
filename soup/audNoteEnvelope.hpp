@@ -21,7 +21,7 @@ namespace soup
 		static constexpr double sustain_amplitude = 0.5;
 		static constexpr double release_time = 0.1;
 
-		constexpr audNoteEnvelope(audNote_t note)
+		audNoteEnvelope(audNote_t note)
 			: angvel(HZ_TO_ANGVEL(audNoteToHz(note)))
 		{
 		}
