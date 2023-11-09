@@ -13,12 +13,22 @@
 #include <Windows.h>
 #include <mmeapi.h>
 #else
-#include <alsa/asoundlib.h> // sudo apt install libasound2-dev
-#pragma comment(lib, "asound")
+#include "SharedLibrary.hpp"
 #endif
 
 namespace soup
 {
+#if SOUP_LINUX
+	using snd_pcm_t = void;
+	using snd_pcm_sframes_t = long;
+	using snd_pcm_uframes_t = unsigned long;
+	using snd_pcm_state_t = int;
+
+	using snd_pcm_state_func_t = snd_pcm_state_t(*)(snd_pcm_t*);
+	using snd_pcm_prepare_t = int(*)(snd_pcm_t*);
+	using snd_pcm_writei_t = snd_pcm_sframes_t(*)(snd_pcm_t*, const void*, snd_pcm_uframes_t);
+#endif
+
 	class audPlayback
 	{
 	private:
@@ -37,6 +47,10 @@ namespace soup
 #if SOUP_WINDOWS
 		HWAVEOUT hWaveOut = INVALID_HANDLE_VALUE;
 #else
+		SharedLibrary alsa;
+		snd_pcm_state_func_t snd_pcm_state = nullptr;
+		snd_pcm_prepare_t snd_pcm_prepare = nullptr;
+		snd_pcm_writei_t snd_pcm_writei = nullptr;
 		snd_pcm_t* hwDevice = nullptr;
 #endif
 

@@ -2,16 +2,35 @@
 #if !SOUP_WASM
 
 #include <atomic>
+#include <cstring> // memset
 #include <chrono>
 #include <thread>
 
-#if SOUP_LINUX
-#include <alsa/asoundlib.h> // sudo apt install libasound2-dev
-#pragma comment(lib, "asound")
-#endif
-
 namespace soup
 {
+#if SOUP_LINUX
+	using snd_pcm_hw_params_t = void;
+	using snd_async_handler_t = void;
+	using snd_pcm_stream_t = int;
+	using snd_pcm_access_t = int;
+	using snd_pcm_format_t = int;
+	using snd_async_callback_t = void(*)(snd_async_handler_t*);
+
+	using snd_pcm_open_t = int(*)(snd_pcm_t**, const char*, snd_pcm_stream_t, int);
+	using snd_pcm_hw_params_malloc_t = int(*)(snd_pcm_hw_params_t**);
+	using snd_pcm_hw_params_any_t = int(*)(snd_pcm_t*, snd_pcm_hw_params_t*);
+	using snd_pcm_hw_params_set_access_t = int(*)(snd_pcm_t*, snd_pcm_hw_params_t*, snd_pcm_access_t);
+	using snd_async_add_pcm_handler_t = int(*)(snd_async_handler_t**, snd_pcm_t*, snd_async_callback_t, void*);
+	using snd_pcm_hw_params_set_format_t = int(*)(snd_pcm_t*, snd_pcm_hw_params_t*, snd_pcm_format_t);
+	using snd_pcm_hw_params_set_rate_near_t = int(*)(snd_pcm_t*, snd_pcm_hw_params_t*, unsigned int*, int*);
+	using snd_pcm_hw_params_set_channels_t = int(*)(snd_pcm_t*, snd_pcm_hw_params_t*, unsigned int);
+	using snd_pcm_hw_params_func_t = int(*)(snd_pcm_t*, snd_pcm_hw_params_t*);
+	using snd_pcm_hw_params_free_t = void(*)(snd_pcm_hw_params_t*);
+
+	using snd_pcm_drop_t = int(*)(snd_pcm_t*);
+	using snd_pcm_close_t = int(*)(snd_pcm_t*);
+#endif
+
 	// Kudos to:
 	// - https://github.com/OneLoneCoder/synth
 	// - https://gist.github.com/seungin/4779216eada24a5077ca1c5e857239ce
@@ -52,6 +71,9 @@ namespace soup
 #else
 		if (hwDevice != nullptr)
 		{
+			auto snd_pcm_drop = (snd_pcm_drop_t)alsa.getAddressMandatory("snd_pcm_drop");
+			auto snd_pcm_close = (snd_pcm_close_t)alsa.getAddressMandatory("snd_pcm_close");
+
 			snd_pcm_drop(hwDevice);
 			snd_pcm_close(hwDevice);
 		}
@@ -65,6 +87,15 @@ namespace soup
 		reinterpret_cast<audPlayback*>(dwInstance)->handleMessage(uMsg);
 	}
 #else
+	[[nodiscard]] static void* snd_async_handler_get_callback_private(snd_async_handler_t* ahandler)
+	{
+#if SOUP_BITS == 32
+		return *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(ahandler) + 0x10);
+#else
+		return *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(ahandler) + 0x18);
+#endif
+	}
+
 	static void waveCallbackStatic(snd_async_handler_t* ahandler)
 	{
 		reinterpret_cast<audPlayback*>(snd_async_handler_get_callback_private(ahandler))->maintainPcm();
@@ -105,15 +136,32 @@ namespace soup
 		wfx.cbSize = 0;
 		waveOutOpen(&hWaveOut, dev.i, &wfx, reinterpret_cast<DWORD_PTR>(&waveCallbackStatic), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION);
 #else
+		SOUP_ASSERT(alsa.load("libasound.so.2"));
+
+		snd_pcm_state = (snd_pcm_state_func_t)alsa.getAddressMandatory("snd_pcm_state");
+		snd_pcm_prepare = (snd_pcm_prepare_t)alsa.getAddressMandatory("snd_pcm_prepare");
+		snd_pcm_writei = (snd_pcm_writei_t)alsa.getAddressMandatory("snd_pcm_writei");
+
+		auto snd_pcm_open = (snd_pcm_open_t)alsa.getAddressMandatory("snd_pcm_open");
+		auto snd_pcm_hw_params_malloc = (snd_pcm_hw_params_malloc_t)alsa.getAddressMandatory("snd_pcm_hw_params_malloc");
+		auto snd_pcm_hw_params_any = (snd_pcm_hw_params_any_t)alsa.getAddressMandatory("snd_pcm_hw_params_any");
+		auto snd_pcm_hw_params_set_access = (snd_pcm_hw_params_set_access_t)alsa.getAddressMandatory("snd_pcm_hw_params_set_access");
+		auto snd_async_add_pcm_handler = (snd_async_add_pcm_handler_t)alsa.getAddressMandatory("snd_async_add_pcm_handler");
+		auto snd_pcm_hw_params_set_format = (snd_pcm_hw_params_set_format_t)alsa.getAddressMandatory("snd_pcm_hw_params_set_format");
+		auto snd_pcm_hw_params_set_rate_near = (snd_pcm_hw_params_set_rate_near_t)alsa.getAddressMandatory("snd_pcm_hw_params_set_rate_near");
+		auto snd_pcm_hw_params_set_channels = (snd_pcm_hw_params_set_channels_t)alsa.getAddressMandatory("snd_pcm_hw_params_set_channels");
+		auto snd_pcm_hw_params = (snd_pcm_hw_params_func_t)alsa.getAddressMandatory("snd_pcm_hw_params");
+		auto snd_pcm_hw_params_free = (snd_pcm_hw_params_free_t)alsa.getAddressMandatory("snd_pcm_hw_params_free");
+
 		// BUG: snd_pcm_hw_params_free is not called in exception case
 		snd_pcm_hw_params_t* hw_params;
-		snd_pcm_open(&hwDevice, "default", SND_PCM_STREAM_PLAYBACK, 0);
+		snd_pcm_open(&hwDevice, "default", /*SND_PCM_STREAM_PLAYBACK*/ 0, 0);
 		snd_pcm_hw_params_malloc(&hw_params);
 		snd_pcm_hw_params_any(hwDevice, hw_params);
-		SOUP_ASSERT(snd_pcm_hw_params_set_access(hwDevice, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED) >= 0);
+		SOUP_ASSERT(snd_pcm_hw_params_set_access(hwDevice, hw_params, /*SND_PCM_ACCESS_RW_INTERLEAVED*/ 3) >= 0);
 		snd_async_handler_t* handler;
 		SOUP_ASSERT(snd_async_add_pcm_handler(&handler, hwDevice, waveCallbackStatic, this) >= 0, "ALSA init failed. You need to be root. Don't ask me why, because I don't know either.");
-		snd_pcm_hw_params_set_format(hwDevice, hw_params, SND_PCM_FORMAT_S16_LE); static_assert(std::is_same_v<int16_t, audSample>);
+		snd_pcm_hw_params_set_format(hwDevice, hw_params, /*SND_PCM_FORMAT_S16_LE*/ 2); static_assert(std::is_same_v<int16_t, audSample>);
 		unsigned int sample_rate = AUD_SAMPLE_RATE;
 		snd_pcm_hw_params_set_rate_near(hwDevice, hw_params, &sample_rate, 0);
 		SOUP_ASSERT(sample_rate == AUD_SAMPLE_RATE);
@@ -183,7 +231,7 @@ namespace soup
 #else
 	void audPlayback::maintainPcm()
 	{
-		if (snd_pcm_state(hwDevice) == SND_PCM_STATE_XRUN)
+		if (snd_pcm_state(hwDevice) == /*SND_PCM_STATE_XRUN*/ 4)
         {
         	SOUP_ASSERT(snd_pcm_prepare(hwDevice) >= 0);
         }
