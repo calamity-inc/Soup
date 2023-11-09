@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#if !SOUP_WASM
 #include "fwd.hpp"
 
 #include <cstdint>
@@ -60,3 +61,5 @@ namespace soup
 		UniquePtr<audPlayback> open(int channels, audFillBlock src, void* user_data = nullptr) const;
 	};
 }
+
+#endif

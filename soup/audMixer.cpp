@@ -1,4 +1,5 @@
 #include "audMixer.hpp"
+#if !SOUP_WASM
 
 #include <algorithm>
 
@@ -66,3 +67,5 @@ namespace soup
 		return a;
 	}
 }
+
+#endif

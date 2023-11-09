@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <atomic>
 
 #include "aud_common.hpp"
@@ -75,3 +78,5 @@ namespace soup
 		void threadFunc();
 	};
 }
+
+#endif

@@ -1,4 +1,5 @@
 #include "audDevice.hpp"
+#if !SOUP_WASM
 
 #include "audPlayback.hpp"
 
@@ -194,3 +195,5 @@ namespace soup
 		return pb;
 	}
 }
+
+#endif

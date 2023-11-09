@@ -1,4 +1,5 @@
 #include "audPlayback.hpp"
+#if !SOUP_WASM
 
 #include <atomic>
 #include <chrono>
@@ -245,3 +246,5 @@ namespace soup
 		}
 	}
 }
+
+#endif
