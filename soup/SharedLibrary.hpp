@@ -31,6 +31,8 @@ namespace soup
 		void operator=(SharedLibrary&& b);
 
 		[[nodiscard]] bool isLoaded() const noexcept;
+		bool load(const std::string& path);
+		bool load(const char* path);
 		void unload();
 		void forget();
 

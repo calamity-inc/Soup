@@ -5,17 +5,13 @@
 namespace soup
 {
 	SharedLibrary::SharedLibrary(const std::string& path)
-		: SharedLibrary(path.c_str())
 	{
+		load(path);
 	}
 
 	SharedLibrary::SharedLibrary(const char* path)
-#if SOUP_WINDOWS
-		: handle(LoadLibraryA(path))
-#else
-		: handle(dlopen(path, RTLD_LAZY))
-#endif
 	{
+		load(path);
 	}
 
 	SharedLibrary::SharedLibrary(SharedLibrary&& b)
@@ -39,6 +35,21 @@ namespace soup
 	bool SharedLibrary::isLoaded() const noexcept
 	{
 		return handle != nullptr;
+	}
+
+	bool SharedLibrary::load(const std::string& path)
+	{
+		return load(path.c_str());
+	}
+
+	bool SharedLibrary::load(const char* path)
+	{
+#if SOUP_WINDOWS
+		handle = LoadLibraryA(path);
+#else
+		handle = dlopen(path, RTLD_LAZY);
+#endif
+		return isLoaded();
 	}
 
 	void SharedLibrary::unload()
