@@ -1,7 +1,8 @@
 #include "audDevice.hpp"
 
-#if SOUP_WINDOWS
+#include "audPlayback.hpp"
 
+#if SOUP_WINDOWS
 #include <Windows.h>
 #include <mmeapi.h>
 #include <objbase.h>
@@ -10,13 +11,14 @@
 
 #pragma comment(lib, "Ole32.lib") // CoInitialize, CoCreateInstance, PropVariantClear
 
-#include "audPlayback.hpp"
 #include "unicode.hpp"
+#endif
 
 namespace soup
 {
 	audDevice audDevice::get(int i)
 	{
+#if SOUP_WINDOWS
 		WAVEOUTCAPSW woc;
 		SOUP_ASSERT(waveOutGetDevCapsW(i, &woc, sizeof(WAVEOUTCAPSW)) == S_OK);
 		return audDevice{
@@ -24,6 +26,10 @@ namespace soup
 			woc.szPname,
 			woc.wChannels
 		};
+#else
+		SOUP_ASSERT(i == 0);
+		return audDevice();
+#endif
 	}
 
 	audDevice audDevice::getDefault()
@@ -34,7 +40,11 @@ namespace soup
 	std::vector<audDevice> audDevice::getAll()
 	{
 		std::vector<audDevice> res;
+#if SOUP_WINDOWS
 		int num = waveOutGetNumDevs();
+#else
+		int num = 1;
+#endif
 		for (int i = 0; i != num; ++i)
 		{
 			res.emplace_back(get(i));
@@ -42,6 +52,7 @@ namespace soup
 		return res;
 	}
 
+#if SOUP_WINDOWS
 	[[nodiscard]] static std::vector<std::wstring> getFullDeviceNamesInWaveOutOrder()
 	{
 		std::vector<std::wstring> res;
@@ -140,9 +151,11 @@ namespace soup
 
 		return res;
 	}
+#endif
 
 	std::string audDevice::getName() const
 	{
+#if SOUP_WINDOWS
 		if (name.length() == MAXPNAMELEN - 1) // Name got cucked by waveOut device name limit?
 		{
 			auto fullnames = getFullDeviceNamesInWaveOutOrder();
@@ -155,6 +168,9 @@ namespace soup
 			}
 		}
 		return unicode::utf16_to_utf8(name);
+#else
+		return "default";
+#endif
 	}
 
 	UniquePtr<audPlayback> audDevice::open(int channels) const
@@ -178,5 +194,3 @@ namespace soup
 		return pb;
 	}
 }
-
-#endif

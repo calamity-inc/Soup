@@ -1,18 +1,15 @@
 #pragma once
 
 #include "base.hpp"
-
-// This is not impossible to port to Linux.
-// In fact, ALSA seems to provide a very similar API: https://github.com/Barracuda72/synth/blob/master/LinuxSoundSynthesizer/NoiseMaker.h#L60
-// But my Linux machines are either headless or glorified web browsers.
-#if SOUP_WINDOWS
-#pragma comment(lib, "winmm.lib")
-
 #include "fwd.hpp"
 
 #include <cstdint>
 #include <string>
 #include <vector>
+
+#if SOUP_WINDOWS
+#pragma comment(lib, "winmm.lib")
+#endif
 
 namespace soup
 {
@@ -33,16 +30,25 @@ namespace soup
 	public:
 		int i;
 	private:
+#if SOUP_WINDOWS
 		std::wstring name;
+#endif
 	public:
 		uint16_t max_channels;
 
+#if SOUP_WINDOWS
 		audDevice() = default;
 
 		audDevice(int i, std::wstring&& name, uint16_t max_channels)
 			: i(i), name(std::move(name)), max_channels(max_channels)
 		{
 		}
+#else
+		audDevice()
+			: i(0), max_channels(2)
+		{
+		}
+#endif
 
 		[[nodiscard]] static audDevice get(int i);
 		[[nodiscard]] static audDevice getDefault();
@@ -54,5 +60,3 @@ namespace soup
 		UniquePtr<audPlayback> open(int channels, audFillBlock src, void* user_data = nullptr) const;
 	};
 }
-
-#endif

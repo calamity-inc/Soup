@@ -1,16 +1,18 @@
 #pragma once
 
-#include "audDevice.hpp"
-
-#if SOUP_WINDOWS
-
 #include <atomic>
 
+#include "aud_common.hpp"
+#include "audDevice.hpp"
+#include "Thread.hpp"
+
+#if SOUP_WINDOWS
 #include <Windows.h>
 #include <mmeapi.h>
-
-#include "aud_common.hpp"
-#include "Thread.hpp"
+#else
+#include <alsa/asoundlib.h> // sudo apt install libasound2-dev
+#pragma comment(lib, "asound")
+#endif
 
 namespace soup
 {
@@ -29,7 +31,11 @@ namespace soup
 		void* user_data;
 
 		Thread thrd;
-		HWAVEOUT hWaveOut;
+#if SOUP_WINDOWS
+		HWAVEOUT hWaveOut = INVALID_HANDLE_VALUE;
+#else
+		snd_pcm_t* hwDevice = nullptr;
+#endif
 
 		audPlayback();
 		audPlayback(audPlayback&&) = delete; // `this` pointer must stay the same
@@ -53,15 +59,19 @@ namespace soup
 		static void fillBlockSilenceSrc(audPlayback&, audSample* block);
 		void fillBlockImpl(audSample* block, audGetAmplitude src);
 
+#if SOUP_WINDOWS
 		void handleMessage(UINT msg);
+#else
+		void maintainPcm();
+#endif
 
 	private:
+#if SOUP_WINDOWS
 		[[nodiscard]] WAVEHDR* heapGetHeader(int i) const noexcept;
+#endif
 		[[nodiscard]] void* heapGetBuffer(int i) const noexcept;
 
 		static void threadFuncStatic(Capture&& cap);
 		void threadFunc();
 	};
 }
-
-#endif

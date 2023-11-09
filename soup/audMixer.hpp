@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-#if SOUP_WINDOWS
 #include "fwd.hpp"
 
 #include <mutex>
@@ -26,4 +25,3 @@ namespace soup
 		[[nodiscard]] double getAmplitude(audPlayback& pb) noexcept;
 	};
 }
-#endif
