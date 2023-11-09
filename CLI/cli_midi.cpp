@@ -16,7 +16,6 @@
 #include <Key.hpp>
 #include <MidiComposition.hpp>
 #include <string.hpp>
-#include <UniquePtr.hpp>
 #endif
 
 using namespace soup;
