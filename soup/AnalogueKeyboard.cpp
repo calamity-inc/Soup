@@ -236,13 +236,13 @@ namespace soup
 		}
 		else
 		{
-			BufferRefReader r(report, false);
+			BufferRefReader r(report);
 			if (hid.usage_page == 0xFF54) // Wooting, up to 16 keys
 			{
 				uint16_t scancode;
 				uint8_t value;
 				while (r.hasMore()
-					&& r.u16(scancode)
+					&& r.u16_be(scancode)
 					&& scancode != 0
 					&& r.u8(value)
 					)
