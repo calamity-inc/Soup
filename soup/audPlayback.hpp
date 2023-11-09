@@ -45,7 +45,7 @@ namespace soup
 
 		Thread thrd;
 #if SOUP_WINDOWS
-		HWAVEOUT hWaveOut = INVALID_HANDLE_VALUE;
+		HWAVEOUT hWaveOut = nullptr;
 #else
 		SharedLibrary alsa;
 		snd_pcm_state_func_t snd_pcm_state = nullptr;

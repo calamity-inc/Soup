@@ -63,7 +63,7 @@ namespace soup
 	{
 		thrd.stop();
 #if SOUP_WINDOWS
-		if (hWaveOut != INVALID_HANDLE_VALUE)
+		if (hWaveOut != nullptr)
 		{
 			waveOutReset(hWaveOut);
 			waveOutClose(hWaveOut);
@@ -115,7 +115,7 @@ namespace soup
 	void audPlayback::open(const audDevice& dev, int channels, audFillBlock src, void* user_data)
 	{
 #if SOUP_WINDOWS
-		SOUP_ASSERT(hWaveOut == INVALID_HANDLE_VALUE);
+		SOUP_ASSERT(hWaveOut == nullptr);
 #else
 		SOUP_ASSERT(hwDevice == nullptr);
 #endif
