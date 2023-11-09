@@ -15,7 +15,7 @@ namespace soup
 			return s.u8(curve_type)
 				&& curve_type == 3
 				&& s.u16(named_curve)
-				&& s.str_lp_u8(point)
+				&& s.template str_lp<u8_t>(point)
 				;
 		}
 	};

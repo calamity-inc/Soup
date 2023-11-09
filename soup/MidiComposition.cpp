@@ -40,7 +40,7 @@ namespace soup
 			r.u32(chunk_name);
 			SOUP_ASSERT(chunk_name == 'MTrk', "Bad MIDI data");
 			MidiTrack& track = tracks.emplace_back();
-			r.str_lp_u32(track.sr.data);
+			r.str_lp<u32_t>(track.sr.data);
 		}
 		SOUP_ASSERT(tracks.size() == ntrks, "Bad MIDI data");
 

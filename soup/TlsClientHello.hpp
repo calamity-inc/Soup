@@ -23,7 +23,7 @@ namespace soup
 		{
 			return version.io(s)
 				&& random.io(s)
-				&& s.str_lp_u8(session_id, 32)
+				&& s.template str_lp<u8_t>(session_id, 32)
 				&& s.vec_u16_bl_u16(cipher_suites)
 				&& s.vec_u8_u8(compression_methods)
 				&& extensions.io(s)

@@ -20,7 +20,7 @@ namespace soup
 				&& s.u16(rtype)
 				&& s.u16(rclass)
 				&& s.u32(ttl)
-				&& s.str_lp_u16(rdata)
+				&& s.template str_lp<u16_t>(rdata)
 				;
 		}
 	};

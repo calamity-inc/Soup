@@ -37,7 +37,7 @@ namespace soup
 	{
 		//std::cout << "[kbRgbCorsairCue] Send: " << data << "\n";
 		StringWriter sw(false);
-		sw.str_lp_u32(data);
+		sw.str_lp<u32_t>(data);
 		pipe.write(sw.data);
 	}
 

@@ -12,7 +12,7 @@ namespace soup
 		SOUP_PACKET_IO(s)
 		{
 			return s.u16(id)
-				&& s.str_lp_u16(data)
+				&& s.template str_lp<u16_t>(data)
 				;
 		}
 	};
@@ -54,7 +54,7 @@ namespace soup
 					{
 						ext_data.append(ext.toBinaryString());
 					}
-					s.str_lp_u16(ext_data);
+					s.template str_lp<u16_t>(ext_data);
 				}
 			}
 			return true;

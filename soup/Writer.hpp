@@ -218,31 +218,31 @@ namespace soup
 		}
 
 		// Length-prefixed string, using u8 for the length prefix.
-		bool str_lp_u8(const std::string& v, const uint8_t max_len = 0xFF)
+		[[deprecated]] bool str_lp_u8(const std::string& v, const uint8_t max_len = 0xFF)
 		{
 			return str_lp<u8_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u16 for the length prefix.
-		bool str_lp_u16(const std::string& v, const uint16_t max_len = 0xFFFF)
+		[[deprecated]] bool str_lp_u16(const std::string& v, const uint16_t max_len = 0xFFFF)
 		{
 			return str_lp<u16_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u24 for the length prefix.
-		bool str_lp_u24(const std::string& v, const uint32_t max_len = 0xFFFFFF)
+		[[deprecated]] bool str_lp_u24(const std::string& v, const uint32_t max_len = 0xFFFFFF)
 		{
 			return str_lp<u24_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u32 for the length prefix.
-		bool str_lp_u32(const std::string& v, const uint32_t max_len = 0xFFFFFFFF)
+		[[deprecated]] bool str_lp_u32(const std::string& v, const uint32_t max_len = 0xFFFFFFFF)
 		{
 			return str_lp<u32_t>(v, max_len);
 		}
 
 		// Length-prefixed string, using u64 for the length prefix.
-		bool str_lp_u64(const std::string& v)
+		[[deprecated]] bool str_lp_u64(const std::string& v)
 		{
 			return str_lp<u64_t>(v);
 		}
@@ -350,7 +350,7 @@ namespace soup
 			return true;
 		}
 
-		// vector of str_lp_u24 with u24 byte length prefix.
+		// vector of str_lp<u24_t> with u24 byte length prefix.
 		bool vec_str_lp_u24_bl_u24(std::vector<std::string>& v)
 		{
 			size_t bl = (v.size() * 3);
@@ -369,7 +369,7 @@ namespace soup
 			}
 			for (auto& entry : v)
 			{
-				if (!str_lp_u24(entry))
+				if (!str_lp<u24_t>(entry))
 				{
 					return false;
 				}

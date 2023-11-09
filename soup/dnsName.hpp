@@ -48,7 +48,7 @@ namespace soup
 			{
 				for (const auto& entry : name)
 				{
-					if (!s.str_lp_u8(entry))
+					if (!s.template str_lp<u8_t>(entry))
 					{
 						return false;
 					}

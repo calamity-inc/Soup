@@ -75,7 +75,7 @@ namespace soup
 				for (u8 type; s.u8(type), type != 0xFF; )
 				{
 					std::string data;
-					if (!s.str_lp_u8(data))
+					if (!s.template str_lp<u8_t>(data))
 					{
 						return false;
 					}
@@ -87,7 +87,7 @@ namespace soup
 				for (auto& option : options)
 				{
 					if (!s.u8(option.first)
-						|| !s.str_lp_u8(option.second)
+						|| !s.template str_lp<u8_t>(option.second)
 						)
 					{
 						return false;

@@ -20,7 +20,7 @@ namespace soup
 						&& num_people_who_asked == 0
 						)
 					{
-						return s.str_lp_u16(host_name);
+						return s.template str_lp<u16_t>(host_name);
 					}
 				}
 			}
@@ -31,7 +31,7 @@ namespace soup
 				{
 					uint8_t num_people_who_asked = 0;
 					return s.u8(num_people_who_asked)
-						&& s.str_lp_u16(host_name)
+						&& s.template str_lp<u16_t>(host_name)
 						;
 				}
 			}

@@ -10,7 +10,7 @@ namespace soup
 
 		SOUP_PACKET_IO(s)
 		{
-			return s.str_lp_u16(data);
+			return s.template str_lp<u16_t>(data);
 		}
 	};
 }

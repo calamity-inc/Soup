@@ -24,7 +24,7 @@ namespace soup
 				|| !s.u16(central_directories_in_total)
 				|| !s.u32(central_directory_size)
 				|| !s.u32(central_directory_offset)
-				|| !s.str_lp_u16(comment)
+				|| !s.template str_lp<u16_t>(comment)
 				)
 			{
 				return false;
