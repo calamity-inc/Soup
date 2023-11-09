@@ -393,9 +393,9 @@ int main(int argc, const char** argv)
 			return cli_mesh(argc - 2, &argv[2]);
 		}
 
-		if (subcommand == "midikeyboard")
+		if (subcommand == "midi")
 		{
-			cli_midikeyboard();
+			cli_midi(argc - 2, &argv[2]);
 			return 0;
 		}
 
@@ -528,7 +528,7 @@ Available tools:
 - keyboard
 - maze
 - mesh [link <token>|list|dns-add-record [ip] [name] [type] [data]]
-- midikeyboard
+- midi [keyboard|play [file]]
 - morse [key|encode [text]] <--silent>
 - qr [contents]
 - repl

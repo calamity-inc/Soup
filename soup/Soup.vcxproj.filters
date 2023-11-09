@@ -1557,6 +1557,9 @@
     <ClInclude Include="audNoteEnvelope.hpp">
       <Filter>audio</Filter>
     </ClInclude>
+    <ClInclude Include="MidiComposition.hpp">
+      <Filter>audio\midi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2284,6 +2287,9 @@
     <ClCompile Include="audNoteEnvelope.cpp">
       <Filter>audio</Filter>
     </ClCompile>
+    <ClCompile Include="MidiComposition.cpp">
+      <Filter>audio\midi</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2525,6 +2531,9 @@
     </Filter>
     <Filter Include="hardware\gamepad">
       <UniqueIdentifier>{5c9b4e26-6f33-4af2-a73d-a360194d66a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio\midi">
+      <UniqueIdentifier>{e94b4139-78fe-41db-8ed7-7a6cae5d9fca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
