@@ -122,6 +122,9 @@ void cli_midi(int argc, const char** argv)
 							break;
 						}
 					}
+
+					mix.stop_playback_when_done = true;
+					pb->awaitCompletion();
 				}
 				catch (const std::exception& e)
 				{
