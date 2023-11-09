@@ -5,13 +5,13 @@
 #define SOUP_IF_ISREAD if constexpr (T::isRead())
 #define SOUP_ELSEIF_ISWRITE else
 
+#include <sstream>
+
 #include "BufferWriter.hpp"
 #include "IstreamReader.hpp"
 #include "OstreamWriter.hpp"
 #include "StringReader.hpp"
 #include "StringWriter.hpp"
-
-#include <sstream>
 
 namespace soup
 {
