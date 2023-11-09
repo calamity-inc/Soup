@@ -17,7 +17,6 @@ namespace soup
 		std::mutex mtx{};
 		std::vector<SharedPtr<audSound>> playing_sounds{};
 		bool stop_playback_when_done = false;
-		bool kill_pb_on_next_block = false;
 
 		void setOutput(audPlayback& pb);
 

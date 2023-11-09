@@ -12,12 +12,14 @@ namespace soup
 	{
 		pb.src = [](audPlayback& pb, audSample* block)
 		{
-			if (reinterpret_cast<audMixer*>(pb.user_data)->kill_pb_on_next_block)
+			std::lock_guard lock(reinterpret_cast<audMixer*>(pb.user_data)->mtx);
+			if (reinterpret_cast<audMixer*>(pb.user_data)->stop_playback_when_done
+				&& reinterpret_cast<audMixer*>(pb.user_data)->playing_sounds.empty()
+				)
 			{
 				pb.stop();
 				return;
 			}
-			std::lock_guard lock(reinterpret_cast<audMixer*>(pb.user_data)->mtx);
 			pb.fillBlockImpl(block, [](audPlayback& pb)
 			{
 				return reinterpret_cast<audMixer*>(pb.user_data)->getAmplitude(pb);
@@ -53,12 +55,6 @@ namespace soup
 			SOUP_IF_UNLIKELY ((*i)->hasFinished())
 			{
 				i = playing_sounds.erase(i);
-				if (stop_playback_when_done
-					&& playing_sounds.empty()
-					)
-				{
-					kill_pb_on_next_block = true;
-				}
 				continue;
 			}
 			a += (*i)->getAmplitude();
