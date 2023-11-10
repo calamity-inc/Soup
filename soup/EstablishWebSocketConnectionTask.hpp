@@ -20,7 +20,7 @@ namespace soup
 		std::string path;
 
 		EstablishWebSocketConnectionTask(const Uri& uri)
-			: use_tls(uri.scheme != "ws"), connect(uri.host, use_tls ? 443 : 80), host(uri.host), path(uri.path)
+			: use_tls(uri.scheme != "ws"), connect(uri.host, (uri.port ? uri.port : (use_tls ? 443 : 80))), host(uri.host), path(uri.path)
 		{
 		}
 
