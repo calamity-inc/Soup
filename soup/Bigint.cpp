@@ -638,11 +638,22 @@ namespace soup
 		chunk_t carry = 0;
 		if (cmp(b) >= 0)
 		{
-			const size_t j = getNumChunks();
-			for (size_t i = 0; i != j; ++i)
+			const size_t nc = getNumChunks();
+			const size_t b_nc = b.getNumChunks();
+			SOUP_ASSUME(nc >= b_nc);
+			size_t i = 0;
+			for (; i != b_nc; ++i)
 			{
 				const size_t x = getChunkInbounds(i);
-				const size_t y = b.getChunk(i);
+				const size_t y = b.getChunkInbounds(i);
+				size_t res = (x + y + carry);
+				setChunkInbounds(i, (chunk_t)res);
+				carry = getCarry(res);
+			}
+			for (; i != nc; ++i)
+			{
+				const size_t x = getChunkInbounds(i);
+				const size_t y = 0;
 				size_t res = (x + y + carry);
 				setChunkInbounds(i, (chunk_t)res);
 				carry = getCarry(res);
