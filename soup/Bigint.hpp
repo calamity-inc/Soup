@@ -120,7 +120,7 @@ namespace soup
 		void copyFirstBits(const Bigint& b, size_t num);
 
 		[[nodiscard]] size_t getDChunk(size_t i) const noexcept;
-		void setDChunk(size_t i, chunk_t v) noexcept;
+		void setDChunk(size_t i, size_t v) noexcept;
 
 #if SOUP_BIGINT_USE_INTRIN
 		[[nodiscard]] static constexpr uint8_t getChunksPerQChunk() noexcept

@@ -425,7 +425,7 @@ namespace soup
 		return *reinterpret_cast<const size_t*>(&chunks[i * 2]);
 	}
 
-	void Bigint::setDChunk(size_t i, chunk_t v) noexcept
+	void Bigint::setDChunk(size_t i, size_t v) noexcept
 	{
 		*reinterpret_cast<size_t*>(&chunks[i * 2]) = v;
 	}
