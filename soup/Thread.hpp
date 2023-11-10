@@ -30,7 +30,7 @@ namespace soup
 		Capture f_cap;
 
 		explicit Thread() noexcept = default;
-		explicit Thread(void(*f)(Capture&&), Capture&& cap = {}) noexcept;
+		explicit Thread(void(*f)(Capture&&), Capture&& cap = {});
 		explicit Thread(const Thread& b) = delete;
 		explicit Thread(Thread&& b) = delete;
 		void start(void(*f)(Capture&&), Capture&& cap = {});

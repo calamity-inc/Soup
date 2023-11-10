@@ -6,7 +6,7 @@
 
 namespace soup
 {
-	Thread::Thread(void(*f)(Capture&&), Capture&& cap) noexcept
+	Thread::Thread(void(*f)(Capture&&), Capture&& cap)
 	{
 		start(f, std::move(cap));
 	}
