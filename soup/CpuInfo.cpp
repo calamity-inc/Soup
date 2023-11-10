@@ -26,9 +26,10 @@ namespace soup
 		cpuid_max_eax = *reinterpret_cast<uint32_t*>(&buf[0]);
 		vendor_id = &buf[4];
 
+		uint32_t arr[4];
+
 		if (cpuid_max_eax >= 0x01)
 		{
-			uint32_t arr[4];
 			invokeCpuid(arr, 0x01);
 			stepping_id = (EAX & 0xF);
 			model = ((EAX >> 4) & 0xF);
@@ -50,6 +51,15 @@ namespace soup
 				}
 			}
 		}
+
+		invokeCpuid(arr, 0x80000000);
+		cpuid_extended_max_eax = EAX;
+
+		if (cpuid_extended_max_eax >= 0x80000001)
+		{
+			invokeCpuid(arr, 0x80000001);
+			extended_features_1_ecx = ECX;
+		}
 	}
 
 	const CpuInfo& CpuInfo::get()
@@ -61,36 +71,40 @@ namespace soup
 	std::string CpuInfo::toString() const
 	{
 		std::string str = "CPUID Support Level: ";
-		str.append(std::to_string(cpuid_max_eax));
+		str.append(string::hex(cpuid_max_eax));
+		str.append("\nCPUID Extended Support Level: ");
+		str.append(string::hex(cpuid_extended_max_eax & ~0x80000000));
 		str.append("\nVendor: ");
 		str.append(vendor_id.c_str());
-		str.push_back('\n');
 
 		if (cpuid_max_eax >= 0x01)
 		{
-			str.append("Stepping ID: ").append(std::to_string(stepping_id));
+			str.append("\nStepping ID: ").append(std::to_string(stepping_id));
 			str.append("\nModel: ").append(std::to_string(model));
 			str.append("\nFamily: ").append(std::to_string(family));
 			str.append("\nFeature Flags 1: ").append(string::hex(feature_flags_ecx));
 			str.append("\nFeature Flags 2: ").append(string::hex(feature_flags_edx));
-			str.push_back('\n');
 
 			if (cpuid_max_eax >= 0x07)
 			{
-				str.append("Feature Flags 3: ").append(string::hex(extended_features_0_ebx));
-				str.push_back('\n');
+				str.append("\nFeature Flags 3: ").append(string::hex(extended_features_0_ebx));
 
 				if (cpuid_max_eax >= 0x16)
 				{
-					str.append("Base Frequency: ").append(std::to_string(base_frequency)).append(
+					str.append("\nBase Frequency: ").append(std::to_string(base_frequency)).append(
 						" MHz\n"
 						"Max. Frequency: "
 					).append(std::to_string(max_frequency)).append(
 						" MHz\n"
 						"Bus (Reference) Frequency: "
-					).append(std::to_string(bus_frequency)).append(" MHz\n");
+					).append(std::to_string(bus_frequency)).append(" MHz");
 				}
 			}
+		}
+
+		if (cpuid_extended_max_eax >= 0x80000001)
+		{
+			str.append("\nExtended Feature Flags: ").append(string::hex(extended_features_1_ecx));
 		}
 
 		return str;
