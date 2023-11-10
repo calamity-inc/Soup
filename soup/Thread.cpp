@@ -11,11 +11,6 @@ namespace soup
 		start(f, std::move(cap));
 	}
 
-	Thread::Thread(std::function<void()>&& func) noexcept
-	{
-		start(std::move(func));
-	}
-
 	static void
 #if SOUP_WINDOWS
 		__stdcall
@@ -67,14 +62,6 @@ namespace soup
 #endif
 
 		running = true;
-	}
-
-	void Thread::start(std::function<void()>&& func)
-	{
-		start([](Capture&& cap)
-		{
-			cap.get<std::function<void()>>()();
-		}, std::move(func));
 	}
 
 	Thread::~Thread() noexcept

@@ -27,7 +27,7 @@ static visKeyboard viskbd;
 
 void cli_keyboard()
 {
-	Thread t([]
+	Thread t([](Capture&&)
 	{
 #if SOUP_WINDOWS
 		DigitalKeyboard digital_kbd;

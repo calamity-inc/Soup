@@ -8,7 +8,6 @@
 #include <pthread.h>
 #endif
 
-#include <functional>
 #include <vector>
 
 #include "Capture.hpp"
@@ -32,11 +31,9 @@ namespace soup
 
 		explicit Thread() noexcept = default;
 		explicit Thread(void(*f)(Capture&&), Capture&& cap = {}) noexcept;
-		explicit Thread(std::function<void()>&& func) noexcept;
 		explicit Thread(const Thread& b) = delete;
 		explicit Thread(Thread&& b) = delete;
-		void start(void(*f)(Capture&&), Capture&& cap);
-		void start(std::function<void()>&& func);
+		void start(void(*f)(Capture&&), Capture&& cap = {});
 
 		~Thread() noexcept;
 
