@@ -155,12 +155,14 @@ namespace soup
 
 		// BUG: snd_pcm_hw_params_free is not called in exception case
 		snd_pcm_hw_params_t* hw_params;
-		snd_pcm_open(&hwDevice, "default", /*SND_PCM_STREAM_PLAYBACK*/ 0, 0);
+		// Using "sysdefault" instead of "default" because it may select SND_PCM_TYPE_IOPLUG instead of SND_PCM_TYPE_PLUG for non-root users, but that does not support async.
+		snd_pcm_open(&hwDevice, "sysdefault", /*SND_PCM_STREAM_PLAYBACK*/ 0, 0);
+		//std::cout << "pcm type: " << *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(hwDevice) + 0x10) << "\n";
 		snd_pcm_hw_params_malloc(&hw_params);
 		snd_pcm_hw_params_any(hwDevice, hw_params);
 		SOUP_ASSERT(snd_pcm_hw_params_set_access(hwDevice, hw_params, /*SND_PCM_ACCESS_RW_INTERLEAVED*/ 3) >= 0);
 		snd_async_handler_t* handler;
-		SOUP_ASSERT(snd_async_add_pcm_handler(&handler, hwDevice, waveCallbackStatic, this) >= 0, "ALSA init failed. You need to be root. Don't ask me why, because I don't know either.");
+		SOUP_ASSERT(snd_async_add_pcm_handler(&handler, hwDevice, waveCallbackStatic, this) >= 0);
 		snd_pcm_hw_params_set_format(hwDevice, hw_params, /*SND_PCM_FORMAT_S16_LE*/ 2); static_assert(std::is_same_v<int16_t, audSample>);
 		unsigned int sample_rate = AUD_SAMPLE_RATE;
 		snd_pcm_hw_params_set_rate_near(hwDevice, hw_params, &sample_rate, 0);
