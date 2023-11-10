@@ -119,7 +119,7 @@ namespace soup
 		void disableBitInbounds(const size_t i);
 		void copyFirstBits(const Bigint& b, size_t num);
 
-		[[nodiscard]] size_t getDChunk(size_t i) const noexcept;
+		[[nodiscard]] size_t getDChunkInbounds(size_t i) const noexcept;
 		void setDChunk(size_t i, size_t v) noexcept;
 
 #if SOUP_BIGINT_USE_INTRIN

@@ -420,7 +420,7 @@ namespace soup
 		}
 	}
 
-	size_t Bigint::getDChunk(size_t i) const noexcept
+	size_t Bigint::getDChunkInbounds(size_t i) const noexcept
 	{
 		return *reinterpret_cast<const size_t*>(&chunks[i * 2]);
 	}
@@ -1115,7 +1115,7 @@ namespace soup
 			for (; i + 2 < nc; i += 2)
 			{
 				size_t di = (i / 2);
-				setDChunk(di, getDChunk(di) | b.getDChunk(i));
+				setDChunk(di, getDChunkInbounds(di) | b.getDChunkInbounds(i));
 			}
 			for (; i != nc; ++i)
 			{
@@ -1150,7 +1150,7 @@ namespace soup
 			for (; i + 2 < nc; i += 2)
 			{
 				size_t di = (i / 2);
-				setDChunk(di, getDChunk(di) & b.getDChunk(i));
+				setDChunk(di, getDChunkInbounds(di) & b.getDChunkInbounds(i));
 			}
 			for (; i != nc; ++i)
 			{
