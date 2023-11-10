@@ -495,7 +495,11 @@ namespace soup
 				const bool down = (event.type == X11Api::KeyPress);
 				const bool repeat = (down && prev_event.type == X11Api::KeyRelease && event.xkey.time == prev_event.xkey.time && event.xkey.keycode == prev_event.xkey.keycode);
 				Window w{ event.xkey.window };
-				w.getConfig().key_callback(w, x.lookupKeysym(&event.xkey, 0), down, repeat);
+				auto& wc = w.getConfig();
+				if (wc.key_callback)
+				{
+					wc.key_callback(w, x.lookupKeysym(&event.xkey, 0), down, repeat);
+				}
 			}
 			else if (event.type == X11Api::Expose)
 			{
