@@ -1395,9 +1395,6 @@
     <ClInclude Include="StringPool.hpp">
       <Filter>data\container</Filter>
     </ClInclude>
-    <ClInclude Include="Serialiser.hpp">
-      <Filter>io\stream</Filter>
-    </ClInclude>
     <ClInclude Include="drData.hpp">
       <Filter>data\reflection</Filter>
     </ClInclude>
