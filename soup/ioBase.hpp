@@ -140,6 +140,22 @@ namespace soup
 	public:
 		bool u64(uint64_t& v)
 		{
+			return u64(v, native_endianness);
+		}
+
+		bool u64_be(uint64_t& v)
+		{
+			return u64(v, NATIVE_ENDIAN == BIG_ENDIAN);
+		}
+
+		bool u64_le(uint64_t& v)
+		{
+			return u64(v, NATIVE_ENDIAN == LITTLE_ENDIAN);
+		}
+
+	protected:
+		bool u64(uint64_t& v, bool native_endianness)
+		{
 #if true
 			if (native_endianness)
 			{
@@ -190,6 +206,7 @@ namespace soup
 #endif
 		}
 
+	public:
 		bool i8(int8_t& v)
 		{
 			return u8(*(uint8_t*)&v);
