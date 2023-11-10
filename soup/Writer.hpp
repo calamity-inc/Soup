@@ -159,17 +159,17 @@ namespace soup
 			{
 				uint8_t prefix = 0xFC;
 				auto val = (uint16_t)v;
-				return u8(prefix) && u16(val);
+				return u8(prefix) && u16_le(val);
 			}
 			else if (v <= 0xFFFFFF)
 			{
 				uint8_t prefix = 0xFD;
 				auto val = (uint32_t)v;
-				return u8(prefix) && u24(val);
+				return u8(prefix) && u24_le(val);
 			}
 			uint8_t prefix = 0xFE;
 			auto val = v;
-			return u8(prefix) && u64(val);
+			return u8(prefix) && u64_le(val);
 		}
 
 		// Null-terminated string.

@@ -138,7 +138,7 @@ namespace soup
 				if (first == 0xFC)
 				{
 					uint16_t val;
-					if (u16(val))
+					if (u16_le(val))
 					{
 						v = val;
 						return true;
@@ -147,7 +147,7 @@ namespace soup
 				if (first == 0xFD)
 				{
 					uint32_t val;
-					if (u24(val))
+					if (u24_le(val))
 					{
 						v = val;
 						return true;
@@ -156,7 +156,7 @@ namespace soup
 				if (first == 0xFE)
 				{
 					uint64_t val;
-					if (u64(val))
+					if (u64_le(val))
 					{
 						v = val;
 						return true;

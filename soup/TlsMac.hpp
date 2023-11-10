@@ -11,7 +11,7 @@ namespace soup
 
 		SOUP_PACKET_IO(s)
 		{
-			return s.u64(seq_num)
+			return s.u64_be(seq_num)
 				&& record.io(s)
 				;
 		}

@@ -9,9 +9,9 @@ namespace soup
 	KeyGenId::KeyGenId(unsigned int bits, const std::string& seeds_export)
 		: bits(bits)
 	{
-		StringRefReader sr(seeds_export, LITTLE_ENDIAN);
-		sr.u64(p.seed);
-		sr.u64(q.seed);
+		StringRefReader sr(seeds_export);
+		sr.u64_le(p.seed);
+		sr.u64_le(q.seed);
 	}
 
 	KeyGenId KeyGenId::generate(unsigned int bits)
@@ -25,9 +25,9 @@ namespace soup
 
 	std::string KeyGenId::toSeedsExport() const
 	{
-		StringWriter sw(LITTLE_ENDIAN);
-		sw.u64(const_cast<uint64_t&>(p.seed));
-		sw.u64(const_cast<uint64_t&>(q.seed));
+		StringWriter sw;
+		sw.u64_le(const_cast<uint64_t&>(p.seed));
+		sw.u64_le(const_cast<uint64_t&>(q.seed));
 		return sw.data;
 	}
 

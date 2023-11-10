@@ -119,7 +119,7 @@ namespace soup
 
 	void ServerWebService::wsSend(Socket& s, uint8_t opcode, const std::string& payload)
 	{
-		StringWriter w{ false };
+		StringWriter w;
 		opcode |= 0x80; // fin
 		if (w.u8(opcode))
 		{
@@ -137,7 +137,7 @@ namespace soup
 				{
 					return;
 				}
-				if (uint16_t buf = payload.size(); !w.u16(buf))
+				if (uint16_t buf = payload.size(); !w.u16_be(buf))
 				{
 					return;
 				}
@@ -148,7 +148,7 @@ namespace soup
 				{
 					return;
 				}
-				if (uint64_t buf = payload.size(); !w.u64(buf))
+				if (uint64_t buf = payload.size(); !w.u64_be(buf))
 				{
 					return;
 				}

@@ -11,7 +11,7 @@ namespace soup
 
 		SOUP_PACKET_IO(s)
 		{
-			return s.u24(length)
+			return s.u24_le(length)
 				&& s.u8(seq_id)
 				;
 		}

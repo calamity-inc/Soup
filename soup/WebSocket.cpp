@@ -22,7 +22,7 @@ namespace soup
 
 	WebSocket::ReadFrameStatus WebSocket::readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload)
 	{
-		StringRefReader r(data, false);
+		StringRefReader r(data);
 		uint8_t buf;
 		size_t header_size = 2;
 
@@ -44,7 +44,7 @@ namespace soup
 		{
 			header_size += (16 / 8);
 			uint16_t buf;
-			SOUP_IF_UNLIKELY (!r.u16(buf))
+			SOUP_IF_UNLIKELY (!r.u16_be(buf))
 			{
 				return BAD;
 			}
@@ -53,7 +53,7 @@ namespace soup
 		else if (payload_len == 127)
 		{
 			header_size += (64 / 8);
-			SOUP_IF_UNLIKELY (!r.u64(payload_len))
+			SOUP_IF_UNLIKELY (!r.u64_be(payload_len))
 			{
 				return BAD;
 			}
