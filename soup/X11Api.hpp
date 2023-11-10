@@ -17,6 +17,8 @@ namespace soup
 		using Time = time_t;
 		using KeySym = unsigned long;
 
+		static constexpr Time CurrentTime = 0;
+
 		enum EventMask : long
 		{
 			KeyPressMask = 0x0000'0001,
@@ -49,8 +51,38 @@ namespace soup
 		enum EventType : int
 		{
 			KeyPress = 2,
-			KeyRelease = 3,
-			Expose = 12,
+			KeyRelease,
+			ButtonPress,
+			ButtonRelease,
+			MotionNotify,
+			EnterNotify,
+			LeaveNotify,
+			FocusIn,
+			FocusOut,
+			KeymapNotify,
+			Expose,
+			GraphicsExpose,
+			NoExpose,
+			VisibilityNotify,
+			CreateNotify,
+			DestroyNotify,
+			UnmapNotify,
+			MapNotify,
+			MapRequest,
+			ReparentNotify,
+			ConfigureNotify,
+			ConfigureRequest,
+			GravityNotify,
+			ResizeRequest,
+			CirculateNotify,
+			CirculateRequest,
+			PropertyNotify,
+			SelectionClear,
+			SelectionRequest,
+			SelectionNotify,
+			ColormapNotify,
+			ClientMessage,
+			MappingNotify,
 		};
 
 		struct XKeyEvent
@@ -70,6 +102,23 @@ namespace soup
 			X11Api::Bool same_screen;	/* same screen flag */
 		};
 
+		struct XFocusChangeEvent
+		{
+			int type;		/* FocusIn or FocusOut */
+			unsigned long serial;	/* # of last request processed by server */
+			Bool send_event;	/* true if this came from a SendEvent request */
+			Display *display;	/* Display the event was read from */
+			Window window;		/* window of event */
+			int mode;		/* NotifyNormal, NotifyWhileGrabbed,
+						   NotifyGrab, NotifyUngrab */
+			int detail;
+			/*
+			 * NotifyAncestor, NotifyVirtual, NotifyInferior,
+			 * NotifyNonlinear,NotifyNonlinearVirtual, NotifyPointer,
+			 * NotifyPointerRoot, NotifyDetailNone
+			 */
+		};
+
 		struct XExposeEvent
 		{
 			int type;		/* Expose */
@@ -82,11 +131,24 @@ namespace soup
 			int count;		/* if nonzero, at least this many more */
 		};
 
+		struct XMapEvent
+		{
+			int type;
+			unsigned long serial;	/* # of last request processed by server */
+			Bool send_event;	/* true if this came from a SendEvent request */
+			Display *display;	/* Display the event was read from */
+			Window event;
+			Window window;
+			Bool override_redirect;	/* boolean, is override set... */
+		};
+
 		union XEvent
 		{
 			int type;
 			XKeyEvent xkey;
+			XFocusChangeEvent xfocus;
 			XExposeEvent xexpose;
+			XMapEvent xmap;
 			long pad[24];
 		};
 
