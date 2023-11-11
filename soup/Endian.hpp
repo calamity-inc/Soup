@@ -81,7 +81,7 @@ namespace soup
 
 		[[nodiscard]] static constexpr network_u16_t toNetwork(native_u16_t val) noexcept
 		{
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if constexpr (NATIVE_ENDIAN != NETWORK_ENDIAN)
 			{
 				return invert(val.data);
 			}
@@ -90,7 +90,7 @@ namespace soup
 
 		[[nodiscard]] static constexpr network_u32_t toNetwork(native_u32_t val) noexcept
 		{
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if constexpr (NATIVE_ENDIAN != NETWORK_ENDIAN)
 			{
 				return invert(val.data);
 			}
@@ -99,7 +99,7 @@ namespace soup
 
 		[[nodiscard]] static constexpr network_u64_t toNetwork(native_u64_t val) noexcept
 		{
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if constexpr (NATIVE_ENDIAN != NETWORK_ENDIAN)
 			{
 				return invert(val.data);
 			}
@@ -108,7 +108,7 @@ namespace soup
 
 		[[nodiscard]] static constexpr native_u16_t toNative(network_u16_t val) noexcept
 		{
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if constexpr (NATIVE_ENDIAN != NETWORK_ENDIAN)
 			{
 				return invert(val.data);
 			}
@@ -117,7 +117,7 @@ namespace soup
 
 		[[nodiscard]] static constexpr native_u32_t toNative(network_u32_t val) noexcept
 		{
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if constexpr (NATIVE_ENDIAN != NETWORK_ENDIAN)
 			{
 				return invert(val.data);
 			}
@@ -126,7 +126,7 @@ namespace soup
 
 		[[nodiscard]] static constexpr native_u64_t toNative(network_u64_t val) noexcept
 		{
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if constexpr (NATIVE_ENDIAN != NETWORK_ENDIAN)
 			{
 				return invert(val.data);
 			}
