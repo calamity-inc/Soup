@@ -30,7 +30,7 @@ namespace soup
 			return val;
 		}
 
-		[[nodiscard]] static consteval uint32_t compileTimeHash(const char* str) noexcept
+		[[nodiscard]] static SOUP_CONSTEVAL uint32_t compileTimeHash(const char* str) noexcept
 		{
 			return hash(str);
 		}

@@ -101,8 +101,10 @@
 	#define SOUP_CPP20 true
 #endif
 
-#if !SOUP_CPP20
-	#define consteval constexpr
+#if SOUP_CPP20
+	#define SOUP_CONSTEVAL consteval
+#else
+	#define SOUP_CONSTEVAL constexpr
 #endif
 
 #if SOUP_CPP20

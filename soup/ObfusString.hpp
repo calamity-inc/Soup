@@ -24,19 +24,19 @@ namespace soup
 		uint32_t seed;
 
 	public:
-		consteval ObfusString(const char(&in)[Size])
+		SOUP_CONSTEVAL ObfusString(const char(&in)[Size])
 		{
 			initialise(in);
 		}
 
 		template <typename T = char>
-		consteval ObfusString(const T* in)
+		SOUP_CONSTEVAL ObfusString(const T* in)
 		{
 			initialise(in);
 		}
 
 	private:
-		consteval void initialise(const char* in)
+		SOUP_CONSTEVAL void initialise(const char* in)
 		{
 			seed = rand.getConstexprSeed(Len);
 			LcgRng rng(seed);
@@ -156,7 +156,7 @@ namespace soup
 	namespace literals
 	{
 		template <StringLiteral Str>
-		consteval auto operator ""_obfus()
+		SOUP_CONSTEVAL auto operator ""_obfus()
 		{
 			return ObfusString<Str.size()>(Str.data);
 		}

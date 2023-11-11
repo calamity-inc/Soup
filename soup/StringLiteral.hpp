@@ -7,7 +7,7 @@ namespace soup
 	{
 		char data[Size];
 
-		consteval StringLiteral(const char(&in)[Size])
+		SOUP_CONSTEVAL StringLiteral(const char(&in)[Size])
 		{
 			for (size_t i = 0; i != Size; ++i)
 			{
@@ -15,12 +15,12 @@ namespace soup
 			}
 		}
 
-		[[nodiscard]] consteval size_t size() const noexcept
+		[[nodiscard]] SOUP_CONSTEVAL size_t size() const noexcept
 		{
 			return Size;
 		}
 
-		[[nodiscard]] consteval const char* c_str() const noexcept
+		[[nodiscard]] SOUP_CONSTEVAL const char* c_str() const noexcept
 		{
 			return &data[0];
 		}
