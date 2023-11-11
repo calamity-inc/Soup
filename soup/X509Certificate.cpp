@@ -161,7 +161,7 @@ namespace soup
 		return is_ec;
 	}
 
-	void X509Certificate::setRsaPublicKey(Bigint&& n, Bigint&& e)
+	void X509Certificate::setRsaPublicKey(Bigint n, Bigint e)
 	{
 		key = EccPoint{ std::move(n), std::move(e) };
 	}

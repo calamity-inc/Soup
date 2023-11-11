@@ -9,9 +9,8 @@
 
 namespace soup
 {
-	class X509Certificate
+	struct X509Certificate
 	{
-	public:
 		enum SigType : uint8_t
 		{
 			UNK_WITH_UNK,
@@ -45,10 +44,8 @@ namespace soup
 		[[nodiscard]] bool isRsa() const noexcept;
 		[[nodiscard]] bool isEc() const noexcept;
 		[[nodiscard]] RsaPublicKey getRsaPublicKey() const;
-	protected:
-		void setRsaPublicKey(Bigint&& n, Bigint&& e);
+		void setRsaPublicKey(Bigint n, Bigint e);
 
-	public:
 		[[nodiscard]] bool canBeVerified() const noexcept;
 		[[nodiscard]] bool verify(const X509Certificate& issuer) const;
 
