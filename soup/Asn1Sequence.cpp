@@ -302,9 +302,15 @@ namespace soup
 			}
 			ret.push_back(':');
 			if (c.identifier.m_class == 0
-				&& c.identifier.type != ASN1_SEQUENCE
-				&& c.identifier.type != ASN1_SET
+				&& (c.identifier.type == ASN1_SEQUENCE || c.identifier.type == ASN1_SET)
 				)
+			{
+				ret.push_back('\n');
+				std::string rp = prefix;
+				rp.push_back('\t');
+				ret.append(Asn1Sequence(c.data).toString(rp));
+			}
+			else
 			{
 				ret.push_back(' ');
 				switch (c.identifier.type)
@@ -329,18 +335,6 @@ namespace soup
 					ret.append(c.data);
 					break;
 				}
-			}
-			else
-			{
-#if true
-				ret.push_back(' ');
-				ret.append(string::bin2hex(c.data));
-#else
-				ret.push_back('\n');
-				std::string rp = prefix;
-				rp.push_back('\t');
-				ret.append(Asn1Sequence(c.data).toString(rp));
-#endif
 			}
 		}
 		if (!ret.empty())
