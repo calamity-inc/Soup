@@ -300,7 +300,11 @@ namespace soup
 			}
 			tbsCert.addSeq(pubInfo);
 		}
-		tbsCert.addNull(); // [7] Extensions, context-specific 3.
+		{
+			Asn1Sequence dummy;
+			dummy.addSeq({});
+			tbsCert.addSeq(dummy); // [7] Extensions, should be a context-specific 3.
+		}
 
 		Asn1Sequence cert;
 		cert.addSeq(tbsCert);
