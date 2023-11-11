@@ -2,13 +2,19 @@
 
 #include <string>
 
+#include "base.hpp"
+
 namespace soup
 {
 	struct CountryNamesEntry
 	{
 		const char* country_code; // alpha-2
 		const char* language_code;
+#if SOUP_CPP20
+		const char8_t* value;
+#else
 		const char* value;
+#endif
 	};
 
 #define COUNTRYNAMES_COUNTRIES 249
@@ -27,7 +33,7 @@ namespace soup
 				{
 					if (language_code == i->language_code)
 					{
-						return i->value;
+						return (const char*)i->value;
 					}
 				} while (++i, i->country_code == cc);
 				break;
@@ -57,7 +63,7 @@ namespace soup
 		// Find country
 		for (; i < &country_names[COUNTRYNAMES_COUNTRIES * COUNTRYNAMES_LANGUAGES]; i += COUNTRYNAMES_LANGUAGES)
 		{
-			if (country_name == i->value)
+			if (country_name == (const char*)i->value)
 			{
 				return i->country_code;
 			}
