@@ -7,7 +7,9 @@
 #include "UniquePtr.hpp"
 #include "x64.hpp"
 
-#if !defined(_MSC_VER) || defined(__clang__)
+#if defined(_MSC_VER) && !defined(__clang__)
+#include <intrin.h>
+#else
 #include <cpuid.h>
 #endif
 
