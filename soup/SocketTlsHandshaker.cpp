@@ -17,7 +17,7 @@ namespace soup
 	{
 		TlsHandshake hs{};
 		hs.handshake_type = handshake_type;
-		hs.length = content.size();
+		hs.length = static_cast<decltype(hs.length)>(content.size());
 		auto data = hs.toBinaryString();
 		data.append(content);
 

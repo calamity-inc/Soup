@@ -49,7 +49,7 @@ namespace soup
 			}
 			else
 			{
-				if (std::distance(m.begin, m.it) < window)
+				if (static_cast<size_t>(std::distance(m.begin, m.it)) < window)
 				{
 					return false;
 				}

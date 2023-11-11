@@ -103,14 +103,14 @@ namespace soup
 			return false;
 		}*/
 		reset();
-		size_t i = 0;
+		uint8_t i = 0;
 		for (const auto& c : fen)
 		{
 			if (i == num_squares)
 			{
 				return false;
 			}
-			auto b = (uint8_t)c;
+			auto b = static_cast<uint8_t>(c);
 			const bool black = ((b >> 5) & 1);
 			switch (c)
 			{
@@ -183,7 +183,7 @@ namespace soup
 		{
 			return piece_symbol;
 		}
-		return ((((rank + file) % 2) ^ !inverted) ? "■" : "□");
+		return (const char*)((((rank + file) % 2) ^ !inverted) ? u8"■" : u8"□");
 	}
 
 	void Chessboard::playMove(ChessCoordinate from, ChessCoordinate to)

@@ -253,7 +253,7 @@ namespace soup
 	int Scheduler::poll(std::vector<pollfd>& pollfds, int timeout)
 	{
 #if SOUP_WINDOWS
-		return ::WSAPoll(pollfds.data(), pollfds.size(), timeout);
+		return ::WSAPoll(pollfds.data(), static_cast<ULONG>(pollfds.size()), timeout);
 #else
 		return ::poll(pollfds.data(), pollfds.size(), timeout);
 #endif

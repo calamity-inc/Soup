@@ -114,7 +114,7 @@ namespace soup
 				if (digit < t(j))
 				{
 					ret.emplace_back(delta);
-					updateBias(delta, ret.size());
+					updateBias(delta, static_cast<uint32_t>(ret.size()));
 					//std::cout << "decoded delta = " << delta << ", new bias = " << bias << "\n";
 					j = 0;
 					delta = 0;
@@ -205,7 +205,7 @@ namespace soup
 
 			uint32_t i = 0;
 			uint32_t n = initial_n;
-			uint32_t size = str.size();
+			uint32_t size = static_cast<uint32_t>(str.size());
 			for (auto delta : deltas)
 			{
 				//std::cout << "delta = " << delta << "\n";

@@ -39,23 +39,23 @@ namespace soup
 					break;
 
 				case joaat::hash("margin-left"):
-					rule.style.margin_left = tk->val.getInt();
+					rule.style.margin_left = static_cast<uint8_t>(tk->val.getInt());
 					break;
 
 				case joaat::hash("margin-right"):
-					rule.style.margin_right = tk->val.getInt();
+					rule.style.margin_right = static_cast<uint8_t>(tk->val.getInt());
 					break;
 
 				case joaat::hash("margin-top"):
-					rule.style.margin_top = tk->val.getInt();
+					rule.style.margin_top = static_cast<uint8_t>(tk->val.getInt());
 					break;
 
 				case joaat::hash("margin-bottom"):
-					rule.style.margin_bottom = tk->val.getInt();
+					rule.style.margin_bottom = static_cast<uint8_t>(tk->val.getInt());
 					break;
 				
 				case joaat::hash("font-size"):
-					rule.style.font_size = tk->val.getInt();
+					rule.style.font_size = static_cast<uint8_t>(tk->val.getInt());
 					break;
 
 				case joaat::hash("color"):

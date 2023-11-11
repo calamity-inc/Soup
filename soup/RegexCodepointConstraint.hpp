@@ -17,7 +17,7 @@ namespace soup
 
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{
-			if (std::distance(m.it, m.end) < c.size())
+			if (static_cast<size_t>(std::distance(m.it, m.end)) < c.size())
 			{
 				return false;
 			}

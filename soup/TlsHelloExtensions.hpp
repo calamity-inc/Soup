@@ -40,7 +40,7 @@ namespace soup
 						{
 							return false;
 						}
-						extension_bytes -= (4 + ext.data.size());
+						extension_bytes -= static_cast<uint16_t>(4 + ext.data.size());
 						extensions.emplace_back(std::move(ext));
 					}
 				}

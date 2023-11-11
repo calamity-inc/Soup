@@ -500,7 +500,7 @@ namespace soup
 		PHIDP_PREPARSED_DATA pp_data = nullptr;
 		if (HidD_GetPreparsedData(handle, &pp_data))
 		{
-			if (HidP_InitializeReportForID(HidP_Input, report_id, pp_data, (char*)read_buffer.data(), read_buffer.capacity()) == HIDP_STATUS_SUCCESS)
+			if (HidP_InitializeReportForID(HidP_Input, report_id, pp_data, (char*)read_buffer.data(), static_cast<ULONG>(read_buffer.capacity())) == HIDP_STATUS_SUCCESS)
 			{
 				ret = true;
 			}
@@ -574,7 +574,7 @@ namespace soup
 			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
 		}
 
-		SOUP_ASSERT(HidD_GetFeature(handle, buf.data(), buf.size()));
+		SOUP_ASSERT(HidD_GetFeature(handle, buf.data(), static_cast<ULONG>(buf.size())));
 #elif SOUP_LINUX
 		// TODO
 #endif
@@ -598,7 +598,7 @@ namespace soup
 #if SOUP_WINDOWS
 		OVERLAPPED overlapped{};
 		DWORD bytesWritten;
-		BOOL result = WriteFile(handle, data, size, &bytesWritten, &overlapped);
+		BOOL result = WriteFile(handle, data, static_cast<DWORD>(size), &bytesWritten, &overlapped);
 		if (result == FALSE
 			&& GetLastError() == ERROR_IO_PENDING
 			)
@@ -622,7 +622,7 @@ namespace soup
 			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
 		}
 
-		return HidD_SetFeature(handle, buf.data(), buf.size());
+		return HidD_SetFeature(handle, buf.data(), static_cast<ULONG>(buf.size()));
 #elif SOUP_LINUX
 		return ioctl(handle, HIDIOCSFEATURE(buf.size()), buf.data()) == buf.size();
 #else
@@ -633,7 +633,7 @@ namespace soup
 #if SOUP_WINDOWS
 	void hwHid::kickOffRead() noexcept
 	{
-		if (!ReadFile(handle, read_buffer.data(), read_buffer.capacity(), &bytes_read, &read_overlapped)
+		if (!ReadFile(handle, read_buffer.data(), static_cast<DWORD>(read_buffer.capacity()), &bytes_read, &read_overlapped)
 			&& GetLastError() == ERROR_IO_PENDING
 			)
 		{

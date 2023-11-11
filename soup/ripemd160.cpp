@@ -335,7 +335,7 @@ namespace soup
 			compress(MDbuf, X);
 		}
 
-		MDfinish(MDbuf, message, in.length(), 0);
+		MDfinish(MDbuf, message, static_cast<uint32_t>(in.length()), 0);
 
 		std::string hash;
 		for (i = 0; i < RMDsize / 8; i += 4)

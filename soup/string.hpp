@@ -50,7 +50,7 @@ namespace soup
 			for (; i != 0; i /= Base)
 			{
 				const auto digit = (i % Base);
-				res.insert(0, 1, '0' + digit);
+				res.insert(0, 1, static_cast<typename Str::value_type>('0' + digit));
 			}
 			if (neg)
 			{

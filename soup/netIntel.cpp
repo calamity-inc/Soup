@@ -352,7 +352,7 @@ namespace soup
 			FileWriter fw(dir / "location_pool.bin");
 			for (const auto& loc : location_pool.pool)
 			{
-				offsets.emplace(loc.c_str(), fw.s.tellp());
+				offsets.emplace(loc.c_str(), static_cast<uint32_t>(fw.s.tellp()));
 				fw.str_nt(loc);
 			}
 		}

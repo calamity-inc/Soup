@@ -21,7 +21,7 @@ namespace soup
 
 	bool WebResource::isDataExpired() const noexcept
 	{
-		return time::unixSeconds() > data_expires;
+		return static_cast<uint64_t>(time::unixSeconds()) > data_expires;
 	}
 
 #if SOUP_WASM

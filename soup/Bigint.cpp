@@ -306,7 +306,7 @@ namespace soup
 
 		if (chunk_i < chunks.size())
 		{
-			Bitset<chunk_t>::at(chunks[chunk_i]).set(j, v);
+			Bitset<chunk_t>::at(chunks[chunk_i]).set(static_cast<uint8_t>(j), v);
 		}
 		else if (v)
 		{
@@ -329,15 +329,15 @@ namespace soup
 		auto chunk_i = i / getBitsPerChunk();
 		auto j = i % getBitsPerChunk();
 
-		j = (1 << j);
+		chunk_t mask = (static_cast<chunk_t>(1) << j);
 
 		if (chunk_i < chunks.size())
 		{
-			chunks[chunk_i] |= j;
+			chunks[chunk_i] |= mask;
 		}
 		else
 		{
-			addChunk(chunk_i, j);
+			addChunk(chunk_i, mask);
 		}
 	}
 
@@ -385,7 +385,7 @@ namespace soup
 		auto chunk_i = i / getBitsPerChunk();
 		auto j = i % getBitsPerChunk();
 
-		Bitset<chunk_t>::at(chunks[chunk_i]).set(j, v);
+		Bitset<chunk_t>::at(chunks[chunk_i]).set(static_cast<uint8_t>(j), v);
 	}
 
 	void Bigint::enableBitInbounds(const size_t i)
@@ -1002,7 +1002,7 @@ namespace soup
 			{
 				size_t c = getChunkInbounds(i);
 				c = ((c << b) | carry);
-				setChunkInbounds(i, c);
+				setChunkInbounds(i, static_cast<chunk_t>(c));
 				carry = getCarry(c);
 			}
 		}

@@ -376,7 +376,7 @@ namespace soup
 		handshaker->server_name = std::move(server_name);
 
 		TlsClientHello hello;
-		hello.random.time = time::unixSeconds();
+		hello.random.time = static_cast<uint32_t>(time::unixSeconds());
 		rand.fill(hello.random.random);
 		handshaker->client_random = hello.random.toBinaryString();
 		vector_emplace_back_randomised(hello.cipher_suites, {
@@ -693,7 +693,7 @@ namespace soup
 			auto my_pub = curve->derivePublic(my_priv);
 
 			cke = curve->encodePointUncompressed(my_pub);
-			cke.insert(0, 1, 1 + csize + csize);
+			cke.insert(0, 1, static_cast<char>(1 + csize + csize));
 		}
 		else
 		{
@@ -821,7 +821,7 @@ namespace soup
 
 			{
 				TlsServerHello shello{};
-				shello.random.time = time::unixSeconds();
+				shello.random.time = static_cast<uint32_t>(time::unixSeconds());
 				rand.fill(shello.random.random);
 				handshaker->server_random = shello.random.toBinaryString();
 				shello.cipher_suite = handshaker->cipher_suite;
@@ -974,7 +974,7 @@ namespace soup
 			sa.sin_family = AF_INET;
 			sa.sin_port = addr.port;
 			sa.sin_addr.s_addr = addr.ip.getV4();
-			if (::sendto(fd, data.data(), data.size(), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
+			if (::sendto(fd, data.data(), static_cast<int>(data.size()), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
 			{
 				return false;
 			}
@@ -985,7 +985,7 @@ namespace soup
 			sa.sin6_family = AF_INET6;
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
 			sa.sin6_port = addr.port;
-			if (::sendto(fd, data.data(), data.size(), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
+			if (::sendto(fd, data.data(), static_cast<int>(data.size()), 0, (sockaddr*)&sa, sizeof(sa)) != data.size())
 			{
 				return false;
 			}
@@ -1085,7 +1085,7 @@ namespace soup
 		{
 			TlsRecord record{};
 			record.content_type = content_type;
-			record.length = content.size();
+			record.length = static_cast<uint16_t>(content.size());
 			auto data = record.toBinaryString();
 			data.append(content);
 			return transport_send(data);
@@ -1100,7 +1100,7 @@ namespace soup
 
 		TlsRecord record{};
 		record.content_type = content_type;
-		record.length = body.size();
+		record.length = static_cast<uint16_t>(body.size());
 
 		Buffer buf(5 + body.size());
 		BufferRefWriter bw(buf, BIG_ENDIAN);
@@ -1419,12 +1419,12 @@ namespace soup
 
 	bool Socket::transport_send(const Buffer& buf) const noexcept
 	{
-		return transport_send(buf.data(), buf.size());
+		return transport_send(buf.data(), static_cast<int>(buf.size()));
 	}
 
 	bool Socket::transport_send(const std::string& data) const noexcept
 	{
-		return transport_send(data.data(), data.size());
+		return transport_send(data.data(), static_cast<int>(data.size()));
 	}
 
 	bool Socket::transport_send(const void* data, int size) const noexcept
@@ -1499,7 +1499,7 @@ namespace soup
 	{
 		if (canRecurse())
 		{
-			auto remainder = (bytes - pre.size());
+			auto remainder = static_cast<int>(bytes - pre.size());
 			if (auto buf = transport_recvCommon(remainder); !buf.empty())
 			{
 				pre.append(buf);

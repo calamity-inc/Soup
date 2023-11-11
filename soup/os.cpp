@@ -156,7 +156,7 @@ namespace soup
 #endif
 		std::array<char, 128> buffer;
 		std::string result;
-		while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
+		while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr)
 		{
 			result += buffer.data();
 		}

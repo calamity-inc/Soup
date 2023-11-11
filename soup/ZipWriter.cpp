@@ -12,9 +12,9 @@ namespace soup
 		ZipIndexedFile zif;
 		zif.compression_method = compression_method;
 		zif.uncompressed_data_crc32 = crc32::hash(contents_uncompressed);
-		zif.compressed_size = contents_compressed.size();
-		zif.uncompressed_size = contents_uncompressed.size();
-		zif.offset = os.tellp();
+		zif.compressed_size = static_cast<uint32_t>(contents_compressed.size());
+		zif.uncompressed_size = static_cast<uint32_t>(contents_uncompressed.size());
+		zif.offset = static_cast<uint32_t>(os.tellp());
 		zif.name = std::move(name);
 
 		ZipLocalFileHeader lfh{};
@@ -63,7 +63,7 @@ namespace soup
 		ZipEndOfCentralDirectory eocd{};
 		eocd.central_directories_on_this_disk = 1;
 		eocd.central_directories_in_total = 1;
-		eocd.central_directory_offset = os.tellp();
+		eocd.central_directory_offset = static_cast<uint32_t>(os.tellp());
 
 		for (const auto& file : files)
 		{

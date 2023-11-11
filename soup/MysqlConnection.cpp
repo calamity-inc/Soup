@@ -565,7 +565,7 @@ namespace soup
 	void MysqlConnection::mysqlSend(std::string data)
 	{
 		MysqlFrame frame{};
-		frame.length = data.size();
+		frame.length = static_cast<decltype(frame.length)>(data.size());
 		frame.seq_id = next_send_seq_id++;
 		data.insert(0, frame.toBinaryStringLE());
 		send(data);

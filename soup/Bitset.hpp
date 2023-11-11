@@ -48,7 +48,7 @@ namespace soup
 
 		[[nodiscard]] static T calculateMask(const uint8_t i) noexcept
 		{
-			return 1 << i;
+			return static_cast<T>(1) << i;
 		}
 
 		void set(const uint8_t i, const bool v) noexcept

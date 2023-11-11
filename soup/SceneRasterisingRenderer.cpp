@@ -177,7 +177,7 @@ namespace soup
 					listTriangles.push_back(clipped[w]);
 				}
 			}
-			nNewTriangles = listTriangles.size();
+			nNewTriangles = static_cast<int>(listTriangles.size());
 		}
 
 		// Draw the transformed, viewed, clipped, projected, sorted, clipped triangles
@@ -252,9 +252,9 @@ namespace soup
 
 				float l = s.light.getPointBrightness(p.a, normal);
 				Rgb colour = t.colour;
-				colour.r *= l;
-				colour.g *= l;
-				colour.b *= l;
+				colour.r = static_cast<uint8_t>(colour.r * l);
+				colour.g = static_cast<uint8_t>(colour.g * l);
+				colour.b = static_cast<uint8_t>(colour.b * l);
 				//screenClipAndDraw(rt, depth_buffer, std::move(p), colour);
 				trisToDraw.emplace_back(Scene::Tri{ std::move(p), colour });
 			}

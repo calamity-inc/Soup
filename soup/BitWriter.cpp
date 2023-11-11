@@ -67,7 +67,7 @@ namespace soup
 		if (val <= 0xFF)
 		{
 			return b(true)
-				&& u8(8, val)
+				&& u8(8, static_cast<uint8_t>(val))
 				;
 		}
 		return b(false)
@@ -201,7 +201,7 @@ namespace soup
 		else
 		{
 			if (!t(lpbits, lpmask)
-				|| !u32_dyn(str.length())
+				|| !u32_dyn(static_cast<uint32_t>(str.length()))
 				)
 			{
 				return false;
@@ -221,7 +221,7 @@ namespace soup
 				if (idx != std::string::npos)
 				{
 					if (!b(true)
-						|| !u8(5, idx)
+						|| !u8(5, static_cast<uint8_t>(idx))
 						)
 					{
 						return false;

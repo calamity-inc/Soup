@@ -87,7 +87,7 @@ namespace soup
 			while (true)
 			{
 				ZipIndexedFile zif;
-				zif.offset = is.getPosition();
+				zif.offset = static_cast<uint32_t>(is.getPosition());
 
 				std::string bytes;
 				is.str(4, bytes);

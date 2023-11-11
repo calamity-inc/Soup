@@ -306,11 +306,11 @@ namespace soup
 				{
 					if (range_begin != 0x100)
 					{
-						const uint8_t range_end = i;
+						const uint8_t range_end = static_cast<uint8_t>(i);
 						const uint8_t range_len = (range_end - range_begin);
 						if (range_len > 3)
 						{
-							appendPresentably(str, range_begin);
+							appendPresentably(str, static_cast<uint8_t>(range_begin));
 							str.push_back('-');
 							appendPresentably(str, range_end - 1);
 						}
@@ -318,7 +318,7 @@ namespace soup
 						{
 							for (uint16_t j = range_begin; j != range_end; ++j)
 							{
-								appendPresentably(str, j);
+								appendPresentably(str, static_cast<uint8_t>(j));
 							}
 						}
 						range_begin = 0x100;
@@ -331,7 +331,7 @@ namespace soup
 				const uint8_t range_len = (range_end - range_begin);
 				if (range_len > 3)
 				{
-					appendPresentably(str, range_begin);
+					appendPresentably(str, static_cast<uint8_t>(range_begin));
 					str.push_back('-');
 					appendPresentably(str, (char)(range_end - 1));
 				}
@@ -339,7 +339,7 @@ namespace soup
 				{
 					for (uint16_t j = range_begin; j != range_end; ++j)
 					{
-						appendPresentably(str, j);
+						appendPresentably(str, static_cast<uint8_t>(j));
 					}
 				}
 			}

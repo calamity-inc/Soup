@@ -24,10 +24,10 @@ namespace soup
 
 	void RenderTarget::drawHollowRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour)
 	{
-		drawLine(Vector2(x, y), Vector2(x + width, y), colour); // top
-		drawLine(Vector2(x, y), Vector2(x, y + height), colour); // left
-		drawLine(Vector2(x + width, y), Vector2(x + width, y + height), colour); // right
-		drawLine(Vector2(x, y + height), Vector2(x + width, y + height), colour); // bottom
+		drawLine(Vector2(static_cast<float>(x), static_cast<float>(y)), Vector2(static_cast<float>(x + width), static_cast<float>(y)), colour); // top
+		drawLine(Vector2(static_cast<float>(x), static_cast<float>(y)), Vector2(static_cast<float>(x), static_cast<float>(y + height)), colour); // left
+		drawLine(Vector2(static_cast<float>(x + width), static_cast<float>(y)), Vector2(static_cast<float>(x + width), static_cast<float>(y + height)), colour); // right
+		drawLine(Vector2(static_cast<float>(x), static_cast<float>(y + height)), Vector2(static_cast<float>(x + width), static_cast<float>(y + height)), colour); // bottom
 	}
 
 	void RenderTarget::drawHollowCircle(unsigned int x, unsigned int y, float r, Rgb colour)
@@ -57,7 +57,7 @@ namespace soup
 		{
 			for (unsigned int py = 0; py != height; ++py)
 			{
-				if (isPointInsideEllipse(x, y, xr, yr, px, py))
+				if (isPointInsideEllipse(static_cast<float>(x), static_cast<float>(y), static_cast<float>(xr), static_cast<float>(yr), static_cast<float>(px), static_cast<float>(py)))
 				{
 					drawPixel(px, py, colour);
 				}
@@ -69,7 +69,7 @@ namespace soup
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			drawRect(lerp(a.x, b.x, t), lerp(a.y, b.y, t), 1, 1, colour);
+			drawRect(static_cast<unsigned int>(lerp(a.x, b.x, t)), static_cast<unsigned int>(lerp(a.y, b.y, t)), 1, 1, colour);
 		}
 	}
 
@@ -77,7 +77,7 @@ namespace soup
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			drawRect(lerp(a.x, b.x, t), lerp(a.y, b.y, t), 1, 1, Rgb::lerp(a_colour, b_colour, t));
+			drawRect(static_cast<unsigned int>(lerp(a.x, b.x, t)), static_cast<unsigned int>(lerp(a.y, b.y, t)), 1, 1, Rgb::lerp(a_colour, b_colour, t));
 		}
 	}
 
@@ -104,7 +104,7 @@ namespace soup
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			processPoint(lines, lerp(a.x, b.x, t), lerp(a.y, b.y, t));
+			processPoint(lines, static_cast<unsigned int>(lerp(a.x, b.x, t)), static_cast<unsigned int>(lerp(a.y, b.y, t)));
 		}
 	}
 
@@ -166,7 +166,7 @@ namespace soup
 
 	void RenderTarget::drawCentredText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
-		drawText(x - (font.measureWidth(text) * scale * 0.5f), y, text, font, colour, scale);
+		drawText(static_cast<unsigned int>(x - ((font.measureWidth(text) * scale) / 2)), y, text, font, colour, scale);
 	}
 
 	void RenderTarget::drawRightboundText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
@@ -176,7 +176,7 @@ namespace soup
 
 	void RenderTarget::drawRightboundText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
-		drawText(x - (font.measureWidth(text) * scale), y, text, font, colour, scale);
+		drawText(static_cast<unsigned int>(x - (font.measureWidth(text) * scale)), y, text, font, colour, scale);
 	}
 
 	void RenderTarget::drawCanvas(unsigned int x, unsigned int y, const Canvas& c)

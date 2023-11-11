@@ -60,8 +60,10 @@ namespace soup
 		}
 		SOUP_THROW(BadCall());
 	}
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wignored-attributes"
+#endif
 	uintptr_t ffi::cdeclCall(void* func, const std::vector<uintptr_t>& args)
 	{
 		DO_FFI_CALL(__cdecl)
@@ -82,5 +84,7 @@ namespace soup
 	{
 		DO_FFI_CALL(__vectorcall)
 	}
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 }

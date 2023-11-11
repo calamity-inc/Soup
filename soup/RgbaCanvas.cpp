@@ -71,7 +71,7 @@ namespace soup
 		uint16_t s;
 		uint32_t i;
 		SOUP_IF_UNLIKELY (!(s = 0x4D42, w.u16(s))
-			|| !(i = (108 + (4 * pixels.size())), w.u32(i))
+			|| !(i = static_cast<uint32_t>(108 + (4 * pixels.size())), w.u32(i))
 			|| !w.skip(4)
 			|| !(i = (14 + 108), w.u32(i))
 			|| !(i = 108, w.u32(i))
@@ -80,7 +80,7 @@ namespace soup
 			|| !(s = 1, w.u16(s))
 			|| !(s = 32, w.u16(s))
 			|| !(i = 3, w.u32(i))
-			|| !(i = (4 * pixels.size()), w.u32(i))
+			|| !(i = static_cast<uint32_t>(4 * pixels.size()), w.u32(i))
 			|| !w.skip(4 + 4 + 4 + 4)
 			|| !(i = 0x00FF0000, w.u32(i))
 			|| !(i = 0x0000FF00, w.u32(i))

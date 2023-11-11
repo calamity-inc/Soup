@@ -43,8 +43,8 @@ namespace soup
 			SelectObject(hdc, GetStockObject(DC_PEN));
 			SetDCPenColor(hdc, RGB(colour.r, colour.g, colour.b));
 
-			MoveToEx(hdc, a.x, a.y, nullptr);
-			LineTo(hdc, b.x, b.y);
+			MoveToEx(hdc, static_cast<int>(a.x), static_cast<int>(a.y), nullptr);
+			LineTo(hdc, static_cast<int>(b.x), static_cast<int>(b.y));
 		}
 
 		void drawCircle(unsigned int x, unsigned int y, float r, Rgb colour) final
@@ -62,7 +62,7 @@ namespace soup
 			SelectObject(hdc, GetStockObject(DC_BRUSH));
 			SetDCBrushColor(hdc, RGB(colour.r, colour.g, colour.b));
 
-			Ellipse(hdc, x - xr, y - yr, x + xr, y + yr);
+			Ellipse(hdc, static_cast<int>(x - xr), static_cast<int>(y - yr), static_cast<int>(x + xr), static_cast<int>(y + yr));
 		}
 
 		[[nodiscard]] Rgb getPixel(unsigned int x, unsigned int y) const final

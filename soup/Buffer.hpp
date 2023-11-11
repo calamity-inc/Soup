@@ -153,7 +153,7 @@ namespace soup
 			push_back(elm);
 		}
 
-		void insert_front(size_t count, char value) noexcept
+		void insert_front(size_t count, uint8_t value) noexcept
 		{
 			const auto s = m_size;
 			grow(count);
@@ -161,7 +161,7 @@ namespace soup
 			memset(&m_data[0], value, count);
 		}
 
-		void insert_back(size_t count, char value) noexcept
+		void insert_back(size_t count, uint8_t value) noexcept
 		{
 			const auto s = m_size;
 			grow(count);

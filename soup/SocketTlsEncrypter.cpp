@@ -18,7 +18,7 @@ namespace soup
 		TlsMac mac{};
 		mac.seq_num = seq_num++;
 		mac.record.content_type = content_type;
-		mac.record.length = content.size();
+		mac.record.length = static_cast<uint16_t>(content.size());
 		return mac.toBinaryString();
 	}
 
@@ -48,7 +48,7 @@ namespace soup
 			auto mac = calculateMac(content_type, content);
 			auto cont_with_mac_size = (content.size() + mac.size());
 			auto aligned_in_len = ((((cont_with_mac_size + 1) / cipher_bytes) + 1) * cipher_bytes);
-			char pad_len = (aligned_in_len - cont_with_mac_size);
+			auto pad_len = static_cast<char>(aligned_in_len - cont_with_mac_size);
 
 			std::vector<uint8_t> data{};
 			data.reserve(content.size() + mac.size() + pad_len);

@@ -16,8 +16,8 @@ namespace soup
 	{
 		auto [measured_width, measured_height] = font->measure(text);
 		const auto scale = style.getFontScale();
-		flat_width = measured_width * scale;
-		flat_height = measured_height * scale;
+		flat_width = static_cast<unsigned int>(measured_width * scale);
+		flat_height = static_cast<unsigned int>(measured_height * scale);
 	}
 
 	void lyoTextElement::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)

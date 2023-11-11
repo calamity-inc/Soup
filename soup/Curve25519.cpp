@@ -129,7 +129,7 @@ namespace soup
 
 		for (i = 0; i < F25519_SIZE; i++) {
 			c += x[i];
-			x[i] = c;
+			x[i] = static_cast<uint8_t>(c);
 			c >>= 8;
 		}
 
@@ -141,12 +141,12 @@ namespace soup
 
 		for (i = 0; i + 1 < F25519_SIZE; i++) {
 			c += x[i];
-			minusp[i] = c;
+			minusp[i] = static_cast<uint8_t>(c);
 			c >>= 8;
 		}
 
 		c += ((uint16_t)x[i]) - 128;
-		minusp[31] = c;
+		minusp[31] = static_cast<uint8_t>(c);
 
 		/* Load x-p if no underflow */
 		f25519_select(x, minusp, x, (c >> 15) & 1);
@@ -161,7 +161,7 @@ namespace soup
 		for (i = 0; i < F25519_SIZE; i++) {
 			c >>= 8;
 			c += ((uint16_t)a[i]) + ((uint16_t)b[i]);
-			r[i] = c;
+			r[i] = static_cast<uint8_t>(c);
 		}
 
 		/* Reduce with 2^255 = 19 mod p */
@@ -170,7 +170,7 @@ namespace soup
 
 		for (i = 0; i < F25519_SIZE; i++) {
 			c += r[i];
-			r[i] = c;
+			r[i] = static_cast<uint8_t>(c);
 			c >>= 8;
 		}
 	}

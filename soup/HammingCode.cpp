@@ -100,10 +100,10 @@ namespace soup
 	void HammingCode::setParityBits(std::vector<bool>& data)
 	{
 		size_t bs = getErrorPosition(data);
-		const auto p = bitutil::getBitsNeededToEncodeRange(data.size());
-		for (size_t i = 0; i != p; ++i)
+		const uint8_t p = bitutil::getBitsNeededToEncodeRange(data.size());
+		for (uint8_t i = 0; i != p; ++i)
 		{
-			data.at(1 << i) = ((bs >> i) & 1);
+			data.at(static_cast<size_t>(1) << i) = ((bs >> i) & 1);
 		}
 	}
 

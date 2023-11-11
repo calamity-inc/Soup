@@ -132,7 +132,7 @@ namespace soup
 		void commit(BitWriter& bw) const
 		{
 			bw.u8(NUM_CTRL_BITS, control_bits);
-			bw.u17_dyn_2(dictionary_index);
+			bw.u17_dyn_2(static_cast<uint32_t>(dictionary_index));
 		}
 	};
 

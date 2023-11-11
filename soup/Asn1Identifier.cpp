@@ -7,7 +7,7 @@ namespace soup
 	std::string Asn1Identifier::toDer() const
 	{
 		std::string ret{};
-		uint8_t first = (((m_class << 1) | constructed) << 5);
+		uint8_t first = (((m_class << 1) | static_cast<uint8_t>(constructed)) << 5);
 		if (type <= 30)
 		{
 			first |= type;

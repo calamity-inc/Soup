@@ -131,7 +131,7 @@ namespace soup
 		wfx.nSamplesPerSec = AUD_SAMPLE_RATE;
 		wfx.wBitsPerSample = sizeof(audSample) * 8;
 		wfx.nChannels = channels;
-		wfx.nBlockAlign = sizeof(audSample) * channels;
+		wfx.nBlockAlign = static_cast<WORD>(sizeof(audSample) * channels);
 		wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
 		wfx.cbSize = 0;
 		waveOutOpen(&hWaveOut, dev.i, &wfx, reinterpret_cast<DWORD_PTR>(&waveCallbackStatic), reinterpret_cast<DWORD_PTR>(this), CALLBACK_FUNCTION);

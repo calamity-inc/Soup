@@ -575,7 +575,7 @@ namespace soup
 
 	int aes::getNk(size_t key_len)
 	{
-		return key_len / 4;
+		return static_cast<int>(key_len / 4);
 	}
 
 	int aes::getNr(size_t key_len)

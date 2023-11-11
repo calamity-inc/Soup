@@ -61,7 +61,7 @@ namespace soup
 		{
 			if (payload.size() <= 125)
 			{
-				uint8_t buf = payload.size();
+				uint8_t buf = static_cast<uint8_t>(payload.size());
 				buf |= 0x80; // has mask
 				if (!w.u8(buf))
 				{
@@ -74,7 +74,7 @@ namespace soup
 				{
 					return;
 				}
-				if (uint16_t buf = payload.size(); !w.u16(buf))
+				if (uint16_t buf = static_cast<uint16_t>(payload.size()); !w.u16(buf))
 				{
 					return;
 				}

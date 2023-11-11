@@ -26,7 +26,7 @@ namespace soup
 			}
 			else if (s.isWrite())
 			{
-				uint16_t len = host_name.length() + 3;
+				uint16_t len = static_cast<uint16_t>(host_name.length() + 3);
 				if (s.u16(len))
 				{
 					uint8_t num_people_who_asked = 0;

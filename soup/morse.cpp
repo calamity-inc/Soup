@@ -66,7 +66,7 @@ namespace soup
 
 	double MorseSequence::getAmplitude(double t)
 	{
-		if (isOnAt(t * 1000.0))
+		if (isOnAt(static_cast<time_t>(t * 1000.0)))
 		{
 			return 0.5 * sin(HZ_TO_ANGVEL(550.0) * t);
 		}

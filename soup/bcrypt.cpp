@@ -786,9 +786,9 @@ namespace soup
 		/* Setting up S-Boxes and Subkeys */
 		Blowfish_initstate(&state);
 		Blowfish_expandstate(&state, csalt, salt_len,
-			(uint8_t*)key, key_len);
+			(uint8_t*)key, static_cast<uint16_t>(key_len));
 		for (k = 0; k < rounds; k++) {
-			Blowfish_expand0state(&state, (uint8_t*)key, key_len);
+			Blowfish_expand0state(&state, (uint8_t*)key, static_cast<uint16_t>(key_len));
 			Blowfish_expand0state(&state, csalt, salt_len);
 		}
 

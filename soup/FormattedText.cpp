@@ -58,7 +58,7 @@ namespace soup
 		{
 			for (const auto& span : line)
 			{
-				rt.drawText(x, y, span.text, font, span.fg.rgb);
+				rt.drawText(static_cast<unsigned int>(x), static_cast<unsigned int>(y), span.text, font, span.fg.rgb);
 				x += font.measureWidth(span.text);
 			}
 			y += font.baseline_glyph_height;

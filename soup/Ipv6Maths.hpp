@@ -17,10 +17,10 @@ namespace soup
 		[[nodiscard]] static constexpr std::array<uint32_t, 4> generateBitmaskHi(int16_t width) noexcept // 0 <= width <= 128
 		{
 			return {
-				bitmask::generateHi<uint32_t>(std::min<int16_t>(width, 32)),
-				bitmask::generateHi<uint32_t>(std::clamp<int16_t>(width - 32, 0, 32)),
-				bitmask::generateHi<uint32_t>(std::clamp<int16_t>(width - 64, 0, 32)),
-				bitmask::generateHi<uint32_t>(std::max<int16_t>(width - 96, 0)),
+				bitmask::generateHi<uint32_t>(static_cast<uint8_t>(std::min<int16_t>(width, 32))),
+				bitmask::generateHi<uint32_t>(static_cast<uint8_t>(std::clamp<int16_t>(width - 32, 0, 32))),
+				bitmask::generateHi<uint32_t>(static_cast<uint8_t>(std::clamp<int16_t>(width - 64, 0, 32))),
+				bitmask::generateHi<uint32_t>(static_cast<uint8_t>(std::max<int16_t>(width - 96, 0))),
 			};
 		}
 

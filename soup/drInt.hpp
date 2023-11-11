@@ -10,7 +10,7 @@ namespace soup
 	{
 		int64_t int_data;
 
-		drInt(int data)
+		drInt(int64_t data)
 			: int_data(data)
 		{
 		}

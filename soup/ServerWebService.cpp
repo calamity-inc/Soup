@@ -125,7 +125,7 @@ namespace soup
 		{
 			if (payload.size() <= 125)
 			{
-				uint8_t buf = payload.size();
+				uint8_t buf = static_cast<uint8_t>(payload.size());
 				if (!w.u8(buf))
 				{
 					return;
@@ -137,7 +137,7 @@ namespace soup
 				{
 					return;
 				}
-				if (uint16_t buf = payload.size(); !w.u16_be(buf))
+				if (uint16_t buf = static_cast<uint16_t>(payload.size()); !w.u16_be(buf))
 				{
 					return;
 				}

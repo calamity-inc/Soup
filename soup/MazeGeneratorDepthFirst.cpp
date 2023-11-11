@@ -105,14 +105,14 @@ namespace soup
 		size_t y = 0;
 		for (const auto& cell : cells)
 		{
-			rt.drawRect(x * 3, y * 3, 2, 2, ((!backtrace.empty() && i == backtrace.top()) ? Rgb::GREEN : Rgb::WHITE));
+			rt.drawRect(static_cast<unsigned int>(x * 3), static_cast<unsigned int>(y * 3), 2, 2, ((!backtrace.empty() && i == backtrace.top()) ? Rgb::GREEN : Rgb::WHITE));
 			if (cell & CON_RIGHT)
 			{
-				rt.drawRect((x * 3) + 2, y * 3, 1, 2, Rgb::WHITE);
+				rt.drawRect(static_cast<unsigned int>((x * 3) + 2), static_cast<unsigned int>(y * 3), 1, 2, Rgb::WHITE);
 			}
 			if (cell & CON_DOWN)
 			{
-				rt.drawRect(x * 3, (y * 3) + 2, 2, 1, Rgb::WHITE);
+				rt.drawRect(static_cast<unsigned int>(x * 3), static_cast<unsigned int>((y * 3) + 2), 2, 1, Rgb::WHITE);
 			}
 
 			++i;

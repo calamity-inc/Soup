@@ -78,8 +78,8 @@ namespace soup
 
 			case joaat::hash("circle"):
 				rt.drawEllipse(
-					translateX(rt, std::stof(node.getAttribute("cx"))),
-					translateY(rt, std::stof(node.getAttribute("cy"))),
+					static_cast<unsigned int>(translateX(rt, std::stof(node.getAttribute("cx")))),
+					static_cast<unsigned int>(translateY(rt, std::stof(node.getAttribute("cy")))),
 					translateX(rt, std::stof(node.getAttribute("r"))),
 					translateY(rt, std::stof(node.getAttribute("r"))),
 					Rgb::fromHex(node.getAttribute("fill"))
@@ -88,8 +88,8 @@ namespace soup
 
 			case joaat::hash("ellipse"):
 				rt.drawEllipse(
-					translateX(rt, std::stof(node.getAttribute("cx"))),
-					translateY(rt, std::stof(node.getAttribute("cy"))),
+					static_cast<unsigned int>(translateX(rt, std::stof(node.getAttribute("cx")))),
+					static_cast<unsigned int>(translateY(rt, std::stof(node.getAttribute("cy")))),
 					translateX(rt, std::stof(node.getAttribute("rx"))),
 					translateY(rt, std::stof(node.getAttribute("ry"))),
 					Rgb::fromHex(node.getAttribute("fill"))
@@ -443,7 +443,7 @@ namespace soup
 		{
 			for (unsigned int x = 0; x != rt.width; ++x)
 			{
-				if (state.isPointInPath(x, y))
+				if (state.isPointInPath(static_cast<float>(x), static_cast<float>(y)))
 				{
 					rt.drawPixel(x, y, fill);
 				}

@@ -5,8 +5,10 @@
 #include "os.hpp"
 #include "structing.hpp"
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-private-field"
+#endif
 struct ListEntry
 {
 	uintptr_t Flink;
@@ -32,7 +34,9 @@ struct LdrDataTableEntry // https://www.geoffchappell.com/studies/windows/km/nto
 	/* 0x58 */ UNICODE_STRING BaseDllName;
 };
 static_assert(sizeof(LdrDataTableEntry) == 0x68);
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 
 namespace soup
 {
@@ -69,8 +73,10 @@ namespace soup
 		}
 	}
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 	void ModuleHider::enable(void* base_addr)
 	{
 		const auto Ldr = reinterpret_cast<PebLdrData*>(os::getCurrentPeb()->Ldr);
@@ -81,7 +87,9 @@ namespace soup
 			//hideInLinkedList(base_addr, InInitializationOrderModuleList_links, InInitializationOrderModuleList_pNext, &Ldr->InInitializationOrderModuleList.Flink, offsetof(LdrDataTableEntry, InInitializationOrderLinks));
 		}
 	}
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 
 	void ModuleHider::disable()
 	{

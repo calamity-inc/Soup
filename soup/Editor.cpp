@@ -159,7 +159,7 @@ namespace soup
 	void Editor::updateCursor() const
 	{
 		auto& text = getTextChild();
-		console.setCursorPos(text.x + text.file.x, text.y + text.file.y);
+		console.setCursorPos(static_cast<unsigned int>(text.x + text.file.x), static_cast<unsigned int>(text.y + text.file.y));
 	}
 
 	std::vector<UniquePtr<ConuiBase>>::iterator Editor::tabsBegin()

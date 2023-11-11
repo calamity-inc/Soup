@@ -146,7 +146,7 @@ namespace soup
 		int result = 0;
 		for (const Segment& seg : segs) {
 			int ccbits = seg.mode->numCharCountBits(version);
-			if (seg.numChars >= (1L << ccbits))
+			if (seg.numChars >= (1ul << ccbits))
 				return -1;  // The segment's length doesn't fit the field's bit width
 			if (4 + ccbits > INT_MAX - result)
 				return -1;  // The sum will overflow an int type

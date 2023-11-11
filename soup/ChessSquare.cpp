@@ -14,22 +14,22 @@ namespace soup
 				break;
 
 			case PIECE_PAWN:
-				return "♙";
+				return (const char*)u8"♙";
 
 			case PIECE_KNIGHT:
-				return "♘";
+				return (const char*)u8"♘";
 
 			case PIECE_BISHOP:
-				return "♗";
+				return (const char*)u8"♗";
 
 			case PIECE_ROOK:
-				return "♖";
+				return (const char*)u8"♖";
 
 			case PIECE_QUEEN:
-				return "♕";
+				return (const char*)u8"♕";
 
 			case PIECE_KING:
-				return "♔";
+				return (const char*)u8"♔";
 			}
 		}
 		else
@@ -40,22 +40,22 @@ namespace soup
 				break;
 
 			case PIECE_PAWN:
-				return "♟";
+				return (const char*)u8"♟";
 
 			case PIECE_KNIGHT:
-				return "♞";
+				return (const char*)u8"♞";
 
 			case PIECE_BISHOP:
-				return "♝";
+				return (const char*)u8"♝";
 
 			case PIECE_ROOK:
-				return "♜";
+				return (const char*)u8"♜";
 
 			case PIECE_QUEEN:
-				return "♛";
+				return (const char*)u8"♛";
 
 			case PIECE_KING:
-				return "♚";
+				return (const char*)u8"♚";
 			}
 		}
 		return nullptr;

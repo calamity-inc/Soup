@@ -46,13 +46,13 @@ namespace soup
 			}
 			while (bits > 8)
 			{
-				if (!u8(bits, (val >> (bits - 8))))
+				if (!u8(bits, static_cast<uint8_t>(val >> (bits - 8))))
 				{
 					return false;
 				}
 				bits -= 8;
 			}
-			return u8(bits, val);
+			return u8(bits, static_cast<uint8_t>(val));
 		}
 
 		bool b(bool val);

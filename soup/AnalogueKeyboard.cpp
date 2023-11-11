@@ -266,7 +266,7 @@ namespace soup
 					}
 					else
 					{
-						sk = hid_scancode_to_soup_key(scancode);
+						sk = hid_scancode_to_soup_key(static_cast<uint8_t>(scancode));
 					}
 					SOUP_IF_LIKELY (sk != KEY_NONE)
 					{

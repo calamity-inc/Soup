@@ -60,7 +60,7 @@ namespace soup
 		};
 		putBigUint32(width, &header[16]);
 		putBigUint32(height, &header[20]);
-		putBigUint32(idatSize, &header[33]);
+		putBigUint32(static_cast<uint32_t>(idatSize), &header[33]);
 		crc = 0;
 		updateCrc(&header[12], 17);
 		putBigUint32(crc, &header[29]);

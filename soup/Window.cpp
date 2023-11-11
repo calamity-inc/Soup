@@ -131,7 +131,7 @@ namespace soup
 			case WM_CHAR:
 				if (wc.char_callback != nullptr)
 				{
-					wc.char_callback(Window{ hWnd }, wParam);
+					wc.char_callback(Window{ hWnd }, static_cast<char32_t>(wParam));
 				}
 				return 0;
 

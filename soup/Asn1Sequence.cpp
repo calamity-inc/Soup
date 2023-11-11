@@ -416,15 +416,15 @@ namespace soup
 		std::string ret{};
 		if (len <= 0x7F)
 		{
-			ret.push_back(len);
+			ret.push_back(static_cast<char>(len));
 		}
 		else
 		{
 			do
 			{
-				ret.insert(0, 1, (char)(unsigned char)len);
+				ret.insert(0, 1, static_cast<char>(static_cast<unsigned char>(len)));
 			} while (len >>= 8, len != 0);
-			ret.insert(0, 1, ret.size() | 0x80);
+			ret.insert(0, 1, static_cast<char>(ret.size() | 0x80));
 		}
 		return ret;
 	}

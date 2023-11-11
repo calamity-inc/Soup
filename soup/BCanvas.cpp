@@ -26,7 +26,7 @@ namespace soup
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			set(lerp(a.x, b.x, t), lerp(a.y, b.y, t));
+			set(static_cast<unsigned int>(lerp(a.x, b.x, t)), static_cast<unsigned int>(lerp(a.y, b.y, t)));
 		}
 	}
 
@@ -35,7 +35,7 @@ namespace soup
 		for (float t = 0.0f; t < 1.0f; t += (0.4f / a.distance(c)))
 		{
 			auto p = visCurves::quadraticBezier(a, b, c, t);
-			set(p.x, p.y);
+			set(static_cast<unsigned int>(p.x), static_cast<unsigned int>(p.y));
 		}
 	}
 
@@ -44,7 +44,7 @@ namespace soup
 		for (float t = 0.0f; t < 1.0f; t += (0.4f / a.distance(d)))
 		{
 			auto p = visCurves::cubicBezier(a, b, c, d, t);
-			set(p.x, p.y);
+			set(static_cast<unsigned int>(p.x), static_cast<unsigned int>(p.y));
 		}
 	}
 

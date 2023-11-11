@@ -1024,7 +1024,7 @@ namespace soup
 				*this = cpy;
 				goto _retry;
 			}
-			int32_t bit = soup::rand(0, bits - 1);
+			int32_t bit = soup::rand.t<int32_t>(0, bits - 1);
 			while (bit--)
 			{
 				bitutil::unsetLeastSignificantSetBit(bf);

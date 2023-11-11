@@ -25,8 +25,10 @@ namespace soup
 		OP_ECHO,
 	};
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstring-compare"
+#endif
 	[[nodiscard]] static LangDesc getLangDescImpl()
 	{
 		LangDesc ld;
@@ -331,7 +333,9 @@ namespace soup
 		}
 		processNonPhpmodeBuffer(ls, i, non_phpmode_buffer);
 	}
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 
 	std::string PhpState::evaluate(const std::string& code, unsigned int max_require_depth) const
 	{

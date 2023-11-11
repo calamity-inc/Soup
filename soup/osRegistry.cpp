@@ -54,12 +54,12 @@ namespace soup
 
 		if (key == nullptr)
 		{
-			RegSetValueExW(h, nullptr, 0, REG_SZ, (const BYTE*)value_utf16.data(), value_utf16.size() * sizeof(UTF16_CHAR_TYPE));
+			RegSetValueExW(h, nullptr, 0, REG_SZ, (const BYTE*)value_utf16.data(), static_cast<DWORD>(value_utf16.size() * sizeof(UTF16_CHAR_TYPE)));
 		}
 		else
 		{
 			auto key_utf16 = unicode::utf8_to_utf16(key);
-			RegSetValueExW(h, key_utf16.c_str(), 0, REG_SZ, (const BYTE*)value_utf16.data(), value_utf16.size() * sizeof(UTF16_CHAR_TYPE));
+			RegSetValueExW(h, key_utf16.c_str(), 0, REG_SZ, (const BYTE*)value_utf16.data(), static_cast<DWORD>(value_utf16.size() * sizeof(UTF16_CHAR_TYPE)));
 		}
 	}
 

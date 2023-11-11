@@ -31,12 +31,12 @@ namespace soup
 
 	inline static uint32_t choose(uint32_t e, uint64_t f, uint64_t g)
 	{
-		return (e & f) ^ (~e & g);
+		return (e & f) ^ (~static_cast<uint64_t>(e) & g);
 	}
 
 	inline static uint32_t majority(uint32_t a, uint64_t b, uint64_t c)
 	{
-		return (a & (b | c)) | (b & c);
+		return static_cast<uint32_t>((a & (b | c)) | (b & c));
 	}
 
 	inline static uint32_t sig0(uint32_t x)

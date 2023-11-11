@@ -480,7 +480,7 @@ namespace soup
 	};
 
 
-	unsigned int copyStored(BitReader& bit_reader, unsigned char* out, size_t out_offset, size_t block_size_max)
+	unsigned int copyStored(BitReader& bit_reader, unsigned char* out, size_t out_offset, uint16_t block_size_max)
 	{
 		SOUP_IF_UNLIKELY (!bit_reader.alignToByte())
 		{
@@ -890,7 +890,7 @@ namespace soup
 			switch (block_type)
 			{
 			case 0:
-				block_result = copyStored(br, out, current_out_offset, max_decompressed_size - current_out_offset);
+				block_result = copyStored(br, out, current_out_offset, static_cast<uint16_t>(max_decompressed_size - current_out_offset));
 				break;
 
 			case 1:
