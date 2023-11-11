@@ -7,7 +7,7 @@
 #include "UniquePtr.hpp"
 #include "x64.hpp"
 
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) || defined(__clang__)
 #include <cpuid.h>
 #endif
 
@@ -112,7 +112,7 @@ namespace soup
 
 	void CpuInfo::invokeCpuid(void* out, uint32_t eax)
 	{
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 		__cpuid(((int*)out), eax);
 		std::swap(((int*)out)[2], ((int*)out)[3]);
 #else
