@@ -1173,6 +1173,7 @@
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
     <ClCompile Include="X509Certificate.cpp" />
+    <ClCompile Include="X509RelativeDistinguishedName.cpp" />
     <ClCompile Include="x64.cpp" />
     <ClCompile Include="xml.cpp" />
     <ClCompile Include="YubikeyValidator.cpp" />

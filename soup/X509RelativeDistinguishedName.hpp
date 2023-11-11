@@ -10,6 +10,8 @@ namespace soup
 {
 	struct X509RelativeDistinguishedName : public std::vector<std::pair<Oid, std::string>>
 	{
+		void read(const Asn1Sequence& seq);
+
 		[[nodiscard]] std::string get(const Oid& target) const
 		{
 			for (const auto& kv : *this)

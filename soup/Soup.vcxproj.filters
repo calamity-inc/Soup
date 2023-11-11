@@ -2287,6 +2287,9 @@
     <ClCompile Include="MidiComposition.cpp">
       <Filter>audio\midi</Filter>
     </ClCompile>
+    <ClCompile Include="X509RelativeDistinguishedName.cpp">
+      <Filter>crypto\x509</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

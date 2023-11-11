@@ -104,8 +104,8 @@ namespace soup
 				return false;
 			}
 
-			issuer = readRelativeDistinguishedName(tbsCert.getSeq(3));
-			subject = readRelativeDistinguishedName(tbsCert.getSeq(5));
+			issuer.read(tbsCert.getSeq(3));
+			subject.read(tbsCert.getSeq(5));
 
 			Asn1Sequence validityPeriod = tbsCert.getSeq(4);
 			valid_from = validityPeriod.getUtctime(0);
@@ -149,17 +149,6 @@ namespace soup
 		}
 #endif
 		return false;
-	}
-
-	X509RelativeDistinguishedName X509Certificate::readRelativeDistinguishedName(const Asn1Sequence& seq)
-	{
-		X509RelativeDistinguishedName ret{};
-		for (size_t i = 0; i != seq.countChildren(); ++i)
-		{
-			auto kv = seq.getSeq(i).getSeq(0);
-			ret.emplace_back(kv.getOid(0), kv.getString(1));
-		}
-		return ret;
 	}
 
 	bool X509Certificate::isRsa() const noexcept

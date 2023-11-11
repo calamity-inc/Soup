@@ -41,10 +41,7 @@ namespace soup
 
 		bool fromDer(const std::string& str);
 		bool load(const Asn1Sequence& cert) noexcept;
-	protected:
-		[[nodiscard]] static X509RelativeDistinguishedName readRelativeDistinguishedName(const Asn1Sequence& seq);
 
-	public:
 		[[nodiscard]] bool isRsa() const noexcept;
 		[[nodiscard]] bool isEc() const noexcept;
 		[[nodiscard]] RsaPublicKey getRsaPublicKey() const;
