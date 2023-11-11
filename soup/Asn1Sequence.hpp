@@ -32,9 +32,11 @@ namespace soup
 		void addNull();
 		void addBitString(std::string val);
 		void addUtf8String(std::string val);
+		void addPrintableString(std::string val);
 		void addSeq(const Asn1Sequence& seq);
 		void addSet(const Asn1Sequence& seq);
 		void addName(const std::vector<std::pair<Oid, std::string>>& name);
+		void addUtctime(std::time_t t);
 
 		[[nodiscard]] std::string toDer() const;
 		[[nodiscard]] std::string toDerNoPrefix() const;

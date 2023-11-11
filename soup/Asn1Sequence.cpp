@@ -155,6 +155,14 @@ namespace soup
 		});
 	}
 
+	void Asn1Sequence::addPrintableString(std::string val)
+	{
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, false, ASN1_STRING_PRINTABLE },
+			std::move(val)
+		});
+	}
+
 	void Asn1Sequence::addSeq(const Asn1Sequence& seq)
 	{
 		emplace_back(Asn1Element{
@@ -187,6 +195,25 @@ namespace soup
 		seq.addSet(set);
 
 		addSeq(seq);
+	}
+
+	void Asn1Sequence::addUtctime(std::time_t t)
+	{
+		auto datetime = time::datetimeUtc(t);
+
+		std::string str;
+		str.append(std::to_string(datetime.year).substr(2, 2));
+		str.append(string::lpad(std::to_string(datetime.month), 2, '0'));
+		str.append(string::lpad(std::to_string(datetime.day), 2, '0'));
+		str.append(string::lpad(std::to_string(datetime.hour), 2, '0'));
+		str.append(string::lpad(std::to_string(datetime.minute), 2, '0'));
+		str.append(string::lpad(std::to_string(datetime.second), 2, '0'));
+		str.push_back('Z');
+		
+		emplace_back(Asn1Element{
+			Asn1Identifier{ 0, false, ASN1_UTCTIME },
+			std::move(str)
+		});
 	}
 
 	std::string Asn1Sequence::toDer() const

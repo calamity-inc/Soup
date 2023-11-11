@@ -54,5 +54,9 @@ namespace soup
 
 		[[nodiscard]] bool isValidForDomain(const std::string& domain) const;
 		[[nodiscard]] static bool matchDomain(const std::string& domain, const std::string& name);
+
+		// Does not generate valid certificates by most opinions.
+		[[nodiscard]] Asn1Sequence toAsn1() const;
+		[[nodiscard]] std::string toDer() const;
 	};
 }

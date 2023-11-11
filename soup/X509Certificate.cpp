@@ -262,4 +262,55 @@ namespace soup
 		}
 		return true;
 	}
+
+	Asn1Sequence X509Certificate::toAsn1() const
+	{
+		Asn1Sequence algo_seq;
+		algo_seq.addOid(Oid::SHA256_WITH_RSA_ENCRYPTION); // RSA_WITH_SHA256
+		algo_seq.addNull();
+
+		//auto tbsCert = Asn1Sequence::fromDer(tbsCertDer);
+		Asn1Sequence tbsCert;
+		tbsCert.addNull(); // [0] This should be "Version 3", respresented by "Constructed Context-specific 0: 020102"
+		tbsCert.addInt({}); // [1] Serial number
+		tbsCert.addSeq(algo_seq);
+		tbsCert.addSet(issuer.toSet());
+		{
+			Asn1Sequence validityPeriod;
+			validityPeriod.addUtctime(valid_from);
+			validityPeriod.addUtctime(valid_to);
+			tbsCert.addSeq(validityPeriod);
+		}
+		tbsCert.addSet(subject.toSet());
+		{
+			Asn1Sequence pubInfo;
+			{
+				Asn1Sequence pubType;
+				pubType.addOid(Oid::RSA_ENCRYPTION);
+				pubType.addNull();
+				pubInfo.addSeq(pubType);
+			}
+			{
+				auto key = getRsaPublicKey();
+
+				Asn1Sequence pubKey;
+				pubKey.addInt(key.n);
+				pubKey.addInt(key.e);
+				pubInfo.addBitString(pubKey.toDer());
+			}
+			tbsCert.addSeq(pubInfo);
+		}
+		tbsCert.addNull(); // [7] Extensions, context-specific 3.
+
+		Asn1Sequence cert;
+		cert.addSeq(tbsCert);
+		cert.addSeq(algo_seq);
+		cert.addBitString(sig);
+		return cert;
+	}
+
+	std::string X509Certificate::toDer() const
+	{
+		return toAsn1().toDer();
+	}
 }

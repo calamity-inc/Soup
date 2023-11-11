@@ -38,5 +38,7 @@ namespace soup
 		{
 			return get({ 2, 5, 4, 10 });
 		}
+
+		[[nodiscard]] Asn1Sequence toSet() const;
 	};
 }
