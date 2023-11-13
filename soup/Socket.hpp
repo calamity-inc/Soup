@@ -28,7 +28,7 @@ namespace soup
 #if SOUP_WINDOWS
 		inline static size_t wsa_consumers = 0;
 #else
-		inline static bool registered_sigpipe_handler = false;
+		inline static bool made_linux_not_suck_dick = false;
 #endif
 
 #if SOUP_WINDOWS

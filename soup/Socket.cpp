@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h> // close
 #include <poll.h>
+#include <sys/resource.h>
 
 #include "signal.hpp"
 #endif
@@ -67,10 +68,18 @@ namespace soup
 			WSAStartup(wVersionRequested, &wsaData);
 		}
 #else
-		if (!registered_sigpipe_handler)
+		if (!made_linux_not_suck_dick)
 		{
-			registered_sigpipe_handler = true;
+			made_linux_not_suck_dick = true;
+
 			signal::handle(SIGPIPE, &sigpipe_handler_proc);
+
+			rlimit rlim;
+			if (getrlimit(RLIMIT_NOFILE, &rlim) == 0)
+			{
+				rlim.rlim_cur = rlim.rlim_max;
+				setrlimit(RLIMIT_NOFILE, &rlim);
+			}
 		}
 #endif
 	}
