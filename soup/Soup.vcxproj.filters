@@ -1557,6 +1557,9 @@
     <ClInclude Include="MidiComposition.hpp">
       <Filter>audio\midi</Filter>
     </ClInclude>
+    <ClInclude Include="filesystem.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2289,6 +2292,9 @@
     </ClCompile>
     <ClCompile Include="X509RelativeDistinguishedName.cpp">
       <Filter>crypto\x509</Filter>
+    </ClCompile>
+    <ClCompile Include="filesystem.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

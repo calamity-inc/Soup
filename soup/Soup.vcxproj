@@ -504,6 +504,7 @@
     <ClInclude Include="ecc.hpp" />
     <ClInclude Include="EstablishWebSocketConnectionTask.hpp" />
     <ClInclude Include="FiberTask.hpp" />
+    <ClInclude Include="filesystem.hpp" />
     <ClInclude Include="fnv.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="HidScancode.hpp" />
@@ -1004,6 +1005,7 @@
     <ClCompile Include="drString.cpp" />
     <ClCompile Include="ecc.cpp" />
     <ClCompile Include="FactoriseProofOfWork.cpp" />
+    <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />
     <ClCompile Include="hwGamepad.cpp" />
