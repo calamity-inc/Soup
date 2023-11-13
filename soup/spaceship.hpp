@@ -14,6 +14,15 @@ namespace soup
 	using strong_ordering = ::std::strong_ordering;
 
 	#define SOUP_SPACESHIP(a, b) ((a) <=> (b))
+
+	[[nodiscard]] inline int SOUP_STRONG_ORDERING_TO_INT(strong_ordering so)
+	{
+		if (so != 0)
+		{
+			return so < 0 ? -1 : 1;
+		}
+		return 0;
+	}
 #else
 	class strong_ordering
 	{
@@ -37,7 +46,7 @@ namespace soup
 	};
 
 	template <typename T>
-	[[nodiscard]] strong_ordering SOUP_SPACESHIP(const T& a, const T& b)
+	[[nodiscard]] inline strong_ordering SOUP_SPACESHIP(const T& a, const T& b)
 	{
 		if (a == b)
 		{
@@ -49,5 +58,7 @@ namespace soup
 		}
 		return strong_ordering::greater;
 	}
+
+	#define SOUP_STRONG_ORDERING_TO_INT(so) ((so).operator int())
 #endif
 }
