@@ -130,6 +130,34 @@ namespace soup
 
 	bool Socket::connect(const SocketAddr& addr) noexcept
 	{
+		SOUP_IF_UNLIKELY (!kickOffConnect(addr))
+		{
+			return false;
+		}
+		pollfd pfd;
+		pfd.fd = fd;
+		pfd.events = POLLOUT;
+		pfd.revents = 0;
+#if SOUP_WINDOWS
+		int res = ::WSAPoll(&pfd, 1, netConfig::get().connect_timeout_ms);
+#else
+		int res = ::poll(&pfd, 1, netConfig::get().connect_timeout_ms);
+#endif
+		SOUP_IF_UNLIKELY (res != 1)
+		{
+			transport_close();
+			return false;
+		}
+		return true;
+	}
+
+	bool Socket::connect(const IpAddr& ip, uint16_t port) noexcept
+	{
+		return connect(SocketAddr(ip, native_u16_t(port)));
+	}
+
+	bool Socket::kickOffConnect(const SocketAddr& addr) noexcept
+	{
 		peer = addr;
 		if (addr.ip.isV4())
 		{
@@ -159,26 +187,12 @@ namespace soup
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
 			::connect(fd, (sockaddr*)&sa, sizeof(sa));
 		}
-		pollfd pfd;
-		pfd.fd = fd;
-		pfd.events = POLLOUT;
-		pfd.revents = 0;
-#if SOUP_WINDOWS
-		int res = ::WSAPoll(&pfd, 1, netConfig::get().connect_timeout_ms);
-#else
-		int res = ::poll(&pfd, 1, netConfig::get().connect_timeout_ms);
-#endif
-		SOUP_IF_UNLIKELY (res != 1)
-		{
-			transport_close();
-			return false;
-		}
 		return true;
 	}
 
-	bool Socket::connect(const IpAddr& ip, uint16_t port) noexcept
+	bool Socket::kickOffConnect(const IpAddr& ip, uint16_t port) noexcept
 	{
-		return connect(SocketAddr(ip, native_u16_t(port)));
+		return kickOffConnect(SocketAddr(ip, native_u16_t(port)));
 	}
 
 	bool Socket::isPortLocallyBound(uint16_t port)

@@ -80,6 +80,8 @@ namespace soup
 		bool connect(const std::string& host, uint16_t port) noexcept; // blocking
 		bool connect(const SocketAddr& addr) noexcept; // blocking
 		bool connect(const IpAddr& ip, uint16_t port) noexcept; // blocking
+		bool kickOffConnect(const SocketAddr& addr) noexcept;
+		bool kickOffConnect(const IpAddr& ip, uint16_t port) noexcept;
 
 		template <typename T = int>
 		bool setOpt(int name, T&& val) noexcept

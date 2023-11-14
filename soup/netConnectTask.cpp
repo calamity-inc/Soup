@@ -117,12 +117,7 @@ namespace soup
 
 	void netConnectTask::proceedToConnect(const IpAddr& addr, uint16_t port)
 	{
-		if (sock.init(addr.isV4() ? AF_INET : AF_INET6, SOCK_STREAM)
-			&& sock.setNonBlocking()
-			)
-		{
-			sock.connect(addr, port);
-		}
+		SOUP_ASSERT(sock.kickOffConnect(addr, port));
 		started_connect_at = time::millis();
 	}
 
