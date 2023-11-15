@@ -8,7 +8,7 @@ namespace soup
 	{
 		return std::filesystem::exists(p)
 #if SOUP_WINDOWS
-			&& std::filesystem::absolute(p) == std::filesystem::canonical(p)
+			&& p.filename() == std::filesystem::canonical(p).filename()
 #endif
 			;
 	}
