@@ -17,6 +17,7 @@ namespace soup
 		{
 			const RegexConstraintTransitionable* c;
 			std::string::const_iterator it;
+			std::vector<std::optional<RegexMatchedGroup>> groups{};
 		};
 
 		const RegexConstraintTransitionable* c;
@@ -34,13 +35,14 @@ namespace soup
 
 		void saveRollback(const RegexConstraintTransitionable* rollback_transition)
 		{
-			rollback_points.push(RollbackPoint{ rollback_transition, it });
+			rollback_points.push(RollbackPoint{ rollback_transition, it, groups });
 		}
 
 		void restoreRollback()
 		{
 			c = rollback_points.top().c;
 			it = rollback_points.top().it;
+			groups = std::move(rollback_points.top().groups);
 			rollback_points.pop();
 		}
 
