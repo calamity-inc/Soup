@@ -643,6 +643,7 @@ spanning over multiple lines */
 		assert(Regex("a(?i:b)c").match("aBc").toString() == R"(0="aBc")");
 
 		assert(Regex("(..)+").match("abc").toString() == R"(0="ab", 1="ab")");
+		assert(Regex("(..)+").match("abcd").toString() == R"(0="abcd", 1="cd")");
 	});
 }
 

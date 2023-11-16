@@ -5,6 +5,7 @@
 #include "fwd.hpp"
 
 #include "Exception.hpp"
+#include "PointerAndBool.hpp"
 
 namespace soup
 {
@@ -12,7 +13,7 @@ namespace soup
 	{
 		const RegexConstraintTransitionable* success_transition = nullptr;
 		const RegexConstraintTransitionable* rollback_transition = nullptr;
-		const RegexGroup* group = nullptr;
+		PointerAndBool<const RegexGroup*> group = nullptr;
 
 		RegexConstraint() = default;
 

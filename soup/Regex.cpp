@@ -69,7 +69,7 @@ namespace soup
 			auto _it = m.it;
 			if (m.c->matches(m))
 			{
-				for (auto g = m.c->group; g; g = g->parent)
+				for (auto g = m.c->group.getPointer(); g; g = g->parent)
 				{
 					if (g->lookahead_or_lookbehind)
 					{
@@ -92,6 +92,10 @@ namespace soup
 					{
 						m.groups.at(g->index) = RegexMatchedGroup{ g->name, _it, m.it };
 					}
+				}
+				if (m.c->group.getBool())
+				{
+					m.groups.at(m.c->group->index)->begin = _it;
 				}
 
 				m.c = m.c->success_transition;

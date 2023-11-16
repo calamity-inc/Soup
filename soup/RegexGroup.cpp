@@ -817,9 +817,11 @@ namespace soup
 		// Set up group pointers 
 		for (const auto& a : alternatives)
 		{
+			bool reset_capture = (index != 0 && !lookahead_or_lookbehind && !isNonCapturing());
 			for (const auto& c : a.constraints)
 			{
-				c->group = this;
+				c->group.set(this, reset_capture);
+				reset_capture = false;
 			}
 		}
 

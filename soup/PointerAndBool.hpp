@@ -36,8 +36,15 @@ namespace soup
 
 		void setBool(bool b) noexcept
 		{
-			data &= ~(uintptr_t)1;
-			data |= (uintptr_t)b;
+			data &= ~static_cast<uintptr_t>(1);
+			data |= static_cast<uintptr_t>(b);
+		}
+
+		void set(T ptr, bool b)
+		{
+			data = reinterpret_cast<uintptr_t>(ptr);
+			//SOUP_ASSERT((data & 1) == 0);
+			data |= static_cast<uintptr_t>(b);
 		}
 
 		operator T() const noexcept
