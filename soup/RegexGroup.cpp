@@ -224,9 +224,14 @@ namespace soup
 					bool positive_lookbehind = false;
 					bool negative_lookbehind = false;
 					std::string name{};
+					std::string inline_modifiers{};
 					if (++s.it != s.end && *s.it == '?')
 					{
-						if (++s.it != s.end)
+						while (++s.it != s.end && (*s.it == '-' || string::isLetter(*s.it)))
+						{
+							inline_modifiers.push_back(*s.it);
+						}
+						if (s.it != s.end)
 						{
 							if (*s.it == ':')
 							{
@@ -270,6 +275,29 @@ namespace soup
 									}
 								}
 							}
+						}
+					}
+					uint16_t restore_flags = s.flags;
+					if (!inline_modifiers.empty())
+					{
+						std::string negative_inline_modifiers{};
+						auto sep = inline_modifiers.find('-');
+						if (sep != std::string::npos)
+						{
+							negative_inline_modifiers = inline_modifiers.substr(sep + 1);
+							inline_modifiers.erase(0, sep + 1);
+						}
+						s.flags |= Regex::parseFlags(inline_modifiers.c_str());
+						s.flags &= ~Regex::parseFlags(negative_inline_modifiers.c_str());
+
+						// If non_capturing is true, these are supposed to be localised inline modifers.
+						if (!non_capturing)
+						{
+							// Otherwise, we want to keep them beyond the scope of this group.
+							restore_flags = s.flags;
+
+							// However, this kind of group should always be non-capturing.
+							non_capturing = true;
 						}
 					}
 					if (positive_lookahead)
@@ -387,6 +415,7 @@ namespace soup
 						success_transitions.setTransitionTo(upGC->group.initial);
 						success_transitions.data = std::move(s.alternatives_transitions);
 						a.constraints.emplace_back(std::move(upGC));
+						s.flags = restore_flags;
 					}
 					if (s.it == s.end)
 					{

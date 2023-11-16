@@ -633,6 +633,14 @@ spanning over multiple lines */
 		assert(Regex(R"((a)(?:b)(?'deez'c)", "n").match("abc").toString() == R"(0="abc", 1{deez}="c")");
 
 		assert(Regex(R"(\d\s[\d][\s])").matchesFully("1 2 "));
+
+		assert(Regex("a(?i)b(?-i)c").matchesFully("aBc") == true);
+		assert(Regex("a(?i)b(?-i)c").matchesFully("aBC") == false);
+		assert(Regex("a(?i)b(?-i)c").match("aBc").toString() == R"(0="aBc")");
+		assert(Regex("a(?i)b(?-i)(c)").match("aBc").toString() == R"(0="aBc", 1="c")");
+		assert(Regex("a(?i:b)c").matchesFully("aBc") == true);
+		assert(Regex("a(?i:b)c").matchesFully("aBC") == false);
+		assert(Regex("a(?i:b)c").match("aBc").toString() == R"(0="aBc")");
 	});
 }
 

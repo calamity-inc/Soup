@@ -13,7 +13,7 @@ namespace soup
 		{
 			mutable std::string::const_iterator it;
 			std::string::const_iterator end;
-			uint16_t flags;
+			mutable uint16_t flags;
 			mutable size_t next_index = 0;
 			mutable std::vector<const RegexConstraintTransitionable**> alternatives_transitions{};
 
