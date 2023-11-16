@@ -13,6 +13,9 @@ namespace soup
 		BigBitset<0x100 / 8> mask{};
 		bool inverted = false;
 
+		inline static const char digits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+		inline static const char whitespace[] = { '\r', '\n', '\t', '\f', '\v', ' ' };
+
 		RegexRangeConstraint(std::string::const_iterator& it, std::string::const_iterator end, bool insensitive)
 		{
 			if (++it == end)
@@ -42,6 +45,29 @@ namespace soup
 						{
 							mask.enable(c);
 						}
+					}
+				}
+				else if (*it == '\\')
+				{
+					SOUP_IF_UNLIKELY (++it == end)
+					{
+						break;
+					}
+					if (*it == 'd')
+					{
+						for (auto& c : digits)
+						{
+							mask.enable(c);
+						}
+						continue;
+					}
+					if (*it == 's')
+					{
+						for (auto& c : whitespace)
+						{
+							mask.enable(c);
+						}
+						continue;
 					}
 				}
 				else if (*it == '['

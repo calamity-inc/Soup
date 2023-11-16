@@ -631,6 +631,8 @@ spanning over multiple lines */
 
 		assert(Regex(R"((a)(?:b)(?'deez'c)").match("abc").toString() == R"(0="abc", 1="a", 2{deez}="c")");
 		assert(Regex(R"((a)(?:b)(?'deez'c)", "n").match("abc").toString() == R"(0="abc", 1{deez}="c")");
+
+		assert(Regex(R"(\d\s[\d][\s])").matchesFully("1 2 "));
 	});
 }
 

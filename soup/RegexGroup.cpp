@@ -186,8 +186,7 @@ namespace soup
 				}
 				else if (*s.it == 'd')
 				{
-					const char arr[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-					auto upC = soup::make_unique<RegexRangeConstraint>(arr);
+					auto upC = soup::make_unique<RegexRangeConstraint>(RegexRangeConstraint::digits);
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);
@@ -196,8 +195,7 @@ namespace soup
 				}
 				else if (*s.it == 's')
 				{
-					const char arr[] = { '\r', '\n', '\t', '\f', '\v', ' ' };
-					auto upC = soup::make_unique<RegexRangeConstraint>(arr);
+					auto upC = soup::make_unique<RegexRangeConstraint>(RegexRangeConstraint::whitespace);
 					auto pC = upC.get();
 					a.constraints.emplace_back(std::move(upC));
 					success_transitions.setTransitionTo(pC);
