@@ -13,7 +13,11 @@ namespace soup
 		TransientTokenBase();
 		TransientTokenBase(bool valid);
 
-		[[nodiscard]] bool isValid() const noexcept;
+		[[nodiscard]] bool isValid() const noexcept
+		{
+			return *sp;
+		}
+
 		void invalidate() const noexcept;
 
 		void reset() noexcept;

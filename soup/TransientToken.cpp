@@ -12,11 +12,6 @@ namespace soup
 	{
 	}
 
-	bool TransientTokenBase::isValid() const noexcept
-	{
-		return *sp;
-	}
-
 	void TransientTokenBase::invalidate() const noexcept
 	{
 		*sp = false;
