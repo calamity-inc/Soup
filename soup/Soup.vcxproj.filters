@@ -1560,6 +1560,9 @@
     <ClInclude Include="filesystem.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="wooting_enums.hpp">
+      <Filter>hardware\keyboard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

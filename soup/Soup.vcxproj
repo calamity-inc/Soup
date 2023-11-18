@@ -708,6 +708,7 @@
     <ClInclude Include="VectorWriter.hpp" />
     <ClInclude Include="version_compare.hpp" />
     <ClInclude Include="WavFmtChunk.hpp" />
+    <ClInclude Include="wooting_enums.hpp" />
     <ClInclude Include="X11Api.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
     <ClInclude Include="Chessboard.hpp" />
