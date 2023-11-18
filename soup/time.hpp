@@ -87,7 +87,6 @@ namespace soup
 
 		[[nodiscard]] static std::time_t toUnix(int year, int month, int day, int hour, int minute, int second);
 
-#if SOUP_CPP20
 		[[nodiscard]] static std::time_t unixFromFile(std::filesystem::file_time_type ft)
 		{
 			return std::chrono::duration_cast<std::chrono::seconds>(
@@ -96,7 +95,6 @@ namespace soup
 				).time_since_epoch()
 			).count();
 		}
-#endif
 
 		// Misc
 
