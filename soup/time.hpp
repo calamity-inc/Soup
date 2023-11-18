@@ -96,6 +96,12 @@ namespace soup
 			).count();
 		}
 
+		[[nodiscard]] static std::filesystem::file_time_type fileFromUnix(std::time_t ut)
+		{
+			std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(ut);
+			return tp - std::chrono::system_clock::now() + std::filesystem::file_time_type::clock::now();
+		}
+
 		// Misc
 
 		[[nodiscard]] static int isLeapYear(int year);
