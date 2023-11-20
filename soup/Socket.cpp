@@ -1087,6 +1087,8 @@ namespace soup
 
 	void Socket::close()
 	{
+		//custom_data.removeStructFromMap(ReuseTag);
+
 		if (tls_encrypter_send.isActive())
 		{
 			tls_close(TlsAlertDescription::close_notify);

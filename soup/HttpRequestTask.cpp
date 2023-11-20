@@ -34,7 +34,9 @@ namespace soup
 		switch (state)
 		{
 		case START:
-			if (!Scheduler::get()->dont_make_reusable_sockets)
+			if (!attempted_reuse
+				&& !Scheduler::get()->dont_make_reusable_sockets
+				)
 			{
 				hr.setKeepAlive();
 				sock = Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls);
@@ -104,7 +106,7 @@ namespace soup
 					// Tag socket we just created for reuse.
 					SOUP_IF_UNLIKELY (Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls))
 					{
-						logWriteLine(soup::format(ObfusString("UNEXPECTED: HttpRequestTask failed to reuse socket for {}"), hr.getHost()));
+						//logWriteLine(soup::format(ObfusString("UNEXPECTED: HttpRequestTask failed to reuse socket for {}"), hr.getHost()));
 						hr.setClose();
 					}
 					else
@@ -129,10 +131,24 @@ namespace soup
 			break;
 
 		case AWAIT_RESPONSE:
-			if (sock->isWorkDoneOrClosed()
-				|| time::unixSecondsSince(awaiting_response_since) > 10
-				)
+			if (sock->isWorkDoneOrClosed())
 			{
+				sock->close();
+				sock.reset();
+				if (attempted_reuse)
+				{
+					//logWriteLine(soup::format("AWAIT_RESPONSE from {} - broken pipe, making a new one", hr.getHost()));
+					state = START;
+				}
+				else
+				{
+					//logWriteLine(soup::format("AWAIT_RESPONSE from {} - request failed", hr.getHost()));
+					setWorkDone();
+				}
+			}
+			else if (time::unixSecondsSince(awaiting_response_since) > 10)
+			{
+				//logWriteLine(soup::format("AWAIT_RESPONSE from {} - timeout", hr.getHost()));
 				sock->close();
 				sock.reset();
 				setWorkDone();
@@ -143,6 +159,7 @@ namespace soup
 
 	void HttpRequestTask::doRecycle()
 	{
+		attempted_reuse = true;
 		if (sock->custom_data.getStructFromMap(ReuseTag).is_busy)
 		{
 			state = WAIT_TO_REUSE;
