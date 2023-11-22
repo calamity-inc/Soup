@@ -24,9 +24,3 @@ This will make it so that you have to use `#include <soup/NAME.hpp>` in your cod
 ## Getting Started
 
 If you want some ideas as to how start using Soup, check out [the docs](https://docs.soup.do/).
-
-## Licence
-
-You may use Soup for personal and commercial projects, but they must be open-source.
-
-If you want to use Soup in a closed-source project, please contact licensing@calamity.gg about your use-case.
