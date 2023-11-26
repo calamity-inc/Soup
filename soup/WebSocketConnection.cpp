@@ -1,6 +1,8 @@
 #include "WebSocketConnection.hpp"
 #if !SOUP_WASM
 
+#include <queue>
+
 #include "HttpRequest.hpp"
 #include "rand.hpp"
 #include "StringWriter.hpp"
@@ -156,12 +158,34 @@ namespace soup
 		}, CaptureWsRecv{ cb, std::move(cap) });
 	}
 
+	struct WebSocketPromiseOverflowData
+	{
+		std::queue<WebSocketMessage> data;
+	};
+
 	SharedPtr<Promise<WebSocketMessage>> WebSocketConnection::wsRecv()
 	{
-		auto p = soup::make_shared<Promise<WebSocketMessage>>();
-		wsRecv([](WebSocketConnection&, WebSocketMessage&& msg, Capture&& cap)
+		if (custom_data.isStructInMap(WebSocketPromiseOverflowData))
 		{
-			cap.get<SharedPtr<Promise<WebSocketMessage>>>()->fulfil(std::move(msg));
+			std::queue<WebSocketMessage>& data = custom_data.getStructFromMapConst(WebSocketPromiseOverflowData).data;
+			if (!data.empty())
+			{
+				auto p = soup::make_shared<Promise<WebSocketMessage>>(std::move(data.front()));
+				data.pop();
+				return p;
+			}
+		}
+		auto p = soup::make_shared<Promise<WebSocketMessage>>();
+		wsRecv([](WebSocketConnection& s, WebSocketMessage&& msg, Capture&& cap)
+		{
+			if (!cap.get<SharedPtr<Promise<WebSocketMessage>>>()->isFulfilled())
+			{
+				cap.get<SharedPtr<Promise<WebSocketMessage>>>()->fulfil(std::move(msg));
+			}
+			else
+			{
+				s.custom_data.getStructFromMap(WebSocketPromiseOverflowData).data.push(std::move(msg));
+			}
 		}, p);
 		return p;
 	}
