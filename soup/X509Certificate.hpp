@@ -45,6 +45,7 @@ namespace soup
 		[[nodiscard]] bool isEc() const noexcept;
 		[[nodiscard]] RsaPublicKey getRsaPublicKey() const;
 		void setRsaPublicKey(Bigint n, Bigint e);
+		void setRsaPublicKey(RsaPublicKey pub);
 
 		[[nodiscard]] bool canBeVerified() const noexcept;
 		[[nodiscard]] bool verify(const X509Certificate& issuer) const;

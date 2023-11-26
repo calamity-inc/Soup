@@ -166,6 +166,11 @@ namespace soup
 		key = EccPoint{ std::move(n), std::move(e) };
 	}
 
+	void X509Certificate::setRsaPublicKey(RsaPublicKey pub)
+	{
+		key = EccPoint{ std::move(pub.n), std::move(pub.e) };
+	}
+
 	RsaPublicKey X509Certificate::getRsaPublicKey() const
 	{
 		return RsaPublicKey(key.x, key.y);
