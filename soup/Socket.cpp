@@ -329,22 +329,22 @@ namespace soup
 		return setBlocking(false);
 	}
 
-	bool Socket::certchain_validator_none(const X509Certchain&, const std::string&)
+	bool Socket::certchain_validator_none(const X509Certchain&, const std::string&, StructMap&)
 	{
 		return true;
 	}
 
-	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string& domain)
+	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string& domain, StructMap&)
 	{
 		return chain.certs.at(0).valid_to >= time::unixSeconds()
 			&& chain.verify(domain, TrustStore::fromMozilla())
 			;
 	}
 
-	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& domain)
+	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& domain, StructMap& custom_data)
 	{
 		return chain.canBeVerified()
-			&& certchain_validator_relaxed(chain, domain)
+			&& certchain_validator_relaxed(chain, domain, custom_data)
 			;
 	}
 
@@ -515,7 +515,7 @@ namespace soup
 					handshaker->promise.fulfilOffThread([](Capture&& _cap)
 					{
 						auto& cap = _cap.get<CaptureValidateCertchain>();
-						if (!cap.certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name))
+						if (!cap.certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name, cap.s.custom_data))
 						{
 							cap.s.tls_close(TlsAlertDescription::bad_certificate);
 						}

@@ -28,6 +28,7 @@ namespace soup
 
 	// data.container
 	class Buffer;
+	struct StructMap;
 
 	// data.json
 	struct JsonArray;
