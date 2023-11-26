@@ -151,16 +151,6 @@ namespace soup
 		return false;
 	}
 
-	bool X509Certificate::isRsa() const noexcept
-	{
-		return !is_ec;
-	}
-
-	bool X509Certificate::isEc() const noexcept
-	{
-		return is_ec;
-	}
-
 	void X509Certificate::setRsaPublicKey(Bigint n, Bigint e)
 	{
 		key = EccPoint{ std::move(n), std::move(e) };

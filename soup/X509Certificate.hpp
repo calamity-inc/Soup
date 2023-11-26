@@ -41,8 +41,8 @@ namespace soup
 		bool fromDer(const std::string& str);
 		bool load(const Asn1Sequence& cert) noexcept;
 
-		[[nodiscard]] bool isRsa() const noexcept;
-		[[nodiscard]] bool isEc() const noexcept;
+		[[nodiscard]] bool isRsa() const noexcept { return !is_ec; }
+		[[nodiscard]] bool isEc() const noexcept { return is_ec; }
 		[[nodiscard]] RsaPublicKey getRsaPublicKey() const;
 		void setRsaPublicKey(Bigint n, Bigint e);
 		void setRsaPublicKey(RsaPublicKey pub);
