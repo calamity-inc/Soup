@@ -14,6 +14,7 @@ local function initClass(mt, t)
 	return t
 end
 
+local soup
 soup = {
 	tryCatch = function(f)
 		local err = libsoup:callString("tryCatch", function()
@@ -178,4 +179,4 @@ foreach ($apiclasses as $t)
 	endNamespace($t);
 }
 
-echo "}\n";
+echo "}\nreturn soup\n";

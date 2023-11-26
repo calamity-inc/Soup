@@ -10,6 +10,7 @@ local function initClass(mt, t)
 	return t
 end
 
+local soup
 soup = {
 	tryCatch = function(f)
 		local err = libsoup:callString("tryCatch", function()
@@ -282,6 +283,7 @@ soup = {
 		end,
 	},
 }
+return soup
 
 --[[ An example:
 soup.tryCatch(function()
