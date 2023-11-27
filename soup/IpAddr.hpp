@@ -102,6 +102,8 @@ namespace soup
 		{
 		}
 
+	private:
+		// Could be confused for SOUP_IPV4
 		explicit constexpr IpAddr(native_u32_t a, native_u32_t b, native_u32_t c, native_u32_t d)
 			: IpAddr(
 				native_u16_t(a), native_u16_t(a >> 16),
@@ -112,6 +114,7 @@ namespace soup
 		{
 		}
 
+	public:
 		explicit constexpr IpAddr(native_u64_t hi, native_u64_t lo)
 			: IpAddr(
 				native_u32_t((uint32_t)hi), native_u32_t(hi >> 32),
