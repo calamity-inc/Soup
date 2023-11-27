@@ -21,7 +21,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "Ubuntu 22.04"
-          path: soup
+          path: CLI/soup
 
   ubuntu-20-04:
     runs-on: ubuntu-20.04
@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "Debian 11, Ubuntu 20.04"
-          path: soup
+          path: CLI/soup
 
   debian-10:
     runs-on: [debian-10]
@@ -61,4 +61,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "Debian 10"
-          path: soup
+          path: CLI/soup
