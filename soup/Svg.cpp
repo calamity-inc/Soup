@@ -334,7 +334,7 @@ namespace soup
 		}
 
 		// https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule
-		[[nodiscard]] bool isPointInPath(float x, float y) noexcept
+		[[nodiscard]] bool isPointInPath(float x, float y) const noexcept
 		{
 			size_t num = path.size();
 			size_t j = num - 1;
