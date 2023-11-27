@@ -33,8 +33,6 @@ namespace soup
 			{
 				return RsaPublicKey(n);
 			}
-
-			void sendAppMessage(Socket& s, netMeshMsgType msg_type, std::string&& data) const;
 		};
 
 		struct MyConfig
@@ -48,5 +46,8 @@ namespace soup
 		[[nodiscard]] static MyConfig& getMyConfig();
 
 		static void addPeerLocally(Bigint n, uint32_t ip = 0);
+
+		static void enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&), Capture&& cap);
+		static void sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data);
 	};
 }

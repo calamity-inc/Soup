@@ -8,10 +8,12 @@
 #include "FileReader.hpp"
 #include "FileWriter.hpp"
 #include "fnv.hpp"
+#include "netConfig.hpp"
 #include "os.hpp"
 #include "sha256.hpp"
 #include "Socket.hpp"
 #include "StringWriter.hpp"
+#include "X509Certchain.hpp"
 
 namespace soup
 {
@@ -99,6 +101,48 @@ namespace soup
 		}
 	}
 
+	struct netMeshTlsClientData
+	{
+		Bigint remote_pub_n;
+	};
+
+	struct netMeshEnableCryptoClientCapture
+	{
+		void(*callback)(Socket&, Capture&&);
+		Capture cap;
+	};
+
+	void netMesh::enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&), Capture&& cap)
+	{
+		s.custom_data.getStructFromMap(netMeshTlsClientData).remote_pub_n = std::move(remote_pub_n);
+		netConfig::get().certchain_validator = [](const X509Certchain& chain, const std::string&, StructMap& custom_data)
+		{
+			return chain.certs.size() == 1
+				&& chain.certs.at(0).isRsa()
+				&& custom_data.getStructFromMapConst(netMeshTlsClientData).remote_pub_n == chain.certs.at(0).getRsaPublicKey().n
+				;
+		};
+		s.enableCryptoClient({}, [](Socket& s, Capture&& _cap)
+		{
+			netMeshEnableCryptoClientCapture& cap = _cap.get<netMeshEnableCryptoClientCapture>();
+			cap.callback(s, std::move(cap.cap));
+		}, netMeshEnableCryptoClientCapture{ callback, std::move(cap) });
+	}
+
+	void netMesh::sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data)
+	{
+		auto n_hash = fnv1a_32(netMesh::getMyConfig().kp.n.toBinary());
+		auto signature = netMesh::getMyConfig().kp.getPrivate().sign<sha256>(data);
+
+		StringWriter sw;
+		{ auto msg_type_u8 = (uint8_t)msg_type; sw.u8(msg_type_u8); }
+		sw.str_lp_u64_dyn(data);
+		sw.u32(n_hash);
+		sw.bigint_lp_u64_dyn(signature);
+
+		s.send(sw.data);
+	}
+
 	const Peer* netMesh::MyConfig::findPeer(uint32_t ip) const noexcept
 	{
 		for (const auto& peer : peers)
@@ -123,29 +167,6 @@ namespace soup
 			}
 		}
 		return nullptr;
-	}
-
-	void netMesh::Peer::sendAppMessage(Socket& s, netMeshMsgType msg_type, std::string&& data) const
-	{
-		std::string to_encrypt = std::move(data);
-		to_encrypt.push_back((char)msg_type);
-
-		auto encrypted = getPublicKey().encryptPkcs1(to_encrypt);
-
-		std::string tbs = encrypted.toBinary();
-		tbs.push_back((char)msg_type);
-
-		auto signature = netMesh::getMyConfig().kp.getPrivate().sign<sha256>(tbs);
-
-		auto n_hash = fnv1a_32(netMesh::getMyConfig().kp.n.toBinary());
-
-		StringWriter sw;
-		{ auto msg_type_u8 = (uint8_t)msg_type; sw.u8(msg_type_u8); }
-		sw.bigint_lp_u64_dyn(encrypted);
-		sw.u32(n_hash);
-		sw.bigint_lp_u64_dyn(signature);
-
-		s.send(sw.data);
 	}
 }
 

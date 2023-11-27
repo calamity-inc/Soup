@@ -24,6 +24,8 @@ namespace soup
 		{
 		}
 
+		bool bind(Server& serv);
+
 	private:
 		static void onTunnelEstablished(Socket& s, ServerService&, Server&);
 	};

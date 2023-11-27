@@ -53,40 +53,31 @@ int cli_mesh(int argc, const char** argv)
 				auto sock = sched.addSocket();
 				if (sock->connect(ip, 7106))
 				{
-					std::cout << " Connection established.\n";
-
-					StringWriter to_encrypt;
-					to_encrypt.u64(data.passnum);
-					to_encrypt.str_lp_u64_dyn(my_config.kp.getPublic().getJwkThumbprint());
-
-					auto encrypted = RsaPublicKey(data.n).encryptPkcs1(std::move(to_encrypt.data));
-
-					StringWriter sw;
-					{ uint8_t msg_type = MESH_MSG_LINK; sw.u8(msg_type); }
-					sw.bigint_lp_u64_dyn(encrypted);
-					sw.bigint_lp_u64_dyn(my_config.kp.n);
-					sock->send(std::move(sw.data));
-
-					std::cout << "Linking..." << std::flush;
-					bool ok = false;
-					sock->recv([](Socket&, std::string&& data, Capture&& cap)
+					std::cout << " Establishing TLS..." << std::flush;
+					netMesh::enableCryptoClient(*sock, data.n, [](Socket& s, Capture&& cap)
 					{
-						if (data.at(0) == MESH_MSG_OK)
+						std::cout << " Established." << std::endl;
+
+						StringWriter sw;
+						{ uint8_t msg_type = MESH_MSG_LINK; sw.u8(msg_type); }
+						sw.u64(cap.get<LinkData>().passnum);
+						sw.bigint_lp_u64_dyn(netMesh::getMyConfig().kp.n);
+						s.send(std::move(sw.data));
+
+						std::cout << "Linking..." << std::flush;
+						s.recv([](Socket&, std::string&& data, Capture&& cap)
 						{
-							*cap.get<bool*>() = true;
-						}
-					}, &ok);
+							if (data.at(0) == MESH_MSG_OK)
+							{
+								LinkData& data = cap.get<LinkData>();
+								netMesh::addPeerLocally(data.n, data.ip);
+								std::cout << " Successfully linked.\n";
+								exit(0);
+							}
+						}, std::move(cap));
+					}, &data);
 					sched.run();
-					if (ok)
-					{
-						netMesh::addPeerLocally(data.n, data.ip);
-						std::cout << " Successfully linked.\n";
-						return 0;
-					}
-					else
-					{
-						std::cout << " Linking failed.\n";
-					}
+					std::cout << " Failed.\n";
 				}
 				else
 				{
@@ -101,7 +92,7 @@ int cli_mesh(int argc, const char** argv)
 				std::cout << " Found " << ip.toString4() << "\n";
 
 				Server serv;
-				if (!serv.bind(7106, &g_mesh_service))
+				if (!g_mesh_service.bind(serv))
 				{
 					std::cout << "Failed to bind to TCP/7106\n";
 					return 1;
@@ -153,6 +144,12 @@ int cli_mesh(int argc, const char** argv)
 				std::string name = argv[2];
 				auto type = (uint16_t)dnsTypeFromString(argv[3]);
 				std::string data = argv[4];
+
+				StringWriter sw;
+				sw.u16(type);
+				sw.str_lp_u64_dyn(name);
+				sw.str_lp_u64_dyn(data);
+
 				if (auto peer = netMesh::getMyConfig().findPeer(ip.getV4NativeEndian()))
 				{
 					std::cout << "Connecting to " << ip.toString4() << "..." << std::flush;
@@ -160,33 +157,24 @@ int cli_mesh(int argc, const char** argv)
 					auto sock = sched.addSocket();
 					if (sock->connect(ip, 7106))
 					{
-						std::cout << " Connection established.\n";
-
-						StringWriter sw;
-						sw.u16(type);
-						sw.str_lp_u64_dyn(name);
-						sw.str_lp_u64_dyn(data);
-						peer->sendAppMessage(*sock, MESH_MSG_DNS_ADD_RECORD, std::move(sw.data));
-
-						std::cout << "Sending command..." << std::flush;
-						bool ok = false;
-						sock->recv([](Socket&, std::string&& data, Capture&& cap)
+						std::cout << " Establishing TLS..." << std::flush;
+						netMesh::enableCryptoClient(*sock, peer->n, [](Socket& s, Capture&& cap)
 						{
-							if (data.at(0) == MESH_MSG_OK)
+							std::cout << " Established." << std::endl;
+
+							std::cout << "Sending command..." << std::flush;
+							netMesh::sendAppMessage(s, MESH_MSG_DNS_ADD_RECORD, cap.get<std::string>());
+							s.recv([](Socket&, std::string&& data, Capture&&)
 							{
-								*cap.get<bool*>() = true;
-							}
-						}, &ok);
+								if (data.at(0) == MESH_MSG_OK)
+								{
+									std::cout << " Success.\n";
+									exit(0);
+								}
+							});
+						}, std::move(sw.data));
 						sched.run();
-						if (ok)
-						{
-							std::cout << " Command executed successfully.\n";
-							return 0;
-						}
-						else
-						{
-							std::cout << " Remote refused to or failed to carry out the command.\n";
-						}
+						std::cout << " Failed.\n";
 					}
 					else
 					{

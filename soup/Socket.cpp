@@ -428,6 +428,7 @@ namespace soup
 		);
 		hello.compression_methods = { 0 };
 
+		if (!handshaker->server_name.empty())
 		{
 			TlsClientHelloExtServerName ext_server_name{};
 			ext_server_name.host_name = handshaker->server_name;

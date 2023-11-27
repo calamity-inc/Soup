@@ -85,7 +85,7 @@ void cli_dnsserver(int argc, const char** argv)
 
 	if (netMesh::isEnabled())
 	{
-		if (serv.bind(7106, &g_mesh_service))
+		if (g_mesh_service.bind(serv))
 		{
 			g_mesh_service.app_msg_handler = [](netMeshMsgType msg_type, std::string&& data)
 			{
