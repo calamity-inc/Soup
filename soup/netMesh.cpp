@@ -89,8 +89,29 @@ namespace soup
 
 	void netMesh::addPeerLocally(Bigint n, uint32_t ip)
 	{
-		s_my_config.peers.emplace_back(Peer{ fnv1a_32(n.toBinary()), ip, std::move(n) });
+		const auto n_hash = fnv1a_32(n.toBinary());
 
+		if (ip == 0) // Administrative device?
+		{
+			if (s_my_config.findPeerByPublicKey(n_hash))
+			{
+				return; // Already known, no need to add it again.
+			}
+		}
+		else
+		{
+			if (auto peer = s_my_config.findPeer(ip))
+			{
+				// Already know this peer; update key but don't create a duplicate entry.
+				peer->n_hash = n_hash;
+				peer->n = std::move(n);
+				goto _save_peers;
+			}
+		}
+
+		s_my_config.peers.emplace_back(Peer{ n_hash, ip, std::move(n) });
+
+	_save_peers:
 		FileWriter fw(getDataPath() / "peers.bin");
 		{ uint8_t version = 0; fw.u8(version); }
 		fw.u64_dyn(s_my_config.peers.size());
@@ -143,11 +164,23 @@ namespace soup
 		s.send(sw.data);
 	}
 
-	const Peer* netMesh::MyConfig::findPeer(uint32_t ip) const noexcept
+	Peer* netMesh::MyConfig::findPeer(uint32_t ip) noexcept
+	{
+		for (auto& peer : peers)
+		{
+			if (peer.ip == ip)
+			{
+				return &peer;
+			}
+		}
+		return nullptr;
+	}
+
+	const Peer* netMesh::MyConfig::findPeerByPublicKey(uint32_t n_hash) const noexcept
 	{
 		for (const auto& peer : peers)
 		{
-			if (peer.ip == ip)
+			if (peer.n_hash == n_hash)
 			{
 				return &peer;
 			}

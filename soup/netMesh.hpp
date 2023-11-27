@@ -40,7 +40,8 @@ namespace soup
 			RsaKeypair kp;
 			std::vector<Peer> peers;
 
-			[[nodiscard]] const Peer* findPeer(uint32_t ip) const noexcept;
+			[[nodiscard]] Peer* findPeer(uint32_t ip) noexcept;
+			[[nodiscard]] const Peer* findPeerByPublicKey(uint32_t n_hash) const noexcept;
 			[[nodiscard]] const Peer* findPeer(uint32_t n_hash, uint32_t ip) const noexcept;
 		};
 		[[nodiscard]] static MyConfig& getMyConfig();
