@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include "Optional.hpp"
+
 namespace soup
 {
 	enum dnsType : uint16_t
@@ -99,5 +101,5 @@ namespace soup
 	};
 	
 	[[nodiscard]] extern std::string dnsTypeToString(dnsType type);
-	[[nodiscard]] extern dnsType dnsTypeFromString(const std::string& str);
+	[[nodiscard]] extern Optional<dnsType> dnsTypeFromString(const std::string& str);
 }

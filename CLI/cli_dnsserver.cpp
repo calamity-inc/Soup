@@ -27,27 +27,33 @@ void cli_dnsserver(int argc, const char** argv)
 		{
 			auto name = arr[0];
 			string::lower(name);
-			auto type = dnsTypeFromString(arr[1]);
-			if (auto factory = dnsRecord::getFactory(type))
+			if (dnsType type; dnsTypeFromString(arr[1]).consume(type))
 			{
-				uint32_t ttl = 60;
-				if (arr.size() >= 4)
+				if (auto factory = dnsRecord::getFactory(type))
 				{
-					ttl = std::stoul(arr[3]);
-				}
-				auto rec = factory(std::string(name), ttl, std::move(arr[2]));
-				if (auto e = records.find(name); e != records.end())
-				{
-					e->second.emplace_back(rec.release());
+					uint32_t ttl = 60;
+					if (arr.size() >= 4)
+					{
+						ttl = std::stoul(arr[3]);
+					}
+					auto rec = factory(std::string(name), ttl, std::move(arr[2]));
+					if (auto e = records.find(name); e != records.end())
+					{
+						e->second.emplace_back(rec.release());
+					}
+					else
+					{
+						records.emplace(std::move(name), std::vector<SharedPtr<dnsRecord>>{ rec.release() });
+					}
 				}
 				else
 				{
-					records.emplace(std::move(name), std::vector<SharedPtr<dnsRecord>>{ rec.release() });
+					std::cout << "No factory for record type " << arr[1] << "\n";
 				}
 			}
 			else
 			{
-				std::cout << "No factory for record type " << arr[1] << "\n";
+				std::cout << "Unknown record type: " << arr[1] << "\n";
 			}
 		}
 		else if (!line.empty() && line.at(0) != '#')

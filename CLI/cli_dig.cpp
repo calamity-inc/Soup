@@ -39,13 +39,9 @@ void cli_dig(int argc, const char** argv)
 		}
 		else
 		{
-			try
+			if (!dnsTypeFromString(argv[i]).consume(t))
 			{
-				t = dnsTypeFromString(argv[i]);
-			}
-			catch (std::exception& e)
-			{
-				std::cout << e.what() << "\n";
+				std::cout << "Unknown record type: " << argv[i] << "\n";
 			}
 		}
 	}

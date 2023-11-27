@@ -21,7 +21,7 @@ namespace soup
 		return std::to_string(type);
 	}
 
-	dnsType dnsTypeFromString(const std::string& str)
+	Optional<dnsType> dnsTypeFromString(const std::string& str)
 	{
 		if (str == "A") return DNS_A;
 		if (str == "AAAA") return DNS_AAAA;
@@ -32,8 +32,6 @@ namespace soup
 		if (str == "SRV") return DNS_SRV;
 		if (str == "NS") return DNS_NS;
 
-		std::string msg = "Unknown dnsType: ";
-		msg.append(str);
-		SOUP_THROW(Exception(std::move(msg)));
+		return std::nullopt;
 	}
 }

@@ -142,7 +142,12 @@ int cli_mesh(int argc, const char** argv)
 			{
 				IpAddr ip(argv[1]);
 				std::string name = argv[2];
-				auto type = (uint16_t)dnsTypeFromString(argv[3]);
+				uint16_t type;
+				if (!dnsTypeFromString(argv[3]).consume(reinterpret_cast<dnsType&>(type)))
+				{
+					std::cout << "Unknown record type: " << argv[3] << "\n";
+					return 1;
+				}
 				std::string data = argv[4];
 
 				StringWriter sw;
