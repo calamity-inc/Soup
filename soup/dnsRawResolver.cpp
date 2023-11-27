@@ -18,7 +18,7 @@ namespace soup
 			}
 			else if (qtype == DNS_AAAA)
 			{
-				res.emplace_back(soup::make_unique<dnsAaaaRecord>(name, -1, IpAddr("::1")));
+				res.emplace_back(soup::make_unique<dnsAaaaRecord>(name, -1, IpAddr(0, 0, 0, 0, 0, 0, 0, 1)));
 			}
 			return true;
 		}
