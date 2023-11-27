@@ -120,12 +120,12 @@ namespace soup
 		{
 		}
 
-		explicit IpAddr(const network_u32_t ipv4) noexcept
+		IpAddr(const network_u32_t ipv4) noexcept
 		{
 			operator =(ipv4);
 		}
 
-		explicit IpAddr(const native_u32_t ipv4) noexcept
+		IpAddr(const native_u32_t ipv4) noexcept
 		{
 			operator =(ipv4);
 		}

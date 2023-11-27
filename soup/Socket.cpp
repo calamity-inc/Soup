@@ -200,7 +200,7 @@ namespace soup
 		auto og = netConfig::get().connect_timeout_ms;
 		netConfig::get().connect_timeout_ms = 20;
 		Socket sock;
-		const bool ret = sock.connect(IpAddr(SOUP_IPV4(127, 0, 0, 1)), port);
+		const bool ret = sock.connect(SOUP_IPV4(127, 0, 0, 1), port);
 		netConfig::get().connect_timeout_ms = og;
 		return ret;
 	}
