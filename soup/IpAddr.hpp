@@ -123,11 +123,17 @@ namespace soup
 		{
 		}
 
+#if SOUP_CPP20
+		constexpr
+#endif
 		IpAddr(const network_u32_t ipv4) noexcept
 		{
 			operator =(ipv4);
 		}
 
+#if SOUP_CPP20
+		constexpr
+#endif
 		IpAddr(const native_u32_t ipv4) noexcept
 		{
 			operator =(ipv4);
@@ -136,13 +142,15 @@ namespace soup
 		bool fromString(const char* str) noexcept;
 		bool fromString(const std::string& str) noexcept;
 
-		void operator = (const network_u32_t ipv4) noexcept
+		constexpr void operator = (const network_u32_t ipv4) noexcept
 		{
 			maskToV4();
-			*reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
+			// *reinterpret_cast<uint32_t*>(reinterpret_cast<uintptr_t>(&data) + 12) = ipv4;
+			shorts[6] = ipv4;
+			shorts[7] = ipv4 >> 16;
 		}
 
-		void operator = (const native_u32_t ipv4) noexcept
+		constexpr void operator = (const native_u32_t ipv4) noexcept
 		{
 			operator = (Endianness::toNetwork(ipv4));
 		}
@@ -199,7 +207,7 @@ namespace soup
 		[[nodiscard]] native_u32_t getV4NativeEndian() const noexcept;
 
 	private:
-		void maskToV4() noexcept
+		constexpr void maskToV4() noexcept
 		{
 			shorts[0] = 0;
 			shorts[1] = 0;
