@@ -33,7 +33,7 @@ void cli_dig(int argc, const char** argv)
 			else
 			{
 				r = soup::make_unique<dnsUdpResolver>();
-				reinterpret_cast<dnsUdpResolver*>(r.get())->server.ip = std::move(server);
+				reinterpret_cast<dnsUdpResolver*>(r.get())->server.ip.fromString(std::move(server));
 				std::cout << "Using UDP resolver at " << reinterpret_cast<dnsUdpResolver*>(r.get())->server.toString() << "\n";
 			}
 		}

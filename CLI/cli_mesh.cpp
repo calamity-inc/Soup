@@ -140,7 +140,8 @@ int cli_mesh(int argc, const char** argv)
 		{
 			if (argc == 5)
 			{
-				IpAddr ip(argv[1]);
+				IpAddr ip;
+				ip.fromString(argv[1]);
 				std::string name = argv[2];
 				uint16_t type;
 				if (!dnsTypeFromString(argv[3]).consume(reinterpret_cast<dnsType&>(type)))

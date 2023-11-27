@@ -23,12 +23,13 @@ namespace soup
 
 	IpAddr netInfo::getPublicAddressImpl(const std::string& provider)
 	{
+		IpAddr addr;
 		HttpRequest req(provider, "/");
 		if (auto res = req.execute(); res.has_value())
 		{
-			return IpAddr(res->body);
+			addr.fromString(res->body);
 		}
-		return IpAddr();
+		return addr;
 	}
 }
 

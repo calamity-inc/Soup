@@ -28,8 +28,14 @@ namespace soup
 				netAdaptor& na = res.emplace_back(netAdaptor{});
 				na.name = adaptor->Description; // "AdapterName" is just some GUID, "Description" is the actual name
 				na.mac_addr = MacAddr(adaptor->Address);
-				na.ip_addr = IpAddr(adaptor->IpAddressList.IpAddress.String).getV4NativeEndian();
-				na.netmask = IpAddr(adaptor->IpAddressList.IpMask.String).getV4NativeEndian();
+				if (IpAddr addr; addr.fromString(adaptor->IpAddressList.IpAddress.String))
+				{
+					na.ip_addr = addr.getV4NativeEndian();
+				}
+				if (IpAddr addr; addr.fromString(adaptor->IpAddressList.IpMask.String))
+				{
+					na.netmask = addr.getV4NativeEndian();
+				}
 			}
 		}
 		return res;

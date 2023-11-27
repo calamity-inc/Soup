@@ -38,16 +38,6 @@ namespace soup
 		{
 		}
 
-		IpAddr(const char* str)
-		{
-			SOUP_ASSERT(fromString(str));
-		}
-
-		IpAddr(const std::string& str)
-		{
-			SOUP_ASSERT(fromString(str));
-		}
-
 		constexpr IpAddr(const IpAddr& b) noexcept
 			: IpAddr(b.shorts)
 		{

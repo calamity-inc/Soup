@@ -234,7 +234,9 @@ SOUP_CEXPORT CidrSubnetInterface* CidrSubnetInterface_new(const char* range)
 
 SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const char* ip_addr)
 {
-	return heap.get(x).contains(IpAddr(ip_addr));
+	IpAddr addr;
+	SOUP_ASSERT(addr.fromString(ip_addr));
+	return heap.get(x).contains(addr);
 }
 
 // DetachedScheduler

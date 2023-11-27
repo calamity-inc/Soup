@@ -14,13 +14,17 @@ namespace soup
 		case DNS_A:
 			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsARecord>(std::move(name), ttl, IpAddr(str).getV4());
+				IpAddr addr;
+				addr.fromString(str);
+				return soup::make_unique<dnsARecord>(std::move(name), ttl, addr.getV4());
 			};
 
 		case DNS_AAAA:
 			return [](std::string&& name, uint32_t ttl, std::string&& str) -> UniquePtr<dnsRecord>
 			{
-				return soup::make_unique<dnsAaaaRecord>(std::move(name), ttl, IpAddr(str));
+				IpAddr addr;
+				addr.fromString(str);
+				return soup::make_unique<dnsAaaaRecord>(std::move(name), ttl, addr);
 			};
 
 		case DNS_CNAME:

@@ -154,8 +154,9 @@ namespace soup
 			{
 				continue;
 			}
-			IpAddr begin = arr.at(0);
-			IpAddr end = arr.at(1);
+			IpAddr begin, end;
+			SOUP_ASSERT(begin.fromString(arr.at(0)));
+			SOUP_ASSERT(end.fromString(arr.at(1)));
 			const netAs* as = getAsByNumber(asn);
 			if (as == nullptr)
 			{
@@ -209,7 +210,10 @@ namespace soup
 			{
 				continue;
 			}
-			ipv6tolocation.emplace(arr.at(0), arr.at(1), netIntelLocationData{
+			IpAddr begin, end;
+			SOUP_ASSERT(begin.fromString(arr.at(0)));
+			SOUP_ASSERT(end.fromString(arr.at(1)));
+			ipv6tolocation.emplace(begin, end, netIntelLocationData{
 				std::move(arr.at(2)),
 				location_pool.emplace(std::move(arr.at(3))),
 				location_pool.emplace(std::move(arr.at(5))),

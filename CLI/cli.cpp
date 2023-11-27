@@ -247,12 +247,14 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "geoip")
 		{
-			if (argc != 3)
+			IpAddr addr;
+			if (argc != 3
+				|| !addr.fromString(argv[2])
+				)
 			{
 				std::cout << "Syntax: soup geoip [ip]" << std::endl;
 				return 0;
 			}
-			IpAddr addr = argv[2];
 			netIntel intel;
 			if (addr.isV4())
 			{

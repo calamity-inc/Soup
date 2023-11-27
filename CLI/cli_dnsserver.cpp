@@ -79,7 +79,8 @@ void cli_dnsserver(int argc, const char** argv)
 
 	if (argc > 1)
 	{
-		IpAddr addr(argv[1]);
+		IpAddr addr;
+		addr.fromString(argv[1]);
 		serv.bindUdp(addr, 53, &dns_srv);
 		std::cout << "Bound to UDP/" << addr.toString() << ":53" << std::endl;
 	}

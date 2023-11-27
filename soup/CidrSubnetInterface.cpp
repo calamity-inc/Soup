@@ -10,7 +10,8 @@ namespace soup
 	UniquePtr<CidrSubnetInterface> CidrSubnetInterface::construct(const std::string& str)
 	{
 		auto sep = str.find('/');
-		IpAddr addr = str.substr(0, sep);
+		IpAddr addr;
+		SOUP_ASSERT(addr.fromString(str.substr(0, sep)));
 		auto size = string::toInt<uint8_t, string::TI_FULL>(str.substr(sep + 1));
 		return construct(addr, size.value());
 	}
