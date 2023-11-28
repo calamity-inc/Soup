@@ -1563,6 +1563,9 @@
     <ClInclude Include="wooting_enums.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
+    <ClInclude Include="MathExpr.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2298,6 +2301,9 @@
     </ClCompile>
     <ClCompile Include="filesystem.cpp">
       <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="MathExpr.cpp">
+      <Filter>lang</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

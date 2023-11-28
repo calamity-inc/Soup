@@ -517,6 +517,7 @@
     <ClInclude Include="kbRgbWooting.hpp" />
     <ClInclude Include="Key.hpp" />
     <ClInclude Include="Keyboard.hpp" />
+    <ClInclude Include="MathExpr.hpp" />
     <ClInclude Include="memProtFlags.hpp" />
     <ClInclude Include="MidiComposition.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
@@ -1025,6 +1026,7 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="lyoStylesheet.cpp" />
+    <ClCompile Include="MathExpr.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />
     <ClCompile Include="MidiComposition.cpp" />
