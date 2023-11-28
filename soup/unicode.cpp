@@ -42,7 +42,7 @@ namespace soup
 				break;
 			}
 			uni <<= 6;
-			uni += (ch & 0b111111);
+			uni |= (ch & 0b111111);
 		}
 		if ((uni >= 0xD800 && uni <= 0xDFFF)
 			|| uni > 0x10FFFF
@@ -155,7 +155,7 @@ namespace soup
 		utf32 >>= 6;
 		if (utf32 <= 0b11111)
 		{
-			utf8.insert(0, 1, (char)((utf32 & 0b11111) | 0b11000000)); // 110xxxxx
+			utf8.insert(0, 1, (char)(utf32 | 0b11000000)); // 110xxxxx
 			return utf8;
 		}
 		// 3
@@ -163,7 +163,7 @@ namespace soup
 		utf32 >>= 6;
 		if (utf32 <= 0b1111)
 		{
-			utf8.insert(0, 1, (char)((utf32 & 0b1111) | 0b11100000)); // 1110xxxx
+			utf8.insert(0, 1, (char)(utf32 | 0b11100000)); // 1110xxxx
 			return utf8;
 		}
 		// 4
