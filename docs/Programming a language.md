@@ -170,7 +170,7 @@ enum MyOpCodes : int
 
 static void myVm(soup::Reader& r)
 {
-    soup::LangVm vm{ &r };
+    soup::LangVm vm{ r };
     for (uint8_t op; vm.getNextOp(op); )
     {
         switch (op)
