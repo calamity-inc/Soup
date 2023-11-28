@@ -17,7 +17,7 @@
 #include "Endian.hpp"
 
 #define SOUP_IPV4(a, b, c, d) ::soup::native_u32_t((a << 24) | (b << 16) | (c << 8) | d)
-#define SOUP_IPV4_NWE(a, b, c, d) ((soup::NATIVE_ENDIAN == soup::NETWORK_ENDIAN) ? SOUP_IPV4(a, b, c, d) : ::soup::network_u32_t((d << 24) | (c << 16) | (b << 8) | a))
+#define SOUP_IPV4_NWE(a, b, c, d) ((soup::NATIVE_ENDIAN == soup::NETWORK_ENDIAN) ? ::soup::network_u32_t((a << 24) | (b << 16) | (c << 8) | d) : ::soup::network_u32_t((d << 24) | (c << 16) | (b << 8) | a))
 
 namespace soup
 {

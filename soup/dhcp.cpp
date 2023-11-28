@@ -30,7 +30,7 @@ namespace soup
 		Socket& sock = *sched.addSocket();
 		if (sock.initUdpBroadcast4()
 			&& sock.setSourcePort4(68)
-			&& sock.udpClientSend(SOUP_IPV4(255, 255, 255, 255), 67, req.toBinaryString())
+			&& sock.udpClientSend(SOUP_IPV4_NWE(255, 255, 255, 255), 67, req.toBinaryString())
 			)
 		{
 			sock.udpRecv([](Socket&, SocketAddr&&, std::string&& data, Capture&& cap)
@@ -67,7 +67,7 @@ namespace soup
 		Socket sock;
 		if (sock.initUdpBroadcast4()
 			&& sock.setSourcePort4(68)
-			&& sock.udpClientSend(SOUP_IPV4(255, 255, 255, 255), 67, req.toBinaryString())
+			&& sock.udpClientSend(SOUP_IPV4_NWE(255, 255, 255, 255), 67, req.toBinaryString())
 			)
 		{
 			sock.close(); // Free up the port for requestSpecificAddress
@@ -114,7 +114,7 @@ namespace soup
 		Socket& sock = *sched.addSocket();
 		if (sock.initUdpBroadcast4()
 			&& sock.setSourcePort4(68)
-			&& sock.udpClientSend(SOUP_IPV4(255, 255, 255, 255), 67, req.toBinaryString())
+			&& sock.udpClientSend(SOUP_IPV4_NWE(255, 255, 255, 255), 67, req.toBinaryString())
 			)
 		{
 			// If the router sends a NAK, it's addressed to 255.255.255.255, hence we can receive it.
