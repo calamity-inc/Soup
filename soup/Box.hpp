@@ -16,6 +16,8 @@ namespace soup
 	 * I use a 4x4 matrix to store the rotation and centerpoint translation, and a vector for the Extents.
 	 * I just chose to use a 4x4 matrix for simplicity so I could use the matrix class.
 	 * An alternative to storing extents and a centerpoint is storing the minimum corner and maximum corner, so I have a set function that converts from this format.
+	 * 
+	 * (I've reached out on 1 Feb 2022 asking about the licence/legal terms, but did not receive a response.)
 	 */
 
 #pragma pack(push, 1)

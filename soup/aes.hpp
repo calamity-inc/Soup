@@ -6,8 +6,6 @@
 
 namespace soup
 {
-	// Adapted from https://github.com/SergeyBel/AES
-
 	class aes
 	{
 	public:

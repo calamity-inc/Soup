@@ -4,7 +4,8 @@
 
 namespace soup
 {
-	// Based on https://www.dlbeer.co.nz/oss/c25519.html and https://github.com/DavyLandman/compact25519
+	// Original source: https://www.dlbeer.co.nz/oss/c25519.html and https://github.com/DavyLandman/compact25519
+	// Original licence: Dedicated to the public domain.
 
 	struct Curve25519
 	{

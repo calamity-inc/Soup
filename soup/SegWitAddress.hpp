@@ -5,8 +5,6 @@
 
 namespace soup
 {
-	// Adapted from https://github.com/sipa/bech32
-
 	struct SegWitAddress
 	{
 		enum Network : uint8_t

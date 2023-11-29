@@ -18,7 +18,8 @@
 
 namespace soup
 {
-	// Adapted from https://github.com/vog/sha1
+	// Original source: https://github.com/vog/sha1
+	// Original licence: Dedicated to the public domain.
 
 	static constexpr auto BLOCK_INTS = sha1::BLOCK_BYTES / sizeof(uint32_t);
 
