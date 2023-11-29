@@ -44,7 +44,8 @@ namespace soup
 	private:
 		void free()
 		{
-			if (data != nullptr)
+			// "if ptr is a null pointer, the standard library deallocation functions do nothing"
+			//if (data != nullptr)
 			{
 				delete data;
 			}
@@ -53,7 +54,8 @@ namespace soup
 	public:
 		void reset() noexcept
 		{
-			if (data != nullptr)
+			// "if ptr is a null pointer, the standard library deallocation functions do nothing"
+			//if (data != nullptr)
 			{
 				delete data;
 				data = nullptr;
