@@ -530,6 +530,7 @@
     <ClInclude Include="Optional.hpp" />
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="parallel.hpp" />
+    <ClInclude Include="Pathfind.hpp" />
     <ClInclude Include="Percentage.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
