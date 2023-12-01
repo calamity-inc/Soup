@@ -381,7 +381,16 @@ SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x)
 
 SOUP_CEXPORT void MimeMessage_addHeader(MimeMessage* x, const char* key, const char* value)
 {
-	heap.get(x).header_fields.emplace(key, value);
+	MimeMessage& mm = heap.get(x);
+	if (strcmp(key, "User-Agent") == 0)
+	{
+		if (auto e = mm.header_fields.find(key); e != mm.header_fields.end())
+		{
+			e->second = value;
+			return;
+		}
+	}
+	mm.header_fields.emplace(key, value);
 }
 
 // Mixed
