@@ -192,7 +192,7 @@ namespace soup
 		}
 
 		template <typename T2>
-		[[nodiscard]] bool eq(const T2& b) const noexcept
+		[[nodiscard]] bool operator==(const T2& b) const noexcept
 		{
 			for (uint8_t i = 0; i != getAxes(); ++i)
 			{
@@ -202,12 +202,6 @@ namespace soup
 				}
 			}
 			return true;
-		}
-
-		template <typename T2>
-		[[nodiscard]] bool operator==(const T2& b) const noexcept
-		{
-			return eq(b);
 		}
 
 		template <typename T2>

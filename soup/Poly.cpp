@@ -8,9 +8,9 @@ namespace soup
 {
 	bool Poly::operator==(const Poly& b) const
 	{
-		return this->a.eq(b.a)
-			&& this->b.eq(b.b)
-			&& this->c.eq(b.c)
+		return this->a == b.a
+			&& this->b == b.b
+			&& this->c == b.c
 			;
 	}
 
