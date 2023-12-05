@@ -1,7 +1,5 @@
 ﻿#include "cli.hpp"
 
-#include <unit_testing.hpp>
-
 #include <x64.hpp>
 
 // crypto
@@ -63,6 +61,8 @@
 #include <version_compare.hpp>
 
 #include <Rgb.hpp>
+
+#include <unit_testing.hpp> // We want to have the final say on what 'assert' means
 
 using namespace soup;
 using namespace soup::literals;
