@@ -54,16 +54,6 @@
 	#define SOUP_X86 false
 #endif
 
-// === Determine if Soup is not being compiled as a static library
-
-#ifndef SOUP_STANDALONE
-	#if defined(_WINDLL) || SOUP_WASM
-		#define SOUP_STANDALONE true
-	#else
-		#define SOUP_STANDALONE false
-	#endif
-#endif
-
 // === Determine if code inspector
 
 #ifdef __INTELLISENSE__

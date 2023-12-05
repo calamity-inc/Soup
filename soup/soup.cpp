@@ -1,6 +1,7 @@
 #include "base.hpp"
 
-#if SOUP_STANDALONE || SOUP_CODE_INSPECTOR
+// Don't want to produce bindings when building Soup as a static lib.
+#if defined(SOUP_STANDALONE) || defined(_WINDLL) || SOUP_WASM || SOUP_CODE_INSPECTOR
 
 #include <stdexcept>
 #include <string>
