@@ -1,5 +1,5 @@
 #include "audPlayback.hpp"
-#if !SOUP_WASM
+#if SOUP_WINDOWS || SOUP_LINUX
 
 #include <atomic>
 #include <cstring> // memset

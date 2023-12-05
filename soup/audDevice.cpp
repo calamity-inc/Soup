@@ -1,5 +1,5 @@
 #include "audDevice.hpp"
-#if !SOUP_WASM
+#if SOUP_WINDOWS || SOUP_LINUX
 
 #include "audPlayback.hpp"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base.hpp"
-#if !SOUP_WASM
+#if SOUP_WINDOWS || SOUP_LINUX
 #include "fwd.hpp"
 
 #include <cstdint>

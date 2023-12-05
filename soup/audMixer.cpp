@@ -1,5 +1,5 @@
 #include "audMixer.hpp"
-#if !SOUP_WASM
+#if SOUP_WINDOWS || SOUP_LINUX
 
 #include <algorithm>
 
