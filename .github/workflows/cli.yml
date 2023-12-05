@@ -17,12 +17,6 @@ jobs:
       - name: Run ./soup test
         run: ./CLI/soup test
 
-      - name: Upload soup
-        uses: actions/upload-artifact@v3
-        with:
-          name: "Ubuntu 22.04"
-          path: CLI/soup
-
   ubuntu-20-04:
     runs-on: ubuntu-20.04
     steps:
@@ -36,12 +30,6 @@ jobs:
 
       - name: Run ./soup test
         run: ./CLI/soup test
-
-      - name: Upload soup
-        uses: actions/upload-artifact@v3
-        with:
-          name: "Debian 11, Ubuntu 20.04"
-          path: CLI/soup
 
   debian-10:
     runs-on: [debian-10]
@@ -60,5 +48,5 @@ jobs:
       - name: Upload soup
         uses: actions/upload-artifact@v3
         with:
-          name: "Debian 10"
+          name: "Debian 10 and above"
           path: CLI/soup
