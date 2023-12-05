@@ -6,6 +6,8 @@
 #pragma comment(lib, "Dnsapi.lib")
 #else
 #include <resolv.h>
+
+#include "dnsClass.hpp" // for DNS_IN because C_IN is not available on MacOS, not even in <arpa/nameser.h>
 #endif
 
 namespace soup
@@ -61,7 +63,7 @@ namespace soup
 		}
 #else
 		unsigned char query_buffer[1024];
-		auto ret = res_query(name.c_str(), C_IN, qtype, query_buffer, sizeof(query_buffer));
+		auto ret = res_query(name.c_str(), DNS_IN, qtype, query_buffer, sizeof(query_buffer));
 		if (ret > 0)
 		{
 			ns_msg nsMsg;
