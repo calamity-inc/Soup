@@ -51,7 +51,7 @@ int main()
 
 	soup::Tempfile code_file("cpp");
 	{
-		std::ofstream f{ code_file };
+		std::ofstream f{ code_file.path };
 		f << std::move(program);
 	}
 	auto comp_res = soup::CompiledExecutable::fromCpp(code_file);
