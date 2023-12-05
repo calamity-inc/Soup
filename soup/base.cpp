@@ -1,5 +1,7 @@
 #include "base.hpp"
 
+static_assert(sizeof(void*) * 8 == SOUP_BITS);
+
 #if !SOUP_EXCEPTIONS
 #include <iostream>
 #endif

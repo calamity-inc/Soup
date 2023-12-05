@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 
-// === Determine platform and bits
+// === Determine platform
 
 #ifdef _WIN32
 	#define SOUP_WINDOWS true
@@ -11,12 +11,6 @@
 	#define SOUP_LINUX false
 	#define SOUP_POSIX false
 	#define SOUP_MACOS false
-
-	#ifdef _WIN64
-		#define SOUP_BITS 64
-	#else
-		#define SOUP_BITS 32
-	#endif
 
 	#define SOUP_EXPORT __declspec(dllexport)
 
@@ -31,8 +25,6 @@
 		#define SOUP_WASM true
 		#define SOUP_LINUX false
 		#define SOUP_MACOS false
-
-		#define SOUP_BITS 32
 
 		#include "emscripten.h"
 		#define SOUP_EXPORT EMSCRIPTEN_KEEPALIVE
@@ -51,14 +43,16 @@
 			#define SOUP_MACOS false
 		#endif
 
-		#if defined(__x86_64__) || defined(__ppc64__) || defined(_M_X64) || defined(__aarch64__)
-			#define SOUP_BITS 64
-		#else
-			#define SOUP_BITS 32
-		#endif
-
 		#define SOUP_EXPORT __attribute__ ((visibility ("default")))
 	#endif
+#endif
+
+// === Determine CPU register size
+
+#if defined(__x86_64__) || defined(__ppc64__) || defined(_M_X64) || defined(__aarch64__)
+	#define SOUP_BITS 64
+#else
+	#define SOUP_BITS 32
 #endif
 
 // === Determine CPU architecture
