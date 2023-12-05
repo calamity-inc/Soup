@@ -1,5 +1,5 @@
 <?php
-require "linux_config.php";
+require "build_config.php";
 
 // Setup folders
 if(!is_dir("bin"))
