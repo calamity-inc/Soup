@@ -84,6 +84,7 @@ namespace soup
 #endif
 	}
 
+#if SOUP_WINDOWS || (SOUP_POSIX && !SOUP_MACOS)
 	void Thread::setTimeCritical() noexcept
 	{
 #if SOUP_WINDOWS
@@ -92,6 +93,7 @@ namespace soup
 		pthread_setschedprio(handle, 15);
 #endif
 	}
+#endif
 
 	void Thread::stop() noexcept
 	{

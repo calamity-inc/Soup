@@ -37,7 +37,9 @@ namespace soup
 
 		~Thread() noexcept;
 
+#if SOUP_WINDOWS || (SOUP_POSIX && !SOUP_MACOS)
 		void setTimeCritical() noexcept;
+#endif
 
 		[[nodiscard]] bool isRunning() const noexcept { return running; }
 		void stop() noexcept;
