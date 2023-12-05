@@ -50,3 +50,23 @@ jobs:
         with:
           name: "Debian 10 and above"
           path: CLI/soup
+
+  macos-latest:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Soup
+        run: php linux_lib.php
+
+      - name: Build CLI
+        run: php linux_cli.php
+
+      - name: Run ./soup test
+        run: ./CLI/soup test
+
+      - name: Upload soup
+        uses: actions/upload-artifact@v3
+        with:
+          name: "MacOS"
+          path: CLI/soup
