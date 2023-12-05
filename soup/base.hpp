@@ -3,13 +3,14 @@
 #include <cstddef>
 #include <cstdint>
 
-// === Determine platform (windows, wasm, or linux) and bits (32 or 64)
+// === Determine platform and bits
 
 #ifdef _WIN32
 	#define SOUP_WINDOWS true
 	#define SOUP_WASM false
 	#define SOUP_LINUX false
 	#define SOUP_POSIX false
+	#define SOUP_MACOS false
 
 	#ifdef _WIN64
 		#define SOUP_BITS 64
@@ -29,6 +30,7 @@
 	#ifdef __EMSCRIPTEN__
 		#define SOUP_WASM true
 		#define SOUP_LINUX false
+		#define SOUP_MACOS false
 
 		#define SOUP_BITS 32
 
@@ -36,10 +38,17 @@
 		#define SOUP_EXPORT EMSCRIPTEN_KEEPALIVE
 	#else
 		#define SOUP_WASM false
+
 		#ifdef __linux__
 			#define SOUP_LINUX true
 		#else
 			#define SOUP_LINUX false
+		#endif
+
+		#if defined(__APPLE__) && defined(__MACH__)
+			#define SOUP_MACOS true
+		#else
+			#define SOUP_MACOS false
 		#endif
 
 		#if defined(__x86_64__) || defined(__ppc64__) || defined(_M_X64) || defined(__aarch64__)
