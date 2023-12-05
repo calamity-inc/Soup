@@ -5,6 +5,9 @@
 #include "Capture.hpp"
 
 #if SOUP_POSIX
+#if SOUP_MACOS
+#define _XOPEN_SOURCE // "The deprecated ucontext routines require _XOPEN_SOURCE to be defined"
+#endif
 #include <ucontext.h>
 #endif
 
