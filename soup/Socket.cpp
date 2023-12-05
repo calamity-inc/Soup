@@ -2,7 +2,7 @@
 
 #if !SOUP_WASM
 
-#if SOUP_LINUX
+#if SOUP_POSIX
 #include <fcntl.h>
 #include <unistd.h> // close
 #include <poll.h>
@@ -1467,7 +1467,7 @@ namespace soup
 			buf.resize(res);
 			return buf;
 		}
-#if SOUP_LINUX
+#if SOUP_POSIX
 		/*else*/ if (res == 0
 			|| (/*res == -1 &&*/
 //#if SOUP_WINDOWS

@@ -35,7 +35,7 @@ namespace soup
 
 	SharedPtr<Socket> Scheduler::addSocket(SharedPtr<Socket>&& sock) noexcept
 	{
-#if SOUP_LINUX
+#if !SOUP_WINDOWS
 		sock->setNonBlocking();
 #endif
 		return addWorker(std::move(sock));

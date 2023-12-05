@@ -67,7 +67,7 @@ namespace soup
 		static void setTitle(const std::string& title);
 
 		inline static EventHandler<void(unsigned int, unsigned int)> size_handler;
-#if SOUP_LINUX
+#if SOUP_POSIX
 		static void sigwinch_handler_proc(int);
 #endif
 		static void enableSizeTracking(void(*fp)(unsigned int, unsigned int, const Capture&), Capture&& cap = {});

@@ -4,7 +4,7 @@
 #if !SOUP_WASM
 #include "Capture.hpp"
 
-#if SOUP_LINUX
+#if SOUP_POSIX
 #include <ucontext.h>
 #endif
 

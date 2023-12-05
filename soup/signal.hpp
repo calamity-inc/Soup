@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base.hpp"
-#if SOUP_LINUX
+#if SOUP_POSIX
 #include <signal.h>
 
 namespace soup

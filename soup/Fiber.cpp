@@ -34,7 +34,7 @@ namespace soup
 		, inst(CreateFiber(0, &entry, this))
 #endif
 	{
-#if SOUP_LINUX
+#if SOUP_POSIX
 		getcontext(&ctx);
 		ctx.uc_link = &ret_ctx;
 		ctx.uc_stack.ss_sp = stack;

@@ -440,7 +440,7 @@ namespace soup
 		std::cout << OSC "2;" << title << ST;
 	}
 
-#if SOUP_LINUX
+#if SOUP_POSIX
 	void console_impl::sigwinch_handler_proc(int)
 	{
 		std::cout << CSI "18t";

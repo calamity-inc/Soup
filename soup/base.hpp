@@ -9,6 +9,7 @@
 	#define SOUP_WINDOWS true
 	#define SOUP_WASM false
 	#define SOUP_LINUX false
+	#define SOUP_POSIX false
 
 	#ifdef _WIN64
 		#define SOUP_BITS 64
@@ -23,6 +24,7 @@
 	#endif
 #else
 	#define SOUP_WINDOWS false
+	#define SOUP_POSIX true
 
 	#ifdef __EMSCRIPTEN__
 		#define SOUP_WASM true
@@ -34,7 +36,11 @@
 		#define SOUP_EXPORT EMSCRIPTEN_KEEPALIVE
 	#else
 		#define SOUP_WASM false
-		#define SOUP_LINUX true
+		#ifdef __linux__
+			#define SOUP_LINUX true
+		#else
+			#define SOUP_LINUX false
+		#endif
 
 		#if defined(__x86_64__) || defined(__ppc64__) || defined(_M_X64) || defined(__aarch64__)
 			#define SOUP_BITS 64
