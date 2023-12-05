@@ -68,5 +68,5 @@ jobs:
       - name: Upload soup
         uses: actions/upload-artifact@v3
         with:
-          name: "MacOS"
+          name: "MacOS (X86)"
           path: CLI/soup
