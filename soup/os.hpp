@@ -17,7 +17,7 @@ namespace soup
 	class os
 	{
 	public:
-		[[nodiscard]] static size_t filesize(const std::filesystem::path& path); // returns -1 on error
+		[[nodiscard]] static intptr_t filesize(const std::filesystem::path& path); // returns -1 on error
 
 		[[nodiscard]] static std::filesystem::path tempfile(const std::string& ext = {});
 		[[nodiscard]] static std::filesystem::path getProgramData();

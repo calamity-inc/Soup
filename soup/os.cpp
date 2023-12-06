@@ -28,7 +28,7 @@
 
 namespace soup
 {
-	size_t os::filesize(const std::filesystem::path& path)
+	intptr_t os::filesize(const std::filesystem::path& path)
 	{
 		// This is not guaranteed to work, but works on UNIX, and on Windows in binary mode.
 		std::ifstream in(path, std::ifstream::ate | std::ifstream::binary);
