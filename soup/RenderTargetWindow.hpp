@@ -8,6 +8,7 @@
 
 #if SOUP_WINDOWS
 #include <Windows.h>
+#pragma comment(lib, "Gdi32.lib")
 #else
 #include "X11Api.hpp"
 #endif

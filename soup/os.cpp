@@ -10,6 +10,7 @@
 #include <ShlObj.h> // CSIDL_COMMON_APPDATA
 
 #pragma comment(lib, "Shell32.lib") // SHGetFolderPathW
+#pragma comment(lib, "User32.lib") // SendInput
 
 #include "Exception.hpp"
 #include "Key.hpp"
