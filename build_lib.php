@@ -2,18 +2,18 @@
 require "build_config.php";
 
 // Setup folders
-if(!is_dir("bin"))
+if(!is_dir(__DIR__."/bin"))
 {
-	mkdir("bin");
+	mkdir(__DIR__."/bin");
 }
-if(!is_dir("bin/int"))
+if(!is_dir(__DIR__."/bin/int"))
 {
-	mkdir("bin/int");
+	mkdir(__DIR__."/bin/int");
 }
 
 // Find work
 $files = [];
-foreach(scandir("soup") as $file)
+foreach(scandir(__DIR__."/soup") as $file)
 {
 	if(substr($file, -4) == ".cpp")
 	{
@@ -26,8 +26,8 @@ $objects = [];
 foreach($files as $file)
 {
 	echo $file."\n";
-	passthru("$clang -c soup/$file.cpp -o bin/int/$file.o");
-	array_push($objects, escapeshellarg("bin/int/$file.o"));
+	passthru("$clang -c ".__DIR__."/soup/$file.cpp -o ".__DIR__."/bin/int/$file.o");
+	array_push($objects, escapeshellarg(__DIR__."/bin/int/$file.o"));
 }
 
 echo "Bundling static lib...\n";
