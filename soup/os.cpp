@@ -132,7 +132,7 @@ namespace soup
 				msg.push_back('"');
 				SOUP_THROW(Exception(std::move(msg)));
 			}
-			string::rtrim(program);
+			string::limit<std::string>(program, "\n");
 		}
 #endif
 	}
