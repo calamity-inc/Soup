@@ -146,8 +146,6 @@ namespace soup
 		}
 
 	private:
-#ifdef _DEBUG
 		void validate() const;
-#endif
 	};
 }

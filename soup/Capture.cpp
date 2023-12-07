@@ -1,12 +1,9 @@
 #include "Capture.hpp"
 
-#ifdef _DEBUG
 #include "Exception.hpp"
-#endif
 
 namespace soup
 {
-#ifdef _DEBUG
 	void Capture::validate() const
 	{
 #if SOUP_BITS == 64
@@ -18,5 +15,4 @@ namespace soup
 			throw Exception("Attempt to use Capture after it has been free'd");
 		}
 	}
-#endif
 }
