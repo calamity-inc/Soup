@@ -31,4 +31,9 @@ foreach($files as $file)
 }
 
 echo "Bundling static lib...\n";
-passthru("ar rc libsoup.a ".join(" ", $objects));
+$archiver = "ar";
+if (defined("PHP_WINDOWS_VERSION_MAJOR"))
+{
+	$archiver = "llvm-ar";
+}
+passthru("$archiver rc libsoup.a ".join(" ", $objects));
