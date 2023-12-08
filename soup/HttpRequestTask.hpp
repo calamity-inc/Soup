@@ -32,7 +32,11 @@ namespace soup
 
 		State state = START;
 		bool prefer_ipv6 = false; // for funny things like https://api.lovense.com/api/lan/getToys
-		bool attempted_reuse = false;
+		union
+		{
+			bool dont_keep_alive = false;
+			bool attempted_reuse /*= false*/;
+		};
 		HttpRequest hr;
 		DelayedCtor<netConnectTask> connector;
 		SharedPtr<Socket> sock;
