@@ -119,7 +119,11 @@ namespace soup
 	{
 		std::vector<std::string> args = { "rc", out };
 		args.insert(args.end(), objects.begin(), objects.end());
+#if !SOUP_MACOS
 		return os::executeLong(prog_ar, std::move(args));
+#else
+		return os::execute(prog_ar, std::move(args));
+#endif
 	}
 
 	const char* Compiler::getDynamicLibraryExtension() const
