@@ -1,3 +1,5 @@
+#if defined(__x86_64__) || defined(_M_X64)
+
 #include <cstdint>
 
 #include <wmmintrin.h>
@@ -172,3 +174,5 @@ namespace soup
 		*reinterpret_cast<__m128i*>(out) = _mm_aesdeclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[0]);
 	}
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if defined(__x86_64__) || defined(_M_X64)
+
 #include <cstdint>
 
 #include <immintrin.h>
@@ -193,3 +195,5 @@ namespace soup
 		_mm_storeu_si128((__m128i*) &state[4], STATE1);
 	}
 }
+
+#endif

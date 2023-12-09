@@ -1,3 +1,5 @@
+#if defined(__x86_64__) || defined(_M_X64)
+
 #include <cstdint>
 
 #include <smmintrin.h> // _mm_extract_epi32
@@ -31,3 +33,5 @@ namespace soup
 		return ~_mm_extract_epi32(_mm_xor_si128(b, _mm_clmulepi64_si128(_mm_and_si128(_mm_clmulepi64_si128(_mm_and_si128(b, z), u, 16), z), u, 0)), 1);
 	}
 }
+
+#endif

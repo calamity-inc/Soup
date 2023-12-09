@@ -1,3 +1,5 @@
+#if defined(__x86_64__) || defined(_M_X64)
+
 #include <cstdint>
 
 #include <immintrin.h>
@@ -187,3 +189,5 @@ namespace soup
 		state[4] = _mm_extract_epi32(E0, 3);
 	}
 }
+
+#endif
