@@ -49,7 +49,7 @@
 
 // === Determine CPU register size
 
-#if defined(__x86_64__) || defined(__ppc64__) || defined(_M_X64) || defined(__aarch64__)
+#if defined(__x86_64__) || defined(_M_X64) || defined(__ppc64__) || defined(__aarch64__)
 	#define SOUP_BITS 64
 #else
 	#define SOUP_BITS 32
@@ -57,7 +57,7 @@
 
 // === Determine CPU architecture
 
-#if defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__i386) || defined(__i486__) || defined(__i486) || defined(i386) || defined(__ia64__) || defined(__x86_64__)
+#if defined(__x86_64__) || defined(_M_X64) || defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
 	#define SOUP_X86 true
 #else
 	#define SOUP_X86 false
