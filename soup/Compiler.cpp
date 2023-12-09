@@ -52,11 +52,15 @@ namespace soup
 			args.emplace_back("-lgdi32");
 		}
 #else
+#if !SOUP_MACOS
 		args.emplace_back("-fuse-ld=lld");
+#endif
 		args.emplace_back("-lstdc++");
 		if (!isEmscripten())
 		{
+#if !SOUP_MACOS
 			args.emplace_back("-lstdc++fs");
+#endif
 			args.emplace_back("-lresolv");
 		}
 		args.emplace_back("-lm");
