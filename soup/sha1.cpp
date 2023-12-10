@@ -1,7 +1,6 @@
 #include "sha1.hpp"
 
 #include "base.hpp"
-#include "sha_commons.hpp"
 
 #if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_INTRIN)
 #define SHA1_USE_INTRIN true
@@ -20,6 +19,29 @@ namespace soup
 {
 	// Original source: https://github.com/vog/sha1
 	// Original licence: Dedicated to the public domain.
+
+	template <size_t BLOCK_INTS, bool intrin>
+	void buffer_to_block(const std::string& buffer, uint32_t block[BLOCK_INTS])
+	{
+		/* Convert the std::string (byte buffer) to a uint32_t array (MSB) */
+		for (size_t i = 0; i < BLOCK_INTS; i++)
+		{
+			if constexpr (intrin)
+			{
+				block[i] = (buffer[4 * i + 0] & 0xff)
+					| (buffer[4 * i + 1] & 0xff) << 8
+					| (buffer[4 * i + 2] & 0xff) << 16
+					| (buffer[4 * i + 3] & 0xff) << 24;
+			}
+			else
+			{
+				block[i] = (buffer[4 * i + 3] & 0xff)
+					| (buffer[4 * i + 2] & 0xff) << 8
+					| (buffer[4 * i + 1] & 0xff) << 16
+					| (buffer[4 * i + 0] & 0xff) << 24;
+			}
+		}
+	}
 
 	static constexpr auto BLOCK_INTS = sha1::BLOCK_BYTES / sizeof(uint32_t);
 

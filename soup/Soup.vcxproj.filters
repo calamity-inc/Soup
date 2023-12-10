@@ -1371,9 +1371,6 @@
     <ClInclude Include="PointerAndBool.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="sha_commons.hpp">
-      <Filter>data\hash</Filter>
-    </ClInclude>
     <ClInclude Include="dnsCacheResolver.hpp">
       <Filter>net\dns</Filter>
     </ClInclude>
