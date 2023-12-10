@@ -37,7 +37,7 @@ namespace soup
 
 			if (cpuid_max_eax >= 0x07)
 			{
-				invokeCpuid(arr, 0x07);
+				invokeCpuid(arr, 0x07, 0);
 				extended_features_0_ebx = EBX;
 
 				if (cpuid_max_eax >= 0x16)
@@ -115,6 +115,17 @@ namespace soup
 		std::swap(((int*)out)[2], ((int*)out)[3]);
 #else
 		__cpuid(eax, ((int*)out)[0], ((int*)out)[1], ((int*)out)[3], ((int*)out)[2]);
+#endif
+	}
+
+	void CpuInfo::invokeCpuid(void* out, uint32_t eax, uint32_t ecx)
+	{
+#if defined(__GNUC__)
+		((uint32_t*)out)[3] = ecx;
+		__get_cpuid(eax, &((uint32_t*)out)[0], &((uint32_t*)out)[1], &((uint32_t*)out)[3], &((uint32_t*)out)[2]);
+#else
+		__cpuidex(((int*)out), eax, ecx);
+		std::swap(((int*)out)[2], ((int*)out)[3]);
 #endif
 	}
 }

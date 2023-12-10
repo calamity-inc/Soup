@@ -102,6 +102,7 @@ namespace soup
 		[[nodiscard]] std::string toString() const;
 
 		static void invokeCpuid(void* out, uint32_t eax);
+		static void invokeCpuid(void* out, uint32_t eax, uint32_t ecx);
 	};
 }
 
