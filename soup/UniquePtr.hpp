@@ -67,7 +67,8 @@ namespace soup
 			const auto old_data = data;
 			data = b.data;
 			b.data = nullptr;
-			if (old_data != nullptr)
+			// "if ptr is a null pointer, the standard library deallocation functions do nothing"
+			//if (old_data != nullptr)
 			{
 				delete old_data;
 			}
