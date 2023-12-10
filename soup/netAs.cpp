@@ -142,7 +142,10 @@ namespace soup
 		case 396986:
 			// myLoc managed IT AG
 		case 24961:
-		case 41412:	
+		case 41412:
+			// Path Network, Inc
+		case 396998:
+		case 30644:
 			return true;
 		}
 		std::string slug = handle;
