@@ -59,22 +59,17 @@ function await_commands()
 	echo $output;
 }
 
-// Find work
+echo "Compiling...\n";
 $files = [];
+$objects = [];
 foreach(scandir(__DIR__."/soup") as $file)
 {
 	if(substr($file, -4) == ".cpp")
 	{
-		array_push($files, substr($file, 0, -4));
+		$file = substr($file, 0, -4);
+		run_command_async("$clang -c ".__DIR__."/soup/$file.cpp -o ".__DIR__."/bin/int/$file.o");
+		array_push($objects, escapeshellarg("bin/int/$file.o"));
 	}
-}
-
-echo "Compiling...\n";
-$objects = [];
-foreach($files as $file)
-{
-	run_command_async("$clang -c ".__DIR__."/soup/$file.cpp -o ".__DIR__."/bin/int/$file.o");
-	array_push($objects, escapeshellarg("bin/int/$file.o"));
 }
 await_commands();
 
