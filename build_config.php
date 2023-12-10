@@ -5,8 +5,12 @@ if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 	$clang .= " -D_CRT_SECURE_NO_WARNINGS";
 }
 
-$clanglink = $clang." -lstdc++ -pthread -lresolv -lm -ldl";
-if (PHP_OS_FAMILY != "Darwin")
+$clanglink = $clang;
+if (!defined("PHP_WINDOWS_VERSION_MAJOR"))
 {
-	$clanglink .= " -fuse-ld=lld -lstdc++fs";
+	$clanglink .= " -lstdc++ -pthread -lresolv -lm -ldl";
+	if (PHP_OS_FAMILY != "Darwin")
+	{
+		$clanglink .= " -fuse-ld=lld -lstdc++fs";
+	}
 }
