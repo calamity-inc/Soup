@@ -88,10 +88,12 @@ await_commands();
 
 echo "Bundling static lib...\n";
 $archiver = "ar";
+$libname = "libsoup.a";
 if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 {
 	$archiver = "llvm-ar";
+	$libname = "soup.lib";
 }
-passthru("$archiver rc libsoup.a ".join(" ", $objects));
+passthru("$archiver rc $libname ".join(" ", $objects));
 
 chdir($cd);
