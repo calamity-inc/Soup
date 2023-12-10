@@ -320,7 +320,7 @@ namespace soup
 			}
 			return res;
 		}
-		
+
 		enum ToIntFlags : uint8_t
 		{
 			TI_FULL = 1 << 0, // The entire string must be processed. If the string is too long or contains invalid characters, nullopt or fallback will be returned.
@@ -471,7 +471,7 @@ namespace soup
 		{
 			return toInt<IntT, Flags>(str).value_or(fallback);
 		}
-		
+
 		template <typename IntT, uint8_t Flags = 0>
 		[[nodiscard]] static IntT toInt(const std::string& str, IntT fallback) noexcept
 		{
