@@ -1,11 +1,7 @@
 #include "CpuInfo.hpp"
 #if SOUP_X86
 
-#include "AllocRaiiVirtual.hpp"
-#include "os.hpp"
 #include "string.hpp"
-#include "UniquePtr.hpp"
-#include "x64.hpp"
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #include <intrin.h>
