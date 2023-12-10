@@ -1,6 +1,9 @@
 <?php
 require "build_config.php";
 
+$cd = getcwd();
+chdir(__DIR__);
+
 // Setup folders
 if(!is_dir(__DIR__."/bin"))
 {
@@ -27,7 +30,7 @@ foreach($files as $file)
 {
 	echo $file."\n";
 	passthru("$clang -c ".__DIR__."/soup/$file.cpp -o ".__DIR__."/bin/int/$file.o");
-	array_push($objects, escapeshellarg(__DIR__."/bin/int/$file.o"));
+	array_push($objects, escapeshellarg("bin/int/$file.o"));
 }
 
 echo "Bundling static lib...\n";
@@ -37,3 +40,5 @@ if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 	$archiver = "llvm-ar";
 }
 passthru("$archiver rc libsoup.a ".join(" ", $objects));
+
+chdir($cd);
