@@ -6,11 +6,11 @@ Most things in Soup are quite self-explanatory, and the code is meant to be read
 
 However, to help you get started or explain more complex topics, there are a few articles here:
 
-- [JSON](JSON.md)
-- [Programming a language](Programming a language.md)
-- [RSA](RSA.md)
-- [STL Drop-in Replacements](STL Drop-in Replacements.md)
+- [JSON](cpp/JSON.md)
+- [Programming a language](cpp/Programming a language.md)
+- [RSA](cpp/RSA.md)
+- [STL Drop-in Replacements](cpp/STL Drop-in Replacements.md)
 
 ## Bindings
 
-- [JS Bindings CDN](JS Bindings CDN.md)
+- [JS Bindings CDN](bindings/JS Bindings CDN.md)
