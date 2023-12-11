@@ -23,7 +23,7 @@ namespace soup
 			return sqrt(pow2(b.x - ((const T*)this)->x) + pow2(b.y - ((const T*)this)->y));
 		}
 
-		[[nodiscard]] T toRot() const noexcept
+		[[nodiscard]] T toRot() const noexcept // Left-handed Z-Up
 		{
 			const float yaw = -atan2f(((const T*)this)->x, ((const T*)this)->y) / ((float)M_PI) * 180.0f;
 			const float pitch = asinf(((const T*)this)->z / Base::magnitude()) / ((float)M_PI) * 180.0f;
@@ -72,14 +72,14 @@ namespace soup
 		}
 
 		template <typename T2>
-		[[nodiscard]] T2 lookAt(const T2& b) const noexcept
+		[[nodiscard]] T2 lookAt(const T2& b) const noexcept // Left-handed Z-Up
 		{
 			return lookAtDir(b).toRot();
 		}
 
 		// rotation vectors
 
-		[[nodiscard]] T toDir() const noexcept // Z Up
+		[[nodiscard]] T toDir() const noexcept // Left-handed Z-Up
 		{
 			const float yaw_radians = DEG_TO_RAD(((const T*)this)->z);
 			const float pitch_radians = DEG_TO_RAD(((const T*)this)->x) * -1.0f;
@@ -87,17 +87,6 @@ namespace soup
 				cosf(pitch_radians) * sinf(yaw_radians) * -1.0f,
 				cosf(pitch_radians) * cosf(yaw_radians),
 				sinf(pitch_radians) * -1.0f
-			};
-		}
-
-		[[nodiscard]] T toDirYUp() const noexcept
-		{
-			const float yaw_radians = DEG_TO_RAD(((const T*)this)->z);
-			const float pitch_radians = DEG_TO_RAD(((const T*)this)->x) * -1.0f;
-			return T{
-				cosf(pitch_radians) * sinf(yaw_radians) * -1.0f,
-				sinf(pitch_radians) * -1.0f,
-				cosf(pitch_radians) * cosf(yaw_radians)
 			};
 		}
 
