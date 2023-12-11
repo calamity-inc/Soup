@@ -1,5 +1,7 @@
 # Soup Documentation
 
+- [Regex](user/Regex.md)
+
 ## C++ Usage
 
 Most things in Soup are quite self-explanatory, and the code is meant to be read as well.
