@@ -35,5 +35,12 @@ namespace soup
 			is.read(v.data(), len);
 			return !is.bad();
 		}
+
+	public:
+		bool getLine(std::string& line) noexcept final
+		{
+			std::getline(is, line);
+			return is.operator bool();
+		}
 	};
 }
