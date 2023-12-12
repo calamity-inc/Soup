@@ -5,7 +5,9 @@
 
 namespace soup
 {
-	UniquePtr<catNode> catParse(Reader& r)
+#define CAT_ASSERT(x) SOUP_IF_UNLIKELY (!(x)) { return {}; }
+
+	UniquePtr<catNode> catParse(Reader& r) noexcept
 	{
 		std::string spaces;
 		auto root = soup::make_unique<catNode>(nullptr);
@@ -59,7 +61,7 @@ namespace soup
 			{
 				do
 				{
-					SOUP_ASSERT(depth != 0);
+					CAT_ASSERT(depth != 0);
 					depths.pop_back();
 					--depth;
 				} while (line.length() <= depth
@@ -73,7 +75,7 @@ namespace soup
 					&& line.substr(0, depth + 1) == std::string(depth + 1, '\t')
 					)
 				{
-					SOUP_ASSERT(!depths.at(depth)->children.empty());
+					CAT_ASSERT(!depths.at(depth)->children.empty());
 					depths.emplace_back(depths.at(depth)->children.back());
 					++depth;
 				}
@@ -100,7 +102,7 @@ namespace soup
 			if (delim != std::string::npos)
 			{
 				node->name = line_trimmed.substr(0, delim);
-				SOUP_ASSERT(line_trimmed.at(delim + 1) == ' ');
+				CAT_ASSERT(line_trimmed.at(delim + 1) == ' ');
 				node->value = line_trimmed.substr(delim + 2); // ": "
 			}
 			else
@@ -111,8 +113,8 @@ namespace soup
 			{
 				string::replaceAll(node->name, "\\:", ":");
 			}
-			SOUP_ASSERT(!node->name.empty());
-			SOUP_ASSERT(node->name.at(0) != '\t');
+			CAT_ASSERT(!node->name.empty());
+			CAT_ASSERT(node->name.at(0) != '\t');
 		}
 		return root;
 	}

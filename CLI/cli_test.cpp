@@ -314,6 +314,7 @@ static void unit_data()
 	{
 		StringReader sr("Hello: World");
 		auto tree = catParse(sr);
+		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "Hello");
 		assert(tree->children.at(0)->value == "World");
@@ -330,6 +331,7 @@ static void unit_data()
 			"\n"
 		);
 		tree = catParse(sr);
+		assert(tree);
 		assert(tree->children.size() == 4);
 		assert(tree->children.at(0)->name == "Hello");
 		assert(tree->children.at(0)->value == "World");
@@ -342,6 +344,7 @@ static void unit_data()
 
 		sr = ("Colon (\\:): Valid");
 		tree = catParse(sr);
+		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "Colon (:)");
 		assert(tree->children.at(0)->value == "Valid");
@@ -353,6 +356,7 @@ static void unit_data()
 			"    Nesting\n"
 		);
 		tree = catParse(sr);
+		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "List");
 		assert(tree->children.at(0)->value == "With Value");
@@ -362,6 +366,9 @@ static void unit_data()
 		assert(tree->children.at(0)->children.at(1)->name == "Nesting");
 		assert(tree->children.at(0)->children.at(1)->value.empty());
 
+		sr = " ";
+		tree = catParse(sr);
+		assert(!tree);
 	});
 
 	test("ripemd160", []

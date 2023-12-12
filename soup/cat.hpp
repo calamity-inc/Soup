@@ -36,5 +36,6 @@ namespace soup
 		}
 	};
 
-	[[nodiscard]] UniquePtr<catNode> catParse(Reader& r);
+	// Returns a default-constructed UniquePtr in case of malformed data.
+	[[nodiscard]] UniquePtr<catNode> catParse(Reader& r) noexcept;
 }
