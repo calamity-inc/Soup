@@ -82,7 +82,7 @@ namespace soup
 			}
 
 			// Content
-			auto node = depths.at(depth)->children.emplace_back(soup::make_unique<catNode>(depths.at(depth))).get();
+			auto node = soup::make_unique<catNode>(depths.at(depth));
 			auto line_trimmed = line.substr(depth);
 			size_t delim = 0;
 			bool with_escaping = false;
@@ -116,8 +116,11 @@ namespace soup
 			{
 				string::replaceAll(node->name, "\\:", ":");
 			}
-			CAT_ASSERT(!node->name.empty());
-			CAT_ASSERT(node->name.at(0) != '\t');
+			if (!node->name.empty())
+			{
+				CAT_ASSERT(node->name.at(0) != '\t');
+				depths.at(depth)->children.emplace_back(std::move(node));
+			}
 		}
 		return root;
 	}

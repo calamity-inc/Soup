@@ -377,6 +377,17 @@ static void unit_data()
 
 		sr = (
 			"Some: Value\n"
+			" "
+		);
+		tree = catParse(sr);
+		assert(tree);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "Some");
+		assert(tree->children.at(0)->value == "Value");
+		assert(tree->children.at(0)->children.empty());
+
+		sr = (
+			"Some: Value\n"
 			"Empty:\n" // Notice the lack of space after colon. Normally, ": " is the key-value separator, but in the "empty value" case, the space is optional.
 		);
 		tree = catParse(sr);
