@@ -135,7 +135,7 @@ namespace soup
 
 	const Token& ParserState::getToken() const
 	{
-		return ld->getToken(static_cast<LexemeNode*>(i->get())->lexeme);
+		return *ld->findToken(static_cast<LexemeNode*>(i->get())->lexeme);
 	}
 
 	void ParserState::checkRighthand() const

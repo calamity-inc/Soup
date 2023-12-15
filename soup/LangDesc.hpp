@@ -11,7 +11,7 @@ namespace soup
 	class LangDesc
 	{
 	public:
-		std::vector<Token> tokens{};
+		std::vector<std::vector<Token>> token_sets{};
 		bool semicolon_is_not_space = false;
 
 		Token& addToken(const char* keyword, Token::parse_t parse = nullptr)
@@ -21,7 +21,17 @@ namespace soup
 
 		Token& addToken(const char* keyword, Rgb colour, Token::parse_t parse = nullptr)
 		{
-			return tokens.emplace_back(Token{ keyword, colour, parse });
+			return token_sets.emplace_back(std::vector<Token>{ Token{ keyword, colour, parse } }).at(0);
+		}
+
+		Token& addTokenWithSamePrecedenceAsPreviousToken(const char* keyword, Token::parse_t parse)
+		{
+			return addTokenWithSamePrecedenceAsPreviousToken(keyword, Rgb::WHITE, parse);
+		}
+
+		Token& addTokenWithSamePrecedenceAsPreviousToken(const char* keyword, Rgb colour, Token::parse_t parse)
+		{
+			return token_sets.back().emplace_back(Token{ keyword, colour, parse });
 		}
 
 		void addBlock(const char* start_keyword, const char* end_keyword);
@@ -33,12 +43,13 @@ namespace soup
 		[[nodiscard]] astBlock parseImpl(std::vector<Lexeme>& ls) const;
 		[[nodiscard]] astBlock parseNoCheck(std::vector<Lexeme>& ls) const;
 	private:
-		void parseBlock(ParserState& ps, const Token& t) const;
-		void parseBlockRecurse(ParserState& ps, const Token& t, astBlock* b) const;
+		void parseBlock(ParserState& ps, const std::vector<Token>& ts) const;
+		void parseBlockRecurse(ParserState& ps, const std::vector<Token>& ts, astBlock* b) const;
 
 	public:
-		[[nodiscard]] const Token& getToken(const char* keyword) const;
-		[[nodiscard]] const Token& getToken(const Lexeme& l) const;
+		[[nodiscard]] const Token* findToken(const char* keyword) const;
+		[[nodiscard]] const Token* findToken(const std::string& keyword) const;
+		[[nodiscard]] const Token* findToken(const Lexeme& l) const;
 
 		[[nodiscard]] FormattedText highlightSyntax(const std::string& code) const;
 		[[nodiscard]] FormattedText highlightSyntax(const std::vector<Lexeme>& ls) const;

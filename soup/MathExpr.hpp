@@ -6,7 +6,6 @@ namespace soup
 {
 	// Evaluates expressions rougly in this format: (?:\d+\s*[+\-*\/]\s*)+\d+
 	// Soup's Language Stack handles the order of operations, so e.g. 1 + 2 * 3 evaluates to 7.
-	// BUG: However, it's a bit too overzealous and hence 3 - 2 + 1 evaluates to 0 instead of 2.
 	// TODO: Handle parens
 	// TODO: Handle unary operators (e.g. -3)
 	// TODO: Add modulo operator (%)

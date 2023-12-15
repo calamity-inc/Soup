@@ -55,7 +55,7 @@ namespace soup
 			const char* c;
 			std::optional<int64_t> opt;
 
-			if (auto tk = std::find(ld->tokens.begin(), ld->tokens.end(), lb); tk != ld->tokens.end())
+			if (auto tk = ld->findToken(lb))
 			{
 				lexemes.emplace_back(Lexeme{ tk->keyword });
 			}
@@ -207,60 +207,68 @@ namespace soup
 		ParserState ps;
 		ps.ld = this;
 		ps.b = &b;
-		for (const auto& t : tokens)
+		for (const auto& ts : token_sets)
 		{
-			if (t.parse != nullptr)
+#if DEBUG_PARSE
+			std::vector<std::string> keywords;
+			for (const auto& t : ts)
 			{
-#if DEBUG_PARSE
-				std::cout << "Parsing " << t.keyword << std::endl;
-#endif
-				parseBlock(ps, t);
-#if DEBUG_PARSE
-				std::cout << b.toString() << std::endl;
-#endif
+				keywords.emplace_back(t.keyword);
 			}
+			std::cout << "Parsing " << string::join(keywords, ", ") << std::endl;
+#endif
+			parseBlock(ps, ts);
+#if DEBUG_PARSE
+			std::cout << b.toString() << std::endl;
+#endif
 		}
 
 		return b;
 	}
 
-	void LangDesc::parseBlock(ParserState& ps, const Token& t) const
+	void LangDesc::parseBlock(ParserState& ps, const std::vector<Token>& ts) const
 	{
 		ps.i = ps.b->children.begin();
 		for (; ps.i != ps.b->children.end(); )
 		{
 			if ((*ps.i)->type == astNode::BLOCK)
 			{
-				parseBlockRecurse(ps, t, static_cast<astBlock*>(ps.i->get()));
+				parseBlockRecurse(ps, ts, static_cast<astBlock*>(ps.i->get()));
 				++ps.i;
 			}
 			else if ((*ps.i)->type == astNode::LEXEME)
 			{
-				if (t == static_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword)
+				bool any_match = false;
+				for (const auto& t : ts)
 				{
-					t.parse(ps);
-					ps.i = ps.b->children.erase(ps.i);	
-					if (ps.op.type != 0xFF)
+					if (t == static_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword)
 					{
-						ps.i = ps.b->children.insert(ps.i, soup::make_unique<OpNode>(std::move(ps.op)));
-						ps.op.type = 0xFF;
-						ps.op.args.clear();
-					}
-					else if (!ps.op.args.empty())
-					{
-						std::string err = "Parser for ";
-						err.append(t.keyword);
-						err.append(" pushed arguments but didn't set op");
-						SOUP_THROW(ParseError(std::move(err)));
+						t.parse(ps);
+						ps.i = ps.b->children.erase(ps.i);
+						if (ps.op.type != 0xFF)
+						{
+							ps.i = ps.b->children.insert(ps.i, soup::make_unique<OpNode>(std::move(ps.op)));
+							ps.op.type = 0xFF;
+							ps.op.args.clear();
+						}
+						else if (!ps.op.args.empty())
+						{
+							std::string err = "Parser for ";
+							err.append(t.keyword);
+							err.append(" pushed arguments but didn't set op");
+							SOUP_THROW(ParseError(std::move(err)));
+						}
+						any_match = true;
+						break;
 					}
 				}
-				else
+				if (!any_match)
 				{
 					if (static_cast<LexemeNode*>(ps.i->get())->lexeme.token_keyword == Lexeme::VAL
 						&& static_cast<LexemeNode*>(ps.i->get())->lexeme.val.isAstBlock()
 						)
 					{
-						parseBlockRecurse(ps, t, &static_cast<LexemeNode*>(ps.i->get())->lexeme.val.getAstBlock());
+						parseBlockRecurse(ps, ts, &static_cast<LexemeNode*>(ps.i->get())->lexeme.val.getAstBlock());
 					}
 					++ps.i;
 				}
@@ -279,7 +287,7 @@ namespace soup
 							&& static_cast<LexemeNode*>(arg.get())->lexeme.val.isAstBlock()
 							)
 						{
-							parseBlockRecurse(ps, t, &static_cast<LexemeNode*>(arg.get())->lexeme.val.getAstBlock());
+							parseBlockRecurse(ps, ts, &static_cast<LexemeNode*>(arg.get())->lexeme.val.getAstBlock());
 						}
 					}
 				}
@@ -292,24 +300,49 @@ namespace soup
 		}
 	}
 
-	void LangDesc::parseBlockRecurse(ParserState& ps, const Token& t, astBlock* b) const
+	void LangDesc::parseBlockRecurse(ParserState& ps, const std::vector<Token>& ts, astBlock* b) const
 	{
 		auto og_b = ps.b;
 		auto og_i = ps.i;
 		ps.b = b;
-		parseBlock(ps, t);
+		parseBlock(ps, ts);
 		ps.b = og_b;
 		ps.i = og_i;
 	}
 
-	const Token& LangDesc::getToken(const char* keyword) const
+	const Token* LangDesc::findToken(const char* keyword) const
 	{
-		return *std::find(tokens.begin(), tokens.end(), keyword);
+		for (const auto& ts : token_sets)
+		{
+			for (const auto& t : ts)
+			{
+				if (t == keyword)
+				{
+					return &t;
+				}
+			}
+		}
+		return nullptr;
 	}
 
-	const Token& LangDesc::getToken(const Lexeme& l) const
+	const Token* LangDesc::findToken(const std::string& keyword) const
 	{
-		return getToken(l.token_keyword);
+		for (const auto& ts : token_sets)
+		{
+			for (const auto& t : ts)
+			{
+				if (t == keyword)
+				{
+					return &t;
+				}
+			}
+		}
+		return nullptr;
+	}
+
+	const Token* LangDesc::findToken(const Lexeme& l) const
+	{
+		return findToken(l.token_keyword);
 	}
 
 	FormattedText LangDesc::highlightSyntax(const std::string& code) const
@@ -350,7 +383,7 @@ namespace soup
 				}
 				else
 				{
-					line.emplace_back(FormattedText::Span{ l.token_keyword, getToken(l).colour });
+					line.emplace_back(FormattedText::Span{ l.token_keyword, findToken(l)->colour });
 				}
 			}
 		}

@@ -27,7 +27,7 @@ namespace soup
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
-		ld.addToken("/", [](soup::ParserState& ps)
+		ld.addTokenWithSamePrecedenceAsPreviousToken("/", [](soup::ParserState& ps)
 		{
 			ps.setOp(OP_DIV);
 			ps.consumeLefthandValue();
@@ -40,7 +40,7 @@ namespace soup
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
-		ld.addToken("-", [](soup::ParserState& ps)
+		ld.addTokenWithSamePrecedenceAsPreviousToken("-", [](soup::ParserState& ps)
 		{
 			ps.setOp(OP_SUB);
 			ps.consumeLefthandValue();

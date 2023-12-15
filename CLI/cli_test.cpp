@@ -33,15 +33,20 @@
 #include <BitWriter.hpp>
 #include <StringWriter.hpp>
 
+// lang
+#include <MathExpr.hpp>
 #include <PhpState.hpp>
 
+// lang.reflection
 #include <rflParser.hpp>
 #include <rflStruct.hpp>
 
+// ling.chatbot
 #include <cbCmd.hpp>
 #include <cbParser.hpp>
 #include <Chatbot.hpp>
 
+// math
 #include <math.hpp>
 
 // net.email
@@ -798,6 +803,14 @@ endif;)") == "");
 			PhpState php;
 			php.request_uri = "/1337";
 			assert(php.evaluate(R"(<?php echo "Request URI: ".$_SERVER["REQUEST_URI"];)") == "Request URI: /1337");
+		});
+	}
+
+	unit("MathExpr")
+	{
+		test("order of operations", []
+		{
+			assert(MathExpr::evaluate("3 - 2 + 1") == 2);
 		});
 	}
 
