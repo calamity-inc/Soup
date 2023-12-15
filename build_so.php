@@ -1,5 +1,5 @@
 <?php
-require "build_config.php";
+require "build_common.php";
 $clang .= " -D SOUP_STANDALONE";
 
 // Setup folders

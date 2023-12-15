@@ -1,4 +1,6 @@
 <?php
+require "build_common.php";
+
 $clang = "em++ -O3 -std=c++20 -flto -fvisibility=hidden -fwasm-exceptions";
 
 // Setup folders
@@ -28,10 +30,11 @@ foreach($files as $file)
 	//if ($file == "soup")
 	{
 		echo $file."\n";
-		passthru("$clang -c soup/$file.cpp -o bin/int/$file.o");
+		run_command_async("$clang -c soup/$file.cpp -o bin/int/$file.o");
 	}
 	array_push($objects, escapeshellarg("bin/int/$file.o"));
 }
+await_commands();
 
 echo "Linking...\n";
 $clang .= " -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=libsoup -s EXPORTED_RUNTIME_METHODS=[\"cwrap\"] -s FETCH=1";
