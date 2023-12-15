@@ -374,6 +374,18 @@ static void unit_data()
 		sr = " ";
 		tree = catParse(sr);
 		assert(!tree);
+
+		sr = (
+			"Some: Value\n"
+			"Empty:\n" // Notice the lack of space after colon. Normally, ": " is the key-value separator, but in the "empty value" case, the space is optional.
+		);
+		tree = catParse(sr);
+		assert(tree);
+		assert(tree->children.size() == 2);
+		assert(tree->children.at(0)->name == "Some");
+		assert(tree->children.at(0)->value == "Value");
+		assert(tree->children.at(1)->name == "Empty");
+		assert(tree->children.at(1)->value == "");
 	});
 
 	test("ripemd160", []

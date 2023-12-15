@@ -102,8 +102,11 @@ namespace soup
 			if (delim != std::string::npos)
 			{
 				node->name = line_trimmed.substr(0, delim);
-				CAT_ASSERT(line_trimmed.at(delim + 1) == ' ');
-				node->value = line_trimmed.substr(delim + 2); // ": "
+				if (line_trimmed.size() != delim + 1)
+				{
+					CAT_ASSERT(line_trimmed.at(delim + 1) == ' ');
+					node->value = line_trimmed.substr(delim + 2); // ": "
+				}
 			}
 			else
 			{
