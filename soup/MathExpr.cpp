@@ -22,7 +22,7 @@ namespace soup
 		LangDesc ld;
 
 		ld.addToken("*", [](ParserState& ps)
-			{
+		{
 			ps.setOp(OP_MUL);
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
