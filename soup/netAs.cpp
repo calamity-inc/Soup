@@ -103,6 +103,7 @@ namespace soup
 		case 213250: // Dominic Scholz trading as ITP-Solutions GmbH & Co. KG	
 		case 400175: // Microtronix ESolutions, LLC
 		case 60602: // Inovare-Prim SRL
+		case 197854: // Eisenia AB	
 			// NForce Entertainment B.V.
 		case 43350:
 		case 64437:	
