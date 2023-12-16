@@ -21,26 +21,26 @@ namespace soup
 	{
 		LangDesc ld;
 
-		ld.addToken("*", [](soup::ParserState& ps)
+		ld.addToken("*", [](ParserState& ps)
 			{
 			ps.setOp(OP_MUL);
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
-		ld.addTokenWithSamePrecedenceAsPreviousToken("/", [](soup::ParserState& ps)
+		ld.addTokenWithSamePrecedenceAsPreviousToken("/", [](ParserState& ps)
 		{
 			ps.setOp(OP_DIV);
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
 
-		ld.addToken("+", [](soup::ParserState& ps)
+		ld.addToken("+", [](ParserState& ps)
 		{
 			ps.setOp(OP_ADD);
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
-		ld.addTokenWithSamePrecedenceAsPreviousToken("-", [](soup::ParserState& ps)
+		ld.addTokenWithSamePrecedenceAsPreviousToken("-", [](ParserState& ps)
 		{
 			ps.setOp(OP_SUB);
 			ps.consumeLefthandValue();
