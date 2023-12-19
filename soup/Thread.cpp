@@ -19,9 +19,10 @@ namespace soup
 	{
 		auto t = reinterpret_cast<Thread*>(handover);
 		t->f(std::move(t->f_cap));
-		t->running = false;
 		t->f_cap.reset();
-		if (t->is_self_deleting)
+		const bool is_self_deleting = t->is_self_deleting;
+		t->running = false;
+		if (is_self_deleting)
 		{
 			delete static_cast<SelfDeletingThread*>(t);
 		}
