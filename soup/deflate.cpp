@@ -33,7 +33,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#if SOUP_BITS == 64
+#if SOUP_BITS >= 64
 #define X64BIT_SHIFTER
 #endif
 
@@ -517,29 +517,21 @@ namespace soup
 			return -1;
 		}
 
-		uint16_t stored_length = ((unsigned short)bit_reader.getInBlock()[0]) | (((unsigned short)bit_reader.getInBlock()[0]) << 8);
+		uint16_t stored_length = ((unsigned short)bit_reader.getInBlock()[0]) | (((unsigned short)bit_reader.getInBlock()[1]) << 8);
 		bit_reader.modifyInBlock(2);
 
 		uint16_t neg_stored_length = ((unsigned short)bit_reader.getInBlock()[0]) | (((unsigned short)bit_reader.getInBlock()[1]) << 8);
 		bit_reader.modifyInBlock(2);
 
-		SOUP_UNUSED(neg_stored_length);
-
-		// Removed this check because I've seen an instance where stored_length = 1285,
-		// but neg_stored_length=64762 (~64762 = 773), so mismatch.
-		// That particular instance could be fixed by masking both sides to 0x7fff,
-		// but I find this "parity check" is rather useless anyway.
-		/*if (stored_length != ((~neg_stored_length) & 0xffff)) // `& 0xffff` is needed. not sure why.
+		SOUP_IF_UNLIKELY (stored_length != (uint16_t)~neg_stored_length)
 		{
 			return -1;
-		}*/
+		}
 
 		SOUP_IF_UNLIKELY (stored_length > block_size_max)
 		{
-			// return -1;
-
-			// In the same chunk where the above check failed, this check also failed. Just capping it seems fine.
-			stored_length = block_size_max;
+			return -1;
+			//stored_length = block_size_max;
 		}
 
 		memcpy(out + out_offset, bit_reader.getInBlock(), stored_length);
@@ -639,9 +631,13 @@ namespace soup
 				fixed_offset_code_len[i] = 5;
 
 			SOUP_IF_UNLIKELY (!literals_decoder.prepareTable(literals_rev_sym_table, kLiteralSyms, kLiteralSyms, fixed_literal_code_len))
+			{
 				return -1;
+			}
 			SOUP_IF_UNLIKELY (!offset_decoder.prepareTable(offset_rev_sym_table, kOffsetSyms, kOffsetSyms, fixed_offset_code_len))
+			{
 				return -1;
+			}
 		}
 
 		for (i = 0; i < kOffsetSyms; i++)
