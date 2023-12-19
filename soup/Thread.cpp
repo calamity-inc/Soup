@@ -70,18 +70,11 @@ namespace soup
 #if SOUP_WINDOWS
 		if (handle != INVALID_HANDLE_VALUE)
 		{
-			if (running)
-			{
-				TerminateThread(handle, 0);
-			}
+			awaitCompletion();
 			CloseHandle(handle);
 		}
 #else
-		if (have_handle)
-		{
-			pthread_detach(handle);
-			pthread_cancel(handle);
-		}
+		awaitCompletion();
 #endif
 	}
 
