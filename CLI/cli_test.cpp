@@ -28,9 +28,11 @@
 #include <Regex.hpp>
 #include <xml.hpp>
 
+// io
 #include <BitReader.hpp>
-#include <StringReader.hpp>
 #include <BitWriter.hpp>
+#include <StringReader.hpp>
+#include <StringRefReader.hpp>
 #include <StringWriter.hpp>
 
 // lang
@@ -725,6 +727,17 @@ static void unit_io()
 		bw.u8(4, 0b101);
 		bw.finishByte();
 		assert(w.data == "\x5F\x01");
+	});
+	test("StringRefReader", []
+	{
+		std::string s = "Hello\nWorld";
+		StringRefReader sr(s);
+		std::string line;
+		assert(sr.getLine(line));
+		assert(line == "Hello");
+		assert(sr.getLine(line));
+		assert(line == "World");
+		assert(!sr.getLine(line));
 	});
 }
 
