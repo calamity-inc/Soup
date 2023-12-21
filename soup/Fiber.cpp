@@ -1,6 +1,6 @@
 #include "Fiber.hpp"
 
-#if !SOUP_WASM
+#if SOUP_WINDOWS || SOUP_LINUX
 
 #if SOUP_WINDOWS
 #include <Windows.h>

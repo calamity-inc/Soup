@@ -37,7 +37,7 @@ namespace soup
 
 		~Thread() noexcept;
 
-#if SOUP_WINDOWS || (SOUP_POSIX && !SOUP_MACOS)
+#if SOUP_WINDOWS || SOUP_LINUX
 		void setTimeCritical() noexcept;
 #endif
 

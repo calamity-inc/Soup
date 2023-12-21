@@ -78,7 +78,7 @@ namespace soup
 #endif
 	}
 
-#if SOUP_WINDOWS || (SOUP_POSIX && !SOUP_MACOS)
+#if SOUP_WINDOWS || SOUP_LINUX
 	void Thread::setTimeCritical() noexcept
 	{
 #if SOUP_WINDOWS

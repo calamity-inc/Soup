@@ -58,7 +58,7 @@ namespace soup
 		args.emplace_back("-lstdc++");
 		if (!isEmscripten())
 		{
-#if !SOUP_MACOS
+#if SOUP_LINUX
 			args.emplace_back("-lstdc++fs");
 #endif
 			args.emplace_back("-lresolv");

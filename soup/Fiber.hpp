@@ -1,13 +1,10 @@
 #pragma once
 
 #include "base.hpp"
-#if !SOUP_WASM
+#if SOUP_WINDOWS || SOUP_LINUX
 #include "Capture.hpp"
 
-#if SOUP_POSIX
-#if SOUP_MACOS
-#define _XOPEN_SOURCE // "The deprecated ucontext routines require _XOPEN_SOURCE to be defined"
-#endif
+#if !SOUP_WINDOWS
 #include <ucontext.h>
 #endif
 
