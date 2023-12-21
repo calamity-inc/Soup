@@ -12,7 +12,11 @@ if (!defined("PHP_WINDOWS_VERSION_MAJOR"))
 	$clanglink .= " -lstdc++ -pthread -lresolv -lm -ldl";
 	if (PHP_OS_FAMILY != "Darwin")
 	{
-		$clanglink .= " -fuse-ld=lld -lstdc++fs";
+		$clanglink .= " -fuse-ld=lld";
+		if (!getenv("ANDROID_ROOT"))
+		{
+			$clanglink .= " -lstdc++fs";
+		}
 	}
 }
 

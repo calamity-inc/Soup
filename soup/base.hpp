@@ -31,7 +31,7 @@
 	#else
 		#define SOUP_WASM false
 
-		#ifdef __linux__
+		#if defined(__linux__) && !defined(__ANDROID__)
 			#define SOUP_LINUX true
 		#else
 			#define SOUP_LINUX false
