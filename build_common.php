@@ -35,7 +35,7 @@ function run_command_async($cmd)
 	);
 	$proc = proc_open($cmd, $descriptorspec, $pipes);
 	array_push($procs, [ $proc, $file ]);
-	if (count($procs) > 32)
+	if (count($procs) >= (getenv("ANDROID_ROOT") ? 16 : 32))
 	{
 		await_commands();
 	}
