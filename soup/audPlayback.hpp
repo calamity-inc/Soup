@@ -34,6 +34,7 @@ namespace soup
 	private:
 		std::atomic_int free_blocks = 0;
 		int current_block = 0;
+		bool stopping = false;
 		void* const heap;
 		double time = 0.0;
 

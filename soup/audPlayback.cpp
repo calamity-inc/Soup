@@ -61,7 +61,8 @@ namespace soup
 
 	audPlayback::~audPlayback()
 	{
-		thrd.stop();
+		stop();
+		thrd.awaitCompletion();
 #if SOUP_WINDOWS
 		if (hWaveOut != nullptr)
 		{
@@ -193,7 +194,7 @@ namespace soup
 
 	void audPlayback::stop() noexcept
 	{
-		thrd.stop();
+		stopping = true;
 	}
 
 	void audPlayback::fillBlockSilence(audSample* block)
@@ -265,7 +266,7 @@ namespace soup
 
 	void audPlayback::threadFunc()
 	{
-		while (true)
+		do
 		{
 			while (free_blocks == 0)
 			{
@@ -293,7 +294,7 @@ namespace soup
 			--free_blocks;
 			current_block += 1;
 			current_block %= NUM_BLOCKS;
-		}
+		} while (!stopping);
 	}
 }
 

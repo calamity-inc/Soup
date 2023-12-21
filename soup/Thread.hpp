@@ -42,7 +42,6 @@ namespace soup
 #endif
 
 		[[nodiscard]] bool isRunning() const noexcept { return running; }
-		void stop() noexcept;
 
 		void awaitCompletion() noexcept;
 		static void awaitCompletion(const std::vector<UniquePtr<Thread>>& threads) noexcept;

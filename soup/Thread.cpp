@@ -89,22 +89,6 @@ namespace soup
 	}
 #endif
 
-	void Thread::stop() noexcept
-	{
-#if SOUP_WINDOWS
-		TerminateThread(handle, 0);
-		running = false;
-#else
-		if (have_handle)
-		{
-			pthread_detach(handle);
-			pthread_cancel(handle);
-			have_handle = false;
-			running = false;
-		}
-#endif
-	}
-
 	void Thread::awaitCompletion() noexcept
 	{
 #if SOUP_WINDOWS

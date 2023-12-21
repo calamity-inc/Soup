@@ -17,6 +17,7 @@ namespace soup
 				&& reinterpret_cast<audMixer*>(pb.user_data)->playing_sounds.empty()
 				)
 			{
+				pb.fillBlockSilence(block);
 				pb.stop();
 				return;
 			}
