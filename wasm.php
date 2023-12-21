@@ -29,7 +29,7 @@ foreach($files as $file)
 {
 	//if ($file == "soup")
 	{
-		echo $file."\n";
+		//echo $file."\n";
 		run_command_async("$clang -c soup/$file.cpp -o bin/int/$file.o");
 	}
 	array_push($objects, escapeshellarg("bin/int/$file.o"));

@@ -232,8 +232,10 @@ namespace soup
 		}
 
 		[[nodiscard]] std::string getArpaName() const;
+#if !SOUP_WASM
 		[[nodiscard]] std::string getReverseDns() const;
 		[[nodiscard]] std::string getReverseDns(dnsResolver& resolver) const;
+#endif
 	};
 	static_assert(sizeof(IpAddr) == 16);
 }

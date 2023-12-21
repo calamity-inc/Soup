@@ -82,6 +82,7 @@ namespace soup
 		return str;
 	}
 
+#if !SOUP_WASM
 	std::string IpAddr::getReverseDns() const
 	{
 		return getReverseDns(*netConfig::get().dns_resolver);
@@ -98,4 +99,5 @@ namespace soup
 		}
 		return {};
 	}
+#endif
 }
