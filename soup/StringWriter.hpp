@@ -9,7 +9,7 @@ namespace soup
 	public:
 		std::string data{};
 
-		StringWriter(Endian endian = LITTLE_ENDIAN)
+		StringWriter(Endian endian = ENDIAN_LITTLE)
 			: Writer(endian)
 		{
 		}

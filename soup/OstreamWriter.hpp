@@ -9,7 +9,7 @@ namespace soup
 	public:
 		std::ostream& os;
 
-		OstreamWriter(std::ostream& os, Endian endian = LITTLE_ENDIAN)
+		OstreamWriter(std::ostream& os, Endian endian = ENDIAN_LITTLE)
 			: Writer(endian), os(os)
 		{
 		}

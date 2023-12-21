@@ -182,7 +182,7 @@ namespace soup
 
 	void TinyPngOut::putBigUint32(uint32_t val, uint8_t arr[4])
 	{
-		if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+		if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
 		{
 			*reinterpret_cast<uint32_t*>(&arr[0]) = Endianness::invert(val);
 		}

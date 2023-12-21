@@ -26,7 +26,7 @@ namespace soup
 		using u56 = u64;
 
 	public:
-		bool fromBinary(std::string bin, Endian endian = BIG_ENDIAN)
+		bool fromBinary(std::string bin, Endian endian = ENDIAN_BIG)
 		{
 			StringReader r(std::move(bin), endian);
 			return read(r);
@@ -34,11 +34,11 @@ namespace soup
 
 		bool fromBinaryLE(std::string bin)
 		{
-			StringReader r(std::move(bin), LITTLE_ENDIAN);
+			StringReader r(std::move(bin), ENDIAN_LITTLE);
 			return read(r);
 		}
 
-		bool read(std::istream& is, Endian endian = BIG_ENDIAN)
+		bool read(std::istream& is, Endian endian = ENDIAN_BIG)
 		{
 			IstreamReader r(is, endian);
 			return read(r);
@@ -46,7 +46,7 @@ namespace soup
 
 		bool readLE(std::istream& is)
 		{
-			return read(is, LITTLE_ENDIAN);
+			return read(is, ENDIAN_LITTLE);
 		}
 
 		template <typename Reader = Reader>
@@ -55,14 +55,14 @@ namespace soup
 			return static_cast<T*>(this)->template io<Reader>(r);
 		}
 
-		[[nodiscard]] Buffer toBinary(Endian endian = BIG_ENDIAN)
+		[[nodiscard]] Buffer toBinary(Endian endian = ENDIAN_BIG)
 		{
 			BufferWriter w(endian);
 			write(w);
 			return w.buf;
 		}
 
-		[[nodiscard]] std::string toBinaryString(Endian endian = BIG_ENDIAN)
+		[[nodiscard]] std::string toBinaryString(Endian endian = ENDIAN_BIG)
 		{
 			StringWriter w(endian);
 			write(w);
@@ -71,10 +71,10 @@ namespace soup
 
 		[[nodiscard]] std::string toBinaryStringLE()
 		{
-			return toBinaryString(LITTLE_ENDIAN);
+			return toBinaryString(ENDIAN_LITTLE);
 		}
 
-		bool write(std::ostream& os, Endian endian = BIG_ENDIAN)
+		bool write(std::ostream& os, Endian endian = ENDIAN_BIG)
 		{
 			OstreamWriter w(os, endian);
 			return write(w);
@@ -82,7 +82,7 @@ namespace soup
 
 		bool writeLE(std::ostream& os)
 		{
-			return write(os, LITTLE_ENDIAN);
+			return write(os, ENDIAN_LITTLE);
 		}
 
 		template <typename Writer = Writer>

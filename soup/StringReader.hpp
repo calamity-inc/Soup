@@ -10,12 +10,12 @@ namespace soup
 		std::string data;
 		size_t offset = 0;
 
-		StringReader(Endian endian = LITTLE_ENDIAN) noexcept
+		StringReader(Endian endian = ENDIAN_LITTLE) noexcept
 			: ioSeekableReader(endian)
 		{
 		}
 
-		StringReader(std::string&& data, Endian endian = LITTLE_ENDIAN)
+		StringReader(std::string&& data, Endian endian = ENDIAN_LITTLE)
 			: ioSeekableReader(endian), data(std::move(data))
 		{
 		}

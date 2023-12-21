@@ -98,7 +98,7 @@ namespace soup
 #if SOUP_BITS == 64
 			if (this->shifter_bit_count_ <= 32 && (this->in_block_ + 4) <= this->in_block_end_)
 			{
-				if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+				if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
 				{
 					this->shifter_data_ |= (((shifter_t)(*((unsigned int*)this->in_block_))) << this->shifter_bit_count_);
 					this->shifter_bit_count_ += 32;

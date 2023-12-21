@@ -11,7 +11,7 @@ namespace soup
 	public:
 		Buffer& buf;
 
-		BufferRefWriter(Buffer& buf, Endian endian = LITTLE_ENDIAN)
+		BufferRefWriter(Buffer& buf, Endian endian = ENDIAN_LITTLE)
 			: Writer(endian), buf(buf)
 		{
 		}

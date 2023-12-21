@@ -11,7 +11,7 @@ namespace soup
 	public:
 		std::istream& is;
 
-		IstreamReader(std::istream& is, Endian endian = LITTLE_ENDIAN)
+		IstreamReader(std::istream& is, Endian endian = ENDIAN_LITTLE)
 			: Reader(endian), is(is)
 		{
 		}

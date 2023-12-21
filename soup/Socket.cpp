@@ -1129,7 +1129,7 @@ namespace soup
 		record.length = static_cast<uint16_t>(body.size());
 
 		Buffer buf(5 + body.size());
-		BufferRefWriter bw(buf, BIG_ENDIAN);
+		BufferRefWriter bw(buf, ENDIAN_BIG);
 		record.write(bw);
 
 		buf.append(body.data(), body.size());

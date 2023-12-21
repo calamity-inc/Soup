@@ -10,7 +10,7 @@ namespace soup
 		size_t size = 0;
 
 		ioSizeMeasurer()
-			: Writer(NATIVE_ENDIAN)
+			: Writer(ENDIAN_NATIVE)
 		{
 		}
 

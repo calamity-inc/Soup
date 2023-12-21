@@ -75,7 +75,7 @@ namespace soup
 		for (; size >= 4; ++data32, size -= 4)
 		{
 			uint32_t v = checksum;
-			if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+			if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
 			{
 				v ^= *data32;
 			}

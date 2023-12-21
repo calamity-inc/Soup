@@ -10,7 +10,7 @@ namespace soup
 		std::vector<uint8_t> data;
 		size_t offset = 0;
 
-		VectorReader(std::vector<uint8_t> data, Endian endian = LITTLE_ENDIAN)
+		VectorReader(std::vector<uint8_t> data, Endian endian = ENDIAN_LITTLE)
 			: Reader(endian), data(std::move(data))
 		{
 		}

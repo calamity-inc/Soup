@@ -829,12 +829,12 @@ namespace soup
 	void aes::inc32(uint8_t block[16])
 	{
 		uint32_t counter = reinterpret_cast<uint32_t*>(block)[3];
-		if constexpr (NATIVE_ENDIAN != BIG_ENDIAN)
+		if constexpr (ENDIAN_NATIVE != ENDIAN_BIG)
 		{
 			counter = Endianness::invert(counter);
 		}
 		++counter;
-		if constexpr (NATIVE_ENDIAN != BIG_ENDIAN)
+		if constexpr (ENDIAN_NATIVE != ENDIAN_BIG)
 		{
 			counter = Endianness::invert(counter);
 		}

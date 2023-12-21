@@ -948,7 +948,7 @@ namespace soup
 		chunk_t carry = 0;
 		const auto nc = getNumChunks();
 		size_t i = 0;
-		if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+		if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
 		{
 			if (nc >= 4)
 			{
@@ -1019,7 +1019,7 @@ namespace soup
 
 	void Bigint::operator>>=(const size_t b)
 	{
-		if constexpr (NATIVE_ENDIAN == LITTLE_ENDIAN)
+		if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
 		{
 			if (b <= getBitsPerChunk())
 			{

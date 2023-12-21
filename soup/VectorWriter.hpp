@@ -9,7 +9,7 @@ namespace soup
 	public:
 		std::vector<uint8_t> vec{};
 
-		VectorWriter(Endian endian = LITTLE_ENDIAN)
+		VectorWriter(Endian endian = ENDIAN_LITTLE)
 			: Writer(endian)
 		{
 		}
