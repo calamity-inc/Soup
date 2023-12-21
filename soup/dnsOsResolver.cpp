@@ -1,6 +1,7 @@
 #include "dnsOsResolver.hpp"
 
-#include "base.hpp"
+#if !SOUP_ANDROID
+
 #if SOUP_WINDOWS
 #include "WinDNS.h"
 #pragma comment(lib, "Dnsapi.lib")
@@ -120,3 +121,5 @@ namespace soup
 		return res;
 	}
 }
+
+#endif

@@ -4,7 +4,7 @@
 
 #include "dnsUdpResolver.hpp"
 #include "dnsHttpResolver.hpp"
-#include "dnsOsResolver.hpp"
+#include "netConfig.hpp"
 
 using namespace soup;
 
@@ -16,7 +16,8 @@ void cli_dig(int argc, const char** argv)
 		return;
 	}
 
-	UniquePtr<dnsResolver> r = soup::make_unique<dnsOsResolver>();
+	dnsResolver* r = netConfig::get().dns_resolver;
+	UniquePtr<dnsResolver> rup;
 	dnsType t = DNS_A;
 
 	for (int i = 1; i != argc; ++i)
@@ -26,15 +27,17 @@ void cli_dig(int argc, const char** argv)
 			std::string server = (argv[i] + 1);
 			if (server.substr(0, 4) == "doh:")
 			{
-				r = soup::make_unique<dnsHttpResolver>();
-				reinterpret_cast<dnsHttpResolver*>(r.get())->server = server.substr(4);
-				std::cout << "Using DoH resolver at " << reinterpret_cast<dnsHttpResolver*>(r.get())->server << "\n";
+				rup = soup::make_unique<dnsHttpResolver>();
+				r = rup.get();
+				reinterpret_cast<dnsHttpResolver*>(r)->server = server.substr(4);
+				std::cout << "Using DoH resolver at " << reinterpret_cast<dnsHttpResolver*>(r)->server << "\n";
 			}
 			else
 			{
-				r = soup::make_unique<dnsUdpResolver>();
-				reinterpret_cast<dnsUdpResolver*>(r.get())->server.ip.fromString(std::move(server));
-				std::cout << "Using UDP resolver at " << reinterpret_cast<dnsUdpResolver*>(r.get())->server.toString() << "\n";
+				rup = soup::make_unique<dnsUdpResolver>();
+				r = rup.get();
+				reinterpret_cast<dnsUdpResolver*>(r)->server.ip.fromString(std::move(server));
+				std::cout << "Using UDP resolver at " << reinterpret_cast<dnsUdpResolver*>(r)->server.toString() << "\n";
 			}
 		}
 		else

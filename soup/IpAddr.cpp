@@ -1,8 +1,8 @@
 #include "IpAddr.hpp"
 
-#include "dnsOsResolver.hpp"
 #include "Endian.hpp"
 #include "IpGroups.hpp"
+#include "netConfig.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -84,8 +84,7 @@ namespace soup
 
 	std::string IpAddr::getReverseDns() const
 	{
-		dnsOsResolver resolver;
-		return getReverseDns(resolver);
+		return getReverseDns(*netConfig::get().dns_resolver);
 	}
 
 	std::string IpAddr::getReverseDns(dnsResolver& resolver) const

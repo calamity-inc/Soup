@@ -2,7 +2,11 @@
 
 #if !SOUP_WASM
 
+#if !SOUP_ANDROID
 #include "dnsOsResolver.hpp"
+#else
+#include "dnsHttpResolver.hpp"
+#endif
 #include "Socket.hpp"
 
 namespace soup
@@ -15,7 +19,11 @@ namespace soup
 	}
 
 	netConfig::netConfig() :
+#if !SOUP_ANDROID
 		dns_resolver(soup::make_unique<dnsOsResolver>()),
+#else
+		dns_resolver(soup::make_unique<dnsHttpResolver>()),
+#endif
 		certchain_validator(&Socket::certchain_validator_relaxed)
 	{
 	}

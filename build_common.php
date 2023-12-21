@@ -9,7 +9,11 @@ if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 $clanglink = $clang;
 if (!defined("PHP_WINDOWS_VERSION_MAJOR"))
 {
-	$clanglink .= " -lstdc++ -pthread -lresolv -lm -ldl";
+	$clanglink .= " -lstdc++ -pthread -lm -ldl";
+	if (!getenv("ANDROID_ROOT"))
+	{
+		$clanglink .= " -lresolv";
+	}
 	if (PHP_OS_FAMILY != "Darwin")
 	{
 		$clanglink .= " -fuse-ld=lld";

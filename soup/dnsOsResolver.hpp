@@ -1,5 +1,7 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_ANDROID
 #include "dnsResolver.hpp"
 
 namespace soup
@@ -9,3 +11,5 @@ namespace soup
 		[[nodiscard]] std::vector<UniquePtr<dnsRecord>> lookup(dnsType qtype, const std::string& name) const final;
 	};
 }
+
+#endif

@@ -61,7 +61,9 @@ namespace soup
 #if SOUP_LINUX
 			args.emplace_back("-lstdc++fs");
 #endif
+#if !SOUP_ANDROID
 			args.emplace_back("-lresolv");
+#endif
 		}
 		args.emplace_back("-lm");
 		args.emplace_back("-ldl");
