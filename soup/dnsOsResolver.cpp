@@ -3,6 +3,7 @@
 #if !SOUP_ANDROID
 
 #if SOUP_WINDOWS
+#undef UNICODE
 #include "WinDNS.h"
 #pragma comment(lib, "Dnsapi.lib")
 #else

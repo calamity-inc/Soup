@@ -15,12 +15,12 @@ namespace soup
 		std::string mac_key;
 		std::vector<uint8_t> implicit_iv;
 
-		[[nodiscard]] constexpr bool isActive() const noexcept
+		[[nodiscard]] bool isActive() const noexcept
 		{
 			return !cipher_key.empty();
 		}
 
-		[[nodiscard]] constexpr bool isAead() const noexcept
+		[[nodiscard]] bool isAead() const noexcept
 		{
 			return !implicit_iv.empty();
 		}
