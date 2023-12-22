@@ -23,8 +23,6 @@ namespace soup
 		enum State : uint8_t
 		{
 			START = 0,
-			WAIT_FOR_OTHER_TASK_CONNECTING,
-			CHECK_REUSABLE_SOCKET,
 			WAIT_TO_REUSE,
 			CONNECTING,
 			AWAIT_RESPONSE,

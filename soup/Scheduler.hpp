@@ -27,7 +27,6 @@ namespace soup
 		AtomicDeque<SharedPtr<Worker>> pending_workers{};
 		size_t passive_workers = 0;
 #if !SOUP_WASM
-		std::unordered_set<std::string> pending_reusable_sockets{};
 		bool dont_make_reusable_sockets = false;
 #endif
 	private:

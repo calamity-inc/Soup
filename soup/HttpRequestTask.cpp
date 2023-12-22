@@ -45,34 +45,10 @@ namespace soup
 					doRecycle();
 					break;
 				}
-				if (Scheduler::get()->pending_reusable_sockets.find(hr.getHost()) != Scheduler::get()->pending_reusable_sockets.end())
-				{
-					state = WAIT_FOR_OTHER_TASK_CONNECTING;
-					break;
-				}
+				// Another task to the same remote may be in the CONNECTING state at this point,
+				// but it will be faster (or at least the same speed) to just make a one-off socket instead of waiting to resue.
 			}
 			cannotRecycle(); // transition to CONNECTING state
-			break;
-
-		case WAIT_FOR_OTHER_TASK_CONNECTING:
-			if (Scheduler::get()->pending_reusable_sockets.find(hr.getHost()) == Scheduler::get()->pending_reusable_sockets.end())
-			{
-				// Need to give another tick for Socket to go from being a "pending worker" to being a "worker."
-				state = CHECK_REUSABLE_SOCKET;
-			}
-			break;
-
-		case CHECK_REUSABLE_SOCKET:
-			sock = Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls);
-			if (sock)
-			{
-				doRecycle();
-			}
-			else
-			{
-				// We were promised a reusable socket... attempting to connect will likely result in failure, but we'll try anyway.
-				cannotRecycle();
-			}
 			break;
 
 		case WAIT_TO_REUSE:
@@ -93,7 +69,6 @@ namespace soup
 		case CONNECTING:
 			if (connector->tickUntilDone())
 			{
-				Scheduler::get()->pending_reusable_sockets.erase(hr.getHost());
 				if (!connector->wasSuccessful())
 				{
 					setWorkDone();
@@ -103,10 +78,9 @@ namespace soup
 				connector.destroy();
 				if (!Scheduler::get()->dont_make_reusable_sockets)
 				{
-					// Tag socket we just created for reuse.
+					// Tag socket we just created for reuse, if it's not a one-off.
 					SOUP_IF_UNLIKELY (Scheduler::get()->findReusableSocket(hr.getHost(), hr.port, hr.use_tls))
 					{
-						//logWriteLine(soup::format(ObfusString("UNEXPECTED: HttpRequestTask failed to reuse socket for {}"), hr.getHost()));
 						hr.setClose();
 					}
 					else
@@ -177,7 +151,6 @@ namespace soup
 	{
 		state = CONNECTING;
 		connector.construct(hr.getHost(), hr.port);
-		Scheduler::get()->pending_reusable_sockets.emplace(hr.getHost());
 	}
 
 	void HttpRequestTask::sendRequest()
@@ -205,8 +178,6 @@ namespace soup
 		switch (state)
 		{
 		case START: str.append(ObfusString("START").str()); break;
-		case WAIT_FOR_OTHER_TASK_CONNECTING: str.append(ObfusString("WAIT_FOR_OTHER_TASK_CONNECTING").str()); break;
-		case CHECK_REUSABLE_SOCKET: str.append(ObfusString("CHECK_REUSABLE_SOCKET").str()); break;
 		case WAIT_TO_REUSE: str.append(ObfusString("WAIT_TO_REUSE").str()); break;
 
 		case CONNECTING:
