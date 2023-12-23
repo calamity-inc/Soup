@@ -5,6 +5,10 @@ if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 {
 	$clang .= " -D_CRT_SECURE_NO_WARNINGS";
 }
+else if (PHP_OS_FAMILY != "Darwin")
+{
+	$clang .= " -fPIC";
+}
 
 $clanglink = $clang;
 if (!defined("PHP_WINDOWS_VERSION_MAJOR"))
