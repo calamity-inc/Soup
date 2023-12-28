@@ -522,6 +522,7 @@
     <ClInclude Include="MidiComposition.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
+    <ClInclude Include="netStatus.hpp" />
     <ClInclude Include="netIntelLocationData4OnDisk.hpp" />
     <ClInclude Include="netIntelOnDisk.hpp" />
     <ClInclude Include="netMesh.hpp" />
@@ -1040,6 +1041,7 @@
     <ClCompile Include="netIntelOnDisk.cpp" />
     <ClCompile Include="netMesh.cpp" />
     <ClCompile Include="netMeshService.cpp" />
+    <ClCompile Include="netStatus.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="parallel.cpp" />
     <ClCompile Include="plist.cpp" />

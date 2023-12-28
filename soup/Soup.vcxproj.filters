@@ -1566,6 +1566,9 @@
     <ClInclude Include="Pathfind.hpp">
       <Filter>algos</Filter>
     </ClInclude>
+    <ClInclude Include="netStatus.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2304,6 +2307,9 @@
     </ClCompile>
     <ClCompile Include="MathExpr.cpp">
       <Filter>lang</Filter>
+    </ClCompile>
+    <ClCompile Include="netStatus.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
