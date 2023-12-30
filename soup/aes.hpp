@@ -13,8 +13,8 @@ namespace soup
 		// Key size must be 16 bytes, 24 bytes, or 32 bytes.
 		// IV size must be 16 bytes.
 
-		static void pkcs7Pad(std::string& encrypted);
-		static void pkcs7Unpad(std::string& decrypted);
+		static void pkcs7Pad(std::string& encrypted) noexcept;
+		[[nodiscard]] static bool pkcs7Unpad(std::string& decrypted) noexcept;
 
 		static void cbcEncrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
 		static void cbcDecrypt(uint8_t* data, size_t data_len, const uint8_t* key, size_t key_len, const uint8_t iv[16]);
