@@ -35,18 +35,19 @@ namespace soup
 {
 	void TestUnit::onFinishedBuildingTree()
 	{
-		// Note: Tree should be free'd by this function, but we exit, so who cares
 		failed_tests = 0;
 		total_tests = 0;
 		runTests();
 		if (failed_tests == 0)
 		{
 			std::cout << "All " << total_tests << " tests ran successfully!";
+			erase();
 			exit(0);
 		}
 		std::cout << failed_tests << " / " << total_tests << " tests have failed.\n\n";
 		truncateSuccessfulTests();
 		printout();
+		erase();
 		exit(1);
 	}
 
