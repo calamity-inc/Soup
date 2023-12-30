@@ -1080,6 +1080,7 @@ static void test_socket_raii_semantics()
 	s3 = std::move(s2);
 	assert(!s2.hasConnection());
 	assert(s3.hasConnection());
+	s3.fd.setMovedAway(); // don't try to actually close() fd 1337 now lol
 }
 
 static void unit_util_string()
