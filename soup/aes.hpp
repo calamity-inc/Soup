@@ -9,7 +9,9 @@ namespace soup
 	class aes
 	{
 	public:
-		// Input size must be a multiple of 16 bytes. You may use a padding scheme such as PKCS#7 to ensure this.
+		// Input size should be a multiple of 16 bytes.
+		//   GCM can deal with unaligned data, other methods will simply ignore the trailing bytes -> they will not be encrypted.
+		//   You may use a padding scheme such as PKCS#7 for padding.
 		// Key size must be 16 bytes, 24 bytes, or 32 bytes.
 		// IV size must be 16 bytes.
 
