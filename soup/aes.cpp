@@ -825,6 +825,7 @@ namespace soup
 			const auto len_iv = iv_len * 8;
 			const auto s = 128 * plusaes::detail::gcm::ceil(len_iv / 128.0) - len_iv;
 			std::vector<uint8_t> ghash_in;
+			ghash_in.reserve(32);
 			plusaes::detail::gcm::push_back(ghash_in, iv, iv_len);
 			plusaes::detail::gcm::push_back_zero_bits(ghash_in, s + 64);
 			plusaes::detail::gcm::push_back(ghash_in, std::bitset<64>(len_iv));
