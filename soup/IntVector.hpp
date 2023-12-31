@@ -93,22 +93,28 @@ namespace soup
 		}
 
 		[[nodiscard]] T& at(size_t idx)
+#ifndef _DEBUG
+			noexcept
+#endif
 		{
 #ifdef _DEBUG
-			SOUP_IF_UNLIKELY(idx >= size())
+			SOUP_IF_UNLIKELY (idx >= size())
 			{
-				throw Exception("Out of range");
+				SOUP_THROW(Exception("Out of range"));
 			}
 #endif
 			return m_data[idx];
 		}
 
 		[[nodiscard]] const T& at(size_t idx) const
+#ifndef _DEBUG
+			noexcept
+#endif
 		{
 #ifdef _DEBUG
 			SOUP_IF_UNLIKELY (idx >= size())
 			{
-				throw Exception("Out of range");
+				SOUP_THROW(Exception("Out of range"));
 			}
 #endif
 			return m_data[idx];
@@ -127,7 +133,6 @@ namespace soup
 				m_size = m_capacity;
 				return;
 			}
-			
 #else
 			while (m_size + elms > m_capacity)
 			{
