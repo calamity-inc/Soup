@@ -52,7 +52,7 @@ void cli_chatgpt(int argc, const char** argv)
 			std::cout << "Assistant: " << std::flush;
 			hr.setPayload(state.encode());
 			//std::cout << state.encode() << "\n";
-			hr.executeEventStream([](std::unordered_map<std::string, std::string>&& data, const Capture&)
+			hr.executeEventStream([](std::unordered_map<std::string, std::string>&& data, const Capture&) SOUP_EXCAL
 			{
 				//std::cout << data.at("data") << "\n";
 				if (auto update = json::decode(data.at("data")))

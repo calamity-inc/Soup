@@ -167,7 +167,7 @@ int cli_websrv(const char* dir)
 	};
 
 	soup::ServerWebService web_srv{ &handleRequest };
-	web_srv.on_connection_established = [](soup::Socket& s, soup::ServerService&, soup::Server&)
+	web_srv.on_connection_established = [](soup::Socket& s, soup::ServerService&, soup::Server&) SOUP_EXCAL
 	{
 		std::cout << s.peer.toString() << " + connection established" << std::endl;
 	};

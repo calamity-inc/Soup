@@ -548,7 +548,7 @@ namespace soup
 			}
 		}
 
-		recv([](Socket& sock, std::string&& data, Capture&& _cap)
+		recv([](Socket& sock, std::string&& data, Capture&& _cap) SOUP_EXCAL
 		{
 			auto& con = static_cast<MysqlConnection&>(sock);
 			auto& cap = _cap.get<CaptureMysqlRecv>();

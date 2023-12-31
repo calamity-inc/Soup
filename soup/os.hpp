@@ -20,7 +20,7 @@ namespace soup
 		[[nodiscard]] static intptr_t filesize(const std::filesystem::path& path); // returns -1 on error
 
 		[[nodiscard]] static std::filesystem::path tempfile(const std::string& ext = {});
-		[[nodiscard]] static std::filesystem::path getProgramData();
+		[[nodiscard]] static std::filesystem::path getProgramData() noexcept;
 
 		static void escape(std::string& str);
 	private:

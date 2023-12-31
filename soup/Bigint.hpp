@@ -357,7 +357,7 @@ namespace soup
 		{
 		}
 
-		void onTick() final
+		void onTick() SOUP_EXCAL final
 		{
 			if (it != miller_rabin_iterations)
 			{
@@ -387,7 +387,7 @@ namespace soup
 			}
 		}
 
-		[[nodiscard]] int getSchedulingDisposition() const final
+		[[nodiscard]] int getSchedulingDisposition() const noexcept final
 		{
 			return HIGH_FRQUENCY;
 		}

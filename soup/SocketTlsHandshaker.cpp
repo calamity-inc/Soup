@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	SocketTlsHandshaker::SocketTlsHandshaker(void(*callback)(Socket&, Capture&&), Capture&& callback_capture) noexcept
+	SocketTlsHandshaker::SocketTlsHandshaker(void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& callback_capture) noexcept
 		: callback(callback), callback_capture(std::move(callback_capture))
 	{
 	}

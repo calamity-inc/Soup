@@ -207,7 +207,7 @@ namespace soup
 		};
 	}
 
-	Bigint RsaPrivateKey::encryptPkcs1(std::string msg) const
+	Bigint RsaPrivateKey::encryptPkcs1(std::string msg) const SOUP_EXCAL
 	{
 		padPrivate(msg);
 		return encryptUnpadded(msg);
@@ -437,12 +437,12 @@ namespace soup
 		}
 	}
 
-	RsaPublicKey RsaKeypair::getPublic() const
+	RsaPublicKey RsaKeypair::getPublic() const SOUP_EXCAL
 	{
 		return RsaPublicKey(n, e);
 	}
 
-	RsaPrivateKey RsaKeypair::getPrivate() const
+	RsaPrivateKey RsaKeypair::getPrivate() const SOUP_EXCAL
 	{
 		return RsaPrivateKey(n, p, q, dp, dq, qinv);
 	}

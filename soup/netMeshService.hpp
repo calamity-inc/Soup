@@ -27,7 +27,7 @@ namespace soup
 		bool bind(Server& serv);
 
 	private:
-		static void onTunnelEstablished(Socket& s, ServerService&, Server&);
+		static void onTunnelEstablished(Socket& s, ServerService&, Server&) SOUP_EXCAL;
 	};
 	inline netMeshService g_mesh_service;
 }

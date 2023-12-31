@@ -15,7 +15,7 @@
 
 namespace soup
 {
-	static void cert_selector(TlsServerRsaData& out, const std::string&)
+	static void cert_selector(TlsServerRsaData& out, const std::string&) SOUP_EXCAL
 	{
 		X509Certificate cert;
 		cert.setRsaPublicKey(netMesh::getMyConfig().kp.getPublic());
@@ -28,9 +28,9 @@ namespace soup
 		return serv.bindCrypto(7106, this, &cert_selector);
 	}
 
-	void netMeshService::onTunnelEstablished(Socket& s, ServerService&, Server&)
+	void netMeshService::onTunnelEstablished(Socket& s, ServerService&, Server&) SOUP_EXCAL
 	{
-		s.recv([](Socket& s, std::string&& data, Capture&&)
+		s.recv([](Socket& s, std::string&& data, Capture&&) SOUP_EXCAL
 		{
 			StringReader sr(std::move(data));
 			uint8_t msg_type;

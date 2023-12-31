@@ -162,12 +162,12 @@ namespace soup
 		[[nodiscard]] static RsaPrivateKey fromJwk(const JsonObject& jwk);
 
 		template <typename CryptoHashAlgo>
-		[[nodiscard]] Bigint sign(const std::string& msg) const // deterministic
+		[[nodiscard]] Bigint sign(const std::string& msg) const SOUP_EXCAL // deterministic
 		{
 			return encryptPkcs1(CryptoHashAlgo::hashWithId(msg));
 		}
 
-		[[nodiscard]] Bigint encryptPkcs1(std::string msg) const; // deterministic
+		[[nodiscard]] Bigint encryptPkcs1(std::string msg) const SOUP_EXCAL; // deterministic
 
 		[[nodiscard]] RsaPublicKey derivePublic() const; // assumes that e = e_pref, which is true unless your keypair is 21-bit or less.
 
@@ -212,7 +212,7 @@ namespace soup
 		[[nodiscard]] static RsaKeypair generate(unsigned int bits, bool lax_length_requirement = false);
 		[[nodiscard]] static RsaKeypair generate(RngInterface& rng, RngInterface& aux_rng, unsigned int bits, bool lax_length_requirement = false);
 
-		[[nodiscard]] RsaPublicKey getPublic() const;
-		[[nodiscard]] RsaPrivateKey getPrivate() const;
+		[[nodiscard]] RsaPublicKey getPublic() const SOUP_EXCAL;
+		[[nodiscard]] RsaPrivateKey getPrivate() const SOUP_EXCAL;
 	};
 }

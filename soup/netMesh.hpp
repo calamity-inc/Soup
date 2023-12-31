@@ -14,7 +14,7 @@ namespace soup
 	 */
 	struct netMesh
 	{
-		[[nodiscard]] static bool isEnabled();
+		[[nodiscard]] static bool isEnabled() noexcept;
 
 		struct Peer
 		{
@@ -44,11 +44,11 @@ namespace soup
 			[[nodiscard]] const Peer* findPeerByPublicKey(uint32_t n_hash) const noexcept;
 			[[nodiscard]] const Peer* findPeer(uint32_t n_hash, uint32_t ip) const noexcept;
 		};
-		[[nodiscard]] static MyConfig& getMyConfig();
+		[[nodiscard]] static MyConfig& getMyConfig() SOUP_EXCAL;
 
-		static void addPeerLocally(Bigint n, uint32_t ip = 0);
+		static void addPeerLocally(Bigint n, uint32_t ip = 0) SOUP_EXCAL;
 
-		static void enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&), Capture&& cap);
-		static void sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data);
+		static void enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL;
+		static void sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data) SOUP_EXCAL;
 	};
 }

@@ -20,7 +20,7 @@ namespace soup
 		return base64::encode(sha1::hash(key));
 	}
 
-	WebSocket::ReadFrameStatus WebSocket::readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload)
+	WebSocket::ReadFrameStatus WebSocket::readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload) SOUP_EXCAL
 	{
 		StringRefReader r(data);
 		uint8_t buf;

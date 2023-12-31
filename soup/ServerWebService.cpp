@@ -17,7 +17,7 @@ namespace soup
 	};
 
 	ServerWebService::ServerWebService(handle_request_t handle_request)
-		: ServerService([](Socket& s, ServerService& srv, Server&)
+		: ServerService([](Socket& s, ServerService& srv, Server&) SOUP_EXCAL
 		{
 			// If non-TLS + data is already available + handle_request throws, this would cause an exception in the bound port,
 			// causing it to be removed from the scheduler, causing the port to be unavailable.
@@ -158,9 +158,9 @@ namespace soup
 		s.send(w.data);
 	}
 
-	void ServerWebService::httpRecv(Socket& s)
+	void ServerWebService::httpRecv(Socket& s) SOUP_EXCAL
 	{
-		s.recv([](Socket& s, std::string&& data, Capture&& cap)
+		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 		{
 			HttpRequest req{};
 			auto method_end = data.find(' ');
@@ -240,9 +240,9 @@ namespace soup
 		}, this);
 	}
 
-	void ServerWebService::wsRecv(Socket& s)
+	void ServerWebService::wsRecv(Socket& s) SOUP_EXCAL
 	{
-		s.recv([](Socket& s, std::string&& data, Capture&& cap)
+		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 		{
 			bool fin;
 			uint8_t opcode;

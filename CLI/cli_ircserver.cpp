@@ -130,9 +130,9 @@ static void ircHandlePart(IrcClientData& cd, const std::string& channel_name)
 	}
 }
 
-static void ircClientRecvLoop(Socket& s)
+static void ircClientRecvLoop(Socket& s) SOUP_EXCAL
 {
-	s.recv([](Socket& s, std::string&& data, Capture&&)
+	s.recv([](Socket& s, std::string&& data, Capture&&) SOUP_EXCAL
 	{
 		IrcClientData& cd = s.custom_data.getStructFromMap(IrcClientData);
 		cd.buffer.append(data);
@@ -315,7 +315,10 @@ static void ircClientRecvLoop(Socket& s)
 			else if ((line.substr(0, 5) == "TOPIC" || line.substr(0, 5) == "topic") && line.length() > 6)
 			{
 				auto arr = string::explode(line.substr(6), " :");
-				SOUP_ASSERT(arr.size() == 2);
+				SOUP_IF_UNLIKELY (arr.size() != 2)
+				{
+					return;
+				}
 				if (auto membership = cd.getMembership(arr.at(0)))
 				{
 					if (membership->op)
@@ -344,7 +347,10 @@ static void ircClientRecvLoop(Socket& s)
 				size_t cmdlen = (line.substr(0, 7) == "PRIVMSG" ? 7 : 6);
 				size_t channel_name_begin = (cmdlen + 1);
 				size_t channel_name_end = line.find(" :", channel_name_begin);
-				SOUP_ASSERT(channel_name_end != std::string::npos);
+				SOUP_IF_UNLIKELY (channel_name_end == std::string::npos)
+				{
+					return;
+				}
 				auto channel_name = line.substr(channel_name_begin, channel_name_end - channel_name_begin);
 
 				if (cd.getMembership(channel_name))
@@ -401,7 +407,7 @@ int cli_ircserver()
 			}
 		}
 	};
-	ServerService serv([](Socket& s, ServerService&, Server&)
+	ServerService serv([](Socket& s, ServerService&, Server&) SOUP_EXCAL
 	{
 		std::cout << s.toString() << " has connected\n";
 		ircClientRecvLoop(s);

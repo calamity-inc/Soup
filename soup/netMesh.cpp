@@ -20,7 +20,7 @@ namespace soup
 	using Peer = netMesh::Peer;
 	using MyConfig = netMesh::MyConfig;
 
-	[[nodiscard]] static std::filesystem::path getDataPath()
+	[[nodiscard]] static std::filesystem::path getDataPath() noexcept
 	{
 		auto path = os::getProgramData();
 		path /= "Calamity, Inc";
@@ -29,27 +29,29 @@ namespace soup
 		return path;
 	}
 
-	bool netMesh::isEnabled()
+	bool netMesh::isEnabled() noexcept
 	{
-		return std::filesystem::is_regular_file(getDataPath() / "keypair.bin")
+		std::error_code ec;
+		return std::filesystem::is_regular_file(getDataPath() / "keypair.bin", ec)
 			&& !getMyConfig().peers.empty()
 			;
 	}
 
 	static MyConfig s_my_config;
 
-	MyConfig& netMesh::getMyConfig()
+	MyConfig& netMesh::getMyConfig() SOUP_EXCAL
 	{
+		std::error_code ec;
 		if (s_my_config.kp.n.isZero())
 		{
 			const auto path = getDataPath();
-			if (!std::filesystem::is_directory(path))
+			if (!std::filesystem::is_directory(path, ec))
 			{
-				std::filesystem::create_directories(path);
+				std::filesystem::create_directories(path, ec);
 			}
 
 			const auto kp_path = path / "keypair.bin";
-			if (std::filesystem::is_regular_file(kp_path))
+			if (std::filesystem::is_regular_file(kp_path, ec))
 			{
 				FileReader fr(kp_path);
 				Bigint p, q;
@@ -68,7 +70,7 @@ namespace soup
 			}
 
 			const auto peers_path = path / "peers.bin";
-			if (std::filesystem::is_regular_file(peers_path))
+			if (std::filesystem::is_regular_file(peers_path, ec))
 			{
 				FileReader fr(peers_path);
 				fr.skip(1); // version
@@ -87,7 +89,7 @@ namespace soup
 		return s_my_config;
 	}
 
-	void netMesh::addPeerLocally(Bigint n, uint32_t ip)
+	void netMesh::addPeerLocally(Bigint n, uint32_t ip) SOUP_EXCAL
 	{
 		const auto n_hash = fnv1a_32(n.toBinary());
 
@@ -129,11 +131,11 @@ namespace soup
 
 	struct netMeshEnableCryptoClientCapture
 	{
-		void(*callback)(Socket&, Capture&&);
+		void(*callback)(Socket&, Capture&&) SOUP_EXCAL;
 		Capture cap;
 	};
 
-	void netMesh::enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&), Capture&& cap)
+	void netMesh::enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL
 	{
 		s.custom_data.getStructFromMap(netMeshTlsClientData).remote_pub_n = std::move(remote_pub_n);
 		netConfig::get().certchain_validator = [](const X509Certchain& chain, const std::string&, StructMap& custom_data)
@@ -143,14 +145,14 @@ namespace soup
 				&& custom_data.getStructFromMapConst(netMeshTlsClientData).remote_pub_n == chain.certs.at(0).getRsaPublicKey().n
 				;
 		};
-		s.enableCryptoClient({}, [](Socket& s, Capture&& _cap)
+		s.enableCryptoClient({}, [](Socket& s, Capture&& _cap) SOUP_EXCAL
 		{
 			netMeshEnableCryptoClientCapture& cap = _cap.get<netMeshEnableCryptoClientCapture>();
 			cap.callback(s, std::move(cap.cap));
 		}, netMeshEnableCryptoClientCapture{ callback, std::move(cap) });
 	}
 
-	void netMesh::sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data)
+	void netMesh::sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data) SOUP_EXCAL
 	{
 		auto n_hash = fnv1a_32(netMesh::getMyConfig().kp.n.toBinary());
 		auto signature = netMesh::getMyConfig().kp.getPrivate().sign<sha256>(data);

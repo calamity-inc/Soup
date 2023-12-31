@@ -110,7 +110,7 @@ namespace soup
 	};
 
 	template <typename T, typename...Args, SOUP_RESTRICT(!std::is_array_v<T>)>
-	[[nodiscard]] UniquePtr<T> make_unique(Args&&...args) SOUP_EXCAL
+	[[nodiscard]] UniquePtr<T> make_unique(Args&&...args)
 	{
 		return UniquePtr<T>(new T(std::forward<Args>(args)...));
 	}

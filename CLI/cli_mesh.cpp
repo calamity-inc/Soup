@@ -54,7 +54,7 @@ int cli_mesh(int argc, const char** argv)
 				if (sock->connect(ip, 7106))
 				{
 					std::cout << " Establishing TLS..." << std::flush;
-					netMesh::enableCryptoClient(*sock, data.n, [](Socket& s, Capture&& cap)
+					netMesh::enableCryptoClient(*sock, data.n, [](Socket& s, Capture&& cap) SOUP_EXCAL
 					{
 						std::cout << " Established." << std::endl;
 
@@ -65,7 +65,7 @@ int cli_mesh(int argc, const char** argv)
 						s.send(std::move(sw.data));
 
 						std::cout << "Linking..." << std::flush;
-						s.recv([](Socket&, std::string&& data, Capture&& cap)
+						s.recv([](Socket&, std::string&& data, Capture&& cap) SOUP_EXCAL
 						{
 							if (data.at(0) == MESH_MSG_OK)
 							{
@@ -164,13 +164,13 @@ int cli_mesh(int argc, const char** argv)
 					if (sock->connect(ip, 7106))
 					{
 						std::cout << " Establishing TLS..." << std::flush;
-						netMesh::enableCryptoClient(*sock, peer->n, [](Socket& s, Capture&& cap)
+						netMesh::enableCryptoClient(*sock, peer->n, [](Socket& s, Capture&& cap) SOUP_EXCAL
 						{
 							std::cout << " Established." << std::endl;
 
 							std::cout << "Sending command..." << std::flush;
 							netMesh::sendAppMessage(s, MESH_MSG_DNS_ADD_RECORD, cap.get<std::string>());
-							s.recv([](Socket&, std::string&& data, Capture&&)
+							s.recv([](Socket&, std::string&& data, Capture&&) SOUP_EXCAL
 							{
 								if (data.at(0) == MESH_MSG_OK)
 								{

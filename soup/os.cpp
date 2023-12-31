@@ -56,7 +56,7 @@ namespace soup
 		return path;
 	}
 
-	std::filesystem::path os::getProgramData()
+	std::filesystem::path os::getProgramData() noexcept
 	{
 #if SOUP_WINDOWS
 		wchar_t szPath[MAX_PATH];

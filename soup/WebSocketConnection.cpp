@@ -18,9 +18,9 @@ namespace soup
 		Capture cap;
 	};
 
-	static void upgradeRecvLoop(Socket& s, Capture&& cap)
+	static void upgradeRecvLoop(Socket& s, Capture&& cap) SOUP_EXCAL
 	{
-		s.recv([](Socket& s, std::string&& data, Capture&& cap)
+		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 		{
 			if (data.find("\r\n\r\n") != std::string::npos)
 			{
@@ -34,13 +34,13 @@ namespace soup
 		}, std::move(cap));
 	}
 
-	void WebSocketConnection::upgrade(std::string host, std::string path, callback_t cb, Capture&& cap)
+	void WebSocketConnection::upgrade(std::string host, std::string path, callback_t cb, Capture&& cap) SOUP_EXCAL
 	{
 		sendUpgradeRequest(std::move(host), std::move(path));
 		upgradeRecvLoop(*this, CaptureWsUpgrade{ cb, std::move(cap) });
 	}
 
-	void WebSocketConnection::sendUpgradeRequest(std::string host, std::string path)
+	void WebSocketConnection::sendUpgradeRequest(std::string host, std::string path) SOUP_EXCAL
 	{
 		HttpRequest req(std::move(host), std::move(path));
 		req.header_fields.at("Connection") = "Upgrade";
@@ -50,12 +50,12 @@ namespace soup
 		req.send(*this);
 	}
 
-	void WebSocketConnection::wsSend(std::string data, bool is_text)
+	void WebSocketConnection::wsSend(std::string data, bool is_text) SOUP_EXCAL
 	{
 		wsSend((is_text ? WebSocketFrameType::TEXT : WebSocketFrameType::BINARY), data);
 	}
 
-	void WebSocketConnection::wsSend(uint8_t opcode, std::string payload)
+	void WebSocketConnection::wsSend(uint8_t opcode, std::string payload) SOUP_EXCAL
 	{
 		StringWriter w{ false };
 		opcode |= 0x80; // fin
@@ -122,9 +122,9 @@ namespace soup
 		Capture cap;
 	};
 
-	void WebSocketConnection::wsRecv(recv_callback_t cb, Capture&& cap)
+	void WebSocketConnection::wsRecv(recv_callback_t cb, Capture&& cap) SOUP_EXCAL
 	{
-		recv([](Socket& s, std::string&& app, Capture&& _cap)
+		recv([](Socket& s, std::string&& app, Capture&& _cap) SOUP_EXCAL
 		{
 			auto& buf = s.custom_data.getStructFromMap(WsRecvBuffer).buf;
 			auto& cap = _cap.get<CaptureWsRecv>();
@@ -163,7 +163,7 @@ namespace soup
 		std::queue<WebSocketMessage> data;
 	};
 
-	SharedPtr<Promise<WebSocketMessage>> WebSocketConnection::wsRecv()
+	SharedPtr<Promise<WebSocketMessage>> WebSocketConnection::wsRecv() SOUP_EXCAL
 	{
 		if (custom_data.isStructInMap(WebSocketPromiseOverflowData))
 		{
@@ -176,7 +176,7 @@ namespace soup
 			}
 		}
 		auto p = soup::make_shared<Promise<WebSocketMessage>>();
-		wsRecv([](WebSocketConnection& s, WebSocketMessage&& msg, Capture&& cap)
+		wsRecv([](WebSocketConnection& s, WebSocketMessage&& msg, Capture&& cap) SOUP_EXCAL
 		{
 			if (!cap.get<SharedPtr<Promise<WebSocketMessage>>>()->isFulfilled())
 			{

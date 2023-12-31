@@ -6,7 +6,7 @@ namespace soup
 {
 	using namespace ::soup::literals;
 
-	[[nodiscard]] inline uint32_t fnv1a_32(const std::string& str)
+	[[nodiscard]] inline uint32_t fnv1a_32(const std::string& str) noexcept
 	{
 		uint32_t hash = 2166136261u;
 		for (const auto& c : str)
@@ -17,7 +17,7 @@ namespace soup
 		return hash;
 	}
 
-	[[nodiscard]] inline uint64_t fnv1a_64(const std::string& str)
+	[[nodiscard]] inline uint64_t fnv1a_64(const std::string& str) noexcept
 	{
 		uint64_t hash = 14695981039346656037ull;
 		for (const auto& c : str)

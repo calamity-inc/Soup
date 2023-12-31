@@ -13,7 +13,7 @@ namespace soup
 		Server* server;
 		ServerService* service;
 
-		void processAccept(Socket&& sock, uint16_t port) const
+		void processAccept(Socket&& sock, uint16_t port) const SOUP_EXCAL
 		{
 			if (sock.hasConnection())
 			{
@@ -36,7 +36,7 @@ namespace soup
 		tls_server_cert_selector_t cert_selector;
 		tls_server_on_client_hello_t on_client_hello;
 
-		void processAccept(Socket&& sock, uint16_t port) const
+		void processAccept(Socket&& sock, uint16_t port) const SOUP_EXCAL
 		{
 			if (sock.hasConnection())
 			{
@@ -45,7 +45,7 @@ namespace soup
 				{
 					service->on_connection_established(*s, *service, *server);
 				}
-				s->enableCryptoServer(cert_selector, [](Socket& s, Capture&& _cap)
+				s->enableCryptoServer(cert_selector, [](Socket& s, Capture&& _cap) SOUP_EXCAL
 				{
 					CaptureServerPortCrypto& cap = *_cap.get<CaptureServerPortCrypto*>();
 					if (cap.service->on_tunnel_established)
@@ -178,20 +178,20 @@ namespace soup
 		return true;
 	}
 
-	void Server::setDataAvailableHandler6(Socket& s)
+	void Server::setDataAvailableHandler6(Socket& s) noexcept
 	{
 		s.holdup_type = Worker::SOCKET;
-		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
+		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPort>().processAccept(s.accept6(), s.peer.port);
 		};
 	}
 
-	void Server::setDataAvailableHandlerCrypto6(Socket& s)
+	void Server::setDataAvailableHandlerCrypto6(Socket& s) noexcept
 	{
 		s.holdup_type = Worker::SOCKET;
-		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
+		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept6(), s.peer.port);
@@ -199,20 +199,20 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
-	void Server::setDataAvailableHandler4(Socket& s)
+	void Server::setDataAvailableHandler4(Socket& s) noexcept
 	{
 		s.holdup_type = Worker::SOCKET;
-		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
+		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPort>().processAccept(s.accept4(), s.peer.port);
 		};
 	}
 
-	void Server::setDataAvailableHandlerCrypto4(Socket& s)
+	void Server::setDataAvailableHandlerCrypto4(Socket& s) noexcept
 	{
 		s.holdup_type = Worker::SOCKET;
-		s.holdup_callback.fp = [](Worker& w, Capture&& cap)
+		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
 			cap.get<CaptureServerPortCrypto>().processAccept(s.accept4(), s.peer.port);
@@ -220,7 +220,7 @@ namespace soup
 	}
 #endif
 
-	void Server::setDataAvailableHandlerUdp(Socket& s, udp_callback_t callback)
+	void Server::setDataAvailableHandlerUdp(Socket& s, udp_callback_t callback) noexcept
 	{
 		s.udpRecv([](Socket& s, SocketAddr&& sender, std::string&& data, Capture&& cap)
 		{
@@ -229,7 +229,7 @@ namespace soup
 		}, callback);
 	}
 
-	void Server::setDataAvailableHandlerUdp(Socket& s, ServerServiceUdp* service)
+	void Server::setDataAvailableHandlerUdp(Socket& s, ServerServiceUdp* service) noexcept
 	{
 		s.udpRecv([](Socket& s, SocketAddr&& sender, std::string&& data, Capture&& cap)
 		{

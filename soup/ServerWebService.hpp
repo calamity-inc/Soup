@@ -44,8 +44,8 @@ namespace soup
 		static void wsSend(Socket& s, uint8_t opcode, const std::string& payload);
 
 	protected:
-		void httpRecv(Socket& s);
-		void wsRecv(Socket& s);
+		void httpRecv(Socket& s) SOUP_EXCAL;
+		void wsRecv(Socket& s) SOUP_EXCAL;
 	};
 }
 #endif
