@@ -390,7 +390,7 @@ namespace soup
 		certchain_validator_t certchain_validator;
 	};
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap)
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap) SOUP_EXCAL
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
 			callback,
@@ -783,7 +783,7 @@ namespace soup
 		Bigint data;
 	};
 
-	void Socket::enableCryptoServer(tls_server_cert_selector_t cert_selector, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_on_client_hello_t on_client_hello)
+	void Socket::enableCryptoServer(tls_server_cert_selector_t cert_selector, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_on_client_hello_t on_client_hello) SOUP_EXCAL
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
 			callback,
@@ -1055,7 +1055,7 @@ namespace soup
 		Capture cap;
 	};
 
-	void Socket::udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap)
+	void Socket::udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap) noexcept
 	{
 		holdup_type = SOCKET;
 		holdup_callback.set([](Worker& w, Capture&& _cap)
@@ -1086,7 +1086,7 @@ namespace soup
 		}, CaptureSocketUdpRecv{ callback, std::move(cap) });
 	}
 
-	void Socket::close()
+	void Socket::close() SOUP_EXCAL
 	{
 		//custom_data.removeStructFromMap(ReuseTag);
 
@@ -1100,12 +1100,12 @@ namespace soup
 		}
 	}
 
-	bool Socket::tls_sendHandshake(const UniquePtr<SocketTlsHandshaker>& handshaker, TlsHandshakeType_t handshake_type, const std::string& content)
+	bool Socket::tls_sendHandshake(const UniquePtr<SocketTlsHandshaker>& handshaker, TlsHandshakeType_t handshake_type, const std::string& content) SOUP_EXCAL
 	{
 		return tls_sendRecord(TlsContentType::handshake, handshaker->pack(handshake_type, content));
 	}
 
-	bool Socket::tls_sendRecord(TlsContentType_t content_type, const std::string& content)
+	bool Socket::tls_sendRecord(TlsContentType_t content_type, const std::string& content) SOUP_EXCAL
 	{
 		if (!tls_encrypter_send.isActive())
 		{
@@ -1120,7 +1120,7 @@ namespace soup
 		return tls_sendRecordEncrypted(content_type, content);
 	}
 
-	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content)
+	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content) SOUP_EXCAL
 	{
 		auto body = tls_encrypter_send.encrypt(content_type, content);
 
@@ -1420,7 +1420,7 @@ namespace soup
 		});
 	}
 
-	void Socket::tls_close(TlsAlertDescription_t desc)
+	void Socket::tls_close(TlsAlertDescription_t desc) SOUP_EXCAL
 	{
 		if (hasConnection())
 		{
@@ -1458,7 +1458,7 @@ namespace soup
 		return ::send(fd, (const char*)data, size, 0) == size;
 	}
 
-	std::string Socket::transport_recvCommon(int max_bytes)
+	std::string Socket::transport_recvCommon(int max_bytes) SOUP_EXCAL
 	{
 		std::string buf(max_bytes, '\0');
 		auto res = ::recv(fd, buf.data(), max_bytes, 0);
@@ -1578,7 +1578,7 @@ namespace soup
 		});
 	}
 
-	std::string Socket::toString() const
+	std::string Socket::toString() const SOUP_EXCAL
 	{
 		return peer.toString();
 	}

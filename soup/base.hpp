@@ -152,6 +152,16 @@
 	#define SOUP_THROW(x) throw x;
 #endif
 
+#ifndef SOUP_EXCAL
+	// An 'excal' function is 'noexcept' except it may throw std::bad_alloc.
+	//
+	// We generally don't attempt to handle allocation failures, not least because it's basically impossible on modern systems.
+	// Because of this, we declare that 'excal' functions are 'noexcept' to avoid superfluous unwind information.
+	//
+	// For visual distinction with IDE hover features, we use `throw()`, but it's functionally identical to `noexcept`.
+	#define SOUP_EXCAL throw()
+#endif
+
 // === Platform-specific types
 
 namespace soup
@@ -169,6 +179,9 @@ namespace soup
 
 namespace soup
 {
+	[[nodiscard]] void* malloc(size_t size) /* SOUP_EXCAL */;
+	[[nodiscard]] void* realloc(void* ptr, size_t new_size) /* SOUP_EXCAL */;
+
 	[[noreturn]] void throwAssertionFailed();
 	[[noreturn]] void throwAssertionFailed(const char* what);
 }

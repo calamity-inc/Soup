@@ -1,8 +1,9 @@
 #pragma once
 
-#include "type_traits.hpp"
-
 #include <utility> // forward
+
+#include "base.hpp" // SOUP_EXCAL
+#include "type_traits.hpp"
 
 namespace soup
 {
@@ -109,7 +110,7 @@ namespace soup
 	};
 
 	template <typename T, typename...Args, SOUP_RESTRICT(!std::is_array_v<T>)>
-	[[nodiscard]] UniquePtr<T> make_unique(Args&&...args)
+	[[nodiscard]] UniquePtr<T> make_unique(Args&&...args) SOUP_EXCAL
 	{
 		return UniquePtr<T>(new T(std::forward<Args>(args)...));
 	}

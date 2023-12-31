@@ -115,13 +115,13 @@ namespace soup
 		static bool certchain_validator_relaxed(const X509Certchain&, const std::string&, StructMap&); // [Default] Verifies what can be verified, accepts the rest.
 		static bool certchain_validator_strict(const X509Certchain&, const std::string&, StructMap&); // Same as relaxed, but rejects SHA384 & SHA512 because Soup doesn't implement them yet.
 
-		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap = {});
+		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&), Capture&& cap = {}) SOUP_EXCAL;
 	protected:
 		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 		void enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 
 	public:
-		void enableCryptoServer(tls_server_cert_selector_t cert_selector, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_on_client_hello_t on_client_hello = nullptr);
+		void enableCryptoServer(tls_server_cert_selector_t cert_selector, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_on_client_hello_t on_client_hello = nullptr) SOUP_EXCAL;
 
 		// Application Layer
 
@@ -141,7 +141,7 @@ namespace soup
 
 		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
 
-		void udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap = {});
+		void udpRecv(void(*callback)(Socket&, SocketAddr&&, std::string&&, Capture&&), Capture&& cap = {}) noexcept;
 
 		/*[[nodiscard]] std::string recvExact(int bytes) noexcept
 		{
@@ -160,19 +160,19 @@ namespace soup
 			return buf;
 		}*/
 
-		void close();
+		void close() SOUP_EXCAL;
 
 		// TLS - Crypto Layer
 
-		bool tls_sendHandshake(const UniquePtr<SocketTlsHandshaker>& handshaker, TlsHandshakeType_t handshake_type, const std::string& content);
-		bool tls_sendRecord(TlsContentType_t content_type, const std::string& content);
-		bool tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content);
+		bool tls_sendHandshake(const UniquePtr<SocketTlsHandshaker>& handshaker, TlsHandshakeType_t handshake_type, const std::string& content) SOUP_EXCAL;
+		bool tls_sendRecord(TlsContentType_t content_type, const std::string& content) SOUP_EXCAL;
+		bool tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content) SOUP_EXCAL;
 
 		void tls_recvHandshake(UniquePtr<SocketTlsHandshaker>&& handshaker, void(*callback)(Socket&, UniquePtr<SocketTlsHandshaker>&&, TlsHandshakeType_t, std::string&&), std::string&& pre = {});
 		void tls_recvRecord(TlsContentType_t expected_content_type, void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {});
 		void tls_recvRecord(void(*callback)(Socket&, TlsContentType_t, std::string&&, Capture&&), Capture&& cap = {});
 
-		void tls_close(TlsAlertDescription_t desc);
+		void tls_close(TlsAlertDescription_t desc) SOUP_EXCAL;
 
 		// Transport Layer
 
@@ -185,7 +185,7 @@ namespace soup
 		[[nodiscard]] bool transport_hasData() const;
 
 	protected:
-		[[nodiscard]] std::string transport_recvCommon(int max_bytes);
+		[[nodiscard]] std::string transport_recvCommon(int max_bytes) SOUP_EXCAL;
 	public:
 		void transport_recv(int max_bytes, transport_recv_callback_t callback, Capture&& cap = {});
 		void transport_recvExact(int bytes, transport_recv_callback_t callback, Capture&& cap = {}, std::string&& pre = {});
@@ -198,7 +198,7 @@ namespace soup
 
 		void keepAlive();
 
-		[[nodiscard]] std::string toString() const;
+		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 	};
 }
 #endif
