@@ -131,8 +131,10 @@
 
 #if SOUP_CPP23
 	#define SOUP_ASSUME(x) [[assume(x)]];
+	#define SOUP_UNREACHABLE std::unreachable();
 #else
 	#define SOUP_ASSUME(x) ;
+	#define SOUP_UNREACHABLE ;
 #endif
 
 // === C++ feature abstraction macros
