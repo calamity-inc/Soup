@@ -129,7 +129,7 @@ namespace soup
 
 		void resizeInner(size_t new_capacity) noexcept
 		{
-			m_data = reinterpret_cast<uint8_t*>(m_data ? realloc(m_data, new_capacity) : malloc(new_capacity));
+			m_data = reinterpret_cast<uint8_t*>(realloc(m_data, new_capacity));
 			m_capacity = new_capacity;
 		}
 

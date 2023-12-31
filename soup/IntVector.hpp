@@ -178,7 +178,7 @@ namespace soup
 		void makeSpaceForMoreElements() noexcept
 		{
 			m_capacity += (0x1000 / sizeof(T));
-			m_data = reinterpret_cast<T*>(m_data ? realloc(m_data, m_capacity * sizeof(T)) : malloc(m_capacity * sizeof(T)));
+			m_data = reinterpret_cast<T*>(realloc(m_data, m_capacity * sizeof(T)));
 		}
 
 	public:
