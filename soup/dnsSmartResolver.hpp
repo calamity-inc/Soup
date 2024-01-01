@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include "dnsResolver.hpp"
 
 namespace soup
@@ -14,3 +17,5 @@ namespace soup
 		mutable bool tested_udp = false;
 	};
 }
+
+#endif

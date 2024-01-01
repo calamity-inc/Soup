@@ -1,4 +1,5 @@
 #include "dnsSmartResolver.hpp"
+#if !SOUP_WASM
 
 #include "dnsHttpResolver.hpp"
 #include "dnsLookupTask.hpp"
@@ -109,3 +110,5 @@ namespace soup
 		return soup::make_unique<dnsSmartLookupTask>(*this, qtype, name);
 	}
 }
+
+#endif
