@@ -3,32 +3,11 @@
 #if !SOUP_WASM
 
 #include "DetachedScheduler.hpp"
-#include "log.hpp"
 #include "WeakRef.hpp"
 
 namespace soup
 {
-	struct dnsAsyncScheduler : public DetachedScheduler
-	{
-		dnsAsyncScheduler()
-			: DetachedScheduler()
-		{
-#if SOUP_EXCEPTIONS
-			on_exception = &onException;
-#endif
-		}
-
-#if SOUP_EXCEPTIONS
-		static void onException(Worker&, const std::exception& e, Scheduler&)
-		{
-			std::string msg = "Exception during DNS lookup task: ";
-			msg.append(e.what());
-			logWriteLine(std::move(msg));
-		}
-#endif
-	};
-
-	static dnsAsyncScheduler dns_async_sched;
+	static DetachedScheduler dns_async_sched;
 
 	struct dnsAsyncExecTask : public Task
 	{
