@@ -148,6 +148,12 @@ namespace soup
 
 				SOUP_IF_UNLIKELY (!fin || (opcode != WebSocketFrameType::TEXT && opcode != WebSocketFrameType::BINARY))
 				{
+					SOUP_IF_LIKELY (opcode == WebSocketFrameType::CLOSE)
+					{
+						payload.erase(0, 1);
+						s.remote_closed = true;
+						s.custom_data.getStructFromMap(SocketCloseReason) = std::move(payload);
+					}
 					cap.cb(static_cast<WebSocketConnection&>(s), {}, std::move(cap.cap));
 					return;
 				}
