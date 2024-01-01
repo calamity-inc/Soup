@@ -4,10 +4,7 @@
 
 #include "DetachedScheduler.hpp"
 #include "log.hpp"
-
-#ifndef NDEBUG
 #include "WeakRef.hpp"
-#endif
 
 namespace soup
 {
@@ -35,36 +32,22 @@ namespace soup
 
 	struct dnsAsyncExecTask : public Task
 	{
-#ifndef NDEBUG
-		WeakRef<dnsResolver> resolv;
-#else
-		const dnsResolver& resolv;
-#endif
+		WeakRef<const dnsResolver> resolv;
 		dnsType qtype;
 		std::string name;
 
 		std::vector<UniquePtr<dnsRecord>> result;
 
 		dnsAsyncExecTask(const dnsResolver& resolv, dnsType qtype, const std::string& name)
-			:
-#ifndef NDEBUG
-			resolv(const_cast<dnsResolver*>(&resolv))
-#else
-			resolv(resolv)
-#endif
-			, qtype(qtype), name(name)
+			: resolv(&resolv), qtype(qtype), name(name)
 		{
 		}
 
 		void onTick() final
 		{
-#ifndef NDEBUG
 			auto pResolv = resolv.getPointer();
 			SOUP_ASSERT(pResolv); // Resolver has been deleted in the time the task was started. Was it stack-allocated?
 			result = pResolv->lookup(qtype, name);
-#else
-			result = resolv.lookup(qtype, name);
-#endif
 			setWorkDone();
 		}
 	};
@@ -97,6 +80,13 @@ namespace soup
 	std::vector<IpAddr> dnsResolver::lookupIPv6(const std::string& name) const
 	{
 		return simplifyIPv6LookupResults(lookup(DNS_AAAA, name));
+	}
+
+	std::vector<UniquePtr<dnsRecord>> dnsResolver::lookup(dnsType qtype, const std::string& name) const
+	{
+		auto task = makeLookupTask(qtype, name);
+		task->run();
+		return std::move(task->result);
 	}
 
 	UniquePtr<dnsLookupTask> dnsResolver::makeLookupTask(dnsType qtype, const std::string& name) const

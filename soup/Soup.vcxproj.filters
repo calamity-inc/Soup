@@ -1569,6 +1569,9 @@
     <ClInclude Include="netStatus.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="dnsSmartResolver.hpp">
+      <Filter>net\dns\resolver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2310,6 +2313,9 @@
     </ClCompile>
     <ClCompile Include="netStatus.cpp">
       <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="dnsSmartResolver.cpp">
+      <Filter>net\dns\resolver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

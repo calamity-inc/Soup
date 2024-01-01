@@ -493,6 +493,7 @@
     <ClInclude Include="DigitalKeyboard.hpp" />
     <ClInclude Include="dnsCacheResolver.hpp" />
     <ClInclude Include="dnsServerService.hpp" />
+    <ClInclude Include="dnsSmartResolver.hpp" />
     <ClInclude Include="drAdaptor.hpp" />
     <ClInclude Include="drData.hpp" />
     <ClInclude Include="drDatetime.hpp" />
@@ -999,6 +1000,7 @@
     <ClCompile Include="dnsRawResolver.cpp" />
     <ClCompile Include="dnsResolver.cpp" />
     <ClCompile Include="dnsServerService.cpp" />
+    <ClCompile Include="dnsSmartResolver.cpp" />
     <ClCompile Include="dnsType.cpp" />
     <ClCompile Include="dnsUdpResolver.cpp" />
     <ClCompile Include="dns_records.cpp" />
