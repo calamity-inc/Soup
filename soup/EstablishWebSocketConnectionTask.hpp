@@ -38,7 +38,7 @@ namespace soup
 					sock = connect.getSocket();
 					if (use_tls)
 					{
-						sock->enableCryptoClient(host, [](Socket& s, Capture&& cap)
+						sock->enableCryptoClient(host, [](Socket& s, Capture&& cap) SOUP_EXCAL
 						{
 							cap.get<EstablishWebSocketConnectionTask*>()->proceedToUpgrade();
 						}, this);
@@ -58,9 +58,9 @@ namespace soup
 			}
 		}
 
-		void proceedToUpgrade()
+		void proceedToUpgrade() SOUP_EXCAL
 		{
-			sock->upgrade(std::move(host), std::move(path), [](WebSocketConnection& con, Capture&& cap)
+			sock->upgrade(std::move(host), std::move(path), [](WebSocketConnection& con, Capture&& cap) noexcept
 			{
 				cap.get<EstablishWebSocketConnectionTask*>()->setWorkDone();
 			}, this);
