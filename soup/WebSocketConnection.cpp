@@ -146,8 +146,11 @@ namespace soup
 					break;
 				}
 
-				SOUP_ASSERT(fin);
-				SOUP_ASSERT(opcode == WebSocketFrameType::TEXT || opcode == WebSocketFrameType::BINARY);
+				SOUP_IF_UNLIKELY (!fin || (opcode != WebSocketFrameType::TEXT && opcode != WebSocketFrameType::BINARY))
+				{
+					cap.cb(static_cast<WebSocketConnection&>(s), {}, std::move(cap.cap));
+					return;
+				}
 
 				WebSocketMessage msg;
 				msg.is_text = (opcode == WebSocketFrameType::TEXT);
