@@ -44,9 +44,9 @@ namespace soup
 	{
 		const auto prev_scheduler = this_thread_running_scheduler;
 		this_thread_running_scheduler = this;
+		std::vector<pollfd> pollfds{};
 		while (shouldKeepRunning())
 		{
-			std::vector<pollfd> pollfds{};
 			uint8_t workload_flags = 0;
 #if LOG_TICK_DUR
 			Stopwatch t;
@@ -64,6 +64,7 @@ namespace soup
 			{
 				yieldKernel(pollfds);
 			}
+			pollfds.clear();
 		}
 		this_thread_running_scheduler = prev_scheduler;
 	}
@@ -73,9 +74,9 @@ namespace soup
 		const auto prev_scheduler = this_thread_running_scheduler;
 		this_thread_running_scheduler = this;
 		time_t deadline = time::millis() + ms;
+		std::vector<pollfd> pollfds{};
 		while (shouldKeepRunning())
 		{
-			std::vector<pollfd> pollfds{};
 			uint8_t workload_flags = 0;
 			tick(pollfds, workload_flags);
 			yieldBusyspin(pollfds, workload_flags);
@@ -83,6 +84,7 @@ namespace soup
 			{
 				break;
 			}
+			pollfds.clear();
 		}
 		this_thread_running_scheduler = prev_scheduler;
 	}
@@ -127,6 +129,9 @@ namespace soup
 		}
 
 		// Process workers
+#if !SOUP_WASM
+		pollfds.reserve(workers.size());
+#endif
 		for (auto i = workers.begin(); i != workers.end(); )
 		{
 			if ((*i)->type == WORKER_TYPE_SOCKET)
