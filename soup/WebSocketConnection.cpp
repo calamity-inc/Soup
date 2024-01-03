@@ -97,7 +97,7 @@ namespace soup
 		uint8_t mask[4];
 		rand.fill(mask);
 
-		for (auto i = 0; i != payload.size(); ++i)
+		for (size_t i = 0; i != payload.size(); ++i)
 		{
 			payload[i] ^= mask[i % 4];
 		}
