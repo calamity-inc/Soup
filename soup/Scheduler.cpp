@@ -89,7 +89,7 @@ namespace soup
 		this_thread_running_scheduler = prev_scheduler;
 	}
 
-	bool Scheduler::shouldKeepRunning() const
+	bool Scheduler::shouldKeepRunning() const noexcept
 	{
 		return workers.size() != passive_workers || !pending_workers.empty();
 	}
