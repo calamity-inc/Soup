@@ -203,7 +203,7 @@ namespace soup
 			}
 
 			workload_flags |= dispo;
-			static_assert((int)Worker::HIGH_FRQUENCY == (int)HAS_HIGH_FREQUENCY_TASKS);
+			static_assert((int)Worker::HIGH_FRQUENCY == ((int)HAS_HIGH_FREQUENCY_TASKS | (int)NOT_JUST_SOCKETS));
 			static_assert((int)Worker::NEUTRAL == (int)NOT_JUST_SOCKETS);
 			static_assert((int)Worker::LOW_FREQUENCY == (int)0);
 		}

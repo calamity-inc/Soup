@@ -29,7 +29,7 @@ namespace soup
 
 		enum SchedulingDisposition : int
 		{
-			HIGH_FRQUENCY = 1 << 1,
+			HIGH_FRQUENCY = (1 << 1) | (1 << 0),
 			NEUTRAL = 1 << 0,
 			LOW_FREQUENCY = 0,
 		};
