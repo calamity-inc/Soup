@@ -511,19 +511,31 @@ namespace soup
 					}
 					handshaker->certchain.cleanup();
 
-					// Validating an ECC cert on my i9-13900K takes around 61 ms, which is time the scheduler could be spending doing more useful things.
-					handshaker->promise.fulfilOffThread([](Capture&& _cap)
+#if SOUP_EXCEPTIONS
+					try
+#endif
 					{
-						auto& cap = _cap.get<CaptureValidateCertchain>();
-						if (!cap.certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name, cap.s.custom_data))
+						// Validating an ECC cert on my i9-13900K takes around 61 ms, which is time the scheduler could be spending doing more useful things.
+						handshaker->promise.fulfilOffThread([](Capture&& _cap)
 						{
-							cap.s.tls_close(TlsAlertDescription::bad_certificate);
-						}
-					}, CaptureValidateCertchain{
-						s,
-						handshaker.get(),
-						netConfig::get().certchain_validator
-					});
+							auto& cap = _cap.get<CaptureValidateCertchain>();
+							if (!cap.certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name, cap.s.custom_data))
+							{
+								cap.s.tls_close(TlsAlertDescription::bad_certificate);
+							}
+						}, CaptureValidateCertchain{
+							s,
+							handshaker.get(),
+							netConfig::get().certchain_validator
+						});
+					}
+#if SOUP_EXCEPTIONS
+					catch (...)
+					{
+						s.tls_close(TlsAlertDescription::internal_error);
+						return;
+					}
+#endif
 
 					auto* p = &handshaker->promise;
 					s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap) SOUP_EXCAL
