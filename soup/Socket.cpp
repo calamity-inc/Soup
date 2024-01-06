@@ -656,84 +656,95 @@ namespace soup
 	void Socket::enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL
 	{
 		std::string cke{};
-		if (handshaker->ecdhe_curve == 0)
+#if SOUP_EXCEPTIONS
+		try
+#endif
 		{
-			std::string pms{};
-			pms.reserve(48);
-			pms.push_back('\3');
-			pms.push_back('\3');
-			for (auto i = 0; i != 46; ++i)
+			if (handshaker->ecdhe_curve == 0)
 			{
-				pms.push_back(rand.ch());
+				std::string pms{};
+				pms.reserve(48);
+				pms.push_back('\3');
+				pms.push_back('\3');
+				for (auto i = 0; i != 46; ++i)
+				{
+					pms.push_back(rand.ch());
+				}
+
+				TlsEncryptedPreMasterSecret epms{};
+				SOUP_IF_UNLIKELY(!handshaker->certchain.certs.at(0).isRsa())
+				{
+					return; // Server picked an RSA ciphersuite but did not provide an appropriate certificate
+				}
+				epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
+				cke = epms.toBinaryString();
+
+				handshaker->pre_master_secret = std::move(pms);
 			}
-
-			TlsEncryptedPreMasterSecret epms{};
-			SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
+			else if (handshaker->ecdhe_curve == NamedCurves::x25519)
 			{
-				return; // Server picked an RSA ciphersuite but did not provide an appropriate certificate
+				uint8_t my_priv[Curve25519::KEY_SIZE];
+				Curve25519::generatePrivate(my_priv);
+
+				uint8_t their_pub[Curve25519::KEY_SIZE];
+				memcpy(their_pub, handshaker->ecdhe_public_key.data(), sizeof(their_pub));
+
+				uint8_t shared_secret[Curve25519::SHARED_SIZE];
+				Curve25519::x25519(shared_secret, my_priv, their_pub);
+				handshaker->pre_master_secret = std::string((const char*)shared_secret, sizeof(shared_secret));
+
+				uint8_t my_pub[Curve25519::KEY_SIZE];
+				Curve25519::derivePublic(my_pub, my_priv);
+
+				cke = std::string(1, (char)sizeof(my_pub));
+				cke.append((const char*)my_pub, sizeof(my_pub));
 			}
-			epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
-			cke = epms.toBinaryString();
-
-			handshaker->pre_master_secret = std::move(pms);
-		}
-		else if (handshaker->ecdhe_curve == NamedCurves::x25519)
-		{
-			uint8_t my_priv[Curve25519::KEY_SIZE];
-			Curve25519::generatePrivate(my_priv);
-
-			uint8_t their_pub[Curve25519::KEY_SIZE];
-			memcpy(their_pub, handshaker->ecdhe_public_key.data(), sizeof(their_pub));
-
-			uint8_t shared_secret[Curve25519::SHARED_SIZE];
-			Curve25519::x25519(shared_secret, my_priv, their_pub);
-			handshaker->pre_master_secret = std::string((const char*)shared_secret, sizeof(shared_secret));
-
-			uint8_t my_pub[Curve25519::KEY_SIZE];
-			Curve25519::derivePublic(my_pub, my_priv);
-
-			cke = std::string(1, (char)sizeof(my_pub));
-			cke.append((const char*)my_pub, sizeof(my_pub));
-		}
-		else if (handshaker->ecdhe_curve == NamedCurves::secp256r1
-			|| handshaker->ecdhe_curve == NamedCurves::secp384r1
-			)
-		{
-			const EccCurve* curve;
-			if (handshaker->ecdhe_curve != NamedCurves::secp384r1)
+			else if (handshaker->ecdhe_curve == NamedCurves::secp256r1
+				|| handshaker->ecdhe_curve == NamedCurves::secp384r1
+				)
 			{
-				curve = &EccCurve::secp256r1();
+				const EccCurve* curve;
+				if (handshaker->ecdhe_curve != NamedCurves::secp384r1)
+				{
+					curve = &EccCurve::secp256r1();
+				}
+				else
+				{
+					curve = &EccCurve::secp384r1();
+				}
+				size_t csize = curve->getBytesPerAxis();
+
+				auto my_priv = curve->generatePrivate();
+
+				EccPoint their_pub{
+					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, csize)),
+					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(csize, csize))
+				};
+				SOUP_IF_UNLIKELY(!curve->validate(their_pub))
+				{
+					return; // Server provided an invalid point for ECDHE
+				}
+
+				auto shared_point = curve->multiply(their_pub, my_priv);
+				auto shared_secret = shared_point.x.toBinary(csize);
+				handshaker->pre_master_secret = std::move(shared_secret);
+
+				auto my_pub = curve->derivePublic(my_priv);
+
+				cke = curve->encodePointUncompressed(my_pub);
+				cke.insert(0, 1, static_cast<char>(1 + csize + csize));
 			}
 			else
 			{
-				curve = &EccCurve::secp384r1();
+				SOUP_DEBUG_ASSERT_UNREACHABLE; // This would be a logic error on our end since we (should) reject other curves earlier
 			}
-			size_t csize = curve->getBytesPerAxis();
-
-			auto my_priv = curve->generatePrivate();
-
-			EccPoint their_pub{
-				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, csize)),
-				Bigint::fromBinary(handshaker->ecdhe_public_key.substr(csize, csize))
-			};
-			SOUP_IF_UNLIKELY (!curve->validate(their_pub))
-			{
-				return; // Server provided an invalid point for ECDHE
-			}
-
-			auto shared_point = curve->multiply(their_pub, my_priv);
-			auto shared_secret = shared_point.x.toBinary(csize);
-			handshaker->pre_master_secret = std::move(shared_secret);
-
-			auto my_pub = curve->derivePublic(my_priv);
-
-			cke = curve->encodePointUncompressed(my_pub);
-			cke.insert(0, 1, static_cast<char>(1 + csize + csize));
 		}
-		else
+#if SOUP_EXCEPTIONS
+		catch (...)
 		{
-			SOUP_DEBUG_ASSERT_UNREACHABLE; // This would be a logic error on our end since we (should) reject other curves earlier
+			return;
 		}
+#endif
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_key_exchange, std::move(cke))
 			&& tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
 			)
