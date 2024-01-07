@@ -34,7 +34,17 @@ namespace soup
 		{
 			if (lookup->tickUntilDone())
 			{
-				if (lookup->result.empty())
+				std::vector<IpAddr> results{};
+				if (current_lookup_is_ipv6)
+				{
+					results = dnsResolver::simplifyIPv6LookupResults(lookup->result);
+				}
+				else
+				{
+					results = dnsResolver::simplifyIPv4LookupResults(lookup->result);
+				}
+
+				if (results.empty())
 				{
 					if (second_lookup)
 					{
@@ -51,15 +61,6 @@ namespace soup
 				}
 				else
 				{
-					std::vector<IpAddr> results{};
-					if (current_lookup_is_ipv6)
-					{
-						results = dnsResolver::simplifyIPv6LookupResults(lookup->result);
-					}
-					else
-					{
-						results = dnsResolver::simplifyIPv4LookupResults(lookup->result);
-					}
 					lookup.reset();
 					proceedToConnect(rand(results), port);
 				}
