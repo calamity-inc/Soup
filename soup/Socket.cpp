@@ -465,6 +465,8 @@ namespace soup
 			hello.extensions.add(TlsExtensionType::signature_algorithms, std::string("\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01", 18));
 		}
 
+		hello.extensions.add(TlsExtensionType::extended_master_secret, {});
+
 		// We support only TLS 1.2. Not particularly useful to provide this extension, but in the future we may support TLS 1.3 and then
 		// this would defend against downgrade attacks.
 		// For now, we can use it to defend against JA3 fingerprinting. :^)
@@ -490,6 +492,7 @@ namespace soup
 				}
 				handshaker->cipher_suite = shello.cipher_suite;
 				handshaker->server_random = shello.random.toBinaryString();
+				handshaker->extended_master_secret = shello.extensions.contains(TlsExtensionType::extended_master_secret);
 
 				s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
 				{
@@ -847,7 +850,10 @@ namespace soup
 						{
 							server_name = std::move(ext_server_name.host_name);
 						}
-						break;
+					}
+					else if (ext.id == TlsExtensionType::extended_master_secret)
+					{
+						handshaker->extended_master_secret = true;
 					}
 				}
 				handshaker->cert_selector(handshaker->rsa_data, server_name);
@@ -872,6 +878,12 @@ namespace soup
 				handshaker->server_random = shello.random.toBinaryString();
 				shello.cipher_suite = handshaker->cipher_suite;
 				shello.compression_method = 0;
+
+				if (handshaker->extended_master_secret)
+				{
+					shello.extensions.add(TlsExtensionType::extended_master_secret, {});
+				}
+
 				if (!s.tls_sendHandshake(handshaker, TlsHandshake::server_hello, shello.toBinaryString()))
 				{
 					return;
