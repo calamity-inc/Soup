@@ -173,12 +173,12 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 
 static soup::TlsServerRsaData server_rsa_data;
 
-static void cert_selector(soup::TlsServerRsaData& out, const std::string& server_name)
+static void cert_selector(soup::TlsServerRsaData& out, const std::string& server_name) SOUP_EXCAL
 {
 	out = server_rsa_data;
 }
 
-static void on_client_hello(soup::Socket& s, soup::TlsClientHello&& hello)
+static void on_client_hello(soup::Socket& s, soup::TlsClientHello&& hello) SOUP_EXCAL
 {
 	auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
 	data.cipher_suites = std::move(hello.cipher_suites);
@@ -304,7 +304,7 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 	};
 
 	soup::ServerWebService web_srv{ &handleRequest };
-	web_srv.on_connection_established = [](soup::Socket& s, soup::ServerService&, soup::Server&)
+	web_srv.on_connection_established = [](soup::Socket& s, soup::ServerService&, soup::Server&) SOUP_EXCAL
 	{
 		std::cout << s.peer.toString() << " + connection established" << std::endl;
 	};
