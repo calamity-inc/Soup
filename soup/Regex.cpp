@@ -14,20 +14,20 @@ namespace soup
 {
 	bool Regex::matches(const std::string& str) const noexcept
 	{
-		return matches(str.cbegin(), str.cend());
+		return matches(str.data(), &str.data()[str.size()]);
 	}
 
-	bool Regex::matches(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	bool Regex::matches(const char* it, const char* end) const noexcept
 	{
 		return match(it, end).isSuccess();
 	}
 
 	bool Regex::matchesFully(const std::string& str) const noexcept
 	{
-		return matchesFully(str.cbegin(), str.cend());
+		return matchesFully(str.data(), &str.data()[str.size()]);
 	}
 
-	bool Regex::matchesFully(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	bool Regex::matchesFully(const char* it, const char* end) const noexcept
 	{
 		auto res = match(it, end);
 		if (res.isSuccess())
@@ -39,15 +39,15 @@ namespace soup
 
 	RegexMatchResult Regex::match(const std::string& str) const noexcept
 	{
-		return match(str.cbegin(), str.cend());
+		return match(str.data(), &str.data()[str.size()]);
 	}
 
-	RegexMatchResult Regex::match(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	RegexMatchResult Regex::match(const char* it, const char* end) const noexcept
 	{
 		return match(it, it, end);
 	}
 
-	RegexMatchResult Regex::match(std::string::const_iterator it, std::string::const_iterator begin, std::string::const_iterator end) const noexcept
+	RegexMatchResult Regex::match(const char* it, const char* begin, const char* end) const noexcept
 	{
 		const auto match_begin = it;
 		RegexMatcher m(*this, it, begin, end);
@@ -160,10 +160,10 @@ namespace soup
 
 	RegexMatchResult Regex::search(const std::string& str) const noexcept
 	{
-		return search(str.cbegin(), str.cend());
+		return search(str.data(), &str.data()[str.size()]);
 	}
 
-	RegexMatchResult Regex::search(std::string::const_iterator it, std::string::const_iterator end) const noexcept
+	RegexMatchResult Regex::search(const char* it, const char* end) const noexcept
 	{
 		const auto begin = it;
 		for (; it != end; ++it)
@@ -185,7 +185,7 @@ namespace soup
 		RegexMatchResult match;
 		while (match = search(str), match.isSuccess())
 		{
-			const size_t offset = (match.groups.at(0).value().begin - str.begin());
+			const size_t offset = (match.groups.at(0).value().begin - str.data());
 			str.erase(offset, match.length());
 			str.insert(offset, replacement);
 		}

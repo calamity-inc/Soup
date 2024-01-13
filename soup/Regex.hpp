@@ -33,17 +33,17 @@ namespace soup
 		Regex(Regex&&) = default;
 
 		[[nodiscard]] bool matches(const std::string& str) const noexcept;
-		[[nodiscard]] bool matches(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
+		[[nodiscard]] bool matches(const char* it, const char* end) const noexcept;
 
 		[[nodiscard]] bool matchesFully(const std::string& str) const noexcept;
-		[[nodiscard]] bool matchesFully(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
+		[[nodiscard]] bool matchesFully(const char* it, const char* end) const noexcept;
 
 		[[nodiscard]] RegexMatchResult match(const std::string& str) const noexcept;
-		[[nodiscard]] RegexMatchResult match(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
-		[[nodiscard]] RegexMatchResult match(std::string::const_iterator it, std::string::const_iterator begin, std::string::const_iterator end) const noexcept;
+		[[nodiscard]] RegexMatchResult match(const char* it, const char* end) const noexcept;
+		[[nodiscard]] RegexMatchResult match(const char* it, const char* begin, const char* end) const noexcept;
 
 		[[nodiscard]] RegexMatchResult search(const std::string& str) const noexcept;
-		[[nodiscard]] RegexMatchResult search(std::string::const_iterator it, std::string::const_iterator end) const noexcept;
+		[[nodiscard]] RegexMatchResult search(const char* it, const char* end) const noexcept;
 
 		void replaceAll(std::string& str, const std::string& replacement) const;
 

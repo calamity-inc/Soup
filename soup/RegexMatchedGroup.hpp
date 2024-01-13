@@ -7,8 +7,8 @@ namespace soup
 	struct RegexMatchedGroup
 	{
 		std::string name;
-		std::string::const_iterator begin;
-		std::string::const_iterator end;
+		const char* begin;
+		const char* end;
 
 		[[nodiscard]] size_t length() const
 		{

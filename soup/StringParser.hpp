@@ -7,10 +7,10 @@ namespace soup
 	struct StringParser
 	{
 		std::string data;
-		std::string::const_iterator it;
+		const char* it;
 
 		StringParser(std::string data)
-			: data(std::move(data)), it(this->data.cbegin())
+			: data(std::move(data)), it(this->data.data())
 		{
 		}
 
@@ -19,9 +19,9 @@ namespace soup
 			return getPosition(it);
 		}
 
-		[[nodiscard]] size_t getPosition(std::string::const_iterator it) const noexcept
+		[[nodiscard]] size_t getPosition(const char* it) const noexcept
 		{
-			return it - data.cbegin();
+			return it - data.data();
 		}
 	};
 }

@@ -16,19 +16,19 @@ namespace soup
 		struct RollbackPoint
 		{
 			const RegexConstraintTransitionable* c;
-			std::string::const_iterator it;
+			const char* it;
 			std::vector<std::optional<RegexMatchedGroup>> groups{};
 		};
 
 		const RegexConstraintTransitionable* c;
-		std::string::const_iterator it;
-		const std::string::const_iterator begin;
-		const std::string::const_iterator end;
+		const char* it;
+		const char* const begin;
+		const char* const end;
 		std::stack<RollbackPoint> rollback_points{};
-		std::stack<std::string::const_iterator> checkpoints{};
+		std::stack<const char*> checkpoints{};
 		std::vector<std::optional<RegexMatchedGroup>> groups{};
 
-		RegexMatcher(const Regex& r, std::string::const_iterator it, std::string::const_iterator begin, std::string::const_iterator end)
+		RegexMatcher(const Regex& r, const char* it, const char* begin, const char* end)
 			: c(r.group.initial), it(it), begin(begin), end(end)
 		{
 		}

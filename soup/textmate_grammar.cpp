@@ -43,7 +43,7 @@ namespace soup
 		const TmPattern* best = nullptr;
 		for (const auto& pattern : patterns)
 		{
-			pattern.res = pattern.match.search(it, data.cend());
+			pattern.res = pattern.match.search(it, &data.data()[data.size()]);
 			if (pattern.res.isSuccess())
 			{
 				pattern.res_offset = std::distance(it, pattern.res.groups.at(0)->begin);
