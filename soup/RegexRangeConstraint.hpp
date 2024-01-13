@@ -290,7 +290,7 @@ namespace soup
 			{
 				return false;
 			}
-			if (mask.get(*m.it) == inverted)
+			if (mask.get(static_cast<unsigned char>(*m.it)) == inverted)
 			{
 				return false;
 			}
