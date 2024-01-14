@@ -1,7 +1,6 @@
 #pragma once
 
 #include <optional>
-#include <stack>
 #include <string>
 #include <vector>
 
@@ -24,8 +23,8 @@ namespace soup
 		const char* it;
 		const char* const begin;
 		const char* const end;
-		std::stack<RollbackPoint> rollback_points{};
-		std::stack<const char*> checkpoints{};
+		std::vector<RollbackPoint> rollback_points{};
+		std::vector<const char*> checkpoints{};
 		std::vector<std::optional<RegexMatchedGroup>> groups{};
 
 		RegexMatcher(const Regex& r, const char* it, const char* begin, const char* end)
@@ -35,26 +34,26 @@ namespace soup
 
 		void saveRollback(const RegexConstraintTransitionable* rollback_transition)
 		{
-			rollback_points.push(RollbackPoint{ rollback_transition, it, groups });
+			rollback_points.emplace_back(RollbackPoint{ rollback_transition, it, groups });
 		}
 
 		void restoreRollback()
 		{
-			c = rollback_points.top().c;
-			it = rollback_points.top().it;
-			groups = std::move(rollback_points.top().groups);
-			rollback_points.pop();
+			c = rollback_points.back().c;
+			it = rollback_points.back().it;
+			groups = std::move(rollback_points.back().groups);
+			rollback_points.pop_back();
 		}
 
 		void saveCheckpoint()
 		{
-			checkpoints.push(it);
+			checkpoints.emplace_back(it);
 		}
 
 		void restoreCheckpoint()
 		{
-			it = checkpoints.top();
-			checkpoints.pop();
+			it = checkpoints.back();
+			checkpoints.pop_back();
 		}
 	};
 }
