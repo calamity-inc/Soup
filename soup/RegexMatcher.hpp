@@ -27,9 +27,17 @@ namespace soup
 		std::vector<const char*> checkpoints{};
 		std::vector<std::optional<RegexMatchedGroup>> groups{};
 
-		RegexMatcher(const Regex& r, const char* it, const char* begin, const char* end)
-			: c(r.group.initial), it(it), begin(begin), end(end)
+		RegexMatcher(const Regex& r, const char* begin, const char* end)
+			: c(r.group.initial), begin(begin), end(end)
 		{
+		}
+
+		void reset(const Regex& r) noexcept
+		{
+			c = r.group.initial;
+			rollback_points.clear();
+			checkpoints.clear();
+			groups.clear();
 		}
 
 		void saveRollback(const RegexConstraintTransitionable* rollback_transition)

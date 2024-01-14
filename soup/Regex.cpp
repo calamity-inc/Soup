@@ -49,8 +49,14 @@ namespace soup
 
 	RegexMatchResult Regex::match(const char* it, const char* begin, const char* end) const noexcept
 	{
+		RegexMatcher m(*this, begin, end);
+		return match(m, it);
+	}
+
+	RegexMatchResult Regex::match(RegexMatcher& m, const char* it) const noexcept
+	{
 		const auto match_begin = it;
-		RegexMatcher m(*this, it, begin, end);
+		m.it = it;
 		while (m.c != nullptr)
 		{
 #if REGEX_DEBUG_MATCH
@@ -165,17 +171,18 @@ namespace soup
 
 	RegexMatchResult Regex::search(const char* it, const char* end) const noexcept
 	{
-		const auto begin = it;
+		RegexMatcher m(*this, it, end);
 		for (; it != end; ++it)
 		{
 #if REGEX_DEBUG_MATCH
 			std::cout << "--- Attempting match with " << std::distance(begin, it) << " byte offset ---\r\n";
 #endif
-			auto res = match(it, begin, end);
+			auto res = match(m, it);
 			if (res.isSuccess())
 			{
 				return res;
 			}
+			m.reset(*this);
 		}
 		return {};
 	}

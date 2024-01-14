@@ -41,6 +41,7 @@ namespace soup
 		[[nodiscard]] RegexMatchResult match(const std::string& str) const noexcept;
 		[[nodiscard]] RegexMatchResult match(const char* it, const char* end) const noexcept;
 		[[nodiscard]] RegexMatchResult match(const char* it, const char* begin, const char* end) const noexcept;
+		[[nodiscard]] RegexMatchResult match(RegexMatcher& m, const char* it) const noexcept;
 
 		[[nodiscard]] RegexMatchResult search(const std::string& str) const noexcept;
 		[[nodiscard]] RegexMatchResult search(const char* it, const char* end) const noexcept;
