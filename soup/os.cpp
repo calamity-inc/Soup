@@ -211,7 +211,7 @@ namespace soup
 #endif
 	}
 
-	void* os::createFileMapping(std::filesystem::path path, size_t& out_len)
+	void* os::createFileMapping(const std::filesystem::path& path, size_t& out_len)
 	{
 		void* addr = nullptr;
 #if SOUP_WINDOWS

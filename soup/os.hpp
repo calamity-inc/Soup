@@ -39,7 +39,7 @@ namespace soup
 		static void virtualFree(void* addr, size_t len);
 		static void changeProtection(void* addr, size_t len, int prot);
 
-		[[nodiscard]] static void* createFileMapping(std::filesystem::path path, size_t& out_len);
+		[[nodiscard]] static void* createFileMapping(const std::filesystem::path& path, size_t& out_len);
 		static void destroyFileMapping(void* addr, size_t len);
 
 		[[nodiscard]] static unsigned int getProcessId() noexcept;
