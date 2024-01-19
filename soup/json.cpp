@@ -18,7 +18,7 @@ namespace soup
 		{
 			return {};
 		}
-		const char* c = &data.at(0);
+		const char* c = data.c_str();
 		return decode(c);
 	}
 
