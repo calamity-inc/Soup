@@ -74,12 +74,17 @@ namespace soup
 		return res;
 	}
 
-	std::string string::fromFile(const std::string& file)
+	std::string string::fromFile(const char* file)
 	{
-		return fromFilePath(soup::filesystem::u8path(file));
+		return fromFile(soup::filesystem::u8path(file));
 	}
 
-	std::string string::fromFilePath(const std::filesystem::path& file)
+	std::string string::fromFile(const std::string& file)
+	{
+		return fromFile(soup::filesystem::u8path(file));
+	}
+
+	std::string string::fromFile(const std::filesystem::path& file)
 	{
 		std::string ret{};
 		if (std::filesystem::exists(file))
@@ -96,12 +101,17 @@ namespace soup
 		return ret;
 	}
 
-	void string::toFile(const std::string& file, const std::string& contents)
+	void string::toFile(const char* file, const std::string& contents)
 	{
-		return toFilePath(soup::filesystem::u8path(file), contents);
+		return toFile(soup::filesystem::u8path(file), contents);
 	}
 
-	void string::toFilePath(const std::filesystem::path& file, const std::string& contents)
+	void string::toFile(const std::string& file, const std::string& contents)
+	{
+		return toFile(soup::filesystem::u8path(file), contents);
+	}
+
+	void string::toFile(const std::filesystem::path& file, const std::string& contents)
 	{
 		std::ofstream of(file, std::ios_base::binary);
 		of << contents;
