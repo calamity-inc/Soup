@@ -575,6 +575,7 @@ namespace soup
 									s.tls_close(TlsAlertDescription::decode_error);
 									return;
 								}
+								// TODO: Verify server signature. See RFC 8422 page 17-18.
 								if (ske.named_curve == NamedCurves::x25519)
 								{
 									if (ske.point.size() != Curve25519::KEY_SIZE)
