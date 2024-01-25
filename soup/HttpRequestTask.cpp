@@ -35,7 +35,7 @@ namespace soup
 		switch (state)
 		{
 		case START:
-			if (!attempted_reuse
+			if (!dont_keep_alive
 				&& !Scheduler::get()->dont_make_reusable_sockets
 				)
 			{
@@ -113,7 +113,7 @@ namespace soup
 				if (attempted_reuse)
 				{
 					//logWriteLine(soup::format("AWAIT_RESPONSE from {} - broken pipe, making a new one", hr.getHost()));
-					state = START;
+					cannotRecycle(); // transition to CONNECTING state
 				}
 				else
 				{
