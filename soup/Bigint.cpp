@@ -1,6 +1,7 @@
 #include "Bigint.hpp"
 
 #include "Bitset.hpp"
+#include "bitutil.hpp"
 #include "branchless.hpp"
 #include "CpuInfo.hpp"
 #include "Endian.hpp"
@@ -1422,13 +1423,16 @@ namespace soup
 
 	size_t Bigint::getTrailingZeroesBinary() const noexcept
 	{
-		size_t res = 0;
-		const auto nb = getNumBits();
-		for (size_t i = 0; i != nb && !getBit(i); ++i)
+		const auto nc = getNumChunks();
+		for (size_t i = 0; i != nc; ++i)
 		{
-			++res;
+			auto c = getChunkInbounds(i);
+			if (c != 0)
+			{
+				return i * getBitsPerChunk() + bitutil::getLeastSignificantSetBit(getChunkInbounds(i));
+			}
 		}
-		return res;
+		return getNumBits();
 	}
 
 	Bigint Bigint::gcd(Bigint v) const SOUP_EXCAL
