@@ -49,6 +49,7 @@
 #include <Chatbot.hpp>
 
 // math
+#include <Bigint.hpp>
 #include <math.hpp>
 
 // net.email
@@ -924,6 +925,16 @@ static void test_chatbot_results()
 	assert(Chatbot::process("6900 kg in tonnes").response.find("6.9") != std::string::npos);
 }
 
+static void unit_math_bigint()
+{
+	test("getTrailingZeroesBinary", []
+	{
+		assert("1"_b.getTrailingZeroesBinary() == 0);
+		assert("2"_b.getTrailingZeroesBinary() == 1);
+		assert(Bigint::_2pow(100).getTrailingZeroesBinary() == 100);
+	});
+}
+
 static void unit_math()
 {
 	test("pow", []
@@ -1234,6 +1245,10 @@ void cli_test()
 		}
 		unit("math")
 		{
+			unit("bigint")
+			{
+				unit_math_bigint();
+			}
 			unit_math();
 		}
 		unit("net")
