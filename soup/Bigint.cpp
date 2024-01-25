@@ -909,36 +909,22 @@ namespace soup
 		const auto nb = getNumBits();
 		if (nb != 0)
 		{
-			const auto maxbitidx = nb - 1;
-			// extend
+			// add new chunks
+			for (size_t i = (b / getBitsPerChunk()) - getNumChunks(); i-- != 0; )
 			{
-				size_t i = maxbitidx;
-				for (size_t j = 0; j != b; ++j)
-				{
-					setBit(i + b, getBitInbounds(i));
-					if (i-- == 0)
-					{
-						break;
-					}
-				}
+				addChunk(0);
 			}
 
-			// move
-			if (b < nb)
+			// move existing bits up
+			for (size_t i = nb; i-- != 0; )
 			{
-				for (size_t i = nb; i-- != b; )
-				{
-					setBitInbounds(i, getBitInbounds(i - b));
-				}
+				setBit(i + b, getBitInbounds(i));
 			}
 
-			// disable
-			if (b < getNumBits())
+			// zero out least significant bits
+			for (size_t i = 0; i != b; ++i)
 			{
-				for (size_t i = 0; i != b; ++i)
-				{
-					disableBitInbounds(i);
-				}
+				disableBitInbounds(i);
 			}
 		}
 	}
