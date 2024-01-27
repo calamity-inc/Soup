@@ -6,7 +6,7 @@ jobs:
   ubuntu-22-04:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build Soup
         run: php build_lib.php
@@ -20,7 +20,7 @@ jobs:
   ubuntu-20-04:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build Soup
         run: php build_lib.php
@@ -34,7 +34,7 @@ jobs:
   debian-10:
     runs-on: [debian-10]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build Soup
         run: php build_lib.php
@@ -46,7 +46,7 @@ jobs:
         run: ./CLI/soup test
 
       - name: Upload soup
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "Debian 10 and above"
           path: CLI/soup
@@ -54,7 +54,7 @@ jobs:
   macos-latest:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build Soup
         run: php build_lib.php
@@ -66,7 +66,7 @@ jobs:
         run: ./CLI/soup test
 
       - name: Upload soup
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "MacOS (X86)"
           path: CLI/soup
@@ -74,7 +74,7 @@ jobs:
   windows-latest:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build Soup
         run: php build_lib.php
@@ -86,7 +86,7 @@ jobs:
         run: CLI/soup.exe test
 
       - name: Upload soup
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "Windows"
           path: CLI/soup.exe

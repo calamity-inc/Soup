@@ -6,15 +6,15 @@ jobs:
   emscripten:
     runs-on: ubuntu-latest
     steps:
-      - uses: mymindstorm/setup-emsdk@v12
+      - uses: mymindstorm/setup-emsdk@v13
 
       - name: Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.EMSDK }}/upstream/emscripten/cache
           key: wasm
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build
         run: php wasm.php
@@ -26,7 +26,7 @@ jobs:
           fail: true
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "WASM"
           path: |
