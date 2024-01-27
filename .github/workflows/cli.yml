@@ -70,3 +70,23 @@ jobs:
         with:
           name: "MacOS (X86)"
           path: CLI/soup
+
+  windows-latest:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Soup
+        run: php build_lib.php
+
+      - name: Build CLI
+        run: php build_cli.php
+
+      - name: Run ./soup test
+        run: CLI/soup.exe test
+
+      - name: Upload soup
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Windows"
+          path: CLI/soup.exe
