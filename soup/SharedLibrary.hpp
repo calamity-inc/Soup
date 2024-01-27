@@ -10,6 +10,8 @@
 
 #include <string>
 
+#include "type_traits.hpp"
+
 namespace soup
 {
 	struct SharedLibrary
@@ -35,6 +37,18 @@ namespace soup
 		bool load(const char* path);
 		void unload();
 		void forget();
+
+		template <typename T, SOUP_RESTRICT(std::is_pointer_v<T>)>
+		[[nodiscard]] T getAddress(const char* name) const noexcept
+		{
+			return reinterpret_cast<T>(getAddress(name));
+		}
+
+		template <typename T, SOUP_RESTRICT(std::is_pointer_v<T>)>
+		[[nodiscard]] T getAddressMandatory(const char* name) const noexcept
+		{
+			return reinterpret_cast<T>(getAddressMandatory(name));
+		}
 
 		[[nodiscard]] void* getAddress(const char* name) const noexcept;
 		[[nodiscard]] void* getAddressMandatory(const char* name) const;
