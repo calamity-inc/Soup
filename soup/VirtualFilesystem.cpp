@@ -15,7 +15,7 @@ namespace soup
 		return lib.isLoaded() || lib.load("projectedfslib");
 	}
 
-	static HRESULT StartDirectoryEnumerationCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ const GUID* enumerationId)
+	static __stdcall HRESULT StartDirectoryEnumerationCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ const GUID* enumerationId)
 	{
 		auto vfs = static_cast<VirtualFilesystem*>(callbackData->InstanceContext);
 		vfs->dir_enums.emplace_back(VirtualFilesystem::DirectoryEnumeration{
@@ -25,7 +25,7 @@ namespace soup
 		return S_OK;
 	}
 
-	static HRESULT EndDirectoryEnumerationCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ const GUID* enumerationId)
+	static __stdcall HRESULT EndDirectoryEnumerationCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ const GUID* enumerationId)
 	{
 		auto vfs = static_cast<VirtualFilesystem*>(callbackData->InstanceContext);
 		for (auto i = vfs->dir_enums.begin(); i != vfs->dir_enums.end(); ++i)
@@ -41,7 +41,7 @@ namespace soup
 
 	static decltype(PrjFileNameCompare)* fpPrjFileNameCompare;
 
-	static HRESULT GetDirectoryEnumerationCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ const GUID* enumerationId, _In_opt_ PCWSTR searchExpression, _In_ PRJ_DIR_ENTRY_BUFFER_HANDLE dirEntryBufferHandle)
+	static __stdcall HRESULT GetDirectoryEnumerationCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ const GUID* enumerationId, _In_opt_ PCWSTR searchExpression, _In_ PRJ_DIR_ENTRY_BUFFER_HANDLE dirEntryBufferHandle)
 	{
 		auto vfs = static_cast<VirtualFilesystem*>(callbackData->InstanceContext);
 		auto& dir_enum = vfs->getDirectoryEnumeration(*enumerationId);
@@ -92,7 +92,7 @@ namespace soup
 		return S_OK;
 	}
 
-	static HRESULT GetPlaceholderInfoCallback(_In_ const PRJ_CALLBACK_DATA* callbackData)
+	static __stdcall HRESULT GetPlaceholderInfoCallback(_In_ const PRJ_CALLBACK_DATA* callbackData)
 	{
 		auto vfs = static_cast<VirtualFilesystem*>(callbackData->InstanceContext);
 		auto target_utf16 = std::wstring(callbackData->FilePathName);
@@ -112,7 +112,7 @@ namespace soup
 		return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
 	}
 
-	static HRESULT GetFileDataCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ UINT64 byteOffset, _In_ UINT32 length)
+	static __stdcall HRESULT GetFileDataCallback(_In_ const PRJ_CALLBACK_DATA* callbackData, _In_ UINT64 byteOffset, _In_ UINT32 length)
 	{
 		auto vfs = static_cast<VirtualFilesystem*>(callbackData->InstanceContext);
 		auto path = unicode::utf16_to_utf8<std::wstring>(callbackData->FilePathName);
