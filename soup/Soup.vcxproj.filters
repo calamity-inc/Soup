@@ -1572,6 +1572,9 @@
     <ClInclude Include="dnsSmartResolver.hpp">
       <Filter>net\dns\resolver</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualFilesystem.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2316,6 +2319,9 @@
     </ClCompile>
     <ClCompile Include="dnsSmartResolver.cpp">
       <Filter>net\dns\resolver</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualFilesystem.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
