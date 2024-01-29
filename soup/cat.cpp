@@ -61,6 +61,10 @@ namespace soup
 					++tabs;
 				}
 				line.insert(0, tabs, '\t');
+				SOUP_IF_UNLIKELY (line.find_first_not_of('\t') == std::string::npos)
+				{
+					continue;
+				}
 			}
 
 			// Descend
@@ -125,11 +129,8 @@ namespace soup
 			{
 				string::replaceAll(node->name, "\\:", ":");
 			}
-			if (!node->name.empty())
-			{
-				CAT_ASSERT(node->name.at(0) != '\t');
-				depths.at(depth)->children.emplace_back(std::move(node));
-			}
+			CAT_ASSERT(node->name.empty() || node->name.at(0) != '\t');
+			depths.at(depth)->children.emplace_back(std::move(node));
 		}
 		return root;
 	}

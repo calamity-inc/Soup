@@ -49,11 +49,16 @@ namespace soup
 				string::replaceAll(name, ":", "\\:");
 			}
 			str.append(name);
-			if (auto val = getValue(child); !val.empty())
+			auto value = getValue(child);
+			if (!value.empty())
 			{
-				SOUP_ASSERT(val.find('\n') == std::string::npos);
+				SOUP_ASSERT(value.find('\n') == std::string::npos);
 				str.append(": ");
-				str.append(val);
+				str.append(value);
+			}
+			if (name.empty() && value.empty())
+			{
+				str.push_back(':');
 			}
 			str.push_back('\n');
 			if (canHaveChildren(child))

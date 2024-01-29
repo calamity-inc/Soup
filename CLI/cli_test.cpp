@@ -376,7 +376,8 @@ static void unit_data()
 
 		sr = " ";
 		tree = catParse(sr);
-		assert(!tree);
+		assert(tree);
+		assert(tree->children.size() == 0);
 
 		sr = (
 			"Some: Value\n"
@@ -400,6 +401,17 @@ static void unit_data()
 		assert(tree->children.at(0)->value == "Value");
 		assert(tree->children.at(1)->name == "Empty");
 		assert(tree->children.at(1)->value == "");
+
+		sr = (
+			":\n"
+			"\tNested"
+		);
+		tree = catParse(sr);
+		assert(tree);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "");
+		assert(tree->children.at(0)->children.size() == 1);
+		assert(tree->children.at(0)->children.at(0)->name == "Nested");
 	});
 
 	test("ripemd160", []
