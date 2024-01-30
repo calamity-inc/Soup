@@ -273,12 +273,10 @@ namespace soup
 			}
 			else
 			{
-				const Bigint TEN = (chunk_t)10u;
-				Bigint remainder;
 				do
 				{
-					quotient.divideUnsigned(TEN, remainder);
-					str.insert(0, 1, (char)('0' + remainder.getChunk(0)));
+					auto remainder = quotient.divideUnsignedSmall(10);
+					str.insert(0, 1, (char)('0' + remainder));
 				} while (!quotient.isZero());
 			}
 			if (negative)
