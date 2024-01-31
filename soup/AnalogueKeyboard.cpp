@@ -39,6 +39,10 @@ namespace soup
 			{
 				return "Wooting 60HE ARM";
 			}
+			if ((hid.product_id & 0xFFF0) == 0x1320)
+			{
+				return "Wooting 60HE Plus";
+			}
 			if ((hid.product_id & 0xFFF0) == 0x1500)
 			{
 				return "Wooting UwU";
