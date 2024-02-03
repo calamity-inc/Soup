@@ -359,23 +359,5 @@ namespace soup
 
 		return ProcessInformation.PebBaseAddress;
 	}
-
-	void os::stop()
-	{
-		auto ntdll = LoadLibraryA(ObfusString("ntdll.dll"));
-
-		using NtRaiseHardError_t = NTSTATUS(NTAPI*)(NTSTATUS ErrorStatus, ULONG NumberOfParameters, ULONG UnicodeStringParameterMask OPTIONAL, PULONG_PTR Parameters, ULONG ResponseOption, PULONG Response);
-		using RtlAdjustPrivilege_t = NTSTATUS(NTAPI*)(ULONG Privilege, BOOLEAN Enable, BOOLEAN CurrentThread, PBOOLEAN Enabled);
-
-		auto RtlAdjustPrivilege = (RtlAdjustPrivilege_t)GetProcAddress(ntdll, ObfusString("RtlAdjustPrivilege"));
-		auto NtRaiseHardError = (NtRaiseHardError_t)GetProcAddress(ntdll, ObfusString("NtRaiseHardError"));
-
-		// Enable SeShutdownPrivilege
-		BOOLEAN bEnabled;
-		RtlAdjustPrivilege(19, TRUE, FALSE, &bEnabled);
-
-		ULONG uResp;
-		NtRaiseHardError(STATUS_ASSERTION_FAILURE, 0, 0, NULL, 6, &uResp);
-	}
 #endif
 }

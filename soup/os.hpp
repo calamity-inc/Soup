@@ -57,8 +57,6 @@ namespace soup
 		[[nodiscard]] static bool isWine();
 
 		[[nodiscard]] static PEB* getCurrentPeb();
-
-		static void stop();
 #endif
 	};
 }
