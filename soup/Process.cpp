@@ -27,7 +27,7 @@ namespace soup
 				{
 					if (strcmp(entry.szExeFile, name) == 0)
 					{
-						return make_unique<Process>(entry.th32ProcessID, entry.szExeFile);
+						return soup::make_unique<Process>(entry.th32ProcessID, entry.szExeFile);
 					}
 				} while (Process32Next(hSnap, &entry));
 			}
@@ -48,12 +48,31 @@ namespace soup
 				{
 					if (entry.th32ProcessID == id)
 					{
-						return make_unique<Process>(entry.th32ProcessID, entry.szExeFile);
+						return soup::make_unique<Process>(entry.th32ProcessID, entry.szExeFile);
 					}
 				} while (Process32Next(hSnap, &entry));
 			}
 		}
 		return {};
+	}
+
+	std::vector<UniquePtr<Process>> Process::getAll()
+	{
+		std::vector<UniquePtr<Process>> res{};
+		HandleRaii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (hSnap)
+		{
+			PROCESSENTRY32 entry;
+			entry.dwSize = sizeof(entry);
+			if (Process32First(hSnap, &entry))
+			{
+				do
+				{
+					res.emplace_back(soup::make_unique<Process>(entry.th32ProcessID, entry.szExeFile));
+				} while (Process32Next(hSnap, &entry));
+			}
+		}
+		return res;
 	}
 
 	std::shared_ptr<Module> Process::open(DWORD desired_access)
