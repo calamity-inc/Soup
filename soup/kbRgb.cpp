@@ -57,6 +57,10 @@ namespace soup
 					{
 						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting 60HE ARM", 14, true, std::move(hid)));
 					}
+					else if ((hid.product_id & 0xFFF0) == 0x1320)
+					{
+						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting 60HE+", 14, true, std::move(hid)));
+					}
 					else if ((hid.product_id & 0xFFF0) == 0x1510)
 					{
 						res.emplace_back(soup::make_unique<kbRgbWooting>("Wooting UwU RGB", 7, true, std::move(hid)));
