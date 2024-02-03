@@ -12,6 +12,7 @@ void cli_maze();
 int cli_mesh(int argc, const char** argv);
 void cli_midi(int argc, const char** argv);
 void cli_morse(int argc, const char** argv);
+void cli_mouse();
 void cli_repl();
 void cli_snake();
 void cli_test();

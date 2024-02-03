@@ -32,6 +32,7 @@
     <ClCompile Include="cli_mesh.cpp" />
     <ClCompile Include="cli_midi.cpp" />
     <ClCompile Include="cli_morse.cpp" />
+    <ClCompile Include="cli_mouse.cpp" />
     <ClCompile Include="cli_repl.cpp" />
     <ClCompile Include="cli_snake.cpp" />
     <ClCompile Include="cli_test.cpp" />

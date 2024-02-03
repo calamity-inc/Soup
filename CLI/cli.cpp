@@ -407,6 +407,12 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "mouse")
+		{
+			cli_mouse();
+			return 0;
+		}
+
 		if (subcommand == "qr")
 		{
 			if (argc != 3)
@@ -532,6 +538,7 @@ Available tools:
 - mesh [link <token>|list|dns-add-record [ip] [name] [type] [data]]
 - midi [keyboard|play [file]]
 - morse [key|encode [text]] <--silent>
+- mouse
 - qr [contents]
 - repl
 - script [.cpp file]
