@@ -18,9 +18,9 @@ using namespace soup;
 
 static bool running = true;
 #if SOUP_WINDOWS
-static const char* kbd_name = "Digital Keyboard";
+static std::string kbd_name = "Digital Keyboard";
 #else
-static const char* kbd_name = "No Analogue Keyboard Detected";
+static std::string kbd_name = "No Analogue Keyboard Detected";
 #endif
 static Window w;
 static visKeyboard viskbd;

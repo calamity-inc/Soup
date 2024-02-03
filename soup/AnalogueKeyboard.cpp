@@ -5,53 +5,12 @@
 
 namespace soup
 {
-	[[nodiscard]] static const char* checkDeviceName(const hwHid& hid)
+	[[nodiscard]] static std::string checkDeviceName(const hwHid& hid)
 	{
 		// Wooting, https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-plugin/src/lib.rs
 		if (hid.vendor_id == 0x31E3)
 		{
-			// Last nibble is for gamepad mode: 0 = Xbox, 1 = Classic, 2 = None
-			if ((hid.product_id & 0xFFF0) == 0x1100)
-			{
-				return "Wooting One";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1200)
-			{
-				return "Wooting Two";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1210)
-			{
-				return "Wooting Lekker";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1220)
-			{
-				return "Wooting Two HE";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1230)
-			{
-				return "Wooting Two HE ARM";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1300)
-			{
-				return "Wooting 60HE";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1310)
-			{
-				return "Wooting 60HE ARM";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1320)
-			{
-				return "Wooting 60HE Plus";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1500)
-			{
-				return "Wooting UwU";
-			}
-			if ((hid.product_id & 0xFFF0) == 0x1510)
-			{
-				return "Wooting UwU RGB";
-			}
-			return "Unknown Wooting Keyboard";
+			return hid.getProductName();
 		}
 		else if (hid.vendor_id == 0x03EB)
 		{
@@ -77,7 +36,7 @@ namespace soup
 			}
 		}
 
-		return nullptr;
+		return {};
 	}
 
 	std::vector<AnalogueKeyboard> AnalogueKeyboard::getAll(bool include_no_permission)
@@ -89,7 +48,7 @@ namespace soup
 			if (include_no_permission || hid.havePermission())
 			{
 				// Check PID/VID for supported device
-				if (auto name = checkDeviceName(hid))
+				if (auto name = checkDeviceName(hid); !name.empty())
 				{
 					// Check metadata to ensure this is the right interface for analogue input
 					if (hid.usage_page == 0xFF54 // Wooting
@@ -97,7 +56,7 @@ namespace soup
 						)
 					{
 						res.emplace_back(AnalogueKeyboard{
-							name,
+							std::move(name),
 							std::move(hid),
 							hid.vendor_id == 0x1532 // Has context key? Wooting - false, Razer - true.
 						});

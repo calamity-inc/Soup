@@ -12,7 +12,7 @@ namespace soup
 {
 	struct AnalogueKeyboard
 	{
-		const char* name;
+		std::string name;
 		hwHid hid;
 		bool has_ctx_key;
 		bool disconnected = false;
