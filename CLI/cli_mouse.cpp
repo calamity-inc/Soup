@@ -26,7 +26,7 @@ void cli_mouse()
 	});
 
 	static constexpr auto scale = 5;
-	w = Window::create("Soup", 25 * scale, 40 * scale);
+	w = Window::create("Soup Mouse Visualisation", 25 * scale, 40 * scale);
 	w.setDrawFunc([](Window, RenderTarget& rt)
 	{
 		rt.fill(Rgb::GREEN);

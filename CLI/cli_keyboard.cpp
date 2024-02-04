@@ -113,7 +113,7 @@ void cli_keyboard()
 		}
 	});
 
-	w = Window::create("Soup", 195 * 5, (3 * 8) + 18 + 50 * 5);
+	w = Window::create("Soup Keyboard Visualisation", 195 * 5, (3 * 8) + 18 + 50 * 5);
 	w.setDrawFunc([](Window, RenderTarget& rt)
 	{
 #if SOUP_WINDOWS
