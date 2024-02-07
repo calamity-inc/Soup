@@ -119,6 +119,26 @@ namespace soup
 		auto t = executeAsync(rip, rcx);
 		WaitForSingleObject(*t, INFINITE);
 	}
+
+	std::vector<Range> Module::getAllocations() const
+	{
+		std::vector<Range> res{};
+
+		MEMORY_BASIC_INFORMATION mbi{};
+
+		PBYTE addr = NULL;
+		while (VirtualQueryEx(*h, addr, &mbi, sizeof(mbi)) == sizeof(mbi))
+		{
+			if (mbi.State == MEM_COMMIT)
+			{
+				res.emplace_back(mbi.BaseAddress, mbi.RegionSize);
+			}
+
+			addr = (PBYTE)mbi.BaseAddress + mbi.RegionSize;
+		}
+
+		return res;
+	}
 }
 
 #endif

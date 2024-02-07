@@ -71,6 +71,8 @@ namespace soup
 
 		UniquePtr<HandleRaii> executeAsync(void* rip, uintptr_t rcx) const noexcept;
 		void executeSync(void* rip, uintptr_t rcx) const noexcept;
+
+		[[nodiscard]] std::vector<Range> getAllocations() const;
 	};
 }
 #endif
