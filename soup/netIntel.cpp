@@ -266,7 +266,7 @@ namespace soup
 			{
 				UniquePtr<CidrSubnet4Interface> newElement = soup::make_unique<CidrSubnet4Interface>(
 					IpAddr((native_u32_t)e.lower),
-					(31 - bitutil::getMostSignificantSetBit(/* e.upper - e.lower */ e.lower ^ e.upper))
+					static_cast<uint8_t>(31 - bitutil::getMostSignificantSetBit(/* e.upper - e.lower */ e.lower ^ e.upper))
 				);
 
 				auto it = res.begin();

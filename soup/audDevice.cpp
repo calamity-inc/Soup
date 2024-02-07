@@ -17,7 +17,7 @@
 
 namespace soup
 {
-	audDevice audDevice::get(int i)
+	audDevice audDevice::get(unsigned int i)
 	{
 #if SOUP_WINDOWS
 		WAVEOUTCAPSW woc;

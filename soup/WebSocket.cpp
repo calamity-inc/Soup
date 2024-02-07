@@ -72,8 +72,8 @@ namespace soup
 		{
 			return PAYLOAD_INCOMPLETE;
 		}
-		payload = data.substr(header_size, payload_len);
-		data.erase(0, header_size + payload_len);
+		payload = data.substr(header_size, static_cast<size_t>(payload_len));
+		data.erase(0, static_cast<size_t>(header_size + payload_len));
 		if (has_mask)
 		{
 			for (auto i = 0; i != payload.size(); ++i)

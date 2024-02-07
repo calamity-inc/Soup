@@ -190,7 +190,7 @@ namespace soup
 
 	bool BitWriter::str_utf32_lp(const std::u32string& str, uint8_t lpbits)
 	{
-		const auto lpmask = ((1 << lpbits) - 1);
+		const auto lpmask = ((1u << lpbits) - 1u);
 		if (str.length() < lpmask)
 		{
 			if (!t(lpbits, str.length()))

@@ -29,7 +29,7 @@ namespace soup
 	class audDevice
 	{
 	public:
-		int i;
+		unsigned int i;
 	private:
 #if SOUP_WINDOWS
 		std::wstring name;
@@ -40,7 +40,7 @@ namespace soup
 #if SOUP_WINDOWS
 		audDevice() = default;
 
-		audDevice(int i, std::wstring&& name, uint16_t max_channels)
+		audDevice(unsigned int i, std::wstring&& name, uint16_t max_channels)
 			: i(i), name(std::move(name)), max_channels(max_channels)
 		{
 		}
@@ -51,7 +51,7 @@ namespace soup
 		}
 #endif
 
-		[[nodiscard]] static audDevice get(int i);
+		[[nodiscard]] static audDevice get(unsigned int i);
 		[[nodiscard]] static audDevice getDefault();
 		[[nodiscard]] static std::vector<audDevice> getAll();
 

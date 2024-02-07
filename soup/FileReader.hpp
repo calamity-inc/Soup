@@ -71,7 +71,7 @@ namespace soup
 
 		[[nodiscard]] size_t getPosition() final
 		{
-			return s.tellg();
+			return static_cast<size_t>(s.tellg());
 		}
 
 		void seek(size_t pos) final

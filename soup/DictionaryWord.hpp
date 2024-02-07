@@ -19,7 +19,7 @@ namespace soup
 				{
 					return false;
 				}
-				meanings.reserve(num_meanings);
+				meanings.reserve(static_cast<size_t>(num_meanings));
 				for (; num_meanings != 0; --num_meanings)
 				{
 					WordMeaning meaning{};

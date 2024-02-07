@@ -47,7 +47,7 @@ namespace soup
 					return false;
 				}
 				jokes.clear();
-				jokes.reserve(size);
+				jokes.reserve(static_cast<size_t>(size));
 				type_pool.clear();
 				while (size--)
 				{

@@ -92,7 +92,7 @@ namespace soup
 			std::ifstream t(file, std::ios::binary);
 
 			t.seekg(0, std::ios::end);
-			const size_t s = t.tellg();
+			const auto s = static_cast<size_t>(t.tellg());
 			t.seekg(0, std::ios::beg);
 
 			ret.reserve(s);

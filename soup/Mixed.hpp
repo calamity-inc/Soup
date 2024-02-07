@@ -250,7 +250,7 @@ namespace std
 			{
 				return hash<string>()(key.getString());
 			}
-			return key.type | key.val;
+			return key.type | static_cast<size_t>(key.val);
 		}
 	};
 }

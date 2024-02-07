@@ -33,7 +33,7 @@ namespace soup
 	{
 		// This is not guaranteed to work, but works on UNIX, and on Windows in binary mode.
 		std::ifstream in(path, std::ifstream::ate | std::ifstream::binary);
-		return in.tellg();
+		return static_cast<intptr_t>(in.tellg());
 	}
 
 	std::filesystem::path os::tempfile(const std::string& ext)
@@ -221,11 +221,11 @@ namespace soup
 			LARGE_INTEGER liSize;
 			SOUP_IF_LIKELY (GetFileSizeEx(f, &liSize))
 			{
-				out_len = liSize.QuadPart;
+				out_len = static_cast<size_t>(liSize.QuadPart);
 				HANDLE m = CreateFileMappingA(f, nullptr, PAGE_READONLY, liSize.HighPart, liSize.LowPart, NULL);
 				SOUP_IF_LIKELY (m != NULL)
 				{
-					addr = MapViewOfFile(m, FILE_MAP_READ, 0, 0, liSize.QuadPart);
+					addr = MapViewOfFile(m, FILE_MAP_READ, 0, 0, out_len);
 					CloseHandle(m);
 				}
 			}

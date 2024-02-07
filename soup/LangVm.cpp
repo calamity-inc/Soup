@@ -101,7 +101,7 @@ namespace soup
 				uint64_t num_args;
 				r.u64_dyn(num_args);
 				std::vector<std::string> var_names{};
-				var_names.reserve(num_args);
+				var_names.reserve(static_cast<size_t>(num_args));
 				while (num_args--)
 				{
 					var_names.emplace_back(popVarName());

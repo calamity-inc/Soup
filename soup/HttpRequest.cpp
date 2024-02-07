@@ -351,7 +351,7 @@ namespace soup
 							{
 								break;
 							}
-							if (auto opt = string::hexToInt<int64_t>(self.buf.substr(0, i)); opt.has_value())
+							if (auto opt = string::hexToInt<uint64_t>(self.buf.substr(0, i)); opt.has_value())
 							{
 								self.bytes_remain = opt.value();
 							}
@@ -379,7 +379,7 @@ namespace soup
 							{
 								break;
 							}
-							auto chunk = self.buf.substr(0, self.bytes_remain);
+							auto chunk = self.buf.substr(0, static_cast<size_t>(self.bytes_remain));
 							if (self.on_body_part)
 							{
 								SOUP_IF_UNLIKELY (!self.on_body_part(s, chunk, self.cap))
@@ -388,7 +388,7 @@ namespace soup
 								}
 							}
 							self.resp.body.append(chunk);
-							self.buf.erase(0, self.bytes_remain + 2);
+							self.buf.erase(0, static_cast<size_t>(self.bytes_remain + 2));
 							self.bytes_remain = 0;
 						}
 					}
@@ -398,7 +398,7 @@ namespace soup
 						{
 							break;
 						}
-						self.resp.body = self.buf.substr(0, self.bytes_remain);
+						self.resp.body = self.buf.substr(0, static_cast<size_t>(self.bytes_remain));
 						//self.buf.erase(0, self.bytes_remain);
 						self.callbackSuccess(s);
 						return;

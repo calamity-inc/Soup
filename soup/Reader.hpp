@@ -192,7 +192,7 @@ namespace soup
 		bool str_lp(std::string& v, const T max_len = -1)
 		{
 			T len;
-			return ser<T>(len) && len <= max_len && str_impl(v, len);
+			return ser<T>(len) && len <= max_len && str_impl(v, static_cast<size_t>(len));
 		}
 
 		// Length-prefixed string, using u64_dyn for the length prefix.
