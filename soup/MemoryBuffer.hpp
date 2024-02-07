@@ -22,7 +22,7 @@ namespace soup
 		explicit MemoryBuffer(const Module& mod, Pointer start, size_t size);
 		~MemoryBuffer();
 
-		void updateRegion(const Module& mod, Pointer start, size_t size);
+		bool updateRegion(const Module& mod, Pointer start, size_t size);
 	private:
 		void release();
 

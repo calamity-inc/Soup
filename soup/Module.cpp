@@ -64,26 +64,19 @@ namespace soup
 	Pointer Module::externalScan(const Range& range, const Pattern& sig) const
 	{
 		MemoryBuffer buf{};
-		size_t matched_bytes = 0;
 		Pointer p = range.base;
 		size_t end = p.as<uintptr_t>() + range.size - 1;
-		for (; p.as<size_t>() < end; p = p.add(1))
+		while (p.as<size_t>() < end)
 		{
-			if (!buf.covers(p))
+			if (buf.updateRegion(*this, p.as<void*>(), 0x10000))
 			{
-				buf.updateRegion(*this, p.as<void*>(), 0x10000);
-			}
-			if (!sig.bytes.at(matched_bytes).has_value() || buf.read<uint8_t>(p) == sig.bytes.at(matched_bytes).value())
-			{
-				if (++matched_bytes >= sig.bytes.size())
+				Range local_range(buf.data, buf.size);
+				if (auto res = local_range.scan(sig))
 				{
-					return p.sub(sig.bytes.size() - 1);
+					return res.as<uintptr_t>() - reinterpret_cast<uintptr_t>(buf.data) + p.as<uintptr_t>();
 				}
 			}
-			else
-			{
-				matched_bytes = 0;
-			}
+			p = p.add(0x10000 - (sig.bytes.size() - 1));
 		}
 		return nullptr;
 	}

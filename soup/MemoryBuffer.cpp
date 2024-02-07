@@ -24,7 +24,7 @@ namespace soup
 		release();
 	}
 
-	void MemoryBuffer::updateRegion(const Module& mod, Pointer start, size_t size)
+	bool MemoryBuffer::updateRegion(const Module& mod, Pointer start, size_t size)
 	{
 		if (this->size != size)
 		{
@@ -33,6 +33,7 @@ namespace soup
 		}
 		this->start = start;
 		this->size = mod.externalRead(start, data, size);
+		return this->size != 0;
 	}
 
 	void MemoryBuffer::release()
