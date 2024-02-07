@@ -58,6 +58,11 @@ namespace soup
 
 	Pointer Module::externalScan(const Pattern& sig) const
 	{
+		return externalScan(range, sig);
+	}
+
+	Pointer Module::externalScan(const Range& range, const Pattern& sig) const
+	{
 		MemoryBuffer buf{};
 		size_t matched_bytes = 0;
 		Pointer p = range.base;

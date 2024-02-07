@@ -52,6 +52,7 @@ namespace soup
 		}
 
 		[[nodiscard]] Pointer externalScan(const Pattern& sig) const;
+		[[nodiscard]] Pointer externalScan(const Range& range, const Pattern& sig) const;
 
 		[[nodiscard]] UniquePtr<AllocRaiiRemote> allocate(size_t size, DWORD type = MEM_COMMIT | MEM_RESERVE, DWORD protect = PAGE_EXECUTE_READWRITE) const;
 		[[nodiscard]] UniquePtr<AllocRaiiRemote> copyInto(const void* data, size_t size) const;
