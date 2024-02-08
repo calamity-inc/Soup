@@ -3,6 +3,8 @@
 #include "base.hpp"
 #if SOUP_WINDOWS
 
+#include <string>
+
 #include "fwd.hpp"
 
 #include "HandleBase.hpp"
@@ -50,6 +52,8 @@ namespace soup
 			externalRead(p, &val, sizeof(val));
 			return val;
 		}
+
+		[[nodiscard]] std::string externalReadString(Pointer p) const;
 
 		[[nodiscard]] Pointer externalScan(const Pattern& sig) const;
 		[[nodiscard]] Pointer externalScan(const Range& range, const Pattern& sig) const;

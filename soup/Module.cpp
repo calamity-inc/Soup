@@ -56,6 +56,18 @@ namespace soup
 		return read;
 	}
 
+	std::string Module::externalReadString(Pointer p) const
+	{
+		std::string str;
+		char c;
+		do
+		{
+			c = externalRead<char>(p);
+			p = p.add(1);
+		} while (c != '\0' && (str.push_back(c), true));
+		return str;
+	}
+
 	Pointer Module::externalScan(const Pattern& sig) const
 	{
 		return externalScan(range, sig);
