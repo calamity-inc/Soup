@@ -18,6 +18,7 @@
 #include <ripemd160.hpp>
 #include <sha1.hpp>
 #include <sha256.hpp>
+#include <unicode.hpp>
 
 #include <json.hpp>
 #include <JsonArray.hpp>
@@ -301,6 +302,14 @@ static void unit_data()
 			assert(base64::urlDecode("8J-YgA==") == "😀");
 		});
 	}
+
+	test("unicode", []
+	{
+		auto utf32 = unicode::utf8_to_utf32("\xF0\x41");
+		assert(utf32.size() == 2);
+		assert(utf32.at(0) == unicode::REPLACEMENT_CHAR);
+		assert(utf32.at(1) == 0x41);
+	});
 
 	test("punycode", []
 	{

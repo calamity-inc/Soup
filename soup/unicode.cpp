@@ -39,7 +39,8 @@ namespace soup
 			uint8_t ch = *it++;
 			if (!UTF8_IS_CONTINUATION(ch))
 			{
-				break;
+				--it;
+				return REPLACEMENT_CHAR;
 			}
 			uni <<= 6;
 			uni |= (ch & 0b111111);
