@@ -57,6 +57,8 @@ namespace soup
 		[[nodiscard]] static bool isWine();
 
 		[[nodiscard]] static PEB* getCurrentPeb();
+
+		[[nodiscard]] static std::string makeScreenshotBmp(int x, int y, int width, int height);
 #endif
 	};
 }
