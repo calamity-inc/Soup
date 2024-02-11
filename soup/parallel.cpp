@@ -1,4 +1,5 @@
 #include "parallel.hpp"
+#if !SOUP_WASM
 
 #include <thread>
 #include <vector>
@@ -55,3 +56,5 @@ namespace soup
 		Thread::awaitCompletion(threads);
 	}
 }
+
+#endif
