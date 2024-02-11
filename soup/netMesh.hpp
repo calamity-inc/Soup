@@ -50,5 +50,7 @@ namespace soup
 
 		static void enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL;
 		static void sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data) SOUP_EXCAL;
+
+		static bool bind(Server& serv);
 	};
 }

@@ -92,7 +92,7 @@ int cli_mesh(int argc, const char** argv)
 				std::cout << " Found " << ip.toString4() << "\n";
 
 				Server serv;
-				if (!g_mesh_service.bind(serv))
+				if (!netMesh::bind(serv))
 				{
 					std::cout << "Failed to bind to TCP/7106\n";
 					return 1;

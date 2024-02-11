@@ -4,30 +4,12 @@
 #include <iostream>
 
 #include "netMesh.hpp"
-#include "Scheduler.hpp"
-#include "Server.hpp"
 #include "sha256.hpp"
 #include "Socket.hpp"
 #include "StringReader.hpp"
-#include "StringRefReader.hpp"
-#include "TlsServerRsaData.hpp"
-#include "X509Certificate.hpp"
 
 namespace soup
 {
-	static void cert_selector(TlsServerRsaData& out, const std::string&) SOUP_EXCAL
-	{
-		X509Certificate cert;
-		cert.setRsaPublicKey(netMesh::getMyConfig().kp.getPublic());
-		out.der_encoded_certchain = { cert.toDer() };
-		out.private_key = netMesh::getMyConfig().kp.getPrivate();
-	}
-
-	bool netMeshService::bind(Server& serv)
-	{
-		return serv.bindCrypto(7106, this, &cert_selector);
-	}
-
 	void netMeshService::onTunnelEstablished(Socket& s, ServerService&, Server&) SOUP_EXCAL
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&&) SOUP_EXCAL

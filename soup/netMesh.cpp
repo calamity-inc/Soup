@@ -9,10 +9,13 @@
 #include "FileWriter.hpp"
 #include "fnv.hpp"
 #include "netConfig.hpp"
+#include "netMeshService.hpp"
 #include "os.hpp"
+#include "Server.hpp"
 #include "sha256.hpp"
 #include "Socket.hpp"
 #include "StringWriter.hpp"
+#include "TlsServerRsaData.hpp"
 #include "X509Certchain.hpp"
 
 namespace soup
@@ -164,6 +167,19 @@ namespace soup
 		sw.bigint_lp_u64_dyn(signature);
 
 		s.send(sw.data);
+	}
+
+	static void cert_selector(TlsServerRsaData& out, const std::string&) SOUP_EXCAL
+	{
+		X509Certificate cert;
+		cert.setRsaPublicKey(netMesh::getMyConfig().kp.getPublic());
+		out.der_encoded_certchain = { cert.toDer() };
+		out.private_key = netMesh::getMyConfig().kp.getPrivate();
+	}
+
+	bool netMesh::bind(Server& serv)
+	{
+		return serv.bindCrypto(7106, &g_mesh_service, &cert_selector);
 	}
 
 	Peer* netMesh::MyConfig::findPeer(uint32_t ip) noexcept
