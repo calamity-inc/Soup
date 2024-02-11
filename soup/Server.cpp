@@ -13,7 +13,7 @@ namespace soup
 		Server* server;
 		ServerService* service;
 
-		void processAccept(Socket&& sock, uint16_t port) const SOUP_EXCAL
+		void processAccept(Socket&& sock) const SOUP_EXCAL
 		{
 			if (sock.hasConnection())
 			{
@@ -36,7 +36,7 @@ namespace soup
 		tls_server_cert_selector_t cert_selector;
 		tls_server_on_client_hello_t on_client_hello;
 
-		void processAccept(Socket&& sock, uint16_t port) const SOUP_EXCAL
+		void processAccept(Socket&& sock) const SOUP_EXCAL
 		{
 			if (sock.hasConnection())
 			{
@@ -184,7 +184,7 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
-			cap.get<CaptureServerPort>().processAccept(s.accept6(), s.peer.port);
+			cap.get<CaptureServerPort>().processAccept(s.accept6());
 		};
 	}
 
@@ -194,7 +194,7 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
-			cap.get<CaptureServerPortCrypto>().processAccept(s.accept6(), s.peer.port);
+			cap.get<CaptureServerPortCrypto>().processAccept(s.accept6());
 		};
 	}
 
@@ -205,7 +205,7 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
-			cap.get<CaptureServerPort>().processAccept(s.accept4(), s.peer.port);
+			cap.get<CaptureServerPort>().processAccept(s.accept4());
 		};
 	}
 
@@ -215,7 +215,7 @@ namespace soup
 		s.holdup_callback.fp = [](Worker& w, Capture&& cap) SOUP_EXCAL
 		{
 			auto& s = static_cast<Socket&>(w);
-			cap.get<CaptureServerPortCrypto>().processAccept(s.accept4(), s.peer.port);
+			cap.get<CaptureServerPortCrypto>().processAccept(s.accept4());
 		};
 	}
 #endif
