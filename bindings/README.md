@@ -9,7 +9,6 @@ Otherwise, you can also just FFI without any abstractions, just be careful not t
 - [Lua](https://github.com/calamity-inc/Soup/blob/senpai/bindings/soup.lua)
 - [JavaScript](https://docs.soup.do/bindings/JS%20Bindings%20CDN.html)
 - [PHP](https://github.com/calamity-inc/Soup/blob/senpai/bindings/soup.php)
-- [Rust](https://github.com/calamity-inc/Soup/blob/senpai/bindings/soup.rs)
 - Plus, any other language that supports FFI!
 
 For a list of available functions and their signatures, see [soup.h](https://github.com/calamity-inc/Soup/blob/senpai/bindings/soup.h).
