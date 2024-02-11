@@ -20,7 +20,7 @@ jobs:
         run: php wasm.php
 
       - name: Ensure files exist
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "bindings/libsoup.js, bindings/libsoup.wasm"
           fail: true
