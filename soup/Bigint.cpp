@@ -1973,11 +1973,16 @@ namespace soup
 
 	Bigint Bigint::fromBinary(const std::string& msg) SOUP_EXCAL
 	{
+		return Bigint::fromBinary(msg.data(), msg.size());
+	}
+
+	Bigint Bigint::fromBinary(const void* data, size_t size) SOUP_EXCAL
+	{
 		Bigint res{};
-		for (auto i = msg.begin(); i != msg.end(); ++i)
+		for (size_t i = 0; i != size; ++i)
 		{
 			res <<= 8u;
-			res |= (chunk_t)(unsigned char)*i;
+			res |= static_cast<chunk_t>(reinterpret_cast<const uint8_t*>(data)[i]);
 		}
 		return res;
 	}
