@@ -2569,4 +2569,7 @@
       <UniqueIdentifier>{e94b4139-78fe-41db-8ed7-7a6cae5d9fca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
 </Project>
