@@ -84,7 +84,7 @@ namespace soup
 						Peer& peer = s_my_config.peers.emplace_back();
 						fr.bigint_lp_u64_dyn(peer.n);
 						fr.u32(peer.ip);
-						peer.n_hash = fnv1a_32(peer.n.toBinary());
+						peer.n_hash = hashN(peer.n);
 					}
 				}
 			}
@@ -94,7 +94,7 @@ namespace soup
 
 	void netMesh::addPeerLocally(Bigint n, uint32_t ip) SOUP_EXCAL
 	{
-		const auto n_hash = fnv1a_32(n.toBinary());
+		const auto n_hash = hashN(n);
 
 		if (ip == 0) // Administrative device?
 		{
@@ -127,6 +127,11 @@ namespace soup
 		}
 	}
 
+	uint32_t netMesh::hashN(const Bigint& n)
+	{
+		return fnv1a_32(n.toBinary());
+	}
+
 	struct netMeshTlsClientData
 	{
 		Bigint remote_pub_n;
@@ -157,7 +162,7 @@ namespace soup
 
 	void netMesh::sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data) SOUP_EXCAL
 	{
-		auto n_hash = fnv1a_32(netMesh::getMyConfig().kp.n.toBinary());
+		auto n_hash = hashN(netMesh::getMyConfig().kp.n);
 		auto signature = netMesh::getMyConfig().kp.getPrivate().sign<sha256>(data);
 
 		StringWriter sw;

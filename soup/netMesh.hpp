@@ -48,6 +48,8 @@ namespace soup
 
 		static void addPeerLocally(Bigint n, uint32_t ip = 0) SOUP_EXCAL;
 
+		[[nodiscard]] static uint32_t hashN(const Bigint& n);
+
 		static void enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL;
 		static void sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data) SOUP_EXCAL;
 
