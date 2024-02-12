@@ -244,13 +244,13 @@ namespace soup
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 		{
+			ServerWebService& srv = *cap.get<ServerWebService*>();
+
 			bool fin;
 			uint8_t opcode;
 			std::string payload;
 			while (WebSocket::readFrame(data, fin, opcode, payload) == WebSocket::OK)
 			{
-				ServerWebService& srv = *cap.get<ServerWebService*>();
-
 				if (opcode <= WebSocketFrameType::_NON_CONTROL_MAX) // non-control frame
 				{
 					WebSocketMessage& msg_buf = s.custom_data.getStructFromMap(WebSocketMessage);
