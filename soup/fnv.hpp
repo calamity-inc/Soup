@@ -11,7 +11,7 @@ namespace soup
 		uint32_t hash = 2166136261u;
 		for (const auto& c : str)
 		{
-			hash ^= c;
+			hash ^= (uint8_t)c;
 			hash *= 16777619u;
 		}
 		return hash;
@@ -22,7 +22,7 @@ namespace soup
 		uint64_t hash = 14695981039346656037ull;
 		for (const auto& c : str)
 		{
-			hash ^= c;
+			hash ^= (uint8_t)c;
 			hash *= 1099511628211ull;
 		}
 		return hash;
@@ -34,7 +34,7 @@ namespace soup
 		const Bigint m = Bigint::_2pow(128);
 		for (const auto& c : str)
 		{
-			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ c);
+			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ (uint8_t)c);
 			hash *= "309485009821345068724781371"_b;
 			hash %= m;
 		}
@@ -47,7 +47,7 @@ namespace soup
 		const Bigint m = Bigint::_2pow(256);
 		for (const auto& c : str)
 		{
-			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ c);
+			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ (uint8_t)c);
 			hash *= "374144419156711147060143317175368453031918731002211"_b;
 			hash %= m;
 		}
@@ -60,7 +60,7 @@ namespace soup
 		const Bigint m = Bigint::_2pow(512);
 		for (const auto& c : str)
 		{
-			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ c);
+			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ (uint8_t)c);
 			hash *= "35835915874844867368919076489095108449946327955754392558399825615420669938882575126094039892345713852759"_b;
 			hash %= m;
 		}
@@ -73,7 +73,7 @@ namespace soup
 		const Bigint m = Bigint::_2pow(1024);
 		for (const auto& c : str)
 		{
-			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ c);
+			hash.setChunkInbounds(0, hash.getChunkInbounds(0) ^ (uint8_t)c);
 			hash *= "5016456510113118655434598811035278955030765345404790744303017523831112055108147451509157692220295382716162651878526895249385292291816524375083746691371804094271873160484737966720260389217684476157468082573"_b;
 			hash %= m;
 		}
