@@ -1065,22 +1065,22 @@ namespace soup
 
 	void Socket::recv(void(*callback)(Socket&, std::string&&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL
 	{
-		CaptureSocketRecv inner_cap{
-			callback,
-			std::move(cap)
-		};
-		auto inner_callback = [](Socket& s, std::string&& data, Capture&& _cap) SOUP_EXCAL
-		{
-			auto& cap = _cap.get<CaptureSocketRecv>();
-			cap.callback(s, std::move(data), std::move(cap.cap));
-		};
 		if (tls_encrypter_recv.isActive())
 		{
+			CaptureSocketRecv inner_cap{
+				callback,
+				std::move(cap)
+			};
+			auto inner_callback = [](Socket& s, std::string&& data, Capture&& _cap) SOUP_EXCAL
+			{
+				auto & cap = _cap.get<CaptureSocketRecv>();
+				cap.callback(s, std::move(data), std::move(cap.cap));
+			};
 			tls_recvRecord(TlsContentType::application_data, inner_callback, std::move(inner_cap));
 		}
 		else
 		{
-			transport_recv(0x1000, inner_callback, std::move(inner_cap));
+			transport_recv(0x1000, callback, std::move(cap));
 		}
 	}
 
