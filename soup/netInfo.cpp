@@ -8,23 +8,25 @@ namespace soup
 {
 	IpAddr netInfo::getPublicAddress()
 	{
-		return getPublicAddressImpl("ip.apimon.de");
+		return getPublicAddressImpl("myi.pe");
 	}
 
 	IpAddr netInfo::getPublicAddressV4()
 	{
-		return getPublicAddressImpl("ipv4.apimon.de");
+		return getPublicAddressImpl("v4.myi.pe");
 	}
 
 	IpAddr netInfo::getPublicAddressV6()
 	{
-		return getPublicAddressImpl("ipv6.apimon.de");
+		return getPublicAddressImpl("v6.myi.pe");
 	}
 
 	IpAddr netInfo::getPublicAddressImpl(const std::string& provider)
 	{
 		IpAddr addr;
-		HttpRequest req(provider, "/");
+		HttpRequest req(provider, "/get");
+		/*req.port = 80;
+		req.use_tls = false;*/
 		if (auto res = req.execute(); res.has_value())
 		{
 			addr.fromString(res->body);
