@@ -3,59 +3,154 @@
 
 #include <iostream>
 
+#include "aes.hpp"
 #include "netMesh.hpp"
+#include "netMeshMsgType.hpp"
+#include "rand.hpp"
 #include "sha256.hpp"
 #include "Socket.hpp"
-#include "StringReader.hpp"
+#include "StringRefReader.hpp"
+#include "StringWriter.hpp"
+#include "WebSocketMessage.hpp"
 
 namespace soup
 {
-	void netMeshService::onTunnelEstablished(Socket& s, ServerService&, Server&) SOUP_EXCAL
+	struct netMeshConnectionInfo
 	{
-		s.recv([](Socket& s, std::string&& data, Capture&&) SOUP_EXCAL
+		alignas(16) uint8_t recv_key[16];
+		alignas(16) uint8_t send_key[16];
+
+		std::string challenge;
+		uint32_t authenticated_as = 0;
+
+		uint32_t recv_seq = 0;
+		uint32_t send_seq = 0;
+
+		void send(Socket& s, std::string data)
 		{
-			StringReader sr(std::move(data));
-			uint8_t msg_type;
-			if (sr.u8(msg_type))
+			aes::pkcs7Pad(data);
+			aes::ecbEncrypt(
+				(uint8_t*)data.data(), data.size(),
+				send_key, sizeof(send_key)
+			);
+			ServerWebService::wsSend(s, data, false);
+		}
+	};
+
+	netMeshService::netMeshService()
+	{
+		should_accept_websocket_connection = [](Socket&, const HttpRequest&, ServerWebService&) -> bool
+		{
+			return true;
+		};
+
+		on_websocket_message = [](WebSocketMessage& msg, Socket& s, ServerWebService&) -> void
+		{
+			if (s.custom_data.isStructInMap(netMeshConnectionInfo))
 			{
-				if (msg_type == MESH_MSG_LINK)
+				auto& con_info = s.custom_data.getStructFromMapConst(netMeshConnectionInfo);
+				aes::ecbDecrypt(
+					(uint8_t*)msg.data.data(), msg.data.size(),
+					con_info.recv_key, sizeof(netMeshConnectionInfo::recv_key)
+				);
+				if (aes::pkcs7Unpad(msg.data))
 				{
-					if (g_mesh_service.link_passnum != 0)
+					StringRefReader sr(msg.data);
+					if (uint8_t msg_type; sr.u8(msg_type))
 					{
-						if (uint64_t passnum; sr.u64(passnum) && passnum == g_mesh_service.link_passnum)
+						if (msg_type == MESH_MSG_LINK)
 						{
-							if (Bigint remote_pub_n; sr.bigint_lp_u64_dyn(remote_pub_n))
+							if (uint64_t passnum; sr.u64(passnum))
 							{
-								s.send(std::string(1, MESH_MSG_OK));
-								netMesh::addPeerLocally(std::move(remote_pub_n));
-								std::cout << "Successfully linked.\n";
-								exit(0);
+								if (passnum == g_mesh_service.link_passnum)
+								{
+									con_info.send(s, std::string(1, MESH_MSG_AFFIRMATIVE));
+									auto remote_pub_n = Bigint::fromBinary(msg.data.data() + 9, msg.data.size() - 9);
+									netMesh::addPeerLocally(std::move(remote_pub_n));
+									std::cout << "\nSuccessfully linked.\n";
+									exit(0);
+								}
+								else
+								{
+									con_info.send(s, std::string(1, MESH_MSG_NEGATIVE));
+								}
 							}
 						}
-					}
-				}
-				else if (msg_type == MESH_MSG_OK)
-				{
-					// Not currently used in this way.
-				}
-				else if (msg_type == MESH_MSG_DNS_ADD_RECORD)
-				{
-					if (g_mesh_service.app_msg_handler)
-					{
-						if (std::string data; sr.str_lp_u64_dyn(data))
+						else if (msg_type == MESH_MSG_AUTH_REQUEST)
 						{
-							if (uint32_t n_hash; sr.u32(n_hash))
+							if (con_info.authenticated_as == 0)
 							{
-								if (Bigint signature; sr.bigint_lp_u64_dyn(signature))
+								con_info.challenge = soup::rand.binstr(14);
+
+								std::string challenge_msg(1, MESH_MSG_AUTH_CHALLENGE);
+								challenge_msg.append(con_info.challenge);
+								con_info.send(s, std::move(challenge_msg));
+								return;
+							}
+						}
+						else if (msg_type == MESH_MSG_AUTH_FINISH)
+						{
+							if (!con_info.challenge.empty())
+							{
+								uint32_t n_hash;
+								if (sr.u32(n_hash))
 								{
+									auto sig = Bigint::fromBinary(msg.data.data() + 5, msg.data.size() - 5);
 									if (auto peer = netMesh::getMyConfig().findPeer(n_hash, s.peer.ip.getV4NativeEndian()))
 									{
-										if (peer->getPublicKey().verify<sha256>(data, signature))
+										if (peer->getPublicKey().verify<sha256>(con_info.challenge, sig))
 										{
-											if (g_mesh_service.app_msg_handler((netMeshMsgType)msg_type, std::move(data)))
+											con_info.authenticated_as = n_hash;
+											con_info.send(s, std::string(1, MESH_MSG_AFFIRMATIVE));
+											return;
+										}
+									}
+								}
+							}
+						}
+						else if (msg_type == MESH_MSG_CAPABILITIES)
+						{
+							if (con_info.authenticated_as != 0)
+							{
+								std::string resp(1, MESH_MSG_CAPABILITIES);
+								for (const auto& e : g_mesh_service.app_msg_handlers)
+								{
+									resp.append(e.first);
+									resp.push_back(',');
+								}
+								if (resp.back() == ',')
+								{
+									resp.pop_back();
+								}
+								con_info.send(s, std::move(resp));
+								return;
+							}
+						}
+						else if (msg_type == MESH_MSG_APPLICATION)
+						{
+							if (con_info.authenticated_as != 0)
+							{
+								uint32_t seq;
+								if (sr.u32(seq)
+									&& con_info.recv_seq++ == seq
+									)
+								{
+									auto sep = msg.data.find(',', 5);
+									if (sep != std::string::npos)
+									{
+										if (auto e = g_mesh_service.app_msg_handlers.find(msg.data.substr(5, sep - 5));
+											e != g_mesh_service.app_msg_handlers.end()
+											)
+										{
+											try
 											{
-												s.send(std::string(1, MESH_MSG_OK));
+												e->second(s, msg.data.substr(sep + 1));
 											}
+											catch (const std::exception& e)
+											{
+												replyNegative(s, e.what());
+											}
+											return;
 										}
 									}
 								}
@@ -63,12 +158,46 @@ namespace soup
 						}
 					}
 				}
-				else
+			}
+			else
+			{
+				auto data = netMesh::getMyConfig().kp.getPrivate().decryptUnpadded(Bigint::fromBinary(msg.data));
+				if (RsaMod::unpad(data)
+					&& data.size() == 32
+					)
 				{
-					// Unknown message type.
+					memcpy(s.custom_data.getStructFromMap(netMeshConnectionInfo).recv_key, data.data(), 16);
+					memcpy(s.custom_data.getStructFromMap(netMeshConnectionInfo).send_key, data.data() + 16, 16);
+					return;
 				}
 			}
-		});
+			s.close();
+		};
+	}
+
+	void netMeshService::reply(Socket& s, const std::string& data)
+	{
+		return reply(s, MESH_MSG_APPLICATION, data);
+	}
+
+	void netMeshService::replyAffirmative(Socket& s, const std::string& data)
+	{
+		return reply(s, MESH_MSG_AFFIRMATIVE, data);
+	}
+
+	void netMeshService::replyNegative(Socket& s, const std::string& data)
+	{
+		return reply(s, MESH_MSG_NEGATIVE, data);
+	}
+
+	void netMeshService::reply(Socket& s, uint8_t msg_type, const std::string& data)
+	{
+		auto& con_info = s.custom_data.getStructFromMapConst(netMeshConnectionInfo);
+		StringWriter sw;
+		sw.u8(msg_type);
+		sw.u32(con_info.send_seq);
+		con_info.send(s, sw.data + data);
+		++con_info.send_seq;
 	}
 }
 

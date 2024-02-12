@@ -9,8 +9,7 @@ namespace soup
 	 * Soup Mesh Network is a simple way to remotely manage your servers.
 	 * It is currently compatible with 'soup dnsserver', which will detect if the machine is configured to use the mesh network, and then listen for administrative commands.
 	 *
-	 * To set up a server with the mesh network, run 'soup mesh link' on that machine. Then, run the provided command on your personal computer.
-	 * This will allow you to manage the mesh network without becoming a part of it.
+	 * For management, you can use the web admin panel at http://soupmesh.net/ (source code at https://github.com/calamity-inc/soupmesh.net).
 	 */
 	struct netMesh
 	{
@@ -50,8 +49,9 @@ namespace soup
 
 		[[nodiscard]] static uint32_t hashN(const Bigint& n);
 
-		static void enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL;
-		static void sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data) SOUP_EXCAL;
+#if false
+		static void enableCryptoClient(Socket& s, const Bigint& remote_pub_n) SOUP_EXCAL;
+#endif
 
 		static bool bind(Server& serv);
 	};

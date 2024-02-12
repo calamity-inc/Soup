@@ -535,7 +535,7 @@ Available tools:
 - ircserver
 - keyboard
 - maze
-- mesh [link <token>|list|dns-add-record [ip] [name] [type] [data]]
+- mesh [link|list]
 - midi [keyboard|play [file]]
 - morse [key|encode [text]] <--silent>
 - mouse

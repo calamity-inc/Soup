@@ -3,19 +3,31 @@
 #include <iostream>
 #include <unordered_map>
 
+#include <dnsServerService.hpp>
 #include <FileReader.hpp>
-
-#include "dnsServerService.hpp"
-#include "netMesh.hpp"
-#include "netMeshService.hpp"
-#include "Server.hpp"
-#include "string.hpp"
-#include "StringReader.hpp"
-#include "UniquePtr.hpp"
+#include <json.hpp>
+#include <netMesh.hpp>
+#include <netMeshService.hpp>
+#include <Server.hpp>
+#include <string.hpp>
+#include <UniquePtr.hpp>
 
 using namespace soup;
 
 static std::unordered_map<std::string, std::vector<SharedPtr<dnsRecord>>> records{};
+
+static void add_record(UniquePtr<dnsRecord>&& rec)
+{
+	if (auto e = records.find(rec->name); e != records.end())
+	{
+		e->second.emplace_back(rec.release());
+	}
+	else
+	{
+		std::string name(rec->name);
+		records.emplace(std::move(name), std::vector<SharedPtr<dnsRecord>>{ rec.release() });
+	}
+}
 
 void cli_dnsserver(int argc, const char** argv)
 {
@@ -36,15 +48,7 @@ void cli_dnsserver(int argc, const char** argv)
 					{
 						ttl = std::stoul(arr[3]);
 					}
-					auto rec = factory(std::string(name), ttl, std::move(arr[2]));
-					if (auto e = records.find(name); e != records.end())
-					{
-						e->second.emplace_back(rec.release());
-					}
-					else
-					{
-						records.emplace(std::move(name), std::vector<SharedPtr<dnsRecord>>{ rec.release() });
-					}
+					add_record(factory(std::move(name), ttl, std::move(arr[2])));
 				}
 				else
 				{
@@ -94,34 +98,78 @@ void cli_dnsserver(int argc, const char** argv)
 	{
 		if (netMesh::bind(serv))
 		{
-			g_mesh_service.app_msg_handler = [](netMeshMsgType msg_type, std::string&& data)
+			g_mesh_service.app_msg_handlers.emplace("dns_list_records", [](Socket& s, std::string&&)
 			{
-				if (msg_type == MESH_MSG_DNS_ADD_RECORD)
+				for (const auto& vec : records)
 				{
-					StringReader sr(std::move(data));
-					if (uint16_t type; sr.u16(type))
+					for (const auto& rec : vec.second)
 					{
+						JsonObject obj;
+						obj.add("name", vec.first);
+						obj.add("type", dnsTypeToString(rec->type));
+						obj.add("value", rec->toString());
+						netMeshService::reply(s, obj.encode());
+					}
+				}
+				netMeshService::reply(s, {});
+			});
+			g_mesh_service.app_msg_handlers.emplace("dns_add_record", [](Socket& s, std::string&& data)
+			{
+				if (auto root = json::decode(data))
+				{
+					std::string name = root->asObj().at("name").asStr();
+					if (dnsType type; dnsTypeFromString(root->asObj().at("type").asStr()).consume(type))
+					{
+						std::string value = root->asObj().at("value").asStr();
 						if (auto factory = dnsRecord::getFactory((dnsType)type))
 						{
-							if (std::string name; sr.str_lp_u64_dyn(name))
+							add_record(factory(std::move(name), 60, std::move(value)));
+							netMeshService::replyAffirmative(s);
+							return;
+						}
+					}
+					netMeshService::replyNegative(s, "Invalid record type");
+				}
+				netMeshService::replyNegative(s, "Invalid request");
+			});
+			g_mesh_service.app_msg_handlers.emplace("dns_remove_record", [](Socket& s, std::string&& data)
+			{
+				if (auto root = json::decode(data))
+				{
+					std::string name = root->asObj().at("name").asStr();
+					if (dnsType type; dnsTypeFromString(root->asObj().at("type").asStr()).consume(type))
+					{
+						std::string value = root->asObj().at("value").asStr();
+						bool ok = false;
+						for (auto vec = records.begin(); vec != records.end(); ++vec)
+						{
+							if (vec->first == name)
 							{
-								if (auto e = records.find(name); e == records.end())
+								for (auto rec = vec->second.begin(); rec != vec->second.end(); ++rec)
 								{
-									if (std::string data; sr.str_lp_u64_dyn(data))
+									if ((*rec)->type == type && (*rec)->toString() == value)
 									{
-										if (auto rec = factory(std::string(name), 60, std::move(data)))
-										{
-											records.emplace(std::move(name), std::vector<SharedPtr<dnsRecord>>{ rec.release() });
-											return true;
-										}
+										ok = true;
+										vec->second.erase(rec);
+										break;
 									}
 								}
+								if (ok)
+								{
+									if (vec->second.empty())
+									{
+										records.erase(vec);
+									}
+									netMeshService::replyAffirmative(s);
+								}
+								return;
 							}
 						}
 					}
+					netMeshService::replyNegative(s, "Invalid record type");
 				}
-				return false;
-			};
+				netMeshService::replyNegative(s, "Invalid request");
+			});
 			std::cout << "[Mesh] Listening for commands\n";
 		}
 		else

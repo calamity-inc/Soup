@@ -8,15 +8,9 @@
 #include "FileReader.hpp"
 #include "FileWriter.hpp"
 #include "fnv.hpp"
-#include "netConfig.hpp"
 #include "netMeshService.hpp"
 #include "os.hpp"
 #include "Server.hpp"
-#include "sha256.hpp"
-#include "Socket.hpp"
-#include "StringWriter.hpp"
-#include "TlsServerRsaData.hpp"
-#include "X509Certchain.hpp"
 
 namespace soup
 {
@@ -132,59 +126,30 @@ namespace soup
 		return fnv1a_32(n.toBinary());
 	}
 
-	struct netMeshTlsClientData
+#if false
+	struct netMeshClientInfo
 	{
-		Bigint remote_pub_n;
+		alignas(16) uint8_t send_key[16];
+		alignas(16) uint8_t recv_key[16];
+		uint32_t send_seq = 0;
+		uint32_t recv_seq = 0;
 	};
 
-	struct netMeshEnableCryptoClientCapture
+	void netMesh::enableCryptoClient(Socket& s, const Bigint& remote_pub_n) SOUP_EXCAL
 	{
-		void(*callback)(Socket&, Capture&&) SOUP_EXCAL;
-		Capture cap;
-	};
+		auto& info = s.custom_data.getStructFromMap(netMeshClientInfo);
 
-	void netMesh::enableCryptoClient(Socket& s, Bigint remote_pub_n, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL
-	{
-		s.custom_data.getStructFromMap(netMeshTlsClientData).remote_pub_n = std::move(remote_pub_n);
-		netConfig::get().certchain_validator = [](const X509Certchain& chain, const std::string&, StructMap& custom_data)
-		{
-			return chain.certs.size() == 1
-				&& chain.certs.at(0).isRsa()
-				&& custom_data.getStructFromMapConst(netMeshTlsClientData).remote_pub_n == chain.certs.at(0).getRsaPublicKey().n
-				;
-		};
-		s.enableCryptoClient({}, [](Socket& s, Capture&& _cap) SOUP_EXCAL
-		{
-			netMeshEnableCryptoClientCapture& cap = _cap.get<netMeshEnableCryptoClientCapture>();
-			cap.callback(s, std::move(cap.cap));
-		}, netMeshEnableCryptoClientCapture{ callback, std::move(cap) });
+		auto bytes = soup::rand.binstr(32);
+		memcpy(info.send_key, bytes.data(), 16);
+		memcpy(info.recv_key, bytes.data() + 16, 16);
+
+		static_cast<WebSocketConnection&>(s).wsSend(RsaPublicKey(remote_pub_n).encryptPkcs1(bytes).toBinary());
 	}
-
-	void netMesh::sendAppMessage(Socket& s, netMeshMsgType msg_type, const std::string& data) SOUP_EXCAL
-	{
-		auto n_hash = hashN(netMesh::getMyConfig().kp.n);
-		auto signature = netMesh::getMyConfig().kp.getPrivate().sign<sha256>(data);
-
-		StringWriter sw;
-		{ auto msg_type_u8 = (uint8_t)msg_type; sw.u8(msg_type_u8); }
-		sw.str_lp_u64_dyn(data);
-		sw.u32(n_hash);
-		sw.bigint_lp_u64_dyn(signature);
-
-		s.send(sw.data);
-	}
-
-	static void cert_selector(TlsServerRsaData& out, const std::string&) SOUP_EXCAL
-	{
-		X509Certificate cert;
-		cert.setRsaPublicKey(netMesh::getMyConfig().kp.getPublic());
-		out.der_encoded_certchain = { cert.toDer() };
-		out.private_key = netMesh::getMyConfig().kp.getPrivate();
-	}
+#endif
 
 	bool netMesh::bind(Server& serv)
 	{
-		return serv.bindCrypto(7106, &g_mesh_service, &cert_selector);
+		return serv.bind(7106, &g_mesh_service);
 	}
 
 	Peer* netMesh::MyConfig::findPeer(uint32_t ip) noexcept
