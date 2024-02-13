@@ -37,5 +37,5 @@ namespace soup
 	};
 
 	// Returns a default-constructed UniquePtr in case of malformed data.
-	[[nodiscard]] UniquePtr<catNode> catParse(Reader& r) noexcept;
+	[[nodiscard]] UniquePtr<catNode> catParse(Reader& r) SOUP_EXCAL;
 }
