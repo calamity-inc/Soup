@@ -16,24 +16,15 @@ namespace soup
 		std::string line;
 		while (r.getLine(line)) // Could possibly have some mechanism for escaping NL e.g. "\\\n" to allow for multi-line values
 		{
-			SOUP_IF_UNLIKELY (line.empty())
-			{
-				continue;
-			}
-
-			if (line.back() == '\r')
+			if (!line.empty() && line.back() == '\r')
 			{
 				line.pop_back();
-				SOUP_IF_UNLIKELY (line.empty())
-				{
-					continue;
-				}
 			}
 
 			if (spaces.empty())
 			{
 				if (depth == 0
-					&& line.at(0) == ' '
+					&& line.c_str()[0] == ' '
 					)
 				{
 					// Since we're just at depth 0, spaces at the beginning of a line will tell us how many spaces are supposed to equal a tab in the user's view.
@@ -65,6 +56,12 @@ namespace soup
 				{
 					continue;
 				}
+			}
+
+			// Ignore empty lines; even those with indentation.
+			SOUP_IF_UNLIKELY (line.find_first_not_of('\t') == std::string::npos)
+			{
+				continue;
 			}
 
 			// Descend

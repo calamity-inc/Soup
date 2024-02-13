@@ -421,6 +421,19 @@ static void unit_data()
 		assert(tree->children.at(0)->name == "");
 		assert(tree->children.at(0)->children.size() == 1);
 		assert(tree->children.at(0)->children.at(0)->name == "Nested");
+
+		// An issue that might occur is that an editor automatically indents a line that is otherwise empty. CaT should process this just like an empty line: ignore it.
+		sr = (
+			"List:\n"
+			"\tItem 1\n"
+			"\t\n"
+			"\tItem 2\n"
+		);
+		tree = catParse(sr);
+		assert(tree);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "List");
+		assert(tree->children.at(0)->children.size() == 2);
 	});
 
 	test("ripemd160", []
