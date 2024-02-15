@@ -191,7 +191,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -225,7 +225,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <Lib>
-      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">
@@ -254,6 +254,9 @@
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'">
     <ClCompile>
@@ -282,6 +285,9 @@
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">
     <ClCompile>
@@ -311,7 +317,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -345,7 +351,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-      <AdditionalDependencies>$(SolutionDir)Intrin\out\x64\Intrin.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -379,6 +385,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -412,6 +419,7 @@
     </Link>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+      <AdditionalDependencies>$(SolutionDir)Intrin\out\$(Platform)\Intrin.lib</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -507,6 +515,7 @@
     <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="filesystem.hpp" />
     <ClInclude Include="fnv.hpp" />
+    <ClInclude Include="HardwareRng.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="HidScancode.hpp" />
     <ClInclude Include="hwGamepad.hpp" />
@@ -1013,6 +1022,7 @@
     <ClCompile Include="FactoriseProofOfWork.cpp" />
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="HammingCode.cpp" />
+    <ClCompile Include="HardwareRng.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />
     <ClCompile Include="hwGamepad.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
