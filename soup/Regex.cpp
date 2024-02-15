@@ -175,7 +175,7 @@ namespace soup
 		for (; it != end; ++it)
 		{
 #if REGEX_DEBUG_MATCH
-			std::cout << "--- Attempting match with " << std::distance(begin, it) << " byte offset ---\r\n";
+			std::cout << "--- Attempting match with " << std::distance(m.begin, it) << " byte offset ---\r\n";
 #endif
 			auto res = match(m, it);
 			if (res.isSuccess())
