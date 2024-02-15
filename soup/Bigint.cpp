@@ -943,7 +943,7 @@ namespace soup
 		}
 	}
 
-	void Bigint::leftShiftSmall(const size_t b) SOUP_EXCAL
+	void Bigint::leftShiftSmall(const unsigned int b) SOUP_EXCAL
 	{
 		chunk_t carry = 0;
 		const auto nc = getNumChunks();
@@ -1066,7 +1066,7 @@ namespace soup
 		}
 	}
 
-	void Bigint::rightShiftSmall(const size_t b) noexcept
+	void Bigint::rightShiftSmall(const unsigned int b) noexcept
 	{
 		auto i = getNumChunks();
 		chunk_t carry = 0;
