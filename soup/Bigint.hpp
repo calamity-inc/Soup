@@ -181,12 +181,12 @@ namespace soup
 		[[nodiscard]] bool isDivisorOf(const Bigint& dividend) const SOUP_EXCAL;
 		void operator<<=(const size_t b) SOUP_EXCAL;
 	private:
-		void leftShiftSmall(const unsigned int b) SOUP_EXCAL;
-		void leftShiftOne() SOUP_EXCAL;
+		SOUP_FORCEINLINE void leftShiftSmall(const unsigned int b) SOUP_EXCAL;
+		SOUP_FORCEINLINE void leftShiftOne() SOUP_EXCAL;
 	public:
 		void operator>>=(const size_t b) noexcept;
 	private:
-		void rightShiftSmall(const unsigned int b) noexcept;
+		SOUP_FORCEINLINE void rightShiftSmall(const unsigned int b) noexcept;
 	public:
 		void operator|=(const Bigint& b) SOUP_EXCAL;
 		void operator&=(const Bigint& b) noexcept;

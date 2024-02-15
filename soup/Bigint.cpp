@@ -950,6 +950,7 @@ namespace soup
 		size_t i = 0;
 		if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
 		{
+#if true
 			if (nc >= 4)
 			{
 				for (; i <= nc - 4; i += 4)
@@ -986,6 +987,7 @@ namespace soup
 					carry = c3[1];
 				}
 			}
+#endif
 			for (; i < nc; ++i)
 			{
 				chunk_t c[2];
@@ -1070,7 +1072,7 @@ namespace soup
 	{
 		auto i = getNumChunks();
 		chunk_t carry = 0;
-#if false
+#if true
 		for (; i >= 4; i -= 4)
 		{
 			chunk_t c0[2];
