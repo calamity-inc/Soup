@@ -58,12 +58,14 @@ Any other character preceeded by a backslash (`\`) is treated as a byte constrai
 
 - `?`: Preceeding constraint is optional (match between 0-1 times).
 - `*`: Preceeding constraint can match as many times as it wants.
-- `*?`: Preceeding constraint can match as many times as it wants, as few times as possible, expanding as needed (lazy).
+	- `*?`: As few times as possible, expanding as needed (lazy).
 - `+`: Preceeding constraint must match at least 1 time and can match as many times as it wants.
-- `+?`: Preceeding constraint must match at least 1 time and can match as many times as it wants, as few times as possible, expanding as needed (lazy).
+	- `+?`: As few times as possible, expanding as needed (lazy).
 - `{x}`: Preceeding constraint must match exactly x times.
 - `{x,}`: Preceeding constraint must match at least x times and can match as many times as it wants.
+	- `{x,}?`: As few times as possible, expanding as needed (lazy).
 - `{x,y}`: Preceeding constraint must match at least x times and at most y times.
+	- `{x,y}?`: As few times as possible, expanding as needed (lazy).
 
 ### Lookahead & Lookbehind
 

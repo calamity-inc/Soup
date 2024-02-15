@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	struct RegexOpenEndedRangeQuantifierConstraint : public RegexConstraintTransitionable
+	struct RegexOpenEndedRangeQuantifierConstraintBase : public RegexConstraintTransitionable
 	{
 		std::vector<UniquePtr<RegexConstraint>> constraints;
 
@@ -23,18 +23,26 @@ namespace soup
 			return true;
 		}
 
+		[[nodiscard]] size_t getCursorAdvancement() const final
+		{
+			return constraints.at(0)->getCursorAdvancement() * constraints.size();
+		}
+	};
+
+	template <bool greedy>
+	struct RegexOpenEndedRangeQuantifierConstraint : public RegexOpenEndedRangeQuantifierConstraintBase
+	{
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			std::string str = constraints.at(0)->toString();
 			str.push_back('{');
 			str.append(std::to_string(constraints.size()));
 			str.append(",}");
+			if (!greedy)
+			{
+				str.push_back('?');
+			}
 			return str;
-		}
-
-		[[nodiscard]] size_t getCursorAdvancement() const final
-		{
-			return constraints.at(0)->getCursorAdvancement() * constraints.size();
 		}
 	};
 }
