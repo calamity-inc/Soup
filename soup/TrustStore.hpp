@@ -11,13 +11,13 @@ namespace soup
 	{
 		std::unordered_map<std::string, X509Certificate> data{};
 
-		[[nodiscard]] static TrustStore fromMozilla();
+		[[nodiscard]] static TrustStore fromMozilla() SOUP_EXCAL;
 
-		void loadCaCerts(std::istream& is); // designed for contents of cacert.pem, which can be downloaded from https://curl.se/docs/caextract.html
-		void addCa(X509Certificate&& cert);
-		void addCa(std::string&& common_name, std::string&& pem);
-		void addCa(std::string&& common_name, X509Certificate&& cert);
+		void loadCaCerts(std::istream& is) SOUP_EXCAL; // designed for contents of cacert.pem, which can be downloaded from https://curl.se/docs/caextract.html
+		void addCa(X509Certificate&& cert) SOUP_EXCAL;
+		void addCa(std::string&& common_name, std::string&& pem) SOUP_EXCAL;
+		void addCa(std::string&& common_name, X509Certificate&& cert) SOUP_EXCAL;
 
-		[[nodiscard]] const X509Certificate* findCommonName(const std::string& cn) const;
+		[[nodiscard]] const X509Certificate* findCommonName(const std::string& cn) const noexcept;
 	};
 }

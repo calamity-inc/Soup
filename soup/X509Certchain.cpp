@@ -73,21 +73,21 @@ namespace soup
 		return true;
 	}
 
-	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts) const
+	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts) const SOUP_EXCAL
 	{
 		return certs.at(0).isValidForDomain(domain)
 			&& verify(ts)
 			;
 	}
 
-	bool X509Certchain::verify(const TrustStore& ts) const
+	bool X509Certchain::verify(const TrustStore& ts) const SOUP_EXCAL
 	{
 		return verifyTrust(ts)
 			&& verifySignatures()
 			;
 	}
 
-	bool X509Certchain::verifyTrust(const TrustStore& ts) const
+	bool X509Certchain::verifyTrust(const TrustStore& ts) const SOUP_EXCAL
 	{
 		if (!certs.empty())
 		{
@@ -108,7 +108,7 @@ namespace soup
 		return false;
 	}
 
-	bool X509Certchain::isAnyInTrustStore(const TrustStore& ts) const
+	bool X509Certchain::isAnyInTrustStore(const TrustStore& ts) const SOUP_EXCAL
 	{
 		for (auto i = certs.rbegin(); i != certs.rend(); ++i)
 		{
@@ -126,7 +126,7 @@ namespace soup
 		return false;
 	}
 
-	bool X509Certchain::verifySignatures() const
+	bool X509Certchain::verifySignatures() const SOUP_EXCAL
 	{
 		if (certs.size() > 1)
 		{
@@ -141,7 +141,7 @@ namespace soup
 		return true;
 	}
 
-	std::string X509Certchain::toString() const
+	std::string X509Certchain::toString() const SOUP_EXCAL
 	{
 		std::string str{};
 		if (!certs.empty())

@@ -48,7 +48,7 @@ namespace soup
 		void setRsaPublicKey(RsaPublicKey pub) noexcept;
 
 		[[nodiscard]] bool canBeVerified() const noexcept;
-		[[nodiscard]] bool verify(const X509Certificate& issuer) const;
+		[[nodiscard]] bool verify(const X509Certificate& issuer) const SOUP_EXCAL;
 
 		[[nodiscard]] bool isValidForDomain(const std::string& domain) const SOUP_EXCAL;
 		[[nodiscard]] static bool matchDomain(const std::string& domain, const std::string& name) SOUP_EXCAL;
@@ -63,9 +63,12 @@ namespace soup
 			if (isEc() && curve)
 			{
 				auto seq = Asn1Sequence::fromDer(sig);
-				auto r = seq.getInt(0);
-				auto s = seq.getInt(1);
-				return curve->verify(key, CryptoHashAlgo::hash(msg), r, s);
+				if (seq.size() == 2)
+				{
+					auto r = seq.getInt(0);
+					auto s = seq.getInt(1);
+					return curve->verify(key, CryptoHashAlgo::hash(msg), r, s);
+				}
 			}
 			return false;
 		}

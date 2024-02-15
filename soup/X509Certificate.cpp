@@ -191,7 +191,7 @@ namespace soup
 		return false;
 	}
 
-	bool X509Certificate::verify(const X509Certificate& issuer) const
+	bool X509Certificate::verify(const X509Certificate& issuer) const SOUP_EXCAL
 	{
 		switch (sig_type)
 		{
