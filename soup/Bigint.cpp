@@ -755,28 +755,41 @@ namespace soup
 
 	std::pair<Bigint, Bigint> Bigint::divide(const Bigint& divisor) const SOUP_EXCAL
 	{
+		std::pair<Bigint, Bigint> res;
+		divide(divisor, res.first, res.second);
+		return res;
+	}
+
+	void Bigint::divide(const Bigint& divisor, Bigint& outQuotient, Bigint& outRemainder) const SOUP_EXCAL
+	{
+		outQuotient.reset();
+		outRemainder.reset();
+
 		if (divisor.negative)
 		{
 			Bigint divisor_cpy(divisor);
 			divisor_cpy.negative = false;
-			auto res = divide(divisor_cpy);
-			res.first.negative ^= 1;
-			return res;
+			divide(divisor_cpy, outQuotient, outRemainder);
+			outQuotient.negative ^= 1;
 		}
-		if (negative)
+		else if (negative)
 		{
 			Bigint dividend(*this);
 			dividend.negative = false;
-			auto res = dividend.divide(divisor);
-			res.first.negative ^= 1;
-			if (!res.second.isZero())
+			dividend.divide(divisor, outQuotient, outRemainder);
+			outQuotient.negative ^= 1;
+			if (!outRemainder.isZero())
 			{
-				res.first -= Bigint((chunk_t)1u);
-				res.second = divisor - res.second;
+				outQuotient -= Bigint((chunk_t)1u);
+				outRemainder = divisor - outRemainder;
 			}
-			return res;
 		}
-		return divideUnsigned(divisor);
+		else
+		{
+			Bigint dividend(*this);
+			dividend.divideUnsigned(divisor, outRemainder);
+			outQuotient = std::move(dividend);
+		}
 	}
 
 	std::pair<Bigint, Bigint> Bigint::divideUnsigned(const Bigint& divisor) const SOUP_EXCAL
@@ -1472,7 +1485,7 @@ namespace soup
 
 		while (!a.isZero())
 		{
-			auto [q, r] = b.divide(a);
+			b.divide(a, q, r);
 			m = x - u * q;
 			n = y - v * q;
 

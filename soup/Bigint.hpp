@@ -170,6 +170,7 @@ namespace soup
 		void operator/=(const Bigint& divisor) SOUP_EXCAL;
 		void operator%=(const Bigint& divisor) SOUP_EXCAL;
 		[[nodiscard]] std::pair<Bigint, Bigint> divide(const Bigint& divisor) const SOUP_EXCAL; // (Quotient, Remainder)
+		void divide(const Bigint& divisor, Bigint& outQuotient, Bigint& outRemainder) const SOUP_EXCAL;
 		[[nodiscard]] std::pair<Bigint, Bigint> divideUnsigned(const Bigint& divisor) const SOUP_EXCAL; // (Quotient, Remainder)
 		void divideUnsigned(const Bigint& divisor, Bigint& remainder) SOUP_EXCAL;
 		[[nodiscard]] chunk_t divideUnsignedSmall(chunk_t divisor) noexcept;
