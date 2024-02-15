@@ -140,6 +140,7 @@ namespace soup
 #if !SOUP_WASM
 		void fulfilOffThread(void(*f)(Capture&&), Capture&& cap = {})
 		{
+			SOUP_DEBUG_ASSERT(!isFulfilled());
 			new SelfDeletingThread([](Capture&& _cap)
 			{
 				auto& cap = _cap.get<CaptureFulfillOffThread>();

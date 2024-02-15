@@ -21,6 +21,8 @@
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
 #include "rand.hpp"
+#include "sha1.hpp"
+#include "sha256.hpp"
 #include "SocketTlsHandshaker.hpp"
 #include "time.hpp"
 #include "TlsAlertDescription.hpp"
@@ -389,6 +391,14 @@ namespace soup
 		certchain_validator_t certchain_validator;
 	};
 
+	struct CaptureValidateSke
+	{
+		Socket& s;
+		SocketTlsHandshaker* handshaker;
+		std::string signature;
+		bool sha256;
+	};
+
 	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
@@ -575,47 +585,110 @@ namespace soup
 									s.tls_close(TlsAlertDescription::decode_error);
 									return;
 								}
-								// TODO: Verify server signature. See RFC 8422 page 17-18.
-								if (ske.named_curve == NamedCurves::x25519)
+								if (ske.signature_hash != /* SHA1 */ 2
+									&& ske.signature_hash != /* SHA256 */ 4
+									)
 								{
-									if (ske.point.size() != Curve25519::KEY_SIZE)
+									s.tls_close(TlsAlertDescription::handshake_failure);
+									return;
+								}
+								SOUP_IF_UNLIKELY(ske.signature_algo != (handshaker->certchain.certs.at(0).isRsa() ? /* RSA */ 1 : /* ECDSA */ 3))
+								{
+									s.tls_close(TlsAlertDescription::illegal_parameter);
+									return;
+								}
+								if (ske.params.named_curve == NamedCurves::x25519)
+								{
+									if (ske.params.point.size() != Curve25519::KEY_SIZE)
 									{
 										s.tls_close(TlsAlertDescription::handshake_failure);
 										return;
 									}
 								}
-								else if (ske.named_curve == NamedCurves::secp256r1)
+								else if (ske.params.named_curve == NamedCurves::secp256r1)
 								{
-									if (ske.point.size() != 65 // first byte for compression format (4 for uncompressed) + 32 for X + 32 for Y
-										|| ske.point.at(0) != 4
+									if (ske.params.point.size() != 65 // first byte for compression format (4 for uncompressed) + 32 for X + 32 for Y
+										|| ske.params.point.at(0) != 4
 										)
 									{
 										s.tls_close(TlsAlertDescription::handshake_failure);
 										return;
 									}
-									ske.point.erase(0, 1); // leave only X + Y
 								}
-								else if (ske.named_curve == NamedCurves::secp384r1)
+								else if (ske.params.named_curve == NamedCurves::secp384r1)
 								{
-									if (ske.point.size() != 97 // first byte for compression format (4 for uncompressed) + 48 for X + 48 for Y
-										|| ske.point.at(0) != 4
+									if (ske.params.point.size() != 97 // first byte for compression format (4 for uncompressed) + 48 for X + 48 for Y
+										|| ske.params.point.at(0) != 4
 										)
 									{
 										s.tls_close(TlsAlertDescription::handshake_failure);
 										return;
 									}
-									ske.point.erase(0, 1); // leave only X + Y
 								}
 								else
 								{
 									s.tls_close(TlsAlertDescription::handshake_failure);
 									return;
 								}
-								// TODO: Validate signature
-								handshaker->ecdhe_curve = ske.named_curve;
-								handshaker->ecdhe_public_key = std::move(ske.point);
+								handshaker->ecdhe_curve = ske.params.named_curve;
+								handshaker->ecdhe_public_key = std::move(ske.params.point);
 
-								s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
+#if SOUP_EXCEPTIONS
+								try
+#endif
+								{
+									// Takes around 57 ms on my i9-13900K. Don't wanna waste that time on main thread.
+									handshaker->promise.reset();
+									handshaker->promise.fulfilOffThread([](Capture&& _cap)
+									{
+										auto& cap = _cap.get<CaptureValidateSke>();
+
+										TlsServerECDHParams params;
+										params.curve_type = 3;
+										params.named_curve = cap.handshaker->ecdhe_curve;
+										params.point = cap.handshaker->ecdhe_public_key;
+
+										std::string msg = cap.handshaker->client_random + cap.handshaker->server_random + params.toBinaryString();
+
+										if (cap.sha256)
+										{
+											if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha256>(msg, cap.signature))
+											{
+												cap.s.tls_close(TlsAlertDescription::handshake_failure);
+											}
+										}
+										else
+										{
+											if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha1>(msg, cap.signature))
+											{
+												cap.s.tls_close(TlsAlertDescription::handshake_failure);
+											}
+										}
+									}, CaptureValidateSke{
+										s,
+										handshaker.get(),
+										std::move(ske.signature),
+										ske.signature_hash == /* SHA256 */ 4
+									});
+								}
+#if SOUP_EXCEPTIONS
+								catch (...)
+								{
+									s.tls_close(TlsAlertDescription::internal_error);
+									return;
+								}
+#endif
+
+								auto* p = &handshaker->promise;
+								s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap) SOUP_EXCAL
+								{
+									w.holdup_type = Worker::NONE;
+
+									auto& s = static_cast<Socket&>(w);
+									UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
+
+									s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
+								}, std::move(handshaker));
 							});
 							break;
 						}
@@ -676,9 +749,11 @@ namespace soup
 				}
 
 				TlsEncryptedPreMasterSecret epms{};
-				SOUP_IF_UNLIKELY(!handshaker->certchain.certs.at(0).isRsa())
+				SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
 				{
-					return; // Server picked an RSA ciphersuite but did not provide an appropriate certificate
+					// Server picked an RSA ciphersuite but did not provide an appropriate certificate
+					tls_close(TlsAlertDescription::illegal_parameter);
+					return;
 				}
 				epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
 				cke = epms.toBinaryString();
@@ -721,12 +796,14 @@ namespace soup
 				auto my_priv = curve->generatePrivate();
 
 				EccPoint their_pub{
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(0, csize)),
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(csize, csize))
+					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(1, csize)),
+					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(1 + csize, csize))
 				};
-				SOUP_IF_UNLIKELY(!curve->validate(their_pub))
+				SOUP_IF_UNLIKELY (!curve->validate(their_pub))
 				{
-					return; // Server provided an invalid point for ECDHE
+					// Server provided an invalid point for ECDHE
+					tls_close(TlsAlertDescription::illegal_parameter);
+					return;
 				}
 
 				auto shared_point = curve->multiply(their_pub, my_priv);
@@ -746,6 +823,7 @@ namespace soup
 #if SOUP_EXCEPTIONS
 		catch (...)
 		{
+			tls_close(TlsAlertDescription::internal_error);
 			return;
 		}
 #endif

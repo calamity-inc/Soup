@@ -196,32 +196,19 @@ namespace soup
 		switch (sig_type)
 		{
 		case RSA_WITH_SHA1:
-			if (!issuer.isRsa())
-			{
-				return false;
-			}
-			return issuer.getRsaPublicKey().verify<soup::sha1>(tbsCertDer, Bigint::fromBinary(sig));
+			return issuer.isRsa()
+				&& issuer.verifySignature<soup::sha1>(tbsCertDer, sig)
+				;
 
 		case RSA_WITH_SHA256:
-			if (!issuer.isRsa())
-			{
-				return false;
-			}
-			return issuer.getRsaPublicKey().verify<soup::sha256>(tbsCertDer, Bigint::fromBinary(sig));
+			return issuer.isRsa()
+				&& issuer.verifySignature<soup::sha256>(tbsCertDer, sig)
+				;
 
 		case ECDSA_WITH_SHA256:
-			if (!issuer.isEc()
-				|| !issuer.curve
-				)
-			{
-				return false;
-			}
-			{
-				auto seq = Asn1Sequence(sig).getSeq(0);
-				auto r = seq.getInt(0);
-				auto s = seq.getInt(1);
-				return issuer.curve->verify(issuer.key, sha256::hash(tbsCertDer), r, s);
-			}
+			return issuer.isEc()
+				&& issuer.verifySignature<soup::sha256>(tbsCertDer, sig)
+				;
 
 			// TODO: Implement SHA384 & SHA512
 		case RSA_WITH_SHA384: return issuer.isRsa();
