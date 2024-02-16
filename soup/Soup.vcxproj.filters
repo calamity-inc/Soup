@@ -1575,6 +1575,9 @@
     <ClInclude Include="HardwareRng.hpp">
       <Filter>algos\rng</Filter>
     </ClInclude>
+    <ClInclude Include="TlsSignatureScheme.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

@@ -24,15 +24,13 @@ namespace soup
 	{
 		TlsServerECDHParams params;
 
-		u8 signature_hash; // HashAlgorithm - https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-18
-		u8 signature_algo; // SignatureAlgorithm - https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-16
+		u16 signature_scheme; // https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-signaturescheme
 		std::string signature;
 
 		SOUP_PACKET_IO(s)
 		{
 			return params.io(s)
-				&& s.u8(signature_hash)
-				&& s.u8(signature_algo)
+				&& s.u16(signature_scheme)
 				&& s.template str_lp<u16_t>(signature)
 				;
 		}

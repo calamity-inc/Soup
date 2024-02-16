@@ -37,6 +37,7 @@
 #include "TlsRecord.hpp"
 #include "TlsServerHello.hpp"
 #include "TlsServerKeyExchange.hpp"
+#include "TlsSignatureScheme.hpp"
 #include "TrustStore.hpp"
 
 #define LOGGING false
@@ -585,17 +586,31 @@ namespace soup
 									s.tls_close(TlsAlertDescription::decode_error);
 									return;
 								}
-								if (ske.signature_hash != /* SHA1 */ 2
-									&& ske.signature_hash != /* SHA256 */ 4
+								if (ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha1
+									|| ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha256
 									)
 								{
-									s.tls_close(TlsAlertDescription::handshake_failure);
-									return;
+									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
+									{
+										s.tls_close(TlsAlertDescription::illegal_parameter);
+										return;
+									}
 								}
-								SOUP_IF_UNLIKELY(ske.signature_algo != (handshaker->certchain.certs.at(0).isRsa() ? /* RSA */ 1 : /* ECDSA */ 3))
+								else if (ske.signature_scheme == TlsSignatureScheme::ecdsa_sha1)
 								{
-									s.tls_close(TlsAlertDescription::illegal_parameter);
-									return;
+									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isEc())
+									{
+										s.tls_close(TlsAlertDescription::illegal_parameter);
+										return;
+									}
+								}
+								else if (ske.signature_scheme == TlsSignatureScheme::ecdsa_secp256r1_sha256)
+								{
+									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isEc() || handshaker->certchain.certs.at(0).curve != &EccCurve::secp256r1())
+									{
+										s.tls_close(TlsAlertDescription::illegal_parameter);
+										return;
+									}
 								}
 								if (ske.params.named_curve == NamedCurves::x25519)
 								{
@@ -633,62 +648,75 @@ namespace soup
 								handshaker->ecdhe_curve = ske.params.named_curve;
 								handshaker->ecdhe_public_key = std::move(ske.params.point);
 
-#if SOUP_EXCEPTIONS
-								try
-#endif
+								if (ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha1
+									|| ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha256
+									|| ske.signature_scheme == TlsSignatureScheme::ecdsa_sha1
+									|| ske.signature_scheme == TlsSignatureScheme::ecdsa_secp256r1_sha256
+									)
 								{
-									// Takes around 57 ms on my i9-13900K. Don't wanna waste that time on main thread.
-									handshaker->promise.reset();
-									handshaker->promise.fulfilOffThread([](Capture&& _cap)
+#if SOUP_EXCEPTIONS
+									try
+#endif
 									{
-										auto& cap = _cap.get<CaptureValidateSke>();
-
-										TlsServerECDHParams params;
-										params.curve_type = 3;
-										params.named_curve = cap.handshaker->ecdhe_curve;
-										params.point = cap.handshaker->ecdhe_public_key;
-
-										std::string msg = cap.handshaker->client_random + cap.handshaker->server_random + params.toBinaryString();
-
-										if (cap.sha256)
+										// Takes around 57 ms on my i9-13900K. Don't wanna waste that time on main thread.
+										handshaker->promise.reset();
+										handshaker->promise.fulfilOffThread([](Capture&& _cap)
 										{
-											if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha256>(msg, cap.signature))
+											auto& cap = _cap.get<CaptureValidateSke>();
+
+											TlsServerECDHParams params;
+											params.curve_type = 3;
+											params.named_curve = cap.handshaker->ecdhe_curve;
+											params.point = cap.handshaker->ecdhe_public_key;
+
+											std::string msg = cap.handshaker->client_random + cap.handshaker->server_random + params.toBinaryString();
+
+											if (cap.sha256)
 											{
-												cap.s.tls_close(TlsAlertDescription::handshake_failure);
+												if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha256>(msg, cap.signature))
+												{
+													cap.s.tls_close(TlsAlertDescription::handshake_failure);
+												}
 											}
-										}
-										else
-										{
-											if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha1>(msg, cap.signature))
+											else
 											{
-												cap.s.tls_close(TlsAlertDescription::handshake_failure);
+												if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha1>(msg, cap.signature))
+												{
+													cap.s.tls_close(TlsAlertDescription::handshake_failure);
+												}
 											}
-										}
-									}, CaptureValidateSke{
-										s,
-										handshaker.get(),
-										std::move(ske.signature),
-										ske.signature_hash == /* SHA256 */ 4
-									});
-								}
+										}, CaptureValidateSke{
+											s,
+											handshaker.get(),
+											std::move(ske.signature),
+											ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha256 || ske.signature_scheme == TlsSignatureScheme::ecdsa_secp256r1_sha256
+										});
+									}
 #if SOUP_EXCEPTIONS
-								catch (...)
-								{
-									s.tls_close(TlsAlertDescription::internal_error);
-									return;
-								}
+									catch (...)
+									{
+										s.tls_close(TlsAlertDescription::internal_error);
+										return;
+									}
 #endif
 
-								auto* p = &handshaker->promise;
-								s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap) SOUP_EXCAL
-								{
-									w.holdup_type = Worker::NONE;
+									auto* p = &handshaker->promise;
+									s.awaitPromiseCompletion(p, [](Worker& w, Capture&& cap) SOUP_EXCAL
+									{
+										w.holdup_type = Worker::NONE;
 
-									auto& s = static_cast<Socket&>(w);
-									UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
+										auto& s = static_cast<Socket&>(w);
+										UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
+
+										s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
+									}, std::move(handshaker));
+								}
+								else
+								{
+									// Don't wanna fail against raw.githubusercontent.com so just proceeding without verifying for now.
 
 									s.enableCryptoClientRecvServerHelloDone(std::move(handshaker));
-								}, std::move(handshaker));
+								}
 							});
 							break;
 						}
