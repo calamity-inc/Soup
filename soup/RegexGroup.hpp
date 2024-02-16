@@ -11,13 +11,13 @@ namespace soup
 	{
 		struct ConstructorState
 		{
-			mutable std::string::const_iterator it;
-			std::string::const_iterator end;
+			mutable const char* it;
+			const char* end;
 			mutable uint16_t flags;
 			mutable size_t next_index = 0;
 			mutable std::vector<const RegexConstraint**> alternatives_transitions{};
 
-			ConstructorState(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags)
+			ConstructorState(const char* it, const char* end, uint16_t flags)
 				: it(it), end(end), flags(flags)
 			{
 			}
@@ -40,7 +40,7 @@ namespace soup
 		{
 		}
 
-		RegexGroup(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags)
+		RegexGroup(const char* it, const char* end, uint16_t flags)
 			: RegexGroup(ConstructorState(it, end, flags))
 		{
 		}

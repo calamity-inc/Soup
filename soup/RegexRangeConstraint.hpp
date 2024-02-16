@@ -16,7 +16,7 @@ namespace soup
 		inline static const char digits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 		inline static const char whitespace[] = { '\r', '\n', '\t', '\f', '\v', ' ' };
 
-		RegexRangeConstraint(std::string::const_iterator& it, std::string::const_iterator end, bool insensitive)
+		RegexRangeConstraint(const char*& it, const char* end, bool insensitive)
 		{
 			if (++it == end)
 			{

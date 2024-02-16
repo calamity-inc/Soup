@@ -11,16 +11,16 @@ namespace soup
 		RegexGroup group;
 
 		Regex(const std::string& pattern, const char* flags)
-			: Regex(pattern.cbegin(), pattern.cend(), parseFlags(flags))
+			: Regex(pattern.data(), &pattern.data()[pattern.size()], parseFlags(flags))
 		{
 		}
 
 		Regex(const std::string& pattern, uint16_t flags = 0)
-			: Regex(pattern.cbegin(), pattern.cend(), flags)
+			: Regex(pattern.data(), &pattern.data()[pattern.size()], flags)
 		{
 		}
 
-		Regex(std::string::const_iterator it, std::string::const_iterator end, uint16_t flags = 0)
+		Regex(const char* it, const char* end, uint16_t flags)
 			: group(it, end, flags)
 		{
 		}
