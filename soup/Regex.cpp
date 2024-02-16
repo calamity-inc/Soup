@@ -279,11 +279,13 @@ namespace soup
 
 		if (reinterpret_cast<uintptr_t>(node->success_transition) > 0b10)
 		{
-			node_to_graphviz_dot(ss, mapped_nodes, node->success_transition);
+			const auto success_transition = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(node->success_transition) & ~1);
+
+			node_to_graphviz_dot(ss, mapped_nodes, success_transition);
 
 			ss << node_to_graphviz_dot_string(node);
 			ss << " -> ";
-			ss << node_to_graphviz_dot_string(node->success_transition);
+			ss << node_to_graphviz_dot_string(success_transition);
 			ss << R"( [label="success"];)";
 			ss << '\n';
 		}
