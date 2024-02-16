@@ -508,22 +508,22 @@ namespace soup
 
 					pModifiedConstraint->group = this;
 
-					// prev-constraint --[success]-> quantifier
-					success_transitions.setPreviousTransitionTo(upQuantifierConstraint.get());
-
-					// constraint --[success]-> quantifier
-					success_transitions.setTransitionTo(upQuantifierConstraint.get());
-
 					if (greedy)
 					{
-						// quantifier --[success]-> constraint
-						upQuantifierConstraint->success_transition = pModifiedConstraint->getEntrypoint();
+						// constraint --[success]-> constraint
+						success_transitions.setTransitionTo(pModifiedConstraint->getEntrypoint());
 
-						// quantifier --[rollback]-> next-constraint
-						success_transitions.emplaceRollback(&upQuantifierConstraint->rollback_transition);
+						// constraint --[rollback]-> next-constraint
+						success_transitions.emplaceRollback(&pModifiedConstraint->rollback_transition);
 					}
 					else
 					{
+						// prev-constraint --[success]-> quantifier
+						success_transitions.setPreviousTransitionTo(upQuantifierConstraint.get());
+
+						// constraint --[success]-> quantifier
+						success_transitions.setTransitionTo(upQuantifierConstraint.get());
+
 						// quantifier --[success]-> next-constraint
 						success_transitions.emplace(&upQuantifierConstraint->success_transition);
 
