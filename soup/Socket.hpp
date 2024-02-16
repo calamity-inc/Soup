@@ -112,8 +112,8 @@ namespace soup
 		bool setNonBlocking() noexcept;
 
 		static bool certchain_validator_none(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL; // Accepts everything.
-		static bool certchain_validator_relaxed(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL; // Verifies what can be verified, accepts the rest.
-		static bool certchain_validator_strict(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL; // [Default] Same as relaxed, but rejects SHA384 & SHA512 because Soup doesn't implement them yet.
+		static bool certchain_validator_relaxed(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL; // [Default] Verifies what can be verified, accepts the rest.
+		static bool certchain_validator_strict(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL; // Same as relaxed, but rejects SHA384 & SHA512 because Soup doesn't implement them yet.
 
 		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap = {}) SOUP_EXCAL;
 	protected:
