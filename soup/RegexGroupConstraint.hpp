@@ -8,29 +8,29 @@ namespace soup
 {
 	struct RegexGroupConstraint : public RegexConstraint
 	{
-		RegexGroup group;
+		RegexGroup data;
 
 		RegexGroupConstraint(const RegexGroup::ConstructorState& s, bool non_capturing)
-			: group(s, non_capturing)
+			: data(s, non_capturing)
 		{
 		}
 
 		[[nodiscard]] const RegexConstraintTransitionable* getTransition() const noexcept final
 		{
-			return group.initial;
+			return data.initial;
 		}
 
 		[[nodiscard]] std::string toString() const noexcept final
 		{
-			auto str = group.toString();
-			if (group.isNonCapturing())
+			auto str = data.toString();
+			if (data.isNonCapturing())
 			{
 				str.insert(0, "?:");
 			}
-			else if (!group.name.empty())
+			else if (!data.name.empty())
 			{
 				str.insert(0, 1, '\'');
-				str.insert(0, group.name);
+				str.insert(0, data.name);
 				str.insert(0, "?'");
 			}
 			str.insert(0, 1, '(');
@@ -40,12 +40,12 @@ namespace soup
 
 		void getFlags(uint16_t& set, uint16_t& unset) const noexcept final
 		{
-			group.getFlags(set, unset);
+			data.getFlags(set, unset);
 		}
 
 		[[nodiscard]] size_t getCursorAdvancement() const final
 		{
-			return group.getCursorAdvancement();
+			return data.getCursorAdvancement();
 		}
 	};
 }
