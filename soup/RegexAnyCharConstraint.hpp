@@ -1,13 +1,13 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "RegexMatcher.hpp"
 
 namespace soup
 {
 	template <bool dotall, bool unicode>
-	struct RegexAnyCharConstraint : public RegexConstraintTransitionable
+	struct RegexAnyCharConstraint : public RegexConstraint
 	{
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{

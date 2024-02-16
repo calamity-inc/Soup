@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "base.hpp"
 #include "BigBitset.hpp"
@@ -8,7 +8,7 @@
 
 namespace soup
 {
-	struct RegexRangeConstraint : public RegexConstraintTransitionable
+	struct RegexRangeConstraint : public RegexConstraint
 	{
 		BigBitset<0x100 / 8> mask{};
 		bool inverted = false;

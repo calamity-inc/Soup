@@ -42,7 +42,7 @@ namespace soup
 	class drData;
 
 	// data.regex
-	struct RegexConstraintTransitionable;
+	struct RegexConstraint;
 	struct RegexGroup;
 	struct RegexMatcher;
 

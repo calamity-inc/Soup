@@ -15,7 +15,12 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept final
+		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
+		{
+			return true;
+		}
+
+		[[nodiscard]] const RegexConstraint* getEntrypoint() const noexcept final
 		{
 			return data.initial;
 		}

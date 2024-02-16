@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include <vector>
 
@@ -8,11 +8,11 @@
 
 namespace soup
 {
-	struct RegexOpenEndedRangeQuantifierConstraintBase : public RegexConstraintTransitionable
+	struct RegexOpenEndedRangeQuantifierConstraintBase : public RegexConstraint
 	{
 		std::vector<UniquePtr<RegexConstraint>> constraints;
 
-		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept final
+		[[nodiscard]] const RegexConstraint* getEntrypoint() const noexcept final
 		{
 			return constraints.at(0)->getEntrypoint();
 		}

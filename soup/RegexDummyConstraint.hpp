@@ -1,12 +1,12 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 namespace soup
 {
-	struct RegexDummyConstraint : public RegexConstraintTransitionable
+	struct RegexDummyConstraint : public RegexConstraint
 	{
-		using RegexConstraintTransitionable::RegexConstraintTransitionable;
+		using RegexConstraint::RegexConstraint;
 
 		[[nodiscard]] size_t getCursorAdvancement() const final
 		{

@@ -1293,9 +1293,6 @@
     <ClInclude Include="RegexGroupConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
-    <ClInclude Include="RegexConstraintTransitionable.hpp">
-      <Filter>data\regex</Filter>
-    </ClInclude>
     <ClInclude Include="RegexMatchedGroup.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>

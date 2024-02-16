@@ -1,13 +1,13 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "RegexGroup.hpp"
 #include "RegexMatcher.hpp"
 
 namespace soup
 {
-	struct RegexNegativeLookaheadConstraint : public RegexConstraintTransitionable
+	struct RegexNegativeLookaheadConstraint : public RegexConstraint
 	{
 		RegexGroup group;
 
@@ -16,7 +16,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept final
+		[[nodiscard]] const RegexConstraint* getEntrypoint() const noexcept final
 		{
 			return group.initial;
 		}

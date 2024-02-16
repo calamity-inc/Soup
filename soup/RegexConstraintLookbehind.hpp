@@ -1,10 +1,10 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 namespace soup
 {
-	struct RegexConstraintLookbehind : public RegexConstraintTransitionable
+	struct RegexConstraintLookbehind : public RegexConstraint
 	{
 		RegexGroup group;
 		size_t window;
@@ -14,7 +14,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept final
+		[[nodiscard]] const RegexConstraint* getEntrypoint() const noexcept final
 		{
 			return group.initial;
 		}

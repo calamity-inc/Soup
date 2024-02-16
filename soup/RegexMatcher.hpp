@@ -14,12 +14,12 @@ namespace soup
 	{
 		struct RollbackPoint
 		{
-			const RegexConstraintTransitionable* c;
+			const RegexConstraint* c;
 			const char* it;
 			std::vector<std::optional<RegexMatchedGroup>> groups{};
 		};
 
-		const RegexConstraintTransitionable* c;
+		const RegexConstraint* c;
 		const char* it;
 		const char* const begin;
 		const char* const end;
@@ -40,7 +40,7 @@ namespace soup
 			groups.clear();
 		}
 
-		void saveRollback(const RegexConstraintTransitionable* rollback_transition)
+		void saveRollback(const RegexConstraint* rollback_transition)
 		{
 			rollback_points.emplace_back(RollbackPoint{ rollback_transition, it, groups });
 		}

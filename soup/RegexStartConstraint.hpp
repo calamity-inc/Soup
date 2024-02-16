@@ -1,13 +1,13 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "RegexMatcher.hpp"
 
 namespace soup
 {
 	template <bool escape_sequence, bool multi_line>
-	struct RegexStartConstraint : public RegexConstraintTransitionable
+	struct RegexStartConstraint : public RegexConstraint
 	{
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{

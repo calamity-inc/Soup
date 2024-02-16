@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "RegexMatcher.hpp"
 

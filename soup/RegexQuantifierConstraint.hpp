@@ -1,13 +1,13 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "UniquePtr.hpp"
 
 namespace soup
 {
 	template <bool at_least_one, bool greedy>
-	struct RegexQuantifierConstraint : public RegexConstraintTransitionable
+	struct RegexQuantifierConstraint : public RegexConstraint
 	{
 		UniquePtr<RegexConstraint> constraint;
 

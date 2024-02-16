@@ -28,15 +28,15 @@ namespace soup
 {
 	struct TransitionsVector
 	{
-		std::vector<const RegexConstraintTransitionable**> data;
-		std::vector<const RegexConstraintTransitionable**> prev_data;
+		std::vector<const RegexConstraint**> data;
+		std::vector<const RegexConstraint**> prev_data;
 
-		void emplace(const RegexConstraintTransitionable** p)
+		void emplace(const RegexConstraint** p)
 		{
 			data.emplace_back(p);
 		}
 
-		void emplaceRollback(const RegexConstraintTransitionable** p)
+		void emplaceRollback(const RegexConstraint** p)
 		{
 			data.emplace_back(p);
 
@@ -44,7 +44,7 @@ namespace soup
 			*reinterpret_cast<uintptr_t*>(p) = 1;
 		}
 
-		void setPreviousTransitionTo(const RegexConstraintTransitionable* c) noexcept
+		void setPreviousTransitionTo(const RegexConstraint* c) noexcept
 		{
 			for (const auto& p : prev_data)
 			{
@@ -52,7 +52,7 @@ namespace soup
 			}
 		}
 
-		void setTransitionTo(const RegexConstraintTransitionable* c, bool save_checkpoint = false) noexcept
+		void setTransitionTo(const RegexConstraint* c, bool save_checkpoint = false) noexcept
 		{
 			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & 1) == 0);
 			if (save_checkpoint)
@@ -68,7 +68,7 @@ namespace soup
 			data.clear();
 		}
 
-		void discharge(std::vector<const RegexConstraintTransitionable**>& outTransitions) noexcept
+		void discharge(std::vector<const RegexConstraint**>& outTransitions) noexcept
 		{
 			for (const auto& p : data)
 			{
@@ -113,7 +113,7 @@ namespace soup
 
 		RegexAlternative a{};
 
-		std::vector<const RegexConstraintTransitionable**> alternatives_transitions{};
+		std::vector<const RegexConstraint**> alternatives_transitions{};
 
 		bool escape = false;
 		for (; s.it != s.end; ++s.it)
@@ -335,12 +335,12 @@ namespace soup
 						}
 
 						// last-lookahead-constraint --[success]-> fail
-						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraintTransitionable*>(0b10));
+						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraint*>(0b10));
 
 						if (upGC->group.initial)
 						{
 							// first-lookahead-constraint --[rollback]-> next-constraint
-							success_transitions.emplaceRollback(&const_cast<RegexConstraintTransitionable*>(upGC->group.initial)->rollback_transition);
+							success_transitions.emplaceRollback(&const_cast<RegexConstraint*>(upGC->group.initial)->rollback_transition);
 						}
 
 						a.constraints.emplace_back(std::move(upGC));
@@ -396,7 +396,7 @@ namespace soup
 
 						// last-lookbehind-constraint --[success]-> fail
 						success_transitions.data = std::move(s.alternatives_transitions);
-						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraintTransitionable*>(0b10));
+						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraint*>(0b10));
 
 						// group --[rollback]--> next-constraint
 						success_transitions.emplaceRollback(&upGC->rollback_transition);
@@ -440,7 +440,7 @@ namespace soup
 					greedy ^= s.hasFlag(RE_UNGREEDY);
 
 					RegexConstraint* pModifiedConstraint;
-					UniquePtr<RegexConstraintTransitionable> upQuantifierConstraint;
+					UniquePtr<RegexConstraint> upQuantifierConstraint;
 					if (greedy)
 					{
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
@@ -492,7 +492,7 @@ namespace soup
 					greedy ^= s.hasFlag(RE_UNGREEDY);
 
 					RegexConstraint* pModifiedConstraint;
-					UniquePtr<RegexConstraintTransitionable> upQuantifierConstraint;
+					UniquePtr<RegexConstraint> upQuantifierConstraint;
 					if (greedy)
 					{
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
@@ -557,7 +557,7 @@ namespace soup
 				}
 				else if (*s.it == '.')
 				{
-					UniquePtr<RegexConstraintTransitionable> upC;
+					UniquePtr<RegexConstraint> upC;
 					if (s.hasFlag(RE_DOTALL))
 					{
 						if (s.hasFlag(RE_UNICODE))
@@ -601,7 +601,7 @@ namespace soup
 				}
 				else if (*s.it == '^')
 				{
-					UniquePtr<RegexConstraintTransitionable> upC;
+					UniquePtr<RegexConstraint> upC;
 					if (s.flags & RE_MULTILINE)
 					{
 						upC = soup::make_unique<RegexStartConstraint<false, true>>();
@@ -618,7 +618,7 @@ namespace soup
 				}
 				else if (*s.it == '$')
 				{
-					UniquePtr<RegexConstraintTransitionable> upC;
+					UniquePtr<RegexConstraint> upC;
 					if (s.flags & RE_MULTILINE)
 					{
 						upC = soup::make_unique<RegexEndConstraint<false, true, false>>();
@@ -863,7 +863,7 @@ namespace soup
 				}
 			}
 
-			UniquePtr<RegexConstraintTransitionable> upC;
+			UniquePtr<RegexConstraint> upC;
 			if (UTF8_HAS_CONTINUATION(*s.it) && s.hasFlag(RE_UNICODE))
 			{
 				std::string c;

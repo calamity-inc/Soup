@@ -1,11 +1,11 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 namespace soup
 {
 	template <bool escape_sequence, bool multi_line, bool end_only>
-	struct RegexEndConstraint : public RegexConstraintTransitionable
+	struct RegexEndConstraint : public RegexConstraint
 	{
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "RegexMatcher.hpp"
 #include "string.hpp"
@@ -8,7 +8,7 @@
 namespace soup
 {
 	template <bool inverted>
-	struct RegexWordBoundaryConstraint : public RegexConstraintTransitionable
+	struct RegexWordBoundaryConstraint : public RegexConstraint
 	{
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{

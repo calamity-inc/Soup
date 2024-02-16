@@ -1,12 +1,12 @@
 #pragma once
 
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 
 #include "RegexMatcher.hpp"
 
 namespace soup
 {
-	struct RegexCodepointConstraint : public RegexConstraintTransitionable
+	struct RegexCodepointConstraint : public RegexConstraint
 	{
 		std::string c;
 

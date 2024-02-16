@@ -1,7 +1,7 @@
 #include "Regex.hpp"
 
 #include "base.hpp"
-#include "RegexConstraintTransitionable.hpp"
+#include "RegexConstraint.hpp"
 #include "RegexMatcher.hpp"
 
 #define REGEX_DEBUG_MATCH false
@@ -110,7 +110,7 @@ namespace soup
 #if REGEX_DEBUG_MATCH
 					std::cout << "saved checkpoint; ";
 #endif
-					m.c = reinterpret_cast<const RegexConstraintTransitionable*>(reinterpret_cast<uintptr_t>(m.c) & ~1);
+					m.c = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(m.c) & ~1);
 					SOUP_ASSERT(m.c != nullptr);
 					m.saveCheckpoint();
 				}
