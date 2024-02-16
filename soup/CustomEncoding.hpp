@@ -22,7 +22,7 @@ namespace soup
 	{
 #if SOUP_CPP20
 		static constexpr const char* ALPHA = AlphaStr.c_str();
-		static inline const Bigint ALPHA_SIZE = (AlphaStr.size() - 1);
+		static inline const Bigint ALPHA_SIZE = AlphaStr.size();
 
 		static inline const auto decodetbl = alpha2decodetbl(AlphaStr.c_str());
 #else
