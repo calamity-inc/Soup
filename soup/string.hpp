@@ -638,6 +638,8 @@ namespace soup
 			return replaceAll<std::wstring>(str, from, to);
 		}
 
+		[[nodiscard]] static std::string escape(const std::string& str);
+
 		template <typename S>
 		static constexpr size_t len(S str) noexcept
 		{
