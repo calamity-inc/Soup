@@ -24,7 +24,7 @@ namespace soup
 
 		virtual ~RegexConstraint() = default;
 
-		[[nodiscard]] virtual const RegexConstraintTransitionable* getTransition() const noexcept = 0;
+		[[nodiscard]] virtual const RegexConstraintTransitionable* getEntrypoint() const noexcept = 0;
 
 		[[nodiscard]] virtual size_t getCursorAdvancement() const
 		{

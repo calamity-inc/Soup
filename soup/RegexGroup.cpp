@@ -462,7 +462,7 @@ namespace soup
 					if (greedy)
 					{
 						// quantifier --[success]-> constraint
-						upQuantifierConstraint->success_transition = pModifiedConstraint->getTransition();
+						upQuantifierConstraint->success_transition = pModifiedConstraint->getEntrypoint();
 
 						// quantifier --[rollback]-> next-constraint
 						success_transitions.emplaceRollback(&upQuantifierConstraint->rollback_transition);
@@ -473,7 +473,7 @@ namespace soup
 						success_transitions.emplace(&upQuantifierConstraint->success_transition);
 
 						// quantifier --[rollback]-> constraint
-						upQuantifierConstraint->rollback_transition = pModifiedConstraint->getTransition();
+						upQuantifierConstraint->rollback_transition = pModifiedConstraint->getEntrypoint();
 					}
 
 					a.constraints.back() = std::move(upQuantifierConstraint);
@@ -517,7 +517,7 @@ namespace soup
 					if (greedy)
 					{
 						// quantifier --[success]-> constraint
-						upQuantifierConstraint->success_transition = pModifiedConstraint->getTransition();
+						upQuantifierConstraint->success_transition = pModifiedConstraint->getEntrypoint();
 
 						// quantifier --[rollback]-> next-constraint
 						success_transitions.emplaceRollback(&upQuantifierConstraint->rollback_transition);
@@ -528,7 +528,7 @@ namespace soup
 						success_transitions.emplace(&upQuantifierConstraint->success_transition);
 
 						// quantifier --[rollback]-> constraint
-						upQuantifierConstraint->rollback_transition = pModifiedConstraint->getTransition();
+						upQuantifierConstraint->rollback_transition = pModifiedConstraint->getEntrypoint();
 					}
 
 					a.constraints.back() = std::move(upQuantifierConstraint);
@@ -546,7 +546,7 @@ namespace soup
 					success_transitions.setPreviousTransitionTo(upOptConstraint.get());
 
 					// opt --[success]-> constraint
-					upOptConstraint->success_transition = pModifiedConstraint->getTransition();
+					upOptConstraint->success_transition = pModifiedConstraint->getEntrypoint();
 
 					// constraint --[success]-> next-constraint
 					// opt --[rollback]-> next-constraint
@@ -696,7 +696,7 @@ namespace soup
 							upClone->group = this;
 
 							// constraint --[success]-> clone
-							success_transitions.setTransitionTo(upClone->getTransition());
+							success_transitions.setTransitionTo(upClone->getEntrypoint());
 
 							// clone --[success]-> whatever-comes-next
 							success_transitions.emplace(&upClone->success_transition);
@@ -724,7 +724,7 @@ namespace soup
 							upClone->group = this;
 
 							// constraint --[success]-> clone
-							success_transitions.setTransitionTo(upClone->getTransition());
+							success_transitions.setTransitionTo(upClone->getEntrypoint());
 
 							// clone --[success]-> whatever-comes-next
 							success_transitions.emplace(&upClone->success_transition);
@@ -738,7 +738,7 @@ namespace soup
 						if (greedy)
 						{
 							// quantifier --[success]-> last-clone
-							upRepConstraint->success_transition = upRepConstraint->constraints.back()->getTransition();
+							upRepConstraint->success_transition = upRepConstraint->constraints.back()->getEntrypoint();
 
 							// quantifier --[rollback]-> next-constraint
 							success_transitions.emplaceRollback(&upRepConstraint->rollback_transition);
@@ -746,7 +746,7 @@ namespace soup
 						else
 						{
 							// quantifier --[rollback]-> last-clone
-							upRepConstraint->rollback_transition = upRepConstraint->constraints.back()->getTransition();
+							upRepConstraint->rollback_transition = upRepConstraint->constraints.back()->getEntrypoint();
 
 							// quantifier --[success]-> next-constraint
 							success_transitions.emplace(&upRepConstraint->success_transition);
@@ -769,7 +769,7 @@ namespace soup
 								upClone->group = this;
 
 								// constraint --[success]-> clone
-								success_transitions.setTransitionTo(upClone->getTransition());
+								success_transitions.setTransitionTo(upClone->getEntrypoint());
 
 								// clone --[success]-> whatever-comes-next
 								success_transitions.emplace(&upClone->success_transition);
@@ -784,7 +784,7 @@ namespace soup
 								upClone->group = this;
 
 								// constraint --[success]-> clone
-								rep_transitions.setTransitionTo(upClone->getTransition());
+								rep_transitions.setTransitionTo(upClone->getEntrypoint());
 
 								// clone --[success]-> next-clone
 								rep_transitions.emplace(&upClone->success_transition);
@@ -813,7 +813,7 @@ namespace soup
 								upClone->group = this;
 
 								// constraint --[success]-> clone
-								success_transitions.setTransitionTo(upClone->getTransition());
+								success_transitions.setTransitionTo(upClone->getEntrypoint());
 
 								// clone --[success]-> whatever-comes-next
 								success_transitions.emplace(&upClone->success_transition);
@@ -831,13 +831,13 @@ namespace soup
 								auto upDummy = soup::make_unique<RegexDummyConstraint>();
 
 								// last-constraint --[success]-> dummy
-								rep_transitions.setTransitionTo(upDummy->getTransition());
+								rep_transitions.setTransitionTo(upDummy->getEntrypoint());
 
 								// dummy --[success]-> next-constraint
 								success_transitions.emplace(&upDummy->success_transition);
 
 								// dummy --[rollback]-> clone
-								upDummy->rollback_transition = upClone->getTransition();
+								upDummy->rollback_transition = upClone->getEntrypoint();
 
 								// clone --[success]-> next-dummy
 								rep_transitions.emplace(&upClone->success_transition);
@@ -895,7 +895,7 @@ namespace soup
 			// Set up rollback transitions for the first constraint in each alternative to jump to next alternative
 			for (size_t i = 0; i + 1 != alternatives.size(); ++i)
 			{
-				alternatives.at(i).constraints.at(0)->rollback_transition = alternatives.at(i + 1).constraints.at(0)->getTransition();
+				alternatives.at(i).constraints.at(0)->rollback_transition = alternatives.at(i + 1).constraints.at(0)->getEntrypoint();
 			}
 		}
 

@@ -6,7 +6,7 @@ namespace soup
 {
 	struct RegexConstraintTransitionable : public RegexConstraint
 	{
-		[[nodiscard]] const RegexConstraintTransitionable* getTransition() const noexcept override
+		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept override
 		{
 			return this;
 		}

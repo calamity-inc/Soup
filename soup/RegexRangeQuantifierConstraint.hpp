@@ -13,9 +13,9 @@ namespace soup
 		std::vector<UniquePtr<RegexConstraint>> constraints;
 		size_t min_reps;
 
-		[[nodiscard]] const RegexConstraintTransitionable* getTransition() const noexcept final
+		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept final
 		{
-			return constraints.at(0)->getTransition();
+			return constraints.at(0)->getEntrypoint();
 		}
 
 		[[nodiscard]] size_t getCursorAdvancement() const final

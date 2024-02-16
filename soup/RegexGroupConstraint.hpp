@@ -15,7 +15,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] const RegexConstraintTransitionable* getTransition() const noexcept final
+		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept final
 		{
 			return data.initial;
 		}

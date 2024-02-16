@@ -12,9 +12,9 @@ namespace soup
 	{
 		std::vector<UniquePtr<RegexConstraint>> constraints;
 
-		[[nodiscard]] const RegexConstraintTransitionable* getTransition() const noexcept final
+		[[nodiscard]] const RegexConstraintTransitionable* getEntrypoint() const noexcept final
 		{
-			return constraints.at(0)->getTransition();
+			return constraints.at(0)->getEntrypoint();
 		}
 
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
