@@ -99,6 +99,8 @@ namespace soup
 			upClone->data.name = data.name;
 			upClone->data.lookahead_or_lookbehind = data.lookahead_or_lookbehind;
 
+			upClone->data.alternatives.back().constraints.back()->success_transition = upClone.get();
+
 			return upClone;
 		}
 	};
