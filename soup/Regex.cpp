@@ -239,7 +239,14 @@ namespace soup
 	[[nodiscard]] static std::string node_to_graphviz_dot_string(const RegexConstraint* node)
 	{
 		std::stringstream ss;
-		ss << node->toString();
+		if (auto str = node->toString(); !str.empty())
+		{
+			ss << std::move(str);
+		}
+		else
+		{
+			ss << "dummy";
+		}
 		ss << " (";
 		ss << (void*)node;
 		ss << ')';
