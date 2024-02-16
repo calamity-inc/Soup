@@ -103,12 +103,6 @@ namespace soup
 		}
 
 		template <typename Int>
-		[[deprecated]] static std::string hex_lower(Int i)
-		{
-			return hexLower(i);
-		}
-
-		template <typename Int>
 		[[nodiscard]] static std::string hexLower(Int i)
 		{
 			return fromIntWithMap<std::string, Int, 16>(i, charset_hex_lower);
@@ -604,22 +598,6 @@ namespace soup
 		}
 
 		// string mutation
-
-		template <class S>
-		[[deprecated]] static void replace_all(S& str, const S& from, const S& to) noexcept
-		{
-			replaceAll(str, from, to);
-		}
-
-		[[deprecated]] static void replace_all(std::string& str, const std::string& from, const std::string& to) noexcept
-		{
-			return replaceAll<std::string>(str, from, to);
-		}
-
-		[[deprecated]] static void replace_all(std::wstring& str, const std::wstring& from, const std::wstring& to) noexcept
-		{
-			return replaceAll<std::wstring>(str, from, to);
-		}
 
 		template <class S>
 		static void replaceAll(S& str, const S& from, const S& to) noexcept
