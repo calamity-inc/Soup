@@ -717,6 +717,8 @@ spanning over multiple lines */
 		assert(Regex("(..)+").match("abc").toString() == R"(0="ab", 1="ab")");
 		assert(Regex("(..)+").match("abcd").toString() == R"(0="abcd", 1="cd")");
 
+		assert(Regex("(..){2}").match("abcdef").toString() == R"(0="abcd", 1="cd")");
+
 		assert(Regex("[a-z]{3,}?").match("abcdef").toString() == R"(0="abc")");
 		assert(Regex("[a-z]{3,}?$").match("abcdef").toString() == R"(0="abcdef")");
 
