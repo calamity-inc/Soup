@@ -913,7 +913,7 @@ namespace soup
 		s.alternatives_transitions = std::move(alternatives_transitions);
 	}
 
-	std::string RegexGroup::toString() const noexcept
+	std::string RegexGroup::toString() const SOUP_EXCAL
 	{
 		std::string str{};
 		for (const auto& a : alternatives)

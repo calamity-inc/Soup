@@ -1,8 +1,12 @@
 #include "Regex.hpp"
 
+#include <sstream>
+#include <unordered_set>
+
 #include "base.hpp"
 #include "RegexConstraint.hpp"
 #include "RegexMatcher.hpp"
+#include "string.hpp"
 
 #define REGEX_DEBUG_MATCH false
 
@@ -230,5 +234,115 @@ namespace soup
 			str.push_back('n');
 		}
 		return str;
+	}
+
+	[[nodiscard]] static std::string node_to_graphviz_dot_string(const RegexConstraint* node)
+	{
+		std::stringstream ss;
+		ss << node->toString();
+		ss << " (";
+		ss << (void*)node;
+		ss << ')';
+
+		return string::escape(ss.str());
+	}
+
+	static void add_success_node(std::stringstream& ss, std::unordered_set<const RegexConstraint*>& mapped_nodes)
+	{
+		if (mapped_nodes.count(reinterpret_cast<const RegexConstraint*>(1)) == 0)
+		{
+			mapped_nodes.emplace(reinterpret_cast<const RegexConstraint*>(1));
+			ss << R"("success" [shape="diamond"];)" << '\n';
+		}
+	}
+
+	static void add_fail_node(std::stringstream& ss, std::unordered_set<const RegexConstraint*>& mapped_nodes)
+	{
+		if (mapped_nodes.count(reinterpret_cast<const RegexConstraint*>(2)) == 0)
+		{
+			mapped_nodes.emplace(reinterpret_cast<const RegexConstraint*>(2));
+			ss << R"("fail" [shape="diamond"];)" << '\n';
+		}
+	}
+
+	static void node_to_graphviz_dot(std::stringstream& ss, std::unordered_set<const RegexConstraint*>& mapped_nodes, const RegexConstraint* node)
+	{
+		if (mapped_nodes.count(node) != 0)
+		{
+			return;
+		}
+		mapped_nodes.emplace(node);
+
+		ss << node_to_graphviz_dot_string(node);
+		ss << R"( [shape="rect"];)";
+		ss << '\n';
+
+		if (reinterpret_cast<uintptr_t>(node->success_transition) > 0b10)
+		{
+			node_to_graphviz_dot(ss, mapped_nodes, node->success_transition);
+
+			ss << node_to_graphviz_dot_string(node);
+			ss << " -> ";
+			ss << node_to_graphviz_dot_string(node->success_transition);
+			ss << R"( [label="success"];)";
+			ss << '\n';
+		}
+		else if (reinterpret_cast<uintptr_t>(node->success_transition) == 0b10)
+		{
+			add_fail_node(ss, mapped_nodes);
+
+			ss << node_to_graphviz_dot_string(node);
+			ss << " -> ";
+			ss << R"("fail")";
+			ss << R"( [label="success"];)";
+			ss << '\n';
+		}
+		else
+		{
+			add_success_node(ss, mapped_nodes);
+
+			ss << node_to_graphviz_dot_string(node);
+			ss << " -> ";
+			ss << R"("success")";
+			ss << R"( [label="success"];)";
+			ss << '\n';
+		}
+
+		if (node->rollback_transition)
+		{
+			if (reinterpret_cast<uintptr_t>(node->rollback_transition) > 1)
+			{
+				node_to_graphviz_dot(ss, mapped_nodes, node->rollback_transition);
+
+				ss << node_to_graphviz_dot_string(node);
+				ss << " -> ";
+				ss << node_to_graphviz_dot_string(node->rollback_transition);
+				ss << R"( [label="rollback"];)";
+				ss << '\n';
+			}
+			else
+			{
+				add_success_node(ss, mapped_nodes);
+
+				ss << node_to_graphviz_dot_string(node);
+				ss << " -> ";
+				ss << R"("success")";
+				ss << R"( [label="rollback"];)";
+				ss << '\n';
+			}
+		}
+	}
+
+	std::string Regex::toGraphvizDot() const SOUP_EXCAL
+	{
+		std::stringstream ss;
+		std::unordered_set<const RegexConstraint*> mapped_nodes{};
+
+		ss << "digraph {\n";
+		ss << "label=" << string::escape(toFullString()) << ";\n";
+		node_to_graphviz_dot(ss, mapped_nodes, group.initial);
+		ss << '}';
+
+		return ss.str();
 	}
 }

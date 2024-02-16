@@ -48,12 +48,12 @@ namespace soup
 
 		void replaceAll(std::string& str, const std::string& replacement) const;
 
-		[[nodiscard]] std::string toString() const noexcept
+		[[nodiscard]] std::string toString() const SOUP_EXCAL
 		{
 			return group.toString();
 		}
 
-		[[nodiscard]] std::string toFullString() const noexcept
+		[[nodiscard]] std::string toFullString() const SOUP_EXCAL
 		{
 			std::string str(1, '/');
 			str.append(toString());
@@ -110,6 +110,9 @@ namespace soup
 		}
 
 		[[nodiscard]] static std::string unparseFlags(uint16_t flags);
+
+		// Result can be used with 'dot' via CLI to produce an image, or an online viewer such as https://dreampuf.github.io/GraphvizOnline/
+		[[nodiscard]] std::string toGraphvizDot() const SOUP_EXCAL;
 	};
 
 	namespace literals

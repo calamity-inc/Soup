@@ -52,7 +52,7 @@ namespace soup
 			return index == -1;
 		}
 
-		[[nodiscard]] std::string toString() const noexcept;
+		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 
 		[[nodiscard]] uint16_t getFlags() const;
 		void getFlags(uint16_t& set, uint16_t& unset) const noexcept;
