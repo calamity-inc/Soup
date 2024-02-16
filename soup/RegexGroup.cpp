@@ -790,7 +790,7 @@ namespace soup
 								rep_transitions.emplace(&upClone->success_transition);
 
 								// clone --[rollback]-> next-constraint
-								success_transitions.emplaceRollback(&upClone->rollback_transition);
+								success_transitions.emplaceRollback(&const_cast<RegexConstraint*>(upClone->getEntrypoint())->rollback_transition);
 
 								upRepConstraint->constraints.emplace_back(std::move(upClone));
 							}
