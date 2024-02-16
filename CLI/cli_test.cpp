@@ -611,6 +611,12 @@ spanning over multiple lines */
 		assert(Regex("A?BC").matches("ABC") == true);
 		assert(Regex("A?BC").matches("DBC") == false);
 
+		assert(Regex("az?b").toString() == "az?b");
+		assert(Regex("az?b").matchesFully("ab") == true);
+		assert(Regex("az?b").matchesFully("azb") == true);
+		assert(Regex("a(bc)?b").matchesFully("ab") == true);
+		assert(Regex("a(bc)?b").matchesFully("abcb") == true);
+
 		assert(Regex("").match("ABC").toString() == R"(0="")");
 
 		assert(Regex("AB*C").matchesFully("AC") == true);

@@ -542,15 +542,8 @@ namespace soup
 
 					pModifiedConstraint->group = this;
 
-					// prev-constraint --[success]-> opt
-					success_transitions.setPreviousTransitionTo(upOptConstraint.get());
-
-					// opt --[success]-> constraint
-					upOptConstraint->success_transition = pModifiedConstraint->getEntrypoint();
-
-					// constraint --[success]-> next-constraint
-					// opt --[rollback]-> next-constraint
-					success_transitions.emplaceRollback(&upOptConstraint->rollback_transition);
+					// constraint --[rollback]-> next-constraint
+					success_transitions.emplaceRollback(&const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->rollback_transition);
 
 					a.constraints.back() = std::move(upOptConstraint);
 					continue;
