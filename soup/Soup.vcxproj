@@ -495,6 +495,7 @@
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
     <ClInclude Include="csv.hpp" />
+    <ClInclude Include="cursed.hpp" />
     <ClInclude Include="DetourHook.hpp" />
     <ClInclude Include="dhcp.hpp" />
     <ClInclude Include="DhcpMessage.hpp" />

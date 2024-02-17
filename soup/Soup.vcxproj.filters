@@ -1578,6 +1578,9 @@
     <ClInclude Include="TlsSignatureScheme.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
+    <ClInclude Include="cursed.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
