@@ -619,7 +619,7 @@ namespace soup
 								{
 									if (ske.params.point.size() != Curve25519::KEY_SIZE)
 									{
-										s.tls_close(TlsAlertDescription::handshake_failure);
+										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
 									}
 								}
@@ -629,7 +629,7 @@ namespace soup
 										|| ske.params.point.at(0) != 4
 										)
 									{
-										s.tls_close(TlsAlertDescription::handshake_failure);
+										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
 									}
 								}
@@ -639,13 +639,13 @@ namespace soup
 										|| ske.params.point.at(0) != 4
 										)
 									{
-										s.tls_close(TlsAlertDescription::handshake_failure);
+										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
 									}
 								}
 								else
 								{
-									s.tls_close(TlsAlertDescription::handshake_failure);
+									s.tls_close(TlsAlertDescription::illegal_parameter);
 									return;
 								}
 								handshaker->ecdhe_curve = ske.params.named_curve;
@@ -672,14 +672,14 @@ namespace soup
 										{
 											if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha256>(msg, cap.signature))
 											{
-												cap.s.tls_close(TlsAlertDescription::handshake_failure);
+												cap.s.tls_close(TlsAlertDescription::decrypt_error);
 											}
 										}
 										else
 										{
 											if (!cap.handshaker->certchain.certs.at(0).verifySignature<soup::sha1>(msg, cap.signature))
 											{
-												cap.s.tls_close(TlsAlertDescription::handshake_failure);
+												cap.s.tls_close(TlsAlertDescription::decrypt_error);
 											}
 										}
 									}, CaptureValidateSke{
@@ -956,7 +956,7 @@ namespace soup
 				handshaker->cert_selector(handshaker->rsa_data, server_name);
 				if (handshaker->rsa_data.der_encoded_certchain.empty())
 				{
-					s.tls_close(TlsAlertDescription::handshake_failure);
+					s.tls_close(TlsAlertDescription::internal_error);
 					return;
 				}
 
