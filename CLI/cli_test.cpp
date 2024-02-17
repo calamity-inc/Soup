@@ -18,6 +18,8 @@
 #include <ripemd160.hpp>
 #include <sha1.hpp>
 #include <sha256.hpp>
+#include <sha384.hpp>
+#include <sha512.hpp>
 #include <unicode.hpp>
 
 #include <json.hpp>
@@ -469,6 +471,15 @@ static void unit_data()
 			"\xa0\xba\x9f\x93\x6c\xda\x31\x18\x27\xa6\xf7\x96\xff\xd5\x19\x8c")
 			== std::string("\xe3\xf2\x29\xba\x72\x7b\xe1\x7b\x8d\x12\x26\x20\x55\x7c\xd4\x53\xc2\xaa\xb2\x1d\x07\xc3\xd4\x95\x32\x9b\x52\xd4\xe6\x1e\xdb\x5a\x6b\x30\x17\x91\xe9\x0d\x35\xc9\xc9\xa4\x6b\x4e\x14\xba\xf9\xaf\x0f\xa0\x22\xf7\x07\x7d\xef\x17\xab\xfd\x37\x97\xc0\x56\x4b\xab\x4f\xbc\x91\x66\x6e\x9d\xef\x9b\x97\xfc\xe3\x4f\x79\x67\x89\xba\xa4\x80\x82\xd1\x22\xee\x42\xc5\xa7\x2e\x5a\x51\x10\xff\xf7\x01\x87\x34\x7b\x66", 100)
 		);
+	});
+
+	test("sha512 & sha384", []
+	{
+		assert(string::bin2hex(sha512::hash("Deez")) == "9CACE758CF2AF8556F3DCFC60B1D54017D3FE9A095F78060A1DA6011662C3C652BD9914E5AB1C3A17A8619D549A99F56A251FDCC24DCC3EDB1E9CE99D3E0E623");
+		assert(string::bin2hex(sha512::hash(std::string(1000, 'a'))) == "67BA5535A46E3F86DBFBED8CBBAF0125C76ED549FF8B0B9E03E0C88CF90FA634FA7B12B47D77B694DE488ACE8D9A65967DC96DF599727D3292A8D9D447709C97");
+
+		assert(string::bin2hex(sha384::hash("Deez")) == "7844EE01401FC28076539A250ED344F945AE1E4253F12DA35D22C2068C06891DEA9C95E56099ED075EF8F2F56816B52B");
+		assert(string::bin2hex(sha384::hash(std::string(1000, 'a'))) == "F54480689C6B0B11D0303285D9A81B21A93BCA6BA5A1B4472765DCA4DA45EE328082D469C650CD3B61B16D3266AB8CED");
 	});
 
 	test("json", []

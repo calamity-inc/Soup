@@ -579,6 +579,8 @@
     <ClInclude Include="RegexWordCharConstraint.hpp" />
     <ClInclude Include="SelfDeletingThread.hpp" />
     <ClInclude Include="ServerServiceUdp.hpp" />
+    <ClInclude Include="sha384.hpp" />
+    <ClInclude Include="sha512.hpp" />
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="StringPool.hpp" />
     <ClInclude Include="Sudoku.hpp" />
@@ -1068,6 +1070,8 @@
     <ClCompile Include="Rgba.cpp" />
     <ClCompile Include="RgbaCanvas.cpp" />
     <ClCompile Include="SelfDeletingThread.cpp" />
+    <ClCompile Include="sha384.cpp" />
+    <ClCompile Include="sha512.cpp" />
     <ClCompile Include="soup.cpp" />
     <ClCompile Include="spaceship.cpp" />
     <ClCompile Include="Sudoku.cpp" />
