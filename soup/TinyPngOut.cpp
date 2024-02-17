@@ -128,7 +128,7 @@ namespace soup
 					n = std::min(n, static_cast<decltype(n)>(std::numeric_limits<size_t>::max()));
 				}
 				assert(n > 0);
-				output.write(reinterpret_cast<const char*>(pixels), static_cast<size_t>(n));
+				output.raw(const_cast<uint8_t*>(pixels), static_cast<size_t>(n));
 
 				// Update checksums
 				updateCrc(pixels, n);

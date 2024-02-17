@@ -34,9 +34,10 @@ namespace soup
 
 		~FileWriter() final = default;
 
-		void write(const char* data, size_t size) final
+		bool raw(void* data, size_t size) final
 		{
-			s.write(data, size);
+			s.write(reinterpret_cast<char*>(data), size);
+			return true;
 		}
 	};
 }

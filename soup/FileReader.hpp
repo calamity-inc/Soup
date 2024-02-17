@@ -39,21 +39,12 @@ namespace soup
 			return s.peek() != EOF;
 		}
 
-		bool u8(uint8_t& v) final
+		bool raw(void* data, size_t len) final
 		{
-			s.read((char*)&v, sizeof(uint8_t));
+			s.read(reinterpret_cast<char*>(data), len);
 			return !s.bad() && !s.eof() && s.is_open();
 		}
 
-	protected:
-		bool str_impl(std::string& v, size_t len) final
-		{
-			v = std::string(len, 0);
-			s.read(v.data(), len);
-			return !s.bad();
-		}
-
-	public:
 		bool getLine(std::string& line) noexcept final
 		{
 			if (ioSeekableReader::getLine(line))

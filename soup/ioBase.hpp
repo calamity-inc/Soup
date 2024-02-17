@@ -60,6 +60,8 @@ namespace soup
 			return true;
 		}
 
+		virtual bool raw(void* data, size_t len) = 0;
+
 		bool b(bool& v)
 		{
 			return u8(*(uint8_t*)&v);
@@ -70,7 +72,10 @@ namespace soup
 			return u8(*(uint8_t*)&v);
 		}
 
-		virtual bool u8(uint8_t& v) = 0;
+		bool u8(uint8_t& v)
+		{
+			return raw(&v, sizeof(uint8_t));
+		}
 
 		bool u16(uint16_t& v)
 		{

@@ -67,7 +67,7 @@ namespace soup
 		template <size_t N>
 		void write(const uint8_t(&data)[N])
 		{
-			output.write(reinterpret_cast<const char*>(data), sizeof(data));
+			output.raw(const_cast<char*>(reinterpret_cast<const char*>(data)), sizeof(data));
 		}
 
 		static void putBigUint32(uint32_t val, uint8_t arr[4]);
