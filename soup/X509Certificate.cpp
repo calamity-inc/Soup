@@ -1,12 +1,12 @@
 #include "X509Certificate.hpp"
 
-#include <cstring> // memcmp
-
 #include "Asn1Type.hpp"
 #include "IpAddr.hpp"
 #include "joaat.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
+#include "sha384.hpp"
+#include "sha512.hpp"
 #include "string.hpp"
 
 namespace soup
@@ -177,20 +177,6 @@ namespace soup
 		key = EccPoint{ std::move(pub.n), std::move(pub.e) };
 	}
 
-	bool X509Certificate::canBeVerified() const noexcept
-	{
-		switch (sig_type)
-		{
-		case RSA_WITH_SHA1:
-		case RSA_WITH_SHA256:
-		case ECDSA_WITH_SHA256:
-			return true;
-
-		default:;
-		}
-		return false;
-	}
-
 	bool X509Certificate::verify(const X509Certificate& issuer) const SOUP_EXCAL
 	{
 		switch (sig_type)
@@ -210,10 +196,20 @@ namespace soup
 				&& issuer.verifySignature<soup::sha256>(tbsCertDer, sig)
 				;
 
-			// TODO: Implement SHA384 & SHA512
-		case RSA_WITH_SHA384: return issuer.isRsa();
-		case RSA_WITH_SHA512: return issuer.isRsa();
-		case ECDSA_WITH_SHA384: return issuer.isEc();
+		case RSA_WITH_SHA384:
+			return issuer.isRsa()
+				&& issuer.verifySignature<soup::sha384>(tbsCertDer, sig)
+				;
+
+		case RSA_WITH_SHA512:
+			return issuer.isRsa()
+				&& issuer.verifySignature<soup::sha512>(tbsCertDer, sig)
+				;
+
+		case ECDSA_WITH_SHA384:
+			return issuer.isEc()
+				&& issuer.verifySignature<soup::sha384>(tbsCertDer, sig)
+				;
 
 		case UNK_WITH_UNK:;
 		}

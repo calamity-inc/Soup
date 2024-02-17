@@ -336,17 +336,10 @@ namespace soup
 		return true;
 	}
 
-	bool Socket::certchain_validator_relaxed(const X509Certchain& chain, const std::string& domain, StructMap&) SOUP_EXCAL
+	bool Socket::certchain_validator_default(const X509Certchain& chain, const std::string& domain, StructMap&) SOUP_EXCAL
 	{
 		return chain.certs.at(0).valid_to >= time::unixSeconds()
 			&& chain.verify(domain, TrustStore::fromMozilla())
-			;
-	}
-
-	bool Socket::certchain_validator_strict(const X509Certchain& chain, const std::string& domain, StructMap& custom_data) SOUP_EXCAL
-	{
-		return chain.canBeVerified()
-			&& certchain_validator_relaxed(chain, domain, custom_data)
 			;
 	}
 

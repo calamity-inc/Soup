@@ -47,7 +47,6 @@ namespace soup
 		void setRsaPublicKey(Bigint n, Bigint e) noexcept;
 		void setRsaPublicKey(RsaPublicKey pub) noexcept;
 
-		[[nodiscard]] bool canBeVerified() const noexcept;
 		[[nodiscard]] bool verify(const X509Certificate& issuer) const SOUP_EXCAL;
 
 		[[nodiscard]] bool isValidForDomain(const std::string& domain) const SOUP_EXCAL;
