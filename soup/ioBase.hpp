@@ -74,8 +74,29 @@ namespace soup
 
 		bool u8(uint8_t& v)
 		{
-			return raw(&v, sizeof(uint8_t));
+			return raw(&v, sizeof(v));
 		}
+	};
+
+	template <bool is_read>
+	class ioBase : public ioVirtualBase
+	{
+	protected:
+		using ioVirtualBase::ioVirtualBase;
+
+	public:
+		[[nodiscard]] static constexpr bool isRead()
+		{
+			return is_read;
+		}
+
+		[[nodiscard]] static constexpr bool isWrite()
+		{
+			return !isRead();
+		}
+
+		template <typename T>
+		bool ser(T& v);
 
 		bool u16(uint16_t& v)
 		{
@@ -97,13 +118,21 @@ namespace soup
 		{
 			if (native_endianness)
 			{
-				return u8(((uint8_t*)&v)[0])
-					&& u8(((uint8_t*)&v)[1]);
+				return raw(&v, sizeof(v));
 			}
 			else
 			{
-				return u8(((uint8_t*)&v)[1])
-					&& u8(((uint8_t*)&v)[0]);
+				if constexpr (is_read)
+				{
+					return raw(&v, sizeof(v))
+						&& (v = Endianness::invert(v), true)
+						;
+				}
+				else
+				{
+					auto tmp = Endianness::invert(v);
+					return raw(&tmp, sizeof(v));
+				}
 			}
 		}
 
@@ -128,17 +157,21 @@ namespace soup
 		{
 			if (native_endianness)
 			{
-				return u8(((uint8_t*)&v)[0])
-					&& u8(((uint8_t*)&v)[1])
-					&& u8(((uint8_t*)&v)[2])
-					&& u8(((uint8_t*)&v)[3]);
+				return raw(&v, sizeof(v));
 			}
 			else
 			{
-				return u8(((uint8_t*)&v)[3])
-					&& u8(((uint8_t*)&v)[2])
-					&& u8(((uint8_t*)&v)[1])
-					&& u8(((uint8_t*)&v)[0]);
+				if constexpr (is_read)
+				{
+					return raw(&v, sizeof(v))
+						&& (v = Endianness::invert(v), true)
+						;
+				}
+				else
+				{
+					auto tmp = Endianness::invert(v);
+					return raw(&tmp, sizeof(v));
+				}
 			}
 		}
 
@@ -161,54 +194,24 @@ namespace soup
 	protected:
 		bool u64(uint64_t& v, bool native_endianness)
 		{
-#if true
 			if (native_endianness)
 			{
-				return u8(((uint8_t*)&v)[0])
-					&& u8(((uint8_t*)&v)[1])
-					&& u8(((uint8_t*)&v)[2])
-					&& u8(((uint8_t*)&v)[3])
-					&& u8(((uint8_t*)&v)[4])
-					&& u8(((uint8_t*)&v)[5])
-					&& u8(((uint8_t*)&v)[6])
-					&& u8(((uint8_t*)&v)[7]);
+				return raw(&v, sizeof(v));
 			}
 			else
 			{
-				return u8(((uint8_t*)&v)[7])
-					&& u8(((uint8_t*)&v)[6])
-					&& u8(((uint8_t*)&v)[5])
-					&& u8(((uint8_t*)&v)[4])
-					&& u8(((uint8_t*)&v)[3])
-					&& u8(((uint8_t*)&v)[2])
-					&& u8(((uint8_t*)&v)[1])
-					&& u8(((uint8_t*)&v)[0]);
+				if constexpr (is_read)
+				{
+					return raw(&v, sizeof(v))
+						&& (v = Endianness::invert(v), true)
+						;
+				}
+				else
+				{
+					auto tmp = Endianness::invert(v);
+					return raw(&tmp, sizeof(v));
+				}
 			}
-#else
-			uint8_t tmp;
-			if (isLittleEndian())
-			{
-				return u8((tmp = v >> 0, tmp))
-					&& u8((tmp = v >> 8, tmp))
-					&& u8((tmp = v >> 16, tmp))
-					&& u8((tmp = v >> 24, tmp))
-					&& u8((tmp = v >> 32, tmp))
-					&& u8((tmp = v >> 40, tmp))
-					&& u8((tmp = v >> 48, tmp))
-					&& u8((tmp = v >> 56, tmp));
-			}
-			else
-			{
-				return u8((tmp = v >> 56, tmp))
-					&& u8((tmp = v >> 48, tmp))
-					&& u8((tmp = v >> 40, tmp))
-					&& u8((tmp = v >> 32, tmp))
-					&& u8((tmp = v >> 24, tmp))
-					&& u8((tmp = v >> 16, tmp))
-					&& u8((tmp = v >> 8, tmp))
-					&& u8((tmp = v >> 0, tmp));
-			}
-#endif
 		}
 
 	public:
@@ -231,27 +234,6 @@ namespace soup
 		{
 			return u64(*(uint64_t*)&v);
 		}
-	};
-
-	template <bool is_read>
-	class ioBase : public ioVirtualBase
-	{
-	protected:
-		using ioVirtualBase::ioVirtualBase;
-
-	public:
-		[[nodiscard]] static constexpr bool isRead()
-		{
-			return is_read;
-		}
-
-		[[nodiscard]] static constexpr bool isWrite()
-		{
-			return !isRead();
-		}
-
-		template <typename T>
-		bool ser(T& v);
 
 		bool u24(uint32_t& v)
 		{
