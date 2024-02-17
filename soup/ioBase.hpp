@@ -55,11 +55,6 @@ namespace soup
 
 		virtual ~ioVirtualBase() = default;
 
-		[[nodiscard]] virtual bool hasMore()
-		{
-			return true;
-		}
-
 		virtual bool raw(void* data, size_t len) = 0;
 
 		bool b(bool& v)
