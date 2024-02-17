@@ -720,8 +720,6 @@
     <ClInclude Include="TinyPngOut.hpp" />
     <ClInclude Include="TreeReader.hpp" />
     <ClInclude Include="tridText.hpp" />
-    <ClInclude Include="VectorReader.hpp" />
-    <ClInclude Include="VectorWriter.hpp" />
     <ClInclude Include="version_compare.hpp" />
     <ClInclude Include="WavFmtChunk.hpp" />
     <ClInclude Include="wooting_enums.hpp" />

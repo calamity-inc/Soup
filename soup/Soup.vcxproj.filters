@@ -971,9 +971,6 @@
     <ClInclude Include="LcgRng.hpp">
       <Filter>algos\rng</Filter>
     </ClInclude>
-    <ClInclude Include="VectorReader.hpp">
-      <Filter>io\stream</Filter>
-    </ClInclude>
     <ClInclude Include="TaskGuard.hpp">
       <Filter>task</Filter>
     </ClInclude>
@@ -981,9 +978,6 @@
       <Filter>data\container</Filter>
     </ClInclude>
     <ClInclude Include="BufferRefWriter.hpp">
-      <Filter>io\stream</Filter>
-    </ClInclude>
-    <ClInclude Include="VectorWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
     <ClInclude Include="BufferWriter.hpp">
