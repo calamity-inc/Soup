@@ -187,7 +187,7 @@ namespace soup
 			m_size = 0;
 		}
 
-		void reset() noexcept
+		/*void reset() noexcept
 		{
 			clear();
 			if (m_capacity != 0)
@@ -196,7 +196,7 @@ namespace soup
 				::free(m_data);
 				m_data = nullptr;
 			}
-		}
+		}*/
 
 	protected:
 		void free() noexcept
