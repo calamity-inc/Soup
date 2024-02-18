@@ -122,7 +122,7 @@ namespace soup
 			{
 				m_capacity = m_size + elms;
 				auto data = reinterpret_cast<T*>(malloc(m_capacity * sizeof(T)));
-				memmove(&data[elms], &m_data[0], m_size * sizeof(T));
+				memcpy(&data[elms], &m_data[0], m_size * sizeof(T));
 				memset(&data[0], 0, elms * sizeof(T));
 				m_data = data;
 				m_size = m_capacity;
