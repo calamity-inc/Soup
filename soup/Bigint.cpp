@@ -1905,7 +1905,9 @@ namespace soup
 
 	Bigint Bigint::montgomeryReduce(const Bigint& r, const Bigint& m, const Bigint& m_mod_mul_inv) const
 	{
-		auto q = (modUnsignedPowerof2(r) * m_mod_mul_inv).modUnsignedPowerof2(r);
+		const auto r_mask = r - Bigint((chunk_t)1u);
+		auto q = ((*this & r_mask) * m_mod_mul_inv);
+		q &= r_mask;
 		auto a = (*this - q * m) / r;
 		if (a.negative)
 		{
@@ -1916,7 +1918,9 @@ namespace soup
 
 	Bigint Bigint::montgomeryReduce(const Bigint& r, size_t re, const Bigint& m, const Bigint& m_mod_mul_inv) const SOUP_EXCAL
 	{
-		auto q = (modUnsignedPowerof2(r) * m_mod_mul_inv).modUnsignedPowerof2(r);
+		const auto r_mask = r - Bigint((chunk_t)1u);
+		auto q = ((*this & r_mask) * m_mod_mul_inv);
+		q &= r_mask;
 		auto a = (*this - q * m);
 		a >>= re;
 		if (a.negative)
