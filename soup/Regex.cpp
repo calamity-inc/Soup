@@ -16,6 +16,20 @@
 
 namespace soup
 {
+	Regex Regex::fromFullString(const std::string& str)
+	{
+		if (str.length() >= 2)
+		{
+			const char c = str.at(0);
+			const auto i = str.find_last_of(c);
+			if (i > 0)
+			{
+				return Regex(str.c_str() + 1, str.c_str() + i, parseFlags(str.c_str() + i + 1));
+			}
+		}
+		return {};
+	}
+
 	bool Regex::matches(const std::string& str) const noexcept
 	{
 		return matches(str.data(), &str.data()[str.size()]);

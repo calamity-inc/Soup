@@ -30,7 +30,10 @@ namespace soup
 		{
 		}
 
+		Regex() = default;
 		Regex(Regex&&) = default;
+
+		[[nodiscard]] static Regex fromFullString(const std::string& str);
 
 		[[nodiscard]] bool matches(const std::string& str) const noexcept;
 		[[nodiscard]] bool matches(const char* it, const char* end) const noexcept;

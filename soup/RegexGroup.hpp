@@ -35,6 +35,8 @@ namespace soup
 		std::string name{};
 		bool lookahead_or_lookbehind = false;
 
+		RegexGroup() = default;
+
 		RegexGroup(size_t index)
 			: index(index)
 		{
