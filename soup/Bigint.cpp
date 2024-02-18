@@ -1016,6 +1016,7 @@ namespace soup
 
 	void Bigint::leftShiftOne() SOUP_EXCAL
 	{
+		// Could potentially leverage _mm_slli_si128 which takes an immediate operand for the shift count.
 		leftShiftSmall(1);
 	}
 
