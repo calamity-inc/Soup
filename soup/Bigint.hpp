@@ -184,10 +184,7 @@ namespace soup
 		SOUP_FORCEINLINE void leftShiftSmall(const unsigned int b) SOUP_EXCAL;
 		SOUP_FORCEINLINE void leftShiftOne() SOUP_EXCAL;
 	public:
-		void operator>>=(const size_t b) noexcept;
-	private:
-		SOUP_FORCEINLINE void rightShiftSmall(const unsigned int b) noexcept;
-	public:
+		void operator>>=(size_t b) noexcept;
 		void operator|=(const Bigint& b) SOUP_EXCAL;
 		void operator&=(const Bigint& b) noexcept;
 

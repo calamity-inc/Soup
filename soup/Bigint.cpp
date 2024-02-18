@@ -1020,42 +1020,86 @@ namespace soup
 		leftShiftSmall(1);
 	}
 
-	void Bigint::operator>>=(const size_t b) noexcept
+	void Bigint::operator>>=(size_t b) noexcept
 	{
-		if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
+		const auto chunks_to_erase = (b / getBitsPerChunk());
+		const auto bits_to_erase = (b % getBitsPerChunk());
+
+		if (chunks_to_erase != 0)
 		{
-			if (b <= getBitsPerChunk())
+			if (chunks_to_erase >= getNumChunks())
 			{
-				rightShiftSmall(b);
+				reset();
 				return;
 			}
+
+#if SOUP_BIGINT_USE_INTVECTOR
+			chunks.eraseFirst(chunks_to_erase);
+#else
+			chunks.erase(chunks.begin(), chunks.begin() + chunks_to_erase);
+#endif
 		}
 
-		if ((b % getBitsPerChunk()) == 0)
+		if (bits_to_erase != 0)
 		{
-			auto chunks_to_erase = b / getBitsPerChunk();
-			if (chunks_to_erase < getNumChunks())
+			b = bits_to_erase;
+			if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
 			{
-#if SOUP_BIGINT_USE_INTVECTOR
-				chunks.eraseFirst(chunks_to_erase);
-#else
-				chunks.erase(chunks.begin(), chunks.begin() + chunks_to_erase);
+				auto i = getNumChunks();
+				chunk_t carry = 0;
+#if true
+				for (; i >= 4; i -= 4)
+				{
+					chunk_t c0[2];
+					chunk_t c1[2];
+					chunk_t c2[2];
+					chunk_t c3[2];
+
+					c0[0] = 0;
+					c0[1] = getChunkInbounds(i - 1);
+					c1[0] = 0;
+					c1[1] = getChunkInbounds(i - 2);
+					c2[0] = 0;
+					c2[1] = getChunkInbounds(i - 3);
+					c3[0] = 0;
+					c3[1] = getChunkInbounds(i - 4);
+
+					*reinterpret_cast<size_t*>(&c0[0]) = (*reinterpret_cast<size_t*>(&c0[0]) >> b);
+					*reinterpret_cast<size_t*>(&c1[0]) = (*reinterpret_cast<size_t*>(&c1[0]) >> b);
+					*reinterpret_cast<size_t*>(&c2[0]) = (*reinterpret_cast<size_t*>(&c2[0]) >> b);
+					*reinterpret_cast<size_t*>(&c3[0]) = (*reinterpret_cast<size_t*>(&c3[0]) >> b);
+
+					c0[1] |= carry;
+					c1[1] |= c0[0];
+					c2[1] |= c1[0];
+					c3[1] |= c2[0];
+
+					setChunkInbounds(i - 1, c0[1]);
+					setChunkInbounds(i - 2, c1[1]);
+					setChunkInbounds(i - 3, c2[1]);
+					setChunkInbounds(i - 4, c3[1]);
+
+					carry = c3[0];
+				}
 #endif
+				while (i--)
+				{
+					chunk_t c[2];
+					c[0] = 0;
+					c[1] = getChunkInbounds(i);
+					*reinterpret_cast<size_t*>(&c[0]) = (*reinterpret_cast<size_t*>(&c[0]) >> b);
+					setChunkInbounds(i, c[1] | carry);
+					carry = c[0];
+				}
 			}
 			else
 			{
-				reset();
-			}
-		}
-		else
-		{
-			size_t nb = getNumBits();
-			if (b >= nb)
-			{
-				reset();
-			}
-			else
-			{
+				size_t nb = getNumBits();
+				if (b >= nb)
+				{
+					reset();
+					return;
+				}
 				for (size_t i = 0; i != nb; ++i)
 				{
 					setBitInbounds(i, getBit(i + b));
@@ -1064,60 +1108,9 @@ namespace soup
 				{
 					disableBitInbounds(i);
 				}
-				shrink();
 			}
+			shrink();
 		}
-	}
-
-	void Bigint::rightShiftSmall(const unsigned int b) noexcept
-	{
-		auto i = getNumChunks();
-		chunk_t carry = 0;
-#if true
-		for (; i >= 4; i -= 4)
-		{
-			chunk_t c0[2];
-			chunk_t c1[2];
-			chunk_t c2[2];
-			chunk_t c3[2];
-
-			c0[0] = 0;
-			c0[1] = getChunkInbounds(i - 1);
-			c1[0] = 0;
-			c1[1] = getChunkInbounds(i - 2);
-			c2[0] = 0;
-			c2[1] = getChunkInbounds(i - 3);
-			c3[0] = 0;
-			c3[1] = getChunkInbounds(i - 4);
-
-			*reinterpret_cast<size_t*>(&c0[0]) = (*reinterpret_cast<size_t*>(&c0[0]) >> b);
-			*reinterpret_cast<size_t*>(&c1[0]) = (*reinterpret_cast<size_t*>(&c1[0]) >> b);
-			*reinterpret_cast<size_t*>(&c2[0]) = (*reinterpret_cast<size_t*>(&c2[0]) >> b);
-			*reinterpret_cast<size_t*>(&c3[0]) = (*reinterpret_cast<size_t*>(&c3[0]) >> b);
-
-			c0[1] |= carry;
-			c1[1] |= c0[0];
-			c2[1] |= c1[0];
-			c3[1] |= c2[0];
-
-			setChunkInbounds(i - 1, c0[1]);
-			setChunkInbounds(i - 2, c1[1]);
-			setChunkInbounds(i - 3, c2[1]);
-			setChunkInbounds(i - 4, c3[1]);
-
-			carry = c3[0];
-		}
-#endif
-		while (i--)
-		{
-			chunk_t c[2];
-			c[0] = 0;
-			c[1] = getChunkInbounds(i);
-			*reinterpret_cast<size_t*>(&c[0]) = (*reinterpret_cast<size_t*>(&c[0]) >> b);
-			setChunkInbounds(i, c[1] | carry);
-			carry = c[0];
-		}
-		shrink();
 	}
 
 	void Bigint::operator|=(const Bigint& b) SOUP_EXCAL
