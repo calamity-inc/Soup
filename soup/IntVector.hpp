@@ -41,22 +41,17 @@ namespace soup
 			free();
 		}
 
-		void operator=(const IntVector<T>& b) noexcept
+		void operator=(const IntVector<T>& b) SOUP_EXCAL
 		{
-			free();
+			if (m_capacity < b.m_size)
+			{
+				free();
+				m_capacity = b.m_size;
+				m_data = (T*)malloc(m_capacity * sizeof(T));
+			}
 
 			m_size = b.m_size;
-			m_capacity = b.m_capacity;
-
-			if (m_capacity != 0)
-			{
-				m_data = (T*)malloc(m_capacity * sizeof(T));
-				memcpy(m_data, b.m_data, m_size * sizeof(T));
-			}
-			else
-			{
-				m_data = nullptr;
-			}
+			memcpy(m_data, b.m_data, m_size * sizeof(T));
 		}
 
 		void operator=(IntVector<T>&& b) noexcept
