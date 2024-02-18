@@ -177,7 +177,7 @@ namespace soup
 		[[nodiscard]] Bigint mod(const Bigint& m) const SOUP_EXCAL;
 		[[nodiscard]] Bigint modUnsigned(const Bigint& m) const SOUP_EXCAL;
 		[[nodiscard]] Bigint modUnsignedPowerof2(const Bigint& m) const SOUP_EXCAL;
-		[[nodiscard]] Bigint modUnsignedNotpowerof2(const Bigint& m) const SOUP_EXCAL;
+		[[nodiscard]] Bigint modUnsignedNotpowerof2(const Bigint& divisor) const SOUP_EXCAL;
 		[[nodiscard]] bool isDivisorOf(const Bigint& dividend) const SOUP_EXCAL;
 		void operator<<=(const size_t b) SOUP_EXCAL;
 	private:
