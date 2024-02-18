@@ -37,6 +37,7 @@
 #include "TlsRecord.hpp"
 #include "TlsServerHello.hpp"
 #include "TlsServerKeyExchange.hpp"
+#include "TlsServerRsaData.hpp"
 #include "TlsSignatureScheme.hpp"
 #include "TrustStore.hpp"
 
@@ -921,6 +922,8 @@ namespace soup
 				return;
 			}
 
+			TlsServerRsaData rsa_data;
+
 			{
 				TlsClientHello hello;
 				if (!hello.fromBinary(data))
@@ -953,8 +956,8 @@ namespace soup
 						handshaker->extended_master_secret = true;
 					}
 				}
-				handshaker->cert_selector(handshaker->rsa_data, server_name);
-				if (handshaker->rsa_data.der_encoded_certchain.empty())
+				handshaker->cert_selector(rsa_data, server_name);
+				if (rsa_data.der_encoded_certchain.empty())
 				{
 					s.tls_close(TlsAlertDescription::internal_error);
 					return;
@@ -989,7 +992,7 @@ namespace soup
 
 			{
 				TlsCertificate tcert;
-				tcert.asn1_certs = std::move(handshaker->rsa_data.der_encoded_certchain);
+				tcert.asn1_certs = std::move(rsa_data.der_encoded_certchain);
 				if (!s.tls_sendHandshake(handshaker, TlsHandshake::certificate, tcert.toBinaryString()))
 				{
 					return;
@@ -1000,6 +1003,8 @@ namespace soup
 			{
 				return;
 			}
+
+			handshaker->private_key = std::move(rsa_data.private_key);
 
 			s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
 			{
@@ -1019,7 +1024,7 @@ namespace soup
 				handshaker->promise.fulfilOffThread([](Capture&& _cap)
 				{
 					auto& cap = _cap.get<CaptureDecryptPreMasterSecret>();
-					cap.handshaker->pre_master_secret = cap.handshaker->rsa_data.private_key.decryptPkcs1(cap.data);
+					cap.handshaker->pre_master_secret = cap.handshaker->private_key.decryptPkcs1(cap.data);
 				}, CaptureDecryptPreMasterSecret{
 					handshaker.get(),
 					Bigint::fromBinary(data)
