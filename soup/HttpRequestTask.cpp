@@ -63,7 +63,8 @@ namespace soup
 				sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
 				state = AWAIT_RESPONSE;
 				awaiting_response_since = time::unixSeconds();
-				sendRequest();
+				hr.send(*sock);
+				recvResponse();
 			}
 			break;
 
@@ -95,12 +96,13 @@ namespace soup
 				{
 					sock->enableCryptoClient(hr.getHost(), [](Socket&, Capture&& cap) SOUP_EXCAL
 					{
-						cap.get<HttpRequestTask*>()->sendRequest();
-					}, this);
+						cap.get<HttpRequestTask*>()->recvResponse();
+					}, this, hr.getDataToSend());
 				}
 				else
 				{
-					sendRequest();
+					hr.send(*sock);
+					recvResponse();
 				}
 			}
 			break;
@@ -144,7 +146,8 @@ namespace soup
 			sock->custom_data.getStructFromMap(ReuseTag).is_busy = true;
 			state = AWAIT_RESPONSE;
 			awaiting_response_since = time::unixSeconds();
-			sendRequest();
+			hr.send(*sock);
+			recvResponse();
 		}
 	}
 
@@ -154,9 +157,8 @@ namespace soup
 		connector.construct(hr.getHost(), hr.port, prefer_ipv6);
 	}
 
-	void HttpRequestTask::sendRequest() SOUP_EXCAL
+	void HttpRequestTask::recvResponse() SOUP_EXCAL
 	{
-		hr.send(*sock);
 		HttpRequest::recvResponse(*sock, [](Socket& s, std::optional<HttpResponse>&& res, Capture&& cap) SOUP_EXCAL
 		{
 			cap.get<HttpRequestTask*>()->fulfil(std::move(res));

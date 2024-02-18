@@ -394,13 +394,14 @@ namespace soup
 		bool sha256;
 	};
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap) SOUP_EXCAL
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data) SOUP_EXCAL
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
 			callback,
 			std::move(cap)
 		);
 		handshaker->server_name = std::move(server_name);
+		handshaker->initial_application_data = std::move(initial_application_data);
 
 		TlsClientHello hello;
 		hello.random.time = static_cast<uint32_t>(time::unixSeconds());
@@ -860,6 +861,11 @@ namespace soup
 			);
 			if (tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getClientFinishVerifyData()))
 			{
+				if (!handshaker->initial_application_data.empty())
+				{
+					tls_sendRecordEncrypted(TlsContentType::application_data, handshaker->initial_application_data);
+				}
+
 				tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 				{
 					UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());

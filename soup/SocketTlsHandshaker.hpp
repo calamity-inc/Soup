@@ -36,6 +36,7 @@ namespace soup
 		X509Certchain certchain{};
 		std::string server_name{};
 		std::string ecdhe_public_key{};
+		std::string initial_application_data{};
 		SocketTlsEncrypter pending_recv_encrypter;
 
 		// server

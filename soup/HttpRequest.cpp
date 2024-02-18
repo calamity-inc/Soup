@@ -100,9 +100,8 @@ namespace soup
 				s->enableCryptoClient(host, [](Socket& s, Capture&& cap) SOUP_EXCAL
 				{
 					auto& data = *cap.get<HttpRequestExecuteData*>();
-					data.req->send(s);
 					execute_recvResponse(s, &data.resp);
-				}, &data);
+				}, &data, getDataToSend());
 			}
 			else
 			{
@@ -136,9 +135,8 @@ namespace soup
 				s->enableCryptoClient(host, [](Socket& s, Capture&& cap) SOUP_EXCAL
 				{
 					auto* data = cap.get<HttpRequestExecuteEventStreamData*>();
-					data->req->send(s);
 					executeEventStream_recv(s, data);
-				}, &data);
+				}, &data, getDataToSend());
 			}
 			else
 			{
@@ -149,7 +147,7 @@ namespace soup
 		}
 	}
 
-	void HttpRequest::send(Socket& s) const SOUP_EXCAL
+	std::string HttpRequest::getDataToSend() const SOUP_EXCAL
 	{
 		std::string data{};
 		data.append(method);
@@ -158,7 +156,12 @@ namespace soup
 		data.append(ObfusString(" HTTP/1.1").str());
 		data.append("\r\n");
 		data.append(toString());
-		s.send(data);
+		return data;
+	}
+
+	void HttpRequest::send(Socket& s) const SOUP_EXCAL
+	{
+		s.send(getDataToSend());
 	}
 
 	void HttpRequest::execute_recvResponse(Socket& s, std::optional<HttpResponse>* resp) SOUP_EXCAL
