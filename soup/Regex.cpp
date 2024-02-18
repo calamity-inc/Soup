@@ -61,6 +61,10 @@ namespace soup
 	{
 		const auto match_begin = it;
 		m.it = it;
+		SOUP_IF_UNLIKELY (m.shouldSaveCheckpoint())
+		{
+			m.saveCheckpoint();
+		}
 		while (m.c != nullptr)
 		{
 #if REGEX_DEBUG_MATCH
@@ -109,13 +113,11 @@ namespace soup
 				}
 
 				m.c = m.c->success_transition;
-				if (reinterpret_cast<uintptr_t>(m.c) & 1)
+				if (m.shouldSaveCheckpoint())
 				{
 #if REGEX_DEBUG_MATCH
 					std::cout << "saved checkpoint; ";
 #endif
-					m.c = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(m.c) & ~1);
-					SOUP_ASSERT(m.c != nullptr);
 					m.saveCheckpoint();
 				}
 				if (reinterpret_cast<uintptr_t>(m.c) == 0b10)
@@ -349,7 +351,7 @@ namespace soup
 
 		ss << "digraph {\n";
 		ss << "label=" << string::escape(toFullString()) << ";\n";
-		node_to_graphviz_dot(ss, mapped_nodes, group.initial);
+		node_to_graphviz_dot(ss, mapped_nodes, reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(group.initial) & ~1));
 		ss << '}';
 
 		return ss.str();

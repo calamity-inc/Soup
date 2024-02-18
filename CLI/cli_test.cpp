@@ -746,6 +746,8 @@ spanning over multiple lines */
 
 		assert(Regex("[a-z]{3,6}?").match("abcdef").toString() == R"(0="abc")");
 		assert(Regex("[a-z]{3,6}?$").match("abcdef").toString() == R"(0="abcdef")");
+
+		assert(Regex("(?=.)a").matchesFully("a") == true);
 	});
 }
 

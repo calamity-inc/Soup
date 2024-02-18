@@ -53,6 +53,17 @@ namespace soup
 			rollback_points.pop_back();
 		}
 
+		bool shouldSaveCheckpoint()
+		{
+			if (reinterpret_cast<uintptr_t>(c) & 1)
+			{
+				c = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(c) & ~1);
+				SOUP_ASSERT(c != nullptr);
+				return true;
+			}
+			return false;
+		}
+
 		void saveCheckpoint()
 		{
 			checkpoints.emplace_back(it);
