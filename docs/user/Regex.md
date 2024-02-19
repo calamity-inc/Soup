@@ -22,20 +22,6 @@ Note that some environments, like JavaScript, operate on words (UTF-16), so `�
 
 With the 'u' flag, we pretend to operate on Unicode codepoints, and Soup specifically will assume that the input is UTF-8-encoded, which means that `💯` matches `/^.$/u` in all environments.
 
-## Escape Sequences
-
-- `\b` — Assert position is at word boundary
-- `\B` — Assert position is not at word boundary
-- `\w` — Match a word character
-- `\W` — Match a non-word character
-- `\A` — Assert position at start of sequence (same as `^` without 'm' flag)
-- `\Z` — Assert position at end of sequence, or the '\n' before the end of the sequence (same as `$` without 'm' flag)
-- `\z` — Assert position at end of sequence (same as `$` with the 'D' flag)
-- `\d` — Match a digit (same as `[0-9]`)
-- `\s` — Match a whitespace character
-
-Any other character preceeded by a backslash (`\`) is treated as a byte constraint.
-
 ## Groups
 
 - A regex is a capturing group with id 0.
@@ -53,6 +39,20 @@ Any other character preceeded by a backslash (`\`) is treated as a byte constrai
 - Range constraint (`[` ... `]`): Matches any byte in the range, which may be defined as multiple bytes (`[abc]`), a range of bytes (`[a-c]`), a class (`[[:alnum:]]`), or a mixture of all of these (`[[:alpha:]0-9 ]`)
 	- Classes: `[:alnum:]`, `[:alpha:]`, `[:ascii:]`, `[:blank:]`, `[:cntrl:]`, `[:digit:]`, `[:graph:]`, `[:lower:]`, `[:upper:]`, `[:word:]`, `[:xdigit:]`
 - Byte constraint: Matches the byte precisely. This is any byte in the pattern that doesn't have a special meaning as described in this document.
+
+### Escape Sequences
+
+- `\b` — Assert position is at word boundary
+- `\B` — Assert position is not at word boundary
+- `\w` — Match a word character
+- `\W` — Match a non-word character
+- `\A` — Assert position at start of sequence (same as `^` without 'm' flag)
+- `\Z` — Assert position at end of sequence, or the '\n' before the end of the sequence (same as `$` without 'm' flag)
+- `\z` — Assert position at end of sequence (same as `$` with the 'D' flag)
+- `\d` — Match a digit (same as `[0-9]`)
+- `\s` — Match a whitespace character
+
+Any other character preceeded by a backslash (`\`) is treated as a byte constraint.
 
 ### Meta
 
