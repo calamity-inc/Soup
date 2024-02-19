@@ -1308,7 +1308,7 @@
     <ClInclude Include="RegexFlags.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>
-    <ClInclude Include="RegexQuantifierConstraint.hpp">
+    <ClInclude Include="RegexRepeatConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
     <ClInclude Include="RegexPositiveLookaheadConstraint.hpp">

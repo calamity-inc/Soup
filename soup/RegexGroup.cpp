@@ -17,9 +17,9 @@
 #include "RegexPositiveLookaheadConstraint.hpp"
 #include "RegexPositiveLookbehindConstraint.hpp"
 #include "RegexOptConstraint.hpp"
-#include "RegexQuantifierConstraint.hpp"
 #include "RegexRangeQuantifierConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
+#include "RegexRepeatConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 #include "RegexWordBoundaryConstraint.hpp"
 #include "RegexWordCharConstraint.hpp"
@@ -456,13 +456,13 @@ namespace soup
 					{
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 						pModifiedConstraint = upModifiedConstraint.get();
-						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<true, true>>(std::move(upModifiedConstraint));
+						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<true, true>>(std::move(upModifiedConstraint));
 					}
 					else
 					{
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 						pModifiedConstraint = upModifiedConstraint.get();
-						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<true, false>>(std::move(upModifiedConstraint));
+						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<true, false>>(std::move(upModifiedConstraint));
 					}
 
 					pModifiedConstraint->group = this;
@@ -508,13 +508,13 @@ namespace soup
 					{
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 						pModifiedConstraint = upModifiedConstraint.get();
-						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<false, true>>(std::move(upModifiedConstraint));
+						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<false, true>>(std::move(upModifiedConstraint));
 					}
 					else
 					{
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 						pModifiedConstraint = upModifiedConstraint.get();
-						upQuantifierConstraint = soup::make_unique<RegexQuantifierConstraint<false, false>>(std::move(upModifiedConstraint));
+						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<false, false>>(std::move(upModifiedConstraint));
 					}
 
 					pModifiedConstraint->group = this;

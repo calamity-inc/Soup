@@ -7,11 +7,11 @@
 namespace soup
 {
 	template <bool at_least_one, bool greedy>
-	struct RegexQuantifierConstraint : public RegexConstraint
+	struct RegexRepeatConstraint : public RegexConstraint
 	{
 		UniquePtr<RegexConstraint> constraint;
 
-		RegexQuantifierConstraint(UniquePtr<RegexConstraint>&& constraint)
+		RegexRepeatConstraint(UniquePtr<RegexConstraint>&& constraint)
 			: constraint(std::move(constraint))
 		{
 		}
