@@ -273,6 +273,17 @@ namespace soup
 										negative_lookbehind = true;
 										++s.it;
 									}
+									else
+									{
+										do
+										{
+											name.push_back(*s.it);
+										} while (++s.it != s.end && *s.it != '>');
+										if (s.it != s.end)
+										{
+											++s.it;
+										}
+									}
 								}
 							}
 						}

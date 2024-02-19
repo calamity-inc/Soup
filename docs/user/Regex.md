@@ -26,7 +26,7 @@ With the 'u' flag, we pretend to operate on Unicode codepoints, and Soup specifi
 
 - A regex is a capturing group with id 0.
 - You can define additional capturing groups with `(` ... `)`; their ids will be sequential.
-- You can name capturing groups: `(?'name'` ... `)`.
+- You can name capturing groups by doing `(?'name'` ... `)` or `(?<name>` ... `)`.
 - Anonymous groups may be non-capturing: `(?:` ... `)`.
 - Anonymous groups can also set modifiers that only apply within them, e.g. to enable 'i' flag and disable 's' flag: `(?i-s:` ... `)`
 	- There is an alternative syntax of this that changes the flags globally: `/(?i)abc/` is identical to `/abc/i`.

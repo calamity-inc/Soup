@@ -41,9 +41,18 @@ namespace soup
 			}
 			else if (!data.name.empty())
 			{
-				str.insert(0, 1, '\'');
-				str.insert(0, data.name);
-				str.insert(0, "?'");
+				if (data.name.find('\'') != std::string::npos)
+				{
+					str.insert(0, 1, '>');
+					str.insert(0, data.name);
+					str.insert(0, "?<");
+				}
+				else
+				{
+					str.insert(0, 1, '\'');
+					str.insert(0, data.name);
+					str.insert(0, "?'");
+				}
 			}
 			str.insert(0, 1, '(');
 			str.push_back(')');
