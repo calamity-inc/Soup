@@ -95,10 +95,9 @@ namespace soup
 		if (a.constraints.empty())
 		{
 			auto upC = soup::make_unique<RegexDummyConstraint>();
-			auto pC = upC.get();
+			success_transitions.setTransitionTo(upC.get());
+			success_transitions.emplace(&upC->success_transition);
 			a.constraints.emplace_back(std::move(upC));
-			success_transitions.setTransitionTo(pC);
-			success_transitions.emplace(&pC->success_transition);
 		}
 
 		g.alternatives.emplace_back(std::move(a));
@@ -124,82 +123,73 @@ namespace soup
 				if (*s.it == 'b')
 				{
 					auto upC = soup::make_unique<RegexWordBoundaryConstraint<false>>();
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 'B')
 				{
 					auto upC = soup::make_unique<RegexWordBoundaryConstraint<true>>();
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 'w')
 				{
 					auto upC = soup::make_unique<RegexWordCharConstraint<false>>();
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 'W')
 				{
 					auto upC = soup::make_unique<RegexWordCharConstraint<true>>();
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 'A')
 				{
 					auto upC = soup::make_unique<RegexStartConstraint<true, false>>();
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 'Z')
 				{
 					auto upC = soup::make_unique<RegexEndConstraint<true, false, false>>();
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 'z')
 				{
 					auto upC = soup::make_unique<RegexEndConstraint<true, false, true>>();
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 'd')
 				{
 					auto upC = soup::make_unique<RegexRangeConstraint>(RegexRangeConstraint::digits);
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == 's')
 				{
 					auto upC = soup::make_unique<RegexRangeConstraint>(RegexRangeConstraint::whitespace);
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 			}
@@ -584,19 +574,17 @@ namespace soup
 							upC = soup::make_unique<RegexAnyCharConstraint<false, false>>();
 						}
 					}
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == '[')
 				{
 					auto upC = soup::make_unique<RegexRangeConstraint>(s.it, s.end, s.hasFlag(RE_INSENSITIVE));
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					if (s.it == s.end)
 					{
 						break;
@@ -614,10 +602,9 @@ namespace soup
 					{
 						upC = soup::make_unique<RegexStartConstraint<false, false>>();
 					}
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == '$')
@@ -635,10 +622,9 @@ namespace soup
 					{
 						upC = soup::make_unique<RegexEndConstraint<false, false, false>>();
 					}
-					auto pC = upC.get();
+					success_transitions.setTransitionTo(upC.get());
+					success_transitions.emplace(&upC->success_transition);
 					a.constraints.emplace_back(std::move(upC));
-					success_transitions.setTransitionTo(pC);
-					success_transitions.emplace(&pC->success_transition);
 					continue;
 				}
 				else if (*s.it == '{')
@@ -886,10 +872,9 @@ namespace soup
 			{
 				upC = soup::make_unique<RegexCharConstraint>(*s.it);
 			}
-			auto pC = upC.get();
+			success_transitions.setTransitionTo(upC.get());
+			success_transitions.emplace(&upC->success_transition);
 			a.constraints.emplace_back(std::move(upC));
-			success_transitions.setTransitionTo(pC);
-			success_transitions.emplace(&pC->success_transition);
 		}
 		discharge_alternative(*this, success_transitions, a);
 		success_transitions.discharge(alternatives_transitions);
