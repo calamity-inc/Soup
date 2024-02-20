@@ -6,7 +6,7 @@
 
 #include "fwd.hpp"
 #include "Regex.hpp"
-#include "RegexMatchedGroup.hpp"
+#include "RegexMatchResult.hpp"
 
 namespace soup
 {
@@ -16,7 +16,7 @@ namespace soup
 		{
 			const RegexConstraint* c;
 			const char* it;
-			std::vector<std::optional<RegexMatchedGroup>> groups{};
+			RegexMatchResult result{};
 		};
 
 		const RegexConstraint* c;
@@ -25,7 +25,7 @@ namespace soup
 		const char* const end;
 		std::vector<RollbackPoint> rollback_points{};
 		std::vector<const char*> checkpoints{};
-		std::vector<std::optional<RegexMatchedGroup>> groups{};
+		RegexMatchResult result{};
 
 		RegexMatcher(const Regex& r, const char* begin, const char* end)
 			: c(r.group.initial), begin(begin), end(end)
@@ -37,19 +37,19 @@ namespace soup
 			c = r.group.initial;
 			rollback_points.clear();
 			checkpoints.clear();
-			groups.clear();
+			result.groups.clear();
 		}
 
 		void saveRollback(const RegexConstraint* rollback_transition)
 		{
-			rollback_points.emplace_back(RollbackPoint{ rollback_transition, it, groups });
+			rollback_points.emplace_back(RollbackPoint{ rollback_transition, it, result });
 		}
 
 		void restoreRollback()
 		{
 			c = rollback_points.back().c;
 			it = rollback_points.back().it;
-			groups = std::move(rollback_points.back().groups);
+			result = std::move(rollback_points.back().result);
 			rollback_points.pop_back();
 		}
 

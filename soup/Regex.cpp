@@ -108,22 +108,22 @@ namespace soup
 						continue;
 					}
 					//std::cout << "group " << g->index << "; ";
-					while (g->index >= m.groups.size())
+					while (g->index >= m.result.groups.size())
 					{
-						m.groups.emplace_back(std::nullopt);
+						m.result.groups.emplace_back(std::nullopt);
 					}
-					if (m.groups.at(g->index).has_value())
+					if (m.result.groups.at(g->index).has_value())
 					{
-						m.groups.at(g->index)->end = m.it;
+						m.result.groups.at(g->index)->end = m.it;
 					}
 					else
 					{
-						m.groups.at(g->index) = RegexMatchedGroup{ g->name, _it, m.it };
+						m.result.groups.at(g->index) = RegexMatchedGroup{ g->name, _it, m.it };
 					}
 				}
 				if (m.c->group.getBool())
 				{
-					m.groups.at(m.c->group->index)->begin = _it;
+					m.result.groups.at(m.c->group->index)->begin = _it;
 				}
 
 				m.c = m.c->success_transition;
@@ -170,18 +170,16 @@ namespace soup
 #endif
 			return {};
 		}
-		RegexMatchResult res;
-		res.groups = std::move(m.groups);
 
 		// Handle match of regex without capturing groups
-		SOUP_IF_UNLIKELY (!res.isSuccess())
+		SOUP_IF_UNLIKELY (!m.result.isSuccess())
 		{
-			res.groups.emplace_back(RegexMatchedGroup{ {}, match_begin, m.it });
+			m.result.groups.emplace_back(RegexMatchedGroup{ {}, match_begin, m.it });
 		}
 
 		SOUP_ASSERT(m.checkpoints.empty()); // if we made a checkpoint for a lookahead group, it should have been restored.
 
-		return res;
+		SOUP_MOVE_RETURN(m.result);
 	}
 
 	RegexMatchResult Regex::search(const std::string& str) const noexcept
