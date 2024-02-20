@@ -749,6 +749,14 @@ spanning over multiple lines */
 		assert(Regex("[a-z]{3,6}?$").match("abcdef").toString() == R"(0="abcdef")");
 
 		assert(Regex("(?=.)a").matchesFully("a") == true);
+
+		assert(Regex(R"((\w)\1)").matchesFully("aa") == true);
+		assert(Regex(R"((\w)\1)").matchesFully("ab") == false);
+		assert(Regex(R"(()\1)").matchesFully("") == true);
+		assert(Regex(R"(\1())").matchesFully("") == false);
+
+		assert(Regex(R"((?'group'\w)\k'group')").matchesFully("aa") == true);
+		assert(Regex(R"((?<group>\w)\k<group>)").matchesFully("aa") == true);
 	});
 }
 

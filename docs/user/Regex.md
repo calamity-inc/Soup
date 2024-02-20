@@ -39,6 +39,7 @@ With the 'u' flag, we pretend to operate on Unicode codepoints, and Soup specifi
 - Range constraint (`[` ... `]`): Matches any byte in the range, which may be defined as multiple bytes (`[abc]`), a range of bytes (`[a-c]`), a class (`[[:alnum:]]`), or a mixture of all of these (`[[:alpha:]0-9 ]`)
 	- Classes: `[:alnum:]`, `[:alpha:]`, `[:ascii:]`, `[:blank:]`, `[:cntrl:]`, `[:digit:]`, `[:graph:]`, `[:lower:]`, `[:upper:]`, `[:word:]`, `[:xdigit:]`
 - Byte constraint: Matches the byte precisely. This is any byte in the pattern that doesn't have a special meaning as described in this document.
+- Recall constraint (`\index`, `\k'name'`, or `\k<name>`): Matches for the contents of a previous capturing group, e.g. `(.)\1` matches any instance of a repeated byte.
 
 ### Escape Sequences
 

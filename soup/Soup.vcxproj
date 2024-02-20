@@ -560,6 +560,7 @@
     <ClInclude Include="RegexEndConstraint.hpp" />
     <ClInclude Include="RegexFlags.hpp" />
     <ClInclude Include="RegexOpenEndedRangeQuantifierConstraint.hpp" />
+    <ClInclude Include="RegexRecallConstraint.hpp" />
     <ClInclude Include="RegexRepeatConstraint.hpp" />
     <ClInclude Include="RegexGroupConstraint.hpp" />
     <ClInclude Include="RegexGroup.hpp" />

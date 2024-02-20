@@ -1581,6 +1581,9 @@
     <ClInclude Include="sha384.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="RegexRecallConstraint.hpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

@@ -45,14 +45,15 @@ namespace soup
 				{
 					str.insert(0, 1, '>');
 					str.insert(0, data.name);
-					str.insert(0, "?<");
+					str.insert(0, 1, '<');
 				}
 				else
 				{
 					str.insert(0, 1, '\'');
 					str.insert(0, data.name);
-					str.insert(0, "?'");
+					str.insert(0, 1, '\'');
 				}
+				str.insert(0, 1, '?');
 			}
 			str.insert(0, 1, '(');
 			str.push_back(')');

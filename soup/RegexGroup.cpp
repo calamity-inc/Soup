@@ -19,6 +19,7 @@
 #include "RegexOptConstraint.hpp"
 #include "RegexRangeQuantifierConstraint.hpp"
 #include "RegexRangeConstraint.hpp"
+#include "RegexRecallConstraint.hpp"
 #include "RegexRepeatConstraint.hpp"
 #include "RegexStartConstraint.hpp"
 #include "RegexWordBoundaryConstraint.hpp"
@@ -192,12 +193,57 @@ namespace soup
 					a.constraints.emplace_back(std::move(upC));
 					continue;
 				}
+				else if (*s.it == 'k')
+				{
+					if (++s.it != s.end)
+					{
+						std::string name;
+						if (*s.it == '<')
+						{
+							while (++s.it != s.end && *s.it != '>')
+							{
+								name.push_back(*s.it);
+							}
+						}
+						else
+						{
+							while (++s.it != s.end && *s.it != '\'')
+							{
+								name.push_back(*s.it);
+							}
+						}
+
+						auto upC = soup::make_unique<RegexRecallNameConstraint>(std::move(name));
+						success_transitions.setTransitionTo(upC.get());
+						success_transitions.emplace(&upC->success_transition);
+						a.constraints.emplace_back(std::move(upC));
+					}
+					continue;
+				}
 			}
 			else
 			{
 				if (*s.it == '\\')
 				{
-					escape = true;
+					if (++s.it != s.end && string::isNumberChar(*s.it))
+					{
+						size_t i = ((*s.it) - '0');
+						while (++s.it != s.end && string::isNumberChar(*s.it))
+						{
+							i *= 10;
+							i += ((*s.it) - '0');
+						}
+
+						auto upC = soup::make_unique<RegexRecallIndexConstraint>(i);
+						success_transitions.setTransitionTo(upC.get());
+						success_transitions.emplace(&upC->success_transition);
+						a.constraints.emplace_back(std::move(upC));
+					}
+					else
+					{
+						escape = true;
+					}
+					--s.it;
 					continue;
 				}
 				else if (*s.it == '|')
