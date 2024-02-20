@@ -1,6 +1,4 @@
-#include <Windows.h>
-
-#include <conio.h> // getch
+#include <cstring> // memcpy
 #include <iostream>
 
 #include <VirtualFilesystem.hpp>
@@ -29,17 +27,20 @@ struct DummyVfs : soup::VirtualFilesystem
 		return files;
 	}
 
-	void getFileContents(const std::string& path, void* buf, size_t offset, size_t len) noexcept final
+	size_t getFileContents(const std::string& path, void* buf, size_t offset, size_t len) noexcept final
 	{
 		std::cout << "Reading ./" << path << " for " << len << " bytes starting at byte " << offset << "\n";
-		if (offset + len <= dummy_file_contents.size())
-		{
-			memcpy(buf, &dummy_file_contents.at(offset), len);
-		}
-		else
+		if (offset >= dummy_file_contents.size())
 		{
 			std::cout << "File read is out of bounds!\n";
+			return 0;
 		}
+		if (offset + len >= dummy_file_contents.size())
+		{
+			len = dummy_file_contents.size() - offset;
+		}
+		memcpy(buf, &dummy_file_contents.at(offset), len);
+		return len;
 	}
 };
 
@@ -53,10 +54,10 @@ int main()
 	catch (std::exception& e)
 	{
 		std::cout << e.what() << std::endl;
-		_getch();
+		std::string tmp; std::getline(std::cin, tmp);
 		return 1;
 	}
 	std::cout << "Virtual filesystem is mounted. Press enter to unmount it." << std::endl;;
-	_getch();
+	std::string tmp; std::getline(std::cin, tmp);
 	return 0;
 }
