@@ -8,23 +8,23 @@ namespace soup
 {
 	IpAddr netInfo::getPublicAddress()
 	{
-		return getPublicAddressImpl("myi.pe");
+		return getPublicAddressImpl("api64.ipify.org");
 	}
 
 	IpAddr netInfo::getPublicAddressV4()
 	{
-		return getPublicAddressImpl("v4.myi.pe");
+		return getPublicAddressImpl("api.ipify.org");
 	}
 
 	IpAddr netInfo::getPublicAddressV6()
 	{
-		return getPublicAddressImpl("v6.myi.pe");
+		return getPublicAddressImpl("api6.ipify.org");
 	}
 
 	IpAddr netInfo::getPublicAddressImpl(const std::string& provider)
 	{
 		IpAddr addr;
-		HttpRequest req(provider, "/get");
+		HttpRequest req(provider, "/");
 		/*req.port = 80;
 		req.use_tls = false;*/
 		if (auto res = req.execute(); res.has_value())
