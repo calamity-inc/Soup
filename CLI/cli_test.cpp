@@ -28,6 +28,7 @@
 #include <JsonInt.hpp>
 #include <JsonObject.hpp>
 #include <JsonString.hpp>
+#include <MessageStream.hpp>
 #include <Regex.hpp>
 #include <xml.hpp>
 
@@ -757,6 +758,24 @@ spanning over multiple lines */
 
 		assert(Regex(R"((?'group'\w)\k'group')").matchesFully("aa") == true);
 		assert(Regex(R"((?<group>\w)\k<group>)").matchesFully("aa") == true);
+	});
+
+	test("MessageStream", []
+	{
+		MessageStream<std::string, int> ms{};
+		constexpr int RECIPIENT_ALL = 0; // This recipient will consume the MessageStream via getAllUnread.
+		constexpr int RECIPIENT_UNREAD = 1; // This recipient will consume the MessageStream via getOldestUnread.
+		assert(ms.getAllUnread(RECIPIENT_ALL).empty());
+		assert(ms.getOldestUnread(RECIPIENT_UNREAD) == nullptr);
+		ms.add("Foo");
+		ms.add("Bar");
+		assert(ms.getAllUnread(RECIPIENT_ALL).size() == 2);
+		ms.add("Baz");
+		assert(ms.getAllUnread(RECIPIENT_ALL).size() == 1);
+		const std::string* str;
+		str = ms.getOldestUnread(RECIPIENT_UNREAD); assert(str && *str == "Foo");
+		str = ms.getOldestUnread(RECIPIENT_UNREAD); assert(str && *str == "Bar");
+		str = ms.getOldestUnread(RECIPIENT_UNREAD); assert(str && *str == "Baz");
 	});
 }
 

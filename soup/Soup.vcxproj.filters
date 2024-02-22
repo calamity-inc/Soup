@@ -1584,6 +1584,9 @@
     <ClInclude Include="RegexRecallConstraint.hpp">
       <Filter>data\regex\constraints</Filter>
     </ClInclude>
+    <ClInclude Include="MessageStream.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

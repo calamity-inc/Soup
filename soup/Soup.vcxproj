@@ -530,6 +530,7 @@
     <ClInclude Include="Keyboard.hpp" />
     <ClInclude Include="MathExpr.hpp" />
     <ClInclude Include="memProtFlags.hpp" />
+    <ClInclude Include="MessageStream.hpp" />
     <ClInclude Include="MidiComposition.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
