@@ -7,12 +7,16 @@
 
 namespace soup
 {
-	struct TrustStore
+	class TrustStore
 	{
+	public:
 		std::unordered_map<std::string, X509Certificate> data{};
 
-		[[nodiscard]] static TrustStore fromMozilla() SOUP_EXCAL;
+		[[nodiscard]] static const TrustStore& fromMozilla() SOUP_EXCAL;
+	private:
+		[[nodiscard]] static TrustStore fromMozillaImpl() SOUP_EXCAL;
 
+	public:
 		void loadCaCerts(std::istream& is) SOUP_EXCAL; // designed for contents of cacert.pem, which can be downloaded from https://curl.se/docs/caextract.html
 		void addCa(X509Certificate&& cert) SOUP_EXCAL;
 		void addCa(std::string&& common_name, std::string&& pem) SOUP_EXCAL;

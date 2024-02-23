@@ -13,7 +13,7 @@ namespace soup
 
 	// crypto
 	struct RsaKeypair;
-	struct TrustStore;
+	class TrustStore;
 	class YubikeyValidator;
 
 	// crypto.x509
