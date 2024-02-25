@@ -64,7 +64,8 @@ namespace soup
 	class xml
 	{
 	public:
-		[[nodiscard]] static UniquePtr<XmlTag> parse(const std::string& xml);
+		[[nodiscard]] static std::vector<UniquePtr<XmlTag>> parse(const std::string& xml);
+		[[nodiscard]] static UniquePtr<XmlTag> parseAndDiscardMetadata(const std::string& xml);
 	private:
 		[[nodiscard]] static UniquePtr<XmlTag> parse(const std::string& xml, std::string::const_iterator& i);
 	};

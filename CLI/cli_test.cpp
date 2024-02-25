@@ -560,20 +560,24 @@ spanning over multiple lines */
 	{
 		UniquePtr<XmlTag> tag;
 
-		tag = xml::parse("<html></html>"); assert(tag->encode() == "<html></html>");
-		tag = xml::parse("<html>Hello</html>"); assert(tag->encode() == "<html>Hello</html>");
-		tag = xml::parse("<html>Hello"); assert(tag->encode() == "<html>Hello</html>");
-		tag = xml::parse("<html>"); assert(tag->encode() == "<html></html>");
-		tag = xml::parse("<html><body>Hello</body></html>"); assert(tag->encode() == "<html><body>Hello</body></html>");
-		tag = xml::parse(R"(<html lang="en">Hello</html>)"); assert(tag->encode() == R"(<html lang="en">Hello</html>)");
-		tag = xml::parse(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
-		tag = xml::parse(R"(<html><body><h1></body>test)"); assert(tag->encode() == R"(<html><body><h1></h1></body>test</html>)");
-		tag = xml::parse(R"(<img src="soup"/>)"); assert(tag->encode() == R"(<img src="soup"></img>)");
+		tag = xml::parseAndDiscardMetadata("<html></html>"); assert(tag->encode() == "<html></html>");
+		tag = xml::parseAndDiscardMetadata("<html>Hello</html>"); assert(tag->encode() == "<html>Hello</html>");
+		tag = xml::parseAndDiscardMetadata("<html>Hello"); assert(tag->encode() == "<html>Hello</html>");
+		tag = xml::parseAndDiscardMetadata("<html>"); assert(tag->encode() == "<html></html>");
+		tag = xml::parseAndDiscardMetadata("<html><body>Hello</body></html>"); assert(tag->encode() == "<html><body>Hello</body></html>");
+		tag = xml::parseAndDiscardMetadata(R"(<html lang="en">Hello</html>)"); assert(tag->encode() == R"(<html lang="en">Hello</html>)");
+		tag = xml::parseAndDiscardMetadata(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
+		tag = xml::parseAndDiscardMetadata(R"(<html><body><h1></body>test)"); assert(tag->encode() == R"(<html><body><h1></h1></body>test</html>)");
+		tag = xml::parseAndDiscardMetadata(R"(<img src="soup"/>)"); assert(tag->encode() == R"(<img src="soup"></img>)");
 
-		// Handle multiple tags by implicitly creating a <body> tag
-		tag = xml::parse("<p>foo</p><p>bar</p>"); assert(tag->encode() == "<body><p>foo</p><p>bar</p></body>");
+		// parseAndDiscardMetadata should imply <body> when multiple top-level tags were found
+		tag = xml::parseAndDiscardMetadata("<p>foo</p><p>bar</p>"); assert(tag->encode() == "<body><p>foo</p><p>bar</p></body>");
 
-		tag = xml::parse("<p>&amp;&lt;&gt;</p>"); assert(tag->encode() == "<p>&amp;&lt;&gt;</p>");
+		// Test encoding & decoding of entities
+		tag = xml::parseAndDiscardMetadata("<p>&amp;&lt;&gt;</p>"); assert(tag->encode() == "<p>&amp;&lt;&gt;</p>");
+
+		// parseAndDiscardMetadata should discard metadata and return only the real top-level tag
+		tag = xml::parseAndDiscardMetadata(R"(<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html><html></html>)"); assert(tag->encode() == "<html></html>");
 	});
 
 	test("Endianness", []

@@ -153,23 +153,49 @@ namespace soup
 		string::replaceAll(this->contents, "&gt;", ">");
 	}
 
-	UniquePtr<XmlTag> xml::parse(const std::string& xml)
+	std::vector<UniquePtr<XmlTag>> xml::parse(const std::string& xml)
 	{
+		std::vector<UniquePtr<XmlTag>> res{};
+
 		auto i = xml.begin();
-		auto tag = parse(xml, i);
-		if (i == xml.end()
-			|| ++i == xml.end()
-			)
-		{
-			return tag;
-		}
-		auto body = soup::make_unique<XmlTag>();
-		body->name = "body";
-		body->children.emplace_back(std::move(tag));
 		do
 		{
-			body->children.emplace_back(parse(xml, i));
+			res.emplace_back(parse(xml, i));
 		} while (i != xml.end() && ++i != xml.end());
+
+		return res;
+	}
+
+	UniquePtr<XmlTag> xml::parseAndDiscardMetadata(const std::string& xml)
+	{
+		auto tags = parse(xml);
+
+		for (auto i = tags.begin(); i != tags.end(); )
+		{
+			if ((*i)->name.c_str()[0] == '?'
+				|| (*i)->name.c_str()[0] == '!'
+				)
+			{
+				i = tags.erase(i);
+			}
+			else
+			{
+				++i;
+			}
+		}
+
+		if (tags.size() == 1)
+		{
+			SOUP_MOVE_RETURN(tags.at(0));
+		}
+
+		auto body = soup::make_unique<XmlTag>();
+		body->name = "body";
+		body->children.reserve(tags.size());
+		for (auto& tag : tags)
+		{
+			body->children.emplace_back(std::move(tag));
+		}
 		return body;
 	}
 
@@ -288,6 +314,12 @@ namespace soup
 						name.beginCopy(xml, i + 1);
 					}
 				}
+			}
+			if (tag->name.c_str()[0] == '?' // <?xml ... ?>
+				|| tag->name.c_str()[0] == '!' // <!DOCTYPE ...>
+				)
+			{
+				return tag; // Won't have children
 			}
 			++i;
 		}

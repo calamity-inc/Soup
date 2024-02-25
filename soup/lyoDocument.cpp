@@ -58,7 +58,7 @@ namespace soup
 
 	UniquePtr<lyoDocument> lyoDocument::fromMarkup(const std::string& markup)
 	{
-		auto root = xml::parse(markup);
+		auto root = xml::parseAndDiscardMetadata(markup);
 		return fromMarkup(*root);
 	}
 
