@@ -5,7 +5,11 @@
 #include "StringBuilder.hpp"
 #include "UniquePtr.hpp"
 
-//#include <iostream>
+#define DEBUG_PARSE false
+
+#if DEBUG_PARSE
+#include <iostream>
+#endif
 
 namespace soup
 {
@@ -233,7 +237,9 @@ namespace soup
 							&& *(i + 1) == '>'
 							)
 						{
-							//std::cout << tag->name << " taking the easy way out" << std::endl;
+#if DEBUG_PARSE
+							std::cout << tag->name << " taking the easy way out" << std::endl;
+#endif
 							++i;
 							return tag;
 						}
@@ -246,7 +252,9 @@ namespace soup
 						++i;
 						if (*i == '"')
 						{
-							//std::cout << "Collecting value for attribute " << name << ": ";
+#if DEBUG_PARSE
+							std::cout << "Collecting value for attribute " << name << ": ";
+#endif
 							++i;
 							value.beginCopy(xml, i);
 							for (;; ++i)
@@ -259,15 +267,21 @@ namespace soup
 								{
 									break;
 								}
-								//std::cout << *i;
+#if DEBUG_PARSE
+								std::cout << *i;
+#endif
 							}
-							//std::cout << std::endl;
+#if DEBUG_PARSE
+							std::cout << std::endl;
+#endif
 							value.endCopy(xml, i);
 							tag->attributes.emplace_back(std::move(name), std::move(value));
 						}
 						else
 						{
-							//std::cout << "Attribute " << name << " has no value";
+#if DEBUG_PARSE
+							std::cout << "Attribute " << name << " has no value";
+#endif
 							tag->attributes.emplace_back(std::move(name), std::string());
 						}
 						name.clear();
@@ -290,7 +304,9 @@ namespace soup
 				text.endCopy(xml, i);
 				if (!text.empty())
 				{
-					//std::cout << "Copied text: " << text << std::endl;
+#if DEBUG_PARSE
+					std::cout << "Copied text: " << text << std::endl;
+#endif
 					tag->children.emplace_back(soup::make_unique<XmlText>(std::move(text)));
 					text.clear();
 				}
@@ -314,22 +330,31 @@ namespace soup
 						}
 					}
 					tbc_tag.endCopy(xml, i);
-					//std::cout << "tbc tag: " << tbc_tag << std::endl;
+#if DEBUG_PARSE
+					std::cout << "tbc tag: " << tbc_tag << std::endl;
+#endif
 					if (tbc_tag != tag->name)
 					{
-						//std::cout << "Expected tbc tag to be " << tag->name << std::endl;
+#if DEBUG_PARSE
+						std::cout << "Expected tbc tag to be " << tag->name << std::endl;
+#endif
 						i -= tbc_tag.length();
 						i -= 3;
-						//std::cout << "Cursor now at " << *i << ", unwinding" << std::endl;
+#if DEBUG_PARSE
+						std::cout << "Cursor now at " << *i << ", unwinding" << std::endl;
+#endif
 						return tag;
 					}
 					text.beginCopy(xml, i);
 					break;
 				}
-				//auto child = parse(xml, i);
-				//std::cout << "Recursed for " << child->name << ": " << child->encode() << std::endl;
-				//tag->children.emplace_back(std::move(child));
+#if DEBUG_PARSE
+				auto child = parse(xml, i);
+				std::cout << "Recursed for " << child->name << ": " << child->encode() << std::endl;
+				tag->children.emplace_back(std::move(child));
+#else
 				tag->children.emplace_back(parse(xml, i));
+#endif
 				if (i == xml.end())
 				{
 					break;
@@ -340,7 +365,9 @@ namespace soup
 		text.endCopy(xml, i);
 		if (!text.empty())
 		{
-			//std::cout << "Copied text before return: " << text << std::endl;
+#if DEBUG_PARSE
+			std::cout << "Copied text before return: " << text << std::endl;
+#endif
 			tag->children.emplace_back(soup::make_unique<XmlText>(std::move(text)));
 			text.clear();
 		}
