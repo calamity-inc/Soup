@@ -1,7 +1,5 @@
 #pragma once
 
-#include "TreeNode.hpp"
-
 #include <string>
 #include <vector>
 
@@ -10,7 +8,7 @@
 
 namespace soup
 {
-	struct XmlNode : public TreeNode
+	struct XmlNode
 	{
 		const bool is_text;
 
@@ -18,6 +16,8 @@ namespace soup
 			: is_text(is_text)
 		{
 		}
+
+		virtual ~XmlNode() = default;
 
 		// Type checks.
 		[[nodiscard]] bool isTag() const noexcept;

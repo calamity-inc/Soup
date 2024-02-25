@@ -900,7 +900,6 @@
     <ClInclude Include="Lexeme.hpp" />
     <ClInclude Include="Token.hpp" />
     <ClInclude Include="Totp.hpp" />
-    <ClInclude Include="TreeNode.hpp" />
     <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="unit_testing.hpp" />
     <ClInclude Include="VirtualRegion.hpp" />

@@ -1164,9 +1164,6 @@
     <ClInclude Include="Screen.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="TreeNode.hpp">
-      <Filter>util\tree</Filter>
-    </ClInclude>
     <ClInclude Include="TreeReader.hpp">
       <Filter>util\tree</Filter>
     </ClInclude>

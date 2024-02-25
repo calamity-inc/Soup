@@ -6,12 +6,11 @@
 
 #include "Lexeme.hpp"
 #include "Op.hpp"
-#include "TreeNode.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
 {
-	struct astNode : public TreeNode
+	struct astNode
 	{
 		enum Type : uint8_t
 		{
@@ -26,6 +25,8 @@ namespace soup
 			: type(type)
 		{
 		}
+
+		virtual ~astNode() = default;
 
 		[[nodiscard]] bool isValue() const noexcept;
 

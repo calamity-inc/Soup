@@ -1,7 +1,5 @@
 #pragma once
 
-#include "TreeNode.hpp"
-
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -12,7 +10,7 @@
 
 namespace soup
 {
-	struct PlistNode : public TreeNode
+	struct PlistNode
 	{
 		enum Type : uint8_t
 		{
@@ -27,6 +25,8 @@ namespace soup
 			: type(type)
 		{
 		}
+
+		virtual ~PlistNode() = default;
 
 		[[nodiscard]] std::string toString(const std::string& prefix = {}) const noexcept;
 

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "TreeNode.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
@@ -17,7 +16,7 @@ namespace soup
 	template <typename Data>
 	struct htDataNode;
 
-	class htNode : public TreeNode
+	class htNode
 	{
 	public:
 		const bool is_data;
@@ -26,6 +25,8 @@ namespace soup
 			: is_data(is_data)
 		{
 		}
+
+		virtual ~htNode() = default;
 
 		template <typename Data, typename Weight>
 		[[nodiscard]] Weight getWeight() const noexcept;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "fwd.hpp"
-#include "TreeNode.hpp"
 
 #include <string>
 #include <vector>
@@ -13,7 +12,7 @@
 
 namespace soup
 {
-	struct lyoElement : public TreeNode
+	struct lyoElement
 	{
 		lyoContainer* parent;
 
@@ -32,6 +31,8 @@ namespace soup
 			: parent(parent)
 		{
 		}
+
+		virtual ~lyoElement() = default;
 
 		[[nodiscard]] lyoDocument& getDocument() noexcept;
 
