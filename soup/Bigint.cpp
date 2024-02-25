@@ -917,7 +917,7 @@ namespace soup
 
 		if (b <= getBitsPerChunk())
 		{
-			return leftShiftSmall(b);
+			return leftShiftSmall(static_cast<unsigned int>(b));
 		}
 
 		const auto nb = getNumBits();
