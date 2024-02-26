@@ -144,6 +144,8 @@ static void unit_cpu()
 		ASSERT_X64_DISASM("cmp byte ptr [rax+0x69133769], 0", 0x80, 0xb8, 0x69, 0x37, 0x13, 0x69, 0x00);
 		ASSERT_X64_DISASM("cmp byte ptr [rip+0x69], 0", 0x80, 0x3d, 0x69, 0x00, 0x00, 0x00, 0x00);
 
+		ASSERT_X64_DISASM("and qword ptr [rbx], 0", 0x48, 0x83, 0x23, 0x00);
+
 #define ASSERT_X64_ASM(asm, ...) { uint8_t code[] = { __VA_ARGS__ }; x64Instruction ins; ins.fromString(asm); assert(memcmp(ins.toBytecode().c_str(), code, sizeof(code)) == 0); }
 
 		ASSERT_X64_ASM("mov rax, rax", 0x48, 0x89, 0xC0); // The 0x8B opcode would also be valid for two direct-access registers.
