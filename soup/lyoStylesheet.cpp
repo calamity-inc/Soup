@@ -11,7 +11,7 @@ namespace soup
 	void lyoStylesheet::addRulesFromCss(const std::string& css)
 	{
 		LangDesc ld;
-		ld.semicolon_is_not_space = true;
+		ld.space_characters.disable(';');
 		auto tks = ld.tokenise(css);
 		ld.eraseSpace(tks);
 

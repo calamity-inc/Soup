@@ -28,7 +28,7 @@ namespace soup
 			return reinterpret_cast<const BigBitset<Bytes>*>(dp);
 		}
 
-		[[nodiscard]] bool get(const size_t i) const noexcept
+		[[nodiscard]] constexpr bool get(const size_t i) const noexcept
 		{
 			const auto j = (i / 8);
 			const auto k = (i % 8);
@@ -36,7 +36,7 @@ namespace soup
 			return (data[j] >> k) & 1;
 		}
 
-		void set(const size_t i, const bool v) noexcept
+		constexpr void set(const size_t i, const bool v) noexcept
 		{
 			const auto j = (i / 8);
 			const auto k = (i % 8);
@@ -47,7 +47,7 @@ namespace soup
 			data[j] |= (mask * v);
 		}
 
-		void enable(const size_t i) noexcept
+		constexpr void enable(const size_t i) noexcept
 		{
 			const auto j = (i / 8);
 			const auto k = (i % 8);
@@ -55,7 +55,7 @@ namespace soup
 			data[j] |= (1 << k);
 		}
 
-		void disable(const size_t i) noexcept
+		constexpr void disable(const size_t i) noexcept
 		{
 			const auto j = (i / 8);
 			const auto k = (i % 8);

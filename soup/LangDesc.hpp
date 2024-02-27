@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "BigBitset.hpp"
 #include "Token.hpp"
 
 namespace soup
@@ -11,8 +12,29 @@ namespace soup
 	class LangDesc
 	{
 	public:
+		BigBitset<0x100 / 8> space_characters{};
+		BigBitset<0x100 / 8> token_terminators{};
 		std::vector<std::vector<Token>> token_sets{};
-		bool semicolon_is_not_space = false;
+
+		SOUP_CONSTEXPR20 LangDesc()
+		{
+			space_characters.enable(' ');
+			space_characters.enable('\t');
+			space_characters.enable('\n');
+			space_characters.enable('\r');
+			space_characters.enable(';');
+
+			token_terminators.enable('$');
+			token_terminators.enable('(');
+			token_terminators.enable(')');
+			token_terminators.enable(',');
+			token_terminators.enable('.');
+			token_terminators.enable(':');
+			token_terminators.enable('<');
+			token_terminators.enable('[');
+			token_terminators.enable('{');
+			token_terminators.enable(';');
+		}
 
 		Token& addToken(const char* keyword, Token::parse_t parse = nullptr)
 		{
