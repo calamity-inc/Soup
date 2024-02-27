@@ -1,1 +1,6 @@
+# Header file's extension says which language it is, no need for Linguist's heuristics.
 *.h linguist-language=C
+*.hpp linguist-language=C++
+
+# Pluto files should be shown with Lua syntax highlighting on Github.com.
+*.pluto linguist-language=Lua

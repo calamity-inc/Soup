@@ -1,0 +1,51 @@
+-- Converts apispec.cat.txt to apispec.json
+-- Requires Pluto 0.9.0 or above
+
+local { cat, json } = require "*"
+
+local input = io.contents("apispec.cat.txt") |> cat.decode|cat.withorder|
+local output = {
+	__order = { "classes", "namespaces", "functions" },
+	classes = { __order = input.classes.__order },
+	namespaces = input.namespaces,
+	functions = { __order = input.functions.__order },
+}
+
+for input.classes.__order as cname do
+	output.classes[cname] = { __order = { "__parent" } }
+	local funcs = input.classes[cname]
+	if type(funcs) == "table" then
+		if funcs.__value then
+			output.classes[cname].__parent = funcs.__value
+		end
+		if funcs.__order then
+			for funcs.__order as fname do
+				output.classes[cname].__order:insert(fname)
+				output.classes[cname][fname] = input.classes[cname][fname]
+			end
+		end
+	elseif funcs ~= "" then
+		output.classes[cname].__parent = funcs
+	end
+end
+
+for input.functions.__order as fname do
+	local data = input.functions[fname]
+	if type(data) ~= "table" then
+		data = { __value = data }
+	end
+	output.functions[fname] = { data.__value }
+	if data.__order then
+		for data.__order as argname do
+			local argdefault
+			local argtype = input.functions[fname][argname]
+			if type(argtype) == "table" then
+				argdefault = argtype.default
+				argtype = argtype.__value
+			end
+			output.functions[fname]:insert({ argtype, argname, tonumber(argdefault) ?? argdefault })
+		end
+	end
+end
+
+io.contents("apispec.json", json.encode(output, true))

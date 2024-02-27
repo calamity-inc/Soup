@@ -1,0 +1,151 @@
+classes:
+	DetachedScheduler: Scheduler
+		new: DetachedScheduler_new
+		isActive: DetachedScheduler_isActive
+	EstablishWebSocketConnectionTask: Worker
+		new: EstablishWebSocketConnectionTask_new
+		getSocket: EstablishWebSocketConnectionTask_getSocket
+	HttpRequest: MimeMessage
+		new: HttpRequest_new
+		setPayload: HttpRequest_setPayload
+		getPath: HttpRequest_getPath
+	HttpRequestTask: Worker
+		newFromRequest: HttpRequestTask_newFromRequest
+		newFromUrl: HttpRequestTask_newFromUrl
+		getResponseBody: HttpRequestTask_getResponseBody
+		getResponseBodyCStr: HttpRequestTask_getResponseBodyCStr
+	MimeMessage
+		addHeader: MimeMessage_addHeader
+	PromiseBase
+		isPending: PromiseBase_isPending
+	Promise_WebSocketMessage: PromiseBase
+		getData: Promise_WebSocketMessage_getData
+	Scheduler
+		new: Scheduler_new
+		setDontMakeReusableSockets: Scheduler_setDontMakeReusableSockets
+		add: Scheduler_add
+		shouldKeepRunning: Scheduler_shouldKeepRunning
+		tick: Scheduler_tick
+	ServerService
+	ServerWebService: ServerService
+		new: ServerWebService_new
+		hasPendingRequest: ServerWebService_hasPendingRequest
+		getPendingRequestPath: ServerWebService_getPendingRequestPath
+		ignoreRequest: ServerWebService_ignoreRequest
+		replyWithHtml: ServerWebService_replyWithHtml
+		replyWith404: ServerWebService_replyWith404
+	Socket: Worker
+	Totp
+		new: Totp_new
+		getQrCodeUri: Totp_getQrCodeUri
+		getValue: Totp_getValue
+	WebSocketConnection: Socket
+		wsSend: WebSocketConnection_wsSend
+		wsRecv: WebSocketConnection_wsRecv
+	Worker
+		isWorkDone: Worker_isWorkDone
+	stdstring
+		new: stdstring_new
+		c_str: stdstring_c_str
+namespaces:
+	aes
+		ecbEncrypt: aes_ecbEncrypt
+		ecbDecrypt: aes_ecbDecrypt
+	base64
+		encode: base64_encode
+		decode: base64_decode
+	Hotp
+		generateSecret: Hotp_generateSecret
+	Server
+		bind: Server_bind
+functions:
+	aes_ecbEncrypt: void
+		data: stdstring
+		key: stdstring
+	aes_ecbDecrypt: void
+		data: stdstring
+		key: stdstring
+	base64_encode: string
+		x: stdstring
+	base64_decode: stdstring
+		x: string
+	DetachedScheduler_new: DetachedScheduler
+	DetachedScheduler_isActive: bool
+		sched: DetachedScheduler
+	EstablishWebSocketConnectionTask_new: EstablishWebSocketConnectionTask
+		uri: string
+	EstablishWebSocketConnectionTask_getSocket: WebSocketConnection
+		x: EstablishWebSocketConnectionTask
+	Hotp_generateSecret: stdstring
+		bytes: int
+			default: 16
+	HttpRequest_new: HttpRequest
+		uri: string
+	HttpRequest_setPayload: void
+		x: HttpRequest
+		data: string
+	HttpRequest_getPath: string
+		x: HttpRequest
+	HttpRequestTask_newFromRequest: HttpRequestTask
+		hr: HttpRequest
+	HttpRequestTask_newFromUrl: HttpRequestTask
+		url: string
+	HttpRequestTask_getResponseBody: stdstring
+		x: HttpRequestTask
+	HttpRequestTask_getResponseBodyCStr: string
+		x: HttpRequestTask
+	MimeMessage_addHeader: void
+		x: MimeMessage
+		key: string
+		value: string
+	PromiseBase_isPending: bool
+		x: PromiseBase
+	Promise_WebSocketMessage_getData: string
+		x: Promise_WebSocketMessage
+	Scheduler_new: Scheduler
+	Scheduler_setDontMakeReusableSockets: void
+		sched: Scheduler
+	Scheduler_add: void
+		sched: Scheduler
+		spWorker: Worker
+	Scheduler_shouldKeepRunning: bool
+		sched: Scheduler
+	Scheduler_tick: void
+		sched: Scheduler
+	Server_bind: bool
+		serv: Scheduler
+		port: int
+		srv: ServerService
+	ServerWebService_new: ServerWebService
+	ServerWebService_hasPendingRequest: bool
+		x: ServerWebService
+	ServerWebService_getPendingRequestPath: string
+		x: ServerWebService
+	ServerWebService_ignoreRequest: void
+		x: ServerWebService
+	ServerWebService_replyWithHtml: void
+		x: ServerWebService
+		html: string
+	ServerWebService_replyWith404: void
+		x: ServerWebService
+	Totp_new: Totp
+		secret: stdstring
+	Totp_getQrCodeUri: string
+		x: Totp
+		label: string
+		issuer: string
+			default: 
+	Totp_getValue: int
+		x: Totp
+	WebSocketConnection_wsSend: void
+		con: WebSocketConnection
+		text: string
+	WebSocketConnection_wsRecv: Promise_WebSocketMessage
+		con: WebSocketConnection
+	Worker_isWorkDone: bool
+		x: Worker
+	stdstring_new: stdstring
+		data: string
+		len: int
+	stdstring_c_str: string
+		x: stdstring

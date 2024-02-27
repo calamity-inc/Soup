@@ -1,258 +1,407 @@
 {
-	"classes": {
-		"DetachedScheduler": {
-			"__parent": "Scheduler",
-			"new": "DetachedScheduler_new",
-			"isActive": "DetachedScheduler_isActive"
-		},
-		"EstablishWebSocketConnectionTask": {
-			"__parent": "Worker",
-			"new": "EstablishWebSocketConnectionTask_new",
-			"getSocket": "EstablishWebSocketConnectionTask_getSocket"
-		},
-		"HttpRequest": {
-			"__parent": "MimeMessage",
-			"new": "HttpRequest_new",
-			"setPayload": "HttpRequest_setPayload",
-			"getPath": "HttpRequest_getPath"
-		},
-		"HttpRequestTask": {
-			"__parent": "Worker",
-			"newFromRequest": "HttpRequestTask_newFromRequest",
-			"newFromUrl": "HttpRequestTask_newFromUrl",
-			"getResponseBody": "HttpRequestTask_getResponseBody",
-			"getResponseBodyCStr": "HttpRequestTask_getResponseBodyCStr"
-		},
-		"MimeMessage": {
-			"addHeader": "MimeMessage_addHeader"
-		},
-		"PromiseBase": {
-			"isPending": "PromiseBase_isPending"
-		},
-		"Promise_WebSocketMessage": {
-			"__parent": "PromiseBase",
-			"getData": "Promise_WebSocketMessage_getData"
-		},
-		"Scheduler": {
-			"new": "Scheduler_new",
-			"setDontMakeReusableSockets": "Scheduler_setDontMakeReusableSockets",
-			"add": "Scheduler_add",
-			"shouldKeepRunning": "Scheduler_shouldKeepRunning",
-			"tick": "Scheduler_tick"
-		},
-		"ServerService": {},
-		"ServerWebService": {
-			"__parent": "ServerService",
-			"new": "ServerWebService_new",
-			"hasPendingRequest": "ServerWebService_hasPendingRequest",
-			"getPendingRequestPath": "ServerWebService_getPendingRequestPath",
-			"ignoreRequest": "ServerWebService_ignoreRequest",
-			"replyWithHtml": "ServerWebService_replyWithHtml",
-			"replyWith404": "ServerWebService_replyWith404"
-		},
-		"Socket": {
-			"__parent": "Worker"
-		},
-		"Totp": {
-			"new": "Totp_new",
-			"getQrCodeUri": "Totp_getQrCodeUri",
-			"getValue": "Totp_getValue"
-		},
-		"WebSocketConnection": {
-			"__parent": "Socket",
-			"wsSend": "WebSocketConnection_wsSend",
-			"wsRecv": "WebSocketConnection_wsRecv"
-		},
-		"Worker": {
-			"isWorkDone": "Worker_isWorkDone"
-		},
-		"stdstring": {
-			"new": "stdstring_new",
-			"c_str": "stdstring_c_str"
-		}
-	},
-	"namespaces": {
-		"aes": {
-			"ecbEncrypt": "aes_ecbEncrypt",
-			"ecbDecrypt": "aes_ecbDecrypt"
-		},
-		"base64": {
-			"encode": "base64_encode",
-			"decode": "base64_decode"
-		},
-		"Hotp": {
-			"generateSecret": "Hotp_generateSecret"
-		},
-		"Server": {
-			"bind": "Server_bind"
-		}
-	},
-	"functions": {
-		"aes_ecbEncrypt": [
-			"void",
-			["stdstring", "data"],
-			["stdstring", "key"]
-		],
-		"aes_ecbDecrypt": [
-			"void",
-			["stdstring", "data"],
-			["stdstring", "key"]
-		],
-		"base64_encode": [
-			"string",
-			["stdstring", "x"]
-		],
-		"base64_decode": [
-			"stdstring",
-			["string", "x"]
-		],
-		"DetachedScheduler_new": [
-			"DetachedScheduler"
-		],
-		"DetachedScheduler_isActive": [
-			"bool",
-			["DetachedScheduler", "sched"]
-		],
-		"EstablishWebSocketConnectionTask_new": [
-			"EstablishWebSocketConnectionTask",
-			["string", "uri"]
-		],
-		"EstablishWebSocketConnectionTask_getSocket": [
-			"WebSocketConnection",
-			["EstablishWebSocketConnectionTask", "x"]
-		],
-		"Hotp_generateSecret": [
-			"stdstring",
-			["int", "bytes", 16]
-		],
-		"HttpRequest_new": [
-			"HttpRequest",
-			["string", "uri"]
-		],
-		"HttpRequest_setPayload": [
-			"void",
-			["HttpRequest", "x"],
-			["string", "data"]
-		],
-		"HttpRequest_getPath": [
-			"string",
-			["HttpRequest", "x"]
-		],
-		"HttpRequestTask_newFromRequest": [
-			"HttpRequestTask",
-			["HttpRequest", "hr"]
-		],
-		"HttpRequestTask_newFromUrl": [
-			"HttpRequestTask",
-			["string", "url"]
-		],
-		"HttpRequestTask_getResponseBody": [
-			"stdstring",
-			["HttpRequestTask", "x"]
-		],
-		"HttpRequestTask_getResponseBodyCStr": [
-			"string",
-			["HttpRequestTask", "x"]
-		],
-		"MimeMessage_addHeader": [
-			"void",
-			["MimeMessage", "x"],
-			["string", "key"],
-			["string", "value"]
-		],
-		"PromiseBase_isPending": [
-			"bool",
-			["PromiseBase", "x"]
-		],
-		"Promise_WebSocketMessage_getData": [
-			"string",
-			["Promise_WebSocketMessage", "x"]
-		],
-		"Scheduler_new": [
-			"Scheduler"
-		],
-		"Scheduler_setDontMakeReusableSockets": [
-			"void",
-			["Scheduler", "sched"]
-		],
-		"Scheduler_add": [
-			"void",
-			["Scheduler", "sched"],
-			["Worker", "spWorker"]
-		],
-		"Scheduler_shouldKeepRunning": [
-			"bool",
-			["Scheduler", "sched"]
-		],
-		"Scheduler_tick": [
-			"void",
-			["Scheduler", "sched"]
-		],
-		"Server_bind": [
-			"bool",
-			["Scheduler", "serv"],
-			["int", "port"],
-			["ServerService", "srv"]
-		],
-		"ServerWebService_new": [
-			"ServerWebService"
-		],
-		"ServerWebService_hasPendingRequest": [
-			"bool",
-			["ServerWebService", "x"]
-		],
-		"ServerWebService_getPendingRequestPath": [
-			"string",
-			["ServerWebService", "x"]
-		],
-		"ServerWebService_ignoreRequest": [
-			"void",
-			["ServerWebService", "x"]
-		],
-		"ServerWebService_replyWithHtml": [
-			"void",
-			["ServerWebService", "x"],
-			["string", "html"]
-		],
-		"ServerWebService_replyWith404": [
-			"void",
-			["ServerWebService", "x"]
-		],
-		"Totp_new": [
-			"Totp",
-			["stdstring", "secret"]
-		],
-		"Totp_getQrCodeUri": [
-			"string",
-			["Totp", "x"],
-			["string", "label"],
-			["string", "issuer", ""]
-		],
-		"Totp_getValue": [
-			"int",
-			["Totp", "x"]
-		],
-		"WebSocketConnection_wsSend": [
-			"void",
-			["WebSocketConnection", "con"],
-			["string", "text"]
-		],
-		"WebSocketConnection_wsRecv": [
-			"Promise_WebSocketMessage",
-			["WebSocketConnection", "con"]
-		],
-		"Worker_isWorkDone": [
-			"bool",
-			["Worker", "x"]
-		],
-		"stdstring_new": [
-			"stdstring",
-			["string", "data"],
-			["int", "len"]
-		],
-		"stdstring_c_str": [
-			"string",
-			["stdstring", "x"]
-		]
-	}
+    "classes": {
+        "DetachedScheduler": {
+            "__parent": "Scheduler",
+            "new": "DetachedScheduler_new",
+            "isActive": "DetachedScheduler_isActive"
+        },
+        "EstablishWebSocketConnectionTask": {
+            "__parent": "Worker",
+            "new": "EstablishWebSocketConnectionTask_new",
+            "getSocket": "EstablishWebSocketConnectionTask_getSocket"
+        },
+        "HttpRequest": {
+            "__parent": "MimeMessage",
+            "new": "HttpRequest_new",
+            "setPayload": "HttpRequest_setPayload",
+            "getPath": "HttpRequest_getPath"
+        },
+        "HttpRequestTask": {
+            "__parent": "Worker",
+            "newFromRequest": "HttpRequestTask_newFromRequest",
+            "newFromUrl": "HttpRequestTask_newFromUrl",
+            "getResponseBody": "HttpRequestTask_getResponseBody",
+            "getResponseBodyCStr": "HttpRequestTask_getResponseBodyCStr"
+        },
+        "MimeMessage": {
+            "addHeader": "MimeMessage_addHeader"
+        },
+        "PromiseBase": {
+            "isPending": "PromiseBase_isPending"
+        },
+        "Promise_WebSocketMessage": {
+            "__parent": "PromiseBase",
+            "getData": "Promise_WebSocketMessage_getData"
+        },
+        "Scheduler": {
+            "new": "Scheduler_new",
+            "setDontMakeReusableSockets": "Scheduler_setDontMakeReusableSockets",
+            "add": "Scheduler_add",
+            "shouldKeepRunning": "Scheduler_shouldKeepRunning",
+            "tick": "Scheduler_tick"
+        },
+        "ServerService": {},
+        "ServerWebService": {
+            "__parent": "ServerService",
+            "new": "ServerWebService_new",
+            "hasPendingRequest": "ServerWebService_hasPendingRequest",
+            "getPendingRequestPath": "ServerWebService_getPendingRequestPath",
+            "ignoreRequest": "ServerWebService_ignoreRequest",
+            "replyWithHtml": "ServerWebService_replyWithHtml",
+            "replyWith404": "ServerWebService_replyWith404"
+        },
+        "Socket": {
+            "__parent": "Worker"
+        },
+        "Totp": {
+            "new": "Totp_new",
+            "getQrCodeUri": "Totp_getQrCodeUri",
+            "getValue": "Totp_getValue"
+        },
+        "WebSocketConnection": {
+            "__parent": "Socket",
+            "wsSend": "WebSocketConnection_wsSend",
+            "wsRecv": "WebSocketConnection_wsRecv"
+        },
+        "Worker": {
+            "isWorkDone": "Worker_isWorkDone"
+        },
+        "stdstring": {
+            "new": "stdstring_new",
+            "c_str": "stdstring_c_str"
+        }
+    },
+    "namespaces": {
+        "aes": {
+            "ecbEncrypt": "aes_ecbEncrypt",
+            "ecbDecrypt": "aes_ecbDecrypt"
+        },
+        "base64": {
+            "encode": "base64_encode",
+            "decode": "base64_decode"
+        },
+        "Hotp": {
+            "generateSecret": "Hotp_generateSecret"
+        },
+        "Server": {
+            "bind": "Server_bind"
+        }
+    },
+    "functions": {
+        "aes_ecbEncrypt": [
+            "void",
+            [
+                "stdstring",
+                "data"
+            ],
+            [
+                "stdstring",
+                "key"
+            ]
+        ],
+        "aes_ecbDecrypt": [
+            "void",
+            [
+                "stdstring",
+                "data"
+            ],
+            [
+                "stdstring",
+                "key"
+            ]
+        ],
+        "base64_encode": [
+            "string",
+            [
+                "stdstring",
+                "x"
+            ]
+        ],
+        "base64_decode": [
+            "stdstring",
+            [
+                "string",
+                "x"
+            ]
+        ],
+        "DetachedScheduler_new": [
+            "DetachedScheduler"
+        ],
+        "DetachedScheduler_isActive": [
+            "bool",
+            [
+                "DetachedScheduler",
+                "sched"
+            ]
+        ],
+        "EstablishWebSocketConnectionTask_new": [
+            "EstablishWebSocketConnectionTask",
+            [
+                "string",
+                "uri"
+            ]
+        ],
+        "EstablishWebSocketConnectionTask_getSocket": [
+            "WebSocketConnection",
+            [
+                "EstablishWebSocketConnectionTask",
+                "x"
+            ]
+        ],
+        "Hotp_generateSecret": [
+            "stdstring",
+            [
+                "int",
+                "bytes",
+                16
+            ]
+        ],
+        "HttpRequest_new": [
+            "HttpRequest",
+            [
+                "string",
+                "uri"
+            ]
+        ],
+        "HttpRequest_setPayload": [
+            "void",
+            [
+                "HttpRequest",
+                "x"
+            ],
+            [
+                "string",
+                "data"
+            ]
+        ],
+        "HttpRequest_getPath": [
+            "string",
+            [
+                "HttpRequest",
+                "x"
+            ]
+        ],
+        "HttpRequestTask_newFromRequest": [
+            "HttpRequestTask",
+            [
+                "HttpRequest",
+                "hr"
+            ]
+        ],
+        "HttpRequestTask_newFromUrl": [
+            "HttpRequestTask",
+            [
+                "string",
+                "url"
+            ]
+        ],
+        "HttpRequestTask_getResponseBody": [
+            "stdstring",
+            [
+                "HttpRequestTask",
+                "x"
+            ]
+        ],
+        "HttpRequestTask_getResponseBodyCStr": [
+            "string",
+            [
+                "HttpRequestTask",
+                "x"
+            ]
+        ],
+        "MimeMessage_addHeader": [
+            "void",
+            [
+                "MimeMessage",
+                "x"
+            ],
+            [
+                "string",
+                "key"
+            ],
+            [
+                "string",
+                "value"
+            ]
+        ],
+        "PromiseBase_isPending": [
+            "bool",
+            [
+                "PromiseBase",
+                "x"
+            ]
+        ],
+        "Promise_WebSocketMessage_getData": [
+            "string",
+            [
+                "Promise_WebSocketMessage",
+                "x"
+            ]
+        ],
+        "Scheduler_new": [
+            "Scheduler"
+        ],
+        "Scheduler_setDontMakeReusableSockets": [
+            "void",
+            [
+                "Scheduler",
+                "sched"
+            ]
+        ],
+        "Scheduler_add": [
+            "void",
+            [
+                "Scheduler",
+                "sched"
+            ],
+            [
+                "Worker",
+                "spWorker"
+            ]
+        ],
+        "Scheduler_shouldKeepRunning": [
+            "bool",
+            [
+                "Scheduler",
+                "sched"
+            ]
+        ],
+        "Scheduler_tick": [
+            "void",
+            [
+                "Scheduler",
+                "sched"
+            ]
+        ],
+        "Server_bind": [
+            "bool",
+            [
+                "Scheduler",
+                "serv"
+            ],
+            [
+                "int",
+                "port"
+            ],
+            [
+                "ServerService",
+                "srv"
+            ]
+        ],
+        "ServerWebService_new": [
+            "ServerWebService"
+        ],
+        "ServerWebService_hasPendingRequest": [
+            "bool",
+            [
+                "ServerWebService",
+                "x"
+            ]
+        ],
+        "ServerWebService_getPendingRequestPath": [
+            "string",
+            [
+                "ServerWebService",
+                "x"
+            ]
+        ],
+        "ServerWebService_ignoreRequest": [
+            "void",
+            [
+                "ServerWebService",
+                "x"
+            ]
+        ],
+        "ServerWebService_replyWithHtml": [
+            "void",
+            [
+                "ServerWebService",
+                "x"
+            ],
+            [
+                "string",
+                "html"
+            ]
+        ],
+        "ServerWebService_replyWith404": [
+            "void",
+            [
+                "ServerWebService",
+                "x"
+            ]
+        ],
+        "Totp_new": [
+            "Totp",
+            [
+                "stdstring",
+                "secret"
+            ]
+        ],
+        "Totp_getQrCodeUri": [
+            "string",
+            [
+                "Totp",
+                "x"
+            ],
+            [
+                "string",
+                "label"
+            ],
+            [
+                "string",
+                "issuer",
+                ""
+            ]
+        ],
+        "Totp_getValue": [
+            "int",
+            [
+                "Totp",
+                "x"
+            ]
+        ],
+        "WebSocketConnection_wsSend": [
+            "void",
+            [
+                "WebSocketConnection",
+                "con"
+            ],
+            [
+                "string",
+                "text"
+            ]
+        ],
+        "WebSocketConnection_wsRecv": [
+            "Promise_WebSocketMessage",
+            [
+                "WebSocketConnection",
+                "con"
+            ]
+        ],
+        "Worker_isWorkDone": [
+            "bool",
+            [
+                "Worker",
+                "x"
+            ]
+        ],
+        "stdstring_new": [
+            "stdstring",
+            [
+                "string",
+                "data"
+            ],
+            [
+                "int",
+                "len"
+            ]
+        ],
+        "stdstring_c_str": [
+            "string",
+            [
+                "stdstring",
+                "x"
+            ]
+        ]
+    }
 }
