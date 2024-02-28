@@ -768,6 +768,11 @@ spanning over multiple lines */
 
 		assert(Regex(R"((?'group'\w)\k'group')").matchesFully("aa") == true);
 		assert(Regex(R"((?<group>\w)\k<group>)").matchesFully("aa") == true);
+
+		assert(Regex(R"EOR((?x)(
+			[a-z]  # Any letter of the alphabet
+			+      # 1 or more times
+		))EOR").matchesFully("abc") == true);
 	});
 
 	test("MessageStream", []

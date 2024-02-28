@@ -92,6 +92,10 @@ namespace soup
 				{
 					res |= RE_INSENSITIVE;
 				}
+				else if (*flags == 'x')
+				{
+					res |= RE_EXTENDED;
+				}
 				else if (*flags == 'u')
 				{
 					res |= RE_UNICODE;

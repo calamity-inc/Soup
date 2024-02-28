@@ -231,6 +231,10 @@ namespace soup
 		{
 			str.push_back('i');
 		}
+		if (flags & RE_EXTENDED)
+		{
+			str.push_back('x');
+		}
 		if (flags & RE_UNICODE)
 		{
 			str.push_back('u');

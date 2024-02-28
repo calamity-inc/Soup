@@ -9,6 +9,7 @@ If there's a feature that's not mentioned here, feel free to open an issue on ou
 - 'm' — '^' and '$' also match start and end of lines, respectively
 - 's' — '.' also matches '\n'
 - 'i' — Case insensitive match
+- 'x' — Ignore bare space characters in pattern. '#' signifies begin of line comment.
 - 'u' — Treat pattern and strings-to-match as UTF-8 instead of binary data
 - 'U' — Quantifiers become lazy by default and are instead made greedy by a trailing '?'
 - 'D' — '$' only matches end of pattern, not '\n' — ignored if 'm' flag is set

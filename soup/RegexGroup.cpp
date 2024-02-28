@@ -897,6 +897,22 @@ namespace soup
 					}
 					continue;
 				}
+
+				if (s.hasFlag(RE_EXTENDED))
+				{
+					if (string::isSpace(*s.it))
+					{
+						continue;
+					}
+					if (*s.it == '#')
+					{
+						do
+						{
+							++s.it;
+						} while (s.it != s.end && *s.it != '\n');
+						continue;
+					}
+				}
 			}
 
 			UniquePtr<RegexConstraint> upC;
