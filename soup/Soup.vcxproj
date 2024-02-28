@@ -902,7 +902,6 @@
     <ClInclude Include="Totp.hpp" />
     <ClInclude Include="type_traits.hpp" />
     <ClInclude Include="unit_testing.hpp" />
-    <ClInclude Include="VirtualRegion.hpp" />
     <ClInclude Include="time.hpp" />
     <ClInclude Include="TlsAlertDescription.hpp" />
     <ClInclude Include="TlsCertificate.hpp" />

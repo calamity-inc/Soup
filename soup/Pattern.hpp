@@ -7,9 +7,6 @@
 
 #include "fwd.hpp"
 #include "base.hpp"
-#if SOUP_WINDOWS
-#include <Windows.h>
-#endif
 
 namespace soup
 {
@@ -23,10 +20,5 @@ namespace soup
 		Pattern(std::string_view ida_sig);
 
 		void addBytesFromIdaSig(std::string_view ida_sig);
-
-#if SOUP_WINDOWS
-		[[nodiscard]] VirtualRegion virtual_scan(BYTE* startAddress = nullptr);
-		[[nodiscard]] std::vector<VirtualRegion> virtual_scan_all(unsigned int limit = -1);
-#endif
 	};
 }

@@ -3,7 +3,6 @@
 #include "Module.hpp"
 #include "CompiletimePatternWithOptBytesBase.hpp"
 #include "Pointer.hpp"
-#include "VirtualRegion.hpp"
 
 namespace soup
 {
@@ -90,73 +89,4 @@ namespace soup
 			}
 		}
 	}
-
-#if SOUP_WINDOWS
-	VirtualRegion Pattern::virtual_scan(BYTE* startAddress)
-	{
-		auto compareMemory = [](const std::uint8_t* data, std::optional<std::uint8_t>* elem, std::size_t num) -> bool
-		{
-			for (std::size_t i = 0; i < num; ++i)
-			{
-				if (elem[i].has_value() && data[i] != elem[i].value())
-				{
-					return false;
-				}
-			}
-			return true;
-		};
-
-		MEMORY_BASIC_INFORMATION mbi{};
-		auto&& baseOffset = startAddress;
-
-		while (VirtualQuery(baseOffset, &mbi, sizeof mbi) > 0)
-		{
-			//try
-			{
-				if (mbi.State == MEM_COMMIT && mbi.Protect == PAGE_READWRITE && mbi.Type == MEM_PRIVATE && mbi.RegionSize > 0x80000)
-				{
-					auto start = baseOffset;
-					auto end = start + (mbi.RegionSize - bytes.size());
-
-					for (auto&& i = start; i < end; ++i)
-					{
-						if (compareMemory(i, bytes.data(), bytes.size()))
-						{
-							//g_logger.log(fmt::format("{} in region with {}", (void*)i, mbi.RegionSize));
-							return VirtualRegion(baseOffset, mbi.RegionSize, i);
-						}
-					}
-				}
-			}
-			//catch (...)
-			//{
-			//}
-			baseOffset += mbi.RegionSize;
-			mbi = {};
-		}
-
-		return VirtualRegion(nullptr, 0, nullptr);
-	}
-
-	std::vector<VirtualRegion> Pattern::virtual_scan_all(unsigned int limit)
-	{
-		std::vector<VirtualRegion> result{};
-		BYTE* addr = nullptr;
-		while (true)
-		{
-			auto region = virtual_scan(addr);
-			if (region.pointer == nullptr)
-			{
-				break;
-			}
-			addr = region.pointer + 8;
-			result.emplace_back(std::move(region));
-			if (result.size() >= limit)
-			{
-				break;
-			}
-		}
-		return result;
-	}
-#endif
 }

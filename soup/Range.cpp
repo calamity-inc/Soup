@@ -1,10 +1,15 @@
 #include "Range.hpp"
 
+#include "base.hpp"
+
 #if SOUP_X86 && SOUP_BITS == 64
 #include <emmintrin.h>
 #endif
 
-#include "base.hpp"
+#if SOUP_WINDOWS
+#include <Windows.h>
+#endif
+
 #include "bitutil.hpp"
 #include "CpuInfo.hpp"
 #include "Pattern.hpp"

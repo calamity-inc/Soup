@@ -39,9 +39,6 @@
     <ClInclude Include="Range.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="VirtualRegion.hpp">
-      <Filter>mem</Filter>
-    </ClInclude>
     <ClInclude Include="Window.hpp">
       <Filter>os</Filter>
     </ClInclude>
