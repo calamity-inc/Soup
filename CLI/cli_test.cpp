@@ -580,6 +580,10 @@ spanning over multiple lines */
 
 		// parseAndDiscardMetadata should discard metadata and return only the real top-level tag
 		tag = xml::parseAndDiscardMetadata(R"(<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html><html></html>)"); assert(tag->encode() == "<html></html>");
+
+		// Test CDATA section parsing
+		tag = xml::parseAndDiscardMetadata("<pre><![CDATA[<sender>John Smith</sender>]]></pre>"); assert(tag->encode() == "<pre>&lt;sender&gt;John Smith&lt;/sender&gt;</pre>");
+		tag = xml::parseAndDiscardMetadata("<pre>before<![CDATA[during]]>after</pre>"); assert(tag->encode() == "<pre>beforeduringafter</pre>");
 	});
 
 	test("Endianness", []

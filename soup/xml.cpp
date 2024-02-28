@@ -325,37 +325,36 @@ namespace soup
 		}
 		StringBuilder text;
 		text.beginCopy(xml, i);
-		for (;; ++i)
+		for (; i != xml.end(); ++i)
 		{
-			if (i == xml.end())
-			{
-				break;
-			}
 			if (*i == '<')
 			{
 				text.endCopy(xml, i);
+#if DEBUG_PARSE
 				if (!text.empty())
 				{
-#if DEBUG_PARSE
 					std::cout << "Copied text: " << text << std::endl;
-#endif
-					tag->children.emplace_back(soup::make_unique<XmlText>(std::move(text)));
-					text.clear();
 				}
+#endif
 
 				if ((i + 1) != xml.end()
 					&& *(i + 1) == '/'
 					)
 				{
+					if (!text.empty())
+					{
+#if DEBUG_PARSE
+						std::cout << "Discharging XmlText for tag close: " << text << std::endl;
+#endif
+						tag->children.emplace_back(soup::make_unique<XmlText>(std::move(text)));
+						text.clear();
+					}
+
 					i += 2;
 					StringBuilder tbc_tag;
 					tbc_tag.beginCopy(xml, i);
-					for (;; ++i)
+					for (; i != xml.end(); ++i)
 					{
-						if (i == xml.end())
-						{
-							break;
-						}
 						if (*i == '>')
 						{
 							break;
@@ -380,6 +379,51 @@ namespace soup
 					text.beginCopy(xml, i);
 					break;
 				}
+
+				// Handle CDATA sections
+				if ((i + 1) != xml.end() && *(i + 1) == '!'
+					&& (i + 2) != xml.end() && *(i + 2) == '['
+					&& (i + 3) != xml.end() && *(i + 3) == 'C'
+					&& (i + 4) != xml.end() && *(i + 4) == 'D'
+					&& (i + 5) != xml.end() && *(i + 5) == 'A'
+					&& (i + 6) != xml.end() && *(i + 6) == 'T'
+					&& (i + 7) != xml.end() && *(i + 7) == 'A'
+					&& (i + 8) != xml.end() && *(i + 8) == '['
+					)
+				{
+					i += 9;
+					text.beginCopy(xml, i);
+					for (; i != xml.end(); ++i)
+					{
+						if (*i == ']'
+							&& (i + 1) != xml.end() && *(i + 1) == ']'
+							&& (i + 2) != xml.end() && *(i + 2) == '>'
+							)
+						{
+							text.endCopy(xml, i);
+							i += 3;
+							break;
+						}
+					}
+#if DEBUG_PARSE
+					if (!text.empty())
+					{
+						std::cout << "Copied text from CDATA section: " << text << std::endl;
+					}
+#endif
+					text.beginCopy(xml, i);
+					--i; // Cursor is already in the right place but for loop will do `++i`
+					continue;
+				}
+
+				if (!text.empty())
+				{
+#if DEBUG_PARSE
+					std::cout << "Discharging XmlText for nested tag: " << text << std::endl;
+#endif
+					tag->children.emplace_back(soup::make_unique<XmlText>(std::move(text)));
+					text.clear();
+				}
 #if DEBUG_PARSE
 				auto child = parse(xml, i);
 				std::cout << "Recursed for " << child->name << ": " << child->encode() << std::endl;
@@ -398,7 +442,7 @@ namespace soup
 		if (!text.empty())
 		{
 #if DEBUG_PARSE
-			std::cout << "Copied text before return: " << text << std::endl;
+			std::cout << "Discharging XmlText for return: " << text << std::endl;
 #endif
 			tag->children.emplace_back(soup::make_unique<XmlText>(std::move(text)));
 			text.clear();
