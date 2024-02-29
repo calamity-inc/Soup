@@ -13,6 +13,15 @@
 
 namespace soup
 {
+	std::string XmlNode::encode() const noexcept
+	{
+		if (is_text)
+		{
+			return static_cast<const XmlText*>(this)->encode();
+		}
+		return static_cast<const XmlTag*>(this)->encode();
+	}
+
 	bool XmlNode::isTag() const noexcept
 	{
 		return !is_text;
@@ -79,20 +88,7 @@ namespace soup
 		str.push_back('>');
 		for (const auto& child : children)
 		{
-			if (child->is_text)
-			{
-				//str.push_back('{');
-				std::string contents = static_cast<XmlText*>(child.get())->contents;
-				string::replaceAll(contents, "&", "&amp;");
-				string::replaceAll(contents, "<", "&lt;");
-				string::replaceAll(contents, ">", "&gt;");
-				str.append(contents);
-				//str.push_back('}');
-			}
-			else
-			{
-				str.append(static_cast<XmlTag*>(child.get())->encode());
-			}
+			str.append(child->encode());
 		}
 		str.append("</");
 		str.append(name);
@@ -151,6 +147,15 @@ namespace soup
 		string::replaceAll(this->contents, "&amp;", "&");
 		string::replaceAll(this->contents, "&lt;", "<");
 		string::replaceAll(this->contents, "&gt;", ">");
+	}
+
+	std::string XmlText::encode() const noexcept
+	{
+		std::string contents = this->contents;
+		string::replaceAll(contents, "&", "&amp;");
+		string::replaceAll(contents, "<", "&lt;");
+		string::replaceAll(contents, ">", "&gt;");
+		return contents;
 	}
 
 	std::vector<UniquePtr<XmlTag>> xml::parse(const std::string& xml)

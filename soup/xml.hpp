@@ -19,6 +19,8 @@ namespace soup
 
 		virtual ~XmlNode() = default;
 
+		[[nodiscard]] std::string encode() const noexcept;
+
 		// Type checks.
 		[[nodiscard]] bool isTag() const noexcept;
 		[[nodiscard]] bool isText() const noexcept;
@@ -59,6 +61,8 @@ namespace soup
 		}
 
 		XmlText(std::string&& contents) noexcept;
+
+		[[nodiscard]] std::string encode() const noexcept;
 	};
 
 	class xml
