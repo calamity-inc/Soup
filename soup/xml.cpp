@@ -340,6 +340,10 @@ namespace soup
 			++i;
 		}
 		StringBuilder text;
+		while (i != xml.end() && string::isSpace(*i))
+		{
+			++i;
+		}
 		text.beginCopy(xml, i);
 		for (; i != xml.end(); ++i)
 		{
@@ -451,7 +455,12 @@ namespace soup
 				{
 					break;
 				}
-				text.beginCopy(xml, i + 1);
+				do
+				{
+					++i;
+				} while (i != xml.end() && string::isSpace(*i));
+				text.beginCopy(xml, i);
+				--i; // Cursor is already in the right place but for loop will do `++i`
 			}
 		}
 		text.endCopy(xml, i);

@@ -586,6 +586,16 @@ spanning over multiple lines */
 		// Test CDATA section parsing
 		tag = xml::parseAndDiscardMetadata("<pre><![CDATA[<sender>John Smith</sender>]]></pre>"); assert(tag->encode() == "<pre>&lt;sender&gt;John Smith&lt;/sender&gt;</pre>");
 		tag = xml::parseAndDiscardMetadata("<pre>before<![CDATA[during]]>after</pre>"); assert(tag->encode() == "<pre>beforeduringafter</pre>");
+
+		// Cosmetic whitespace should be ignored
+		tag = xml::parseAndDiscardMetadata(R"EOC(
+<entries>
+	<entry primary>
+		<name>primary</name>
+	</entry>
+</entries>
+)EOC");
+		assert(tag->encode() == "<entries><entry primary><name>primary</name></entry></entries>");
 	});
 
 	test("Endianness", []
