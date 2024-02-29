@@ -73,13 +73,16 @@ namespace soup
 		if (kbRgbCorsairCue::ensureConnected())
 		{
 			kbRgbCorsairCue::send(R"({"method":1,"params":{"deviceTypeMask":1,"sizeMax":10},"code":2})");
-			auto jr = json::decode(kbRgbCorsairCue::receive());
-			for (const auto& dev : jr->asObj().at("result").asObj().at("deviceInfos").asArr())
+			// For some users, 'kbRgbCorsairCue::receive())' apparently returns an empty string. Handle it somewhat gracefully.
+			if (auto jr = json::decode(kbRgbCorsairCue::receive()))
 			{
-				res.emplace_back(soup::make_unique<kbRgbCorsairCue>(
-					std::move(dev.asObj().at("id").asStr().value),
-					std::move(dev.asObj().at("model").asStr().value)
-				));
+				for (const auto& dev : jr->asObj().at("result").asObj().at("deviceInfos").asArr())
+				{
+					res.emplace_back(soup::make_unique<kbRgbCorsairCue>(
+						std::move(dev.asObj().at("id").asStr().value),
+						std::move(dev.asObj().at("model").asStr().value)
+					));
+				}
 			}
 		}
 #endif
