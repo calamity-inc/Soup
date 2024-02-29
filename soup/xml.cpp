@@ -209,6 +209,10 @@ namespace soup
 
 	UniquePtr<XmlTag> xml::parse(const std::string& xml, std::string::const_iterator& i)
 	{
+		while (i != xml.end() && string::isSpace(*i))
+		{
+			++i;
+		}
 		if (i == xml.end())
 		{
 			return {};
