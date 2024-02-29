@@ -165,7 +165,10 @@ namespace soup
 		auto i = xml.begin();
 		do
 		{
-			res.emplace_back(parse(xml, i));
+			if (auto tag = parse(xml, i))
+			{
+				res.emplace_back(std::move(tag));
+			}
 		} while (i != xml.end() && ++i != xml.end());
 
 		return res;
@@ -206,6 +209,10 @@ namespace soup
 
 	UniquePtr<XmlTag> xml::parse(const std::string& xml, std::string::const_iterator& i)
 	{
+		if (i == xml.end())
+		{
+			return {};
+		}
 		auto tag = soup::make_unique<XmlTag>();
 		if (*i == '<')
 		{
