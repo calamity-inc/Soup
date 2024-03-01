@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "fwd.hpp"
@@ -8,13 +9,18 @@
 
 namespace soup
 {
+	struct XmlMode;
+
 	class xml
 	{
 	public:
-		[[nodiscard]] static std::vector<UniquePtr<XmlTag>> parse(const std::string& xml);
-		[[nodiscard]] static UniquePtr<XmlTag> parseAndDiscardMetadata(const std::string& xml);
+		static XmlMode MODE_XML;
+		static XmlMode MODE_HTML;
+
+		[[nodiscard]] static std::vector<UniquePtr<XmlTag>> parse(const std::string& xml, const XmlMode& mode = MODE_XML);
+		[[nodiscard]] static UniquePtr<XmlTag> parseAndDiscardMetadata(const std::string& xml, const XmlMode& mode = MODE_XML);
 	private:
-		[[nodiscard]] static UniquePtr<XmlTag> parse(const std::string& xml, std::string::const_iterator& i);
+		[[nodiscard]] static UniquePtr<XmlTag> parse(const std::string& xml, const XmlMode& mode, std::string::const_iterator& i);
 	};
 
 	struct XmlNode
@@ -28,7 +34,7 @@ namespace soup
 
 		virtual ~XmlNode() = default;
 
-		[[nodiscard]] std::string encode() const noexcept;
+		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const noexcept;
 
 		// Type checks.
 		[[nodiscard]] bool isTag() const noexcept;
@@ -52,7 +58,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string encode() const noexcept;
+		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const noexcept;
 
 		[[nodiscard]] bool hasAttribute(const std::string& name) const noexcept;
 		[[nodiscard]] const std::string& getAttribute(const std::string& name) const;
@@ -72,5 +78,11 @@ namespace soup
 		XmlText(std::string&& contents) noexcept;
 
 		[[nodiscard]] std::string encode() const noexcept;
+	};
+
+	struct XmlMode
+	{
+		// If not empty, `/>` is ignored. Instead, only contained tags are considered self-closing.
+		std::unordered_set<std::string> self_closing_tags;
 	};
 }

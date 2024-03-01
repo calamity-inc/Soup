@@ -568,7 +568,6 @@ spanning over multiple lines */
 		tag = xml::parseAndDiscardMetadata("<html>"); assert(tag->encode() == "<html></html>");
 		tag = xml::parseAndDiscardMetadata("<html><body>Hello</body></html>"); assert(tag->encode() == "<html><body>Hello</body></html>");
 		tag = xml::parseAndDiscardMetadata(R"(<html lang="en">Hello</html>)"); assert(tag->encode() == R"(<html lang="en">Hello</html>)");
-		tag = xml::parseAndDiscardMetadata(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
 		tag = xml::parseAndDiscardMetadata(R"(<html><body><h1></body>test)"); assert(tag->encode() == R"(<html><body><h1></h1></body>test</html>)");
 		tag = xml::parseAndDiscardMetadata(R"(<img src="soup"/>)"); assert(tag->encode() == R"(<img src="soup"></img>)");
 		tag = xml::parseAndDiscardMetadata(""); assert(tag->encode() == "<body></body>");
@@ -596,6 +595,14 @@ spanning over multiple lines */
 </entries>
 )EOC");
 		assert(tag->encode() == "<entries><entry primary><name>primary</name></entry></entries>");
+
+		// Self-closing tags & different modes
+		tag = xml::parseAndDiscardMetadata("<root><div/>Hello</root>"); assert(tag->encode() == "<root><div></div>Hello</root>");
+		tag = xml::parseAndDiscardMetadata("<root><div/>Hello</root>", xml::MODE_HTML); assert(tag->encode(xml::MODE_HTML) == "<root><div>Hello</div></root>");
+		tag = xml::parseAndDiscardMetadata("<root><br>Hello</root>"); assert(tag->encode() == "<root><br>Hello</br></root>");
+		tag = xml::parseAndDiscardMetadata("<root><br>Hello</root>", xml::MODE_HTML); assert(tag->encode(xml::MODE_HTML) == "<root><br />Hello</root>");
+		tag = xml::parseAndDiscardMetadata(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
+		tag = xml::parseAndDiscardMetadata(R"(<html><body/>test)", xml::MODE_HTML); assert(tag->encode(xml::MODE_HTML) == R"(<html><body>test</body></html>)");
 	});
 
 	test("Endianness", []

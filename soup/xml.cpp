@@ -13,14 +13,17 @@
 
 namespace soup
 {
-	std::vector<UniquePtr<XmlTag>> xml::parse(const std::string& xml)
+	XmlMode xml::MODE_XML{};
+	XmlMode xml::MODE_HTML{ { "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" } };
+
+	std::vector<UniquePtr<XmlTag>> xml::parse(const std::string& xml, const XmlMode& mode)
 	{
 		std::vector<UniquePtr<XmlTag>> res{};
 
 		auto i = xml.begin();
 		do
 		{
-			if (auto tag = parse(xml, i))
+			if (auto tag = parse(xml, mode, i))
 			{
 				res.emplace_back(std::move(tag));
 			}
@@ -29,9 +32,9 @@ namespace soup
 		return res;
 	}
 
-	UniquePtr<XmlTag> xml::parseAndDiscardMetadata(const std::string& xml)
+	UniquePtr<XmlTag> xml::parseAndDiscardMetadata(const std::string& xml, const XmlMode& mode)
 	{
-		auto tags = parse(xml);
+		auto tags = parse(xml, mode);
 
 		for (auto i = tags.begin(); i != tags.end(); )
 		{
@@ -62,7 +65,7 @@ namespace soup
 		return body;
 	}
 
-	UniquePtr<XmlTag> xml::parse(const std::string& xml, std::string::const_iterator& i)
+	UniquePtr<XmlTag> xml::parse(const std::string& xml, const XmlMode& mode, std::string::const_iterator& i)
 	{
 		while (i != xml.end() && string::isSpace(*i))
 		{
@@ -130,7 +133,8 @@ namespace soup
 							tag->attributes.emplace_back(std::move(name), std::string());
 							name.clear();
 						}
-						if ((i + 1) != xml.end()
+						if (mode.self_closing_tags.empty()
+							&& (i + 1) != xml.end()
 							&& *(i + 1) == '>'
 							)
 						{
@@ -188,6 +192,11 @@ namespace soup
 			}
 			if (tag->name.c_str()[0] == '?' // <?xml ... ?>
 				|| tag->name.c_str()[0] == '!' // <!DOCTYPE ...>
+#if SOUP_CPP20
+				|| mode.self_closing_tags.contains(tag->name)
+#else
+				|| mode.self_closing_tags.count(tag->name)
+#endif
 				)
 			{
 				return tag; // Won't have children
@@ -300,14 +309,15 @@ namespace soup
 					text.clear();
 				}
 #if DEBUG_PARSE
-				auto child = parse(xml, i);
+				auto child = parse(xml, mode, i);
 				std::cout << "Recursed for " << child->name << ": " << child->encode() << std::endl;
 				tag->children.emplace_back(std::move(child));
 #else
-				tag->children.emplace_back(parse(xml, i));
+				tag->children.emplace_back(parse(xml, mode, i));
 #endif
 				if (i == xml.end())
 				{
+					text.beginCopy(xml, i);
 					break;
 				}
 				do
@@ -330,13 +340,13 @@ namespace soup
 		return tag;
 	}
 
-	std::string XmlNode::encode() const noexcept
+	std::string XmlNode::encode(const XmlMode& mode) const noexcept
 	{
 		if (is_text)
 		{
 			return static_cast<const XmlText*>(this)->encode();
 		}
-		return static_cast<const XmlTag*>(this)->encode();
+		return static_cast<const XmlTag*>(this)->encode(mode);
 	}
 
 	bool XmlNode::isTag() const noexcept
@@ -385,8 +395,14 @@ namespace soup
 		return *static_cast<const XmlText*>(this);
 	}
 
-	std::string XmlTag::encode() const noexcept
+	std::string XmlTag::encode(const XmlMode& mode) const noexcept
 	{
+#if SOUP_CPP20
+		const bool is_self_closing = mode.self_closing_tags.contains(name);
+#else
+		const bool is_self_closing = mode.self_closing_tags.count(name);
+#endif
+
 		std::string str(1, '<');
 		str.append(name);
 		for (const auto& e : attributes)
@@ -402,14 +418,21 @@ namespace soup
 				str.push_back('"');
 			}
 		}
+		if (is_self_closing)
+		{
+			str.append(" /");
+		}
 		str.push_back('>');
 		for (const auto& child : children)
 		{
-			str.append(child->encode());
+			str.append(child->encode(mode));
 		}
-		str.append("</");
-		str.append(name);
-		str.push_back('>');
+		if (!is_self_closing)
+		{
+			str.append("</");
+			str.append(name);
+			str.push_back('>');
+		}
 		return str;
 	}
 
