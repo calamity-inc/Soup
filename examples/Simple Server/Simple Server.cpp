@@ -162,6 +162,8 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 			// cURL: 2D01D915
 			// Soup: 3CCAD55E, 584CC037, B6289622, DA7F09A6
 
+			// Could also consider contents of signature_algorithms extension. { rsa_pkcs1_sha1 } is implied if not present.
+
 			soup::ServerWebService::sendHtml(s, std::move(str));
 		}
 	}
