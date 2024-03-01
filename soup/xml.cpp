@@ -13,151 +13,6 @@
 
 namespace soup
 {
-	std::string XmlNode::encode() const noexcept
-	{
-		if (is_text)
-		{
-			return static_cast<const XmlText*>(this)->encode();
-		}
-		return static_cast<const XmlTag*>(this)->encode();
-	}
-
-	bool XmlNode::isTag() const noexcept
-	{
-		return !is_text;
-	}
-
-	bool XmlNode::isText() const noexcept
-	{
-		return is_text;
-	}
-
-	XmlTag& XmlNode::asTag()
-	{
-		if (!isTag())
-		{
-			SOUP_THROW(Exception("XmlNode has unexpected type"));
-		}
-		return *static_cast<XmlTag*>(this);
-	}
-
-	XmlText& XmlNode::asText()
-	{
-		if (!isText())
-		{
-			SOUP_THROW(Exception("XmlNode has unexpected type"));
-		}
-		return *static_cast<XmlText*>(this);
-	}
-
-	const XmlTag& XmlNode::asTag() const
-	{
-		if (!isTag())
-		{
-			SOUP_THROW(Exception("XmlNode has unexpected type"));
-		}
-		return *static_cast<const XmlTag*>(this);
-	}
-
-	const XmlText& XmlNode::asText() const
-	{
-		if (!isText())
-		{
-			SOUP_THROW(Exception("XmlNode has unexpected type"));
-		}
-		return *static_cast<const XmlText*>(this);
-	}
-
-	std::string XmlTag::encode() const noexcept
-	{
-		std::string str(1, '<');
-		str.append(name);
-		for (const auto& e : attributes)
-		{
-			str.push_back(' ');
-			//str.push_back('{');
-			str.append(e.first);
-			//str.push_back('}');
-			if (!e.second.empty())
-			{
-				str.append("=\"");
-				str.append(e.second);
-				str.push_back('"');
-			}
-		}
-		str.push_back('>');
-		for (const auto& child : children)
-		{
-			str.append(child->encode());
-		}
-		str.append("</");
-		str.append(name);
-		str.push_back('>');
-		return str;
-	}
-
-	bool XmlTag::hasAttribute(const std::string& name) const noexcept
-	{
-		for (const auto& a : attributes)
-		{
-			if (a.first == name)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	const std::string& XmlTag::getAttribute(const std::string& name) const
-	{
-		for (const auto& a : attributes)
-		{
-			if (a.first == name)
-			{
-				return a.second;
-			}
-		}
-		SOUP_ASSERT_UNREACHABLE;
-	}
-
-	XmlTag* XmlTag::findTag(const std::string& name_target)
-	{
-		if (name == name_target)
-		{
-			return this;
-		}
-		XmlTag* res = nullptr;
-		for (const auto& child : children)
-		{
-			if (!child->is_text)
-			{
-				res = static_cast<XmlTag*>(child.get())->findTag(name_target);
-				if (res != nullptr)
-				{
-					break;
-				}
-			}
-		}
-		return res;
-	}
-
-	XmlText::XmlText(std::string&& contents) noexcept
-		: XmlNode(true), contents(std::move(contents))
-	{
-		string::replaceAll(this->contents, "&amp;", "&");
-		string::replaceAll(this->contents, "&lt;", "<");
-		string::replaceAll(this->contents, "&gt;", ">");
-	}
-
-	std::string XmlText::encode() const noexcept
-	{
-		std::string contents = this->contents;
-		string::replaceAll(contents, "&", "&amp;");
-		string::replaceAll(contents, "<", "&lt;");
-		string::replaceAll(contents, ">", "&gt;");
-		return contents;
-	}
-
 	std::vector<UniquePtr<XmlTag>> xml::parse(const std::string& xml)
 	{
 		std::vector<UniquePtr<XmlTag>> res{};
@@ -473,5 +328,150 @@ namespace soup
 			text.clear();
 		}
 		return tag;
+	}
+
+	std::string XmlNode::encode() const noexcept
+	{
+		if (is_text)
+		{
+			return static_cast<const XmlText*>(this)->encode();
+		}
+		return static_cast<const XmlTag*>(this)->encode();
+	}
+
+	bool XmlNode::isTag() const noexcept
+	{
+		return !is_text;
+	}
+
+	bool XmlNode::isText() const noexcept
+	{
+		return is_text;
+	}
+
+	XmlTag& XmlNode::asTag()
+	{
+		if (!isTag())
+		{
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
+		}
+		return *static_cast<XmlTag*>(this);
+	}
+
+	XmlText& XmlNode::asText()
+	{
+		if (!isText())
+		{
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
+		}
+		return *static_cast<XmlText*>(this);
+	}
+
+	const XmlTag& XmlNode::asTag() const
+	{
+		if (!isTag())
+		{
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
+		}
+		return *static_cast<const XmlTag*>(this);
+	}
+
+	const XmlText& XmlNode::asText() const
+	{
+		if (!isText())
+		{
+			SOUP_THROW(Exception("XmlNode has unexpected type"));
+		}
+		return *static_cast<const XmlText*>(this);
+	}
+
+	std::string XmlTag::encode() const noexcept
+	{
+		std::string str(1, '<');
+		str.append(name);
+		for (const auto& e : attributes)
+		{
+			str.push_back(' ');
+			//str.push_back('{');
+			str.append(e.first);
+			//str.push_back('}');
+			if (!e.second.empty())
+			{
+				str.append("=\"");
+				str.append(e.second);
+				str.push_back('"');
+			}
+		}
+		str.push_back('>');
+		for (const auto& child : children)
+		{
+			str.append(child->encode());
+		}
+		str.append("</");
+		str.append(name);
+		str.push_back('>');
+		return str;
+	}
+
+	bool XmlTag::hasAttribute(const std::string& name) const noexcept
+	{
+		for (const auto& a : attributes)
+		{
+			if (a.first == name)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	const std::string& XmlTag::getAttribute(const std::string& name) const
+	{
+		for (const auto& a : attributes)
+		{
+			if (a.first == name)
+			{
+				return a.second;
+			}
+		}
+		SOUP_ASSERT_UNREACHABLE;
+	}
+
+	XmlTag* XmlTag::findTag(const std::string& name_target)
+	{
+		if (name == name_target)
+		{
+			return this;
+		}
+		XmlTag* res = nullptr;
+		for (const auto& child : children)
+		{
+			if (!child->is_text)
+			{
+				res = static_cast<XmlTag*>(child.get())->findTag(name_target);
+				if (res != nullptr)
+				{
+					break;
+				}
+			}
+		}
+		return res;
+	}
+
+	XmlText::XmlText(std::string&& contents) noexcept
+		: XmlNode(true), contents(std::move(contents))
+	{
+		string::replaceAll(this->contents, "&amp;", "&");
+		string::replaceAll(this->contents, "&lt;", "<");
+		string::replaceAll(this->contents, "&gt;", ">");
+	}
+
+	std::string XmlText::encode() const noexcept
+	{
+		std::string contents = this->contents;
+		string::replaceAll(contents, "&", "&amp;");
+		string::replaceAll(contents, "<", "&lt;");
+		string::replaceAll(contents, ">", "&gt;");
+		return contents;
 	}
 }

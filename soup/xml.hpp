@@ -8,6 +8,15 @@
 
 namespace soup
 {
+	class xml
+	{
+	public:
+		[[nodiscard]] static std::vector<UniquePtr<XmlTag>> parse(const std::string& xml);
+		[[nodiscard]] static UniquePtr<XmlTag> parseAndDiscardMetadata(const std::string& xml);
+	private:
+		[[nodiscard]] static UniquePtr<XmlTag> parse(const std::string& xml, std::string::const_iterator& i);
+	};
+
 	struct XmlNode
 	{
 		const bool is_text;
@@ -63,14 +72,5 @@ namespace soup
 		XmlText(std::string&& contents) noexcept;
 
 		[[nodiscard]] std::string encode() const noexcept;
-	};
-
-	class xml
-	{
-	public:
-		[[nodiscard]] static std::vector<UniquePtr<XmlTag>> parse(const std::string& xml);
-		[[nodiscard]] static UniquePtr<XmlTag> parseAndDiscardMetadata(const std::string& xml);
-	private:
-		[[nodiscard]] static UniquePtr<XmlTag> parse(const std::string& xml, std::string::const_iterator& i);
 	};
 }
