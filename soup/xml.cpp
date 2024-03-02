@@ -16,56 +16,56 @@ namespace soup
 	XmlMode xml::MODE_XML{};
 	XmlMode xml::MODE_HTML{ { "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" } };
 
-	std::vector<UniquePtr<XmlTag>> xml::parse(const std::string& xml, const XmlMode& mode)
+	std::vector<UniquePtr<XmlNode>> xml::parse(const std::string& xml, const XmlMode& mode)
 	{
-		std::vector<UniquePtr<XmlTag>> res{};
+		std::vector<UniquePtr<XmlNode>> res{};
 
 		auto i = xml.begin();
 		do
 		{
-			if (auto tag = parse(xml, mode, i))
+			if (auto node = parse(xml, mode, i))
 			{
-				res.emplace_back(std::move(tag));
+				res.emplace_back(std::move(node));
 			}
-		} while (i != xml.end() && ++i != xml.end());
+		} while (i != xml.end());
 
 		return res;
 	}
 
 	UniquePtr<XmlTag> xml::parseAndDiscardMetadata(const std::string& xml, const XmlMode& mode)
 	{
-		auto tags = parse(xml, mode);
+		auto nodes = parse(xml, mode);
 
-		for (auto i = tags.begin(); i != tags.end(); )
+		for (auto i = nodes.begin(); i != nodes.end(); )
 		{
-			if ((*i)->name.c_str()[0] == '?'
-				|| (*i)->name.c_str()[0] == '!'
-				)
+			if ((*i)->isTag())
 			{
-				i = tags.erase(i);
+				XmlTag& tag = (*i)->asTag();
+				if (tag.name.c_str()[0] == '?'
+					|| tag.name.c_str()[0] == '!'
+					)
+				{
+					i = nodes.erase(i);
+					continue;
+				}
 			}
-			else
-			{
-				++i;
-			}
+			++i;
 		}
 
-		if (tags.size() == 1)
+		if (nodes.size() == 1
+			&& nodes.at(0)->isTag()
+			)
 		{
-			SOUP_MOVE_RETURN(tags.at(0));
+			SOUP_MOVE_RETURN(nodes.at(0));
 		}
 
 		auto body = soup::make_unique<XmlTag>();
 		body->name = "body";
-		body->children.reserve(tags.size());
-		for (auto& tag : tags)
-		{
-			body->children.emplace_back(std::move(tag));
-		}
+		body->children = std::move(nodes);
 		return body;
 	}
 
-	UniquePtr<XmlTag> xml::parse(const std::string& xml, const XmlMode& mode, std::string::const_iterator& i)
+	UniquePtr<XmlNode> xml::parse(const std::string& xml, const XmlMode& mode, std::string::const_iterator& i)
 	{
 		while (i != xml.end() && string::isSpace(*i))
 		{
@@ -75,7 +75,7 @@ namespace soup
 		{
 			return {};
 		}
-		auto tag = soup::make_unique<XmlTag>();
+		UniquePtr<XmlTag> tag;
 		if (*i == '<')
 		{
 			++i;
@@ -93,6 +93,7 @@ namespace soup
 				}
 			}
 			name_builder.endCopy(xml, i);
+			tag = soup::make_unique<XmlTag>();
 			tag->name = std::move(name_builder);
 			if (*i != '>')
 			{
@@ -141,7 +142,7 @@ namespace soup
 #if DEBUG_PARSE
 							std::cout << tag->name << " taking the easy way out" << std::endl;
 #endif
-							++i;
+							i += 2;
 							return tag;
 						}
 						name.beginCopy(xml, i + 1);
@@ -190,6 +191,7 @@ namespace soup
 					}
 				}
 			}
+			++i;
 			if (tag->name.c_str()[0] == '?' // <?xml ... ?>
 				|| tag->name.c_str()[0] == '!' // <!DOCTYPE ...>
 #if SOUP_CPP20
@@ -201,7 +203,6 @@ namespace soup
 			{
 				return tag; // Won't have children
 			}
-			++i;
 		}
 		StringBuilder text;
 		while (i != xml.end() && string::isSpace(*i))
@@ -220,6 +221,10 @@ namespace soup
 					std::cout << "Copied text: " << text << std::endl;
 				}
 #endif
+				if (!tag)
+				{
+					return soup::make_unique<XmlText>(std::move(text));
+				}
 
 				if ((i + 1) != xml.end()
 					&& *(i + 1) == '/'
@@ -245,6 +250,7 @@ namespace soup
 						}
 					}
 					tbc_tag.endCopy(xml, i);
+					++i;
 #if DEBUG_PARSE
 					std::cout << "tbc tag: " << tbc_tag << std::endl;
 #endif
@@ -310,7 +316,7 @@ namespace soup
 				}
 #if DEBUG_PARSE
 				auto child = parse(xml, mode, i);
-				std::cout << "Recursed for " << child->name << ": " << child->encode() << std::endl;
+				std::cout << "Recursed for " << child->encode() << std::endl;
 				tag->children.emplace_back(std::move(child));
 #else
 				tag->children.emplace_back(parse(xml, mode, i));
@@ -320,15 +326,16 @@ namespace soup
 					text.beginCopy(xml, i);
 					break;
 				}
-				do
-				{
-					++i;
-				} while (i != xml.end() && string::isSpace(*i));
+				while (string::isSpace(*i) && ++i != xml.end());
 				text.beginCopy(xml, i);
 				--i; // Cursor is already in the right place but for loop will do `++i`
 			}
 		}
 		text.endCopy(xml, i);
+		if (!tag)
+		{
+			return soup::make_unique<XmlText>(std::move(text));
+		}
 		if (!text.empty())
 		{
 #if DEBUG_PARSE

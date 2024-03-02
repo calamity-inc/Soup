@@ -50,6 +50,8 @@ namespace soup
 	struct PlistDict;
 	struct PlistArray;
 	struct PlistString;
+	struct XmlMode;
+	struct XmlNode;
 	struct XmlTag;
 	struct XmlText;
 

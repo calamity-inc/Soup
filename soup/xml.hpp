@@ -9,18 +9,16 @@
 
 namespace soup
 {
-	struct XmlMode;
-
 	class xml
 	{
 	public:
 		static XmlMode MODE_XML;
 		static XmlMode MODE_HTML;
 
-		[[nodiscard]] static std::vector<UniquePtr<XmlTag>> parse(const std::string& xml, const XmlMode& mode = MODE_XML);
+		[[nodiscard]] static std::vector<UniquePtr<XmlNode>> parse(const std::string& xml, const XmlMode& mode = MODE_XML);
 		[[nodiscard]] static UniquePtr<XmlTag> parseAndDiscardMetadata(const std::string& xml, const XmlMode& mode = MODE_XML);
 	private:
-		[[nodiscard]] static UniquePtr<XmlTag> parse(const std::string& xml, const XmlMode& mode, std::string::const_iterator& i);
+		[[nodiscard]] static UniquePtr<XmlNode> parse(const std::string& xml, const XmlMode& mode, std::string::const_iterator& i);
 	};
 
 	struct XmlNode

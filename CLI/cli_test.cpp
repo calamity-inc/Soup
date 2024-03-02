@@ -573,8 +573,9 @@ spanning over multiple lines */
 		tag = xml::parseAndDiscardMetadata(""); assert(tag->encode() == "<body></body>");
 		tag = xml::parseAndDiscardMetadata(" \t\r\n<html></html>"); assert(tag->encode() == "<html></html>");
 
-		// parseAndDiscardMetadata should imply <body> when multiple top-level tags were found
+		// parseAndDiscardMetadata should imply <body> when multiple top-level nodes were found
 		tag = xml::parseAndDiscardMetadata("<p>foo</p><p>bar</p>"); assert(tag->encode() == "<body><p>foo</p><p>bar</p></body>");
+		tag = xml::parseAndDiscardMetadata("No root element? <emoji>sad</emoji>"); assert(tag->encode() == "<body>No root element? <emoji>sad</emoji></body>");
 
 		// Test encoding & decoding of entities
 		tag = xml::parseAndDiscardMetadata("<p>&amp;&lt;&gt;</p>"); assert(tag->encode() == "<p>&amp;&lt;&gt;</p>");
