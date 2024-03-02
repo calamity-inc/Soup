@@ -40,7 +40,14 @@ namespace soup
 		static void changeProtection(void* addr, size_t len, int prot);
 
 		[[nodiscard]] static void* createFileMapping(const std::filesystem::path& path, size_t& out_len);
+#if SOUP_WINDOWS
+		static void destroyFileMapping(void* addr, size_t len)
+		{
+			UnmapViewOfFile(addr);
+		}
+#else
 		static void destroyFileMapping(void* addr, size_t len);
+#endif
 
 		[[nodiscard]] static unsigned int getProcessId() noexcept;
 

@@ -247,14 +247,12 @@ namespace soup
 		return addr;
 	}
 
+#if !SOUP_WINDOWS
 	void os::destroyFileMapping(void* addr, size_t len)
 	{
-#if SOUP_WINDOWS
-		UnmapViewOfFile(addr);
-#else
 		munmap(addr, len);
-#endif
 	}
+#endif
 
 	unsigned int os::getProcessId() noexcept
 	{
