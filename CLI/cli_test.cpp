@@ -572,6 +572,8 @@ spanning over multiple lines */
 		tag = xml::parseAndDiscardMetadata(R"(<img src="soup"/>)"); assert(tag->encode() == R"(<img src="soup"></img>)");
 		tag = xml::parseAndDiscardMetadata(""); assert(tag->encode() == "<body></body>");
 		tag = xml::parseAndDiscardMetadata(" \t\r\n<html></html>"); assert(tag->encode() == "<html></html>");
+		tag = xml::parseAndDiscardMetadata(R"(<elm attr="value"></elm>)"); assert(tag->encode() == R"(<elm attr="value"></elm>)");
+		tag = xml::parseAndDiscardMetadata(R"(<elm attr='value'></elm>)"); assert(tag->encode() == R"(<elm attr="value"></elm>)");
 
 		// parseAndDiscardMetadata should imply <body> when multiple top-level nodes were found
 		tag = xml::parseAndDiscardMetadata("<p>foo</p><p>bar</p>"); assert(tag->encode() == "<body><p>foo</p><p>bar</p></body>");

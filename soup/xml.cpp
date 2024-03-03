@@ -189,6 +189,33 @@ namespace soup
 							value.endCopy(xml, i);
 							tag->attributes.emplace_back(std::move(name), std::move(value));
 						}
+						else if (i != xml.end() && *i == '\'')
+						{
+#if DEBUG_PARSE
+							std::cout << "Collecting value for attribute " << name << ": ";
+#endif
+							++i;
+							value.beginCopy(xml, i);
+							for (;; ++i)
+							{
+								if (i == xml.end())
+								{
+									return tag;
+								}
+								if (*i == '\'')
+								{
+									break;
+								}
+#if DEBUG_PARSE
+								std::cout << *i;
+#endif
+							}
+#if DEBUG_PARSE
+							std::cout << std::endl;
+#endif
+							value.endCopy(xml, i);
+							tag->attributes.emplace_back(std::move(name), std::move(value));
+						}
 						else
 						{
 #if DEBUG_PARSE
@@ -435,9 +462,19 @@ namespace soup
 				|| !mode.empty_attribute_syntax
 				)
 			{
-				str.append("=\"");
-				str.append(e.second);
-				str.push_back('"');
+				str.push_back('=');
+				if (e.second.find('"') != std::string::npos)
+				{
+					str.push_back('\'');
+					str.append(e.second);
+					str.push_back('\'');
+				}
+				else
+				{
+					str.push_back('"');
+					str.append(e.second);
+					str.push_back('"');
+				}
 			}
 		}
 		if (is_self_closing)
