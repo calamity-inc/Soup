@@ -148,6 +148,11 @@ namespace soup
 			// Path Network, Inc
 		case 396998:
 		case 30644:
+			// Strong Technology
+		case 13926:
+		case 54203:
+		case 22781:
+		case 62651:
 			return true;
 		}
 		std::string slug = handle;
