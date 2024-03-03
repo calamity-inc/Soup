@@ -1,11 +1,11 @@
 #include "Tempfile.hpp"
 
-#include "os.hpp"
+#include "filesystem.hpp"
 
 namespace soup
 {
 	Tempfile::Tempfile(const std::string& ext)
-		: FileRaii(os::tempfile(ext))
+		: FileRaii(filesystem::tempfile(ext))
 	{
 	}
 }

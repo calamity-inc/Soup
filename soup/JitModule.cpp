@@ -1,7 +1,7 @@
 #include "JitModule.hpp"
 
 #include "Compiler.hpp"
-#include "os.hpp"
+#include "filesystem.hpp"
 
 namespace soup
 {
@@ -43,7 +43,7 @@ namespace soup
 	std::string JitModule::compile()
 	{
 		Compiler compiler;
-		dll_path = os::tempfile(compiler.getDynamicLibraryExtension());
+		dll_path = filesystem::tempfile(compiler.getDynamicLibraryExtension());
 		auto output = compiler.makeDynamicLibrary(cpp_path, dll_path.string());
 		if (std::filesystem::exists(dll_path))
 		{

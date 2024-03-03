@@ -9,12 +9,12 @@
 #include "base64.hpp"
 #include "FileReader.hpp"
 #include "FileWriter.hpp"
+#include "filesystem.hpp"
 #include "HttpRequest.hpp"
 #include "json.hpp"
 #include "JsonArray.hpp"
 #include "JsonObject.hpp"
 #include "JsonString.hpp"
-#include "os.hpp"
 #include "rsa.hpp"
 #include "sha256.hpp"
 
@@ -223,7 +223,7 @@ namespace soup
 
 	std::filesystem::path AcmeClient::getAccountPath() const
 	{
-		auto path = os::getProgramData();
+		auto path = filesystem::getProgramData();
 		path /= "Calamity, Inc";
 		path /= "Soup";
 		path /= "AcmeAccount";

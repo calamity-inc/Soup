@@ -3,7 +3,6 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
-#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -17,11 +16,6 @@ namespace soup
 	class os
 	{
 	public:
-		[[nodiscard]] static intptr_t filesize(const std::filesystem::path& path); // returns -1 on error
-
-		[[nodiscard]] static std::filesystem::path tempfile(const std::string& ext = {});
-		[[nodiscard]] static std::filesystem::path getProgramData() noexcept;
-
 		static void escape(std::string& str);
 	private:
 		static void escapeNoCheck(std::string& str);
@@ -38,16 +32,6 @@ namespace soup
 		[[nodiscard]] static void* virtualAlloc(size_t len, int prot);
 		static void virtualFree(void* addr, size_t len);
 		static void changeProtection(void* addr, size_t len, int prot);
-
-		[[nodiscard]] static void* createFileMapping(const std::filesystem::path& path, size_t& out_len);
-#if SOUP_WINDOWS
-		static void destroyFileMapping(void* addr, size_t len)
-		{
-			UnmapViewOfFile(addr);
-		}
-#else
-		static void destroyFileMapping(void* addr, size_t len);
-#endif
 
 		[[nodiscard]] static unsigned int getProcessId() noexcept;
 

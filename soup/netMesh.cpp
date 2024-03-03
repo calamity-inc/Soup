@@ -7,9 +7,9 @@
 
 #include "FileReader.hpp"
 #include "FileWriter.hpp"
+#include "filesystem.hpp"
 #include "fnv.hpp"
 #include "netMeshService.hpp"
-#include "os.hpp"
 #include "Server.hpp"
 
 namespace soup
@@ -19,7 +19,7 @@ namespace soup
 
 	[[nodiscard]] static std::filesystem::path getDataPath() noexcept
 	{
-		auto path = os::getProgramData();
+		auto path = filesystem::getProgramData();
 		path /= "Calamity, Inc";
 		path /= "Soup";
 		path /= "Mesh Network";

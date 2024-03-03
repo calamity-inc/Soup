@@ -5,8 +5,8 @@
 #else
 #include "FileReader.hpp"
 #include "FileWriter.hpp"
+#include "filesystem.hpp"
 #include "HttpRequest.hpp"
-#include "os.hpp"
 #include "sha1.hpp"
 #include "string.hpp"
 #endif
@@ -105,7 +105,7 @@ namespace soup
 
 	std::filesystem::path WebResource::getCacheFile() const
 	{
-		auto file = os::getProgramData();
+		auto file = filesystem::getProgramData();
 		file /= "Calamity, Inc";
 		file /= "Soup";
 		file /= "WebResource";
