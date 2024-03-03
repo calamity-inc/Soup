@@ -152,7 +152,7 @@ namespace soup
 						name.endCopy(xml, i);
 						StringBuilder value;
 						++i;
-						if (*i == '"')
+						if (i != xml.end() && *i == '"')
 						{
 #if DEBUG_PARSE
 							std::cout << "Collecting value for attribute " << name << ": ";
