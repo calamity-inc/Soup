@@ -14,7 +14,8 @@
 namespace soup
 {
 	XmlMode xml::MODE_XML{};
-	XmlMode xml::MODE_HTML{ { "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" } };
+	XmlMode xml::MODE_LAX_XML{ {}, true };
+	XmlMode xml::MODE_HTML{ { "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" }, true };
 
 	std::vector<UniquePtr<XmlNode>> xml::parse(const std::string& xml, const XmlMode& mode)
 	{
@@ -111,7 +112,10 @@ namespace soup
 						name.endCopy(xml, i);
 						if (!name.empty())
 						{
-							tag->attributes.emplace_back(std::move(name), std::string());
+							if (mode.empty_attribute_syntax)
+							{
+								tag->attributes.emplace_back(std::move(name), std::string());
+							}
 							name.clear();
 						}
 						break;
@@ -121,7 +125,10 @@ namespace soup
 						name.endCopy(xml, i);
 						if (!name.empty())
 						{
-							tag->attributes.emplace_back(std::move(name), std::string());
+							if (mode.empty_attribute_syntax)
+							{
+								tag->attributes.emplace_back(std::move(name), std::string());
+							}
 							name.clear();
 						}
 						name.beginCopy(xml, i + 1);
@@ -131,7 +138,10 @@ namespace soup
 						name.endCopy(xml, i);
 						if (!name.empty())
 						{
-							tag->attributes.emplace_back(std::move(name), std::string());
+							if (mode.empty_attribute_syntax)
+							{
+								tag->attributes.emplace_back(std::move(name), std::string());
+							}
 							name.clear();
 						}
 						if (mode.self_closing_tags.empty()
@@ -184,7 +194,10 @@ namespace soup
 #if DEBUG_PARSE
 							std::cout << "Attribute " << name << " has no value";
 #endif
-							tag->attributes.emplace_back(std::move(name), std::string());
+							if (mode.empty_attribute_syntax)
+							{
+								tag->attributes.emplace_back(std::move(name), std::string());
+							}
 						}
 						name.clear();
 						name.beginCopy(xml, i + 1);
@@ -418,7 +431,9 @@ namespace soup
 			//str.push_back('{');
 			str.append(e.first);
 			//str.push_back('}');
-			if (!e.second.empty())
+			if (!e.second.empty()
+				|| !mode.empty_attribute_syntax
+				)
 			{
 				str.append("=\"");
 				str.append(e.second);

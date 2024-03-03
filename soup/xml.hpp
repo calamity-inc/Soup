@@ -13,6 +13,7 @@ namespace soup
 	{
 	public:
 		static XmlMode MODE_XML;
+		static XmlMode MODE_LAX_XML;
 		static XmlMode MODE_HTML;
 
 		[[nodiscard]] static std::vector<UniquePtr<XmlNode>> parse(const std::string& xml, const XmlMode& mode = MODE_XML);
@@ -82,5 +83,8 @@ namespace soup
 	{
 		// If not empty, `/>` is ignored. Instead, only contained tags are considered self-closing.
 		std::unordered_set<std::string> self_closing_tags;
+
+		// Allow attributes to be specified without a value.
+		bool empty_attribute_syntax = false;
 	};
 }

@@ -590,12 +590,12 @@ spanning over multiple lines */
 		// Cosmetic whitespace should be ignored
 		tag = xml::parseAndDiscardMetadata(R"EOC(
 <entries>
-	<entry primary>
+	<entry primary="">
 		<name>primary</name>
 	</entry>
 </entries>
 )EOC");
-		assert(tag->encode() == "<entries><entry primary><name>primary</name></entry></entries>");
+		assert(tag->encode() == R"(<entries><entry primary=""><name>primary</name></entry></entries>)");
 
 		// Self-closing tags & different modes
 		tag = xml::parseAndDiscardMetadata("<root><div/>Hello</root>"); assert(tag->encode() == "<root><div></div>Hello</root>");
