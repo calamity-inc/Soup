@@ -1,5 +1,6 @@
 # Soup Documentation
 
+- [Colons and Tabs format (CaT)](user/cat.md)
 - [Regex](user/regex.md)
 
 ## C++ Usage
