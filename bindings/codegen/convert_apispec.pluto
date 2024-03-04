@@ -3,7 +3,7 @@
 
 local { cat, json } = require "*"
 
-local input = io.contents("apispec.cat.txt") |> cat.decode|cat.withorder|
+local input = io.contents("apispec.cat.txt") |> cat.decode|"flatwithorder"|
 local output = {
 	__order = { "classes", "namespaces", "functions" },
 	classes = { __order = input.classes.__order },
