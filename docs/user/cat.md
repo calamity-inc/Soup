@@ -4,13 +4,15 @@ CaT is a dead-simple configuration format that arose from our need for a human-f
 
 The most important aspect about it is how easy it is to generate valid CaT from any pre-existing tree structure.
 
-A tree structure you may be familiar with is the filesystem. For example, if we write "Hello, world!" at "/home/john/hello.txt", we have the node "home" with the child "john" with the child "hello.txt" with the value "Hello, world!". This would be represented in CaT as follows:
+A tree structure you may be familiar with is the filesystem. For example, if we write "Hello, world!" at "/home/john/hello.txt", we have the node "home" with the child "john" with the child "hello.txt" with the value "Hello, world!". This could be represented in CaT as follows:
 
 ```
 home
     john
         hello.txt: Hello, world!
 ```
+
+Note that, on this page, 4 spaces are used instead of actual tab characters to ensure consistent rendering.
 
 ## Architecture
 
