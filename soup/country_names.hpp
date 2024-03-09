@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring> //strlen
 #include <string>
 
 #include "base.hpp"
@@ -22,11 +23,17 @@ namespace soup
 
 	extern CountryNamesEntry country_names[COUNTRYNAMES_COUNTRIES * COUNTRYNAMES_LANGUAGES];
 
-	[[nodiscard]] inline const char* getCountryName(const std::string& country_code, const std::string& language_code = "EN")
+	[[nodiscard]] inline const char* getCountryName(const char* country_code, const std::string& language_code = "EN")
 	{
+		if (strlen(country_code) != 2)
+		{
+			return nullptr;
+		}
 		for (CountryNamesEntry* i = &country_names[0]; i != &country_names[COUNTRYNAMES_COUNTRIES * COUNTRYNAMES_LANGUAGES]; i += COUNTRYNAMES_LANGUAGES)
 		{
-			if (country_code == i->country_code)
+			if (country_code[0] == i->country_code[0]
+				&& country_code[1] == i->country_code[1]
+				)
 			{
 				const char* cc = i->country_code;
 				do
