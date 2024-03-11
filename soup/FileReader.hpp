@@ -42,7 +42,7 @@ namespace soup
 		bool raw(void* data, size_t len) final
 		{
 			s.read(reinterpret_cast<char*>(data), len);
-			return !s.bad() && !s.eof() && s.is_open();
+			return s.rdstate() == 0;
 		}
 
 		bool getLine(std::string& line) noexcept final
