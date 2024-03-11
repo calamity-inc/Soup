@@ -143,15 +143,15 @@ namespace soup
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
+		ld.addToken("==", Rgb::RED, [](ParserState& ps)
+			{
+				ps.setOp(OP_EQ);
+				ps.consumeLefthandValue();
+				ps.consumeRighthandValue();
+			});
 		ld.addToken("=", Rgb::RED, [](ParserState& ps)
 		{
 			ps.setOp(OP_ASSIGN);
-			ps.consumeLefthandValue();
-			ps.consumeRighthandValue();
-		});
-		ld.addToken("==", Rgb::RED, [](ParserState& ps)
-		{
-			ps.setOp(OP_EQ);
 			ps.consumeLefthandValue();
 			ps.consumeRighthandValue();
 		});
