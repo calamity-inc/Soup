@@ -153,14 +153,14 @@ namespace soup
 		case 54203:
 		case 22781:
 		case 62651:
-			// Google One VPN
-		case 36492:
 			return true;
 		}
 		std::string slug = handle;
 		slug.push_back(' ');
 		slug.append(name);
 		string::lower(slug);
+		string::replaceAll(slug, "-", "");
+		string::replaceAll(slug, ",", "");
 		if (slug.find("cdn") != std::string::npos
 			|| slug.find("colocation") != std::string::npos // AS48950 GLOBAL COLOCATION LIMITED
 			// Note: Not "colo" because "Telmex Colombia S.A."
@@ -169,7 +169,6 @@ namespace soup
 				)			
 			|| slug.find("datacenter") != std::string::npos
 			|| slug.find("data center") != std::string::npos
-			|| slug.find("data-center") != std::string::npos
 			|| slug.find("ddos") != std::string::npos
 			|| slug.find("dedi") != std::string::npos // AS35913 DediPath, AS42831 UK Dedicated Servers Limited
 			|| (slug.find("host") != std::string::npos // AS45382 EHOSTICT, AS51430 AltusHost B.V., AS55720 Gigabit Hosting Sdn Bhd, AS61493 InterBS S.R.L. (BAEHOST), AS64200 VIVID-HOSTING LLC, AS136557 Host Universal Pty Ltd, AS200698 Globalhost d.o.o., AS203020 HostRoyale Technologies Pvt Ltd
