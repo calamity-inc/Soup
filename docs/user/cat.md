@@ -14,6 +14,12 @@ home
 
 Note that, on this page, 4 spaces are used instead of actual tab characters to ensure consistent rendering.
 
+## Files
+
+We recommend that files storing CaT data use the `.txt` extension because it opens in the user's default text editor without any hassle.
+
+If you also want it to be clear that the file uses the CaT format, we recommend using the `.cat.txt` extension.
+
 ## Architecture
 
 CaT only recognises "nodes," which can have a name (string), value (string), and children (vector of node).
