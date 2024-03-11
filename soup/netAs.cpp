@@ -153,6 +153,8 @@ namespace soup
 		case 54203:
 		case 22781:
 		case 62651:
+			// Google One VPN
+		case 36492:
 			return true;
 		}
 		std::string slug = handle;
