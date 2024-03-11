@@ -39,14 +39,16 @@ namespace soup
 {
 	bool ffi::isSafeToCall(void* func) noexcept
 	{
+		bool ret = true;
 #if SOUP_WINDOWS
 		auto ntdll = LoadLibraryA("ntdll.dll");
 		if (GetProcAddress(ntdll, "NtRaiseHardError") == func)
 		{
-			return false;
+			ret = false;
 		}
+		FreeLibrary(ntdll);
 #endif
-		return true;
+		return ret;
 	}
 
 	uintptr_t ffi::call(CallConv conv, void* func, const std::vector<uintptr_t>& args)
