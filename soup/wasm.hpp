@@ -41,6 +41,8 @@ namespace soup
 		{
 			return (T*)&memory[ptr];
 		}
+
+		void linkWasiPreview1() noexcept;
 	};
 
 	struct WasmVm

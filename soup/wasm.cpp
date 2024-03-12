@@ -262,6 +262,34 @@ namespace soup
 		return nullptr;
 	}
 
+	void WasmScript::linkWasiPreview1() noexcept
+	{
+		// https://github.com/bytecodealliance/wasmtime/blob/main/docs/WASI-tutorial.md#web-assembly-text-example
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_write"))
+		{
+			fi->ptr = [](WasmVm& vm)
+			{
+				int32_t out_nwritten = vm.stack.top(); vm.stack.pop();
+				int32_t iovs_len = vm.stack.top(); vm.stack.pop();
+				int32_t iovs = vm.stack.top(); vm.stack.pop();
+				int32_t file_descriptor = vm.stack.top(); vm.stack.pop();
+				int32_t nwritten = 0;
+				if (file_descriptor == 1) // stdout
+				{
+					while (iovs_len--)
+					{
+						int32_t iov_base = *vm.script.getMemory<int32_t>(iovs); iovs += 4;
+						int32_t iov_len = *vm.script.getMemory<int32_t>(iovs); iovs += 4;
+						fwrite(vm.script.getMemory<char>(iov_base), 1, iov_len, stdout);
+						nwritten += iov_len;
+					}
+				}
+				*vm.script.getMemory<int32_t>(out_nwritten) = nwritten;
+				vm.stack.push(nwritten);
+			};
+		}
+	}
+
 	// WasmVm
 
 	bool WasmVm::run(const std::string& data) SOUP_EXCAL
