@@ -67,7 +67,7 @@ namespace soup
 			return s.rdstate() == 0;
 		}
 
-		bool getLine(std::string& line) noexcept final
+		bool getLine(std::string& line) SOUP_EXCAL final
 		{
 			if (Reader::getLine(line))
 			{

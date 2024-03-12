@@ -67,7 +67,7 @@ namespace soup
 		}
 
 		// Faster alternative to std::stringstream + std::getline
-		bool getLine(std::string& line) noexcept final
+		bool getLine(std::string& line) SOUP_EXCAL final
 		{
 			size_t next = data.find('\n', offset);
 			SOUP_IF_LIKELY (next != std::string::npos)
