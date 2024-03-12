@@ -14,8 +14,8 @@
 namespace soup
 {
 	XmlMode xml::MODE_XML{};
-	XmlMode xml::MODE_LAX_XML{ {}, true };
-	XmlMode xml::MODE_HTML{ { "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" }, true };
+	XmlMode xml::MODE_LAX_XML{ {}, true, true };
+	XmlMode xml::MODE_HTML{ { "area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr" }, true, true };
 
 	UniquePtr<XmlTag> xml::parseAndDiscardMetadata(const std::string& xml, const XmlMode& mode)
 	{
@@ -225,6 +225,33 @@ namespace soup
 #endif
 							value.endCopy(i);
 							tag->attributes.emplace_back(std::move(name), std::move(value));
+						}
+						else if (i != end && string::isAlphaNum(*i) && mode.unquoted_attributes)
+						{
+#if DEBUG_PARSE
+							std::cout << "Collecting value for attribute " << name << ": ";
+#endif
+							value.beginCopy(i);
+							for (;; ++i)
+							{
+								if (i == end)
+								{
+									return tag;
+								}
+								if (!string::isAlphaNum(*i))
+								{
+									break;
+								}
+#if DEBUG_PARSE
+								std::cout << *i;
+#endif
+							}
+#if DEBUG_PARSE
+							std::cout << std::endl;
+#endif
+							value.endCopy(i);
+							tag->attributes.emplace_back(std::move(name), std::move(value));
+
 						}
 						else
 						{

@@ -88,5 +88,8 @@ namespace soup
 
 		// Allow attributes to be specified without a value.
 		bool empty_attribute_syntax = false;
+
+		// Allow attribute values to be bare strings.
+		bool unquoted_attributes = false;
 	};
 }

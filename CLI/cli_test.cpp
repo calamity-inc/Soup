@@ -607,6 +607,9 @@ spanning over multiple lines */
 		tag = xml::parseAndDiscardMetadata("<root><br>Hello</root>", xml::MODE_HTML); assert(tag->encode(xml::MODE_HTML) == "<root><br />Hello</root>");
 		tag = xml::parseAndDiscardMetadata(R"(<html><body/>test)"); assert(tag->encode() == R"(<html><body></body>test</html>)");
 		tag = xml::parseAndDiscardMetadata(R"(<html><body/>test)", xml::MODE_HTML); assert(tag->encode(xml::MODE_HTML) == R"(<html><body>test</body></html>)");
+
+		// Unquoted attributes
+		tag = xml::parseAndDiscardMetadata(R"(<input value=yes disabled>)", xml::MODE_HTML); assert(tag->encode(xml::MODE_HTML) == R"(<input value="yes" disabled />)");
 	});
 
 	test("Endianness", []
