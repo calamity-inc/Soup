@@ -97,28 +97,45 @@ namespace soup
 			return true;
 		}
 
-		// An integer where every byte's most significant bit is used to indicate if another byte follows.
+		// An integer where every byte's most significant bit is used to indicate if another byte follows, most significant byte first.
 		template <typename Int>
 		bool om(Int& v)
 		{
-			Int val{};
-			while (hasMore())
+			v = {};
+			uint8_t byte;
+			while (u8(byte))
 			{
-				uint8_t byte;
-				u8(byte);
-				val <<= 7;
-				val |= (byte & 0x7F);
+				v <<= 7;
+				v |= (byte & 0x7F);
 				if (!(byte & 0x80))
 				{
-					break;
+					return true;
 				}
 			}
-			v = val;
-			return true;
+			return false;
 		}
 
 		// Specialisation of the above for Bigint.
 		bool om_bigint(Bigint& v);
+
+		// An integer where every byte's most significant bit is used to indicate if another byte follows, least significant byte first. This is compatible with unsigned LEB123.
+		template <typename Int>
+		bool oml(Int& v)
+		{
+			v = {};
+			uint8_t byte;
+			uint8_t shift = 0;
+			while (u8(byte))
+			{
+				v |= (static_cast<Int>(byte & 0x7F) << shift);
+				if (!(byte & 0x80))
+				{
+					return true;
+				}
+				shift += 7;
+			}
+			return false;
+		}
 
 		bool mysql_lenenc(uint64_t& v)
 		{

@@ -107,7 +107,7 @@ namespace soup
 			return true;
 		}
 
-		// An integer where every byte's most significant bit is used to indicate if another byte follows.
+		// An integer where every byte's most significant bit is used to indicate if another byte follows, most significant byte first.
 		template <typename Int>
 		bool om(const Int& v)
 		{

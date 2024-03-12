@@ -42,6 +42,7 @@
 // lang
 #include <MathExpr.hpp>
 #include <PhpState.hpp>
+#include <wasm.hpp>
 
 // lang.reflection
 #include <rflParser.hpp>
@@ -979,6 +980,24 @@ endif;)") == "");
 		test("order of operations", []
 		{
 			assert(MathExpr::evaluate("3 - 2 + 1") == 2);
+		});
+	}
+
+	unit("WASM")
+	{
+		test("addTwo", []
+		{
+			WasmScript ws;
+			assert(ws.load(base64::decode("AGFzbQEAAAABBwFgAn9/AX8DAgEABwoBBmFkZFR3bwAACgkBBwAgACABagsACgRuYW1lAgMBAAA=")));
+			auto code = ws.getExportedFuntion("addTwo");
+			assert(code);
+			WasmVm vm;
+			vm.locals.emplace_back(1);
+			vm.locals.emplace_back(2);
+			assert(vm.run(*code));
+			assert(!vm.stack.empty());
+			assert(vm.stack.top() == 3);
+			assert(vm.stack.pop(), vm.stack.empty());
 		});
 	}
 

@@ -1581,6 +1581,9 @@
     <ClInclude Include="MessageStream.hpp">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="wasm.hpp">
+      <Filter>lang</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2337,6 +2340,9 @@
     </ClCompile>
     <ClCompile Include="sha384.cpp">
       <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="wasm.cpp">
+      <Filter>lang</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
