@@ -29,6 +29,6 @@ namespace soup
 
 		std::vector<Event> events{};
 
-		MidiComposition(ioSeekableReader& r);
+		MidiComposition(Reader& r);
 	};
 }

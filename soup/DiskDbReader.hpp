@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ioSeekableReader.hpp"
 #include "ioSizeMeasurer.hpp"
+#include "Reader.hpp"
 
 namespace soup
 {
@@ -18,10 +18,10 @@ namespace soup
 	// All entries are assumed to have the same size.
 	struct DiskDbReader
 	{
-		ioSeekableReader& r;
+		Reader& r;
 		size_t entry_size;
 
-		DiskDbReader(ioSeekableReader& r, size_t entry_size)
+		DiskDbReader(Reader& r, size_t entry_size)
 			: r(r), entry_size(entry_size)
 		{
 		}
@@ -34,7 +34,7 @@ namespace soup
 
 		// cmp function should read (partial) entry and return hint <=> ...
 		template <typename T>
-		bool seekEntry(const T& hint, std::strong_ordering(*cmp)(ioSeekableReader& r, const T& hint))
+		bool seekEntry(const T& hint, std::strong_ordering(*cmp)(Reader& r, const T& hint))
 		{
 			size_t start = 0;
 			size_t end = getNumEntries();

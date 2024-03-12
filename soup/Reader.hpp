@@ -12,11 +12,24 @@ namespace soup
 		using ioBase::ioBase;
 
 		[[nodiscard]] virtual bool hasMore() = 0;
+		[[nodiscard]] virtual size_t getPosition() = 0;
+		virtual void seek(size_t pos) = 0;
+		void seekBegin() { seek(0); }
+		virtual void seekEnd() = 0;
 
-		bool skip(size_t len)
+		[[nodiscard]] size_t getRemainingBytes()
 		{
-			std::string v;
-			return str(len, v);
+			const size_t pos = getPosition();
+			seekEnd();
+			const size_t remaining = (getPosition() - pos);
+			seek(pos);
+			return remaining;
+		}
+
+		bool skip(size_t len) noexcept
+		{
+			seek(getPosition() + len);
+			return true;
 		}
 
 		// An unsigned 64-bit integer encoded in 1..9 bytes. The most significant bit of bytes 1 to 8 is used to indicate if another byte follows.

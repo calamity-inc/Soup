@@ -5,18 +5,18 @@
 #if SOUP_WINDOWS
 
 #include "audSound.hpp"
-#include "ioSeekableReader.hpp"
+#include "Reader.hpp"
 
 namespace soup
 {
 	struct audWav : public audSound
 	{
-		ioSeekableReader& r;
+		Reader& r;
 		uint16_t channels;
 		size_t data_begin;
 		size_t data_end;
 
-		audWav(ioSeekableReader& r);
+		audWav(Reader& r);
 
 		void prepare() final;
 		[[nodiscard]] bool hasFinished() noexcept final;

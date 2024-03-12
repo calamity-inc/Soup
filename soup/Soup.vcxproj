@@ -638,7 +638,6 @@
     <ClInclude Include="WebSocketConnection.hpp" />
     <ClInclude Include="InquiryLang.hpp" />
     <ClInclude Include="IntStruct.hpp" />
-    <ClInclude Include="ioSeekableReader.hpp" />
     <ClInclude Include="IpGroups.hpp" />
     <ClInclude Include="Ipv6Maths.hpp" />
     <ClInclude Include="Jokebook.hpp" />

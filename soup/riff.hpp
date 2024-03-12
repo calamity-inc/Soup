@@ -14,7 +14,7 @@ namespace soup
 			return !name.empty();
 		}
 
-		[[nodiscard]] std::string readData(ioSeekableReader& r) const
+		[[nodiscard]] std::string readData(Reader& r) const
 		{
 			std::string data;
 			r.str(data_size, data);
@@ -30,7 +30,7 @@ namespace soup
 			return data_size + (data_size & 1) + data_offset;
 		}
 
-		void skipData(ioSeekableReader& r) const
+		void skipData(Reader& r) const
 		{
 			r.seek(getDataEnd());
 		}
@@ -38,9 +38,9 @@ namespace soup
 
 	struct RiffReader
 	{
-		ioSeekableReader& r;
+		Reader& r;
 
-		RiffReader(ioSeekableReader& r)
+		RiffReader(Reader& r)
 			: r(r)
 		{
 		}

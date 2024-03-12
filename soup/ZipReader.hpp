@@ -10,9 +10,9 @@ namespace soup
 {
 	struct ZipReader
 	{
-		ioSeekableReader& is;
+		Reader& is;
 
-		ZipReader(ioSeekableReader& is);
+		ZipReader(Reader& is);
 
 		[[nodiscard]] size_t seekCentralDirectory() const; // returns 0 on failure
 

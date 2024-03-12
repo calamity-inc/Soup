@@ -11,7 +11,7 @@
 
 namespace soup
 {
-	audWav::audWav(ioSeekableReader& r)
+	audWav::audWav(Reader& r)
 		: r(r)
 	{
 		RiffReader rr(r);

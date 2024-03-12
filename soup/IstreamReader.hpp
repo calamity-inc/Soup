@@ -45,5 +45,21 @@ namespace soup
 			std::getline(is, line);
 			return is.operator bool();
 		}
+
+		[[nodiscard]] size_t getPosition() final
+		{
+			return static_cast<size_t>(is.tellg());
+		}
+
+		void seek(size_t pos) final
+		{
+			is.seekg(pos);
+			is.clear();
+		}
+
+		void seekEnd() final
+		{
+			is.seekg(0, std::ios::end);
+		}
 	};
 }

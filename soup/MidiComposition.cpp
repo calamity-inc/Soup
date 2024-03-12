@@ -1,6 +1,6 @@
 #include "MidiComposition.hpp"
 
-#include "ioSeekableReader.hpp"
+#include "Reader.hpp"
 #include "StringReader.hpp"
 
 namespace soup
@@ -14,7 +14,7 @@ namespace soup
 	};
 
 	// https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
-	MidiComposition::MidiComposition(ioSeekableReader& r)
+	MidiComposition::MidiComposition(Reader& r)
 	{
 		uint32_t chunk_name;
 		r.u32_be(chunk_name);

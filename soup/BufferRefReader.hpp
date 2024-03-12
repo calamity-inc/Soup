@@ -1,19 +1,19 @@
 #pragma once
 
-#include "ioSeekableReader.hpp"
+#include "Reader.hpp"
 
 #include <cstring> // memcpy
 
 namespace soup
 {
-	class BufferRefReader final : public ioSeekableReader
+	class BufferRefReader final : public Reader
 	{
 	public:
 		const Buffer& data;
 		size_t offset = 0;
 
 		BufferRefReader(const Buffer& data, bool little_endian = true)
-			: ioSeekableReader(little_endian), data(data)
+			: Reader(little_endian), data(data)
 		{
 		}
 

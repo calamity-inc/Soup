@@ -2,14 +2,14 @@
 
 #include "deflate.hpp"
 #include "Exception.hpp"
-#include "ioSeekableReader.hpp"
+#include "Reader.hpp"
 #include "ZipCentralDirectoryFile.hpp"
 #include "ZipEndOfCentralDirectory.hpp"
 #include "ZipLocalFileHeader.hpp"
 
 namespace soup
 {
-	ZipReader::ZipReader(ioSeekableReader& is)
+	ZipReader::ZipReader(Reader& is)
 		: is(is)
 	{
 		if (!is.isLittleEndian())

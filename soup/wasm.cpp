@@ -335,7 +335,7 @@ namespace soup
 		size_t stack_size;
 	};
 
-	static void skipOverBranch(ioSeekableReader& r, size_t depth = 0) SOUP_EXCAL
+	static void skipOverBranch(Reader& r, size_t depth = 0) SOUP_EXCAL
 	{
 		uint8_t op;
 		while (r.u8(op))
@@ -392,7 +392,7 @@ namespace soup
 		}
 	}
 
-	bool WasmVm::run(ioSeekableReader& r) SOUP_EXCAL
+	bool WasmVm::run(Reader& r) SOUP_EXCAL
 	{
 		size_t local_decl_count;
 		r.oml(local_decl_count);

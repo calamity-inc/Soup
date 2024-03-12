@@ -3,8 +3,8 @@
 #include "base.hpp"
 
 #include "console.hpp"
-#include "ioSeekableReader.hpp"
 #include "RasterFont.hpp"
+#include "Reader.hpp"
 #include "StringWriter.hpp"
 #include "TinyPngOut.hpp"
 #include "unicode.hpp"
@@ -360,7 +360,7 @@ namespace soup
 	}
 
 
-	Canvas Canvas::fromBmp(ioSeekableReader& r)
+	Canvas Canvas::fromBmp(Reader& r)
 	{
 		Canvas c;
 

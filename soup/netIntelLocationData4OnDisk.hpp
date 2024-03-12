@@ -24,7 +24,7 @@ namespace soup
 		}
 
 #if SOUP_CPP20
-		[[nodiscard]] static std::strong_ordering cmp(ioSeekableReader & r, const uint32_t & hint)
+		[[nodiscard]] static std::strong_ordering cmp(Reader & r, const uint32_t & hint)
 		{
 			netIntelLocationData4OnDisk data;
 			r.u32(data.lower);

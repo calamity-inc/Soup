@@ -989,9 +989,6 @@
     <ClInclude Include="log.hpp">
       <Filter>log</Filter>
     </ClInclude>
-    <ClInclude Include="ioSeekableReader.hpp">
-      <Filter>io\stream</Filter>
-    </ClInclude>
     <ClInclude Include="DiskDbReader.hpp">
       <Filter>data</Filter>
     </ClInclude>
