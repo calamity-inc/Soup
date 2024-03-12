@@ -38,8 +38,12 @@ namespace soup
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name) const noexcept;
 
 		template <typename T>
-		[[nodiscard]] T* getMemory(int32_t ptr)
+		[[nodiscard]] T* getMemory(int32_t ptr) noexcept
 		{
+			SOUP_IF_UNLIKELY (ptr < 0 || ptr >= sizeof(memory))
+			{
+				return nullptr;
+			}
 			return (T*)&memory[ptr];
 		}
 
