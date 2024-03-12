@@ -64,6 +64,7 @@ namespace soup
 				r.skip(section_size);
 				break;
 
+#if false
 			case 1: // Type
 			{
 				size_t num_types;
@@ -100,6 +101,7 @@ namespace soup
 					}
 				}
 				break;
+#endif
 
 			case 2: // Import
 				{
