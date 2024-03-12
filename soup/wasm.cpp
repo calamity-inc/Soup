@@ -143,6 +143,35 @@ namespace soup
 
 			// 5 - Memory
 
+			case 6: // Global
+				{
+					size_t num_globals;
+					r.oml(num_globals);
+					while (num_globals--)
+					{
+						uint8_t type; r.u8(type);
+						SOUP_IF_UNLIKELY (type != 0x7f) // i32
+						{
+							return false;
+						}
+						r.skip(1); // mutability
+						uint8_t op;
+						r.u8(op);
+						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
+						{
+							return false;
+						}
+						int32_t value; r.oml(value);
+						r.u8(op);
+						SOUP_IF_UNLIKELY (op != 0x0b) // end
+						{
+							return false;
+						}
+						globals.emplace_back(value);
+					}
+				}
+				break;
+
 			case 7: // Export
 				{
 					size_t num_exports;
@@ -195,7 +224,7 @@ namespace soup
 				}
 				break;
 
-			case 11: //Data
+			case 11: // Data
 				{
 					size_t num_segments;
 					r.oml(num_segments);
@@ -319,6 +348,8 @@ namespace soup
 			case 0x20: // local.get
 			case 0x21: // local.set
 			case 0x22: // local.tee
+			case 0x23: // global.get
+			case 0x24: // global.set
 				{
 					size_t imm;
 					r.oml(imm);
@@ -456,13 +487,13 @@ namespace soup
 					{
 						return false;
 					}
+#if DEBUG_VM
+					std::cout << "Calling into " << script.function_imports.at(function_index).module_name << ":" << script.function_imports.at(function_index).function_name << "\n";
+#endif
 					SOUP_IF_UNLIKELY (script.function_imports.at(function_index).ptr == nullptr)
 					{
 						return false;
 					}
-#if DEBUG_VM
-					std::cout << "Calling into " << script.function_imports.at(function_index).module_name << ":" << script.function_imports.at(function_index).function_name << "\n";
-#endif
 					script.function_imports.at(function_index).ptr(*this);
 				}
 				break;
@@ -504,6 +535,30 @@ namespace soup
 						return false;
 					}
 					locals.at(local_index) = stack.top();
+				}
+				break;
+
+			case 0x23: // global.get
+				{
+					size_t global_index;
+					r.oml(global_index);
+					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
+					{
+						return false;
+					}
+					stack.push(script.globals.at(global_index));
+				}
+				break;
+
+			case 0x24: // global.set
+				{
+					size_t global_index;
+					r.oml(global_index);
+					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
+					{
+						return false;
+					}
+					script.globals.at(global_index) = stack.top(); stack.pop();
 				}
 				break;
 
@@ -577,6 +632,78 @@ namespace soup
 					int32_t b = stack.top(); stack.pop();
 					int32_t a = stack.top(); stack.pop();
 					stack.push(a == b);
+				}
+				break;
+
+			case 0x47: // i32.ne
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(a != b);
+				}
+				break;
+
+			case 0x48: // i32.lt_s
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(a < b);
+				}
+				break;
+
+			case 0x49: // i32.lt_u
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a) < static_cast<uint32_t>(b));
+				}
+				break;
+
+			case 0x4c: // i32.le_s
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(a <= b);
+				}
+				break;
+
+			case 0x4d: // i32.le_u
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a) <= static_cast<uint32_t>(b));
+				}
+				break;
+
+			case 0x4a: // i32.gt_s
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(a > b);
+				}
+				break;
+
+			case 0x4b: // i32.gt_u
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a) > static_cast<uint32_t>(b));
+				}
+				break;
+
+			case 0x4e: // i32.ge_s
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(a >= b);
+				}
+				break;
+
+			case 0x4f: // i32.ge_u
+				{
+					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a) >= static_cast<uint32_t>(b));
 				}
 				break;
 

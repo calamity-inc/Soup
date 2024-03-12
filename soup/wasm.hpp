@@ -27,6 +27,7 @@ namespace soup
 		std::unordered_map<std::string, size_t> export_map{};
 		std::vector<FunctionImport> function_imports{};
 		std::vector<std::string> functions{};
+		std::vector<int32_t> globals{};
 
 		WasmScript();
 
