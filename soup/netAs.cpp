@@ -27,7 +27,7 @@ namespace soup
 			if (auto code = ws.getExportedFuntion("is_hosting_asn"))
 			{
 				WasmVm vm(ws);
-				vm.stack.emplace(this->number);
+				vm.locals.emplace_back(this->number);
 				if (vm.run(*code)
 					&& vm.stack.top()
 					)
