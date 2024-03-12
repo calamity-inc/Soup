@@ -1037,9 +1037,9 @@ endif;)") == "");
 			vm.locals.emplace_back(69);
 			vm.locals.emplace_back(0x10);
 			assert(vm.run(*code));
-			assert(string::bin2hex(std::string(&scr.memory[0x00], 0x10)) == "00000000000000000000000000000000");
-			assert(string::bin2hex(std::string(&scr.memory[0x10], 0x10)) == "45454545454545454545454545454545");
-			assert(string::bin2hex(std::string(&scr.memory[0x20], 0x10)) == "00000000000000000000000000000000");
+			assert(string::bin2hex(std::string(scr.getMemory<const char>(0x00), 0x10)) == "00000000000000000000000000000000");
+			assert(string::bin2hex(std::string(scr.getMemory<const char>(0x10), 0x10)) == "45454545454545454545454545454545");
+			assert(string::bin2hex(std::string(scr.getMemory<const char>(0x20), 0x10)) == "00000000000000000000000000000000");
 		});
 		test("Imports", []
 		{

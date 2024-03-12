@@ -23,13 +23,14 @@ namespace soup
 			wasm_ffi_func_t ptr;
 		};
 
-		char memory[0x10'000]; // 64 KiB
+		uint8_t* memory = nullptr;
+		size_t memory_size = 0;
 		std::unordered_map<std::string, size_t> export_map{};
 		std::vector<FunctionImport> function_imports{};
 		std::vector<std::string> functions{};
 		std::vector<int32_t> globals{};
 
-		WasmScript();
+		~WasmScript() noexcept;
 
 		bool load(const std::string& data);
 		bool load(Reader& r);
@@ -40,7 +41,7 @@ namespace soup
 		template <typename T>
 		[[nodiscard]] T* getMemory(int32_t ptr) noexcept
 		{
-			SOUP_IF_UNLIKELY (ptr < 0 || ptr >= sizeof(memory))
+			SOUP_IF_UNLIKELY (ptr < 0 || ptr >= memory_size)
 			{
 				return nullptr;
 			}

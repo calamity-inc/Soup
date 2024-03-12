@@ -21,9 +21,9 @@ namespace soup
 {
 	// WasmScript
 
-	WasmScript::WasmScript()
+	WasmScript::~WasmScript() noexcept
 	{
-		memset(memory, 0, sizeof(memory));
+		free(memory);
 	}
 
 	bool WasmScript::load(const std::string& data)
@@ -143,7 +143,31 @@ namespace soup
 				}
 				break;
 
-			// 5 - Memory
+			case 5: // Memory
+				{
+					size_t num_memories; r.oml(num_memories);
+					SOUP_IF_UNLIKELY (memory != nullptr || num_memories != 1)
+					{
+						return false;
+					}
+					uint8_t flags; r.u8(flags);
+					size_t pages; r.oml(pages);
+					if (flags & 1)
+					{
+						size_t max_pages; r.oml(max_pages);
+					}
+					if (pages == 0)
+					{
+						++pages;
+					}
+					memory = (uint8_t*)soup::malloc(pages * 0x10'000);
+					memory_size = pages * 0x10'000;
+					memset(memory, 0, memory_size);
+#if DEBUG_LOAD
+					std::cout << "Memory consists of " << pages << " pages, totalling " << memory_size << " bytes\n";
+#endif
+				}
+				break;
 
 			case 6: // Global
 				{
@@ -249,7 +273,7 @@ namespace soup
 							return false;
 						}
 						size_t size; r.oml(size);
-						SOUP_IF_UNLIKELY (base + size >= sizeof(memory))
+						SOUP_IF_UNLIKELY (base + size >= memory_size)
 						{
 							return false;
 						}
