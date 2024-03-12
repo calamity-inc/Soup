@@ -335,15 +335,27 @@ namespace soup
 		size_t stack_size;
 	};
 
-	static void skipOverBranch(ioSeekableReader& r) SOUP_EXCAL
+	static void skipOverBranch(ioSeekableReader& r, size_t depth = 0) SOUP_EXCAL
 	{
 		uint8_t op;
 		while (r.u8(op))
 		{
 			switch (op)
 			{
+			case 0x02: // block
+			case 0x03: // loop
+			case 0x04: // if
+				r.skip(1); // void
+				++depth;
+				break;
+
 			case 0x0b: // end
-				return;
+				if (depth == 0)
+				{
+					return;
+				}
+				--depth;
+				break;
 
 			case 0x0c: // br
 			case 0x10: // call
@@ -420,6 +432,11 @@ namespace soup
 			case 0x01: // nop
 				break;
 
+			case 0x02: // block
+				r.skip(1); // void
+				ctrlflow.emplace(CtrlFlowEntry{ (size_t)-1, stack.size()});
+				break;
+
 			case 0x03: // loop
 				r.skip(1); // void
 				ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
@@ -457,12 +474,12 @@ namespace soup
 					{
 						return false;
 					}
-					size_t break_depth;
-					r.oml(break_depth);
+					size_t depth;
+					r.oml(depth);
 #if DEBUG_VM
-					std::cout << "unconditional branch with depth " << break_depth << ", new position = ";
+					std::cout << "unconditional branch with depth " << depth << ", new position = ";
 #endif
-					while (break_depth--)
+					while (depth--)
 					{
 						ctrlflow.pop();
 						SOUP_IF_UNLIKELY (ctrlflow.empty())
@@ -470,7 +487,16 @@ namespace soup
 							return false;
 						}
 					}
-					r.seek(ctrlflow.top().position);
+					if (ctrlflow.top().position == -1)
+					{
+						// branch forwards
+						skipOverBranch(r, depth);
+					}
+					else
+					{
+						// branch backwards
+						r.seek(ctrlflow.top().position);
+					}
 #if DEBUG_VM
 					std::cout << r.getPosition() << "\n";
 #endif
