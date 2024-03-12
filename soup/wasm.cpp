@@ -400,17 +400,19 @@ namespace soup
 		{
 			size_t type_count;
 			r.oml(type_count);
-			SOUP_IF_UNLIKELY (type_count != 1)
-			{
-				return false;
-			}
 			uint8_t type;
 			r.u8(type);
 			SOUP_IF_UNLIKELY (type != 0x7f) // i32
 			{
+#if DEBUG_VM
+				std::cout << "Unsupported local type: " << (int)type << "\n";
+#endif
 				return false;
 			}
-			locals.emplace_back(0);
+			while (type_count--)
+			{
+				locals.emplace_back(0);
+			}
 		}
 
 		std::stack<CtrlFlowEntry> ctrlflow{};
@@ -427,6 +429,9 @@ namespace soup
 				return false;
 
 			case 0x00: // unreachable
+#if DEBUG_VM
+				std::cout << "unreachable\n";
+#endif
 				return false;
 
 			case 0x01: // nop
@@ -441,7 +446,7 @@ namespace soup
 				r.skip(1); // void
 				ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
 #if DEBUG_VM
-				std::cout << "loop at position " << r.getPosition() << "\n";
+				std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << "\n";
 #endif
 				break;
 
@@ -472,6 +477,9 @@ namespace soup
 				{
 					SOUP_IF_UNLIKELY (ctrlflow.empty())
 					{
+#if DEBUG_VM
+						std::cout << "branch despite empty ctrlflow stack\n";
+#endif
 						return false;
 					}
 					size_t depth;
@@ -484,6 +492,9 @@ namespace soup
 						ctrlflow.pop();
 						SOUP_IF_UNLIKELY (ctrlflow.empty())
 						{
+#if DEBUG_VM
+							std::cout << "branch depth exceeds ctrlflow stack\n";
+#endif
 							return false;
 						}
 					}
@@ -507,12 +518,18 @@ namespace soup
 				}
 				break;
 
+			case 0x0f: // return
+				return true;
+
 			case 0x10: // call
 				{
 					size_t function_index;
 					r.oml(function_index);
 					SOUP_IF_UNLIKELY (function_index >= script.function_imports.size())
 					{
+#if DEBUG_VM
+						std::cout << "call is out-of-bounds\n";
+#endif
 						return false;
 					}
 #if DEBUG_VM
@@ -536,6 +553,9 @@ namespace soup
 					r.oml(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
+#if DEBUG_VM
+						std::cout << "local is out-of-bounds\n";
+#endif
 						return false;
 					}
 					stack.push(locals.at(local_index));
@@ -548,6 +568,9 @@ namespace soup
 					r.oml(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
+#if DEBUG_VM
+						std::cout << "local is out-of-bounds\n";
+#endif
 						return false;
 					}
 					locals.at(local_index) = stack.top(); stack.pop();
@@ -560,6 +583,9 @@ namespace soup
 					r.oml(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
+#if DEBUG_VM
+						std::cout << "local is out-of-bounds\n";
+#endif
 						return false;
 					}
 					locals.at(local_index) = stack.top();
@@ -572,6 +598,9 @@ namespace soup
 					r.oml(global_index);
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
+#if DEBUG_VM
+						std::cout << "global is out-of-bounds\n";
+#endif
 						return false;
 					}
 					stack.push(script.globals.at(global_index));
@@ -584,6 +613,9 @@ namespace soup
 					r.oml(global_index);
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
+#if DEBUG_VM
+						std::cout << "global is out-of-bounds\n";
+#endif
 						return false;
 					}
 					script.globals.at(global_index) = stack.top(); stack.pop();
@@ -652,6 +684,13 @@ namespace soup
 					int32_t value;
 					r.soml(value);
 					stack.push(value);
+				}
+				break;
+
+			case 0x45: // i32.eqz
+				{
+					int32_t value = stack.top(); stack.pop();
+					stack.push(value == 0);
 				}
 				break;
 
