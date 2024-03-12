@@ -163,7 +163,7 @@ namespace soup
 						{
 							return false;
 						}
-						int32_t value; r.oml(value);
+						int32_t value; r.soml(value);
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x0b) // end
 						{
@@ -242,7 +242,7 @@ namespace soup
 						{
 							return false;
 						}
-						int32_t base; r.oml(base);
+						int32_t base; r.soml(base);
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x0b) // end
 						{
@@ -373,7 +373,7 @@ namespace soup
 			case 0x41: // i32.const
 				{
 					int32_t value;
-					r.oml(value);
+					r.soml(value);
 				}
 				break;
 			}
@@ -624,7 +624,7 @@ namespace soup
 			case 0x41: // i32.const
 				{
 					int32_t value;
-					r.oml(value);
+					r.soml(value);
 					stack.push(value);
 				}
 				break;

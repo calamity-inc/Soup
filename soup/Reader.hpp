@@ -118,7 +118,7 @@ namespace soup
 		// Specialisation of the above for Bigint.
 		bool om_bigint(Bigint& v);
 
-		// An integer where every byte's most significant bit is used to indicate if another byte follows, least significant byte first. This is compatible with unsigned LEB123.
+		// An integer where every byte's most significant bit is used to indicate if another byte follows, least significant byte first. This is compatible with unsigned LEB128.
 		template <typename Int>
 		bool oml(Int& v)
 		{
@@ -130,6 +130,29 @@ namespace soup
 				v |= (static_cast<Int>(byte & 0x7F) << shift);
 				if (!(byte & 0x80))
 				{
+					return true;
+				}
+				shift += 7;
+			}
+			return false;
+		}
+
+		// Signed LEB128.
+		template <typename Int>
+		bool soml(Int& v)
+		{
+			v = {};
+			uint8_t byte;
+			uint8_t shift = 0;
+			while (u8(byte))
+			{
+				v |= (static_cast<Int>(byte & 0x7F) << shift);
+				if (!(byte & 0x80))
+				{
+					if (shift < (sizeof(Int) * 8) && (byte & 0x40))
+					{
+						v |= (~0 << shift);
+					}
 					return true;
 				}
 				shift += 7;
