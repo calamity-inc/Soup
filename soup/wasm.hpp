@@ -10,21 +10,30 @@
 
 namespace soup
 {
-	class WasmScript
-	{
-	public:
-		char memory[0x10'000];
+	struct WasmVm;
 
-	private:
+	using wasm_ffi_func_t = void(*)(WasmVm&);
+
+	struct WasmScript
+	{
+		struct FunctionImport
+		{
+			std::string module_name;
+			std::string function_name;
+			wasm_ffi_func_t ptr;
+		};
+
+		char memory[0x10'000]; // 64 KiB
 		std::unordered_map<std::string, size_t> export_map{};
+		std::vector<FunctionImport> function_imports{};
 		std::vector<std::string> functions{};
 
-	public:
 		WasmScript();
 
 		bool load(const std::string& data);
 		bool load(Reader& r);
 
+		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name) const noexcept;
 
 		template <typename T>

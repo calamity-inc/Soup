@@ -1021,6 +1021,7 @@ endif;)") == "");
 				WasmVm vm(scr);
 				vm.locals.emplace_back(1036);
 				assert(vm.run(*code));
+				assert(!vm.stack.empty());
 				assert(vm.stack.top() == 0x1c);
 				assert(vm.stack.pop(), vm.stack.empty());
 			}
@@ -1039,6 +1040,27 @@ endif;)") == "");
 			assert(string::bin2hex(std::string(&scr.memory[0x00], 0x10)) == "00000000000000000000000000000000");
 			assert(string::bin2hex(std::string(&scr.memory[0x10], 0x10)) == "45454545454545454545454545454545");
 			assert(string::bin2hex(std::string(&scr.memory[0x20], 0x10)) == "00000000000000000000000000000000");
+		});
+		test("Imports", []
+		{
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAn9/AX9gAX8BfwINAQVpbmRleANhZGQAAAMCAQEFAwEAAAcTAgZhZGRUd28AAQZtZW1vcnkCAAoKAQgAIABBAhAACwA6BG5hbWUBGgIACWluZGV4L2FkZAEMaW5kZXgvYWRkVHdvAggCAAABAQABMAQHAgABMAEBMQYEAQABMA==")));
+			auto fi = scr.getImportedFunction("index", "add");
+			assert(fi);
+			fi->ptr = [](WasmVm& vm)
+			{
+				int32_t b = vm.stack.top(); vm.stack.pop();
+				int32_t a = vm.stack.top(); vm.stack.pop();
+				vm.stack.push(a + b);
+			};
+			auto code = scr.getExportedFuntion("addTwo");
+			assert(code);
+			WasmVm vm(scr);
+			vm.locals.emplace_back(40);
+			assert(vm.run(*code));
+			assert(!vm.stack.empty());
+			assert(vm.stack.top() == 42);
+			assert(vm.stack.pop(), vm.stack.empty());			
 		});
 	}
 

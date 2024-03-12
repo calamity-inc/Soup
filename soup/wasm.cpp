@@ -101,6 +101,32 @@ namespace soup
 				}
 				break;
 
+			case 2: // Import
+				{
+					size_t num_imports;
+					r.oml(num_imports);
+#if DEBUG_LOAD
+					std::cout << num_imports << " import(s)\n";
+#endif
+					while (num_imports--)
+					{
+						size_t module_name_len; r.oml(module_name_len);
+						std::string module_name; r.str(module_name_len, module_name);
+						size_t field_name_len; r.oml(field_name_len);
+						std::string field_name; r.str(field_name_len, field_name);
+#if DEBUG_LOAD
+						std::cout << "-" << module_name << ":" << field_name << "\n";
+#endif
+						uint8_t kind; r.u8(kind);
+						if (kind == 0) // function
+						{
+							size_t signature_index; r.oml(signature_index);
+							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr });
+						}
+					}
+				}
+				break;
+
 			case 3: // Function
 				{
 					size_t num_functions;
@@ -209,13 +235,28 @@ namespace soup
 		return true;
 	}
 
+	WasmScript::FunctionImport* WasmScript::getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept
+	{
+		for (auto& fi : function_imports)
+		{
+			if (fi.function_name == function_name
+				&& fi.module_name == module_name
+				)
+			{
+				return &fi;
+			}
+		}
+		return nullptr;
+	}
+
 	const std::string* WasmScript::getExportedFuntion(const std::string& name) const noexcept
 	{
 		if (auto e = export_map.find(name); e != export_map.end())
 		{
-			if (e->second < functions.size())
+			const size_t i = (e->second - function_imports.size());
+			if (i < functions.size())
 			{
-				return &functions.at(e->second);
+				return &functions.at(i);
 			}
 		}
 		return nullptr;
@@ -245,12 +286,14 @@ namespace soup
 			case 0x0b: // end
 				return;
 
+			case 0x0c: // br
+			case 0x10: // call
 			case 0x20: // local.get
 			case 0x21: // local.set
 			case 0x22: // local.tee
 				{
-					size_t local_index;
-					r.oml(local_index);
+					size_t imm;
+					r.oml(imm);
 				}
 				break;
 
@@ -309,6 +352,12 @@ namespace soup
 				std::cout << "Unsupported opcode: " << (int)op << "\n";
 #endif
 				return false;
+
+			case 0x00: // unreachable
+				return false;
+
+			case 0x01: // nop
+				break;
 
 			case 0x03: // loop
 				r.skip(1); // void
@@ -369,6 +418,29 @@ namespace soup
 						stack.pop();
 					}
 				}
+				break;
+
+			case 0x10: // call
+				{
+					size_t function_index;
+					r.oml(function_index);
+					SOUP_IF_UNLIKELY (function_index >= script.function_imports.size())
+					{
+						return false;
+					}
+					SOUP_IF_UNLIKELY (script.function_imports.at(function_index).ptr == nullptr)
+					{
+						return false;
+					}
+#if DEBUG_VM
+					std::cout << "Calling into " << script.function_imports.at(function_index).module_name << ":" << script.function_imports.at(function_index).function_name << "\n";
+#endif
+					script.function_imports.at(function_index).ptr(*this);
+				}
+				break;
+
+			case 0x1a: // drop
+				stack.pop();
 				break;
 
 			case 0x20: // local.get
