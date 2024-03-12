@@ -29,6 +29,7 @@ namespace soup
 	void netIntel::asInit(bool ipv4, bool ipv6)
 	{
 		initAsList();
+		initExtraWasm();
 		if (ipv4)
 		{
 			initIpv4ToAs();
@@ -101,6 +102,13 @@ namespace soup
 			as.name = as_pool.emplace(line.substr(handle_sep + 2, line.length() - handle_sep - 3));
 			aslist.emplace(as.number, soup::make_unique<netAs>(std::move(as)));
 		}
+	}
+
+	void netIntel::initExtraWasm()
+	{
+		WebResource rsc("raw.githubusercontent.com", "/calamity-inc/soup-extra-data/senpai/build/release.wasm");
+		rsc.downloadWithCaching();
+		extra_wasm = std::move(rsc.data);
 	}
 
 	void netIntel::initIpv4ToAs()

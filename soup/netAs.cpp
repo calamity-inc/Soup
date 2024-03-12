@@ -1,163 +1,45 @@
 #include "netAs.hpp"
 
+#include "base64.hpp"
+#include "netIntel.hpp"
 #include "string.hpp"
+#include "wasm.hpp"
 
 namespace soup
 {
-	bool netAs::isHosting(const netIntel& intel) const noexcept
+	bool netAs::isHosting(const netIntel& intel) const SOUP_EXCAL
 	{
-		switch (number)
+		return isHosting(intel.extra_wasm);
+	}
+
+	bool netAs::isHosting() const SOUP_EXCAL
+	{
+		// Hard-coding https://github.com/calamity-inc/soup-extra-data/tree/2cf65d932945524f529c0bb2527df51bc5b18b92
+		return isHosting(base64::decode("AGFzbQEAAAABBgFgAX8BfwMCAQAFAwEAAAcbAg5pc19ob3N0aW5nX2FzbgAABm1lbW9yeQIACqMIAaAIACAAQbElRiAAQY4ZRnIgAEHZMEZyIABBpD9GciAAQdjIAEZyIABB4MgARnIgAEH3yABGciAAQbfcAEZyIABB5twARnIgAEH25QBGciAAQZ3nAEZyIABBtp4BRnIgAEH5nwFGciAAQZnGAUZyIABBreYBRnIgAEGD6wFGciAAQYDPAUZyIABBkPABRnIgAEGulwJGciAAQY6lAkZyIABBy64CRnIgAEG3swJGciAAQeS9AkZyIABB3MQCRnIgAEGZ0gJGciAAQfnTAkZyIABBruACRnIgAEHL5gJGciAAQeLrAkZyIABB1e0CRnIgAEH87QJGciAAQcL1AkZyIABBvYYDRnIgAEGAiQNGciAAQaOUA0ZyIABBx5kDRnIgAEGVngNGciAAQcbGA0ZyIABBo6MDRnIgAEHwsgNGciAAQdHFA0ZyIABB2cUDRnIgAEGk1QNGciAAQaDmA0ZyIABB/4AIRnIgAEHriAhGciAAQeiSCEZyIABB06wIRnIgAEHBrQhGciAAQa+wCEZyIABBwbEIRnIgAEHvzQhGciAAQe/OCEZyIABBkvsIRnIgAEHp/AhGciAAQcqIDEZyIABB440MRnIgAEHNjwxGciAAQd2PDEZyIABB5JYMRnIgAEH9wQxGciAAQb/CDEZyIABB1M8MRnIgAEGO+gxGciAAQZ2CDUZyIABBlowQRnIgAEGlshBGciAAQdSwAUZyIABB8MIARnIgAEHm9QJGciAAQY7sAkZyIABBzJgCRnIgAEG8HkZyIABBx6QDRnIgAEHENEZyIABB25IBRnIgAEGAnAJGciAAQbfVA0ZyIABBiz9GciAAQbr0AkZyIABB7MwMRnIgAEGYzQhGciAAQenLAkZyIABBqNADRnIgAEG+5wxGciAAQd3SAkZyIABB6ugBRnIgAEHSrQNGciAAQdz3A0ZyIABBlxlGciAAQb+2AkZyIABBodIMRnIgAEGCgg1GciAAQa+2GEZyIABButkDRnIgAEHeiQxGciAAQdbSAkZyIABBtfcDRnIgAEGPgRBGciAAQcSYGEZyIABBrr0CRnIgAEGdwQxGciAAQfrxAEZyIABB7/8BRnIgAEHUzQJGciAAQazXAkZyIABBrgFGciAAQeUQRnIgAEHGI0ZyIABB8zBGciAAQZsxRnIgAEHeMkZyIABB4DJGciAAQZU3RnIgAEGiOkZyIABBkNQARnIgAEGQ1gBGciAAQdTXAEZyIABBhtoARnIgAEGv3wBGciAAQfeBAUZyIABB3JUBRnIgAEHTrAFGciAAQczkAEZyIABBy7sIRnIgAEG6nRhGciAAQYHDAUZyIABBxMMCRnIgAEHGnRhGciAAQbTvAUZyIABB5uwARnIgAEG7pwNGciAAQf2xAUZyIABBu+kDRnILADIEbmFtZQEXAQAUaW5kZXgvaXNfaG9zdGluZ19hc24CBgEAAQABMAQEAQABMAYEAQABMA=="));
+	}
+
+	bool netAs::isHosting(const std::string& extra_wasm) const SOUP_EXCAL
+	{
+		// Checking ASN against https://github.com/calamity-inc/soup-extra-data/blob/senpai/index.ts
+		WasmScript ws;
+		if (ws.load(extra_wasm))
 		{
-		case 3214: // xTom GmbH
-		case 4785: // xTom Limited
-		case 6233: // xTom
-		case 8100: // QuadraNet Enterprises LLC
-		case 9304: // HGC Global Communications Limited
-		case 9312: // xTom Hong Kong Limited
-		case 9335: // CAT Telecom Public Company Limited
-		case 11831: // eSecureData
-		case 11878: // tzulo, inc.
-		case 13046: // ISKON INTERNET d.d. za informatiku i telekomunikacije
-		case 13213: // UK-2 Limited
-		case 20278: // Nexeon Technologies, Inc.
-		case 20473: // The Constant Company, LLC
-		case 25369: // Hydra Communications Ltd
-		case 29485: // A1 Hrvatska d.o.o.
-		case 30083: // GoDaddy.com, LLC
-		case 26496: // GoDaddy.com, LLC
-		case 30736: // ASERGO Scandinavia ApS
-		case 35758: // Rachamim Aviel Twito trading as A.B INTERNET SOLUTIONS
-		case 37518: // Fiber Grid INC
-		case 38731: // Vietel - CHT Compamy Ltd
-		case 39351: // 31173 Services AB
-		case 40676: // Psychz Networks
-		case 41564: // Orion Network Limited
-		case 43289: // Trabia SRL
-		case 43513: // Sia Nano IT
-		case 45102: // Alibaba US Technology Co. Ltd.
-		case 45899: // VNPT Corp
-		case 46562: // Performive LLC
-		case 46805: // Inter Connects Inc
-		case 46844: // Sharktech
-		case 47810: // Proservice LLC
-		case 49981: // WorldStream B.V.
-		case 50304: // Blix Solutions AS
-		case 51747: // Internet Vikings International AB
-		case 52423: // Data Miners S.A. ( Racknation.cr )
-		case 53013: // W I X NET DO BRASIL LTDA - ME
-		case 58182: // Wix.com Ltd.
-		case 53667: // FranTech Solutions
-		case 55664: // PT Inovasi Global Mumpuni
-		case 58065: // Packet Exchange Limited
-		case 58073: // YISP B.V.
-		case 60068: // Datacamp Limited
-		case 62240: // Clouvider Limited
-		case 131199: // Nexeon Technologies, Inc.
-		case 132203: // Tencent Building Kejizhongyi Avenue
-		case 133480: // Intergrid Group Pty Ltd
-		case 136787: // TEFINCOM S.A.
-		case 136897: // EnjoyVC Cloud Group Limited
-		case 137263: // NETEASE (HONG KONG) LIMITED
-		case 137409: // GSL Networks Pty LTD
-		case 141039: // TEFINCOM S.A.
-		case 141167: // AgotoZ HK Limited
-		case 146834: // XUNYOU SiChuan XunYou Network Technologe Limit Co
-		case 147049: // PacketHub S.A.
-		case 197706: // Keminet SHPK
-		case 198371: // NINET Company Nis d.o.o.
-		case 198605: // AVAST Software s.r.o.
-		case 198621: // AVAST Software s.r.o.
-		case 199524: // G-Core Labs S.A.
-		case 205053: // Asimia Damaskou
-		case 205119: // TELEKS DOOEL Skopje
-		case 206804: // EstNOC OY
-		case 212238: // Datacamp Limited
-		case 213277: // ALMOUROLTEC SERVICOS DE INFORMATICA E INTERNET LDA
-		case 263702: // GRUPO ZGH SPA
-		case 268581: // QNAX LTDA
-		case 22612: // Namecheap, Inc.
-		case 8560: // IONOS SE
-		case 47846: // SEDO GmbH
-		case 46606: // Unified Layer
-		case 35916: // MULTACOM CORPORATION
-		case 3900: // SWITCH, LTD
-		case 53831: // Squarespace, Inc.
-		case 6724: // Strato AG
-		case 18779: // EGIHosting
-		case 36352: // ColoCrossing
-		case 60087: // Netsons s.r.l. (Uania Cloud Service)
-		case 8075: // Microsoft / Azure
-		case 47674: // related to BLAZINGFAST
-		case 206444: // KUBBUR
-		case 140952: // Strong Technology, LLC
-		case 42473: // ANEXIA Internetdienstleistungs GmbH
-		case 59432: // GINERNET
-		case 209854: // Surfshark Ltd.
-		case 43357: // Owl Limited
-		case 29802: // HIVELOCITY, Inc.
-		case 54994: // QUANTIL NETWORKS INC
-		case 64476: // Shadow SAS (shadow.tech)
-		case 3223: // Voxility LLP
-		case 39743: // Voxility S.R.L. 
-		case 207137: // PacketHub S.A.
-		case 213250: // Dominic Scholz trading as ITP-Solutions GmbH & Co. KG	
-		case 400175: // Microtronix ESolutions, LLC
-		case 60602: // Inovare-Prim SRL
-		case 197854: // Eisenia AB	
-			// NForce Entertainment B.V.
-		case 43350:
-		case 64437:	
-			// Latitude.sh (formerly Maxihost)
-		case 262287:
-		case 396356:
-			// Green Floid LLC
-		case 40622:
-		case 204957:
-			// Nuclearfallout Enterprises, Inc (NFO)
-		case 14586:
-		case 32751:
-			// GleSYS AB
-		case 42708:
-		case 43948:
-			// Cogent Communications
-		case 174:
-		case 2149:
-		case 4550:
-		case 6259:
-		case 6299:
-		case 6494:
-		case 6496:
-		case 7061:
-		case 7458:
-		case 10768:
-		case 11024:
-		case 11220:
-		case 11526:
-		case 12207:
-		case 16631:
-		case 19164:
-		case 22099:
-			// Scaleway (Note that their ASN 29447 is reused for residential internet by its holding company)
-		case 12876:
-			// Bytedance
-		case 138699:
-		case 396986:
-			// myLoc managed IT AG
-		case 24961:
-		case 41412:
-			// Path Network, Inc
-		case 396998:
-		case 30644:
-			// Strong Technology
-		case 13926:
-		case 54203:
-		case 22781:
-		case 62651:
-			return true;
+			if (auto code = ws.getExportedFuntion("is_hosting_asn"))
+			{
+				WasmVm vm;
+				vm.stack.emplace(this->number);
+				if (vm.run(*code)
+					&& vm.stack.top()
+					)
+				{
+					return true;
+				}
+			}
 		}
-		std::string slug = handle;
+
+		std::string slug = this->handle;
 		slug.push_back(' ');
-		slug.append(name);
+		slug.append(this->name);
 		string::lower(slug);
 		string::replaceAll(slug, "-", "");
 		string::replaceAll(slug, ",", "");
@@ -166,7 +48,7 @@ namespace soup
 			// Note: Not "colo" because "Telmex Colombia S.A."
 			|| (slug.find("cloud") != std::string::npos // AS39845 2 Cloud Ltd.
 				&& slug.find("the cloud") == std::string::npos // ignore AS41012 The Cloud Networks Limited
-				)			
+				)
 			|| slug.find("datacenter") != std::string::npos
 			|| slug.find("data center") != std::string::npos
 			|| slug.find("ddos") != std::string::npos
@@ -199,12 +81,5 @@ namespace soup
 			return true;
 		}
 		return false;
-	}
-
-	bool netAs::isHosting() const noexcept
-	{
-		// `const netIntel&` argument is currently unused, but requiring it for future improvements.
-		const netIntel* ptr = nullptr;
-		return isHosting(*ptr);
 	}
 }

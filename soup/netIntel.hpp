@@ -23,6 +23,7 @@ namespace soup
 		RangeMap<IpAddr, const netAs*> ipv6toas{};
 		RangeMap<uint32_t, netIntelLocationData> ipv4tolocation{};
 		RangeMap<IpAddr, netIntelLocationData> ipv6tolocation{};
+		std::string extra_wasm{};
 
 		void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
 		void deinit() noexcept;
@@ -37,6 +38,7 @@ namespace soup
 
 	private:
 		void initAsList(); // blocking
+		void initExtraWasm(); // blocking
 		void initIpv4ToAs(); // blocking
 		void initIpv6ToAs(); // blocking
 		void initIpv4ToLocation(); // blocking
