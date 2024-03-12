@@ -991,13 +991,36 @@ endif;)") == "");
 			assert(ws.load(base64::decode("AGFzbQEAAAABBwFgAn9/AX8DAgEABwoBBmFkZFR3bwAACgkBBwAgACABagsACgRuYW1lAgMBAAA=")));
 			auto code = ws.getExportedFuntion("addTwo");
 			assert(code);
-			WasmVm vm;
+			WasmVm vm(ws);
 			vm.locals.emplace_back(1);
 			vm.locals.emplace_back(2);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
 			assert(vm.stack.top() == 3);
 			assert(vm.stack.pop(), vm.stack.empty());
+		});
+		test("Memory", []
+		{
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABCgJgAAF/YAF/AX8DAwIAAQUDAQABByIDCmdldF9zdHJpbmcAAAhnZXRfYnl0ZQABBm1lbW9yeQIACg8CBQBBoAgLBwAgAC0AAAsLGwIAQYwICwEcAEGYCAsNAgAAAAYAAABsAG8AbABOBG5hbWUBIwIAEGluZGV4L2dldF9zdHJpbmcBDmluZGV4L2dldF9ieXRlAggCAAABAQABMAQHAgABMAEBMQYEAQABMAkJAgABMAEDMC4x")));
+			{
+				auto code = scr.getExportedFuntion("get_string");
+				assert(code);
+				WasmVm vm(scr);
+				assert(vm.run(*code));
+				assert(!vm.stack.empty());
+				assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(scr.getMemory<const UTF16_CHAR_TYPE>(vm.stack.top())) == "lol");
+				assert(vm.stack.pop(), vm.stack.empty());
+			}
+			{
+				auto code = scr.getExportedFuntion("get_byte");
+				assert(code);
+				WasmVm vm(scr);
+				vm.locals.emplace_back(1036);
+				assert(vm.run(*code));
+				assert(vm.stack.top() == 0x1c);
+				assert(vm.stack.pop(), vm.stack.empty());
+			}
 		});
 	}
 

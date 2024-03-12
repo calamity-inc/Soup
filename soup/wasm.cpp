@@ -1,5 +1,7 @@
 #include "wasm.hpp"
 
+#include <cstring> // memset
+
 #include "Reader.hpp"
 #include "StringRefReader.hpp"
 
@@ -10,9 +12,18 @@
 #include "string.hpp"
 #endif
 
+// Good resources:
+// - https://webassembly.github.io/wabt/demo/wat2wasm/
+// - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
+
 namespace soup
 {
 	// WasmScript
+
+	WasmScript::WasmScript()
+	{
+		memset(memory, 0, sizeof(memory));
+	}
 
 	bool WasmScript::load(const std::string& data)
 	{
@@ -45,7 +56,7 @@ namespace soup
 #if DEBUG_LOAD
 				std::cout << "Ignoring section of type " << (int)section_type << "\n";
 #endif
-				if (section_size == 0)
+				SOUP_IF_UNLIKELY (section_size == 0)
 				{
 					return false;
 				}
@@ -143,7 +154,7 @@ namespace soup
 					{
 						size_t body_size;
 						r.oml(body_size);
-						if (body_size == 0)
+						SOUP_IF_UNLIKELY (body_size == 0)
 						{
 							return false;
 						}
@@ -153,6 +164,38 @@ namespace soup
 						std::cout << "- " << string::bin2hex(body) << "\n";
 #endif
 						functions.emplace_back(std::move(body));
+					}
+				}
+				break;
+
+			case 11: //Data
+				{
+					size_t num_segments;
+					r.oml(num_segments);
+#if DEBUG_LOAD
+					std::cout << num_segments << " data segment(s)\n";
+#endif
+					while (num_segments--)
+					{
+						r.skip(1); // flags
+						uint8_t op;
+						r.u8(op);
+						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
+						{
+							return false;
+						}
+						int32_t base; r.oml(base);
+						r.u8(op);
+						SOUP_IF_UNLIKELY (op != 0x0b) // end
+						{
+							return false;
+						}
+						size_t size; r.oml(size);
+						SOUP_IF_UNLIKELY (base + size >= sizeof(memory))
+						{
+							return false;
+						}
+						r.raw(&memory[base], size);
 					}
 				}
 				break;
@@ -228,6 +271,43 @@ namespace soup
 						return false;
 					}
 					locals.at(local_index) = stack.top(); stack.pop();
+				}
+				break;
+
+			case 0x28: // i32.load
+				{
+					int32_t base = stack.top(); stack.pop();
+					r.skip(1); // alignment
+					int32_t offset; r.oml(offset);
+					stack.emplace(*script.getMemory<int32_t>(base + offset));
+				}
+				break;
+
+			case 0x2d: // i32.load8_u
+				{
+					int32_t base = stack.top(); stack.pop();
+					r.skip(1); // alignment
+					int32_t offset; r.oml(offset);
+					stack.emplace(*script.getMemory<uint8_t>(base + offset));
+				}
+				break;
+
+			case 0x2f: // i32.load16_u
+				{
+					int32_t base = stack.top(); stack.pop();
+					r.skip(1); // alignment
+					int32_t offset; r.oml(offset);
+					stack.emplace(*script.getMemory<uint16_t>(base + offset));
+				}
+				break;
+
+			case 0x36: // i32.store
+				{
+					int32_t value = stack.top(); stack.pop();
+					int32_t base = stack.top(); stack.pop();
+					r.skip(1); // alignment
+					int32_t offset; r.oml(offset);
+					*script.getMemory<int32_t>(base + offset) = value;
 				}
 				break;
 
