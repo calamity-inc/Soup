@@ -34,9 +34,20 @@ namespace soup
 
 		~FileReader() final = default;
 
-		bool hasMore() final
+		bool hasMore() noexcept final
 		{
-			return s.peek() != EOF;
+#if SOUP_EXCEPTIONS
+			try
+#endif
+			{
+				return s.peek() != EOF;
+			}
+#if SOUP_EXCEPTIONS
+			catch (...)
+			{
+			}
+			return false;
+#endif
 		}
 
 		bool raw(void* data, size_t len) noexcept final

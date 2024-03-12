@@ -25,7 +25,7 @@ namespace soup
 
 		~StringRefReader() final = default;
 
-		bool hasMore() final
+		bool hasMore() noexcept final
 		{
 			return offset != size;
 		}
@@ -41,17 +41,17 @@ namespace soup
 			return true;
 		}
 
-		[[nodiscard]] size_t getPosition() final
+		[[nodiscard]] size_t getPosition() noexcept final
 		{
 			return offset;
 		}
 
-		void seek(size_t pos) final
+		void seek(size_t pos) noexcept final
 		{
 			offset = pos;
 		}
 
-		void seekEnd() final
+		void seekEnd() noexcept final
 		{
 			offset = size;
 		}
