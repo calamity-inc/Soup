@@ -241,56 +241,56 @@ namespace soup
 
 			case 0x46: // i32.eq
 				{
-					int32_t a = stack.top(); stack.pop();
 					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
 					stack.push(a == b);
 				}
 				break;
 
 			case 0x6a: // i32.add
 				{
-					int32_t a = stack.top(); stack.pop();
 					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
 					stack.push(a + b);
 				}
 				break;
 
 			case 0x6b: // i32.sub
 				{
-					int32_t a = stack.top(); stack.pop();
 					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
 					stack.push(a - b);
 				}
 				break;
 
 			case 0x6c: // i32.mul
 				{
-					int32_t a = stack.top(); stack.pop();
 					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
 					stack.push(a * b);
 				}
 				break;
 
 			case 0x6d: // i32.div_s
 				{
-					int32_t a = stack.top(); stack.pop();
 					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
 					stack.push(a / b);
 				}
 				break;
 
 			case 0x71: // i32.and
 				{
-					int32_t a = stack.top(); stack.pop();
 					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
 					stack.push(a & b);
 				}
 				break;
 
 			case 0x72: // i32.or
 				{
-					int32_t a = stack.top(); stack.pop();
 					int32_t b = stack.top(); stack.pop();
+					int32_t a = stack.top(); stack.pop();
 					stack.push(a | b);
 				}
 				break;
