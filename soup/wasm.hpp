@@ -46,6 +46,6 @@ namespace soup
 		}
 
 		bool run(const std::string& data) SOUP_EXCAL;
-		bool run(Reader& r) SOUP_EXCAL;
+		bool run(ioSeekableReader& r) SOUP_EXCAL;
 	};
 }

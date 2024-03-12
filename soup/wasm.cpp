@@ -6,8 +6,9 @@
 #include "StringRefReader.hpp"
 
 #define DEBUG_LOAD false
+#define DEBUG_VM false
 
-#if DEBUG_LOAD
+#if DEBUG_LOAD || DEBUG_VM
 #include <iostream>
 #include "string.hpp"
 #endif
@@ -228,7 +229,54 @@ namespace soup
 		return run(r);
 	}
 
-	bool WasmVm::run(Reader& r) SOUP_EXCAL
+	struct CtrlFlowEntry
+	{
+		size_t position;
+		size_t stack_size;
+	};
+
+	static void skipOverBranch(ioSeekableReader& r) SOUP_EXCAL
+	{
+		uint8_t op;
+		while (r.u8(op))
+		{
+			switch (op)
+			{
+			case 0x0b: // end
+				return;
+
+			case 0x20: // local.get
+			case 0x21: // local.set
+			case 0x22: // local.tee
+				{
+					size_t local_index;
+					r.oml(local_index);
+				}
+				break;
+
+			case 0x28: // i32.load
+			case 0x2d: // i32.load8_u
+			case 0x2f: // i32.load16_u
+			case 0x36: // i32.store
+			case 0x3a: // i32.store8
+			case 0x3b: // i32.store16
+				{
+					r.skip(1); // alignment
+					int32_t offset; r.oml(offset);
+				}
+				break;
+
+			case 0x41: // i32.const
+				{
+					int32_t value;
+					r.oml(value);
+				}
+				break;
+			}
+		}
+	}
+
+	bool WasmVm::run(ioSeekableReader& r) SOUP_EXCAL
 	{
 		size_t local_decl_count;
 		r.oml(local_decl_count);
@@ -236,8 +284,20 @@ namespace soup
 		{
 			size_t type_count;
 			r.oml(type_count);
-			r.skip(type_count);
+			SOUP_IF_UNLIKELY (type_count != 1)
+			{
+				return false;
+			}
+			uint8_t type;
+			r.u8(type);
+			SOUP_IF_UNLIKELY (type != 0x7f) // i32
+			{
+				return false;
+			}
+			locals.emplace_back(0);
 		}
+
+		std::stack<CtrlFlowEntry> ctrlflow{};
 
 		uint8_t op;
 		while (r.u8(op))
@@ -245,10 +305,71 @@ namespace soup
 			switch (op)
 			{
 			default:
+#if DEBUG_VM
+				std::cout << "Unsupported opcode: " << (int)op << "\n";
+#endif
 				return false;
 
+			case 0x03: // loop
+				r.skip(1); // void
+				ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
+#if DEBUG_VM
+				std::cout << "loop at position " << r.getPosition() << "\n";
+#endif
+				break;
+
+			case 0x04: // if
+				{
+					r.skip(1); // void
+					int32_t value = stack.top(); stack.pop();
+					if (value)
+					{
+						ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
+					}
+					else
+					{
+						skipOverBranch(r);
+					}
+				}
+				break;
+
 			case 0x0b: // end
-				return true;
+				if (ctrlflow.empty())
+				{
+					return true;
+				}
+				ctrlflow.pop();
+				break;
+
+			case 0x0c: // br
+				{
+					SOUP_IF_UNLIKELY (ctrlflow.empty())
+					{
+						return false;
+					}
+					size_t break_depth;
+					r.oml(break_depth);
+#if DEBUG_VM
+					std::cout << "unconditional branch with depth " << break_depth << ", new position = ";
+#endif
+					while (break_depth--)
+					{
+						ctrlflow.pop();
+						SOUP_IF_UNLIKELY (ctrlflow.empty())
+						{
+							return false;
+						}
+					}
+					r.seek(ctrlflow.top().position);
+#if DEBUG_VM
+					std::cout << r.getPosition() << "\n";
+#endif
+					while (stack.size() > ctrlflow.top().stack_size)
+					{
+						stack.pop();
+					}
+				}
+				break;
 
 			case 0x20: // local.get
 				{
@@ -271,6 +392,18 @@ namespace soup
 						return false;
 					}
 					locals.at(local_index) = stack.top(); stack.pop();
+				}
+				break;
+
+			case 0x22: // local.tee
+				{
+					size_t local_index;
+					r.oml(local_index);
+					SOUP_IF_UNLIKELY (local_index >= locals.size())
+					{
+						return false;
+					}
+					locals.at(local_index) = stack.top();
 				}
 				break;
 
@@ -308,6 +441,26 @@ namespace soup
 					r.skip(1); // alignment
 					int32_t offset; r.oml(offset);
 					*script.getMemory<int32_t>(base + offset) = value;
+				}
+				break;
+
+			case 0x3a: // i32.store8
+				{
+					int32_t value = stack.top(); stack.pop();
+					int32_t base = stack.top(); stack.pop();
+					r.skip(1); // alignment
+					int32_t offset; r.oml(offset);
+					*script.getMemory<int8_t>(base + offset) = static_cast<int8_t>(value);
+				}
+				break;
+
+			case 0x3b: // i32.store16
+				{
+					int32_t value = stack.top(); stack.pop();
+					int32_t base = stack.top(); stack.pop();
+					r.skip(1); // alignment
+					int32_t offset; r.oml(offset);
+					*script.getMemory<int16_t>(base + offset) = static_cast<int16_t>(value);
 				}
 				break;
 
