@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	bool netAs::isHosting() const noexcept
+	bool netAs::isHosting(const netIntel& intel) const noexcept
 	{
 		switch (number)
 		{
@@ -199,5 +199,12 @@ namespace soup
 			return true;
 		}
 		return false;
+	}
+
+	bool netAs::isHosting() const noexcept
+	{
+		// `const netIntel&` argument is currently unused, but requiring it for future improvements.
+		const netIntel* ptr = nullptr;
+		return isHosting(*ptr);
 	}
 }

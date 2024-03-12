@@ -290,7 +290,7 @@ int main(int argc, const char** argv)
 				std::cout << "AS Number: " << as->number << "\n";
 				std::cout << "AS Handle: " << as->handle << "\n";
 				std::cout << "AS Name: " << as->name << "\n";
-				std::cout << "AS is hosting provider? " << (as->isHosting() ? "Yes" : "No") << "\n";
+				std::cout << "AS is hosting provider? " << (as->isHosting(intel) ? "Yes" : "No") << "\n";
 			}
 			return 0;
 		}
