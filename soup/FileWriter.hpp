@@ -34,9 +34,20 @@ namespace soup
 
 		~FileWriter() final = default;
 
-		bool raw(void* data, size_t size) final
+		bool raw(void* data, size_t size) noexcept final
 		{
-			s.write(reinterpret_cast<char*>(data), size);
+#if SOUP_EXCEPTIONS
+			try
+#endif
+			{
+				s.write(reinterpret_cast<char*>(data), size);
+			}
+#if SOUP_EXCEPTIONS
+			catch (...)
+			{
+				return false;
+			}
+#endif
 			return true;
 		}
 	};

@@ -23,9 +23,21 @@ namespace soup
 			return is.peek() != EOF;
 		}
 
-		bool raw(void* data, size_t len) final
+		bool raw(void* data, size_t len) noexcept final
 		{
-			return !is.read(reinterpret_cast<char*>(data), len).bad();
+#if SOUP_EXCEPTIONS
+			try
+#endif
+			{
+				is.read(reinterpret_cast<char*>(data), len);
+			}
+#if SOUP_EXCEPTIONS
+			catch (...)
+			{
+				return false;
+			}
+#endif
+			return is.rdstate() == 0;
 		}
 
 		bool getLine(std::string& line) noexcept final

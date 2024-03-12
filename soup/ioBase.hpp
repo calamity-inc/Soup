@@ -55,7 +55,7 @@ namespace soup
 
 		virtual ~ioVirtualBase() = default;
 
-		virtual bool raw(void* data, size_t len) = 0;
+		virtual bool raw(void* data, size_t len) noexcept = 0;
 
 		bool b(bool& v)
 		{

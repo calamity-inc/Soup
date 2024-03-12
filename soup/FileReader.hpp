@@ -39,9 +39,20 @@ namespace soup
 			return s.peek() != EOF;
 		}
 
-		bool raw(void* data, size_t len) final
+		bool raw(void* data, size_t len) noexcept final
 		{
-			s.read(reinterpret_cast<char*>(data), len);
+#if SOUP_EXCEPTIONS
+			try
+#endif
+			{
+				s.read(reinterpret_cast<char*>(data), len);
+			}
+#if SOUP_EXCEPTIONS
+			catch (...)
+			{
+				return false;
+			}
+#endif
 			return s.rdstate() == 0;
 		}
 
