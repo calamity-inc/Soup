@@ -1066,13 +1066,12 @@ endif;)") == "");
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAX8Bf2ACf38BfwMDAgEABQMBAAEHDAEIaXNfbWFnaWMAAQo9AjIBAn8DQCAAIgNBAWohACABIgJBAWohASADLQAAIgMgAi0AAEcEQEEADwsgAw0AC0EBCwgAIABBARAACwsLAQBBAQsFZGVlegAANARuYW1lARoCAAZzdHJjbXABD2lzX2hvc3Rpbmdfc2x1ZwIRAgAEAAEwAQExAgEyAwEzAQA=")));
-			auto scrap = scr.getMemory<char>(0x9000);
-			assert(scrap);
-			strcpy(scrap, "deez");
+			auto scrap = scr.allocateMemory(sizeof("deez"));
+			assert(scr.setMemory(scrap, "deez", sizeof("deez")));
 			auto code = scr.getExportedFuntion("is_magic");
 			assert(code);
 			WasmVm vm(scr);
-			vm.locals.emplace_back(0x9000);
+			vm.locals.emplace_back(scrap);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
 			assert(vm.stack.top() == 1);

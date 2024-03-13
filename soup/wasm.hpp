@@ -31,6 +31,7 @@ namespace soup
 
 		uint8_t* memory = nullptr;
 		size_t memory_size = 0;
+		size_t last_alloc = -1;
 		std::vector<size_t> functions{};
 		std::vector<FunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
@@ -45,6 +46,8 @@ namespace soup
 
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name) const noexcept;
+
+		[[nodiscard]] int32_t allocateMemory(size_t len) noexcept;
 
 		template <typename T>
 		[[nodiscard]] T* getMemory(int32_t ptr) noexcept

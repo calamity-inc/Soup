@@ -317,6 +317,16 @@ namespace soup
 		return nullptr;
 	}
 
+	int32_t WasmScript::allocateMemory(size_t len) noexcept
+	{
+		if (last_alloc >= memory_size)
+		{
+			last_alloc = memory_size - 1;
+		}
+		last_alloc -= len;
+		return static_cast<int32_t>(last_alloc);
+	}
+
 	bool WasmScript::setMemory(int32_t ptr, const void* src, size_t len) noexcept
 	{
 		SOUP_IF_UNLIKELY (ptr < 0 || (ptr + len) >= memory_size)

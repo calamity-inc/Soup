@@ -32,10 +32,11 @@ namespace soup
 				slug.append(this->name);
 				string::lower(slug);
 
-				if (ws.setMemory(0x9000, slug.data(), slug.size()))
+				auto scrap = ws.allocateMemory(slug.size() + 1);
+				if (ws.setMemory(scrap, slug.c_str(), slug.size() + 1))
 				{
 					WasmVm vm(ws);
-					vm.locals.emplace_back(0x9000);
+					vm.locals.emplace_back(scrap);
 					if (vm.run(*code)
 						&& vm.stack.top()
 						)
