@@ -951,6 +951,7 @@ namespace soup
 					auto offset = script.readUPTR(r);
 					stack.emplace(*script.getMemory<int64_t>(base, offset));
 				}
+				break;
 
 			case 0x2c: // i32.load8_s
 				{
