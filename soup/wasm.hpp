@@ -49,7 +49,7 @@ namespace soup
 		template <typename T>
 		[[nodiscard]] T* getMemory(int32_t ptr) noexcept
 		{
-			SOUP_IF_UNLIKELY (ptr < 0 || ptr >= memory_size)
+			SOUP_IF_UNLIKELY (ptr < 0 || (ptr + sizeof(T)) >= memory_size)
 			{
 				return nullptr;
 			}

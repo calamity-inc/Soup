@@ -319,7 +319,7 @@ namespace soup
 
 	bool WasmScript::setMemory(int32_t ptr, const void* src, size_t len) noexcept
 	{
-		SOUP_IF_UNLIKELY (ptr < 0 || ptr + len >= memory_size)
+		SOUP_IF_UNLIKELY (ptr < 0 || (ptr + len) >= memory_size)
 		{
 			return false;
 		}
