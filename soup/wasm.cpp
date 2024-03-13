@@ -523,6 +523,7 @@ namespace soup
 				break;
 
 			case 0x29: // i64.load
+			case 0x37: // i64.store
 				{
 					r.skip(1); // memflags
 					int64_t offset; r.oml(offset);
@@ -542,8 +543,75 @@ namespace soup
 					r.soml(value);
 				}
 				break;
+
+#if DEBUG_VM
+			case 0x00: // unreachable
+			case 0x01: // nop
+			case 0x0f: // return
+			case 0x1a: // drop
+			case 0x45: // i32.eqz
+			case 0x46: // i32.eq
+			case 0x47: // i32.ne
+			case 0x48: // i32.lt_s
+			case 0x49: // i32.lt_u
+			case 0x4a: // i32.gt_s
+			case 0x4b: // i32.gt_u
+			case 0x4c: // i32.le_s
+			case 0x4d: // i32.le_u
+			case 0x4e: // i32.ge_s
+			case 0x4f: // i32.ge_u
+			case 0x50: // i64.eqz
+			case 0x51: // i64.eq
+			case 0x52: // i64.ne
+			case 0x53: // i64.lt_s
+			case 0x54: // i64.lt_u
+			case 0x55: // i64.gt_s
+			case 0x56: // i64.gt_u
+			case 0x57: // i64.le_s
+			case 0x58: // i64.le_u
+			case 0x59: // i64.ge_s
+			case 0x5a: // i64.ge_u
+			case 0x69: // i32.popcnt
+			case 0x6a: // i32.add
+			case 0x6b: // i32.sub
+			case 0x6c: // i32.mul
+			case 0x6d: // i32.div_s
+			case 0x6e: // i32.div_u
+			case 0x6f: // i32.rem_s
+			case 0x70: // i32.rem_u
+			case 0x71: // i32.and
+			case 0x72: // i32.or
+			case 0x73: // i32.xor
+			case 0x74: // i32.shl
+			case 0x75: // i32.shr_s ("arithmetic right shift")
+			case 0x76: // i32.shr_u ("logical right shift")
+			case 0x7c: // i64.add
+			case 0x7d: // i64.sub
+			case 0x7e: // i64.mul
+			case 0x7f: // i64.div_s
+			case 0x80: // i64.div_u
+			case 0x81: // i64.rem_s
+			case 0x82: // i64.rem_u
+			case 0x83: // i64.and
+			case 0x84: // i64.or
+			case 0x85: // i64.xor
+			case 0x86: // i64.shl
+			case 0x87: // i64.shr_s ("arithmetic right shift")
+			case 0x88: // i64.shr_u ("logical right shift")
+			case 0xa7: // i32.wrap_i64
+			case 0xac: // i64.extend_i32_s
+			case 0xad: // i64.extend_i32_u
+				break;
+
+			default:
+				std::cout << "skipOverBranch: unknown instruction " << string::hex(op) << ", might cause problems\n";
+				break;
+#endif
 			}
 		}
+#if DEBUG_VM
+		std::cout << "skipOverBranch: end of stream reached\n";
+#endif
 		return false;
 	}
 
@@ -575,7 +643,7 @@ namespace soup
 			{
 			default:
 #if DEBUG_VM
-				std::cout << "Unsupported opcode: " << (int)op << "\n";
+				std::cout << "Unsupported opcode: " << string::hex(op) << "\n";
 #endif
 				return false;
 
@@ -593,6 +661,9 @@ namespace soup
 					uint8_t result_type; r.u8(result_type);
 					bool has_result = (result_type != /* void */ 0x40);
 					ctrlflow.emplace(CtrlFlowEntry{ (size_t)-1, stack.size() + has_result });
+#if DEBUG_VM
+					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << "\n";
+#endif
 				}
 				break;
 
@@ -612,7 +683,7 @@ namespace soup
 					uint8_t result_type; r.u8(result_type);
 					bool has_result = (result_type != /* void */ 0x40);
 					auto value = stack.top(); stack.pop();
-					//std::cout << "if: condition is " << (!!value) << "\n";
+					//std::cout << "if: condition is " << (value.i32 ? "true" : "false") << "\n";
 					if (value.i32)
 					{
 						ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
@@ -642,6 +713,7 @@ namespace soup
 					return true;
 				}
 				ctrlflow.pop();
+				//std::cout << "ctrlflow stack now has " << ctrlflow.size() << " entries\n";
 				break;
 
 			case 0x0d: // br_if
@@ -667,9 +739,9 @@ namespace soup
 					size_t depth;
 					r.oml(depth);
 #if DEBUG_VM
-					std::cout << "unconditional branch with depth " << depth << ", new position = ";
+					std::cout << "branch with depth " << depth << " at position " << r.getPosition() << "\n";
 #endif
-					while (depth--)
+					for (size_t i = 0; i != depth; ++i)
 					{
 						ctrlflow.pop();
 						SOUP_IF_UNLIKELY (ctrlflow.empty())
@@ -691,7 +763,7 @@ namespace soup
 						r.seek(ctrlflow.top().position);
 					}
 #if DEBUG_VM
-					std::cout << r.getPosition() << "\n";
+					std::cout << "position after branch: " << r.getPosition() << "\n";
 #endif
 					while (stack.size() > ctrlflow.top().stack_size)
 					{
@@ -1383,16 +1455,36 @@ namespace soup
 			//std::cout << "arg: " << script.getMemory<const char>(stack.top()) << "\n";
 			callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
 		}
+#if DEBUG_VM
+		std::cout << "call: enter " << function_index << "\n";
+		//std::cout << string::bin2hex(script.code.at(function_index)) << "\n";
+#endif
 		SOUP_IF_UNLIKELY (!callvm.run(script.code.at(function_index)))
 		{
 			return false;
 		}
+#if DEBUG_VM
+		std::cout << "call: leave " << function_index << "\n";
+#endif
 		for (size_t i = 0; i != type.num_results; ++i)
 		{
+			SOUP_IF_UNLIKELY (callvm.stack.empty())
+			{
+#if DEBUG_VM
+				std::cout << "call: not enough values on the stack after return\n";
+#endif
+				return false;
+			}
 			//std::cout << "return value: " << callvm.stack.top() << "\n";
 			stack.push(callvm.stack.top()); callvm.stack.pop();
 		}
-		// callvm stack should be empty now
+#if DEBUG_VM
+		SOUP_IF_UNLIKELY (!callvm.stack.empty())
+		{
+			std::cout << "call: too many values on the stack after return\n";
+			// not really an issue, but still shouldn't happen in well-formed WASM code.
+		}
+#endif
 		return true;
 	}
 }

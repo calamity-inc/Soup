@@ -1106,6 +1106,30 @@ endif;)") == "");
 			assert(vm.stack.top().i32 == 42);
 			assert(vm.stack.pop(), vm.stack.empty());
 		});
+		test("Forward Branching", []
+		{
+			// (module  
+			//   (func $f64 (result i32)
+			//     (block $B0
+			//       (loop $L1
+			//         (block $B2
+			//           (br $B0)
+			//          )
+			//         (br $L1)))
+			//   	i32.const 42
+			//   )
+			//   (export "main" (func $f64))
+			// )
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABBQFgAAF/AwIBAAcIAQRtYWluAAAKEwERAAJAA0ACQAwCCwwACwtBKgsAEgRuYW1lAQYBAANmNjQCAwEAAA==")));
+			auto code = scr.getExportedFuntion("main");
+			assert(code);
+			WasmVm vm(scr);
+			assert(vm.run(*code));
+			assert(!vm.stack.empty());
+			assert(vm.stack.top().i32 == 42);
+			assert(vm.stack.pop(), vm.stack.empty());
+		});
 	}
 
 	test("reflection", []
