@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 #include "fwd.hpp"
+#include "type_traits.hpp"
 
 #include <stack>
 #include <string>
@@ -23,6 +24,9 @@ namespace soup
 		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
 		WasmValue(int64_t i64) : i64(i64) {}
 		WasmValue(uint64_t u64) : WasmValue(static_cast<int64_t>(u64)) {}
+
+		template <typename T, SOUP_RESTRICT(std::is_same_v<T, size_t>)>
+		WasmValue(T ptr) : i32(static_cast<int32_t>(ptr)) {}
 	};
 
 	struct WasmScript
