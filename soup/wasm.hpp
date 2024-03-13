@@ -17,8 +17,12 @@ namespace soup
 	union WasmValue
 	{
 		int32_t i32;
+		int64_t i64;
 
 		WasmValue(int32_t i32) : i32(i32) {}
+		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
+		WasmValue(int64_t i64) : i64(i64) {}
+		WasmValue(uint64_t u64) : WasmValue(static_cast<int64_t>(u64)) {}
 	};
 
 	struct WasmScript
@@ -54,19 +58,19 @@ namespace soup
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name) const noexcept;
 
-		[[nodiscard]] int32_t allocateMemory(size_t len) noexcept;
+		[[nodiscard]] size_t allocateMemory(size_t len) noexcept;
 
 		template <typename T>
-		[[nodiscard]] T* getMemory(int32_t ptr) noexcept
+		[[nodiscard]] T* getMemory(size_t ptr) noexcept
 		{
-			SOUP_IF_UNLIKELY (ptr < 0 || (ptr + sizeof(T)) >= memory_size)
+			SOUP_IF_UNLIKELY (ptr + sizeof(T) >= memory_size)
 			{
 				return nullptr;
 			}
 			return (T*)&memory[ptr];
 		}
 
-		bool setMemory(int32_t ptr, const void* src, size_t len) noexcept;
+		bool setMemory(size_t ptr, const void* src, size_t len) noexcept;
 
 		void linkWasiPreview1() noexcept;
 	};

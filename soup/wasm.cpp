@@ -2,6 +2,7 @@
 
 #include <cstring> // memset
 
+#include "bitutil.hpp"
 #include "Reader.hpp"
 #include "StringRefReader.hpp"
 
@@ -317,19 +318,19 @@ namespace soup
 		return nullptr;
 	}
 
-	int32_t WasmScript::allocateMemory(size_t len) noexcept
+	size_t WasmScript::allocateMemory(size_t len) noexcept
 	{
 		if (last_alloc >= memory_size)
 		{
 			last_alloc = memory_size - 1;
 		}
 		last_alloc -= len;
-		return static_cast<int32_t>(last_alloc);
+		return last_alloc;
 	}
 
-	bool WasmScript::setMemory(int32_t ptr, const void* src, size_t len) noexcept
+	bool WasmScript::setMemory(size_t ptr, const void* src, size_t len) noexcept
 	{
-		SOUP_IF_UNLIKELY (ptr < 0 || (ptr + len) >= memory_size)
+		SOUP_IF_UNLIKELY (ptr + len >= memory_size)
 		{
 			return false;
 		}
@@ -461,20 +462,36 @@ namespace soup
 				break;
 
 			case 0x28: // i32.load
+			case 0x2c: // i32.load8_s
 			case 0x2d: // i32.load8_u
+			case 0x2e: // i32.load16_s
 			case 0x2f: // i32.load16_u
 			case 0x36: // i32.store
 			case 0x3a: // i32.store8
 			case 0x3b: // i32.store16
 				{
-					r.skip(1); // alignment
-					int32_t offset; r.oml(offset);
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+				}
+				break;
+
+			case 0x29: // i64.load
+				{
+					r.skip(1); // memflags
+					int64_t offset; r.oml(offset);
 				}
 				break;
 
 			case 0x41: // i32.const
 				{
 					int32_t value;
+					r.soml(value);
+				}
+				break;
+
+			case 0x42: // i64.const
+				{
+					int64_t value;
 					r.soml(value);
 				}
 				break;
@@ -773,27 +790,53 @@ namespace soup
 			case 0x28: // i32.load
 				{
 					auto base = stack.top(); stack.pop();
-					r.skip(1); // alignment
-					int32_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<int32_t>(base.i32 + offset));
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					stack.emplace(*script.getMemory<int32_t>(static_cast<uint32_t>(base.i32) + offset));
+				}
+				break;
+
+			case 0x29: // i64.load
+				{
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					uint64_t offset; r.oml(offset);
+					stack.emplace(*script.getMemory<int64_t>(static_cast<uint64_t>(base.i64) + offset));
+				}
+
+			case 0x2c: // i32.load8_s
+				{
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					stack.emplace(static_cast<int32_t>(*script.getMemory<int8_t>(static_cast<uint32_t>(base.i32) + offset)));
 				}
 				break;
 
 			case 0x2d: // i32.load8_u
 				{
 					auto base = stack.top(); stack.pop();
-					r.skip(1); // alignment
-					int32_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<uint8_t>(base.i32 + offset));
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint8_t>(static_cast<uint32_t>(base.i32) + offset)));
+				}
+				break;
+
+			case 0x2e: // i32.load16_s
+				{
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					stack.emplace(static_cast<uint32_t>(*script.getMemory<int16_t>(static_cast<uint32_t>(base.i32) + offset)));
 				}
 				break;
 
 			case 0x2f: // i32.load16_u
 				{
 					auto base = stack.top(); stack.pop();
-					r.skip(1); // alignment
-					int32_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<uint16_t>(base.i32 + offset));
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint16_t>(static_cast<uint32_t>(base.i32) + offset)));
 				}
 				break;
 
@@ -801,9 +844,19 @@ namespace soup
 				{
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
-					r.skip(1); // alignment
-					int32_t offset; r.oml(offset);
-					*script.getMemory<int32_t>(base.i32 + offset) = value.i32;
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					*script.getMemory<int32_t>(static_cast<uint32_t>(base.i32) + offset) = value.i32;
+				}
+				break;
+
+			case 0x37: // i64.store
+				{
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					uint64_t offset; r.oml(offset);
+					*script.getMemory<int64_t>(static_cast<uint64_t>(base.i64) + offset) = value.i64;
 				}
 				break;
 
@@ -811,9 +864,9 @@ namespace soup
 				{
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
-					r.skip(1); // alignment
-					int32_t offset; r.oml(offset);
-					*script.getMemory<int8_t>(base.i32 + offset) = static_cast<int8_t>(value.i32);
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					*script.getMemory<int8_t>(static_cast<uint32_t>(base.i32) + offset) = static_cast<int8_t>(value.i32);
 				}
 				break;
 
@@ -821,15 +874,23 @@ namespace soup
 				{
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
-					r.skip(1); // alignment
-					int32_t offset; r.oml(offset);
-					*script.getMemory<int16_t>(base.i32 + offset) = static_cast<int16_t>(value.i32);
+					r.skip(1); // memflags
+					uint32_t offset; r.oml(offset);
+					*script.getMemory<int16_t>(static_cast<uint32_t>(base.i32) + offset) = static_cast<int16_t>(value.i32);
 				}
 				break;
 
 			case 0x41: // i32.const
 				{
 					int32_t value;
+					r.soml(value);
+					stack.push(value);
+				}
+				break;
+
+			case 0x42: // i64.const
+				{
+					int64_t value;
 					r.soml(value);
 					stack.push(value);
 				}
@@ -874,22 +935,6 @@ namespace soup
 				}
 				break;
 
-			case 0x4c: // i32.le_s
-				{
-					auto b = stack.top(); stack.pop();
-					auto a = stack.top(); stack.pop();
-					stack.push(a.i32 <= b.i32);
-				}
-				break;
-
-			case 0x4d: // i32.le_u
-				{
-					auto b = stack.top(); stack.pop();
-					auto a = stack.top(); stack.pop();
-					stack.push(static_cast<uint32_t>(a.i32) <= static_cast<uint32_t>(b.i32));
-				}
-				break;
-
 			case 0x4a: // i32.gt_s
 				{
 					auto b = stack.top(); stack.pop();
@@ -906,6 +951,22 @@ namespace soup
 				}
 				break;
 
+			case 0x4c: // i32.le_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 <= b.i32);
+				}
+				break;
+
+			case 0x4d: // i32.le_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) <= static_cast<uint32_t>(b.i32));
+				}
+				break;
+
 			case 0x4e: // i32.ge_s
 				{
 					auto b = stack.top(); stack.pop();
@@ -919,6 +980,100 @@ namespace soup
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
 					stack.push(static_cast<uint32_t>(a.i32) >= static_cast<uint32_t>(b.i32));
+				}
+				break;
+
+			case 0x50: // i64.eqz
+				{
+					auto value = stack.top(); stack.pop();
+					stack.push(value.i64 == 0);
+				}
+				break;
+
+			case 0x51: // i64.eq
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 == b.i64);
+				}
+				break;
+
+			case 0x52: // i64.ne
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 != b.i64);
+				}
+				break;
+
+			case 0x53: // i64.lt_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 < b.i64);
+				}
+				break;
+
+			case 0x54: // i64.lt_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint64_t>(a.i64) < static_cast<uint64_t>(b.i64));
+				}
+				break;
+
+			case 0x55: // i64.gt_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 > b.i64);
+				}
+				break;
+
+			case 0x56: // i64.gt_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint64_t>(a.i64) > static_cast<uint64_t>(b.i64));
+				}
+				break;
+
+			case 0x57: // i64.le_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 <= b.i64);
+				}
+				break;
+
+			case 0x58: // i64.le_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint64_t>(a.i64) <= static_cast<uint64_t>(b.i64));
+				}
+				break;
+
+			case 0x59: // i64.ge_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 >= b.i64);
+				}
+				break;
+
+			case 0x5a: // i64.ge_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint64_t>(a.i64) >= static_cast<uint64_t>(b.i64));
+				}
+				break;
+
+			case 0x69: // i32.popcnt
+				{
+					auto value = stack.top(); stack.pop();
+					stack.push(bitutil::getNumSetBits(static_cast<uint32_t>(value.i32)));
 				}
 				break;
 
@@ -954,6 +1109,30 @@ namespace soup
 				}
 				break;
 
+			case 0x6e: // i32.div_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) / static_cast<uint32_t>(b.i32));
+				}
+				break;
+
+			case 0x6f: // i32.rem_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 % b.i32);
+				}
+				break;
+
+			case 0x70: // i32.rem_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) % static_cast<uint32_t>(b.i32));
+				}
+				break;
+
 			case 0x71: // i32.and
 				{
 					auto b = stack.top(); stack.pop();
@@ -967,6 +1146,163 @@ namespace soup
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
 					stack.push(a.i32 | b.i32);
+				}
+				break;
+
+			case 0x73: // i32.xor
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 ^ b.i32);
+				}
+				break;
+
+			case 0x74: // i32.shl
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 << (static_cast<uint32_t>(b.i32) % (sizeof(uint32_t) * 8)));
+				}
+				break;
+
+			case 0x75: // i32.shr_s ("arithmetic right shift")
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 >> (static_cast<uint32_t>(b.i32) % (sizeof(uint32_t) * 8)));
+				}
+				break;
+
+			case 0x76: // i32.shr_u ("logical right shift")
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) >> (static_cast<uint32_t>(b.i32) % (sizeof(uint32_t) * 8)));
+				}
+				break;
+
+			case 0x7c: // i64.add
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 + b.i64);
+				}
+				break;
+
+			case 0x7d: // i64.sub
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 - b.i64);
+				}
+				break;
+
+			case 0x7e: // i64.mul
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 * b.i64);
+				}
+				break;
+
+			case 0x7f: // i64.div_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 / b.i64);
+				}
+				break;
+
+			case 0x80: // i64.div_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint64_t>(a.i64) / static_cast<uint64_t>(b.i64));
+				}
+				break;
+
+			case 0x81: // i64.rem_s
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 % b.i64);
+				}
+				break;
+
+			case 0x82: // i64.rem_u
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint64_t>(a.i64) % static_cast<uint64_t>(b.i64));
+				}
+				break;
+
+			case 0x83: // i64.and
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 & b.i64);
+				}
+				break;
+
+			case 0x84: // i64.or
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 | b.i64);
+				}
+				break;
+
+			case 0x85: // i64.xor
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 ^ b.i64);
+				}
+				break;
+
+			case 0x86: // i64.shl
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 << (static_cast<uint64_t>(b.i64) % (sizeof(uint64_t) * 8)));
+				}
+				break;
+
+			case 0x87: // i64.shr_s ("arithmetic right shift")
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i64 >> (static_cast<uint64_t>(b.i64) % (sizeof(uint64_t) * 8)));
+				}
+				break;
+
+			case 0x88: // i64.shr_u ("logical right shift")
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint64_t>(a.i64) >> (static_cast<uint64_t>(b.i64) % (sizeof(uint64_t) * 8)));
+				}
+				break;
+
+			case 0xa7: // i32.wrap_i64
+				{
+					auto value = stack.top(); stack.pop();
+					stack.push(static_cast<int32_t>(value.i64));
+				}
+				break;
+
+			case 0xac: // i64.extend_i32_s
+				{
+					auto value = stack.top(); stack.pop();
+					stack.push(static_cast<int64_t>(value.i32));
+				}
+				break;
+
+			case 0xad: // i64.extend_i32_u
+				{
+					auto value = stack.top(); stack.pop();
+					stack.push(static_cast<int64_t>(static_cast<uint64_t>(static_cast<uint32_t>(value.i32))));
 				}
 				break;
 			}
