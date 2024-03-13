@@ -41,8 +41,6 @@ namespace soup
 		slug.push_back(' ');
 		slug.append(this->name);
 		string::lower(slug);
-		string::replaceAll(slug, "-", "");
-		string::replaceAll(slug, ",", "");
 		if (slug.find("cdn") != std::string::npos
 			|| slug.find("colocation") != std::string::npos // AS48950 GLOBAL COLOCATION LIMITED
 			// Note: Not "colo" because "Telmex Colombia S.A."
@@ -51,6 +49,7 @@ namespace soup
 				)
 			|| slug.find("datacenter") != std::string::npos
 			|| slug.find("data center") != std::string::npos
+			|| slug.find("data-center") != std::string::npos
 			|| slug.find("ddos") != std::string::npos
 			|| slug.find("dedi") != std::string::npos // AS35913 DediPath, AS42831 UK Dedicated Servers Limited
 			|| (slug.find("host") != std::string::npos // AS45382 EHOSTICT, AS51430 AltusHost B.V., AS55720 Gigabit Hosting Sdn Bhd, AS61493 InterBS S.R.L. (BAEHOST), AS64200 VIVID-HOSTING LLC, AS136557 Host Universal Pty Ltd, AS200698 Globalhost d.o.o., AS203020 HostRoyale Technologies Pvt Ltd
@@ -65,6 +64,7 @@ namespace soup
 			|| slug.find("digitalocean") != std::string::npos
 			|| slug.find("amazon") != std::string::npos
 			|| slug.find("google llc") != std::string::npos // added LLC to prevent detection of "Google Fiber Inc"
+			|| slug.find("google, llc") != std::string::npos // Google One VPN
 			|| slug.find("akamai") != std::string::npos
 			|| slug.find("microsoft") != std::string::npos
 			|| slug.find("alibaba") != std::string::npos
