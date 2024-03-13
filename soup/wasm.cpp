@@ -317,6 +317,16 @@ namespace soup
 		return nullptr;
 	}
 
+	bool WasmScript::setMemory(int32_t ptr, const void* src, size_t len) noexcept
+	{
+		SOUP_IF_UNLIKELY (ptr < 0 || ptr + len >= memory_size)
+		{
+			return false;
+		}
+		memcpy(&memory[ptr], src, len);
+		return true;
+	}
+
 	void WasmScript::linkWasiPreview1() noexcept
 	{
 		// https://github.com/bytecodealliance/wasmtime/blob/main/docs/WASI-tutorial.md#web-assembly-text-example

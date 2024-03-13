@@ -56,6 +56,8 @@ namespace soup
 			return (T*)&memory[ptr];
 		}
 
+		bool setMemory(int32_t ptr, const void* src, size_t len) noexcept;
+
 		void linkWasiPreview1() noexcept;
 	};
 

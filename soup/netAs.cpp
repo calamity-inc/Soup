@@ -14,16 +14,16 @@ namespace soup
 
 	bool netAs::isHosting() const SOUP_EXCAL
 	{
-		// Hard-coding https://github.com/calamity-inc/soup-extra-data/tree/2cf65d932945524f529c0bb2527df51bc5b18b92
-		return isHosting(base64::decode("AGFzbQEAAAABBgFgAX8BfwMCAQAFAwEAAAcbAg5pc19ob3N0aW5nX2FzbgAABm1lbW9yeQIACqMIAaAIACAAQbElRiAAQY4ZRnIgAEHZMEZyIABBpD9GciAAQdjIAEZyIABB4MgARnIgAEH3yABGciAAQbfcAEZyIABB5twARnIgAEH25QBGciAAQZ3nAEZyIABBtp4BRnIgAEH5nwFGciAAQZnGAUZyIABBreYBRnIgAEGD6wFGciAAQYDPAUZyIABBkPABRnIgAEGulwJGciAAQY6lAkZyIABBy64CRnIgAEG3swJGciAAQeS9AkZyIABB3MQCRnIgAEGZ0gJGciAAQfnTAkZyIABBruACRnIgAEHL5gJGciAAQeLrAkZyIABB1e0CRnIgAEH87QJGciAAQcL1AkZyIABBvYYDRnIgAEGAiQNGciAAQaOUA0ZyIABBx5kDRnIgAEGVngNGciAAQcbGA0ZyIABBo6MDRnIgAEHwsgNGciAAQdHFA0ZyIABB2cUDRnIgAEGk1QNGciAAQaDmA0ZyIABB/4AIRnIgAEHriAhGciAAQeiSCEZyIABB06wIRnIgAEHBrQhGciAAQa+wCEZyIABBwbEIRnIgAEHvzQhGciAAQe/OCEZyIABBkvsIRnIgAEHp/AhGciAAQcqIDEZyIABB440MRnIgAEHNjwxGciAAQd2PDEZyIABB5JYMRnIgAEH9wQxGciAAQb/CDEZyIABB1M8MRnIgAEGO+gxGciAAQZ2CDUZyIABBlowQRnIgAEGlshBGciAAQdSwAUZyIABB8MIARnIgAEHm9QJGciAAQY7sAkZyIABBzJgCRnIgAEG8HkZyIABBx6QDRnIgAEHENEZyIABB25IBRnIgAEGAnAJGciAAQbfVA0ZyIABBiz9GciAAQbr0AkZyIABB7MwMRnIgAEGYzQhGciAAQenLAkZyIABBqNADRnIgAEG+5wxGciAAQd3SAkZyIABB6ugBRnIgAEHSrQNGciAAQdz3A0ZyIABBlxlGciAAQb+2AkZyIABBodIMRnIgAEGCgg1GciAAQa+2GEZyIABButkDRnIgAEHeiQxGciAAQdbSAkZyIABBtfcDRnIgAEGPgRBGciAAQcSYGEZyIABBrr0CRnIgAEGdwQxGciAAQfrxAEZyIABB7/8BRnIgAEHUzQJGciAAQazXAkZyIABBrgFGciAAQeUQRnIgAEHGI0ZyIABB8zBGciAAQZsxRnIgAEHeMkZyIABB4DJGciAAQZU3RnIgAEGiOkZyIABBkNQARnIgAEGQ1gBGciAAQdTXAEZyIABBhtoARnIgAEGv3wBGciAAQfeBAUZyIABB3JUBRnIgAEHTrAFGciAAQczkAEZyIABBy7sIRnIgAEG6nRhGciAAQYHDAUZyIABBxMMCRnIgAEHGnRhGciAAQbTvAUZyIABB5uwARnIgAEG7pwNGciAAQf2xAUZyIABBu+kDRnILADIEbmFtZQEXAQAUaW5kZXgvaXNfaG9zdGluZ19hc24CBgEAAQABMAQEAQABMAYEAQABMA=="));
+		// Hard-coding https://github.com/calamity-inc/soup-extra-data/tree/fa17e3ebbf0f6fc6416f695d98e346ecc7c2ec68
+		return isHosting(base64::decode("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"));
 	}
 
 	bool netAs::isHosting(const std::string& extra_wasm) const SOUP_EXCAL
 	{
-		// Checking ASN against https://github.com/calamity-inc/soup-extra-data/blob/senpai/index.ts
 		WasmScript ws;
-		if (ws.load(extra_wasm))
+		SOUP_IF_LIKELY (ws.load(extra_wasm))
 		{
+			// Checking ASN against https://github.com/calamity-inc/soup-extra-data/blob/senpai/src/is_hosting_asn.ts
 			if (auto code = ws.getExportedFuntion("is_hosting_asn"))
 			{
 				WasmVm vm(ws);
@@ -35,50 +35,27 @@ namespace soup
 					return true;
 				}
 			}
-		}
 
-		std::string slug = this->handle;
-		slug.push_back(' ');
-		slug.append(this->name);
-		string::lower(slug);
-		if (slug.find("cdn") != std::string::npos
-			|| slug.find("colocation") != std::string::npos // AS48950 GLOBAL COLOCATION LIMITED
-			// Note: Not "colo" because "Telmex Colombia S.A."
-			|| (slug.find("cloud") != std::string::npos // AS39845 2 Cloud Ltd.
-				&& slug.find("the cloud") == std::string::npos // ignore AS41012 The Cloud Networks Limited
-				)
-			|| slug.find("datacenter") != std::string::npos
-			|| slug.find("data center") != std::string::npos
-			|| slug.find("data-center") != std::string::npos
-			|| slug.find("ddos") != std::string::npos
-			|| slug.find("dedi") != std::string::npos // AS35913 DediPath, AS42831 UK Dedicated Servers Limited
-			|| (slug.find("host") != std::string::npos // AS45382 EHOSTICT, AS51430 AltusHost B.V., AS55720 Gigabit Hosting Sdn Bhd, AS61493 InterBS S.R.L. (BAEHOST), AS64200 VIVID-HOSTING LLC, AS136557 Host Universal Pty Ltd, AS200698 Globalhost d.o.o., AS203020 HostRoyale Technologies Pvt Ltd
-				&& slug.find("afrihost") == std::string::npos
-				)
-			|| slug.find("layer") != std::string::npos // AS49453, AS57172 Global Layer B.V.
-			|| slug.find("server") != std::string::npos
-			|| slug.find("vps") != std::string::npos
-			|| slug.find("hetzner") != std::string::npos
-			|| slug.find("ovh") != std::string::npos
-			|| slug.find("contabo") != std::string::npos
-			|| slug.find("digitalocean") != std::string::npos
-			|| slug.find("amazon") != std::string::npos
-			|| slug.find("google llc") != std::string::npos // added LLC to prevent detection of "Google Fiber Inc"
-			|| slug.find("google, llc") != std::string::npos // Google One VPN
-			|| slug.find("akamai") != std::string::npos
-			|| slug.find("microsoft") != std::string::npos
-			|| slug.find("alibaba") != std::string::npos
-			|| slug.find("fastly") != std::string::npos
-			|| slug.find("linode") != std::string::npos
-			|| slug.find("aruba") != std::string::npos
-			|| slug.find("godaddy") != std::string::npos
-			|| slug.find("oracle") != std::string::npos
-			|| slug.find("m247") != std::string::npos
-			|| slug.find("leaseweb") != std::string::npos
-			|| slug.find("ipxo") != std::string::npos // AS61317, AS206092
-			)
-		{
-			return true;
+			// Checking slug against https://github.com/calamity-inc/soup-extra-data/blob/senpai/src/is_hosting_slug.c
+			if (auto code = ws.getExportedFuntion("is_hosting_slug"))
+			{
+				std::string slug = this->handle;
+				slug.push_back(' ');
+				slug.append(this->name);
+				string::lower(slug);
+
+				if (ws.setMemory(0x9000, slug.data(), slug.size()))
+				{
+					WasmVm vm(ws);
+					vm.locals.emplace_back(0x9000);
+					if (vm.run(*code)
+						&& vm.stack.top()
+						)
+					{
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}
