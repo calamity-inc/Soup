@@ -999,7 +999,7 @@ endif;)") == "");
 			vm.locals.emplace_back(2);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top() == 3);
+			assert(vm.stack.top().i32 == 3);
 			assert(vm.stack.pop(), vm.stack.empty());
 		});
 		test("Memory", []
@@ -1012,7 +1012,7 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*code));
 				assert(!vm.stack.empty());
-				assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(scr.getMemory<const UTF16_CHAR_TYPE>(vm.stack.top())) == "lol");
+				assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(scr.getMemory<const UTF16_CHAR_TYPE>(vm.stack.top().i32)) == "lol");
 				assert(vm.stack.pop(), vm.stack.empty());
 			}
 			{
@@ -1022,7 +1022,7 @@ endif;)") == "");
 				vm.locals.emplace_back(1036);
 				assert(vm.run(*code));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top() == 0x1c);
+				assert(vm.stack.top().i32 == 0x1c);
 				assert(vm.stack.pop(), vm.stack.empty());
 			}
 		});
@@ -1049,9 +1049,9 @@ endif;)") == "");
 			assert(fi);
 			fi->ptr = [](WasmVm& vm)
 			{
-				int32_t b = vm.stack.top(); vm.stack.pop();
-				int32_t a = vm.stack.top(); vm.stack.pop();
-				vm.stack.push(a + b);
+				auto b = vm.stack.top(); vm.stack.pop();
+				auto a = vm.stack.top(); vm.stack.pop();
+				vm.stack.push(a.i32 + b.i32);
 			};
 			auto code = scr.getExportedFuntion("addTwo");
 			assert(code);
@@ -1059,7 +1059,7 @@ endif;)") == "");
 			vm.locals.emplace_back(40);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top() == 42);
+			assert(vm.stack.top().i32 == 42);
 			assert(vm.stack.pop(), vm.stack.empty());			
 		});
 		test("Call Non-Imported", []
@@ -1074,7 +1074,7 @@ endif;)") == "");
 			vm.locals.emplace_back(scrap);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top() == 1);
+			assert(vm.stack.top().i32 == 1);
 			assert(vm.stack.pop(), vm.stack.empty());
 		});
 	}

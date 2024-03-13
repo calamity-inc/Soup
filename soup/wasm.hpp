@@ -14,6 +14,13 @@ namespace soup
 
 	using wasm_ffi_func_t = void(*)(WasmVm&);
 
+	union WasmValue
+	{
+		int32_t i32;
+
+		WasmValue(int32_t i32) : i32(i32) {}
+	};
+
 	struct WasmScript
 	{
 		struct FunctionType
@@ -66,8 +73,8 @@ namespace soup
 
 	struct WasmVm
 	{
-		std::stack<int32_t> stack;
-		std::vector<int32_t> locals;
+		std::stack<WasmValue> stack;
+		std::vector<WasmValue> locals;
 		WasmScript& script;
 
 		WasmVm(WasmScript& script)

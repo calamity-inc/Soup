@@ -17,7 +17,7 @@ namespace soup
 				WasmVm vm(ws);
 				vm.locals.emplace_back(this->number);
 				if (vm.run(*code)
-					&& vm.stack.top()
+					&& vm.stack.top().i32
 					)
 				{
 					return true;
@@ -38,7 +38,7 @@ namespace soup
 					WasmVm vm(ws);
 					vm.locals.emplace_back(scrap);
 					if (vm.run(*code)
-						&& vm.stack.top()
+						&& vm.stack.top().i32
 						)
 					{
 						return true;

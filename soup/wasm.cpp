@@ -351,8 +351,8 @@ namespace soup
 			{
 				auto plen = vm.stack.top(); vm.stack.pop();
 				auto pargc = vm.stack.top(); vm.stack.pop();
-				*vm.script.getMemory<int32_t>(plen) = sizeof("program");
-				*vm.script.getMemory<int32_t>(pargc) = 0;
+				*vm.script.getMemory<int32_t>(plen.i32) = sizeof("program");
+				*vm.script.getMemory<int32_t>(pargc.i32) = 0;
 				vm.stack.push(0);
 			};
 		}
@@ -362,8 +362,8 @@ namespace soup
 			{
 				auto pstr = vm.stack.top(); vm.stack.pop();
 				auto pargv = vm.stack.top(); vm.stack.pop();
-				vm.script.setMemory(pstr, "program", sizeof("program"));
-				*vm.script.getMemory<int32_t>(pargv) = pstr;
+				vm.script.setMemory(pstr.i32, "program", sizeof("program"));
+				*vm.script.getMemory<int32_t>(pargv.i32) = pstr.i32;
 				vm.stack.push(0);
 			};
 		}
@@ -387,17 +387,17 @@ namespace soup
 				auto iovs = vm.stack.top(); vm.stack.pop();
 				auto file_descriptor = vm.stack.top(); vm.stack.pop();
 				auto nwritten = 0;
-				if (file_descriptor == 1) // stdout
+				if (file_descriptor.i32 == 1) // stdout
 				{
-					while (iovs_len--)
+					while (iovs_len.i32--)
 					{
-						int32_t iov_base = *vm.script.getMemory<int32_t>(iovs); iovs += 4;
-						int32_t iov_len = *vm.script.getMemory<int32_t>(iovs); iovs += 4;
+						int32_t iov_base = *vm.script.getMemory<int32_t>(iovs.i32); iovs.i32 += 4;
+						int32_t iov_len = *vm.script.getMemory<int32_t>(iovs.i32); iovs.i32 += 4;
 						fwrite(vm.script.getMemory<char>(iov_base), 1, iov_len, stdout);
 						nwritten += iov_len;
 					}
 				}
-				*vm.script.getMemory<int32_t>(out_nwritten) = nwritten;
+				*vm.script.getMemory<int32_t>(out_nwritten.i32) = nwritten;
 				vm.stack.push(nwritten);
 			};
 		}
@@ -547,9 +547,9 @@ namespace soup
 				{
 					uint8_t result_type; r.u8(result_type);
 					bool has_result = (result_type != /* void */ 0x40);
-					int32_t value = stack.top(); stack.pop();
+					auto value = stack.top(); stack.pop();
 					//std::cout << "if: condition is " << (!!value) << "\n";
-					if (value)
+					if (value.i32)
 					{
 						ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
 					}
@@ -582,8 +582,8 @@ namespace soup
 
 			case 0x0d: // br_if
 				{
-					int32_t value = stack.top(); stack.pop();
-					if (!value)
+					auto value = stack.top(); stack.pop();
+					if (!value.i32)
 					{
 						size_t depth;
 						r.oml(depth);
@@ -766,64 +766,64 @@ namespace soup
 #endif
 						return false;
 					}
-					script.globals.at(global_index) = stack.top(); stack.pop();
+					script.globals.at(global_index) = stack.top().i32; stack.pop();
 				}
 				break;
 
 			case 0x28: // i32.load
 				{
-					int32_t base = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
 					r.skip(1); // alignment
 					int32_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<int32_t>(base + offset));
+					stack.emplace(*script.getMemory<int32_t>(base.i32 + offset));
 				}
 				break;
 
 			case 0x2d: // i32.load8_u
 				{
-					int32_t base = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
 					r.skip(1); // alignment
 					int32_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<uint8_t>(base + offset));
+					stack.emplace(*script.getMemory<uint8_t>(base.i32 + offset));
 				}
 				break;
 
 			case 0x2f: // i32.load16_u
 				{
-					int32_t base = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
 					r.skip(1); // alignment
 					int32_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<uint16_t>(base + offset));
+					stack.emplace(*script.getMemory<uint16_t>(base.i32 + offset));
 				}
 				break;
 
 			case 0x36: // i32.store
 				{
-					int32_t value = stack.top(); stack.pop();
-					int32_t base = stack.top(); stack.pop();
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
 					r.skip(1); // alignment
 					int32_t offset; r.oml(offset);
-					*script.getMemory<int32_t>(base + offset) = value;
+					*script.getMemory<int32_t>(base.i32 + offset) = value.i32;
 				}
 				break;
 
 			case 0x3a: // i32.store8
 				{
-					int32_t value = stack.top(); stack.pop();
-					int32_t base = stack.top(); stack.pop();
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
 					r.skip(1); // alignment
 					int32_t offset; r.oml(offset);
-					*script.getMemory<int8_t>(base + offset) = static_cast<int8_t>(value);
+					*script.getMemory<int8_t>(base.i32 + offset) = static_cast<int8_t>(value.i32);
 				}
 				break;
 
 			case 0x3b: // i32.store16
 				{
-					int32_t value = stack.top(); stack.pop();
-					int32_t base = stack.top(); stack.pop();
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
 					r.skip(1); // alignment
 					int32_t offset; r.oml(offset);
-					*script.getMemory<int16_t>(base + offset) = static_cast<int16_t>(value);
+					*script.getMemory<int16_t>(base.i32 + offset) = static_cast<int16_t>(value.i32);
 				}
 				break;
 
@@ -837,136 +837,136 @@ namespace soup
 
 			case 0x45: // i32.eqz
 				{
-					int32_t value = stack.top(); stack.pop();
-					stack.push(value == 0);
+					auto value = stack.top(); stack.pop();
+					stack.push(value.i32 == 0);
 				}
 				break;
 
 			case 0x46: // i32.eq
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a == b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 == b.i32);
 				}
 				break;
 
 			case 0x47: // i32.ne
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a != b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 != b.i32);
 				}
 				break;
 
 			case 0x48: // i32.lt_s
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a < b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 < b.i32);
 				}
 				break;
 
 			case 0x49: // i32.lt_u
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(static_cast<uint32_t>(a) < static_cast<uint32_t>(b));
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) < static_cast<uint32_t>(b.i32));
 				}
 				break;
 
 			case 0x4c: // i32.le_s
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a <= b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 <= b.i32);
 				}
 				break;
 
 			case 0x4d: // i32.le_u
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(static_cast<uint32_t>(a) <= static_cast<uint32_t>(b));
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) <= static_cast<uint32_t>(b.i32));
 				}
 				break;
 
 			case 0x4a: // i32.gt_s
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a > b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 > b.i32);
 				}
 				break;
 
 			case 0x4b: // i32.gt_u
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(static_cast<uint32_t>(a) > static_cast<uint32_t>(b));
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) > static_cast<uint32_t>(b.i32));
 				}
 				break;
 
 			case 0x4e: // i32.ge_s
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a >= b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 >= b.i32);
 				}
 				break;
 
 			case 0x4f: // i32.ge_u
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(static_cast<uint32_t>(a) >= static_cast<uint32_t>(b));
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(static_cast<uint32_t>(a.i32) >= static_cast<uint32_t>(b.i32));
 				}
 				break;
 
 			case 0x6a: // i32.add
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a + b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 + b.i32);
 				}
 				break;
 
 			case 0x6b: // i32.sub
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a - b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 - b.i32);
 				}
 				break;
 
 			case 0x6c: // i32.mul
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a * b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 * b.i32);
 				}
 				break;
 
 			case 0x6d: // i32.div_s
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a / b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 / b.i32);
 				}
 				break;
 
 			case 0x71: // i32.and
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a & b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 & b.i32);
 				}
 				break;
 
 			case 0x72: // i32.or
 				{
-					int32_t b = stack.top(); stack.pop();
-					int32_t a = stack.top(); stack.pop();
-					stack.push(a | b);
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.i32 | b.i32);
 				}
 				break;
 			}
