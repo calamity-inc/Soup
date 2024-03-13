@@ -420,6 +420,15 @@ namespace soup
 				vm.stack.push(0);
 			};
 		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "proc_exit"))
+		{
+			fi->ptr = [](WasmVm& vm)
+			{
+				auto code = vm.stack.top(); vm.stack.pop();
+				exit(code.i32);
+			};
+		}
+
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_prestat_get"))
 		{
 			fi->ptr = [](WasmVm& vm)
