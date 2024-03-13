@@ -51,7 +51,7 @@ namespace soup
 		uint8_t* memory = nullptr;
 		size_t memory_size = 0;
 		size_t last_alloc = -1;
-		std::vector<size_t> functions{};
+		std::vector<size_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<FunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
 		std::vector<int32_t> globals{};

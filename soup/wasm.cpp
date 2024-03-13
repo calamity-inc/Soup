@@ -121,7 +121,7 @@ namespace soup
 						uint8_t kind; r.u8(kind);
 						if (kind == 0) // function
 						{
-							size_t signature_index; r.oml(signature_index);
+							size_t type_index; r.oml(type_index);
 							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr });
 						}
 					}
@@ -137,9 +137,9 @@ namespace soup
 #endif
 					while (num_functions--)
 					{
-						size_t signature_index;
-						r.oml(signature_index);
-						functions.emplace_back(signature_index);
+						size_t type_index;
+						r.oml(type_index);
+						functions.emplace_back(type_index);
 					}
 				}
 				break;
@@ -881,6 +881,21 @@ namespace soup
 						return false;
 					}
 					size_t function_index = script.elements.at(element_index.i32);
+					SOUP_IF_UNLIKELY (function_index < script.function_imports.size())
+					{
+#if DEBUG_VM
+						std::cout << "indirect call to imported function\n";
+#endif
+						return false;
+					}
+					function_index -= script.function_imports.size();
+					SOUP_IF_UNLIKELY (type_index != script.functions.at(function_index))
+					{
+#if DEBUG_VM
+						std::cout << "call: function type mismatch\n";
+#endif
+						return false;
+					}
 					SOUP_IF_UNLIKELY (!doCall(type_index, function_index))
 					{
 						return false;
@@ -899,7 +914,7 @@ namespace soup
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
 #if DEBUG_VM
-						std::cout << "local is out-of-bounds\n";
+						std::cout << "local.get: index is out-of-bounds: " << local_index << "\n";
 #endif
 						return false;
 					}
@@ -914,7 +929,7 @@ namespace soup
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
 #if DEBUG_VM
-						std::cout << "local is out-of-bounds\n";
+						std::cout << "local.set: index is out-of-bounds: " << local_index << "\n";
 #endif
 						return false;
 					}
@@ -929,7 +944,7 @@ namespace soup
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
 #if DEBUG_VM
-						std::cout << "local is out-of-bounds\n";
+						std::cout << "local.tee: index is out-of-bounds: " << local_index << "\n";
 #endif
 						return false;
 					}
@@ -944,7 +959,7 @@ namespace soup
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
 #if DEBUG_VM
-						std::cout << "global is out-of-bounds\n";
+						std::cout << "global.get: index is out-of-bounds: " << global_index << "\n";
 #endif
 						return false;
 					}
@@ -959,7 +974,7 @@ namespace soup
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
 #if DEBUG_VM
-						std::cout << "global is out-of-bounds\n";
+						std::cout << "global.set: index is out-of-bounds: " << global_index << "\n";
 #endif
 						return false;
 					}
