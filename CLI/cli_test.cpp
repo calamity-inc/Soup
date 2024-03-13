@@ -1077,6 +1077,35 @@ endif;)") == "");
 			assert(vm.stack.top().i32 == 1);
 			assert(vm.stack.pop(), vm.stack.empty());
 		});
+		test("Call Indirect", []
+		{
+			// (module
+			//   (type $FUNCSIG$i (func (param i32) (result i32)))
+			//   (table funcref
+			//     (elem $test)
+			//   )
+			//   (memory $0 1)
+			//   (func $test (type $FUNCSIG$i) (param $0 i32) (result i32)
+			//     (i32.add (local.get $0) (i32.const 40))
+			//   )
+			//   (func $main (result i32)
+			//     (call_indirect (type $FUNCSIG$i)
+			//       (i32.const 2) ;; argument
+			//       (i32.const 0) ;; table index
+			//     )
+			//   )
+			//   (export "main" (func $main))
+			// )
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABCgJgAX8Bf2AAAX8DAwIAAQQFAXABAQEFAwEAAQcIAQRtYWluAAEJBwEAQQALAQAKEwIHACAAQShqCwkAQQJBABEAAAsAMgRuYW1lAQ0CAAR0ZXN0AQRtYWluAggCAAEAATABAAQMAQAJRlVOQ1NJRyRpBgQBAAEw")));
+			auto code = scr.getExportedFuntion("main");
+			assert(code);
+			WasmVm vm(scr);
+			assert(vm.run(*code));
+			assert(!vm.stack.empty());
+			assert(vm.stack.top().i32 == 42);
+			assert(vm.stack.pop(), vm.stack.empty());
+		});
 	}
 
 	test("reflection", []

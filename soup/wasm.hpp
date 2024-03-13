@@ -11,7 +11,7 @@
 
 namespace soup
 {
-	struct WasmVm;
+	class WasmVm;
 
 	using wasm_ffi_func_t = void(*)(WasmVm&);
 
@@ -53,6 +53,7 @@ namespace soup
 		std::vector<int32_t> globals{};
 		std::unordered_map<std::string, size_t> export_map{};
 		std::vector<std::string> code{};
+		std::vector<size_t> elements{};
 
 		~WasmScript() noexcept;
 
@@ -79,8 +80,9 @@ namespace soup
 		void linkWasiPreview1() noexcept;
 	};
 
-	struct WasmVm
+	class WasmVm
 	{
+	public:
 		std::stack<WasmValue> stack;
 		std::vector<WasmValue> locals;
 		WasmScript& script;
@@ -92,5 +94,7 @@ namespace soup
 
 		bool run(const std::string& data) SOUP_EXCAL;
 		bool run(Reader& r) SOUP_EXCAL;
+	private:
+		bool doCall(size_t type_index, size_t function_index) SOUP_EXCAL;
 	};
 }
