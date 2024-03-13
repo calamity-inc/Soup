@@ -455,13 +455,9 @@ namespace soup
 			r.oml(type_count);
 			uint8_t type;
 			r.u8(type);
-			SOUP_IF_UNLIKELY (type != 0x7f) // i32
-			{
-#if DEBUG_VM
-				std::cout << "Unsupported local type: " << (int)type << "\n";
-#endif
-				return false;
-			}
+			SOUP_UNUSED(type);
+			// type 0x7f = i32
+			// type 0x7e = i64
 			while (type_count--)
 			{
 				locals.emplace_back(0);
