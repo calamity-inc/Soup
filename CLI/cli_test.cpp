@@ -1130,6 +1130,19 @@ endif;)") == "");
 			assert(vm.stack.top().i32 == 42);
 			assert(vm.stack.pop(), vm.stack.empty());
 		});
+		test("Floats", []
+		{
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABBgFgAXwBfAMCAQAHBwEDZmFjAAAKLgEsACAARAAAAAAAAPA/YwR8RAAAAAAAAPA/BSAAIABEAAAAAAAA8D+hEACiCwsAEgRuYW1lAQYBAANmYWMCAwEAAA==")));
+			auto code = scr.getExportedFuntion("fac");
+			assert(code);
+			WasmVm vm(scr);
+			vm.locals.emplace_back(5.0);
+			assert(vm.run(*code));
+			assert(!vm.stack.empty());
+			assert(vm.stack.top().f64 == 120.0);
+			assert(vm.stack.pop(), vm.stack.empty());
+		});
 	}
 
 	test("reflection", []

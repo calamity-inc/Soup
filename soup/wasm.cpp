@@ -535,12 +535,16 @@ namespace soup
 
 			case 0x28: // i32.load
 			case 0x29: // i64.load
+			case 0x2a: // f32.load
+			case 0x2b: // f64.load
 			case 0x2c: // i32.load8_s
 			case 0x2d: // i32.load8_u
 			case 0x2e: // i32.load16_s
 			case 0x2f: // i32.load16_u
 			case 0x36: // i32.store
 			case 0x37: // i64.store
+			case 0x38: // f32.store
+			case 0x39: // f64.store
 			case 0x3a: // i32.store8
 			case 0x3b: // i32.store16
 				{
@@ -561,6 +565,14 @@ namespace soup
 					int64_t value;
 					r.soml(value);
 				}
+				break;
+
+			case 0x43: // f32.const
+				r.skip(4);
+				break;
+
+			case 0x44: // f64.const
+				r.skip(8);
 				break;
 
 #if DEBUG_VM
@@ -590,6 +602,18 @@ namespace soup
 			case 0x58: // i64.le_u
 			case 0x59: // i64.ge_s
 			case 0x5a: // i64.ge_u
+			case 0x5b: // f32.eq
+			case 0x5c: // f32.ne
+			case 0x5d: // f32.lt
+			case 0x5e: // f32.gt
+			case 0x5f: // f32.le
+			case 0x60: // f32.ge
+			case 0x61: // f64.eq
+			case 0x62: // f64.ne
+			case 0x63: // f64.lt
+			case 0x64: // f64.gt
+			case 0x65: // f64.le
+			case 0x66: // f64.ge
 			case 0x69: // i32.popcnt
 			case 0x6a: // i32.add
 			case 0x6b: // i32.sub
@@ -617,6 +641,14 @@ namespace soup
 			case 0x86: // i64.shl
 			case 0x87: // i64.shr_s ("arithmetic right shift")
 			case 0x88: // i64.shr_u ("logical right shift")
+			case 0x92: // f32.add
+			case 0x93: // f32.sub
+			case 0x94: // f32.mul
+			case 0x95: // f32.mul
+			case 0xa0: // f64.add
+			case 0xa1: // f64.sub
+			case 0xa2: // f64.mul
+			case 0xa3: // f64.mul
 			case 0xa7: // i32.wrap_i64
 			case 0xac: // i64.extend_i32_s
 			case 0xad: // i64.extend_i32_u
@@ -953,6 +985,24 @@ namespace soup
 				}
 				break;
 
+			case 0x2a: // f32.load
+				{
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					auto offset = script.readUPTR(r);
+					stack.emplace(*script.getMemory<float>(base, offset));
+				}
+				break;
+
+			case 0x2b: // f64.load
+				{
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					auto offset = script.readUPTR(r);
+					stack.emplace(*script.getMemory<double>(base, offset));
+				}
+				break;
+
 			case 0x2c: // i32.load8_s
 				{
 					auto base = stack.top(); stack.pop();
@@ -1009,6 +1059,26 @@ namespace soup
 				}
 				break;
 
+			case 0x38: // f32.store
+				{
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					auto offset = script.readUPTR(r);
+					*script.getMemory<float>(base, offset) = value.f32;
+				}
+				break;
+
+			case 0x39: // f64.store
+				{
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					auto offset = script.readUPTR(r);
+					*script.getMemory<double>(base, offset) = value.f64;
+				}
+				break;
+
 			case 0x3a: // i32.store8
 				{
 					auto value = stack.top(); stack.pop();
@@ -1041,6 +1111,22 @@ namespace soup
 				{
 					int64_t value;
 					r.soml(value);
+					stack.push(value);
+				}
+				break;
+
+			case 0x43: // f32.const
+				{
+					float value;
+					r.f32(value);
+					stack.push(value);
+				}
+				break;
+
+			case 0x44: // f64.const
+				{
+					double value;
+					r.f64(value);
 					stack.push(value);
 				}
 				break;
@@ -1216,6 +1302,102 @@ namespace soup
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
 					stack.push(static_cast<uint64_t>(a.i64) >= static_cast<uint64_t>(b.i64));
+				}
+				break;
+
+			case 0x5b: // f32.eq
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 == b.f32);
+				}
+				break;
+
+			case 0x5c: // f32.ne
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 != b.f32);
+				}
+				break;
+
+			case 0x5d: // f32.lt
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 < b.f32);
+				}
+				break;
+
+			case 0x5e: // f32.gt
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 > b.f32);
+				}
+				break;
+
+			case 0x5f: // f32.le
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 <= b.f32);
+				}
+				break;
+
+			case 0x60: // f32.ge
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 >= b.f32);
+				}
+				break;
+
+			case 0x61: // f64.eq
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 == b.f64);
+				}
+				break;
+
+			case 0x62: // f64.ne
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 != b.f64);
+				}
+				break;
+
+			case 0x63: // f64.lt
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 < b.f64);
+				}
+				break;
+
+			case 0x64: // f64.gt
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 > b.f64);
+				}
+				break;
+
+			case 0x65: // f64.le
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 <= b.f64);
+				}
+				break;
+
+			case 0x66: // f64.ge
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 >= b.f64);
 				}
 				break;
 
@@ -1431,6 +1613,70 @@ namespace soup
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
 					stack.push(static_cast<uint64_t>(a.i64) >> (static_cast<uint64_t>(b.i64) % (sizeof(uint64_t) * 8)));
+				}
+				break;
+
+			case 0x92: // f32.add
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 + b.f32);
+				}
+				break;
+
+			case 0x93: // f32.sub
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 - b.f32);
+				}
+				break;
+
+			case 0x94: // f32.mul
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 * b.f32);
+				}
+				break;
+
+			case 0x95: // f32.mul
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f32 / b.f32);
+				}
+				break;
+
+			case 0xa0: // f64.add
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 + b.f64);
+				}
+				break;
+
+			case 0xa1: // f64.sub
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 - b.f64);
+				}
+				break;
+
+			case 0xa2: // f64.mul
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 * b.f64);
+				}
+				break;
+
+			case 0xa3: // f64.mul
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(a.f64 / b.f64);
 				}
 				break;
 

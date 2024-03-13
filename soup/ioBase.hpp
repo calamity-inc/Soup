@@ -344,6 +344,16 @@ namespace soup
 					&& u8(((uint8_t*)&v)[0]);
 			}
 		}
+
+		bool f32(float& v) noexcept
+		{
+			return raw(&v, 4);
+		}
+
+		bool f64(double& v) noexcept
+		{
+			return raw(&v, 8);
+		}
 	};
 
 #define IOBASE_SER_METHOD_IMPL(t) IOBASE_SER_METHOD_IMPL_2(t, true) IOBASE_SER_METHOD_IMPL_2(t, false)

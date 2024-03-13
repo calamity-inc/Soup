@@ -19,11 +19,15 @@ namespace soup
 	{
 		int32_t i32;
 		int64_t i64;
+		float f32;
+		double f64;
 
 		WasmValue(int32_t i32) : i32(i32) {}
 		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
 		WasmValue(int64_t i64) : i64(i64) {}
 		WasmValue(uint64_t u64) : WasmValue(static_cast<int64_t>(u64)) {}
+		WasmValue(float f32) : f32(f32) {}
+		WasmValue(double f64) : f64(f64) {}
 
 		template <typename T, SOUP_RESTRICT(std::is_same_v<T, size_t>)>
 		WasmValue(T ptr) : i32(static_cast<int32_t>(ptr)) {}
