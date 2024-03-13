@@ -1062,6 +1062,22 @@ endif;)") == "");
 			assert(vm.stack.top() == 42);
 			assert(vm.stack.pop(), vm.stack.empty());			
 		});
+		test("Call Non-Imported", []
+		{
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAX8Bf2ACf38BfwMDAgEABQMBAAEHDAEIaXNfbWFnaWMAAQo9AjIBAn8DQCAAIgNBAWohACABIgJBAWohASADLQAAIgMgAi0AAEcEQEEADwsgAw0AC0EBCwgAIABBARAACwsLAQBBAQsFZGVlegAANARuYW1lARoCAAZzdHJjbXABD2lzX2hvc3Rpbmdfc2x1ZwIRAgAEAAEwAQExAgEyAwEzAQA=")));
+			auto scrap = scr.getMemory<char>(0x9000);
+			assert(scrap);
+			strcpy(scrap, "deez");
+			auto code = scr.getExportedFuntion("is_magic");
+			assert(code);
+			WasmVm vm(scr);
+			vm.locals.emplace_back(0x9000);
+			assert(vm.run(*code));
+			assert(!vm.stack.empty());
+			assert(vm.stack.top() == 1);
+			assert(vm.stack.pop(), vm.stack.empty());
+		});
 	}
 
 	test("reflection", []

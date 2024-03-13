@@ -64,15 +64,14 @@ namespace soup
 				r.skip(section_size);
 				break;
 
-#if false
 			case 1: // Type
-			{
-				size_t num_types;
-				r.oml(num_types);
+				{
+					size_t num_types;
+					r.oml(num_types);
 #if DEBUG_LOAD
-				std::cout << num_types << " type(s)\n";
+					std::cout << num_types << " type(s)\n";
 #endif
-				while (num_types--)
+					while (num_types--)
 					{
 						uint8_t type_type;
 						r.u8(type_type);
@@ -82,26 +81,25 @@ namespace soup
 							return false;
 
 						case 0x60: // func
-						{
+							{
 #if DEBUG_LOAD
-							std::cout << "- function with ";
+								std::cout << "- function with ";
 #endif
-							size_t n;
-							r.oml(n); r.skip(n); // parameters
+								size_t num_parameters; r.oml(num_parameters); r.skip(num_parameters);
 #if DEBUG_LOAD
-							std::cout << n << " parameter(s) and ";
+								std::cout << num_parameters << " parameter(s) and ";
 #endif
-							r.oml(n); r.skip(n); // results
+								size_t num_results; r.oml(num_results); r.skip(num_results);
 #if DEBUG_LOAD
-							std::cout << n << " return value(s)\n";
+								std::cout << num_results << " return value(s)\n";
 #endif
-						}
-						break;
+								types.emplace_back(FunctionType{ num_parameters, num_results });
+							}
+							break;
 						}
 					}
 				}
 				break;
-#endif
 
 			case 2: // Import
 				{
@@ -138,7 +136,9 @@ namespace soup
 #endif
 					while (num_functions--)
 					{
-						size_t signature_index; r.oml(signature_index);
+						size_t signature_index;
+						r.oml(signature_index);
+						functions.emplace_back(signature_index);
 					}
 				}
 				break;
@@ -245,7 +245,7 @@ namespace soup
 #if DEBUG_LOAD
 						std::cout << "- " << string::bin2hex(body) << "\n";
 #endif
-						functions.emplace_back(std::move(body));
+						code.emplace_back(std::move(body));
 					}
 				}
 				break;
@@ -309,9 +309,9 @@ namespace soup
 		if (auto e = export_map.find(name); e != export_map.end())
 		{
 			const size_t i = (e->second - function_imports.size());
-			if (i < functions.size())
+			if (i < code.size())
 			{
-				return &functions.at(i);
+				return &code.at(i);
 			}
 		}
 		return nullptr;
@@ -382,6 +382,7 @@ namespace soup
 				break;
 
 			case 0x0c: // br
+			case 0x0d: // br_if
 			case 0x10: // call
 			case 0x20: // local.get
 			case 0x21: // local.set
@@ -497,6 +498,17 @@ namespace soup
 				ctrlflow.pop();
 				break;
 
+			case 0x0d: // br_if
+				{
+					int32_t value = stack.top(); stack.pop();
+					if (!value)
+					{
+						size_t depth;
+						r.oml(depth);
+						break;
+					}
+				}
+				[[fallthrough]];
 			case 0x0c: // br
 				{
 					SOUP_IF_UNLIKELY (ctrlflow.empty())
@@ -549,21 +561,47 @@ namespace soup
 				{
 					size_t function_index;
 					r.oml(function_index);
-					SOUP_IF_UNLIKELY (function_index >= script.function_imports.size())
+					if (function_index < script.function_imports.size())
+					{
+#if DEBUG_VM
+						std::cout << "Calling into " << script.function_imports.at(function_index).module_name << ":" << script.function_imports.at(function_index).function_name << "\n";
+#endif
+						SOUP_IF_UNLIKELY (script.function_imports.at(function_index).ptr == nullptr)
+						{
+							return false;
+						}
+						script.function_imports.at(function_index).ptr(*this);
+						break;
+					}
+					function_index -= script.function_imports.size();
+					SOUP_IF_UNLIKELY (function_index >= script.functions.size() || function_index >= script.code.size())
 					{
 #if DEBUG_VM
 						std::cout << "call is out-of-bounds\n";
 #endif
 						return false;
 					}
-#if DEBUG_VM
-					std::cout << "Calling into " << script.function_imports.at(function_index).module_name << ":" << script.function_imports.at(function_index).function_name << "\n";
-#endif
-					SOUP_IF_UNLIKELY (script.function_imports.at(function_index).ptr == nullptr)
+					auto type_index = script.functions.at(function_index);
+					SOUP_IF_UNLIKELY (type_index >= script.types.size())
 					{
+#if DEBUG_VM
+						std::cout << "call is out-of-bounds\n";
+#endif
 						return false;
 					}
-					script.function_imports.at(function_index).ptr(*this);
+					const auto& type = script.types.at(type_index);
+					WasmVm callvm(script);
+					for (size_t i = 0; i != type.num_parameters; ++i)
+					{
+						callvm.locals.emplace_back(stack.top()); stack.pop();
+					}
+					callvm.run(script.code.at(function_index));
+					for (size_t i = 0; i != type.num_results; ++i)
+					{
+						//std::cout << "return value: " << callvm.stack.top() << "\n";
+						stack.push(callvm.stack.top()); callvm.stack.pop();
+					}
+					// callvm stack should be empty now
 				}
 				break;
 

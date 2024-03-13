@@ -16,6 +16,12 @@ namespace soup
 
 	struct WasmScript
 	{
+		struct FunctionType
+		{
+			size_t num_parameters;
+			size_t num_results;
+		};
+
 		struct FunctionImport
 		{
 			std::string module_name;
@@ -25,10 +31,12 @@ namespace soup
 
 		uint8_t* memory = nullptr;
 		size_t memory_size = 0;
-		std::unordered_map<std::string, size_t> export_map{};
+		std::vector<size_t> functions{};
+		std::vector<FunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
-		std::vector<std::string> functions{};
 		std::vector<int32_t> globals{};
+		std::unordered_map<std::string, size_t> export_map{};
+		std::vector<std::string> code{};
 
 		~WasmScript() noexcept;
 
