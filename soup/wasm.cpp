@@ -389,7 +389,7 @@ namespace soup
 			case 0x02: // block
 			case 0x03: // loop
 			case 0x04: // if
-				r.skip(1); // void
+				r.skip(1); // result type
 				++depth;
 				break;
 
@@ -491,33 +491,40 @@ namespace soup
 				break;
 
 			case 0x02: // block
-				r.skip(1); // void
-				ctrlflow.emplace(CtrlFlowEntry{ (size_t)-1, stack.size()});
+				{
+					uint8_t result_type; r.u8(result_type);
+					bool has_result = (result_type != /* void */ 0x40);
+					ctrlflow.emplace(CtrlFlowEntry{ (size_t)-1, stack.size() + has_result });
+				}
 				break;
 
 			case 0x03: // loop
-				r.skip(1); // void
-				ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
+				{
+					uint8_t result_type; r.u8(result_type);
+					bool has_result = (result_type != /* void */ 0x40);
+					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
 #if DEBUG_VM
-				std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << "\n";
+					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << "\n";
 #endif
+				}
 				break;
 
 			case 0x04: // if
 				{
-					r.skip(1); // void
+					uint8_t result_type; r.u8(result_type);
+					bool has_result = (result_type != /* void */ 0x40);
 					int32_t value = stack.top(); stack.pop();
 					//std::cout << "if: condition is " << (!!value) << "\n";
 					if (value)
 					{
-						ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
+						ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
 					}
 					else
 					{
 						if (skipOverBranch(r))
 						{
 							// we're in the 'else' branch
-							ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
+							ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
 						}
 						else
 						{
