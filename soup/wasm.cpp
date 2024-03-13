@@ -359,7 +359,7 @@ namespace soup
 		size_t stack_size;
 	};
 
-	static void skipOverBranch(Reader& r, size_t depth = 0) SOUP_EXCAL
+	static bool skipOverBranch(Reader& r, size_t depth = 0) SOUP_EXCAL
 	{
 		uint8_t op;
 		while (r.u8(op))
@@ -373,10 +373,17 @@ namespace soup
 				++depth;
 				break;
 
+			case 0x05: // else
+				if (depth == 0)
+				{
+					return true;
+				}
+				break;
+
 			case 0x0b: // end
 				if (depth == 0)
 				{
-					return;
+					return false;
 				}
 				--depth;
 				break;
@@ -415,6 +422,7 @@ namespace soup
 				break;
 			}
 		}
+		return false;
 	}
 
 	bool WasmVm::run(Reader& r) SOUP_EXCAL
@@ -479,17 +487,30 @@ namespace soup
 				{
 					r.skip(1); // void
 					int32_t value = stack.top(); stack.pop();
+					//std::cout << "if: condition is " << (!!value) << "\n";
 					if (value)
 					{
 						ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
 					}
 					else
 					{
-						skipOverBranch(r);
+						if (skipOverBranch(r))
+						{
+							// we're in the 'else' branch
+							ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() });
+						}
+						else
+						{
+							// we're after the 'end'
+						}
 					}
 				}
 				break;
 
+			case 0x05: // else
+				//std::cout << "else: skipping over this branch\n";
+				skipOverBranch(r);
+				[[fallthrough]];
 			case 0x0b: // end
 				if (ctrlflow.empty())
 				{
@@ -593,7 +614,8 @@ namespace soup
 					WasmVm callvm(script);
 					for (size_t i = 0; i != type.num_parameters; ++i)
 					{
-						callvm.locals.emplace_back(stack.top()); stack.pop();
+						//std::cout << "arg: " << script.getMemory<const char>(stack.top()) << "\n";
+						callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
 					}
 					callvm.run(script.code.at(function_index));
 					for (size_t i = 0; i != type.num_results; ++i)
