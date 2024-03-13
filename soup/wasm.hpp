@@ -54,6 +54,7 @@ namespace soup
 		std::unordered_map<std::string, size_t> export_map{};
 		std::vector<std::string> code{};
 		std::vector<size_t> elements{};
+		bool memory64 = false;
 
 		~WasmScript() noexcept;
 
@@ -75,9 +76,22 @@ namespace soup
 			return (T*)&memory[ptr];
 		}
 
+		template <typename T>
+		[[nodiscard]] T* getMemory(WasmValue base, size_t offset = 0) noexcept
+		{
+			if (memory64)
+			{
+				return getMemory<T>(static_cast<uint64_t>(base.i64) + offset);
+			}
+			return getMemory<T>(static_cast<uint32_t>(base.i32) + offset);
+		}
+
 		bool setMemory(size_t ptr, const void* src, size_t len) noexcept;
+		bool setMemory(WasmValue ptr, const void* src, size_t len) noexcept;
 
 		void linkWasiPreview1() noexcept;
+
+		[[nodiscard]] size_t readUPTR(Reader& r) const noexcept;
 	};
 
 	class WasmVm
@@ -95,6 +109,7 @@ namespace soup
 		bool run(const std::string& data) SOUP_EXCAL;
 		bool run(Reader& r) SOUP_EXCAL;
 	private:
+		bool skipOverBranch(Reader& r, size_t depth = 0) SOUP_EXCAL;
 		bool doCall(size_t type_index, size_t function_index) SOUP_EXCAL;
 	};
 }

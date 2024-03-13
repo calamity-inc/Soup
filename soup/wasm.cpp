@@ -159,6 +159,10 @@ namespace soup
 					{
 						size_t max_pages; r.oml(max_pages);
 					}
+					if (flags & 4)
+					{
+						memory64 = true;
+					}
 					if (pages == 0)
 					{
 						++pages;
@@ -378,6 +382,14 @@ namespace soup
 		return true;
 	}
 
+	bool WasmScript::setMemory(WasmValue ptr, const void* src, size_t len) noexcept
+	{
+		return memory64
+			? setMemory(static_cast<uint64_t>(ptr.i64), src, len)
+			: setMemory(static_cast<uint32_t>(ptr.i32), src, len)
+			;
+	}
+
 	void WasmScript::linkWasiPreview1() noexcept
 	{
 		// Resources:
@@ -444,6 +456,19 @@ namespace soup
 		}
 	}
 
+	size_t WasmScript::readUPTR(Reader& r) const noexcept
+	{
+		if (memory64)
+		{
+			uint64_t ptr;
+			r.oml(ptr);
+			return static_cast<size_t>(ptr);
+		}
+		uint32_t ptr;
+		r.oml(ptr);
+		return static_cast<size_t>(ptr);
+	}
+
 	// WasmVm
 
 	bool WasmVm::run(const std::string& data) SOUP_EXCAL
@@ -458,7 +483,7 @@ namespace soup
 		size_t stack_size;
 	};
 
-	static bool skipOverBranch(Reader& r, size_t depth = 0) SOUP_EXCAL
+	bool WasmVm::skipOverBranch(Reader& r, size_t depth) SOUP_EXCAL
 	{
 		uint8_t op;
 		while (r.u8(op))
@@ -509,24 +534,18 @@ namespace soup
 				break;
 
 			case 0x28: // i32.load
+			case 0x29: // i64.load
 			case 0x2c: // i32.load8_s
 			case 0x2d: // i32.load8_u
 			case 0x2e: // i32.load16_s
 			case 0x2f: // i32.load16_u
 			case 0x36: // i32.store
+			case 0x37: // i64.store
 			case 0x3a: // i32.store8
 			case 0x3b: // i32.store16
 				{
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-				}
-				break;
-
-			case 0x29: // i64.load
-			case 0x37: // i64.store
-				{
-					r.skip(1); // memflags
-					int64_t offset; r.oml(offset);
+					SOUP_UNUSED(script.readUPTR(r));
 				}
 				break;
 
@@ -920,8 +939,8 @@ namespace soup
 				{
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<int32_t>(static_cast<uint32_t>(base.i32) + offset));
+					auto offset = script.readUPTR(r);
+					stack.emplace(*script.getMemory<int32_t>(base, offset));
 				}
 				break;
 
@@ -929,16 +948,16 @@ namespace soup
 				{
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint64_t offset; r.oml(offset);
-					stack.emplace(*script.getMemory<int64_t>(static_cast<uint64_t>(base.i64) + offset));
+					auto offset = script.readUPTR(r);
+					stack.emplace(*script.getMemory<int64_t>(base, offset));
 				}
 
 			case 0x2c: // i32.load8_s
 				{
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					stack.emplace(static_cast<int32_t>(*script.getMemory<int8_t>(static_cast<uint32_t>(base.i32) + offset)));
+					auto offset = script.readUPTR(r);
+					stack.emplace(static_cast<int32_t>(*script.getMemory<int8_t>(base, offset)));
 				}
 				break;
 
@@ -946,8 +965,8 @@ namespace soup
 				{
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint8_t>(static_cast<uint32_t>(base.i32) + offset)));
+					auto offset = script.readUPTR(r);
+					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint8_t>(base, offset)));
 				}
 				break;
 
@@ -955,8 +974,8 @@ namespace soup
 				{
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					stack.emplace(static_cast<uint32_t>(*script.getMemory<int16_t>(static_cast<uint32_t>(base.i32) + offset)));
+					auto offset = script.readUPTR(r);
+					stack.emplace(static_cast<uint32_t>(*script.getMemory<int16_t>(base, offset)));
 				}
 				break;
 
@@ -964,8 +983,8 @@ namespace soup
 				{
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint16_t>(static_cast<uint32_t>(base.i32) + offset)));
+					auto offset = script.readUPTR(r);
+					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint16_t>(base, offset)));
 				}
 				break;
 
@@ -974,8 +993,8 @@ namespace soup
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					*script.getMemory<int32_t>(static_cast<uint32_t>(base.i32) + offset) = value.i32;
+					auto offset = script.readUPTR(r);
+					*script.getMemory<int32_t>(base, offset) = value.i32;
 				}
 				break;
 
@@ -984,8 +1003,8 @@ namespace soup
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint64_t offset; r.oml(offset);
-					*script.getMemory<int64_t>(static_cast<uint64_t>(base.i64) + offset) = value.i64;
+					auto offset = script.readUPTR(r);
+					*script.getMemory<int64_t>(base, offset) = value.i64;
 				}
 				break;
 
@@ -994,8 +1013,8 @@ namespace soup
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					*script.getMemory<int8_t>(static_cast<uint32_t>(base.i32) + offset) = static_cast<int8_t>(value.i32);
+					auto offset = script.readUPTR(r);
+					*script.getMemory<int8_t>(base, offset) = static_cast<int8_t>(value.i32);
 				}
 				break;
 
@@ -1004,8 +1023,8 @@ namespace soup
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					uint32_t offset; r.oml(offset);
-					*script.getMemory<int16_t>(static_cast<uint32_t>(base.i32) + offset) = static_cast<int16_t>(value.i32);
+					auto offset = script.readUPTR(r);
+					*script.getMemory<int16_t>(base, offset) = static_cast<int16_t>(value.i32);
 				}
 				break;
 
