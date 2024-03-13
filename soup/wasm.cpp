@@ -339,16 +339,54 @@ namespace soup
 
 	void WasmScript::linkWasiPreview1() noexcept
 	{
-		// https://github.com/bytecodealliance/wasmtime/blob/main/docs/WASI-tutorial.md#web-assembly-text-example
+		// Resources:
+		// - Barebones "Hello World": https://github.com/bytecodealliance/wasmtime/blob/main/docs/WASI-tutorial.md#web-assembly-text-example
+		// - How the XCC compiler uses WASI:
+		//   - https://github.com/tyfkda/xcc/blob/main/libsrc/_wasm/wasi.h
+		//   - https://github.com/tyfkda/xcc/blob/main/libsrc/_wasm/crt0/_start.c#L41
+
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "args_sizes_get"))
+		{
+			fi->ptr = [](WasmVm& vm)
+			{
+				auto plen = vm.stack.top(); vm.stack.pop();
+				auto pargc = vm.stack.top(); vm.stack.pop();
+				*vm.script.getMemory<int32_t>(plen) = sizeof("program");
+				*vm.script.getMemory<int32_t>(pargc) = 0;
+				vm.stack.push(0);
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "args_get"))
+		{
+			fi->ptr = [](WasmVm& vm)
+			{
+				auto pstr = vm.stack.top(); vm.stack.pop();
+				auto pargv = vm.stack.top(); vm.stack.pop();
+				vm.script.setMemory(pstr, "program", sizeof("program"));
+				*vm.script.getMemory<int32_t>(pargv) = pstr;
+				vm.stack.push(0);
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_prestat_get"))
+		{
+			fi->ptr = [](WasmVm& vm)
+			{
+				auto prestat = vm.stack.top(); vm.stack.pop();
+				auto fd = vm.stack.top(); vm.stack.pop();
+				SOUP_UNUSED(prestat);
+				SOUP_UNUSED(fd);
+				vm.stack.push(-1);
+			};
+		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_write"))
 		{
 			fi->ptr = [](WasmVm& vm)
 			{
-				int32_t out_nwritten = vm.stack.top(); vm.stack.pop();
-				int32_t iovs_len = vm.stack.top(); vm.stack.pop();
-				int32_t iovs = vm.stack.top(); vm.stack.pop();
-				int32_t file_descriptor = vm.stack.top(); vm.stack.pop();
-				int32_t nwritten = 0;
+				auto out_nwritten = vm.stack.top(); vm.stack.pop();
+				auto iovs_len = vm.stack.top(); vm.stack.pop();
+				auto iovs = vm.stack.top(); vm.stack.pop();
+				auto file_descriptor = vm.stack.top(); vm.stack.pop();
+				auto nwritten = 0;
 				if (file_descriptor == 1) // stdout
 				{
 					while (iovs_len--)
