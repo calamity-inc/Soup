@@ -627,7 +627,10 @@ namespace soup
 						//std::cout << "arg: " << script.getMemory<const char>(stack.top()) << "\n";
 						callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
 					}
-					callvm.run(script.code.at(function_index));
+					SOUP_IF_UNLIKELY (!callvm.run(script.code.at(function_index)))
+					{
+						return false;
+					}
 					for (size_t i = 0; i != type.num_results; ++i)
 					{
 						//std::cout << "return value: " << callvm.stack.top() << "\n";
