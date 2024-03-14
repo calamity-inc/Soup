@@ -951,6 +951,42 @@ namespace soup
 				}
 				break;
 
+			case 0x3f: // memory.size
+				{
+					r.skip(1); // reserved
+					pushIPTR(script.memory_size / 0x10'000);
+				}
+				break;
+
+			case 0x40: // memory.grow
+				{
+					r.skip(1); // reserved
+					size_t delta;
+					if (script.memory64)
+					{
+						delta = static_cast<uint64_t>(stack.top().i64);
+					}
+					else
+					{
+						delta = static_cast<uint32_t>(stack.top().i32);
+					}
+					stack.pop();
+					delta *= 0x10'000;
+					auto nmem = (uint8_t*)::realloc(script.memory, script.memory_size + delta);
+					if (nmem == nullptr)
+					{
+						pushIPTR(-1);
+					}
+					else
+					{
+						memset(&nmem[script.memory_size], 0, delta);
+						pushIPTR(script.memory_size / 0x10'000);
+						script.memory = nmem;
+						script.memory_size += delta;
+					}
+				}
+				break;
+
 			case 0x41: // i32.const
 				{
 					int32_t value;
@@ -1641,6 +1677,11 @@ namespace soup
 				}
 				break;
 
+			case 0x3f: // memory.size
+			case 0x40: // memory.grow
+				r.skip(1);
+				break;
+
 			case 0x41: // i32.const
 				{
 					int32_t value;
@@ -1847,5 +1888,17 @@ namespace soup
 			return false;
 		}
 		return true;
+	}
+
+	void WasmVm::pushIPTR(size_t ptr) SOUP_EXCAL
+	{
+		if (script.memory64)
+		{
+			stack.push(static_cast<uint64_t>(ptr));
+		}
+		else
+		{
+			stack.push(static_cast<uint32_t>(ptr));
+		}
 	}
 }

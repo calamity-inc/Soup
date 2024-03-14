@@ -123,5 +123,6 @@ namespace soup
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(size_t type_index, size_t function_index) SOUP_EXCAL;
+		void pushIPTR(size_t ptr) SOUP_EXCAL;
 	};
 }
