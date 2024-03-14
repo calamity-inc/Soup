@@ -504,189 +504,6 @@ namespace soup
 		size_t stack_size;
 	};
 
-	bool WasmVm::skipOverBranch(Reader& r, size_t depth) SOUP_EXCAL
-	{
-		uint8_t op;
-		while (r.u8(op))
-		{
-			switch (op)
-			{
-			case 0x02: // block
-			case 0x03: // loop
-			case 0x04: // if
-				r.skip(1); // result type
-				++depth;
-				break;
-
-			case 0x05: // else
-				if (depth == 0)
-				{
-					return true;
-				}
-				break;
-
-			case 0x0b: // end
-				if (depth == 0)
-				{
-					return false;
-				}
-				--depth;
-				break;
-
-			case 0x0c: // br
-			case 0x0d: // br_if
-			case 0x10: // call
-			case 0x20: // local.get
-			case 0x21: // local.set
-			case 0x22: // local.tee
-			case 0x23: // global.get
-			case 0x24: // global.set
-				{
-					size_t imm;
-					r.oml(imm);
-				}
-				break;
-
-			case 0x11: // call_indirect
-				{
-					size_t type_index; r.oml(type_index);
-					size_t table_index; r.oml(table_index);
-				}
-				break;
-
-			case 0x28: // i32.load
-			case 0x29: // i64.load
-			case 0x2a: // f32.load
-			case 0x2b: // f64.load
-			case 0x2c: // i32.load8_s
-			case 0x2d: // i32.load8_u
-			case 0x2e: // i32.load16_s
-			case 0x2f: // i32.load16_u
-			case 0x36: // i32.store
-			case 0x37: // i64.store
-			case 0x38: // f32.store
-			case 0x39: // f64.store
-			case 0x3a: // i32.store8
-			case 0x3b: // i32.store16
-				{
-					r.skip(1); // memflags
-					SOUP_UNUSED(script.readUPTR(r));
-				}
-				break;
-
-			case 0x41: // i32.const
-				{
-					int32_t value;
-					r.soml(value);
-				}
-				break;
-
-			case 0x42: // i64.const
-				{
-					int64_t value;
-					r.soml(value);
-				}
-				break;
-
-			case 0x43: // f32.const
-				r.skip(4);
-				break;
-
-			case 0x44: // f64.const
-				r.skip(8);
-				break;
-
-#if DEBUG_VM
-			case 0x00: // unreachable
-			case 0x01: // nop
-			case 0x0f: // return
-			case 0x1a: // drop
-			case 0x45: // i32.eqz
-			case 0x46: // i32.eq
-			case 0x47: // i32.ne
-			case 0x48: // i32.lt_s
-			case 0x49: // i32.lt_u
-			case 0x4a: // i32.gt_s
-			case 0x4b: // i32.gt_u
-			case 0x4c: // i32.le_s
-			case 0x4d: // i32.le_u
-			case 0x4e: // i32.ge_s
-			case 0x4f: // i32.ge_u
-			case 0x50: // i64.eqz
-			case 0x51: // i64.eq
-			case 0x52: // i64.ne
-			case 0x53: // i64.lt_s
-			case 0x54: // i64.lt_u
-			case 0x55: // i64.gt_s
-			case 0x56: // i64.gt_u
-			case 0x57: // i64.le_s
-			case 0x58: // i64.le_u
-			case 0x59: // i64.ge_s
-			case 0x5a: // i64.ge_u
-			case 0x5b: // f32.eq
-			case 0x5c: // f32.ne
-			case 0x5d: // f32.lt
-			case 0x5e: // f32.gt
-			case 0x5f: // f32.le
-			case 0x60: // f32.ge
-			case 0x61: // f64.eq
-			case 0x62: // f64.ne
-			case 0x63: // f64.lt
-			case 0x64: // f64.gt
-			case 0x65: // f64.le
-			case 0x66: // f64.ge
-			case 0x69: // i32.popcnt
-			case 0x6a: // i32.add
-			case 0x6b: // i32.sub
-			case 0x6c: // i32.mul
-			case 0x6d: // i32.div_s
-			case 0x6e: // i32.div_u
-			case 0x6f: // i32.rem_s
-			case 0x70: // i32.rem_u
-			case 0x71: // i32.and
-			case 0x72: // i32.or
-			case 0x73: // i32.xor
-			case 0x74: // i32.shl
-			case 0x75: // i32.shr_s ("arithmetic right shift")
-			case 0x76: // i32.shr_u ("logical right shift")
-			case 0x7c: // i64.add
-			case 0x7d: // i64.sub
-			case 0x7e: // i64.mul
-			case 0x7f: // i64.div_s
-			case 0x80: // i64.div_u
-			case 0x81: // i64.rem_s
-			case 0x82: // i64.rem_u
-			case 0x83: // i64.and
-			case 0x84: // i64.or
-			case 0x85: // i64.xor
-			case 0x86: // i64.shl
-			case 0x87: // i64.shr_s ("arithmetic right shift")
-			case 0x88: // i64.shr_u ("logical right shift")
-			case 0x92: // f32.add
-			case 0x93: // f32.sub
-			case 0x94: // f32.mul
-			case 0x95: // f32.mul
-			case 0xa0: // f64.add
-			case 0xa1: // f64.sub
-			case 0xa2: // f64.mul
-			case 0xa3: // f64.mul
-			case 0xa7: // i32.wrap_i64
-			case 0xac: // i64.extend_i32_s
-			case 0xad: // i64.extend_i32_u
-				break;
-
-			default:
-				std::cout << "skipOverBranch: unknown instruction " << string::hex(op) << ", might cause problems\n";
-				break;
-#endif
-			}
-		}
-#if DEBUG_VM
-		std::cout << "skipOverBranch: end of stream reached\n";
-#endif
-		return false;
-	}
-
 	bool WasmVm::run(Reader& r) SOUP_EXCAL
 	{
 		size_t local_decl_count;
@@ -1739,6 +1556,189 @@ namespace soup
 			}
 		}
 		return true;
+	}
+
+	bool WasmVm::skipOverBranch(Reader& r, size_t depth) SOUP_EXCAL
+	{
+		uint8_t op;
+		while (r.u8(op))
+		{
+			switch (op)
+			{
+			case 0x02: // block
+			case 0x03: // loop
+			case 0x04: // if
+				r.skip(1); // result type
+				++depth;
+				break;
+
+			case 0x05: // else
+				if (depth == 0)
+				{
+					return true;
+				}
+				break;
+
+			case 0x0b: // end
+				if (depth == 0)
+				{
+					return false;
+				}
+				--depth;
+				break;
+
+			case 0x0c: // br
+			case 0x0d: // br_if
+			case 0x10: // call
+			case 0x20: // local.get
+			case 0x21: // local.set
+			case 0x22: // local.tee
+			case 0x23: // global.get
+			case 0x24: // global.set
+				{
+					size_t imm;
+					r.oml(imm);
+				}
+				break;
+
+			case 0x11: // call_indirect
+				{
+					size_t type_index; r.oml(type_index);
+					size_t table_index; r.oml(table_index);
+				}
+				break;
+
+			case 0x28: // i32.load
+			case 0x29: // i64.load
+			case 0x2a: // f32.load
+			case 0x2b: // f64.load
+			case 0x2c: // i32.load8_s
+			case 0x2d: // i32.load8_u
+			case 0x2e: // i32.load16_s
+			case 0x2f: // i32.load16_u
+			case 0x36: // i32.store
+			case 0x37: // i64.store
+			case 0x38: // f32.store
+			case 0x39: // f64.store
+			case 0x3a: // i32.store8
+			case 0x3b: // i32.store16
+				{
+					r.skip(1); // memflags
+					SOUP_UNUSED(script.readUPTR(r));
+				}
+				break;
+
+			case 0x41: // i32.const
+				{
+					int32_t value;
+					r.soml(value);
+				}
+				break;
+
+			case 0x42: // i64.const
+				{
+					int64_t value;
+					r.soml(value);
+				}
+				break;
+
+			case 0x43: // f32.const
+				r.skip(4);
+				break;
+
+			case 0x44: // f64.const
+				r.skip(8);
+				break;
+
+#if DEBUG_VM
+			case 0x00: // unreachable
+			case 0x01: // nop
+			case 0x0f: // return
+			case 0x1a: // drop
+			case 0x45: // i32.eqz
+			case 0x46: // i32.eq
+			case 0x47: // i32.ne
+			case 0x48: // i32.lt_s
+			case 0x49: // i32.lt_u
+			case 0x4a: // i32.gt_s
+			case 0x4b: // i32.gt_u
+			case 0x4c: // i32.le_s
+			case 0x4d: // i32.le_u
+			case 0x4e: // i32.ge_s
+			case 0x4f: // i32.ge_u
+			case 0x50: // i64.eqz
+			case 0x51: // i64.eq
+			case 0x52: // i64.ne
+			case 0x53: // i64.lt_s
+			case 0x54: // i64.lt_u
+			case 0x55: // i64.gt_s
+			case 0x56: // i64.gt_u
+			case 0x57: // i64.le_s
+			case 0x58: // i64.le_u
+			case 0x59: // i64.ge_s
+			case 0x5a: // i64.ge_u
+			case 0x5b: // f32.eq
+			case 0x5c: // f32.ne
+			case 0x5d: // f32.lt
+			case 0x5e: // f32.gt
+			case 0x5f: // f32.le
+			case 0x60: // f32.ge
+			case 0x61: // f64.eq
+			case 0x62: // f64.ne
+			case 0x63: // f64.lt
+			case 0x64: // f64.gt
+			case 0x65: // f64.le
+			case 0x66: // f64.ge
+			case 0x69: // i32.popcnt
+			case 0x6a: // i32.add
+			case 0x6b: // i32.sub
+			case 0x6c: // i32.mul
+			case 0x6d: // i32.div_s
+			case 0x6e: // i32.div_u
+			case 0x6f: // i32.rem_s
+			case 0x70: // i32.rem_u
+			case 0x71: // i32.and
+			case 0x72: // i32.or
+			case 0x73: // i32.xor
+			case 0x74: // i32.shl
+			case 0x75: // i32.shr_s ("arithmetic right shift")
+			case 0x76: // i32.shr_u ("logical right shift")
+			case 0x7c: // i64.add
+			case 0x7d: // i64.sub
+			case 0x7e: // i64.mul
+			case 0x7f: // i64.div_s
+			case 0x80: // i64.div_u
+			case 0x81: // i64.rem_s
+			case 0x82: // i64.rem_u
+			case 0x83: // i64.and
+			case 0x84: // i64.or
+			case 0x85: // i64.xor
+			case 0x86: // i64.shl
+			case 0x87: // i64.shr_s ("arithmetic right shift")
+			case 0x88: // i64.shr_u ("logical right shift")
+			case 0x92: // f32.add
+			case 0x93: // f32.sub
+			case 0x94: // f32.mul
+			case 0x95: // f32.mul
+			case 0xa0: // f64.add
+			case 0xa1: // f64.sub
+			case 0xa2: // f64.mul
+			case 0xa3: // f64.mul
+			case 0xa7: // i32.wrap_i64
+			case 0xac: // i64.extend_i32_s
+			case 0xad: // i64.extend_i32_u
+				break;
+
+			default:
+				std::cout << "skipOverBranch: unknown instruction " << string::hex(op) << ", might cause problems\n";
+				break;
+#endif
+			}
+		}
+#if DEBUG_VM
+		std::cout << "skipOverBranch: end of stream reached\n";
+#endif
+		return false;
 	}
 
 	bool WasmVm::doCall(size_t type_index, size_t function_index) SOUP_EXCAL
