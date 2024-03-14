@@ -601,7 +601,7 @@ namespace soup
 
 			case 0x0c: // br
 				{
-					size_t depth;
+					uint32_t depth;
 					r.oml(depth);
 					SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
 					{
@@ -612,7 +612,7 @@ namespace soup
 
 			case 0x0d: // br_if
 				{
-					size_t depth;
+					uint32_t depth;
 					r.oml(depth);
 					auto value = stack.top(); stack.pop();
 					if (value.i32)
@@ -1522,7 +1522,7 @@ namespace soup
 		return true;
 	}
 
-	bool WasmVm::skipOverBranch(Reader& r, size_t depth) SOUP_EXCAL
+	bool WasmVm::skipOverBranch(Reader& r, uint32_t depth) SOUP_EXCAL
 	{
 		uint8_t op;
 		while (r.u8(op))
@@ -1705,7 +1705,7 @@ namespace soup
 		return false;
 	}
 
-	bool WasmVm::doBranch(Reader& r, size_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL
+	bool WasmVm::doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL
 	{
 		SOUP_IF_UNLIKELY (ctrlflow.empty())
 		{
