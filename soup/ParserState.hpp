@@ -29,8 +29,9 @@ namespace soup
 		void pushLefthand(Mixed&& val);
 		void pushLefthand(Lexeme&& l);
 		void pushLefthandNode(UniquePtr<astNode>&& node);
+		[[nodiscard]] astNode* peekLefthand() const noexcept; // returns nullptr if no lefthand
 		UniquePtr<astNode> popLefthand();
-		[[nodiscard]] astNode* peekRighthand() const;
+		[[nodiscard]] astNode* peekRighthand() const; // throws if no righthand
 		UniquePtr<astNode> popRighthand();
 		UniquePtr<astBlock> collapseRighthandBlock(const char* end_token); // end_token must've been registered with addToken
 

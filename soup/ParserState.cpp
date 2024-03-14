@@ -85,6 +85,15 @@ namespace soup
 		++i;
 	}
 
+	astNode* ParserState::peekLefthand() const noexcept
+	{
+		if (i != b->children.begin())
+		{
+			return (i - 1)->get();
+		}
+		return nullptr;
+	}
+
 	UniquePtr<astNode> ParserState::popLefthand()
 	{
 		if (i == b->children.begin())
