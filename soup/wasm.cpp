@@ -1789,13 +1789,13 @@ namespace soup
 			//std::cout << "return value: " << callvm.stack.top() << "\n";
 			stack.push(callvm.stack.top()); callvm.stack.pop();
 		}
-#if DEBUG_VM
 		SOUP_IF_UNLIKELY (!callvm.stack.empty())
 		{
+#if DEBUG_VM
 			std::cout << "call: too many values on the stack after return\n";
-			// not really an issue, but still shouldn't happen in well-formed WASM code.
-		}
 #endif
+			return false;
+		}
 		return true;
 	}
 }
