@@ -1707,26 +1707,27 @@ namespace soup
 
 	bool WasmVm::doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL
 	{
-		SOUP_IF_UNLIKELY (ctrlflow.empty())
-		{
-#if DEBUG_VM
-			std::cout << "branch despite empty ctrlflow stack\n";
-#endif
-			return false;
-		}
-
 #if DEBUG_VM
 		std::cout << "branch with depth " << depth << " at position " << r.getPosition() << "\n";
 #endif
+		SOUP_IF_UNLIKELY (ctrlflow.empty())
+		{
+#if DEBUG_VM
+			std::cout << "branch returns from function\n";
+#endif
+			r.seekEnd();
+			return true;
+		}
 		for (size_t i = 0; i != depth; ++i)
 		{
 			ctrlflow.pop();
 			SOUP_IF_UNLIKELY (ctrlflow.empty())
 			{
 #if DEBUG_VM
-				std::cout << "branch depth exceeds ctrlflow stack\n";
+				std::cout << "branch returns from function\n";
 #endif
-				return false;
+				r.seekEnd();
+				return true;
 			}
 		}
 		if (ctrlflow.top().position == -1)
