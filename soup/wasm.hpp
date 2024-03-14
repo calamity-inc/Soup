@@ -22,6 +22,7 @@ namespace soup
 		float f32;
 		double f64;
 
+		WasmValue() : i64(0) {}
 		WasmValue(int32_t i32) : i32(i32) {}
 		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
 		WasmValue(int64_t i64) : i64(i64) {}

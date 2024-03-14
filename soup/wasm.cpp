@@ -513,7 +513,7 @@ namespace soup
 			// type 0x7e = i64
 			while (type_count--)
 			{
-				locals.emplace_back(0);
+				locals.emplace_back();
 			}
 		}
 
