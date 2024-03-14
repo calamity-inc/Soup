@@ -498,12 +498,6 @@ namespace soup
 		return run(r);
 	}
 
-	struct CtrlFlowEntry
-	{
-		size_t position;
-		size_t stack_size;
-	};
-
 	bool WasmVm::run(Reader& r) SOUP_EXCAL
 	{
 		size_t local_decl_count;
@@ -605,58 +599,28 @@ namespace soup
 				//std::cout << "ctrlflow stack now has " << ctrlflow.size() << " entries\n";
 				break;
 
-			case 0x0d: // br_if
-				{
-					auto value = stack.top(); stack.pop();
-					if (!value.i32)
-					{
-						size_t depth;
-						r.oml(depth);
-						break;
-					}
-				}
-				[[fallthrough]];
 			case 0x0c: // br
 				{
-					SOUP_IF_UNLIKELY (ctrlflow.empty())
-					{
-#if DEBUG_VM
-						std::cout << "branch despite empty ctrlflow stack\n";
-#endif
-						return false;
-					}
 					size_t depth;
 					r.oml(depth);
-#if DEBUG_VM
-					std::cout << "branch with depth " << depth << " at position " << r.getPosition() << "\n";
-#endif
-					for (size_t i = 0; i != depth; ++i)
+					SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
 					{
-						ctrlflow.pop();
-						SOUP_IF_UNLIKELY (ctrlflow.empty())
+						return false;
+					}
+				}
+				break;
+
+			case 0x0d: // br_if
+				{
+					size_t depth;
+					r.oml(depth);
+					auto value = stack.top(); stack.pop();
+					if (value.i32)
+					{
+						SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
 						{
-#if DEBUG_VM
-							std::cout << "branch depth exceeds ctrlflow stack\n";
-#endif
 							return false;
 						}
-					}
-					if (ctrlflow.top().position == -1)
-					{
-						// branch forwards
-						skipOverBranch(r, depth);
-					}
-					else
-					{
-						// branch backwards
-						r.seek(ctrlflow.top().position);
-					}
-#if DEBUG_VM
-					std::cout << "position after branch: " << r.getPosition() << "\n";
-#endif
-					while (stack.size() > ctrlflow.top().stack_size)
-					{
-						stack.pop();
 					}
 				}
 				break;
@@ -1739,6 +1703,50 @@ namespace soup
 		std::cout << "skipOverBranch: end of stream reached\n";
 #endif
 		return false;
+	}
+
+	bool WasmVm::doBranch(Reader& r, size_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL
+	{
+		SOUP_IF_UNLIKELY (ctrlflow.empty())
+		{
+#if DEBUG_VM
+			std::cout << "branch despite empty ctrlflow stack\n";
+#endif
+			return false;
+		}
+
+#if DEBUG_VM
+		std::cout << "branch with depth " << depth << " at position " << r.getPosition() << "\n";
+#endif
+		for (size_t i = 0; i != depth; ++i)
+		{
+			ctrlflow.pop();
+			SOUP_IF_UNLIKELY (ctrlflow.empty())
+			{
+#if DEBUG_VM
+				std::cout << "branch depth exceeds ctrlflow stack\n";
+#endif
+				return false;
+			}
+		}
+		if (ctrlflow.top().position == -1)
+		{
+			// branch forwards
+			skipOverBranch(r, depth);
+		}
+		else
+		{
+			// branch backwards
+			r.seek(ctrlflow.top().position);
+		}
+#if DEBUG_VM
+		std::cout << "position after branch: " << r.getPosition() << "\n";
+#endif
+		while (stack.size() > ctrlflow.top().stack_size)
+		{
+			stack.pop();
+		}
+		return true;
 	}
 
 	bool WasmVm::doCall(size_t type_index, size_t function_index) SOUP_EXCAL

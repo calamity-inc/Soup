@@ -112,8 +112,16 @@ namespace soup
 
 		bool run(const std::string& data) SOUP_EXCAL;
 		bool run(Reader& r) SOUP_EXCAL;
+
 	private:
+		struct CtrlFlowEntry
+		{
+			size_t position;
+			size_t stack_size;
+		};
+
 		bool skipOverBranch(Reader& r, size_t depth = 0) SOUP_EXCAL;
-		bool doCall(size_t type_index, size_t function_index) SOUP_EXCAL;
+		[[nodiscard]] bool doBranch(Reader& r, size_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
+		[[nodiscard]] bool doCall(size_t type_index, size_t function_index) SOUP_EXCAL;
 	};
 }
