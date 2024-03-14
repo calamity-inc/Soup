@@ -6,12 +6,12 @@
 
 namespace soup
 {
+	// Checks the ASN and slug against https://github.com/calamity-inc/soup-extra-data/blob/senpai/index.blume
 	bool netAs::isHosting(const netIntel& intel) const SOUP_EXCAL
 	{
 		WasmScript ws;
 		SOUP_IF_LIKELY (ws.load(intel.extra_wasm))
 		{
-			// Checking ASN against https://github.com/calamity-inc/soup-extra-data/blob/senpai/src/is_hosting_asn.ts
 			if (auto code = ws.getExportedFuntion("is_hosting_asn"))
 			{
 				WasmVm vm(ws);
@@ -24,7 +24,6 @@ namespace soup
 				}
 			}
 
-			// Checking slug against https://github.com/calamity-inc/soup-extra-data/blob/senpai/src/is_hosting_slug.c
 			if (auto code = ws.getExportedFuntion("is_hosting_slug"))
 			{
 				std::string slug = this->handle;
