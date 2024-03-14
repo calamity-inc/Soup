@@ -625,6 +625,32 @@ namespace soup
 				}
 				break;
 
+			case 0x0e: // br_table
+				{
+					std::vector<uint32_t> table;
+					size_t num_branches;
+					r.oml(num_branches);
+					table.reserve(num_branches);
+					while (num_branches--)
+					{
+						uint32_t depth;
+						r.oml(depth);
+						table.emplace_back(depth);
+					}
+					uint32_t depth;
+					r.oml(depth);
+					auto index = stack.top(); stack.pop();
+					if (index.i32 < table.size())
+					{
+						depth = table.at(index.i32);
+					}
+					SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
+					{
+						return false;
+					}
+				}
+				break;
+
 			case 0x0f: // return
 				return true;
 
@@ -1562,6 +1588,20 @@ namespace soup
 				{
 					size_t imm;
 					r.oml(imm);
+				}
+				break;
+
+			case 0x0e: // br_table
+				{
+					size_t num_branches;
+					r.oml(num_branches);
+					while (num_branches--)
+					{
+						uint32_t depth;
+						r.oml(depth);
+					}
+					uint32_t default_depth;
+					r.oml(default_depth);
 				}
 				break;
 
