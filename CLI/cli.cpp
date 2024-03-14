@@ -25,6 +25,7 @@
 #include <string.hpp>
 #include <unicode.hpp>
 #include <Uri.hpp>
+#include <wasm.hpp>
 #include <WavFmtChunk.hpp>
 
 using namespace soup;
@@ -461,6 +462,31 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "wasm")
+		{
+			FileReader fr(argv[2]);
+			WasmScript scr;
+			if (!scr.load(fr))
+			{
+				std::cout << "Failed to load\n";
+				return 1;
+			}
+			auto code = scr.getExportedFuntion("_start");
+			if (!code)
+			{
+				std::cout << "WASM file has loaded but \"_start\" function not found in exports.\n";
+				return 2;
+			}
+			scr.linkWasiPreview1();
+			WasmVm vm(scr);
+			if (!vm.run(*code))
+			{
+				std::cout << "A runtime error occurred.\n";
+				return 3;
+			}
+			return 0;
+		}
+
 		if (subcommand == "wav")
 		{
 #if SOUP_WINDOWS
@@ -544,6 +570,7 @@ Available tools:
 - script [.cpp file]
 - snake
 - test
+- wasm [file]
 - wav [file]
 - websrv [dir]
 
