@@ -440,6 +440,7 @@ namespace soup
 				vm.stack.push(-1);
 			};
 		}
+
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_write"))
 		{
 			fi->ptr = [](WasmVm& vm)
@@ -461,6 +462,17 @@ namespace soup
 				}
 				*vm.script.getMemory<int32_t>(out_nwritten.i32) = nwritten;
 				vm.stack.push(nwritten);
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_filestat_get"))
+		{
+			fi->ptr = [](WasmVm& vm)
+			{
+				auto out = vm.stack.top(); vm.stack.pop();
+				auto fd = vm.stack.top(); vm.stack.pop();
+				SOUP_UNUSED(out);
+				SOUP_UNUSED(fd);
+				vm.stack.push(fd.i32 < 3 ? 0 : -1);
 			};
 		}
 	}
