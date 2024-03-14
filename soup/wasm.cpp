@@ -735,6 +735,15 @@ namespace soup
 				stack.pop();
 				break;
 
+			case 0x1b: // select
+				{
+					auto cond = stack.top(); stack.pop();
+					auto fvalue = stack.top(); stack.pop();
+					auto tvalue = stack.top(); stack.pop();
+					stack.push(cond.i32 ? tvalue : fvalue);
+				}
+				break;
+
 			case 0x20: // local.get
 				{
 					size_t local_index;
@@ -1659,6 +1668,7 @@ namespace soup
 			case 0x01: // nop
 			case 0x0f: // return
 			case 0x1a: // drop
+			case 0x1b: // select
 			case 0x45: // i32.eqz
 			case 0x46: // i32.eq
 			case 0x47: // i32.ne
