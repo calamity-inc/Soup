@@ -581,6 +581,13 @@ namespace soup
 						else
 						{
 							// we're after the 'end'
+							SOUP_IF_UNLIKELY (has_result)
+							{
+#if DEBUG_VM
+								std::cout << "if: has result but no 'else' clause\n";
+#endif
+								return false;
+							}
 						}
 					}
 				}
@@ -824,7 +831,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(*script.getMemory<int32_t>(base, offset));
+					if (auto ptr = script.getMemory<int32_t>(base, offset))
+					{
+						stack.emplace(*ptr);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -833,7 +850,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(*script.getMemory<int64_t>(base, offset));
+					if (auto ptr = script.getMemory<int64_t>(base, offset))
+					{
+						stack.emplace(*ptr);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -842,7 +869,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(*script.getMemory<float>(base, offset));
+					if (auto ptr = script.getMemory<float>(base, offset))
+					{
+						stack.emplace(*ptr);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -851,7 +888,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(*script.getMemory<double>(base, offset));
+					if (auto ptr = script.getMemory<double>(base, offset))
+					{
+						stack.emplace(*ptr);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -860,7 +907,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(static_cast<int32_t>(*script.getMemory<int8_t>(base, offset)));
+					if (auto ptr = script.getMemory<int8_t>(base, offset))
+					{
+						stack.emplace(static_cast<int32_t>(*ptr));
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -869,7 +926,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint8_t>(base, offset)));
+					if (auto ptr = script.getMemory<uint8_t>(base, offset))
+					{
+						stack.emplace(static_cast<uint32_t>(*ptr));
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -878,7 +945,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(static_cast<uint32_t>(*script.getMemory<int16_t>(base, offset)));
+					if (auto ptr = script.getMemory<int16_t>(base, offset))
+					{
+						stack.emplace(static_cast<uint32_t>(*ptr));
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -887,7 +964,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					stack.emplace(static_cast<uint32_t>(*script.getMemory<uint16_t>(base, offset)));
+					if (auto ptr = script.getMemory<uint16_t>(base, offset))
+					{
+						stack.emplace(static_cast<uint32_t>(*ptr));
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -897,7 +984,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<int32_t>(base, offset) = value.i32;
+					if (auto ptr = script.getMemory<int32_t>(base, offset))
+					{
+						*ptr = value.i32;
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -907,7 +1004,17 @@ namespace soup
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<int64_t>(base, offset) = value.i64;
+					if (auto ptr = script.getMemory<int64_t>(base, offset))
+					{
+						*ptr = value.i64;
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
