@@ -36,6 +36,7 @@ namespace soup
 		virtual ~XmlNode() = default;
 
 		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
+		void encodeAndAppendTo(std::string& str, const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
 
 		// Type checks.
 		[[nodiscard]] bool isTag() const noexcept;
@@ -60,6 +61,7 @@ namespace soup
 		}
 
 		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
+		void encodeAndAppendTo(std::string& str, const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
 
 		[[nodiscard]] bool hasAttribute(const std::string& name) const noexcept;
 		[[nodiscard]] const std::string& getAttribute(const std::string& name) const;
@@ -78,7 +80,7 @@ namespace soup
 
 		XmlText(std::string&& contents) noexcept;
 
-		[[nodiscard]] std::string encode() const SOUP_EXCAL;
+		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL;
 	};
 
 	struct XmlMode
@@ -92,4 +94,18 @@ namespace soup
 		// Allow attribute values to be bare strings.
 		bool unquoted_attributes = false;
 	};
+
+	inline std::string XmlNode::encode(const XmlMode& mode) const SOUP_EXCAL
+	{
+		std::string str;
+		encodeAndAppendTo(str, mode);
+		return str;
+	}
+
+	inline std::string XmlTag::encode(const XmlMode& mode) const SOUP_EXCAL
+	{
+		std::string str;
+		encodeAndAppendTo(str, mode);
+		return str;
+	}
 }

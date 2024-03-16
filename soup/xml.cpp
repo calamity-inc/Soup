@@ -424,13 +424,16 @@ namespace soup
 		return tag;
 	}
 
-	std::string XmlNode::encode(const XmlMode& mode) const SOUP_EXCAL
+	void XmlNode::encodeAndAppendTo(std::string& str, const XmlMode& mode) const SOUP_EXCAL
 	{
 		if (is_text)
 		{
-			return static_cast<const XmlText*>(this)->encode();
+			static_cast<const XmlText*>(this)->encodeAndAppendTo(str);
 		}
-		return static_cast<const XmlTag*>(this)->encode(mode);
+		else
+		{
+			static_cast<const XmlTag*>(this)->encodeAndAppendTo(str, mode);
+		}
 	}
 
 	bool XmlNode::isTag() const noexcept
@@ -479,15 +482,14 @@ namespace soup
 		return *static_cast<const XmlText*>(this);
 	}
 
-	std::string XmlTag::encode(const XmlMode& mode) const SOUP_EXCAL
+	void XmlTag::encodeAndAppendTo(std::string& str, const XmlMode& mode) const SOUP_EXCAL
 	{
 #if SOUP_CPP20
 		const bool is_self_closing = mode.self_closing_tags.contains(name);
 #else
 		const bool is_self_closing = mode.self_closing_tags.count(name);
 #endif
-
-		std::string str(1, '<');
+		str.push_back('<');
 		str.append(name);
 		for (const auto& e : attributes)
 		{
@@ -521,7 +523,7 @@ namespace soup
 		str.push_back('>');
 		for (const auto& child : children)
 		{
-			str.append(child->encode(mode));
+			child->encodeAndAppendTo(str, mode);
 		}
 		if (!is_self_closing)
 		{
@@ -529,7 +531,6 @@ namespace soup
 			str.append(name);
 			str.push_back('>');
 		}
-		return str;
 	}
 
 	bool XmlTag::hasAttribute(const std::string& name) const noexcept
@@ -585,12 +586,12 @@ namespace soup
 		string::replaceAll(this->contents, "&gt;", ">");
 	}
 
-	std::string XmlText::encode() const SOUP_EXCAL
+	void XmlText::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
 	{
 		std::string contents = this->contents;
 		string::replaceAll(contents, "&", "&amp;");
 		string::replaceAll(contents, "<", "&lt;");
 		string::replaceAll(contents, ">", "&gt;");
-		return contents;
+		str.append(contents);
 	}
 }
