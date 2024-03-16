@@ -27,8 +27,8 @@ namespace soup
 		bool operator <(const JsonNode& b) const;
 
 		[[nodiscard]] std::string encode() const SOUP_EXCAL;
-		virtual void encodeAndAppendTo(std::string& str) const SOUP_EXCAL = 0;
 		[[nodiscard]] std::string encodePretty() const SOUP_EXCAL;
+		virtual void encodeAndAppendTo(std::string& str) const SOUP_EXCAL = 0;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 
 		virtual bool binaryEncode(Writer& w) const = 0; // specific to soup

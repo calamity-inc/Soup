@@ -36,7 +36,9 @@ namespace soup
 		virtual ~XmlNode() = default;
 
 		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
+		[[nodiscard]] std::string encodePretty(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
 		void encodeAndAppendTo(std::string& str, const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
+		void encodePrettyAndAppendTo(std::string& str, const XmlMode& mode = xml::MODE_XML, unsigned depth = 0) const SOUP_EXCAL;
 
 		// Type checks.
 		[[nodiscard]] bool isTag() const noexcept;
@@ -61,7 +63,10 @@ namespace soup
 		}
 
 		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
+		[[nodiscard]] std::string encodePretty(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
 		void encodeAndAppendTo(std::string& str, const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
+		void encodePrettyAndAppendTo(std::string& str, const XmlMode& mode = xml::MODE_XML, unsigned depth = 0) const SOUP_EXCAL;
+		void encodeAttributesAndAppendTo(std::string& str, const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
 
 		[[nodiscard]] bool hasAttribute(const std::string& name) const noexcept;
 		[[nodiscard]] const std::string& getAttribute(const std::string& name) const;
@@ -102,10 +107,24 @@ namespace soup
 		return str;
 	}
 
+	inline std::string XmlNode::encodePretty(const XmlMode& mode) const SOUP_EXCAL
+	{
+		std::string str;
+		encodePrettyAndAppendTo(str, mode);
+		return str;
+	}
+
 	inline std::string XmlTag::encode(const XmlMode& mode) const SOUP_EXCAL
 	{
 		std::string str;
 		encodeAndAppendTo(str, mode);
+		return str;
+	}
+
+	inline std::string XmlTag::encodePretty(const XmlMode& mode) const SOUP_EXCAL
+	{
+		std::string str;
+		encodePrettyAndAppendTo(str, mode);
 		return str;
 	}
 }

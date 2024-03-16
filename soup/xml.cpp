@@ -436,6 +436,18 @@ namespace soup
 		}
 	}
 
+	void XmlNode::encodePrettyAndAppendTo(std::string& str, const XmlMode& mode, unsigned depth) const SOUP_EXCAL
+	{
+		if (is_text)
+		{
+			static_cast<const XmlText*>(this)->encodeAndAppendTo(str);
+		}
+		else
+		{
+			static_cast<const XmlTag*>(this)->encodePrettyAndAppendTo(str, mode, depth);
+		}
+	}
+
 	bool XmlNode::isTag() const noexcept
 	{
 		return !is_text;
@@ -491,6 +503,61 @@ namespace soup
 #endif
 		str.push_back('<');
 		str.append(name);
+		encodeAttributesAndAppendTo(str, mode);
+		if (is_self_closing)
+		{
+			str.append(" /");
+		}
+		str.push_back('>');
+		for (const auto& child : children)
+		{
+			child->encodeAndAppendTo(str, mode);
+		}
+		if (!is_self_closing)
+		{
+			str.append("</");
+			str.append(name);
+			str.push_back('>');
+		}
+	}
+
+	void XmlTag::encodePrettyAndAppendTo(std::string& str, const XmlMode& mode, unsigned depth) const SOUP_EXCAL
+	{
+#if SOUP_CPP20
+		const bool is_self_closing = mode.self_closing_tags.contains(name);
+#else
+		const bool is_self_closing = mode.self_closing_tags.count(name);
+#endif
+		str.push_back('<');
+		str.append(name);
+		encodeAttributesAndAppendTo(str, mode);
+		if (is_self_closing)
+		{
+			str.append(" /");
+		}
+		str.push_back('>');
+		const auto child_depth = (depth + 1);
+		for (const auto& child : children)
+		{
+			str.push_back('\n');
+			str.append(child_depth * 4, ' ');
+			child->encodePrettyAndAppendTo(str, mode, child_depth);
+		}
+		if (!is_self_closing)
+		{
+			if (!children.empty())
+			{
+				str.push_back('\n');
+				str.append(depth * 4, ' ');
+			}
+			str.append("</");
+			str.append(name);
+			str.push_back('>');
+		}
+	}
+
+	void XmlTag::encodeAttributesAndAppendTo(std::string& str, const XmlMode& mode) const SOUP_EXCAL
+	{
 		for (const auto& e : attributes)
 		{
 			str.push_back(' ');
@@ -515,21 +582,6 @@ namespace soup
 					str.push_back('"');
 				}
 			}
-		}
-		if (is_self_closing)
-		{
-			str.append(" /");
-		}
-		str.push_back('>');
-		for (const auto& child : children)
-		{
-			child->encodeAndAppendTo(str, mode);
-		}
-		if (!is_self_closing)
-		{
-			str.append("</");
-			str.append(name);
-			str.push_back('>');
 		}
 	}
 
