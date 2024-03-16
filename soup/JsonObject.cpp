@@ -60,7 +60,7 @@ namespace soup
 		str.push_back('}');
 	}
 
-	void JsonObject::encodePrettyAndAppendTo(std::string& str, const std::string& prefix) const SOUP_EXCAL
+	void JsonObject::encodePrettyAndAppendTo(std::string& str, unsigned depth) const SOUP_EXCAL
 	{
 		if (children.empty())
 		{
@@ -68,22 +68,22 @@ namespace soup
 		}
 		else
 		{
-			std::string rprefix = prefix;
-			rprefix.append("    ");
+			const auto child_depth = (depth + 1);
 			str.append("{\n");
 			for (auto i = children.begin(); i != children.end(); ++i)
 			{
-				str.append(rprefix);
+				str.append(child_depth * 4, ' ');
 				i->first->encodeAndAppendTo(str);
 				str.append(": ");
-				i->second->encodePrettyAndAppendTo(str, rprefix);
+				i->second->encodePrettyAndAppendTo(str, child_depth);
 				if (i != children.end() - 1)
 				{
 					str.push_back(',');
 				}
 				str.push_back('\n');
 			}
-			str.append(prefix).push_back('}');
+			str.append(depth * 4, ' ');
+			str.push_back('}');
 		}
 	}
 
