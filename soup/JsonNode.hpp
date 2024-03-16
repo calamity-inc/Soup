@@ -30,7 +30,7 @@ namespace soup
 		virtual void encodeAndAppendTo(std::string& str) const SOUP_EXCAL = 0;
 		[[nodiscard]] std::string encodePretty(const std::string& prefix = {}) const SOUP_EXCAL;
 
-		virtual bool binaryEncode(Writer& w) const; // specific to soup
+		virtual bool binaryEncode(Writer& w) const = 0; // specific to soup
 
 		// Type casts; will throw if node is of different type.
 		[[nodiscard]] JsonArray& asArr();

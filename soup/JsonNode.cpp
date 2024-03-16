@@ -49,11 +49,6 @@ namespace soup
 		return encode();
 	}
 
-	bool JsonNode::binaryEncode(Writer& w) const
-	{
-		return false;
-	}
-
 	void JsonNode::throwTypeError()
 	{
 		SOUP_THROW(Exception("JsonNode has unexpected type"));
