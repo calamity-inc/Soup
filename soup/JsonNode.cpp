@@ -36,13 +36,6 @@ namespace soup
 			;
 	}
 
-	std::string JsonNode::encode() const SOUP_EXCAL
-	{
-		std::string str;
-		encodeAndAppendTo(str);
-		return str;
-	}
-
 	std::string JsonNode::encodePretty(const std::string& prefix) const SOUP_EXCAL
 	{
 		if (isArr())

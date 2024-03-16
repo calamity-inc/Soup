@@ -73,6 +73,13 @@ namespace soup
 		static void throwTypeError();
 	};
 
+	inline std::string JsonNode::encode() const SOUP_EXCAL
+	{
+		std::string str;
+		encodeAndAppendTo(str);
+		return str;
+	}
+
 	inline JsonArray& JsonNode::asArr()
 	{
 		SOUP_IF_UNLIKELY (!isArr())
