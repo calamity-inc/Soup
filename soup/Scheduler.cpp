@@ -20,18 +20,20 @@ namespace soup
 {
 	static thread_local Scheduler* this_thread_running_scheduler = nullptr;
 
-	SharedPtr<Worker> Scheduler::addWorker(SharedPtr<Worker>&& w) SOUP_EXCAL
+	void Scheduler::addWorker(SharedPtr<Worker>&& w) SOUP_EXCAL
 	{
-		return pending_workers.emplace_front(std::move(w))->data;
+		pending_workers.emplace_front(std::move(w));
 	}
 
 #if !SOUP_WASM
 	SharedPtr<Socket> Scheduler::addSocket() SOUP_EXCAL
 	{
-		return addSocket(soup::make_shared<Socket>());
+		auto s = soup::make_shared<Socket>();
+		addSocket(s);
+		return s;
 	}
 
-	SharedPtr<Socket> Scheduler::addSocket(SharedPtr<Socket>&& sock) SOUP_EXCAL
+	void Scheduler::addSocket(SharedPtr<Socket> sock) SOUP_EXCAL
 	{
 #if !SOUP_WINDOWS
 		sock->setNonBlocking();
