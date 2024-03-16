@@ -134,24 +134,33 @@ namespace soup
 #endif
 					m.saveCheckpoint();
 				}
-				if (reinterpret_cast<uintptr_t>(m.c) == 0b10)
+				if (reinterpret_cast<uintptr_t>(m.c) != 0b10)
 				{
 #if REGEX_DEBUG_MATCH
-					std::cout << "matched into a snafu\n";
+					std::cout << "matched\n";
 #endif
-					return {};
+					continue;
 				}
 #if REGEX_DEBUG_MATCH
-				std::cout << "matched\n";
+				std::cout << "matched into a snafu";
 #endif
-				continue;
+				if (!m.rollback_points.empty())
+				{
+					m.rollback_points.pop_back();
+				}
 			}
+#if REGEX_DEBUG_MATCH
+			else
+			{
+				std::cout << "did not match";
+			}
+#endif
 
 			// Rollback?
 			if (!m.rollback_points.empty())
 			{
 #if REGEX_DEBUG_MATCH
-				std::cout << "did not match, rolling back\n";
+				std::cout << "; rolling back\n";
 #endif
 				m.restoreRollback();
 				if (reinterpret_cast<uintptr_t>(m.c) == 1)
@@ -166,7 +175,7 @@ namespace soup
 
 			// Oh well
 #if REGEX_DEBUG_MATCH
-			std::cout << "no matchy\n";
+			std::cout << "\n";
 #endif
 			return {};
 		}

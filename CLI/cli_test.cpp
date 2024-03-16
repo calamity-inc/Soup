@@ -799,6 +799,10 @@ spanning over multiple lines */
 			[a-z]  # Any letter of the alphabet
 			+      # 1 or more times
 		))EOR").matchesFully("abc") == true);
+
+		assert(Regex(R"((?<!(?<!\.)\.)\w)").search("a").isSuccess() == true);
+		assert(Regex(R"((?<!(?<!\.)\.)\w)").search(".a").isSuccess() == false);
+		assert(Regex(R"((?<!(?<!\.)\.)\w)").search("..a").isSuccess() == true);
 	});
 
 	test("MessageStream", []
