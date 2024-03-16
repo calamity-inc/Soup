@@ -424,7 +424,7 @@ namespace soup
 		return tag;
 	}
 
-	std::string XmlNode::encode(const XmlMode& mode) const noexcept
+	std::string XmlNode::encode(const XmlMode& mode) const SOUP_EXCAL
 	{
 		if (is_text)
 		{
@@ -479,7 +479,7 @@ namespace soup
 		return *static_cast<const XmlText*>(this);
 	}
 
-	std::string XmlTag::encode(const XmlMode& mode) const noexcept
+	std::string XmlTag::encode(const XmlMode& mode) const SOUP_EXCAL
 	{
 #if SOUP_CPP20
 		const bool is_self_closing = mode.self_closing_tags.contains(name);
@@ -585,7 +585,7 @@ namespace soup
 		string::replaceAll(this->contents, "&gt;", ">");
 	}
 
-	std::string XmlText::encode() const noexcept
+	std::string XmlText::encode() const SOUP_EXCAL
 	{
 		std::string contents = this->contents;
 		string::replaceAll(contents, "&", "&amp;");

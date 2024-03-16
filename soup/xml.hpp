@@ -35,7 +35,7 @@ namespace soup
 
 		virtual ~XmlNode() = default;
 
-		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const noexcept;
+		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
 
 		// Type checks.
 		[[nodiscard]] bool isTag() const noexcept;
@@ -59,7 +59,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const noexcept;
+		[[nodiscard]] std::string encode(const XmlMode& mode = xml::MODE_XML) const SOUP_EXCAL;
 
 		[[nodiscard]] bool hasAttribute(const std::string& name) const noexcept;
 		[[nodiscard]] const std::string& getAttribute(const std::string& name) const;
@@ -78,7 +78,7 @@ namespace soup
 
 		XmlText(std::string&& contents) noexcept;
 
-		[[nodiscard]] std::string encode() const noexcept;
+		[[nodiscard]] std::string encode() const SOUP_EXCAL;
 	};
 
 	struct XmlMode
