@@ -36,17 +36,20 @@ namespace soup
 			;
 	}
 
-	std::string JsonNode::encodePretty(const std::string& prefix) const SOUP_EXCAL
+	void JsonNode::encodePrettyAndAppendTo(std::string& str, const std::string& prefix) const SOUP_EXCAL
 	{
 		if (isArr())
 		{
-			return reinterpretAsArr().encodePretty(prefix);
+			reinterpretAsArr().encodePrettyAndAppendTo(str, prefix);
 		}
-		if (isObj())
+		else if (isObj())
 		{
-			return reinterpretAsObj().encodePretty(prefix);
+			reinterpretAsObj().encodePrettyAndAppendTo(str, prefix);
 		}
-		return encode();
+		else
+		{
+			encodeAndAppendTo(str);
+		}
 	}
 
 	void JsonNode::throwTypeError()

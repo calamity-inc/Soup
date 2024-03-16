@@ -38,7 +38,7 @@ namespace soup
 		explicit JsonArray(const char*& c);
 
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
-		[[nodiscard]] std::string encodePretty(const std::string& prefix = {}) const SOUP_EXCAL;
+		void encodePrettyAndAppendTo(std::string& str, const std::string& prefix = {}) const SOUP_EXCAL;
 
 		bool binaryEncode(Writer& w) const final;
 

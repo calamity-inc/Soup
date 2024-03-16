@@ -60,29 +60,31 @@ namespace soup
 		str.push_back('}');
 	}
 
-	std::string JsonObject::encodePretty(const std::string& prefix) const SOUP_EXCAL
+	void JsonObject::encodePrettyAndAppendTo(std::string& str, const std::string& prefix) const SOUP_EXCAL
 	{
 		if (children.empty())
 		{
-			return "{}";
+			str.append("{}");
 		}
-		std::string rprefix = prefix;
-		rprefix.append("    ");
-		std::string res = "{\n";
-		for (auto i = children.begin(); i != children.end(); ++i)
+		else
 		{
-			res.append(rprefix);
-			res.append(i->first->encode());
-			res.append(": ");
-			res.append(i->second->encodePretty(rprefix));
-			if (i != children.end() - 1)
+			std::string rprefix = prefix;
+			rprefix.append("    ");
+			str.append("{\n");
+			for (auto i = children.begin(); i != children.end(); ++i)
 			{
-				res.push_back(',');
+				str.append(rprefix);
+				i->first->encodeAndAppendTo(str);
+				str.append(": ");
+				i->second->encodePrettyAndAppendTo(str, rprefix);
+				if (i != children.end() - 1)
+				{
+					str.push_back(',');
+				}
+				str.push_back('\n');
 			}
-			res.push_back('\n');
+			str.append(prefix).push_back('}');
 		}
-		res.append(prefix).push_back('}');
-		return res;
 	}
 
 	bool JsonObject::binaryEncode(Writer& w) const

@@ -28,7 +28,8 @@ namespace soup
 
 		[[nodiscard]] std::string encode() const SOUP_EXCAL;
 		virtual void encodeAndAppendTo(std::string& str) const SOUP_EXCAL = 0;
-		[[nodiscard]] std::string encodePretty(const std::string& prefix = {}) const SOUP_EXCAL;
+		[[nodiscard]] std::string encodePretty() const SOUP_EXCAL;
+		void encodePrettyAndAppendTo(std::string& str, const std::string& prefix = {}) const SOUP_EXCAL;
 
 		virtual bool binaryEncode(Writer& w) const = 0; // specific to soup
 
@@ -77,6 +78,13 @@ namespace soup
 	{
 		std::string str;
 		encodeAndAppendTo(str);
+		return str;
+	}
+
+	inline std::string JsonNode::encodePretty() const SOUP_EXCAL
+	{
+		std::string str;
+		encodePrettyAndAppendTo(str);
 		return str;
 	}
 
