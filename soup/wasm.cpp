@@ -1431,6 +1431,10 @@ namespace soup
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
+					SOUP_IF_UNLIKELY (b.i32 == 0)
+					{
+						return 0;
+					}
 					stack.push(a.i32 / b.i32);
 				}
 				break;
@@ -1439,6 +1443,10 @@ namespace soup
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
+					SOUP_IF_UNLIKELY (b.i32 == 0)
+					{
+						return 0;
+					}
 					stack.push(static_cast<uint32_t>(a.i32) / static_cast<uint32_t>(b.i32));
 				}
 				break;
@@ -1535,6 +1543,10 @@ namespace soup
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
+					SOUP_IF_UNLIKELY (b.i64 == 0)
+					{
+						return 0;
+					}
 					stack.push(a.i64 / b.i64);
 				}
 				break;
@@ -1543,6 +1555,10 @@ namespace soup
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
+					SOUP_IF_UNLIKELY (b.i64 == 0)
+					{
+						return 0;
+					}
 					stack.push(static_cast<uint64_t>(a.i64) / static_cast<uint64_t>(b.i64));
 				}
 				break;
