@@ -8,12 +8,6 @@ jobs:
     steps:
       - uses: mymindstorm/setup-emsdk@v13
 
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.EMSDK }}/upstream/emscripten/cache
-          key: wasm
-
       - uses: actions/checkout@v4
 
       - name: Build
