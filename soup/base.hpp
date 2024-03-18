@@ -133,8 +133,13 @@
 	#define SOUP_ASSUME(x) [[assume(x)]];
 	#define SOUP_UNREACHABLE std::unreachable();
 #else
-	#define SOUP_ASSUME(x) ;
-	#define SOUP_UNREACHABLE ;
+	#if defined(_MSC_VER) && !defined(__clang__)
+		#define SOUP_ASSUME(x) __assume(x);
+		#define SOUP_UNREACHABLE SOUP_ASSUME(false);
+	#else
+		#define SOUP_ASSUME(x) ;
+		#define SOUP_UNREACHABLE __builtin_unreachable();
+	#endif
 #endif
 
 // === C++ feature abstraction macros
@@ -194,7 +199,7 @@ namespace soup
 	#define SOUP_DEBUG_ASSERT(x) SOUP_ASSERT(x)
 	#define SOUP_DEBUG_ASSERT_UNREACHABLE SOUP_UNREACHABLE
 #else
-	#define SOUP_DEBUG_ASSERT(x) SOUP_ASSUME(X)
+	#define SOUP_DEBUG_ASSERT(x) SOUP_ASSUME(x)
 	#define SOUP_DEBUG_ASSERT_UNREACHABLE SOUP_ASSERT_UNREACHABLE
 #endif
 

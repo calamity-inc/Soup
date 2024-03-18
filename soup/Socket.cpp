@@ -374,9 +374,9 @@ namespace soup
 		case 12: return TLS_GREASE_12;
 		case 13: return TLS_GREASE_13;
 		case 14: return TLS_GREASE_14;
-		default:;
+		case 15: return TLS_GREASE_15;
 		}
-		return TLS_GREASE_15;
+		SOUP_UNREACHABLE;
 	}
 
 	struct CaptureValidateCertchain
