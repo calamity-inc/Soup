@@ -459,7 +459,7 @@ namespace soup
 		}
 
 		{
-			// Note: NGINX/OpenSSL (e.g., api.deepl.com) closes with "internal_error" if signature_algorithms is not present.
+			// Note: If not present, { rsa_pkcs1_sha1 } is implied. NGINX/OpenSSL may close with "internal_error" if the server is not able to accept that, e.g. api.deepl.com.
 
 			std::vector<uint16_t> supported_signature_schemes{
 				TlsSignatureScheme::rsa_pkcs1_sha1,
