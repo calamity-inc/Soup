@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 
+#include <cstdint>
 #include <cmath>
 
 namespace soup

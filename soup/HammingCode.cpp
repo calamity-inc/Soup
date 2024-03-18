@@ -1,5 +1,7 @@
 #include "HammingCode.hpp"
 
+#include <cstdint>
+
 #include "bitutil.hpp"
 
 namespace soup

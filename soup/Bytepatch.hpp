@@ -1,6 +1,7 @@
 #pragma once
 
-#include "base.hpp"
+#include <cstdint>
+#include <cstddef> // size_t
 
 namespace soup
 {

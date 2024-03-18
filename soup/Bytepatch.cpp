@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "macros.hpp"
+#include "macros.hpp" // COUNT
 
 namespace soup
 {

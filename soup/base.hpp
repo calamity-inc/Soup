@@ -1,9 +1,6 @@
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
-
-// === Determine platform
+// === Platform/ABI macros
 
 #ifdef _WIN32
 	#define SOUP_WINDOWS true
@@ -54,15 +51,23 @@
 	#endif
 #endif
 
-// === Determine CPU register size
+#define SOUP_CEXPORT extern "C" SOUP_EXPORT
+
+#ifdef _MSC_VER
+#define SOUP_FORCEINLINE __forceinline
+#define SOUP_NOINLINE __declspec(noinline)
+#else
+#define SOUP_FORCEINLINE __attribute__((always_inline))
+#define SOUP_NOINLINE __attribute__((noinline))
+#endif
+
+// === CPU macros
 
 #if defined(__x86_64__) || defined(_M_X64) || defined(__ppc64__) || defined(__aarch64__)
 	#define SOUP_BITS 64
 #else
 	#define SOUP_BITS 32
 #endif
-
-// === Determine CPU architecture
 
 #if defined(__x86_64__) || defined(_M_X64) || defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
 	#define SOUP_X86 true
@@ -78,27 +83,10 @@
 	#define SOUP_CODE_INSPECTOR false
 #endif
 
-// === Platform abstraction macros
-
-#define SOUP_CEXPORT extern "C" SOUP_EXPORT
-
-#ifdef _MSC_VER
-	#define SOUP_FORCEINLINE __forceinline
-	#define SOUP_NOINLINE __declspec(noinline)
-#else
-	#define SOUP_FORCEINLINE __attribute__((always_inline))
-	#define SOUP_NOINLINE __attribute__((noinline))
-#endif
-
-// === C++ version abstraction macros
+// === C++ conditional feature macros
 
 #if __cplusplus == 1997'11L
 	#error Please set the /Zc:__cplusplus compiler flag or manually adjust __cplusplus when using Soup.
-#endif
-
-#ifdef SOUP_CPP20
-	#pragma message("Ignoring SOUP_CPP20 define, this is automatically set based on C++ version.")
-	#undef SOUP_CPP20
 #endif
 
 #if __cplusplus < 2020'00L
@@ -142,8 +130,6 @@
 	#endif
 #endif
 
-// === C++ feature abstraction macros
-
 #if (__cpp_exceptions < 1997'11L) && (!defined(_MSC_VER) || defined(__clang__))
 	#define SOUP_EXCEPTIONS false
 	#define SOUP_THROW(x) ::soup::throwImpl(x);
@@ -169,20 +155,9 @@
 	#define SOUP_EXCAL throw()
 #endif
 
-// === Platform-specific types
+// === Development helpers
 
-namespace soup
-{
-#if SOUP_BITS == 64
-	using halfintmax_t = int32_t;
-	using halfsize_t = uint32_t;
-#elif SOUP_BITS == 32
-	using halfintmax_t = int16_t;
-	using halfsize_t = uint16_t;
-#endif
-}
-
-// === Development helper macros
+#include <cstddef> // size_t
 
 namespace soup
 {
