@@ -4,7 +4,7 @@
 
 namespace soup
 {
-	struct DefaultRngInterface : public RngInterface
+	struct DefaultRngInterface : public StatelessRngInterface
 	{
 		[[nodiscard]] uint64_t generate() final;
 	};

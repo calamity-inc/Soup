@@ -8,6 +8,7 @@
 #include "pem.hpp"
 #include "Promise.hpp"
 #include "rand.hpp"
+#include "RngInterface.hpp"
 #include "sha256.hpp"
 #include "X509RelativeDistinguishedName.hpp"
 
@@ -376,6 +377,11 @@ namespace soup
 
 			primes.emplace_back(gen(bits / 2u));
 		}
+	}
+
+	RsaKeypair RsaKeypair::generate(StatelessRngInterface& rng, unsigned int bits, bool lax_length_requirement)
+	{
+		return generate(rng, rng, bits, lax_length_requirement);
 	}
 
 	struct CaptureGenerateRng
