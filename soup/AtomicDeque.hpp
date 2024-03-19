@@ -66,7 +66,7 @@ namespace soup
 			return ptr;
 		}
 
-		Node* emplace_front(Data&& data) SOUP_EXCAL
+		void emplace_front(Data&& data) SOUP_EXCAL
 		{
 			Node* node = new Node(std::move(data));
 			Node* next = head.load();
@@ -74,10 +74,9 @@ namespace soup
 			{
 				node->next = next;
 			} while (!head.compare_exchange_weak(next, node));
-			return node;
 		}
 
-		Node* emplace_back(Data&& data) SOUP_EXCAL
+		void emplace_back(Data&& data) SOUP_EXCAL
 		{
 			Node* node = new Node(std::move(data));
 			while (true)
@@ -98,7 +97,6 @@ namespace soup
 					}
 				}
 			}
-			return node;
 		}
 
 		PoppedNode<Node, Data> pop_front() noexcept

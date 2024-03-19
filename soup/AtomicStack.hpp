@@ -22,14 +22,13 @@ namespace soup
 
 		std::atomic<Node*> head = nullptr;
 
-		Node* emplace_front(Data&& data)
+		void emplace_front(Data&& data)
 		{
 			Node* node = new Node(std::move(data));
 			node->next = head.load();
 			while (!head.compare_exchange_weak(node->next, node))
 			{
 			}
-			return node;
 		}
 
 		PoppedNode<Node, Data> pop_front() noexcept
