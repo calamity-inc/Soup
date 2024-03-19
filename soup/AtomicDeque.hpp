@@ -2,6 +2,7 @@
 
 #include <atomic>
 
+#include "base.hpp" // SOUP_EXCAL
 #include "PoppedNode.hpp"
 
 namespace soup
