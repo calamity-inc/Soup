@@ -3,12 +3,13 @@
 #include "Asn1Sequence.hpp"
 #include "Asn1Type.hpp"
 #include "base64.hpp"
+#include "DefaultRngInterface.hpp"
+#include "HardwareRng.hpp"
 #include "JsonString.hpp"
 #include "ObfusString.hpp"
 #include "pem.hpp"
 #include "Promise.hpp"
 #include "rand.hpp"
-#include "RngInterface.hpp"
 #include "sha256.hpp"
 #include "X509RelativeDistinguishedName.hpp"
 
@@ -331,51 +332,17 @@ namespace soup
 		qinv = q.modMulInv(p);
 	}
 
-	[[nodiscard]] static Bigint gen(unsigned int bits)
-	{
-		return Bigint::randomProbablePrime(bits, 3);
-	}
-
 	RsaKeypair RsaKeypair::generate(unsigned int bits, bool lax_length_requirement)
 	{
-		auto gen_promise = [](Capture&& cap) -> Bigint
+		if (FastHardwareRng::isAvailable())
 		{
-			return gen(cap.get<unsigned int>());
-		};
-
-		std::vector<Bigint> primes{};
-		{
-#if SOUP_WASM
-			primes.emplace_back(gen(bits / 2u));
-			primes.emplace_back(gen(bits / 2u));
-#else
-			Promise<Bigint> p(gen_promise, bits / 2u);
-			Promise<Bigint> q(gen_promise, bits / 2u);
-			p.awaitFulfilment();
-			q.awaitFulfilment();
-			primes.emplace_back(std::move(p.getResult()));
-			primes.emplace_back(std::move(q.getResult()));
-#endif
+			FastHardwareRngInterface rngif;
+			return generate(rngif, bits, lax_length_requirement);
 		}
-
-		while (true)
+		else
 		{
-			for (const auto& p : primes)
-			{
-				for (const auto& q : primes)
-				{
-					if (p != q)
-					{
-						RsaKeypair kp(p, q);
-						if (kp.n.getBitLength() == bits || lax_length_requirement)
-						{
-							return kp;
-						}
-					}
-				}
-			}
-
-			primes.emplace_back(gen(bits / 2u));
+			DefaultRngInterface rngif;
+			return generate(rngif, bits, lax_length_requirement);
 		}
 	}
 
