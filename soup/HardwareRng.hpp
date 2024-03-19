@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "RngInterface.hpp"
+
 namespace soup
 {
 	// For the purposes of this class, "hardware RNG" is such that no bit is predictable to an attacker even with unlimited resources.
@@ -26,4 +28,15 @@ namespace soup
 		[[nodiscard]] static uint32_t generate32() noexcept;
 		[[nodiscard]] static uint64_t generate64() noexcept;
 	};
+
+	template <typename T>
+	struct StatelessRngWrapper : public StatelessRngInterface
+	{
+		uint64_t generate() final
+		{
+			return T::generate64();
+		}
+	};
+	using HardwareRngInterface = StatelessRngWrapper<HardwareRng>;
+	using FastHardwareRngInterface = StatelessRngWrapper<FastHardwareRng>;
 }
