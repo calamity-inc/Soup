@@ -932,9 +932,6 @@
     <ClInclude Include="rtti.hpp">
       <Filter>mem\vft</Filter>
     </ClInclude>
-    <ClInclude Include="KeyGenId.hpp">
-      <Filter>crypto</Filter>
-    </ClInclude>
     <ClInclude Include="CustomEncoding.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
@@ -949,9 +946,6 @@
     </ClInclude>
     <ClInclude Include="RaiiEmulator.hpp">
       <Filter>mem</Filter>
-    </ClInclude>
-    <ClInclude Include="BigintId.hpp">
-      <Filter>crypto</Filter>
     </ClInclude>
     <ClInclude Include="LcgRngInterface.hpp">
       <Filter>algos\rng\interface</Filter>
@@ -2044,12 +2038,6 @@
     </ClCompile>
     <ClCompile Include="bitutil.cpp">
       <Filter>data\bit</Filter>
-    </ClCompile>
-    <ClCompile Include="BigintId.cpp">
-      <Filter>crypto</Filter>
-    </ClCompile>
-    <ClCompile Include="KeyGenId.cpp">
-      <Filter>crypto</Filter>
     </ClCompile>
     <ClCompile Include="DefaultRngInterface.cpp">
       <Filter>algos\rng\interface</Filter>

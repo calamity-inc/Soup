@@ -452,7 +452,6 @@
     <ClInclude Include="base40.hpp" />
     <ClInclude Include="BCanvas.hpp" />
     <ClInclude Include="Benchmark.hpp" />
-    <ClInclude Include="BigintId.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="Buffer.hpp" />
@@ -641,7 +640,6 @@
     <ClInclude Include="IpGroups.hpp" />
     <ClInclude Include="Ipv6Maths.hpp" />
     <ClInclude Include="Jokebook.hpp" />
-    <ClInclude Include="KeyGenId.hpp" />
     <ClInclude Include="LcgRng.hpp" />
     <ClInclude Include="LexemeParser.hpp" />
     <ClInclude Include="log.hpp" />
@@ -983,7 +981,6 @@
     <ClCompile Include="Benchmark.cpp" />
     <ClCompile Include="Bigfloat.cpp" />
     <ClCompile Include="Bigint.cpp" />
-    <ClCompile Include="BigintId.cpp" />
     <ClCompile Include="BitReader.cpp" />
     <ClCompile Include="bitutil.cpp" />
     <ClCompile Include="BitWriter.cpp" />
@@ -1034,7 +1031,6 @@
     <ClCompile Include="kbRgbRazerChroma.cpp" />
     <ClCompile Include="kbRgbWooting.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="KeyGenId.cpp" />
     <ClCompile Include="Key.cpp" />
     <ClCompile Include="LcgRng.cpp" />
     <ClCompile Include="LexemeParser.cpp" />

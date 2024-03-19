@@ -91,11 +91,6 @@ SOUP_CEXPORT const char* HttpRequestTask_getResponseBodyCStr(void* hrt);
 // InquiryLang
 SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x);
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x);
-// KeyGenId
-SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, const stdstring* str);
-SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits);
-SOUP_CEXPORT stdstring* KeyGenId_toSeedsExport(const KeyGenId* x);
-SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x);
 // MimeMessage
 SOUP_CEXPORT void MimeMessage_addHeader(MimeMessage* x, const char* key, const char* value);
 // Mixed

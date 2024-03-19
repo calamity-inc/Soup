@@ -78,12 +78,6 @@
 				execute: soup.cwrap("InquiryLang_execute", "number", ["string"]),
 				formatResultLine: soup.cwrap("InquiryLang_formatResultLine", "string", ["number"]),
 			};
-			soup.KeyGenId = {
-				newFromSeedsExport: soup.cwrap("KeyGenId_newFromSeedsExport", "number", ["number", "number"]),
-				generate: soup.cwrap("KeyGenId_generate", "number", ["number"]),
-				toSeedsExport: soup.cwrap("KeyGenId_toSeedsExport", "number", ["number"]),
-				getKeypair: soup.cwrap("KeyGenId_getKeypair", "number", ["number"]),
-			};
 			soup.MimeMessage = {
 				addHeader: soup.cwrap("MimeMessage_addHeader", "void", ["number", "string", "string"]),
 			};

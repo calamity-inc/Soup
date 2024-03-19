@@ -33,7 +33,6 @@ typedef void (*void_func_t)();
 #include "HttpRequestTask.hpp"
 #include "InquiryLang.hpp"
 #include "IpAddr.hpp"
-#include "KeyGenId.hpp"
 #include "MimeMessage.hpp"
 #include "Mixed.hpp"
 #include "Notifyable.hpp"
@@ -354,28 +353,6 @@ SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x)
 SOUP_CEXPORT const char* InquiryLang_formatResultLine(const Mixed* x)
 {
 	returnString(InquiryLang::formatResultLine(heap.get(x)));
-}
-
-// KeyGenId
-
-SOUP_CEXPORT KeyGenId* KeyGenId_newFromSeedsExport(unsigned int bits, const stdstring* str)
-{
-	return heap.add(new KeyGenId(bits, heap.get(str)));
-}
-
-SOUP_CEXPORT KeyGenId* KeyGenId_generate(unsigned int bits)
-{
-	return heap.add(KeyGenId::generate(bits));
-}
-
-SOUP_CEXPORT stdstring* KeyGenId_toSeedsExport(const KeyGenId* x)
-{
-	return heap.add(heap.get(x).toSeedsExport());
-}
-
-SOUP_CEXPORT RsaKeypair* KeyGenId_getKeypair(const KeyGenId* x)
-{
-	return heap.add(heap.get(x).getKeypair());
 }
 
 // MimeMessage
