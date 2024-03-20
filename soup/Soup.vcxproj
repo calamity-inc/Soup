@@ -690,9 +690,9 @@
     <ClInclude Include="Bitset.hpp" />
     <ClInclude Include="BigBitset.hpp" />
     <ClInclude Include="BitReader.hpp" />
-    <ClInclude Include="Box.hpp" />
-    <ClInclude Include="BoxAxisAligned.hpp" />
-    <ClInclude Include="BoxCorners.hpp" />
+    <ClInclude Include="gmBox.hpp" />
+    <ClInclude Include="gmAxisAlignedBox.hpp" />
+    <ClInclude Include="gmBoxCorners.hpp" />
     <ClInclude Include="Bytepatch.hpp" />
     <ClInclude Include="BytepatchExternal.hpp" />
     <ClInclude Include="Callback.hpp" />
@@ -720,7 +720,7 @@
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="TinyPngOut.hpp" />
     <ClInclude Include="TreeReader.hpp" />
-    <ClInclude Include="tridText.hpp" />
+    <ClInclude Include="gmText.hpp" />
     <ClInclude Include="version_compare.hpp" />
     <ClInclude Include="WavFmtChunk.hpp" />
     <ClInclude Include="wooting_enums.hpp" />
@@ -985,9 +985,9 @@
     <ClCompile Include="BitReader.cpp" />
     <ClCompile Include="bitutil.cpp" />
     <ClCompile Include="BitWriter.cpp" />
-    <ClCompile Include="Box.cpp" />
-    <ClCompile Include="BoxAxisAligned.cpp" />
-    <ClCompile Include="BoxCorners.cpp" />
+    <ClCompile Include="gmBox.cpp" />
+    <ClCompile Include="gmAxisAlignedBox.cpp" />
+    <ClCompile Include="gmBoxCorners.cpp" />
     <ClCompile Include="Bytepatch.cpp" />
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="Capture.cpp" />
@@ -1078,7 +1078,7 @@
     <ClCompile Include="TransientToken.cpp" />
     <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="TreeWriter.cpp" />
-    <ClCompile Include="tridText.cpp" />
+    <ClCompile Include="gmText.cpp" />
     <ClCompile Include="hwHid.cpp" />
     <ClCompile Include="Uuid.cpp" />
     <ClCompile Include="version_compare.cpp" />

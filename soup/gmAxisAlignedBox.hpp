@@ -5,7 +5,7 @@
 namespace soup
 {
 #pragma pack(push, 1)
-	struct BoxAxisAligned
+	struct gmAxisAlignedBox
 	{
 		Vector3 back_lower_left;
 		Vector3 front_upper_right;

@@ -23,25 +23,25 @@ namespace soup
 #pragma pack(push, 1)
 #pragma warning(push)
 #pragma warning(disable: 26495) // uninitialised member variable
-	struct Box
+	struct gmBox
 	{
 		Matrix m;
 		Vector3 extent;
 
-		Box() = default;
+		gmBox() = default;
 
-		Box(const Matrix& m, const Vector3& extent)
+		gmBox(const Matrix& m, const Vector3& extent)
 			: m(m), extent(extent)
 		{
 		}
 
 		// BL = Low values corner point, BH = High values corner point
-		Box(const Matrix& M, const Vector3& BL, const Vector3& BH)
+		gmBox(const Matrix& M, const Vector3& BL, const Vector3& BH)
 		{
 			set(M, BL, BH);
 		}
 
-		Box(const Vector3& pos, const Vector3& rot, const Vector3& dimensions)
+		gmBox(const Vector3& pos, const Vector3& rot, const Vector3& dimensions)
 			: m(pos, rot), extent(dimensions * 0.5f)
 		{
 		}
@@ -72,11 +72,11 @@ namespace soup
 		bool checkRayIntersection(const Ray& r, Vector3* outHit = nullptr);
 
 		bool isPointInBox(const Vector3& P);
-		bool isBoxInBox(Box& BBox);
+		bool isBoxInBox(gmBox& BBox);
 		bool isSphereInBox(const Vector3& P, float fRadius);
 		bool boxOutsidePlane(const Vector3& Norm, const Vector3& P);
 
-		[[nodiscard]] BoxCorners toCorners() const noexcept;
+		[[nodiscard]] gmBoxCorners toCorners() const noexcept;
 		[[nodiscard]] std::array<Poly, 12> toPolys() const noexcept;
 	};
 #pragma warning(pop)

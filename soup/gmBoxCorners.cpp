@@ -1,10 +1,10 @@
-#include "BoxCorners.hpp"
+#include "gmBoxCorners.hpp"
 
 #include "Poly.hpp"
 
 namespace soup
 {
-	BoxCorners::BoxCorners(const Vector3& origin, const Vector3& extent, const Vector3& right, const Vector3& forward, const Vector3& up) noexcept
+	gmBoxCorners::gmBoxCorners(const Vector3& origin, const Vector3& extent, const Vector3& right, const Vector3& forward, const Vector3& up) noexcept
 	{
 		this->front_upper_right.x = origin.x + extent.y * right.x + extent.x * forward.x + extent.z * up.x;
 		this->front_upper_right.y = origin.y + extent.y * right.y + extent.x * forward.y + extent.z * up.y;
@@ -39,7 +39,7 @@ namespace soup
 		this->edge8.z = this->front_upper_right.z - 2 * extent.z * up.z;
 	}
 
-	std::array<Poly, 12> BoxCorners::toPolys() const noexcept
+	std::array<Poly, 12> gmBoxCorners::toPolys() const noexcept
 	{
 		return std::array<Poly, 12>{
 			// front

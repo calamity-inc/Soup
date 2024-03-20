@@ -1,6 +1,6 @@
-#include "Box.hpp"
+#include "gmBox.hpp"
 
-#include "BoxCorners.hpp"
+#include "gmBoxCorners.hpp"
 #include "Poly.hpp"
 #include "Ray.hpp"
 
@@ -9,14 +9,14 @@ namespace soup
 	//
 	// Returns a 3x3 rotation matrix as vectors
 	//
-	void Box::getInvRot(Vector3* pvRot)
+	void gmBox::getInvRot(Vector3* pvRot)
 	{
 		pvRot[0] = Vector3(m.mf[0], m.mf[1], m.mf[2]);
 		pvRot[1] = Vector3(m.mf[4], m.mf[5], m.mf[6]);
 		pvRot[2] = Vector3(m.mf[8], m.mf[9], m.mf[10]);
 	}
 
-	bool Box::checkRayIntersection(const Ray& r, Vector3* outHit)
+	bool gmBox::checkRayIntersection(const Ray& r, Vector3* outHit)
 	{
 		//// Put line in box space
 		//matrix MInv = m.invertSimple();
@@ -89,7 +89,7 @@ namespace soup
 	//
 	// Check if a point is in this bounding box
 	//
-	bool Box::isPointInBox(const Vector3& InP)
+	bool gmBox::isPointInBox(const Vector3& InP)
 	{
 		// Rotate the point into the box's coordinates
 		Vector3 P = m.invertSimple() * InP;
@@ -104,7 +104,7 @@ namespace soup
 	//
 	// Check if a sphere overlaps any part of this bounding box
 	//
-	bool Box::isSphereInBox(const Vector3& InP, float fRadius)
+	bool gmBox::isSphereInBox(const Vector3& InP, float fRadius)
 	{
 		float fDist;
 		float fDistSq = 0;
@@ -125,7 +125,7 @@ namespace soup
 	//
 	// Check if the bounding box is completely behind a plane( defined by a normal and a point )
 	//
-	bool Box::boxOutsidePlane(const Vector3& InNorm, const Vector3& InP)
+	bool gmBox::boxOutsidePlane(const Vector3& InNorm, const Vector3& InP)
 	{
 		// Plane Normal in Box Space
 		Vector3 Norm = InNorm.rotateByMatrix(m.invertSimple().mf); // RotByMatrix only uses rotation portion of matrix
@@ -143,7 +143,7 @@ namespace soup
 	// Check if any part of a box is inside any part of another box
 	// Uses the separating axis test.
 	//
-	bool Box::isBoxInBox(Box& BBox)
+	bool gmBox::isBoxInBox(gmBox& BBox)
 	{
 		Vector3 SizeA = extent;
 		Vector3 SizeB = BBox.extent;
@@ -205,9 +205,9 @@ namespace soup
 		return true;
 	}
 
-	BoxCorners Box::toCorners() const noexcept
+	gmBoxCorners gmBox::toCorners() const noexcept
 	{
-		return BoxCorners(
+		return gmBoxCorners(
 			getCentrePoint(),
 			extent,
 			m.getRightVector(),
@@ -216,7 +216,7 @@ namespace soup
 		);
 	}
 
-	std::array<Poly, 12> Box::toPolys() const noexcept
+	std::array<Poly, 12> gmBox::toPolys() const noexcept
 	{
 		return toCorners().toPolys();
 	}

@@ -416,15 +416,6 @@
     <ClInclude Include="PolyVector.hpp">
       <Filter>math\3d</Filter>
     </ClInclude>
-    <ClInclude Include="Box.hpp">
-      <Filter>math\3d\box</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxAxisAligned.hpp">
-      <Filter>math\3d\box</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxCorners.hpp">
-      <Filter>math\3d\box</Filter>
-    </ClInclude>
     <ClInclude Include="Sphere.hpp">
       <Filter>math\3d\sphere</Filter>
     </ClInclude>
@@ -1137,9 +1128,6 @@
     <ClInclude Include="audWav.hpp">
       <Filter>audio</Filter>
     </ClInclude>
-    <ClInclude Include="tridText.hpp">
-      <Filter>math\3d</Filter>
-    </ClInclude>
     <ClInclude Include="LexemeParser.hpp">
       <Filter>lang</Filter>
     </ClInclude>
@@ -1578,6 +1566,18 @@
     <ClInclude Include="memBox.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="gmText.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="gmBoxCorners.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="gmBox.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="gmAxisAlignedBox.hpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1744,15 +1744,6 @@
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>math\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Box.cpp">
-      <Filter>math\3d\box</Filter>
-    </ClCompile>
-    <ClCompile Include="BoxAxisAligned.cpp">
-      <Filter>math\3d\box</Filter>
-    </ClCompile>
-    <ClCompile Include="BoxCorners.cpp">
-      <Filter>math\3d\box</Filter>
     </ClCompile>
     <ClCompile Include="UvSphere.cpp">
       <Filter>math\3d\sphere</Filter>
@@ -2112,9 +2103,6 @@
     <ClCompile Include="audWav.cpp">
       <Filter>audio</Filter>
     </ClCompile>
-    <ClCompile Include="tridText.cpp">
-      <Filter>math\3d</Filter>
-    </ClCompile>
     <ClCompile Include="LexemeParser.cpp">
       <Filter>lang</Filter>
     </ClCompile>
@@ -2332,6 +2320,18 @@
     <ClCompile Include="wasm.cpp">
       <Filter>lang</Filter>
     </ClCompile>
+    <ClCompile Include="gmText.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="gmBox.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="gmAxisAlignedBox.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="gmBoxCorners.cpp">
+      <Filter>math\3d\geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2396,9 +2396,6 @@
     </Filter>
     <Filter Include="math\3d">
       <UniqueIdentifier>{420a3716-0d15-4a0e-94bf-cdbceb5e361b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math\3d\box">
-      <UniqueIdentifier>{469d822a-942d-4d0d-9d44-f391c9d6fd0f}</UniqueIdentifier>
     </Filter>
     <Filter Include="math\3d\sphere">
       <UniqueIdentifier>{5aab1dce-54fa-45bc-be6f-04c692f2834b}</UniqueIdentifier>
@@ -2576,6 +2573,9 @@
     </Filter>
     <Filter Include="audio\midi">
       <UniqueIdentifier>{e94b4139-78fe-41db-8ed7-7a6cae5d9fca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\3d\geometry">
+      <UniqueIdentifier>{0fee4f27-cb87-4e66-bf92-eeff59b4e983}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

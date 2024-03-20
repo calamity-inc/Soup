@@ -101,12 +101,14 @@ namespace soup
 	struct Vector3;
 
 	// math.3d
-	struct BoxCorners;
 	class Matrix;
 	struct Mesh;
 	struct Poly;
 	class Quaternion;
 	struct Ray;
+
+	// math.3d.geometry
+	struct gmBoxCorners;
 
 	// math.3d.scene
 	struct Scene;

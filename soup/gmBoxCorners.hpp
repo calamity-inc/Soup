@@ -11,7 +11,7 @@ namespace soup
 #pragma pack(push, 1)
 #pragma warning(push)
 #pragma warning(disable: 26495) // uninitialised member variable
-	struct BoxCorners
+	struct gmBoxCorners
 	{
 		Vector3 back_lower_left;
 		Vector3 edge2; // front lower left
@@ -22,9 +22,9 @@ namespace soup
 		Vector3 edge7; // back lower right
 		Vector3 edge8; // front lower right
 
-		explicit BoxCorners() noexcept = default;
+		explicit gmBoxCorners() noexcept = default;
 
-		explicit BoxCorners(const Vector3& origin, const Vector3& extent, const Vector3& right, const Vector3& forward, const Vector3& up) noexcept;
+		explicit gmBoxCorners(const Vector3& origin, const Vector3& extent, const Vector3& right, const Vector3& forward, const Vector3& up) noexcept;
 
 		[[nodiscard]] std::array<Poly, 12> toPolys() const noexcept;
 

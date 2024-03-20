@@ -1,4 +1,4 @@
-#include "BoxAxisAligned.hpp"
+#include "gmAxisAlignedBox.hpp"
 
 namespace soup
 {
@@ -20,7 +20,7 @@ namespace soup
 		return false;
 	}
 
-	bool BoxAxisAligned::checkLineIntersection(const Vector3& L1, const Vector3& L2, Vector3& Hit) noexcept
+	bool gmAxisAlignedBox::checkLineIntersection(const Vector3& L1, const Vector3& L2, Vector3& Hit) noexcept
 	{
 		if (L2.x < back_lower_left.x && L1.x < back_lower_left.x) return false;
 		if (L2.x > front_upper_right.x && L1.x > front_upper_right.x) return false;

@@ -1,12 +1,12 @@
-#include "tridText.hpp"
+#include "gmText.hpp"
 
 #include "RasterFont.hpp"
 
 namespace soup
 {
-    std::vector<Box> tridText::getVoxels() const
+    std::vector<gmBox> gmText::getVoxels() const
 	{
-		std::vector<Box> boxes{};
+		std::vector<gmBox> boxes{};
 		Vector3 extent = (voxel_dimensions * 0.5f);
 		std::swap(extent.x, extent.y);
 		Matrix mat(this->mat);
@@ -25,7 +25,7 @@ namespace soup
 							0.0f,
 							-((y + g.y_offset) * voxel_dimensions.z)
 						});
-						boxes.emplace_back(Box(std::move(m), extent));
+						boxes.emplace_back(gmBox(std::move(m), extent));
 					}
 				}
 			}
@@ -38,7 +38,7 @@ namespace soup
         return boxes;
     }
 
-	std::vector<Poly> tridText::toPolys() const
+	std::vector<Poly> gmText::toPolys() const
 	{
 		auto voxels = getVoxels();
 

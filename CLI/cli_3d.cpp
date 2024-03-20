@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-#include <Box.hpp>
+#include <gmBox.hpp>
 #include <Canvas.hpp>
 #include <console.hpp>
 #include <ControlInput.hpp>
@@ -29,67 +29,67 @@ static float fov = 80.0f;
 
 static void amogus()
 {
-	for (const auto& p : Box{ Vector3{ -0.5f, 2.0f, -0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ -0.5f, 2.0f, -0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 0.5f, 2.0f, -0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 0.5f, 2.0f, -0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ -0.5f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ -0.5f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ -0.0f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ -0.0f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 0.5f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 0.5f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 1.0f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 1.0f, 2.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ -0.5f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ -0.5f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 255, 255 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 0.0f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 0.0f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 255, 255 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 0.5f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 0.5f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 1.0f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 1.0f, 2.0f, 0.5f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ -0.5f, 2.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ -0.5f, 2.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 0.0f, 2.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 0.0f, 2.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
 
-	for (const auto& p : Box{ Vector3{ 0.5f, 2.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 0.5f, 2.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, Vector3{ 0.5f, 0.5f, 0.5f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 0 } });
 	}
@@ -104,7 +104,7 @@ static void updateScene()
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 0, 255, 0 }, true });
 	}
 
-	for (const auto& p : Box{ Vector3{ 0.5f, 1.0f, 0.0f }, Vector3{ 10.0f, 10.0f, 10.0f }, Vector3{ 0.6f, 0.6f, 0.6f } }.toPolys())
+	for (const auto& p : gmBox{ Vector3{ 0.5f, 1.0f, 0.0f }, Vector3{ 10.0f, 10.0f, 10.0f }, Vector3{ 0.6f, 0.6f, 0.6f } }.toPolys())
 	{
 		s.tris.emplace_back(Scene::Tri{ p, Rgb { 255, 0, 255 } });
 	}
