@@ -1575,6 +1575,9 @@
     <ClInclude Include="wasm.hpp">
       <Filter>lang</Filter>
     </ClInclude>
+    <ClInclude Include="memBox.hpp">
+      <Filter>mem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
