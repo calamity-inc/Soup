@@ -97,7 +97,7 @@ namespace soup
 			}
 			else
 			{
-				if (space_characters.get(*i))
+				if (space_characters.get((unsigned char)*i))
 				{
 					if (!st.lb_is_space)
 					{
@@ -108,7 +108,7 @@ namespace soup
 				else
 				{
 					if (st.lb_is_space
-						|| token_terminators.get(*i)
+						|| token_terminators.get((unsigned char)*i)
 						)
 					{
 						st.flushLiteralBuffer();
