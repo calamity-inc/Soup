@@ -22,11 +22,7 @@ namespace soup
 				{
 					service->on_connection_established(*s, *service, *server);
 				}
-				if (service->on_tunnel_established)
-				{
-					service->on_tunnel_established(*s, *service, *server);
-				}
-				service->srv_on_tunnel_established(*s, *service, *server);
+				service->on_tunnel_established(*s, *service, *server);
 			}
 		}
 	};
@@ -48,11 +44,7 @@ namespace soup
 				s->enableCryptoServer(cert_selector, [](Socket& s, Capture&& _cap) SOUP_EXCAL
 				{
 					CaptureServerPortCrypto& cap = *_cap.get<CaptureServerPortCrypto*>();
-					if (cap.service->on_tunnel_established)
-					{
-						cap.service->on_tunnel_established(s, *cap.service, *cap.server);
-					}
-					cap.service->srv_on_tunnel_established(s, *cap.service, *cap.server);
+					cap.service->on_tunnel_established(s, *cap.service, *cap.server);
 				}, this, on_client_hello);
 			}
 		}

@@ -14,11 +14,10 @@ namespace soup
 		// on_tunnel_established is called when:
 		// - (non-crypto) the TCP connection is established
 		// - (crypto) the TLS handshake has completed
-		const callback_t srv_on_tunnel_established;
-		callback_t on_tunnel_established = nullptr;
+		const callback_t on_tunnel_established;
 
-		ServerService(callback_t srv_on_tunnel_established = nullptr)
-			: srv_on_tunnel_established(srv_on_tunnel_established)
+		ServerService(callback_t on_tunnel_established)
+			: on_tunnel_established(on_tunnel_established)
 		{
 		}
 	};
