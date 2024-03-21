@@ -5,7 +5,7 @@
 
 namespace soup
 {
-	[[nodiscard]] static uint16_t encodeColour(Rgb colour) noexcept
+	[[nodiscard]] static uint16_t wootingEncodeColour(Rgb colour) noexcept
 	{
 		return (colour.r & 0xf8) << 8 | (colour.g & 0xfc) << 3 | (colour.b & 0xf8) >> 3;
 	}
@@ -229,7 +229,7 @@ namespace soup
 				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
 				{
 					const Rgb& colour = colours[sk];
-					encoded = encodeColour(colour);
+					encoded = wootingEncodeColour(colour);
 				}
 				buf.push_back(encoded & 0xff);
 				buf.push_back(encoded >> 8);

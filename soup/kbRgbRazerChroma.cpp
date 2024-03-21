@@ -127,7 +127,7 @@ namespace soup
 		}
 	}
 
-	[[nodiscard]] static uint32_t encodeColour(Rgb colour) noexcept
+	[[nodiscard]] static uint32_t razerEncodeColour(Rgb colour) noexcept
 	{
 		return (colour.b << 16) | (colour.g << 8) | colour.r;
 	}
@@ -151,7 +151,7 @@ namespace soup
 	{
 		for (const auto& [row, column] : mapKeyToPos(key))
 		{
-			const auto encoded = encodeColour(colour);
+			const auto encoded = razerEncodeColour(colour);
 			if (colours[row * 22 + column] != encoded)
 			{
 				colours[row * 22 + column] = encoded;
@@ -173,7 +173,7 @@ namespace soup
 			{
 				if (auto sk = mapPosToKey(row, column); sk != KEY_NONE)
 				{
-					const auto encoded = encodeColour(colours[sk]);
+					const auto encoded = razerEncodeColour(colours[sk]);
 					if (this->colours[row * 22 + column] != encoded)
 					{
 						this->colours[row * 22 + column] = encoded;
@@ -194,7 +194,7 @@ namespace soup
 
 	void kbRgbRazerChroma::setAllKeys(Rgb colour)
 	{
-		const auto encoded = encodeColour(colour);
+		const auto encoded = razerEncodeColour(colour);
 
 		bool changed = false;
 		for (auto& clr : this->colours)

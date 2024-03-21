@@ -193,6 +193,6 @@ namespace soup
 		{
 			SOUP_THROW(Exception("Unexpected key"));
 		}
-		SOUP_THROW(Exception(format("Unknown type: {}", tag.name)));
+		SOUP_THROW(Exception(soup::format("Unknown type: {}", tag.name)));
 	}
 }

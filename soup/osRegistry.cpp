@@ -10,8 +10,6 @@
 
 namespace soup
 {
-	using Key = osRegistry::Key;
-
 	bool osRegistry::Key::hasSubkey(const char* name) const noexcept
 	{
 		HKEY k;
@@ -23,7 +21,7 @@ namespace soup
 		return false;
 	}
 
-	Key osRegistry::Key::getSubkey(const char* name) const
+	osRegistry::Key osRegistry::Key::getSubkey(const char* name) const
 	{
 		HKEY k;
 		if (RegOpenKeyA(h, name, &k) == ERROR_SUCCESS)
@@ -33,7 +31,7 @@ namespace soup
 		SOUP_THROW(Exception("Failed to open registry key"));
 	}
 
-	Key Key::createSubkey(const char* name) const
+	osRegistry::Key osRegistry::Key::createSubkey(const char* name) const
 	{
 		HKEY k;
 		if (RegCreateKeyExA(h, name, 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &k, nullptr) == ERROR_SUCCESS)
@@ -63,9 +61,9 @@ namespace soup
 		}
 	}
 
-	Key osRegistry::CLASSES_ROOT{ HKEY_CLASSES_ROOT };
-	Key osRegistry::CURRENT_USER{ HKEY_CURRENT_USER };
-	Key osRegistry::LOCAL_MACHINE{ HKEY_LOCAL_MACHINE };
+	osRegistry::Key osRegistry::CLASSES_ROOT{ HKEY_CLASSES_ROOT };
+	osRegistry::Key osRegistry::CURRENT_USER{ HKEY_CURRENT_USER };
+	osRegistry::Key osRegistry::LOCAL_MACHINE{ HKEY_LOCAL_MACHINE };
 }
 
 #endif

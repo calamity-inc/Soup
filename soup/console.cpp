@@ -1,4 +1,3 @@
-#define SOUP_CONSOLE_MACROS
 #include "console.hpp"
 
 #if !SOUP_WASM
@@ -20,6 +19,12 @@
 
 #include "signal.hpp"
 #endif
+
+#define BEL "\x7"
+#define ESC "\x1B"
+#define CSI ESC "["
+#define OSC ESC "]"
+#define ST  ESC "\\"
 
 namespace soup
 {
@@ -571,5 +576,11 @@ namespace soup
 		ctrl_c_handler = handler;
 	}
 }
+
+#undef BEL
+#undef ESC
+#undef CSI
+#undef OSC
+#undef ST
 
 #endif
