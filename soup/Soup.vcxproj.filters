@@ -581,44 +581,17 @@
     <ClInclude Include="PhpState.hpp">
       <Filter>lang</Filter>
     </ClInclude>
-    <ClInclude Include="Lexeme.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
-    <ClInclude Include="ParseError.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
     <ClInclude Include="ffi.hpp">
       <Filter>os</Filter>
     </ClInclude>
     <ClInclude Include="Searchspace.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="parse_tree.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
     <ClInclude Include="FormattedText.hpp">
       <Filter>vis</Filter>
     </ClInclude>
-    <ClInclude Include="LangDesc.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
     <ClInclude Include="ConstString.hpp">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="ParserState.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
-    <ClInclude Include="Op.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
-    <ClInclude Include="LangVm.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
-    <ClInclude Include="BuiltinOp.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
-    <ClInclude Include="Token.hpp">
-      <Filter>lang</Filter>
     </ClInclude>
     <ClInclude Include="Scene.hpp">
       <Filter>math\3d\scene</Filter>
@@ -1128,9 +1101,6 @@
     <ClInclude Include="audWav.hpp">
       <Filter>audio</Filter>
     </ClInclude>
-    <ClInclude Include="LexemeParser.hpp">
-      <Filter>lang</Filter>
-    </ClInclude>
     <ClInclude Include="cat.hpp">
       <Filter>data\cat</Filter>
     </ClInclude>
@@ -1578,6 +1548,54 @@
     <ClInclude Include="gmAxisAlignedBox.hpp">
       <Filter>math\3d\geometry</Filter>
     </ClInclude>
+    <ClInclude Include="LangDesc.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="LangVm.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Lexeme.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="LexemeParser.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Op.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="parse_tree.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="ParseError.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="ParserState.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Token.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="laPlutoFrontend.hpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="laFrontend.hpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="BuiltinOp.hpp">
+      <Filter>lang\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="laBackend.hpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="laWasmBackend.hpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="irExpression.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
+    <ClInclude Include="irModule.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -1850,18 +1868,6 @@
     <ClCompile Include="FormattedText.cpp">
       <Filter>vis</Filter>
     </ClCompile>
-    <ClCompile Include="LangDesc.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
-    <ClCompile Include="ParserState.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
-    <ClCompile Include="parse_tree.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
-    <ClCompile Include="LangVm.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>math\3d\scene</Filter>
     </ClCompile>
@@ -2103,9 +2109,6 @@
     <ClCompile Include="audWav.cpp">
       <Filter>audio</Filter>
     </ClCompile>
-    <ClCompile Include="LexemeParser.cpp">
-      <Filter>lang</Filter>
-    </ClCompile>
     <ClCompile Include="cat.cpp">
       <Filter>data\cat</Filter>
     </ClCompile>
@@ -2331,6 +2334,30 @@
     </ClCompile>
     <ClCompile Include="gmBoxCorners.cpp">
       <Filter>math\3d\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="LangDesc.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="LangVm.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="LexemeParser.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="parse_tree.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserState.cpp">
+      <Filter>lang\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="laPlutoFrontend.cpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="laWasmBackend.cpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="irExpression.cpp">
+      <Filter>lang\compiler\ir</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2576,6 +2603,18 @@
     </Filter>
     <Filter Include="math\3d\geometry">
       <UniqueIdentifier>{0fee4f27-cb87-4e66-bf92-eeff59b4e983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler">
+      <UniqueIdentifier>{f7686e88-8816-441d-9ce5-eb5c818728dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler\frontend">
+      <UniqueIdentifier>{2d8e0b45-78ce-426c-8043-9d6b5f97ce8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler\backend">
+      <UniqueIdentifier>{72083afc-441a-49d0-85be-3ca60dcaedd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lang\compiler\ir">
+      <UniqueIdentifier>{96271236-fdb8-4957-9ea5-b3ae5043f3ac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

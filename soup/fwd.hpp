@@ -73,17 +73,19 @@ namespace soup
 	class Reader;
 	class StringReader;
 	class Writer;
+	class StringWriter;
 
-	// lang
+	// lang.agnostic
+	struct aglTranspiler;
+
+	// lang.compiler
 	struct astBlock;
 	struct astNode;
 	class LangDesc;
 	struct Lexeme;
+	struct LexemeParser;
 	class ParserState;
 	struct Token;
-
-	// lang.agnostic
-	struct aglTranspiler;
 
 	// lang.reflection
 	struct rflFunc;

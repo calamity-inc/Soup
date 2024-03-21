@@ -16,7 +16,21 @@ namespace soup
 		explicit LexemeParser(const LangDesc& ld, const std::string& code);
 		explicit LexemeParser(std::vector<Lexeme>&& tks);
 
-		void advance()
+		[[nodiscard]] bool hasMore() const noexcept
+		{
+			return tks.end() != i;
+		}
+
+		[[nodiscard]] const char* getTokenKeyword() const noexcept
+		{
+			if (hasMore())
+			{
+				return i->token_keyword;
+			}
+			return nullptr;
+		}
+
+		void advance() noexcept
 		{
 			++i;
 		}
