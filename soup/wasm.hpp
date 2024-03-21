@@ -38,8 +38,8 @@ namespace soup
 	{
 		struct FunctionType
 		{
-			size_t num_parameters;
-			size_t num_results;
+			uint32_t num_parameters;
+			uint32_t num_results;
 		};
 
 		struct FunctionImport
@@ -52,13 +52,13 @@ namespace soup
 		uint8_t* memory = nullptr;
 		size_t memory_size = 0;
 		size_t last_alloc = -1;
-		std::vector<size_t> functions{}; // (function_index - function_imports.size()) -> type_index
+		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<FunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
 		std::vector<int32_t> globals{};
-		std::unordered_map<std::string, size_t> export_map{};
+		std::unordered_map<std::string, uint32_t> export_map{};
 		std::vector<std::string> code{};
-		std::vector<size_t> elements{};
+		std::vector<uint32_t> elements{};
 		bool memory64 = false;
 
 		~WasmScript() noexcept;
@@ -123,7 +123,7 @@ namespace soup
 
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
-		[[nodiscard]] bool doCall(size_t type_index, size_t function_index) SOUP_EXCAL;
+		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index) SOUP_EXCAL;
 		void pushIPTR(size_t ptr) SOUP_EXCAL;
 	};
 }

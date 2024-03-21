@@ -86,11 +86,11 @@ namespace soup
 #if DEBUG_LOAD
 								std::cout << "- function with ";
 #endif
-								size_t num_parameters; r.oml(num_parameters); r.skip(num_parameters);
+								uint32_t num_parameters; r.oml(num_parameters); r.skip(num_parameters);
 #if DEBUG_LOAD
 								std::cout << num_parameters << " parameter(s) and ";
 #endif
-								size_t num_results; r.oml(num_results); r.skip(num_results);
+								uint32_t num_results; r.oml(num_results); r.skip(num_results);
 #if DEBUG_LOAD
 								std::cout << num_results << " return value(s)\n";
 #endif
@@ -137,7 +137,7 @@ namespace soup
 #endif
 					while (num_functions--)
 					{
-						size_t type_index;
+						uint32_t type_index;
 						r.oml(type_index);
 						functions.emplace_back(type_index);
 					}
@@ -222,7 +222,7 @@ namespace soup
 						std::cout << "- " << name << "\n";
 #endif
 						uint8_t kind; r.u8(kind);
-						size_t index; r.oml(index);
+						uint32_t index; r.oml(index);
 						if (kind == 0) // function 
 						{
 							export_map.emplace(std::move(name), index);
@@ -231,6 +231,12 @@ namespace soup
 					}
 				}
 				break;
+
+			case 8: // Start
+#if DEBUG_LOAD
+				std::cout << "module has a start function\n";
+#endif
+				return false;
 
 			case 9: // Elem
 				{
@@ -262,7 +268,7 @@ namespace soup
 						r.oml(num_elements);
 						while (num_elements--)
 						{
-							size_t function_index;
+							uint32_t function_index;
 							r.oml(function_index);
 							elements.emplace_back(function_index);
 						}
@@ -635,7 +641,7 @@ namespace soup
 			case 0x0e: // br_table
 				{
 					std::vector<uint32_t> table;
-					size_t num_branches;
+					uint32_t num_branches;
 					r.oml(num_branches);
 					table.reserve(num_branches);
 					while (num_branches--)
@@ -646,10 +652,10 @@ namespace soup
 					}
 					uint32_t depth;
 					r.oml(depth);
-					auto index = stack.top(); stack.pop();
-					if (index.i32 < table.size())
+					auto index = static_cast<uint32_t>(stack.top().i32); stack.pop();
+					if (index < table.size())
 					{
-						depth = table.at(index.i32);
+						depth = table.at(index);
 					}
 					SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
 					{
@@ -663,7 +669,7 @@ namespace soup
 
 			case 0x10: // call
 				{
-					size_t function_index;
+					uint32_t function_index;
 					r.oml(function_index);
 					if (function_index < script.function_imports.size())
 					{
@@ -688,7 +694,7 @@ namespace soup
 #endif
 						return false;
 					}
-					size_t type_index = script.functions.at(function_index);
+					uint32_t type_index = script.functions.at(function_index);
 					SOUP_IF_UNLIKELY (!doCall(type_index, function_index))
 					{
 						return false;
@@ -698,8 +704,8 @@ namespace soup
 
 			case 0x11: // call_indirect
 				{
-					size_t type_index; r.oml(type_index);
-					size_t table_index; r.oml(table_index);
+					uint32_t type_index; r.oml(type_index);
+					uint32_t table_index; r.oml(table_index);
 					SOUP_IF_UNLIKELY (table_index != 0)
 					{
 #if DEBUG_VM
@@ -707,15 +713,15 @@ namespace soup
 #endif
 						return false;
 					}
-					auto element_index = stack.top(); stack.pop();
-					SOUP_IF_UNLIKELY (element_index.i32 >= script.elements.size())
+					auto element_index = static_cast<uint32_t>(stack.top().i32); stack.pop();
+					SOUP_IF_UNLIKELY (element_index >= script.elements.size())
 					{
 #if DEBUG_VM
 						std::cout << "call: element is out-of-bounds\n";
 #endif
 						return false;
 					}
-					size_t function_index = script.elements.at(element_index.i32);
+					uint32_t function_index = script.elements.at(element_index);
 					SOUP_IF_UNLIKELY (function_index < script.function_imports.size())
 					{
 #if DEBUG_VM
@@ -1761,7 +1767,7 @@ namespace soup
 
 			case 0x0e: // br_table
 				{
-					size_t num_branches;
+					uint32_t num_branches;
 					r.oml(num_branches);
 					while (num_branches--)
 					{
@@ -1775,8 +1781,8 @@ namespace soup
 
 			case 0x11: // call_indirect
 				{
-					size_t type_index; r.oml(type_index);
-					size_t table_index; r.oml(table_index);
+					uint32_t type_index; r.oml(type_index);
+					uint32_t table_index; r.oml(table_index);
 				}
 				break;
 
@@ -1932,7 +1938,7 @@ namespace soup
 			r.seekEnd();
 			return true;
 		}
-		for (size_t i = 0; i != depth; ++i)
+		for (uint32_t i = 0; i != depth; ++i)
 		{
 			ctrlflow.pop();
 			SOUP_IF_UNLIKELY (ctrlflow.empty())
@@ -1964,7 +1970,7 @@ namespace soup
 		return true;
 	}
 
-	bool WasmVm::doCall(size_t type_index, size_t function_index) SOUP_EXCAL
+	bool WasmVm::doCall(uint32_t type_index, uint32_t function_index) SOUP_EXCAL
 	{
 		SOUP_IF_UNLIKELY (type_index >= script.types.size())
 		{
@@ -1975,7 +1981,7 @@ namespace soup
 		}
 		const auto& type = script.types.at(type_index);
 		WasmVm callvm(script);
-		for (size_t i = 0; i != type.num_parameters; ++i)
+		for (uint32_t i = 0; i != type.num_parameters; ++i)
 		{
 			//std::cout << "arg: " << script.getMemory<const char>(stack.top()) << "\n";
 			callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
@@ -1991,7 +1997,7 @@ namespace soup
 #if DEBUG_VM
 		std::cout << "call: leave " << function_index << "\n";
 #endif
-		for (size_t i = 0; i != type.num_results; ++i)
+		for (uint32_t i = 0; i != type.num_results; ++i)
 		{
 			SOUP_IF_UNLIKELY (callvm.stack.empty())
 			{
