@@ -42,6 +42,7 @@ namespace soup
 		ld.addToken(TK_NOTEQUALS);
 
 		auto ls = ld.tokenise(program);
+		ld.eraseNlTerminatedComments(ls, "--");
 		ld.eraseSpace(ls);
 		LexemeParser lp(std::move(ls));
 
