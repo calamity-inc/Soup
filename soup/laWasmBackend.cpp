@@ -28,6 +28,14 @@ namespace soup
 			w.raw(data.data(), data.size());
 		}
 
+		// Memory section
+		{
+			b = 5; w.u8(b);
+			auto data = getMemorySectionData(m);
+			w.oml(data.size());
+			w.raw(data.data(), data.size());
+		}
+
 		// Export section
 		{
 			b = 7; w.u8(b);
@@ -40,6 +48,15 @@ namespace soup
 		{
 			b = 10; w.u8(b);
 			auto data = getCodeSectionData(m);
+			w.oml(data.size());
+			w.raw(data.data(), data.size());
+		}
+
+		// Data section
+		if (!m.data.empty())
+		{
+			b = 11; w.u8(b);
+			auto data = getDataSectionData(m);
 			w.oml(data.size());
 			w.raw(data.data(), data.size());
 		}
@@ -79,6 +96,15 @@ namespace soup
 		SOUP_MOVE_RETURN(w.data);
 	}
 
+	std::string laWasmBackend::getMemorySectionData(const irModule& m)
+	{
+		StringWriter w;
+		w.oml(1); // num memories
+		w.skip(1); // flags
+		w.oml(1); // num pages
+		SOUP_MOVE_RETURN(w.data);
+	}
+
 	std::string laWasmBackend::getExportSectionData(const irModule& m)
 	{
 		StringWriter w;
@@ -107,12 +133,27 @@ namespace soup
 		SOUP_MOVE_RETURN(w.data);
 	}
 
+	std::string laWasmBackend::getDataSectionData(const irModule& m)
+	{
+		StringWriter w;
+		uint8_t b;
+		w.oml(1); // num segments
+		w.skip(1); // flags
+		b = 0x41; w.u8(b); // i32.const
+		w.soml(0); // base
+		b = 0x0b; w.u8(b); // end
+		w.oml(m.data.size());
+		w.str(m.data.size(), m.data.data());
+		SOUP_MOVE_RETURN(w.data);
+	}
+
 	bool laWasmBackend::writeType(StringWriter& w, irType type)
 	{
 		uint8_t b;
 		switch (type)
 		{
 		case IR_I64: b = 0x7e; break;
+		case IR_PTR: b = 0x7f; break;
 		}
 		return w.u8(b);
 	}
@@ -144,6 +185,11 @@ namespace soup
 		{
 		case IR_CONST_I64:
 			b = 0x42; w.u8(b); // i64.const
+			w.soml(e.constant_value);
+			return 1;
+
+		case IR_CONST_PTR:
+			b = 0x41; w.u8(b); // i32.const
 			w.soml(e.constant_value);
 			return 1;
 

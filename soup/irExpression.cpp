@@ -8,6 +8,7 @@ namespace soup
 		switch (type)
 		{
 		case IR_CONST_I64: str.append("IR_CONST_I64"); break;
+		case IR_CONST_PTR: str.append("IR_CONST_PTR"); break;
 		case IR_LOCAL: str.append("IR_LOCAL"); break;
 		case IR_CALL: str.append("IR_CALL"); break;
 		case IR_ADD: str.append("IR_ADD"); break;
@@ -17,7 +18,7 @@ namespace soup
 		case IR_UDIV: str.append("IR_UDIV"); break;
 		case IR_RET: str.append("IR_RET"); break;
 		}
-		if (type == IR_CONST_I64)
+		if (type == IR_CONST_I64 || type == IR_CONST_PTR)
 		{
 			str.append(": ");
 			str.append(std::to_string(constant_value));

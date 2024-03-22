@@ -11,6 +11,7 @@ namespace soup
 	enum irExpressionType : uint8_t
 	{
 		IR_CONST_I64,
+		IR_CONST_PTR,
 		IR_LOCAL,
 		IR_CALL,
 

@@ -11,6 +11,7 @@ namespace soup
 	enum irType : uint8_t
 	{
 		IR_I64,
+		IR_PTR,
 	};
 
 	struct irModule
@@ -23,7 +24,7 @@ namespace soup
 			std::vector<UniquePtr<irExpression>> insns{};
 		};
 
-		std::vector<std::string> data_segments{};
+		std::string data{};
 		std::vector<FuncExport> func_exports{};
 	};
 }

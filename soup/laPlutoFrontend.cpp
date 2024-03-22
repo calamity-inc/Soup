@@ -37,7 +37,7 @@ namespace soup
 
 		irModule m;
 		irModule::FuncExport top_level_fn;
-		this->funcs = &m.func_exports;
+		this->m = &m;
 		statlist(lp, m, top_level_fn);
 		if (!top_level_fn.insns.empty())
 		{
@@ -96,8 +96,8 @@ namespace soup
 					{
 						break;
 					}
+					fn.returns.emplace_back(val->type == IR_CONST_PTR ? IR_PTR : IR_I64);
 					insn->children.emplace_back(std::move(val));
-					fn.returns.emplace_back(IR_I64);
 				} while (lp.getTokenKeyword() == TK_COMMA && (lp.advance(), true));
 				fn.insns.emplace_back(std::move(insn));
 			}
@@ -166,6 +166,14 @@ namespace soup
 					ret->constant_value = lp.i->val.getInt();
 					lp.advance();
 				}
+				else if (lp.i->val.isString())
+				{
+					ret = soup::make_unique<irExpression>(IR_CONST_PTR);
+					ret->constant_value = m->data.size();
+					m->data.append(lp.i->val.getString());
+					m->data.push_back('\0');
+					lp.advance();
+				}
 			}
 			else if (lp.i->token_keyword == Lexeme::LITERAL)
 			{
@@ -204,9 +212,9 @@ namespace soup
 				&& (lp.i + 1)->token_keyword == TK_LPAREN
 				)
 			{
-				for (uint32_t i = 0; i != funcs->size(); ++i)
+				for (uint32_t i = 0; i != m->func_exports.size(); ++i)
 				{
-					if ((*funcs)[i].name == lp.i->getLiteral())
+					if (m->func_exports[i].name == lp.i->getLiteral())
 					{
 						ret = soup::make_unique<irExpression>(IR_CALL);
 						ret->index = i;
