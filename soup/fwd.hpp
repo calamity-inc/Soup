@@ -87,6 +87,9 @@ namespace soup
 	class ParserState;
 	struct Token;
 
+	// lang.compiler.ir
+	struct irFunction;
+
 	// lang.reflection
 	struct rflFunc;
 	struct rflStruct;

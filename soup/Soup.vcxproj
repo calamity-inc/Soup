@@ -522,7 +522,9 @@
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
     <ClInclude Include="irExpression.hpp" />
+    <ClInclude Include="irFunction.hpp" />
     <ClInclude Include="irModule.hpp" />
+    <ClInclude Include="irType.hpp" />
     <ClInclude Include="kbRgb.hpp" />
     <ClInclude Include="kbRgbCorsairCue.hpp" />
     <ClInclude Include="kbRgbRazerChroma.hpp" />

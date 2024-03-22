@@ -13,13 +13,15 @@ namespace soup
 	public:
 		[[nodiscard]] irModule parse(const std::string& program) final;
 	protected:
-		void statlist(LexemeParser& lp, irModule& m, irModule::FuncExport& fn);
-		[[nodiscard]] UniquePtr<irExpression> expr(LexemeParser& lp, uint8_t limit = 0);
-		[[nodiscard]] UniquePtr<irExpression> simpleexp(LexemeParser& lp);
-		[[nodiscard]] UniquePtr<irExpression> exprstat(LexemeParser& lp);
-		[[nodiscard]] UniquePtr<irExpression> suffixedexp(LexemeParser& lp);
+		[[nodiscard]] std::vector<UniquePtr<irExpression>> statlist(LexemeParser& lp, irModule& m, irFunction& fn);
+		[[nodiscard]] UniquePtr<irExpression> expr(LexemeParser& lp, irModule& m, irFunction& fn, uint8_t limit = 0);
+		[[nodiscard]] UniquePtr<irExpression> simpleexp(LexemeParser& lp, irModule& m, irFunction& fn);
+		[[nodiscard]] UniquePtr<irExpression> exprstat(LexemeParser& lp, irModule& m, irFunction& fn);
+		[[nodiscard]] UniquePtr<irExpression> suffixedexp(LexemeParser& lp, irModule& m, irFunction& fn);
+		void funcargs(LexemeParser& lp, irModule& m, irFunction& fn, irExpression& insn);
+
+		static void propagateType(irFunction& fn, irExpression& e, irType type);
 
 		std::stack<std::vector<std::string>> locals{};
-		irModule* m;
 	};
 }

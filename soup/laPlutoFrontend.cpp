@@ -6,8 +6,10 @@
 
 namespace soup
 {
+	static constexpr const char* TK_LOCAL = "local";
 	static constexpr const char* TK_FUNCTION = "function";
 	static constexpr const char* TK_RETURN = "return";
+	static constexpr const char* TK_WHILE = "while";
 	static constexpr const char* TK_END = "end";
 	static constexpr const char* TK_ADD = "+";
 	static constexpr const char* TK_SUB = "-";
@@ -16,12 +18,17 @@ namespace soup
 	static constexpr const char* TK_COMMA = ",";
 	static constexpr const char* TK_LPAREN = "(";
 	static constexpr const char* TK_RPAREN = ")";
+	static constexpr const char* TK_ASSIGN = "=";
+	static constexpr const char* TK_EQUALS = "==";
+	static constexpr const char* TK_NOTEQUALS = "~=";
 
 	irModule laPlutoFrontend::parse(const std::string& program)
 	{
 		LangDesc ld;
+		ld.addToken(TK_LOCAL);
 		ld.addToken(TK_FUNCTION);
 		ld.addToken(TK_RETURN);
+		ld.addToken(TK_WHILE);
 		ld.addToken(TK_END);
 		ld.addToken(TK_ADD);
 		ld.addToken(TK_SUB);
@@ -30,15 +37,17 @@ namespace soup
 		ld.addToken(TK_COMMA);
 		ld.addToken(TK_LPAREN);
 		ld.addToken(TK_RPAREN);
+		ld.addToken(TK_ASSIGN);
+		ld.addToken(TK_EQUALS);
+		ld.addToken(TK_NOTEQUALS);
 
 		auto ls = ld.tokenise(program);
 		ld.eraseSpace(ls);
 		LexemeParser lp(std::move(ls));
 
 		irModule m;
-		irModule::FuncExport top_level_fn;
-		this->m = &m;
-		statlist(lp, m, top_level_fn);
+		irFunction top_level_fn;
+		top_level_fn.insns = statlist(lp, m, top_level_fn);
 		if (!top_level_fn.insns.empty())
 		{
 			//top_level_fn.name = "_start";
@@ -47,14 +56,15 @@ namespace soup
 		return m;
 	}
 
-	void laPlutoFrontend::statlist(LexemeParser& lp, irModule& m, irModule::FuncExport& fn)
+	std::vector<UniquePtr<irExpression>> laPlutoFrontend::statlist(LexemeParser& lp, irModule& m, irFunction& fn)
 	{
+		std::vector<UniquePtr<irExpression>> insns{};
 		while (lp.hasMore())
 		{
 			if (lp.i->token_keyword == TK_FUNCTION)
 			{
 				lp.advance();
-				irModule::FuncExport inner_fn;
+				irFunction inner_fn;
 				if (lp.i->isLiteral())
 				{
 					locals.emplace();
@@ -75,7 +85,7 @@ namespace soup
 					if (lp.hasMore()) { lp.advance(); } // skip ')'
 					if (lp.hasMore())
 					{
-						statlist(lp, m, inner_fn);
+						inner_fn.insns = statlist(lp, m, inner_fn);
 						if (lp.getTokenKeyword() == TK_END)
 						{
 							lp.advance();
@@ -85,32 +95,58 @@ namespace soup
 					locals.pop();
 				}
 			}
+			else if (lp.i->token_keyword == TK_LOCAL)
+			{
+				lp.advance();
+				if (lp.i->isLiteral())
+				{
+					fn.locals.emplace_back(IR_I64);
+					locals.top().emplace_back(lp.i->getLiteral());
+					lp.advance();
+				}
+			}
 			else if (lp.i->token_keyword == TK_RETURN)
 			{
 				lp.advance();
 				auto insn = soup::make_unique<irExpression>(IR_RET);
 				do
 				{
-					auto val = expr(lp);
+					auto val = expr(lp, m, fn);
 					if (!val)
 					{
 						break;
 					}
-					fn.returns.emplace_back(val->type == IR_CONST_PTR ? IR_PTR : IR_I64);
+					fn.returns.emplace_back(val->getResultType(fn));
 					insn->children.emplace_back(std::move(val));
 				} while (lp.getTokenKeyword() == TK_COMMA && (lp.advance(), true));
-				fn.insns.emplace_back(std::move(insn));
+				insns.emplace_back(std::move(insn));
 			}
-			else if (auto insn = exprstat(lp))
+			else if (lp.i->token_keyword == TK_WHILE)
 			{
-				fn.insns.emplace_back(std::move(insn));
+				lp.advance();
+				auto insn = soup::make_unique<irExpression>(IR_WHILE);
+				if (auto cond = expr(lp, m, fn))
+				{
+					insn->children.emplace_back(std::move(cond));
+					if (lp.hasMore()) { lp.advance(); } // skip 'do'
+					for (auto& inner_stat : statlist(lp, m, fn))
+					{
+						insn->children.emplace_back(std::move(inner_stat));
+					}
+					if (lp.hasMore()) { lp.advance(); } // skip 'end'
+					insns.emplace_back(std::move(insn));
+				}
+			}
+			else if (auto insn = exprstat(lp, m, fn))
+			{
+				insns.emplace_back(std::move(insn));
 			}
 			else
 			{
-				// unexpected top-level statement
 				break;
 			}
 		}
+		return insns;
 	}
 
 	[[nodiscard]] static uint8_t getbinopr(const char* token_keyword) noexcept
@@ -119,6 +155,8 @@ namespace soup
 		if (token_keyword == TK_SUB) { return IR_SUB; }
 		if (token_keyword == TK_MUL) { return IR_MUL; }
 		if (token_keyword == TK_DIV) { return IR_SDIV; }
+		if (token_keyword == TK_EQUALS) { return IR_EQUALS; }
+		if (token_keyword == TK_NOTEQUALS) { return IR_NOTEQUALS; }
 		return 0xff;
 	}
 
@@ -131,16 +169,16 @@ namespace soup
 		return 1;
 	}
 
-	UniquePtr<irExpression> laPlutoFrontend::expr(LexemeParser& lp, uint8_t limit)
+	UniquePtr<irExpression> laPlutoFrontend::expr(LexemeParser& lp, irModule& m, irFunction& fn, uint8_t limit)
 	{
-		auto ret = simpleexp(lp);
+		auto ret = simpleexp(lp, m, fn);
 		if (ret)
 		{
 			auto opr = getbinopr(lp.getTokenKeyword());
 			while (opr != 0xff && getpriority(opr) > limit)
 			{
 				lp.advance();
-				auto rhs = expr(lp, getpriority(opr));
+				auto rhs = expr(lp, m, fn, getpriority(opr));
 				if (!rhs)
 				{
 					break;
@@ -153,7 +191,7 @@ namespace soup
 		return ret;
 	}
 
-	UniquePtr<irExpression> laPlutoFrontend::simpleexp(LexemeParser& lp)
+	UniquePtr<irExpression> laPlutoFrontend::simpleexp(LexemeParser& lp, irModule& m, irFunction& fn)
 	{
 		UniquePtr<irExpression> ret;
 		if (lp.hasMore())
@@ -169,26 +207,38 @@ namespace soup
 				else if (lp.i->val.isString())
 				{
 					ret = soup::make_unique<irExpression>(IR_CONST_PTR);
-					ret->constant_value = m->data.size();
-					m->data.append(lp.i->val.getString());
-					m->data.push_back('\0');
+					ret->constant_value = m.data.size();
+					m.data.append(lp.i->val.getString());
+					m.data.push_back('\0');
 					lp.advance();
 				}
 			}
 			else if (lp.i->token_keyword == Lexeme::LITERAL)
 			{
-				if ((lp.i + 1) != lp.tks.end()
+				if (lp.i->getLiteral() == "true")
+				{
+					ret = soup::make_unique<irExpression>(IR_CONST_BOOL);
+					ret->constant_value = true;
+					lp.advance();
+				}
+				else if(lp.i->getLiteral() == "false")
+				{
+					ret = soup::make_unique<irExpression>(IR_CONST_BOOL);
+					ret->constant_value = false;
+					lp.advance();
+				}
+				else if ((lp.i + 1) != lp.tks.end()
 					&& (lp.i + 1)->token_keyword == TK_LPAREN
 					)
 				{
-					ret = suffixedexp(lp);
+					ret = suffixedexp(lp, m, fn);
 				}
 				else
 				{
 					const auto& locals_in_scope = locals.top();
 					if (auto it = std::find(locals_in_scope.begin(), locals_in_scope.end(), lp.i->getLiteral()); it != locals_in_scope.end())
 					{
-						ret = soup::make_unique<irExpression>(IR_LOCAL);
+						ret = soup::make_unique<irExpression>(IR_LOCAL_GET);
 						ret->index = static_cast<uint32_t>(std::distance(locals_in_scope.begin(), it));
 						lp.advance();
 					}
@@ -198,12 +248,33 @@ namespace soup
 		return ret;
 	}
 
-	UniquePtr<irExpression> laPlutoFrontend::exprstat(LexemeParser& lp)
+	UniquePtr<irExpression> laPlutoFrontend::exprstat(LexemeParser& lp, irModule& m, irFunction& fn)
 	{
-		return suffixedexp(lp);
+		if (lp.getTokenKeyword() == Lexeme::LITERAL)
+		{
+			if ((lp.i + 1) != lp.tks.end()
+				&& (lp.i + 1)->token_keyword == TK_ASSIGN
+				)
+			{
+				const auto& locals_in_scope = locals.top();
+				if (auto it = std::find(locals_in_scope.begin(), locals_in_scope.end(), lp.i->getLiteral()); it != locals_in_scope.end())
+				{
+					auto insn = soup::make_unique<irExpression>(IR_LOCAL_SET);
+					insn->index = static_cast<uint32_t>(std::distance(locals_in_scope.begin(), it));
+					lp.advance(); // skip name 
+					lp.advance(); // skip '='
+					if (auto val = expr(lp, m, fn))
+					{
+						insn->children.emplace_back(std::move(val));
+						return insn;
+					}
+				}
+			}
+		}
+		return suffixedexp(lp, m, fn);
 	}
 
-	UniquePtr<irExpression> laPlutoFrontend::suffixedexp(LexemeParser& lp)
+	UniquePtr<irExpression> laPlutoFrontend::suffixedexp(LexemeParser& lp, irModule& m, irFunction& fn)
 	{
 		UniquePtr<irExpression> ret;
 		if (lp.getTokenKeyword() == Lexeme::LITERAL)
@@ -212,34 +283,77 @@ namespace soup
 				&& (lp.i + 1)->token_keyword == TK_LPAREN
 				)
 			{
-				for (uint32_t i = 0; i != m->func_exports.size(); ++i)
+				if (lp.i->getLiteral() == "__to_ptr")
 				{
-					if (m->func_exports[i].name == lp.i->getLiteral())
+					ret = soup::make_unique<irExpression>(IR_I64_TO_PTR);
+					funcargs(lp, m, fn, *ret);
+				}
+				else if (lp.i->getLiteral() == "__read_u8")
+				{
+					auto insn = soup::make_unique<irExpression>(IR_READ_I8);
+					funcargs(lp, m, fn, *insn);
+					propagateType(fn, *insn->children.at(0), IR_PTR);
+					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_ZX);
+					ret->children.emplace_back(std::move(insn));
+				}
+				else if (lp.i->getLiteral() == "__read_i8")
+				{
+					auto insn = soup::make_unique<irExpression>(IR_READ_I8);
+					funcargs(lp, m, fn, *insn);
+					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_SX);
+					ret->children.emplace_back(std::move(insn));
+				}
+				else
+				{
+					for (uint32_t i = 0; i != m.func_exports.size(); ++i)
 					{
-						ret = soup::make_unique<irExpression>(IR_CALL);
-						ret->index = i;
-						lp.advance(); // skip name
-						if (lp.hasMore()) { lp.advance(); } // skip '('
-						while (lp.hasMore())
+						if (m.func_exports[i].name == lp.i->getLiteral())
 						{
-							auto arg = expr(lp);
-							if (!arg)
-							{
-								break;
-							}
-							ret->children.emplace_back(std::move(arg));
-							if (lp.getTokenKeyword() != TK_COMMA)
-							{
-								break;
-							}
-							lp.advance(); // skip ','
+							ret = soup::make_unique<irExpression>(IR_CALL);
+							ret->index = i;
+							funcargs(lp, m, fn, *ret);
+							break;
 						}
-						if (lp.hasMore()) { lp.advance(); } // skip ')'
-						break;
 					}
 				}
 			}
 		}
 		return ret;
+	}
+
+	void laPlutoFrontend::funcargs(LexemeParser& lp, irModule& m, irFunction& fn, irExpression& insn)
+	{
+		lp.advance(); // skip name
+		if (lp.hasMore()) { lp.advance(); } // skip '('
+		while (lp.hasMore())
+		{
+			auto arg = expr(lp, m, fn);
+			if (!arg)
+			{
+				break;
+			}
+			insn.children.emplace_back(std::move(arg));
+			if (lp.getTokenKeyword() != TK_COMMA)
+			{
+				break;
+			}
+			lp.advance(); // skip ','
+		}
+		if (lp.hasMore()) { lp.advance(); } // skip ')'
+	}
+
+	void laPlutoFrontend::propagateType(irFunction& fn, irExpression& e, irType type)
+	{
+		if (e.type == IR_LOCAL_GET)
+		{
+			fn.getLocalType(e.index) = type;
+		}
+		else if (e.type == IR_ADD || e.type == IR_SUB)
+		{
+			for (auto& child : e.children)
+			{
+				propagateType(fn, *child, type);
+			}
+		}
 	}
 }

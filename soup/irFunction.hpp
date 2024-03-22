@@ -1,0 +1,37 @@
+#pragma once
+
+#include <string>
+#include <vector>
+
+#include "irType.hpp"
+#include "irExpression.hpp"
+
+namespace soup
+{
+	struct irFunction
+	{
+		std::string name;
+		std::vector<irType> parameters{};
+		std::vector<irType> returns{};
+		std::vector<irType> locals{}; // Note: parameters are also locals. This vector begins at parameters.size().
+		std::vector<UniquePtr<irExpression>> insns{};
+
+		[[nodiscard]] irType& getLocalType(uint32_t index)
+		{
+			if (index < parameters.size())
+			{
+				return parameters.at(index);
+			}
+			return locals.at(index - parameters.size());
+		}
+
+		[[nodiscard]] const irType& getLocalType(uint32_t index) const
+		{
+			if (index < parameters.size())
+			{
+				return parameters.at(index);
+			}
+			return locals.at(index - parameters.size());
+		}
+	};
+}

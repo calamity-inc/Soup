@@ -16,9 +16,9 @@ namespace soup
 		[[nodiscard]] static std::string getExportSectionData(const irModule& m);
 		[[nodiscard]] static std::string getCodeSectionData(const irModule& m);
 		[[nodiscard]] static std::string getDataSectionData(const irModule& m);
-		[[nodiscard]] static std::string compileFunction(const irModule& m, const std::vector<UniquePtr<irExpression>>& insns);
+		[[nodiscard]] static std::string compileFunction(const irModule& m, const irFunction& fn);
 	protected:
 		static bool writeType(StringWriter& w, irType type);
-		static int compileExpression(const irModule& m, StringWriter& w, const irExpression& e);
+		static int compileExpression(const irModule& m, const irFunction& fn, StringWriter& w, const irExpression& e);
 	};
 }
