@@ -48,6 +48,7 @@ namespace soup
 
 		irModule m;
 		irFunction top_level_fn;
+		locals.emplace();
 		top_level_fn.insns = statlist(lp, m, top_level_fn);
 		if (!top_level_fn.insns.empty())
 		{
