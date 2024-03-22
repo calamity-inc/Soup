@@ -192,28 +192,28 @@ namespace soup
 		{
 		case IR_CONST_BOOL:
 			b = 0x41; w.u8(b); // i32.const
-			w.soml(e.constant_value);
+			w.soml(e.const_bool.value ? 1 : 0);
 			return 1;
 
 		case IR_CONST_I64:
 			b = 0x42; w.u8(b); // i64.const
-			w.soml(e.constant_value);
+			w.soml(e.const_i64.value);
 			return 1;
 
 		case IR_CONST_PTR:
 			b = 0x41; w.u8(b); // i32.const
-			w.soml(e.constant_value);
+			w.soml(e.const_ptr.value);
 			return 1;
 
 		case IR_LOCAL_GET:
 			b = 0x20; w.u8(b); // local.get
-			w.oml(e.index);
+			w.oml(e.local_get.index);
 			return 1;
 
 		case IR_LOCAL_SET:
 			compileExpression(m, fn, w, *e.children.at(0));
 			b = 0x21; w.u8(b); // local.set
-			w.oml(e.index);
+			w.oml(e.local_set.index);
 			return 0;
 
 		case IR_CALL:
@@ -222,8 +222,8 @@ namespace soup
 				compileExpression(m, fn, w, *child);
 			}
 			b = 0x10; w.u8(b); // call
-			w.oml(e.index);
-			return static_cast<int>(m.func_exports.at(e.index).returns.size());
+			w.oml(e.call.index);
+			return static_cast<int>(m.func_exports.at(e.call.index).returns.size());
 
 		case IR_RET:
 			for (const auto& child : e.children)

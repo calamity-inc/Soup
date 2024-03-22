@@ -203,13 +203,13 @@ namespace soup
 				if (lp.i->val.isInt())
 				{
 					ret = soup::make_unique<irExpression>(IR_CONST_I64);
-					ret->constant_value = lp.i->val.getInt();
+					ret->const_i64.value = lp.i->val.getInt();
 					lp.advance();
 				}
 				else if (lp.i->val.isString())
 				{
 					ret = soup::make_unique<irExpression>(IR_CONST_PTR);
-					ret->constant_value = m.data.size();
+					ret->const_ptr.value = m.data.size();
 					m.data.append(lp.i->val.getString());
 					m.data.push_back('\0');
 					lp.advance();
@@ -220,13 +220,13 @@ namespace soup
 				if (lp.i->getLiteral() == "true")
 				{
 					ret = soup::make_unique<irExpression>(IR_CONST_BOOL);
-					ret->constant_value = true;
+					ret->const_bool.value = true;
 					lp.advance();
 				}
 				else if(lp.i->getLiteral() == "false")
 				{
 					ret = soup::make_unique<irExpression>(IR_CONST_BOOL);
-					ret->constant_value = false;
+					ret->const_bool.value = false;
 					lp.advance();
 				}
 				else if ((lp.i + 1) != lp.tks.end()
@@ -241,7 +241,7 @@ namespace soup
 					if (auto it = std::find(locals_in_scope.begin(), locals_in_scope.end(), lp.i->getLiteral()); it != locals_in_scope.end())
 					{
 						ret = soup::make_unique<irExpression>(IR_LOCAL_GET);
-						ret->index = static_cast<uint32_t>(std::distance(locals_in_scope.begin(), it));
+						ret->local_get.index = static_cast<uint32_t>(std::distance(locals_in_scope.begin(), it));
 						lp.advance();
 					}
 				}
@@ -262,7 +262,7 @@ namespace soup
 				if (auto it = std::find(locals_in_scope.begin(), locals_in_scope.end(), lp.i->getLiteral()); it != locals_in_scope.end())
 				{
 					auto insn = soup::make_unique<irExpression>(IR_LOCAL_SET);
-					insn->index = static_cast<uint32_t>(std::distance(locals_in_scope.begin(), it));
+					insn->local_set.index = static_cast<uint32_t>(std::distance(locals_in_scope.begin(), it));
 					lp.advance(); // skip name 
 					lp.advance(); // skip '='
 					if (auto val = expr(lp, m, fn))
@@ -312,7 +312,7 @@ namespace soup
 						if (m.func_exports[i].name == lp.i->getLiteral())
 						{
 							ret = soup::make_unique<irExpression>(IR_CALL);
-							ret->index = i;
+							ret->call.index = i;
 							funcargs(lp, m, fn, *ret);
 							break;
 						}
@@ -348,7 +348,7 @@ namespace soup
 	{
 		if (e.type == IR_LOCAL_GET)
 		{
-			fn.getLocalType(e.index) = type;
+			fn.getLocalType(e.local_get.index) = type;
 		}
 		else if (e.type == IR_ADD || e.type == IR_SUB)
 		{

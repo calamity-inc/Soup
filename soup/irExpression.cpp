@@ -29,21 +29,12 @@ namespace soup
 		case IR_I8_TO_I64_SX: str.append("IR_I8_TO_I64_SX"); break;
 		case IR_I8_TO_I64_ZX: str.append("IR_I8_TO_I64_ZX"); break;
 		}
-		if (type == IR_CONST_I64 || type == IR_CONST_PTR)
-		{
-			str.append(": ");
-			str.append(std::to_string(constant_value));
-		}
-		else if (type == IR_CONST_BOOL)
-		{
-			str.append(": ");
-			str.append(constant_value ? "true" : "false");
-		}
-		else if (type == IR_LOCAL_GET || type == IR_LOCAL_SET || type == IR_CALL)
-		{
-			str.append(": ");
-			str.append(std::to_string(index));
-		}
+		if (type == IR_CONST_BOOL) { str.append(": ").append(const_bool.value ? "true" : "false"); }
+		if (type == IR_CONST_I64) { str.append(": ").append(std::to_string(const_i64.value)); }
+		if (type == IR_CONST_PTR) { str.append(": ").append(std::to_string(const_ptr.value)); }
+		if (type == IR_LOCAL_GET) { str.append(": ").append(std::to_string(local_get.index)); }
+		if (type == IR_LOCAL_SET) { str.append(": ").append(std::to_string(local_set.index)); }
+		if (type == IR_CALL) { str.append(": ").append(std::to_string(local_set.index)); }
 		str.push_back('\n');
 		++depth;
 		for (const auto& child : children)
@@ -77,7 +68,7 @@ namespace soup
 		}
 		if (type == IR_LOCAL_GET)
 		{
-			return fn.getLocalType(index);
+			return fn.getLocalType(local_get.index);
 		}
 		return IR_I64;
 	}

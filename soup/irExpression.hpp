@@ -44,8 +44,22 @@ namespace soup
 		irExpressionType type;
 		union
 		{
-			int64_t constant_value; // IR_CONST_BOOL, IR_CONST_I64, IR_CONST_PTR
-			uint32_t index; // IR_LOCAL_GET, IR_LOCAL_SET, IR_CALL
+			struct
+			{
+				bool value;
+			} const_bool;
+			struct
+			{
+				int64_t value;
+			} const_i64;
+			struct
+			{
+				uint64_t value;
+			} const_ptr;
+			struct
+			{
+				uint32_t index;
+			} local_get, local_set, call;
 		};
 		std::vector<UniquePtr<irExpression>> children{};
 
