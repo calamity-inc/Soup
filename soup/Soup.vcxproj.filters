@@ -1602,6 +1602,9 @@
     <ClInclude Include="irFunction.hpp">
       <Filter>lang\compiler\ir</Filter>
     </ClInclude>
+    <ClInclude Include="irVm.hpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2363,6 +2366,9 @@
       <Filter>lang\compiler\backend</Filter>
     </ClCompile>
     <ClCompile Include="irExpression.cpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClCompile>
+    <ClCompile Include="irVm.cpp">
       <Filter>lang\compiler\ir</Filter>
     </ClCompile>
   </ItemGroup>

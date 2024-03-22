@@ -118,7 +118,18 @@ namespace soup
 					{
 						break;
 					}
-					fn.returns.emplace_back(val->getResultType(fn));
+					if (val->type == IR_CALL)
+					{
+						// TODO: mulret should be pruned unless this is the last return value
+						for (const auto& type : m.func_exports.at(val->call.index).returns)
+						{
+							fn.returns.emplace_back(type);
+						}
+					}
+					else
+					{
+						fn.returns.emplace_back(val->getResultType(fn));
+					}
 					insn->children.emplace_back(std::move(val));
 				} while (lp.getTokenKeyword() == TK_COMMA && (lp.advance(), true));
 				insns.emplace_back(std::move(insn));

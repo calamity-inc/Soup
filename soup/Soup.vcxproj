@@ -525,6 +525,7 @@
     <ClInclude Include="irFunction.hpp" />
     <ClInclude Include="irModule.hpp" />
     <ClInclude Include="irType.hpp" />
+    <ClInclude Include="irVm.hpp" />
     <ClInclude Include="kbRgb.hpp" />
     <ClInclude Include="kbRgbCorsairCue.hpp" />
     <ClInclude Include="kbRgbRazerChroma.hpp" />
@@ -1035,6 +1036,7 @@
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="IpcSocket.cpp" />
     <ClCompile Include="irExpression.cpp" />
+    <ClCompile Include="irVm.cpp" />
     <ClCompile Include="Jokebook.cpp" />
     <ClCompile Include="kbRgb.cpp" />
     <ClCompile Include="kbRgbCorsairCue.cpp" />

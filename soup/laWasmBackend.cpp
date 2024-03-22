@@ -226,11 +226,14 @@ namespace soup
 			return static_cast<int>(m.func_exports.at(e.call.index).returns.size());
 
 		case IR_RET:
-			for (const auto& child : e.children)
 			{
-				compileExpression(m, fn, w, *child);
+				int ret = 0;
+				for (const auto& child : e.children)
+				{
+					ret += compileExpression(m, fn, w, *child);
+				}
+				return ret;
 			}
-			return static_cast<int>(e.children.size());
 
 		case IR_WHILE:
 			b = 0x03; w.u8(b); // loop
