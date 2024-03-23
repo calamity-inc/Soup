@@ -303,7 +303,7 @@ namespace soup
 				}
 				else if (lp.i->getLiteral() == "__read_u8")
 				{
-					auto insn = soup::make_unique<irExpression>(IR_READ_I8);
+					auto insn = soup::make_unique<irExpression>(IR_LOAD_I8);
 					funcargs(lp, m, fn, *insn);
 					propagateType(fn, *insn->children.at(0), IR_PTR);
 					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_ZX);
@@ -311,10 +311,16 @@ namespace soup
 				}
 				else if (lp.i->getLiteral() == "__read_i8")
 				{
-					auto insn = soup::make_unique<irExpression>(IR_READ_I8);
+					auto insn = soup::make_unique<irExpression>(IR_LOAD_I8);
 					funcargs(lp, m, fn, *insn);
 					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_SX);
 					ret->children.emplace_back(std::move(insn));
+				}
+				else if (lp.i->getLiteral() == "print")
+				{
+					ret = soup::make_unique<irExpression>(IR_CALL);
+					ret->call.index = m.getPrintFunctionIndex();
+					funcargs(lp, m, fn, *ret);
 				}
 				else
 				{

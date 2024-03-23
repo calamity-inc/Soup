@@ -21,6 +21,7 @@ namespace soup
 			{
 				bool b;
 				int8_t i8;
+				int32_t i32;
 				int64_t i64;
 				uint64_t ptr;
 			} value;
@@ -28,6 +29,7 @@ namespace soup
 
 			Variable(bool b) { value.b = b; type = IR_BOOL; }
 			Variable(int8_t i8) { value.i8 = i8; type = IR_I8; }
+			Variable(int32_t i32) { value.i32 = i32; type = IR_I32; }
 			Variable(int64_t i64) { value.i64 = i64; type = IR_I64; }
 			Variable(uint64_t ptr) { value.ptr = ptr; type = IR_PTR; }
 

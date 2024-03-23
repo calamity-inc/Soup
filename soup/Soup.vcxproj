@@ -1036,6 +1036,7 @@
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="IpcSocket.cpp" />
     <ClCompile Include="irExpression.cpp" />
+    <ClCompile Include="irModule.cpp" />
     <ClCompile Include="irVm.cpp" />
     <ClCompile Include="Jokebook.cpp" />
     <ClCompile Include="kbRgb.cpp" />

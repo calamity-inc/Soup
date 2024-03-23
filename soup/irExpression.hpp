@@ -13,6 +13,8 @@ namespace soup
 	enum irExpressionType : uint8_t
 	{
 		IR_CONST_BOOL,
+		IR_CONST_I8,
+		IR_CONST_I32,
 		IR_CONST_I64,
 		IR_CONST_PTR,
 
@@ -22,19 +24,23 @@ namespace soup
 		IR_RET,
 		IR_WHILE,
 
-		// Arithmetic Binary Operators: T, T -> T where T must not be bool.
+		// Arithmetic Binary Operators: (T, T) -> (T) where T must not be bool.
 		IR_ADD,
 		IR_SUB,
 		IR_MUL,
 		IR_SDIV,
 		IR_UDIV,
 
-		IR_EQUALS, // T, T -> bool
-		IR_NOTEQUALS, // T, T -> bool
+		IR_EQUALS, // (T, T) -> (bool)
+		IR_NOTEQUALS, // (T, T) -> (bool)
 
-		IR_READ_I8, // ptr -> i8
+		IR_LOAD_I8, // (ptr) -> (i8)
+		IR_STORE, // (ptr, T) -> () where T must not be bool.
 
 		IR_I64_TO_PTR, // zero-extend
+		IR_I64_TO_I32,
+		IR_I32_TO_I64_SX,
+		IR_I32_TO_I64_ZX,
 		IR_I8_TO_I64_SX,
 		IR_I8_TO_I64_ZX,
 	};
@@ -50,6 +56,14 @@ namespace soup
 			} const_bool;
 			struct
 			{
+				int8_t value;
+			} const_i8;
+			struct
+			{
+				int32_t value;
+			} const_i32;
+			struct
+			{
 				int64_t value;
 			} const_i64;
 			struct
@@ -59,7 +73,11 @@ namespace soup
 			struct
 			{
 				uint32_t index;
-			} local_get, local_set, call;
+			} local_get, local_set;
+			struct
+			{
+				int64_t index;
+			} call;
 		};
 		std::vector<UniquePtr<irExpression>> children{};
 

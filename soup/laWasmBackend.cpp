@@ -4,6 +4,98 @@
 
 namespace soup
 {
+	void laWasmBackend::linkPosix(irModule& m)
+	{
+		for (size_t i = 0; i != m.imports.size(); ++i)
+		{
+			if (m.imports[i].module_name == "posix")
+			{
+				if (m.imports[i].func.name == "write")
+				{
+					m.updateCalls(~i, m.func_exports.size());
+
+					m.imports[i].module_name = "wasi_snapshot_preview1";
+					m.imports[i].func.name = "fd_write";
+					m.imports[i].func.parameters = { IR_I32, IR_PTR, IR_I32, IR_PTR };
+					m.imports[i].func.returns = { IR_I32 };
+
+					m.data.append(4 - (m.data.size() % 4), '\0'); // WASI needs aligned pointers.
+
+					irFunction& fn = m.func_exports.emplace_back();
+					fn.name = "posix_write";
+					fn.parameters = { IR_I32, IR_PTR, IR_I64 };
+					fn.returns.emplace_back(IR_I64);
+					{
+						auto storeInsn = soup::make_unique<irExpression>(IR_STORE);
+						{
+							auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
+							ptrConst->const_ptr.value = m.data.size() + 0;
+							storeInsn->children.emplace_back(std::move(ptrConst));
+						}
+						{
+							auto localGetExpr = soup::make_unique<irExpression>(IR_LOCAL_GET);
+							localGetExpr->local_get.index = 1;
+							storeInsn->children.emplace_back(std::move(localGetExpr));
+						}
+						fn.insns.emplace_back(std::move(storeInsn));
+					}
+					{
+						auto storeInsn = soup::make_unique<irExpression>(IR_STORE);
+						{
+							auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
+							ptrConst->const_ptr.value = m.data.size() + 4;
+							storeInsn->children.emplace_back(std::move(ptrConst));
+						}
+						{
+							auto castInsn = soup::make_unique<irExpression>(IR_I64_TO_I32);
+							{
+								auto localGetExpr = soup::make_unique<irExpression>(IR_LOCAL_GET);
+								localGetExpr->local_get.index = 2;
+								castInsn->children.emplace_back(std::move(localGetExpr));
+							}
+							storeInsn->children.emplace_back(std::move(castInsn));
+						}
+						fn.insns.emplace_back(std::move(storeInsn));
+					}
+					{
+						auto returnInsn = soup::make_unique<irExpression>(IR_RET);
+						{
+							auto castInsn = soup::make_unique<irExpression>(IR_I32_TO_I64_ZX);
+							{
+								auto callInsn = soup::make_unique<irExpression>(IR_CALL);
+								callInsn->call.index = ~i;
+								{
+									auto localGetExpr = soup::make_unique<irExpression>(IR_LOCAL_GET);
+									localGetExpr->local_get.index = 0;
+									callInsn->children.emplace_back(std::move(localGetExpr));
+								}
+								{
+									auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
+									ptrConst->const_ptr.value = m.data.size() + 0;
+									callInsn->children.emplace_back(std::move(ptrConst));
+								}
+								{
+									auto constI32Expr = soup::make_unique<irExpression>(IR_CONST_I32);
+									constI32Expr->const_i32.value = 1;
+									callInsn->children.emplace_back(std::move(constI32Expr));
+								}
+								{
+									auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
+									ptrConst->const_ptr.value = m.data.size() + 0;
+									callInsn->children.emplace_back(std::move(ptrConst));
+								}
+								castInsn->children.emplace_back(std::move(callInsn));
+							}
+							returnInsn->children.emplace_back(std::move(castInsn));
+						}
+						fn.insns.emplace_back(std::move(returnInsn));
+					}
+					m.data.append(8, '\0');
+				}
+			}
+		}
+	}
+
 	std::string laWasmBackend::compileModule(const irModule& m) const
 	{
 		StringWriter w;
@@ -16,6 +108,14 @@ namespace soup
 		{
 			b = 1; w.u8(b);
 			auto data = getTypeSectionData(m);
+			w.oml(data.size());
+			w.raw(data.data(), data.size());
+		}
+
+		// Import section
+		{
+			b = 2; w.u8(b);
+			auto data = getImportSectionData(m);
 			w.oml(data.size());
 			w.raw(data.data(), data.size());
 		}
@@ -67,7 +167,21 @@ namespace soup
 	std::string laWasmBackend::getTypeSectionData(const irModule& m)
 	{
 		StringWriter w;
-		w.oml(m.func_exports.size());
+		w.oml(m.imports.size() + m.func_exports.size());
+		for (const auto& imp : m.imports)
+		{
+			uint8_t type_type = 0x60; w.u8(type_type); // function
+			w.oml(imp.func.parameters.size());
+			for (const auto& t : imp.func.parameters)
+			{
+				writeType(w, t);
+			}
+			w.oml(imp.func.returns.size());
+			for (const auto& t : imp.func.returns)
+			{
+				writeType(w, t);
+			}
+		}
 		for (const auto& func : m.func_exports)
 		{
 			uint8_t type_type = 0x60; w.u8(type_type); // function
@@ -85,13 +199,30 @@ namespace soup
 		SOUP_MOVE_RETURN(w.data);
 	}
 
+	std::string laWasmBackend::getImportSectionData(const irModule& m)
+	{
+		StringWriter w;
+		w.oml(m.imports.size());
+		for (uint32_t i = 0; i != m.imports.size(); ++i)
+		{
+			const auto& imp = m.imports[i];
+			w.oml(imp.module_name.size());
+			w.str(imp.module_name.size(), imp.module_name.data());
+			w.oml(imp.func.name.size());
+			w.str(imp.func.name.size(), imp.func.name.data());
+			uint8_t kind = 0; w.u8(kind); // function
+			w.oml(i); // type index
+		}
+		SOUP_MOVE_RETURN(w.data);
+	}
+
 	std::string laWasmBackend::getFunctionSectionData(const irModule& m)
 	{
 		StringWriter w;
 		w.oml(m.func_exports.size());
 		for (uint32_t i = 0; i != m.func_exports.size(); ++i)
 		{
-			w.oml(i); // We're keeping function & type indecies the same for now for simplicity.
+			w.oml(i + m.imports.size()); // We're keeping function & type indecies the same for now for simplicity.
 		}
 		SOUP_MOVE_RETURN(w.data);
 	}
@@ -108,14 +239,20 @@ namespace soup
 	std::string laWasmBackend::getExportSectionData(const irModule& m)
 	{
 		StringWriter w;
-		w.oml(m.func_exports.size());
+		w.oml(m.func_exports.size() + 1);
 		for (uint32_t i = 0; i != m.func_exports.size(); ++i)
 		{
 			const auto& func = m.func_exports[i];
 			w.oml(func.name.size());
 			w.str(func.name.size(), func.name.data());
 			uint8_t kind = 0; w.u8(kind); // function
-			w.oml(i);
+			w.oml(m.imports.size() + i);
+		}
+		{
+			w.oml(6);
+			w.str(6, "memory");
+			uint8_t kind = 2; w.u8(kind); // memory
+			w.oml(0);
 		}
 		SOUP_MOVE_RETURN(w.data);
 	}
@@ -154,6 +291,7 @@ namespace soup
 		{
 		case IR_BOOL: b = 0x7f; break; // i32
 		case IR_I8: b = 0x7f; break; // i32
+		case IR_I32: b = 0x7f; break; // i32
 		case IR_I64: b = 0x7e; break; // i64
 		case IR_PTR: b = 0x7f; break; // i32
 		}
@@ -195,6 +333,16 @@ namespace soup
 			w.soml(e.const_bool.value ? 1 : 0);
 			return 1;
 
+		case IR_CONST_I8:
+			b = 0x41; w.u8(b); // i32.const
+			w.soml(e.const_i8.value);
+			return 1;
+
+		case IR_CONST_I32:
+			b = 0x41; w.u8(b); // i32.const
+			w.soml(e.const_i32.value);
+			return 1;
+
 		case IR_CONST_I64:
 			b = 0x42; w.u8(b); // i64.const
 			w.soml(e.const_i64.value);
@@ -222,7 +370,12 @@ namespace soup
 				compileExpression(m, fn, w, *child);
 			}
 			b = 0x10; w.u8(b); // call
-			w.oml(e.call.index);
+			if (e.call.index < 0)
+			{
+				w.oml(~e.call.index);
+				return static_cast<int>(m.imports.at(~e.call.index).func.returns.size());
+			}
+			w.oml(e.call.index + m.imports.size());
 			return static_cast<int>(m.func_exports.at(e.call.index).returns.size());
 
 		case IR_RET:
@@ -308,25 +461,62 @@ namespace soup
 			SOUP_ASSERT(e.children.size() == 2);
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			b = 0x51; w.u8(b); // i64.eq
+			if (auto type = e.children[0]->getResultType(fn); type == IR_I8 || type == IR_I32)
+			{
+				b = 0x46; w.u8(b); // i32.eq
+			}
+			else
+			{
+				b = 0x51; w.u8(b); // i64.eq
+			}
 			return 1;
 
 		case IR_NOTEQUALS:
 			SOUP_ASSERT(e.children.size() == 2);
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			b = 0x52; w.u8(b); // i64.ne
+			if (auto type = e.children[0]->getResultType(fn); type == IR_I8 || type == IR_I32)
+			{
+				b = 0x47; w.u8(b); // i32.ne
+			}
+			else
+			{
+				b = 0x52; w.u8(b); // i64.ne
+			}
 			return 1;
 
-		case IR_READ_I8:
+		case IR_LOAD_I8:
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
 			b = 0x2d; w.u8(b); // i32.load8_u
 			w.skip(2); // memflags + offset
 			return 1;
 
+		case IR_STORE:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			b = 0x36; w.u8(b); // i32.store
+			w.skip(2); // memflags + offset
+			return 0;
+
 		case IR_I64_TO_PTR:
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
 			b = 0xa7; w.u8(b); // i32.wrap_i64
+			return 1;
+
+		case IR_I64_TO_I32:
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			b = 0xa7; w.u8(b); // i32.wrap_i64
+			return 1;
+
+		case IR_I32_TO_I64_SX:
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			b = 0xac; w.u8(b); // i64.extend_i32_s
+			return 1;
+
+		case IR_I32_TO_I64_ZX:
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			b = 0xad; w.u8(b); // i64.extend_i32_u
 			return 1;
 
 		case IR_I8_TO_I64_SX:

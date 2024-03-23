@@ -9,7 +9,7 @@ namespace soup
 		IR_BOOL,
 		IR_I8,
 		//IR_I16,
-		//IR_I32,
+		IR_I32,
 		IR_I64,
 		IR_PTR,
 	};

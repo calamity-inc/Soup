@@ -2371,6 +2371,9 @@
     <ClCompile Include="irVm.cpp">
       <Filter>lang\compiler\ir</Filter>
     </ClCompile>
+    <ClCompile Include="irModule.cpp">
+      <Filter>lang\compiler\ir</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
