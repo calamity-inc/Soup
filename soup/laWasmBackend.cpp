@@ -365,18 +365,35 @@ namespace soup
 			return 0;
 
 		case IR_CALL:
-			for (const auto& child : e.children)
 			{
-				compileExpression(m, fn, w, *child);
+				int nargs = 0;
+				for (const auto& child : e.children)
+				{
+					nargs += compileExpression(m, fn, w, *child);
+				}
+				if (e.call.index >= 0)
+				{
+					auto overflow = nargs - m.func_exports.at(e.call.index).parameters.size();
+					while (overflow--)
+					{
+						uint8_t b = 0x1a; w.u8(b); // drop
+					}
+					b = 0x10; w.u8(b); // call
+					w.oml(e.call.index + m.imports.size());
+					return static_cast<int>(m.func_exports.at(e.call.index).returns.size());
+				}
+				else
+				{
+					auto overflow = nargs - m.imports.at(~e.call.index).func.parameters.size();
+					while (overflow--)
+					{
+						uint8_t b = 0x1a; w.u8(b); // drop
+					}
+					b = 0x10; w.u8(b); // call
+					w.oml(~e.call.index);
+					return static_cast<int>(m.imports.at(~e.call.index).func.returns.size());
+				}
 			}
-			b = 0x10; w.u8(b); // call
-			if (e.call.index < 0)
-			{
-				w.oml(~e.call.index);
-				return static_cast<int>(m.imports.at(~e.call.index).func.returns.size());
-			}
-			w.oml(e.call.index + m.imports.size());
-			return static_cast<int>(m.func_exports.at(e.call.index).returns.size());
 
 		case IR_RET:
 			{
