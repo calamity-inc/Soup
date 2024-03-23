@@ -222,8 +222,8 @@ namespace soup
 				}
 				else if (lp.i->val.isString())
 				{
-					ret = soup::make_unique<irExpression>(IR_CONST_PTR);
-					ret->const_ptr.value = m.data.size();
+					ret = soup::make_unique<irExpression>(IR_CONST_I64);
+					ret->const_i64.value = m.data.size();
 					m.data.append(lp.i->val.getString());
 					m.data.push_back('\0');
 					lp.advance();
@@ -299,16 +299,13 @@ namespace soup
 				&& (lp.i + 1)->token_keyword == TK_LPAREN
 				)
 			{
-				if (lp.i->getLiteral() == "__to_ptr")
-				{
-					ret = soup::make_unique<irExpression>(IR_I64_TO_PTR);
-					funcargs(lp, m, fn, *ret);
-				}
-				else if (lp.i->getLiteral() == "__load_u8")
+				if (lp.i->getLiteral() == "__load_u8")
 				{
 					auto insn = soup::make_unique<irExpression>(IR_LOAD_I8);
 					funcargs(lp, m, fn, *insn);
-					propagateType(fn, *insn->children.at(0), IR_PTR);
+					auto ptrExpr = std::move(insn->children.at(0));
+					insn->children.at(0) = soup::make_unique<irExpression>(IR_I64_TO_PTR);
+					insn->children.at(0)->children.emplace_back(std::move(ptrExpr));
 					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_ZX);
 					ret->children.emplace_back(std::move(insn));
 				}
@@ -316,7 +313,9 @@ namespace soup
 				{
 					auto insn = soup::make_unique<irExpression>(IR_LOAD_I8);
 					funcargs(lp, m, fn, *insn);
-					propagateType(fn, *insn->children.at(0), IR_PTR);
+					auto ptrExpr = std::move(insn->children.at(0));
+					insn->children.at(0) = soup::make_unique<irExpression>(IR_I64_TO_PTR);
+					insn->children.at(0)->children.emplace_back(std::move(ptrExpr));
 					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_SX);
 					ret->children.emplace_back(std::move(insn));
 				}
@@ -324,7 +323,9 @@ namespace soup
 				{
 					ret = soup::make_unique<irExpression>(IR_STORE_I8);
 					funcargs(lp, m, fn, *ret);
-					propagateType(fn, *ret->children.at(0), IR_PTR);
+					auto ptrExpr = std::move(ret->children.at(0));
+					ret->children.at(0) = soup::make_unique<irExpression>(IR_I64_TO_PTR);
+					ret->children.at(0)->children.emplace_back(std::move(ptrExpr));
 					auto valueExpr = std::move(ret->children.at(1));
 					ret->children.at(1) = soup::make_unique<irExpression>(IR_I64_TO_I8);
 					ret->children.at(1)->children.emplace_back(std::move(valueExpr));
@@ -334,6 +335,9 @@ namespace soup
 					ret = soup::make_unique<irExpression>(IR_CALL);
 					ret->call.index = m.getPrintFunctionIndex();
 					funcargs(lp, m, fn, *ret);
+					auto ptrExpr = std::move(ret->children.at(0));
+					ret->children.at(0) = soup::make_unique<irExpression>(IR_I64_TO_PTR);
+					ret->children.at(0)->children.emplace_back(std::move(ptrExpr));
 				}
 				else
 				{
@@ -372,20 +376,5 @@ namespace soup
 			lp.advance(); // skip ','
 		}
 		if (lp.hasMore()) { lp.advance(); } // skip ')'
-	}
-
-	void laPlutoFrontend::propagateType(irFunction& fn, irExpression& e, irType type)
-	{
-		if (e.type == IR_LOCAL_GET)
-		{
-			fn.getLocalType(e.local_get.index) = type;
-		}
-		else if (e.type == IR_ADD_I64 || e.type == IR_SUB_I64)
-		{
-			for (auto& child : e.children)
-			{
-				propagateType(fn, *child, type);
-			}
-		}
 	}
 }

@@ -20,8 +20,6 @@ namespace soup
 		[[nodiscard]] UniquePtr<irExpression> suffixedexp(LexemeParser& lp, irModule& m, irFunction& fn);
 		void funcargs(LexemeParser& lp, irModule& m, irFunction& fn, irExpression& insn);
 
-		static void propagateType(irFunction& fn, irExpression& e, irType type);
-
 		std::stack<std::vector<std::string>> locals{};
 	};
 }
