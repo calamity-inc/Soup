@@ -19,7 +19,7 @@ namespace soup
 					m.imports[i].func.parameters = { IR_I32, IR_PTR, IR_I32, IR_PTR };
 					m.imports[i].func.returns = { IR_I32 };
 
-					m.data.append(4 - (m.data.size() % 4), '\0'); // WASI needs aligned pointers.
+					const auto ptr = m.allocateZeroedMemory(8, 4);
 
 					irFunction& fn = m.func_exports.emplace_back();
 					fn.name = "posix_write";
@@ -29,7 +29,7 @@ namespace soup
 						auto storeInsn = soup::make_unique<irExpression>(IR_STORE_I32);
 						{
 							auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
-							ptrConst->const_ptr.value = m.data.size() + 0;
+							ptrConst->const_ptr.value = ptr + 0;
 							storeInsn->children.emplace_back(std::move(ptrConst));
 						}
 						{
@@ -43,7 +43,7 @@ namespace soup
 						auto storeInsn = soup::make_unique<irExpression>(IR_STORE_I32);
 						{
 							auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
-							ptrConst->const_ptr.value = m.data.size() + 4;
+							ptrConst->const_ptr.value = ptr + 4;
 							storeInsn->children.emplace_back(std::move(ptrConst));
 						}
 						{
@@ -71,7 +71,7 @@ namespace soup
 								}
 								{
 									auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
-									ptrConst->const_ptr.value = m.data.size() + 0;
+									ptrConst->const_ptr.value = ptr + 0;
 									callInsn->children.emplace_back(std::move(ptrConst));
 								}
 								{
@@ -81,7 +81,7 @@ namespace soup
 								}
 								{
 									auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
-									ptrConst->const_ptr.value = m.data.size() + 0;
+									ptrConst->const_ptr.value = ptr + 0;
 									callInsn->children.emplace_back(std::move(ptrConst));
 								}
 								castInsn->children.emplace_back(std::move(callInsn));
@@ -90,7 +90,6 @@ namespace soup
 						}
 						fn.insns.emplace_back(std::move(returnInsn));
 					}
-					m.data.append(8, '\0');
 				}
 			}
 		}
@@ -279,8 +278,9 @@ namespace soup
 		b = 0x41; w.u8(b); // i32.const
 		w.soml(0); // base
 		b = 0x0b; w.u8(b); // end
-		w.oml(m.data.size());
-		w.str(m.data.size(), m.data.data());
+		auto data = m.getContiguousMemory();
+		w.oml(data.size());
+		w.str(data.size(), data.data());
 		SOUP_MOVE_RETURN(w.data);
 	}
 

@@ -2,6 +2,65 @@
 
 namespace soup
 {
+	std::string irModule::getContiguousMemory() const
+	{
+		std::string memory{};
+		for (const auto& chunk : this->data)
+		{
+			size_t ptr = memory.size();
+			if (size_t rem = ptr % chunk.alignment)
+			{
+				memory.append(chunk.alignment - rem, '\0');
+			}
+			memory.append(chunk.data);
+		}
+		return memory;
+	}
+
+	uint64_t irModule::allocateConstData(std::string&& data)
+	{
+		size_t ptr = 0;
+		for (const auto& chunk : this->data)
+		{
+			if (size_t rem = ptr % chunk.alignment)
+			{
+				ptr += (chunk.alignment - rem);
+			}
+			if (chunk.is_const && chunk.data == data)
+			{
+				return ptr;
+			}
+			ptr += chunk.data.size();
+		}
+		auto& chunk = this->data.emplace_back();
+		chunk.data = std::move(data);
+		chunk.alignment = 1;
+		chunk.is_const = true;
+		return ptr;
+	}
+
+	uint64_t irModule::allocateZeroedMemory(uint64_t size, uint8_t align)
+	{
+		size_t ptr = 0;
+		for (const auto& chunk : this->data)
+		{
+			if (size_t rem = ptr % chunk.alignment)
+			{
+				ptr += (chunk.alignment - rem);
+			}
+			ptr += chunk.data.size();
+		}
+		if (size_t rem = ptr % align)
+		{
+			ptr += (align - rem);
+		}
+		auto& chunk = this->data.emplace_back();
+		chunk.data = std::string(size, '\0');
+		chunk.alignment = align;
+		chunk.is_const = false;
+		return ptr;
+	}
+
 	uint32_t irModule::getFunctionIndex(const std::string& name)
 	{
 		uint32_t i = 0;

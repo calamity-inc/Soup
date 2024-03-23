@@ -251,10 +251,10 @@ namespace soup
 				}
 				else if (lp.i->val.isString())
 				{
+					auto data = lp.i->val.getString();
+					data.push_back('\0');
 					ret = soup::make_unique<irExpression>(IR_CONST_I64);
-					ret->const_i64.value = m.data.size();
-					m.data.append(lp.i->val.getString());
-					m.data.push_back('\0');
+					ret->const_i64.value = m.allocateConstData(std::move(data));
 					lp.advance();
 				}
 			}
