@@ -9,6 +9,8 @@ namespace soup
 	static constexpr const char* TK_LOCAL = "local";
 	static constexpr const char* TK_FUNCTION = "function";
 	static constexpr const char* TK_RETURN = "return";
+	static constexpr const char* TK_IF = "if";
+	static constexpr const char* TK_ELSE = "else";
 	static constexpr const char* TK_WHILE = "while";
 	static constexpr const char* TK_END = "end";
 	static constexpr const char* TK_ADD = "+";
@@ -29,6 +31,8 @@ namespace soup
 		ld.addToken(TK_LOCAL);
 		ld.addToken(TK_FUNCTION);
 		ld.addToken(TK_RETURN);
+		ld.addToken(TK_IF);
+		ld.addToken(TK_ELSE);
 		ld.addToken(TK_WHILE);
 		ld.addToken(TK_END);
 		ld.addToken(TK_ADD);
@@ -135,6 +139,31 @@ namespace soup
 					insn->children.emplace_back(std::move(val));
 				} while (lp.getTokenKeyword() == TK_COMMA && (lp.advance(), true));
 				insns.emplace_back(std::move(insn));
+			}
+			else if (lp.i->token_keyword == TK_IF)
+			{
+				lp.advance();
+				auto insn = soup::make_unique<irExpression>(IR_IFELSE);
+				if (auto cond = expr(lp, m, fn))
+				{
+					insn->children.emplace_back(std::move(cond));
+					if (lp.hasMore()) { lp.advance(); } // skip 'then'
+					for (auto& inner_stat : statlist(lp, m, fn))
+					{
+						insn->children.emplace_back(std::move(inner_stat));
+					}
+					insn->ifelse.ifinsns = insn->children.size() - 1;
+					if (lp.getTokenKeyword() == TK_ELSE)
+					{
+						lp.advance();
+						for (auto& inner_stat : statlist(lp, m, fn))
+						{
+							insn->children.emplace_back(std::move(inner_stat));
+						}
+					}
+					if (lp.hasMore()) { lp.advance(); } // skip 'end'
+					insns.emplace_back(std::move(insn));
+				}
 			}
 			else if (lp.i->token_keyword == TK_WHILE)
 			{

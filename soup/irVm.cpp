@@ -104,6 +104,27 @@ namespace soup
 				return ret;
 			}
 
+		case IR_IFELSE:
+			{
+				auto cond = oneret(execute(m, *insn.children.at(0)));
+				SOUP_ASSERT(cond.type == IR_BOOL);
+				if (cond.value.b)
+				{
+					for (size_t i = 0; i != insn.ifelse.ifinsns; ++i)
+					{
+						execute(m, *insn.children[1 + i]);
+					}
+				}
+				else
+				{
+					for (size_t i = 1 + insn.ifelse.ifinsns; i != insn.children.size(); ++i)
+					{
+						execute(m, *insn.children[i]);
+					}
+				}
+			}
+			return {};
+
 		case IR_WHILE:
 			while (true)
 			{

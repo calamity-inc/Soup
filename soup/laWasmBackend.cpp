@@ -406,6 +406,33 @@ namespace soup
 				return ret;
 			}
 
+		case IR_IFELSE:
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
+			b = 0x04; w.u8(b); // if
+			b = 0x40; w.u8(b); // void
+			for (size_t i = 0; i != e.ifelse.ifinsns; ++i)
+			{
+				int ret = compileExpression(m, w, *e.children[1 + i]);
+				while (ret--)
+				{
+					uint8_t b = 0x1a; w.u8(b); // drop
+				}
+			}
+			if (1 + e.ifelse.ifinsns != e.children.size())
+			{
+				b = 0x05; w.u8(b); // else
+				for (size_t i = 1 + e.ifelse.ifinsns; i != e.children.size(); ++i)
+				{
+					int ret = compileExpression(m, w, *e.children[i]);
+					while (ret--)
+					{
+						uint8_t b = 0x1a; w.u8(b); // drop
+					}
+				}
+			}
+			b = 0x0b; w.u8(b); // end
+			return 0;
+
 		case IR_WHILE:
 			b = 0x03; w.u8(b); // loop
 			b = 0x40; w.u8(b); // void

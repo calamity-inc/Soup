@@ -22,6 +22,7 @@ namespace soup
 		IR_LOCAL_SET,
 		IR_CALL,
 		IR_RET,
+		IR_IFELSE,
 		IR_WHILE,
 
 		IR_ADD_I32,
@@ -94,6 +95,10 @@ namespace soup
 			{
 				int64_t index;
 			} call;
+			struct
+			{
+				size_t ifinsns;
+			} ifelse;
 		};
 		std::vector<UniquePtr<irExpression>> children{};
 
