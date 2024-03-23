@@ -19,17 +19,26 @@ namespace soup
 		case IR_CALL: str.append("IR_CALL"); break;
 		case IR_RET: str.append("IR_RET"); break;
 		case IR_WHILE: str.append("IR_WHILE"); break;
-		case IR_ADD: str.append("IR_ADD"); break;
-		case IR_SUB: str.append("IR_SUB"); break;
-		case IR_MUL: str.append("IR_MUL"); break;
-		case IR_SDIV: str.append("IR_SDIV"); break;
-		case IR_UDIV: str.append("IR_UDIV"); break;
-		case IR_SMOD: str.append("IR_SMOD"); break;
-		case IR_UMOD: str.append("IR_UMOD"); break;
-		case IR_EQUALS: str.append("IR_EQUALS"); break;
-		case IR_NOTEQUALS: str.append("IR_NOTEQUALS"); break;
+		case IR_ADD_I32: str.append("IR_ADD_I32"); break;
+		case IR_ADD_I64: str.append("IR_ADD_I64"); break;
+		case IR_ADD_PTR: str.append("IR_ADD_PTR"); break;
+		case IR_SUB_I32: str.append("IR_SUB_I32"); break;
+		case IR_SUB_I64: str.append("IR_SUB_I64"); break;
+		case IR_MUL_I64: str.append("IR_MUL_I64"); break;
+		case IR_SDIV_I64: str.append("IR_SDIV_I64"); break;
+		case IR_UDIV_I64: str.append("IR_UDIV_I64"); break;
+		case IR_SMOD_I64: str.append("IR_SMOD_I64"); break;
+		case IR_UMOD_I64: str.append("IR_UMOD_I64"); break;
+		case IR_EQUALS_I8: str.append("IR_EQUALS_I8"); break;
+		case IR_EQUALS_I32: str.append("IR_EQUALS_I32"); break;
+		case IR_EQUALS_I64: str.append("IR_EQUALS_I64"); break;
+		case IR_NOTEQUALS_I8: str.append("IR_NOTEQUALS_I8"); break;
+		case IR_NOTEQUALS_I32: str.append("IR_NOTEQUALS_I32"); break;
+		case IR_NOTEQUALS_I64: str.append("IR_NOTEQUALS_I64"); break;
 		case IR_LOAD_I8: str.append("IR_LOAD_I8"); break;
-		case IR_STORE: str.append("IR_STORE"); break;
+		case IR_STORE_I8: str.append("IR_STORE_I8"); break;
+		case IR_STORE_I32: str.append("IR_STORE_I32"); break;
+		case IR_STORE_I64: str.append("IR_STORE_I64"); break;
 		case IR_I64_TO_PTR: str.append("IR_I64_TO_PTR"); break;
 		case IR_I64_TO_I32: str.append("IR_I64_TO_I32"); break;
 		case IR_I64_TO_I8: str.append("IR_I64_TO_I8"); break;
@@ -65,7 +74,9 @@ namespace soup
 
 	irType irExpression::getResultType(const irFunction& fn) const noexcept
 	{
-		if (type == IR_CONST_BOOL || type == IR_EQUALS || type == IR_NOTEQUALS)
+		if (type == IR_CONST_BOOL
+			|| (type >= IR_EQUALS_I8 && type <= IR_NOTEQUALS_I64)
+			)
 		{
 			return IR_BOOL;
 		}

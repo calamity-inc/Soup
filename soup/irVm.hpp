@@ -35,8 +35,6 @@ namespace soup
 
 			[[nodiscard]] static Variable fromArithmeticValue(int64_t value, irType type);
 
-			[[nodiscard]] int64_t getArithmeticValue() const noexcept;
-
 			[[nodiscard]] std::string toString() const noexcept;
 		};
 

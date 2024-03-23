@@ -24,20 +24,33 @@ namespace soup
 		IR_RET,
 		IR_WHILE,
 
-		// Arithmetic Binary Operators: (T, T) -> (T) where T must not be bool.
-		IR_ADD,
-		IR_SUB,
-		IR_MUL,
-		IR_SDIV,
-		IR_UDIV,
-		IR_SMOD,
-		IR_UMOD,
+		IR_ADD_I32,
+		IR_ADD_I64,
+		IR_ADD_PTR,
+		IR_SUB_I32,
+		IR_SUB_I64,
+		//IR_MUL_I32,
+		IR_MUL_I64,
+		//IR_SDIV_I32,
+		IR_SDIV_I64,
+		//IR_UDIV_I32,
+		IR_UDIV_I64,
+		//IR_SMOD_I32,
+		IR_SMOD_I64,
+		//IR_UMOD_I32,
+		IR_UMOD_I64,
 
-		IR_EQUALS, // (T, T) -> (bool)
-		IR_NOTEQUALS, // (T, T) -> (bool)
+		IR_EQUALS_I8,
+		IR_EQUALS_I32,
+		IR_EQUALS_I64,
+		IR_NOTEQUALS_I8,
+		IR_NOTEQUALS_I32,
+		IR_NOTEQUALS_I64,
 
 		IR_LOAD_I8, // (ptr) -> (i8)
-		IR_STORE, // (ptr, T) -> () where T must not be bool.
+		IR_STORE_I8, // (ptr, i8) -> ()
+		IR_STORE_I32, // (ptr, i32) -> ()
+		IR_STORE_I64, // (ptr, i64) -> ()
 
 		IR_I64_TO_PTR, // zero-extend
 		IR_I64_TO_I32,

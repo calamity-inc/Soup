@@ -120,83 +120,148 @@ namespace soup
 			}
 			return {};
 
-		case IR_ADD:
+		case IR_ADD_I32:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
-				return { Variable::fromArithmeticValue(lhs.getArithmeticValue() + rhs.getArithmeticValue(), lhs.type) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I32);
+				return { Variable(lhs.value.i32 + rhs.value.i32) };
 			}
 
-		case IR_SUB:
+		case IR_ADD_I64:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
-				return { Variable::fromArithmeticValue(lhs.getArithmeticValue() - rhs.getArithmeticValue(), lhs.type) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(lhs.value.i64 + rhs.value.i64) };
 			}
 
-		case IR_MUL:
+		case IR_ADD_PTR:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
-				return { Variable::fromArithmeticValue(lhs.getArithmeticValue() * rhs.getArithmeticValue(), lhs.type) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_PTR);
+				return { Variable(lhs.value.ptr + rhs.value.ptr) };
 			}
 
-		case IR_SDIV:
+		case IR_SUB_I32:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
-				return { Variable::fromArithmeticValue(lhs.getArithmeticValue() / rhs.getArithmeticValue(), lhs.type) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I32);
+				return { Variable(lhs.value.i32 - rhs.value.i32) };
 			}
 
-		case IR_UDIV:
+		case IR_SUB_I64:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
-				return { Variable::fromArithmeticValue(static_cast<uint64_t>(lhs.getArithmeticValue()) / static_cast<uint64_t>(rhs.getArithmeticValue()), lhs.type) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(lhs.value.i64 - rhs.value.i64) };
 			}
 
-		case IR_SMOD:
+		case IR_MUL_I64:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
-				return { Variable::fromArithmeticValue(lhs.getArithmeticValue() / rhs.getArithmeticValue(), lhs.type) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(lhs.value.i64 * rhs.value.i64) };
 			}
 
-		case IR_UMOD:
+		case IR_SDIV_I64:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
-				return { Variable::fromArithmeticValue(static_cast<uint64_t>(lhs.getArithmeticValue()) % static_cast<uint64_t>(rhs.getArithmeticValue()), lhs.type) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(lhs.value.i64 / rhs.value.i64) };
 			}
 
-		case IR_EQUALS:
+		case IR_UDIV_I64:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				return { Variable(lhs.type == rhs.type && lhs.getArithmeticValue() == rhs.getArithmeticValue()) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(static_cast<uint64_t>(lhs.value.i64) / static_cast<uint64_t>(rhs.value.i64)) };
 			}
 
-		case IR_NOTEQUALS:
+		case IR_SMOD_I64:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto lhs = oneret(execute(m, *insn.children[0]));
 				auto rhs = oneret(execute(m, *insn.children[1]));
-				return { Variable(lhs.type != rhs.type || lhs.getArithmeticValue() != rhs.getArithmeticValue()) };
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(lhs.value.i64 % rhs.value.i64) };
+			}
+
+		case IR_UMOD_I64:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(static_cast<uint64_t>(lhs.value.i64) % static_cast<uint64_t>(rhs.value.i64)) };
+			}
+
+		case IR_EQUALS_I8:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I8);
+				return { Variable(lhs.value.i8 == rhs.value.i8) };
+			}
+
+		case IR_EQUALS_I32:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I32);
+				return { Variable(lhs.value.i32 == rhs.value.i32) };
+			}
+
+		case IR_EQUALS_I64:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(lhs.value.i64 == rhs.value.i64) };
+			}
+
+		case IR_NOTEQUALS_I8:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I8);
+				return { Variable(lhs.value.i8 != rhs.value.i8) };
+			}
+
+		case IR_NOTEQUALS_I32:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I32);
+				return { Variable(lhs.value.i32 != rhs.value.i32) };
+			}
+
+		case IR_NOTEQUALS_I64:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type == IR_I64);
+				return { Variable(lhs.value.i64 != rhs.value.i64) };
 			}
 
 		case IR_LOAD_I8:
@@ -206,31 +271,38 @@ namespace soup
 				return { Variable(static_cast<int8_t>(memory.at(ptr.value.ptr))) };
 			}
 
-		case IR_STORE:
+		case IR_STORE_I8:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
 				auto ptr = oneret(execute(m, *insn.children[0]));
 				auto value = oneret(execute(m, *insn.children[1]));
-				switch (value.type)
-				{
-				case IR_BOOL:
-					SOUP_ASSERT_UNREACHABLE;
-
-				case IR_I8:
-					*reinterpret_cast<int8_t*>(&memory.at(ptr.value.ptr)) = value.value.i8;
-					break;
-
-				case IR_I32:
-					*reinterpret_cast<int32_t*>(&memory.at(ptr.value.ptr)) = value.value.i32;
-					break;
-
-				case IR_I64:
-				case IR_PTR:
-					*reinterpret_cast<int64_t*>(&memory.at(ptr.value.ptr)) = value.value.i64;
-					break;
-				}
+				SOUP_ASSERT(ptr.type == IR_PTR);
+				SOUP_ASSERT(value.type == IR_I8);
+				*reinterpret_cast<int8_t*>(&memory.at(ptr.value.ptr)) = value.value.i8;
 				return {};
 			}
+
+		case IR_STORE_I32:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto ptr = oneret(execute(m, *insn.children[0]));
+				auto value = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(ptr.type == IR_PTR);
+				SOUP_ASSERT(value.type == IR_I32);
+				*reinterpret_cast<int32_t*>(&memory.at(ptr.value.ptr)) = value.value.i32;
+			}
+			return {};
+
+		case IR_STORE_I64:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto ptr = oneret(execute(m, *insn.children[0]));
+				auto value = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(ptr.type == IR_PTR);
+				SOUP_ASSERT(value.type == IR_I64);
+				*reinterpret_cast<int64_t*>(&memory.at(ptr.value.ptr)) = value.value.i64;
+			}
+			return {};
 
 		case IR_I64_TO_PTR:
 			{
@@ -293,19 +365,6 @@ namespace soup
 		case IR_I32: return static_cast<int32_t>(value);
 		case IR_I64: return static_cast<int64_t>(value);
 		case IR_PTR: return static_cast<uint64_t>(value);
-		}
-		SOUP_UNREACHABLE;
-	}
-
-	int64_t irVm::Variable::getArithmeticValue() const noexcept
-	{
-		switch (type)
-		{
-		case IR_BOOL: return value.b;
-		case IR_I8: return value.i8;
-		case IR_I32: return value.i32;
-		case IR_I64: return value.i64;
-		case IR_PTR: return value.ptr;
 		}
 		SOUP_UNREACHABLE;
 	}

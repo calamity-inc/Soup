@@ -166,13 +166,13 @@ namespace soup
 
 	[[nodiscard]] static uint8_t getbinopr(const char* token_keyword) noexcept
 	{
-		if (token_keyword == TK_ADD) { return IR_ADD; }
-		if (token_keyword == TK_SUB) { return IR_SUB; }
-		if (token_keyword == TK_MUL) { return IR_MUL; }
-		if (token_keyword == TK_DIV) { return IR_SDIV; }
-		if (token_keyword == TK_MOD) { return IR_SMOD; }
-		if (token_keyword == TK_EQUALS) { return IR_EQUALS; }
-		if (token_keyword == TK_NOTEQUALS) { return IR_NOTEQUALS; }
+		if (token_keyword == TK_ADD) { return IR_ADD_I64; }
+		if (token_keyword == TK_SUB) { return IR_SUB_I64; }
+		if (token_keyword == TK_MUL) { return IR_MUL_I64; }
+		if (token_keyword == TK_DIV) { return IR_SDIV_I64; }
+		if (token_keyword == TK_MOD) { return IR_SMOD_I64; }
+		if (token_keyword == TK_EQUALS) { return IR_EQUALS_I64; }
+		if (token_keyword == TK_NOTEQUALS) { return IR_NOTEQUALS_I64; }
 		return 0xff;
 	}
 
@@ -180,7 +180,7 @@ namespace soup
 	{
 		switch (opr)
 		{
-		case IR_MUL: case IR_SDIV: case IR_SMOD: return 2;
+		case IR_MUL_I64: case IR_SDIV_I64: case IR_SMOD_I64: return 2;
 		}
 		return 1;
 	}
@@ -322,7 +322,7 @@ namespace soup
 				}
 				else if (lp.i->getLiteral() == "__store8")
 				{
-					ret = soup::make_unique<irExpression>(IR_STORE);
+					ret = soup::make_unique<irExpression>(IR_STORE_I8);
 					funcargs(lp, m, fn, *ret);
 					propagateType(fn, *ret->children.at(0), IR_PTR);
 					auto valueExpr = std::move(ret->children.at(1));
@@ -380,7 +380,7 @@ namespace soup
 		{
 			fn.getLocalType(e.local_get.index) = type;
 		}
-		else if (e.type == IR_ADD || e.type == IR_SUB)
+		else if (e.type == IR_ADD_I64 || e.type == IR_SUB_I64)
 		{
 			for (auto& child : e.children)
 			{

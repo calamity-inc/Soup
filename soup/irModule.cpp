@@ -38,11 +38,11 @@ namespace soup
 			{
 				auto loop = soup::make_unique<irExpression>(IR_WHILE);
 				{
-					auto condition = soup::make_unique<irExpression>(IR_NOTEQUALS);
+					auto condition = soup::make_unique<irExpression>(IR_NOTEQUALS_I8);
 					{
 						auto readExpr = soup::make_unique<irExpression>(IR_LOAD_I8);
 						{
-							auto addExpr = soup::make_unique<irExpression>(IR_ADD);
+							auto addExpr = soup::make_unique<irExpression>(IR_ADD_PTR);
 							{
 								auto localGetExpr = soup::make_unique<irExpression>(IR_LOCAL_GET);
 								localGetExpr->local_get.index = 0;
@@ -72,7 +72,7 @@ namespace soup
 					auto setInsn = soup::make_unique<irExpression>(IR_LOCAL_SET);
 					setInsn->local_set.index = 1;
 					{
-						auto addExpr = soup::make_unique<irExpression>(IR_ADD);
+						auto addExpr = soup::make_unique<irExpression>(IR_ADD_I64);
 						{
 							auto getLocal = soup::make_unique<irExpression>(IR_LOCAL_GET);
 							getLocal->local_get.index = 1;

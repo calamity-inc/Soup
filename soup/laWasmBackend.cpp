@@ -26,7 +26,7 @@ namespace soup
 					fn.parameters = { IR_I32, IR_PTR, IR_I64 };
 					fn.returns.emplace_back(IR_I64);
 					{
-						auto storeInsn = soup::make_unique<irExpression>(IR_STORE);
+						auto storeInsn = soup::make_unique<irExpression>(IR_STORE_I32);
 						{
 							auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
 							ptrConst->const_ptr.value = m.data.size() + 0;
@@ -40,7 +40,7 @@ namespace soup
 						fn.insns.emplace_back(std::move(storeInsn));
 					}
 					{
-						auto storeInsn = soup::make_unique<irExpression>(IR_STORE);
+						auto storeInsn = soup::make_unique<irExpression>(IR_STORE_I32);
 						{
 							auto ptrConst = soup::make_unique<irExpression>(IR_CONST_PTR);
 							ptrConst->const_ptr.value = m.data.size() + 4;
@@ -309,7 +309,7 @@ namespace soup
 		}
 		for (const auto& insn : fn.insns)
 		{
-			int ret = compileExpression(m, fn, w, *insn);
+			int ret = compileExpression(m, w, *insn);
 			if (insn->type == IR_RET)
 			{
 				break;
@@ -323,7 +323,7 @@ namespace soup
 		SOUP_MOVE_RETURN(w.data);
 	}
 
-	int laWasmBackend::compileExpression(const irModule& m, const irFunction& fn, StringWriter& w, const irExpression& e)
+	int laWasmBackend::compileExpression(const irModule& m, StringWriter& w, const irExpression& e)
 	{
 		uint8_t b;
 		switch (e.type)
@@ -359,7 +359,7 @@ namespace soup
 			return 1;
 
 		case IR_LOCAL_SET:
-			compileExpression(m, fn, w, *e.children.at(0));
+			compileExpression(m, w, *e.children.at(0));
 			b = 0x21; w.u8(b); // local.set
 			w.oml(e.local_set.index);
 			return 0;
@@ -369,7 +369,7 @@ namespace soup
 				int nargs = 0;
 				for (const auto& child : e.children)
 				{
-					nargs += compileExpression(m, fn, w, *child);
+					nargs += compileExpression(m, w, *child);
 				}
 				if (e.call.index >= 0)
 				{
@@ -400,7 +400,7 @@ namespace soup
 				int ret = 0;
 				for (const auto& child : e.children)
 				{
-					ret += compileExpression(m, fn, w, *child);
+					ret += compileExpression(m, w, *child);
 				}
 				return ret;
 			}
@@ -408,12 +408,12 @@ namespace soup
 		case IR_WHILE:
 			b = 0x03; w.u8(b); // loop
 			b = 0x40; w.u8(b); // void
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			b = 0x04; w.u8(b); // if
 			b = 0x40; w.u8(b); // void
 			for (size_t i = 1; i != e.children.size(); ++i)
 			{
-				int ret = compileExpression(m, fn, w, *e.children[i]);
+				int ret = compileExpression(m, w, *e.children[i]);
 				while (ret--)
 				{
 					uint8_t b = 0x1a; w.u8(b); // drop
@@ -425,161 +425,167 @@ namespace soup
 			b = 0x0b; w.u8(b); // end
 			return 0;
 
-		case IR_ADD:
+		case IR_ADD_I32:
+		case IR_ADD_PTR:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			if (e.children[0]->getResultType(fn) == IR_PTR)
-			{
-				b = 0x6a; w.u8(b); // i32.add
-			}
-			else
-			{
-				b = 0x7c; w.u8(b); // i64.add
-			}
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x6a; w.u8(b); // i32.add
 			return 1;
 
-		case IR_SUB:
+		case IR_ADD_I64:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			if (e.children[0]->getResultType(fn) == IR_PTR)
-			{
-				b = 0x6b; w.u8(b); // i32.sub
-			}
-			else
-			{
-				b = 0x7d; w.u8(b); // i64.sub
-			}
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x7c; w.u8(b); // i64.add
 			return 1;
 
-		case IR_MUL:
+		case IR_SUB_I32:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x6b; w.u8(b); // i32.sub
+			return 1;
+
+		case IR_SUB_I64:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x7d; w.u8(b); // i64.sub
+			return 1;
+
+		case IR_MUL_I64:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
 			b = 0x7e; w.u8(b); // i64.mul
 			return 1;
 
-		case IR_SDIV:
+		case IR_SDIV_I64:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
 			b = 0x7f; w.u8(b); // i64.div_s
 			return 1;
 
-		case IR_UDIV:
+		case IR_UDIV_I64:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
 			b = 0x80; w.u8(b); // i64.div_u
 			return 1;
 
-		case IR_SMOD:
+		case IR_SMOD_I64:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
 			b = 0x81; w.u8(b); // i64.rem_s
 			return 1;
 
-		case IR_UMOD:
+		case IR_UMOD_I64:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
 			b = 0x82; w.u8(b); // i64.rem_u
 			return 1;
 
-		case IR_EQUALS:
+
+		case IR_EQUALS_I8:
+		case IR_EQUALS_I32:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			if (auto type = e.children[0]->getResultType(fn); type == IR_I8 || type == IR_I32)
-			{
-				b = 0x46; w.u8(b); // i32.eq
-			}
-			else
-			{
-				b = 0x51; w.u8(b); // i64.eq
-			}
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x46; w.u8(b); // i32.eq
 			return 1;
 
-		case IR_NOTEQUALS:
+		case IR_EQUALS_I64:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			if (auto type = e.children[0]->getResultType(fn); type == IR_I8 || type == IR_I32)
-			{
-				b = 0x47; w.u8(b); // i32.ne
-			}
-			else
-			{
-				b = 0x52; w.u8(b); // i64.ne
-			}
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x51; w.u8(b); // i64.eq
+			return 1;
+
+		case IR_NOTEQUALS_I8:
+		case IR_NOTEQUALS_I32:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x47; w.u8(b); // i32.ne
+			return 1;
+
+		case IR_NOTEQUALS_I64:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x52; w.u8(b); // i64.ne
 			return 1;
 
 		case IR_LOAD_I8:
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			b = 0x2d; w.u8(b); // i32.load8_u
 			w.skip(2); // memflags + offset
 			return 1;
 
-		case IR_STORE:
+		case IR_STORE_I8:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			{
-				auto type = e.children[1]->getResultType(fn);
-				if (type == IR_I64)
-				{
-					b = 0x37; w.u8(b); // i64.store
-				}
-				else if (type == IR_I8)
-				{
-					b = 0x3a; w.u8(b); // i32.store8
-				}
-				else
-				{
-					b = 0x36; w.u8(b); // i32.store
-				}
-			}
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x3a; w.u8(b); // i32.store8
+			w.skip(2); // memflags + offset
+			return 0;
+
+		case IR_STORE_I32:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x36; w.u8(b); // i32.store
+			w.skip(2); // memflags + offset
+			return 0;
+
+		case IR_STORE_I64:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+			b = 0x37; w.u8(b); // i64.store
 			w.skip(2); // memflags + offset
 			return 0;
 
 		case IR_I64_TO_PTR:
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			b = 0xa7; w.u8(b); // i32.wrap_i64
 			return 1;
 
 		case IR_I64_TO_I32:
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			b = 0xa7; w.u8(b); // i32.wrap_i64
 			return 1;
 
 		case IR_I64_TO_I8:
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			b = 0xa7; w.u8(b); // i32.wrap_i64
 			// TODO: Modulo 0xff to ensure it's a valid i8 now
 			return 1;
 
 		case IR_I32_TO_I64_SX:
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			b = 0xac; w.u8(b); // i64.extend_i32_s
 			return 1;
 
 		case IR_I32_TO_I64_ZX:
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			b = 0xad; w.u8(b); // i64.extend_i32_u
 			return 1;
 
 		case IR_I8_TO_I64_SX:
 			// Possible optimisation: Detect child being IR_READ_I8 and emit directly as i64.load8_s.
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			/* First, sign-extend i8 to i32: */ b = 0xc0; w.u8(b); // i32.extend8_s
 			/* Then, sign-extend i32 to i64: */ b = 0xac; w.u8(b); // i64.extend_i32_s
 			return 1;
 
 		case IR_I8_TO_I64_ZX:
 			// Possible optimisation: Detect child being IR_READ_I8 and emit directly as i64.load8_u.
-			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
 			/* First, zero-extend i8 to i32: IR_READ_I8 would have left the top bits all zero, so nothing to do. */
 			/* Then, zero-extend i32 to i64: */ b = 0xad; w.u8(b); // i64.extend_i32_u
 			return 1;
