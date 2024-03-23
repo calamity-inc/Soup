@@ -1,5 +1,7 @@
 #include "irVm.hpp"
 
+#include "rand.hpp"
+
 namespace soup
 {
 	[[nodiscard]] static irVm::Variable oneret(std::vector<irVm::Variable>&& ret)
@@ -12,9 +14,7 @@ namespace soup
 	{
 		for (const auto& local : fn.locals)
 		{
-			// TODO: Consider if there should be any guarantees about locals being initialised to 0.
-			// Otherwise, randomise the value here to avoid ossification.
-			locals.emplace_back(Variable::fromArithmeticValue(0, local));
+			locals.emplace_back(Variable::fromArithmeticValue(soup::rand.t<uint64_t>(0, -1), local));
 		}
 
 		for (const auto& insn : fn.insns)

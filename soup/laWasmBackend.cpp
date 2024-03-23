@@ -359,6 +359,7 @@ namespace soup
 			return 1;
 
 		case IR_LOCAL_SET:
+			// Possible optimisation: If this is the first instruction and the local is being set to a constant 0, this instruction can be omitted.
 			compileExpression(m, w, *e.children.at(0));
 			b = 0x21; w.u8(b); // local.set
 			w.oml(e.local_set.index);
