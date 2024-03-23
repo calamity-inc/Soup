@@ -30,6 +30,8 @@ namespace soup
 		IR_MUL,
 		IR_SDIV,
 		IR_UDIV,
+		IR_SMOD,
+		IR_UMOD,
 
 		IR_EQUALS, // (T, T) -> (bool)
 		IR_NOTEQUALS, // (T, T) -> (bool)
@@ -39,6 +41,7 @@ namespace soup
 
 		IR_I64_TO_PTR, // zero-extend
 		IR_I64_TO_I32,
+		IR_I64_TO_I8,
 		IR_I32_TO_I64_SX,
 		IR_I32_TO_I64_ZX,
 		IR_I8_TO_I64_SX,

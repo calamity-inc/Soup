@@ -15,6 +15,7 @@ namespace soup
 	static constexpr const char* TK_SUB = "-";
 	static constexpr const char* TK_MUL = "*";
 	static constexpr const char* TK_DIV = "/";
+	static constexpr const char* TK_MOD = "%";
 	static constexpr const char* TK_COMMA = ",";
 	static constexpr const char* TK_LPAREN = "(";
 	static constexpr const char* TK_RPAREN = ")";
@@ -34,6 +35,7 @@ namespace soup
 		ld.addToken(TK_SUB);
 		ld.addToken(TK_MUL);
 		ld.addToken(TK_DIV);
+		ld.addToken(TK_MOD);
 		ld.addToken(TK_COMMA);
 		ld.addToken(TK_LPAREN);
 		ld.addToken(TK_RPAREN);
@@ -168,6 +170,7 @@ namespace soup
 		if (token_keyword == TK_SUB) { return IR_SUB; }
 		if (token_keyword == TK_MUL) { return IR_MUL; }
 		if (token_keyword == TK_DIV) { return IR_SDIV; }
+		if (token_keyword == TK_MOD) { return IR_SMOD; }
 		if (token_keyword == TK_EQUALS) { return IR_EQUALS; }
 		if (token_keyword == TK_NOTEQUALS) { return IR_NOTEQUALS; }
 		return 0xff;
@@ -177,7 +180,7 @@ namespace soup
 	{
 		switch (opr)
 		{
-		case IR_MUL: case IR_SDIV: return 2;
+		case IR_MUL: case IR_SDIV: case IR_SMOD: return 2;
 		}
 		return 1;
 	}
@@ -301,7 +304,7 @@ namespace soup
 					ret = soup::make_unique<irExpression>(IR_I64_TO_PTR);
 					funcargs(lp, m, fn, *ret);
 				}
-				else if (lp.i->getLiteral() == "__read_u8")
+				else if (lp.i->getLiteral() == "__load_u8")
 				{
 					auto insn = soup::make_unique<irExpression>(IR_LOAD_I8);
 					funcargs(lp, m, fn, *insn);
@@ -309,12 +312,22 @@ namespace soup
 					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_ZX);
 					ret->children.emplace_back(std::move(insn));
 				}
-				else if (lp.i->getLiteral() == "__read_i8")
+				else if (lp.i->getLiteral() == "__load_i8")
 				{
 					auto insn = soup::make_unique<irExpression>(IR_LOAD_I8);
 					funcargs(lp, m, fn, *insn);
+					propagateType(fn, *insn->children.at(0), IR_PTR);
 					ret = soup::make_unique<irExpression>(IR_I8_TO_I64_SX);
 					ret->children.emplace_back(std::move(insn));
+				}
+				else if (lp.i->getLiteral() == "__store8")
+				{
+					ret = soup::make_unique<irExpression>(IR_STORE);
+					funcargs(lp, m, fn, *ret);
+					propagateType(fn, *ret->children.at(0), IR_PTR);
+					auto valueExpr = std::move(ret->children.at(1));
+					ret->children.at(1) = soup::make_unique<irExpression>(IR_I64_TO_I8);
+					ret->children.at(1)->children.emplace_back(std::move(valueExpr));
 				}
 				else if (lp.i->getLiteral() == "print")
 				{

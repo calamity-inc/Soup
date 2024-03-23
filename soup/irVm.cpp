@@ -165,6 +165,24 @@ namespace soup
 				return { Variable::fromArithmeticValue(static_cast<uint64_t>(lhs.getArithmeticValue()) / static_cast<uint64_t>(rhs.getArithmeticValue()), lhs.type) };
 			}
 
+		case IR_SMOD:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
+				return { Variable::fromArithmeticValue(lhs.getArithmeticValue() / rhs.getArithmeticValue(), lhs.type) };
+			}
+
+		case IR_UMOD:
+			{
+				SOUP_ASSERT(insn.children.size() == 2);
+				auto lhs = oneret(execute(m, *insn.children[0]));
+				auto rhs = oneret(execute(m, *insn.children[1]));
+				SOUP_ASSERT(lhs.type == rhs.type && lhs.type != IR_BOOL);
+				return { Variable::fromArithmeticValue(static_cast<uint64_t>(lhs.getArithmeticValue()) % static_cast<uint64_t>(rhs.getArithmeticValue()), lhs.type) };
+			}
+
 		case IR_EQUALS:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);
@@ -226,6 +244,13 @@ namespace soup
 				auto var = oneret(execute(m, *insn.children.at(0)));
 				SOUP_ASSERT(var.type == IR_I64);
 				return { Variable(static_cast<int32_t>(var.value.i64)) };
+			}
+
+		case IR_I64_TO_I8:
+			{
+				auto var = oneret(execute(m, *insn.children.at(0)));
+				SOUP_ASSERT(var.type == IR_I64);
+				return { Variable(static_cast<int8_t>(var.value.i64)) };
 			}
 
 		case IR_I32_TO_I64_SX:

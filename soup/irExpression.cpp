@@ -24,12 +24,15 @@ namespace soup
 		case IR_MUL: str.append("IR_MUL"); break;
 		case IR_SDIV: str.append("IR_SDIV"); break;
 		case IR_UDIV: str.append("IR_UDIV"); break;
+		case IR_SMOD: str.append("IR_SMOD"); break;
+		case IR_UMOD: str.append("IR_UMOD"); break;
 		case IR_EQUALS: str.append("IR_EQUALS"); break;
 		case IR_NOTEQUALS: str.append("IR_NOTEQUALS"); break;
 		case IR_LOAD_I8: str.append("IR_LOAD_I8"); break;
 		case IR_STORE: str.append("IR_STORE"); break;
 		case IR_I64_TO_PTR: str.append("IR_I64_TO_PTR"); break;
 		case IR_I64_TO_I32: str.append("IR_I64_TO_I32"); break;
+		case IR_I64_TO_I8: str.append("IR_I64_TO_I8"); break;
 		case IR_I32_TO_I64_SX: str.append("IR_I32_TO_I64_SX"); break;
 		case IR_I32_TO_I64_ZX: str.append("IR_I32_TO_I64_ZX"); break;
 		case IR_I8_TO_I64_SX: str.append("IR_I8_TO_I64_SX"); break;
@@ -66,7 +69,7 @@ namespace soup
 		{
 			return IR_BOOL;
 		}
-		if (type == IR_CONST_I8 || type == IR_LOAD_I8)
+		if (type == IR_CONST_I8 || type == IR_LOAD_I8 || type == IR_I64_TO_I8)
 		{
 			return IR_I8;
 		}

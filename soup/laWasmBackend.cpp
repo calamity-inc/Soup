@@ -474,6 +474,20 @@ namespace soup
 			b = 0x80; w.u8(b); // i64.div_u
 			return 1;
 
+		case IR_SMOD:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			b = 0x81; w.u8(b); // i64.rem_s
+			return 1;
+
+		case IR_UMOD:
+			SOUP_ASSERT(e.children.size() == 2);
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
+			b = 0x82; w.u8(b); // i64.rem_u
+			return 1;
+
 		case IR_EQUALS:
 			SOUP_ASSERT(e.children.size() == 2);
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
@@ -512,7 +526,21 @@ namespace soup
 			SOUP_ASSERT(e.children.size() == 2);
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[0]) == 1);
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children[1]) == 1);
-			b = 0x36; w.u8(b); // i32.store
+			{
+				auto type = e.children[1]->getResultType(fn);
+				if (type == IR_I64)
+				{
+					b = 0x37; w.u8(b); // i64.store
+				}
+				else if (type == IR_I8)
+				{
+					b = 0x3a; w.u8(b); // i32.store8
+				}
+				else
+				{
+					b = 0x36; w.u8(b); // i32.store
+				}
+			}
 			w.skip(2); // memflags + offset
 			return 0;
 
@@ -524,6 +552,12 @@ namespace soup
 		case IR_I64_TO_I32:
 			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
 			b = 0xa7; w.u8(b); // i32.wrap_i64
+			return 1;
+
+		case IR_I64_TO_I8:
+			SOUP_ASSERT(compileExpression(m, fn, w, *e.children.at(0)) == 1);
+			b = 0xa7; w.u8(b); // i32.wrap_i64
+			// TODO: Modulo 0xff to ensure it's a valid i8 now
 			return 1;
 
 		case IR_I32_TO_I64_SX:
