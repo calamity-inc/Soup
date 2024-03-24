@@ -329,10 +329,7 @@ namespace soup
 			{
 				break;
 			}
-			while (ret--)
-			{
-				uint8_t b = 0x1a; w.u8(b); // drop
-			}
+			discard(w, ret);
 		}
 		uint8_t b = 0x0b; w.u8(b); // end
 		SOUP_MOVE_RETURN(w.data);
@@ -389,10 +386,7 @@ namespace soup
 				if (e.call.index >= 0)
 				{
 					auto overflow = nargs - m.func_exports.at(e.call.index).parameters.size();
-					while (overflow--)
-					{
-						uint8_t b = 0x1a; w.u8(b); // drop
-					}
+					discard(w, overflow);
 					b = 0x10; w.u8(b); // call
 					w.oml(e.call.index + m.imports.size());
 					return static_cast<int>(m.func_exports.at(e.call.index).returns.size());
@@ -400,10 +394,7 @@ namespace soup
 				else
 				{
 					auto overflow = nargs - m.imports.at(~e.call.index).func.parameters.size();
-					while (overflow--)
-					{
-						uint8_t b = 0x1a; w.u8(b); // drop
-					}
+					discard(w, overflow);
 					b = 0x10; w.u8(b); // call
 					w.oml(~e.call.index);
 					return static_cast<int>(m.imports.at(~e.call.index).func.returns.size());
@@ -421,50 +412,85 @@ namespace soup
 			}
 
 		case IR_IFELSE:
-			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
-			b = 0x04; w.u8(b); // if
-			b = 0x40; w.u8(b); // void
-			for (size_t i = 0; i != e.ifelse.ifinsns; ++i)
+			if (1 + e.ifelse.ifinsns == e.children.size()) // If without else?
 			{
-				int ret = compileExpression(m, w, *e.children[1 + i]);
-				while (ret--)
+				SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
+				b = 0x04; w.u8(b); // if
+				b = 0x40; w.u8(b); // void
+				for (size_t i = 0; i != e.ifelse.ifinsns; ++i)
 				{
-					uint8_t b = 0x1a; w.u8(b); // drop
+					discard(w, compileExpression(m, w, *e.children[1 + i]));
 				}
+				b = 0x0b; w.u8(b); // end
 			}
-			if (1 + e.ifelse.ifinsns != e.children.size())
+			else if (e.children.at(0)->isNegativeCompareToConstantZero())
 			{
+				auto inv_cond = e.children.at(0)->inverted();
+				SOUP_ASSERT(compileExpression(m, w, *inv_cond) == 1);
+				b = 0x04; w.u8(b); // if
+				b = 0x40; w.u8(b); // void
+				for (size_t i = 1 + e.ifelse.ifinsns; i != e.children.size(); ++i)
+				{
+					discard(w, compileExpression(m, w, *e.children[i]));
+				}
+				b = 0x05; w.u8(b); // else
+				for (size_t i = 0; i != e.ifelse.ifinsns; ++i)
+				{
+					discard(w, compileExpression(m, w, *e.children[1 + i]));
+				}
+				b = 0x0b; w.u8(b); // end
+			}
+			else
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
+				b = 0x04; w.u8(b); // if
+				b = 0x40; w.u8(b); // void
+				for (size_t i = 0; i != e.ifelse.ifinsns; ++i)
+				{
+					discard(w, compileExpression(m, w, *e.children[1 + i]));
+				}
 				b = 0x05; w.u8(b); // else
 				for (size_t i = 1 + e.ifelse.ifinsns; i != e.children.size(); ++i)
 				{
-					int ret = compileExpression(m, w, *e.children[i]);
-					while (ret--)
-					{
-						uint8_t b = 0x1a; w.u8(b); // drop
-					}
+					discard(w, compileExpression(m, w, *e.children[i]));
 				}
+				b = 0x0b; w.u8(b); // end
 			}
-			b = 0x0b; w.u8(b); // end
 			return 0;
 
 		case IR_WHILE:
 			b = 0x03; w.u8(b); // loop
 			b = 0x40; w.u8(b); // void
-			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
-			b = 0x04; w.u8(b); // if
-			b = 0x40; w.u8(b); // void
-			for (size_t i = 1; i != e.children.size(); ++i)
+			if (false) // there may be some situations where inverting the condition could lead to faster code, but I'm not sure.
 			{
-				int ret = compileExpression(m, w, *e.children[i]);
-				while (ret--)
+				auto inv_cond = e.children.at(0)->inverted();
+				b = 0x02; w.u8(b); // block
+				b = 0x40; w.u8(b); // void
+				SOUP_ASSERT(compileExpression(m, w, *inv_cond) == 1);
+				b = 0x0d; w.u8(b); // br_if
+				b = 0x00; w.u8(b); // to end of 'block'
+				for (size_t i = 1; i != e.children.size(); ++i)
 				{
-					uint8_t b = 0x1a; w.u8(b); // drop
+					discard(w, compileExpression(m, w, *e.children[i]));
 				}
+				b = 0x0c; w.u8(b); // br
+				b = 0x01; w.u8(b); // skip over 'block'; back to 'loop'
+				b = 0x0b; w.u8(b); // end of 'block'
 			}
-			b = 0x0c; w.u8(b); // br
-			b = 0x01; w.u8(b); // skip over 'if'; back to 'loop'
-			b = 0x0b; w.u8(b); // end
-			b = 0x0b; w.u8(b); // end
+			else
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
+				b = 0x04; w.u8(b); // if
+				b = 0x40; w.u8(b); // void
+				for (size_t i = 1; i != e.children.size(); ++i)
+				{
+					discard(w, compileExpression(m, w, *e.children[i]));
+				}
+				b = 0x0c; w.u8(b); // br
+				b = 0x01; w.u8(b); // skip over 'if'; back to 'loop'
+				b = 0x0b; w.u8(b); // end of 'if'
+			}
+			b = 0x0b; w.u8(b); // end of 'loop'
 			return 0;
 
 		case IR_ADD_I32:
@@ -535,16 +561,42 @@ namespace soup
 		case IR_EQUALS_I8:
 		case IR_EQUALS_I32:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
-			b = 0x46; w.u8(b); // i32.eq
+			if (e.children[1]->isConstantZero())
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+				b = 0x45; w.u8(b); // i32.eqz
+			}
+			else if (e.children[0]->isConstantZero())
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+				b = 0x45; w.u8(b); // i32.eqz
+			}
+			else
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+				SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+				b = 0x46; w.u8(b); // i32.eq
+			}
 			return 1;
 
 		case IR_EQUALS_I64:
 			SOUP_ASSERT(e.children.size() == 2);
-			SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
-			SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
-			b = 0x51; w.u8(b); // i64.eq
+			if (e.children[1]->isConstantZero())
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+				b = 0x50; w.u8(b); // i64.eqz
+			}
+			else if (e.children[0]->isConstantZero())
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+				b = 0x50; w.u8(b); // i64.eqz
+			}
+			else
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children[0]) == 1);
+				SOUP_ASSERT(compileExpression(m, w, *e.children[1]) == 1);
+				b = 0x51; w.u8(b); // i64.eq
+			}
 			return 1;
 
 		case IR_NOTEQUALS_I8:
@@ -633,5 +685,13 @@ namespace soup
 			return 1;
 		}
 		SOUP_UNREACHABLE;
+	}
+
+	void laWasmBackend::discard(StringWriter& w, int nres)
+	{
+		while (nres--)
+		{
+			uint8_t b = 0x1a; w.u8(b); // drop
+		}
 	}
 }

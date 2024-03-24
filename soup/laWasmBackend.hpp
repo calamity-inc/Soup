@@ -22,5 +22,6 @@ namespace soup
 	protected:
 		static bool writeType(StringWriter& w, irType type);
 		static int compileExpression(const irModule& m, StringWriter& w, const irExpression& e);
+		static void discard(StringWriter& w, int nres);
 	};
 }

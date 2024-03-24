@@ -168,6 +168,15 @@ namespace soup
 		}
 	}
 
+	bool irExpression::isNegativeCompareToConstantZero() const noexcept
+	{
+		if (type >= IR_NOTEQUALS_I8 && type <= IR_NOTEQUALS_I64)
+		{
+			return children.at(0)->isConstantZero() || children.at(1)->isConstantZero();
+		}
+		return false;
+	}
+
 	bool irExpression::isFoldableConstant() const noexcept
 	{
 		if (type <= IR_CONST_PTR)
@@ -186,5 +195,40 @@ namespace soup
 			return true;
 		}
 		return false;
+	}
+
+	UniquePtr<irExpression> irExpression::clone() const
+	{
+		auto insn = soup::make_unique<irExpression>(this->type);
+		insn->union_value = this->union_value;
+		insn->children.reserve(children.size());
+		for (const auto& child : children)
+		{
+			insn->children.emplace_back(child->clone());
+		}
+		return insn;
+	}
+
+	UniquePtr<irExpression> irExpression::inverted() const
+	{
+		if (type == IR_CONST_BOOL)
+		{
+			auto insn = soup::make_unique<irExpression>(IR_CONST_BOOL);
+			insn->const_bool.value = !this->const_bool.value;
+			return insn;
+		}
+		if (type >= IR_EQUALS_I8 && type <= IR_EQUALS_I64)
+		{
+			auto insn = clone();
+			insn->type = static_cast<irExpressionType>(insn->type + (IR_NOTEQUALS_I8 - IR_EQUALS_I8));
+			return insn;
+		}
+		if (type >= IR_NOTEQUALS_I8 && type <= IR_NOTEQUALS_I64)
+		{
+			auto insn = clone();
+			insn->type = static_cast<irExpressionType>(insn->type + (IR_EQUALS_I8 - IR_NOTEQUALS_I8));
+			return insn;
+		}
+		SOUP_ASSERT_UNREACHABLE;
 	}
 }

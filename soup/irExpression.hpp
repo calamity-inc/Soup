@@ -99,6 +99,7 @@ namespace soup
 			{
 				size_t ifinsns;
 			} ifelse;
+			uint64_t union_value; static_assert(sizeof(size_t) <= sizeof(uint64_t));
 		};
 		std::vector<UniquePtr<irExpression>> children{};
 
@@ -122,6 +123,9 @@ namespace soup
 		[[nodiscard]] irType getResultType(const irFunction& fn) const noexcept;
 
 		[[nodiscard]] bool isConstantZero() const noexcept;
+		[[nodiscard]] bool isNegativeCompareToConstantZero() const noexcept;
 		[[nodiscard]] bool isFoldableConstant() const noexcept;
+		[[nodiscard]] UniquePtr<irExpression> clone() const;
+		[[nodiscard]] UniquePtr<irExpression> inverted() const;
 	};
 }
