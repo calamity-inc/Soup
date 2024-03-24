@@ -48,11 +48,6 @@ namespace soup
 		IR_NOTEQUALS_I32,
 		IR_NOTEQUALS_I64,
 
-		IR_LOAD_I8, // (ptr) -> (i8)
-		IR_STORE_I8, // (ptr, i8) -> ()
-		IR_STORE_I32, // (ptr, i32) -> ()
-		IR_STORE_I64, // (ptr, i64) -> ()
-
 		IR_I64_TO_PTR, // zero-extend
 		IR_I64_TO_I32,
 		IR_I64_TO_I8,
@@ -60,6 +55,11 @@ namespace soup
 		IR_I32_TO_I64_ZX,
 		IR_I8_TO_I64_SX,
 		IR_I8_TO_I64_ZX,
+
+		IR_LOAD_I8, // (ptr) -> (i8)
+		IR_STORE_I8, // (ptr, i8) -> ()
+		IR_STORE_I32, // (ptr, i32) -> ()
+		IR_STORE_I64, // (ptr, i64) -> ()
 	};
 
 	struct irExpression
@@ -117,6 +117,10 @@ namespace soup
 
 		[[nodiscard]] std::string toString(unsigned int depth = 0) const noexcept;
 
+		bool optimiseByConstantFolding();
+
 		[[nodiscard]] irType getResultType(const irFunction& fn) const noexcept;
+
+		[[nodiscard]] bool isFoldableConstant() const noexcept;
 	};
 }

@@ -33,5 +33,15 @@ namespace soup
 			}
 			return locals.at(index - parameters.size());
 		}
+
+		bool optimiseByConstantFolding()
+		{
+			bool any_changes = false;
+			for (auto& insn : insns)
+			{
+				any_changes |= insn->optimiseByConstantFolding();
+			}
+			return any_changes;
+		}
 	};
 }

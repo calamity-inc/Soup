@@ -1,6 +1,7 @@
 #include "irExpression.hpp"
 
 #include "irFunction.hpp"
+#include "irVm.hpp"
 
 namespace soup
 {
@@ -74,6 +75,59 @@ namespace soup
 		return str;
 	}
 
+	bool irExpression::optimiseByConstantFolding()
+	{
+		bool any_change = false;
+		if (isFoldableConstant())
+		{
+			if (type >= IR_ADD_I32 && type < IR_LOAD_I8)
+			{
+				irModule mod;
+				std::string memory;
+				irVm vm(memory);
+				auto res = vm.execute(mod, *this);
+				SOUP_ASSERT(res.size() == 1);
+				switch (res.at(0).type)
+				{
+				case IR_BOOL:
+					type = IR_CONST_BOOL;
+					const_bool.value = res.at(0).value.b;
+					break;
+
+				case IR_I8:
+					type = IR_CONST_I8;
+					const_i8.value = res.at(0).value.i8;
+					break;
+
+				case IR_I32:
+					type = IR_CONST_I32;
+					const_i32.value = res.at(0).value.i32;
+					break;
+
+				case IR_I64:
+					type = IR_CONST_I64;
+					const_i64.value = res.at(0).value.i64;
+					break;
+
+				case IR_PTR:
+					type = IR_CONST_PTR;
+					const_ptr.value = res.at(0).value.ptr;
+					break;
+				}
+				children.clear();
+				any_change |= true;
+			}
+		}
+		else
+		{
+			for (const auto& child : children)
+			{
+				any_change |= child->optimiseByConstantFolding();
+			}
+		}
+		return any_change;
+	}
+
 	irType irExpression::getResultType(const irFunction& fn) const noexcept
 	{
 		if (type == IR_CONST_BOOL
@@ -99,5 +153,25 @@ namespace soup
 			return fn.getLocalType(local_get.index);
 		}
 		return IR_I64;
+	}
+
+	bool irExpression::isFoldableConstant() const noexcept
+	{
+		if (type <= IR_CONST_PTR)
+		{
+			return true;
+		}
+		if (type >= IR_ADD_I32 && type < IR_LOAD_I8)
+		{
+			for (const auto& child : children)
+			{
+				if (!child->isFoldableConstant())
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }

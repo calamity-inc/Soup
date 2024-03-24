@@ -30,6 +30,16 @@ namespace soup
 		[[nodiscard]] uint64_t allocateConstData(std::string&& data);
 		[[nodiscard]] uint64_t allocateZeroedMemory(uint64_t size, uint8_t align = 1);
 
+		bool optimiseByConstantFolding()
+		{
+			bool any_changes = false;
+			for (auto& func : func_exports)
+			{
+				any_changes |= func.optimiseByConstantFolding();
+			}
+			return any_changes;
+		}
+
 		[[nodiscard]] uint32_t getFunctionIndex(const std::string& name);
 		[[nodiscard]] uint32_t getStrlenFunctionIndex();
 		[[nodiscard]] uint32_t getPrintFunctionIndex();

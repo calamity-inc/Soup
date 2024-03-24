@@ -12,7 +12,7 @@ namespace soup
 	// Although I think it's a bit weird to have a VM for IR, I think it does make sense to have a "ground truth", such that:
 	// - An exception/assert in the IR VM would indicate a faulty frontend.
 	// - Different results in IR VM vs compiled indicates a faulty... something (could be frontend, backend, or even the target CPU/VM).
-	// This would also allow for constant folding, but currently no optimisations are implemented.
+	// This also allows for constant folding.
 	struct irVm
 	{
 		struct Variable
