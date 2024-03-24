@@ -10,6 +10,7 @@
 #include "netIntelLocationData4OnDisk.hpp"
 #include "string.hpp"
 #include "StringReader.hpp"
+#include "wasm.hpp"
 #include "WebResource.hpp"
 
 namespace soup
@@ -109,6 +110,28 @@ namespace soup
 		WebResource rsc("raw.githubusercontent.com", "/calamity-inc/soup-extra-data/senpai/build/release.wasm");
 		rsc.downloadWithCaching();
 		extra_wasm = std::move(rsc.data);
+
+		// Apply AS name overwrites from https://github.com/calamity-inc/soup-extra-data/blob/senpai/index.blume
+		WasmScript ws;
+		SOUP_IF_LIKELY (ws.load(extra_wasm))
+		{
+			if (auto code = ws.getExportedFuntion("asn_name_overwrites"))
+			{
+				WasmVm vm(ws);
+				if (vm.run(*code))
+				{
+					while (!vm.stack.empty())
+					{
+						auto name = vm.stack.top(); vm.stack.pop();
+						auto asn = vm.stack.top(); vm.stack.pop();
+						if (auto e = aslist.find(asn.i32); e != aslist.end())
+						{
+							e->second->name = as_pool.emplace(ws.getMemory<const char>(name));
+						}
+					}
+				}
+			}
+		}
 	}
 
 	void netIntel::initIpv4ToAs()
