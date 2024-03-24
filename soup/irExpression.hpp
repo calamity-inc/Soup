@@ -121,6 +121,7 @@ namespace soup
 
 		[[nodiscard]] irType getResultType(const irFunction& fn) const noexcept;
 
+		[[nodiscard]] bool isConstantZero() const noexcept;
 		[[nodiscard]] bool isFoldableConstant() const noexcept;
 	};
 }

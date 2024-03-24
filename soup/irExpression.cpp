@@ -155,6 +155,19 @@ namespace soup
 		return IR_I64;
 	}
 
+	bool irExpression::isConstantZero() const noexcept
+	{
+		switch (type)
+		{
+		case IR_CONST_BOOL: return !const_bool.value;
+		case IR_CONST_I8: return !const_i8.value;
+		case IR_CONST_I32: return !const_i32.value;
+		case IR_CONST_I64: return !const_i64.value;
+		case IR_CONST_PTR: return !const_ptr.value;
+		default: SOUP_ASSERT(type > IR_CONST_PTR); return false;
+		}
+	}
+
 	bool irExpression::isFoldableConstant() const noexcept
 	{
 		if (type <= IR_CONST_PTR)

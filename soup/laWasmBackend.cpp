@@ -307,10 +307,25 @@ namespace soup
 			w.oml(1);
 			writeType(w, local);
 		}
-		for (const auto& insn : fn.insns)
+		auto i = fn.insns.begin();
+		if (true) // Optimisation: Skip zero-initialisation of locals, because WASM guarantees it.
 		{
-			int ret = compileExpression(m, w, *insn);
-			if (insn->type == IR_RET)
+			for (; i != fn.insns.end(); ++i)
+			{
+				irExpression& insn = **i;
+				if (insn.type != IR_LOCAL_SET
+					|| !insn.children.at(0)->isConstantZero()
+					)
+				{
+					break;
+				}
+			}
+		}
+		for (; i != fn.insns.end(); ++i)
+		{
+			irExpression& insn = **i;
+			int ret = compileExpression(m, w, insn);
+			if (insn.type == IR_RET)
 			{
 				break;
 			}
@@ -359,7 +374,6 @@ namespace soup
 			return 1;
 
 		case IR_LOCAL_SET:
-			// Possible optimisation: If this is the first instruction and the local is being set to a constant 0, this instruction can be omitted.
 			compileExpression(m, w, *e.children.at(0));
 			b = 0x21; w.u8(b); // local.set
 			w.oml(e.local_set.index);
