@@ -93,7 +93,7 @@ namespace soup
 			} local_get, local_set;
 			struct
 			{
-				int64_t index;
+				intptr_t index;
 			} call;
 			struct
 			{

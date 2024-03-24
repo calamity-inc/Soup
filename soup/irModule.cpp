@@ -61,9 +61,9 @@ namespace soup
 		return ptr;
 	}
 
-	uint32_t irModule::getFunctionIndex(const std::string& name)
+	intptr_t irModule::getFunctionIndex(const std::string& name)
 	{
-		uint32_t i = 0;
+		intptr_t i = 0;
 		for (; i != func_exports.size(); ++i)
 		{
 			if (func_exports[i].name == name)
@@ -74,9 +74,9 @@ namespace soup
 		return i;
 	}
 
-	uint32_t irModule::getStrlenFunctionIndex()
+	intptr_t irModule::getStrlenFunctionIndex()
 	{
-		uint32_t idx = getFunctionIndex("strlen");
+		intptr_t idx = getFunctionIndex("strlen");
 		if (idx == func_exports.size())
 		{
 			irFunction& fn = func_exports.emplace_back();
@@ -160,9 +160,9 @@ namespace soup
 		return idx;
 	}
 
-	uint32_t irModule::getPrintFunctionIndex()
+	intptr_t irModule::getPrintFunctionIndex()
 	{
-		uint32_t idx = getFunctionIndex("print");
+		intptr_t idx = getFunctionIndex("print");
 		if (idx == func_exports.size())
 		{
 			auto strlen_idx = getStrlenFunctionIndex();
@@ -200,7 +200,7 @@ namespace soup
 		return idx;
 	}
 
-	int64_t irModule::getImportFunctionIndex(const std::string& mod, const std::string& func)
+	intptr_t irModule::getImportFunctionIndex(const std::string& mod, const std::string& func)
 	{
 		for (size_t i = 0; i != imports.size(); ++i)
 		{
@@ -214,7 +214,7 @@ namespace soup
 		return 0;
 	}
 
-	int64_t irModule::getPosixWriteFunctionIndex()
+	intptr_t irModule::getPosixWriteFunctionIndex()
 	{
 		if (auto idx = getImportFunctionIndex("posix", "write"))
 		{
@@ -231,7 +231,7 @@ namespace soup
 		return ~idx;
 	}
 
-	static void updateCallsImpl(int64_t old_idx, int64_t new_idx, irExpression& insn)
+	static void updateCallsImpl(intptr_t old_idx, intptr_t new_idx, irExpression& insn)
 	{
 		if (insn.type == IR_CALL)
 		{
@@ -246,7 +246,7 @@ namespace soup
 		}
 	}
 
-	void irModule::updateCalls(int64_t old_idx, int64_t new_idx)
+	void irModule::updateCalls(intptr_t old_idx, intptr_t new_idx)
 	{
 		for (auto& func : func_exports)
 		{

@@ -40,13 +40,13 @@ namespace soup
 			return any_changes;
 		}
 
-		[[nodiscard]] uint32_t getFunctionIndex(const std::string& name);
-		[[nodiscard]] uint32_t getStrlenFunctionIndex();
-		[[nodiscard]] uint32_t getPrintFunctionIndex();
+		[[nodiscard]] intptr_t getFunctionIndex(const std::string& name);
+		[[nodiscard]] intptr_t getStrlenFunctionIndex();
+		[[nodiscard]] intptr_t getPrintFunctionIndex();
 
-		[[nodiscard]] int64_t getImportFunctionIndex(const std::string& mod, const std::string& func);
-		[[nodiscard]] int64_t getPosixWriteFunctionIndex();
+		[[nodiscard]] intptr_t getImportFunctionIndex(const std::string& mod, const std::string& func);
+		[[nodiscard]] intptr_t getPosixWriteFunctionIndex();
 
-		void updateCalls(int64_t old_idx, int64_t new_idx);
+		void updateCalls(intptr_t old_idx, intptr_t new_idx);
 	};
 }
