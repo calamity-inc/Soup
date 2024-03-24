@@ -671,17 +671,33 @@ namespace soup
 			return 1;
 
 		case IR_I8_TO_I64_SX:
-			// Possible optimisation: Detect child being IR_READ_I8 and emit directly as i64.load8_s.
-			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
-			/* First, sign-extend i8 to i32: */ b = 0xc0; w.u8(b); // i32.extend8_s
-			/* Then, sign-extend i32 to i64: */ b = 0xac; w.u8(b); // i64.extend_i32_s
+			if (e.children.at(0)->type == IR_LOAD_I8)
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)->children.at(0)) == 1);
+				b = 0x30; w.u8(b); // i64.load8_s
+				w.skip(2); // memflags + offset
+			}
+			else
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
+				/* First, sign-extend i8 to i32: */ b = 0xc0; w.u8(b); // i32.extend8_s
+				/* Then, sign-extend i32 to i64: */ b = 0xac; w.u8(b); // i64.extend_i32_s
+			}
 			return 1;
 
 		case IR_I8_TO_I64_ZX:
-			// Possible optimisation: Detect child being IR_READ_I8 and emit directly as i64.load8_u.
-			SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
-			/* First, zero-extend i8 to i32: IR_READ_I8 would have left the top bits all zero, so nothing to do. */
-			/* Then, zero-extend i32 to i64: */ b = 0xad; w.u8(b); // i64.extend_i32_u
+			if (e.children.at(0)->type == IR_LOAD_I8)
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)->children.at(0)) == 1);
+				b = 0x31; w.u8(b); // i64.load8_u
+				w.skip(2); // memflags + offset
+			}
+			else
+			{
+				SOUP_ASSERT(compileExpression(m, w, *e.children.at(0)) == 1);
+				/* First, zero-extend i8 to i32: The top bits should be zero, so nothing to do. */
+				/* Then, zero-extend i32 to i64: */ b = 0xad; w.u8(b); // i64.extend_i32_u
+			}
 			return 1;
 		}
 		SOUP_UNREACHABLE;
