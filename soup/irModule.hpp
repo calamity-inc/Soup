@@ -40,6 +40,8 @@ namespace soup
 			return any_changes;
 		}
 
+		[[nodiscard]] irFunction& getFunction(intptr_t index);
+
 		[[nodiscard]] intptr_t getFunctionIndex(const std::string& name);
 		[[nodiscard]] intptr_t getStrlenFunctionIndex();
 		[[nodiscard]] intptr_t getPrintFunctionIndex();

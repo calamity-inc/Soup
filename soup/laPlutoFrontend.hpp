@@ -21,5 +21,7 @@ namespace soup
 		void funcargs(LexemeParser& lp, irModule& m, irFunction& fn, irExpression& insn);
 
 		std::stack<std::vector<std::string>> locals{};
+
+		[[nodiscard]] static UniquePtr<irExpression> oneret(irModule& m, UniquePtr<irExpression>&& insn);
 	};
 }

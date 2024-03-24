@@ -231,6 +231,18 @@ namespace soup
 		return ~idx;
 	}
 
+	irFunction& irModule::getFunction(intptr_t index)
+	{
+		if (index >= 0)
+		{
+			return func_exports.at(index);
+		}
+		else
+		{
+			return imports.at(~index).func;
+		}
+	}
+
 	static void updateCallsImpl(intptr_t old_idx, intptr_t new_idx, irExpression& insn)
 	{
 		if (insn.type == IR_CALL)

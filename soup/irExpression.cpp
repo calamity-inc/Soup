@@ -21,6 +21,7 @@ namespace soup
 		case IR_RET: str.append("IR_RET"); break;
 		case IR_IFELSE: str.append("IR_IFELSE"); break;
 		case IR_WHILE: str.append("IR_WHILE"); break;
+		case IR_DISCARD: str.append("IR_DISCARD"); break;
 		case IR_ADD_I32: str.append("IR_ADD_I32"); break;
 		case IR_ADD_I64: str.append("IR_ADD_I64"); break;
 		case IR_ADD_PTR: str.append("IR_ADD_PTR"); break;
@@ -58,6 +59,7 @@ namespace soup
 		if (type == IR_LOCAL_SET) { str.append(": ").append(std::to_string(local_set.index)); }
 		if (type == IR_CALL) { str.append(": ").append(std::to_string(call.index)); }
 		if (type == IR_IFELSE) { str.append(": ").append(std::to_string(ifelse.ifinsns)); }
+		if (type == IR_DISCARD) { str.append(": ").append(std::to_string(discard.count)); }
 		str.push_back('\n');
 		++depth;
 		for (const auto& child : children)

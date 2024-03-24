@@ -24,6 +24,7 @@ namespace soup
 		IR_RET,
 		IR_IFELSE,
 		IR_WHILE,
+		IR_DISCARD,
 
 		IR_ADD_I32,
 		IR_ADD_I64,
@@ -99,6 +100,10 @@ namespace soup
 			{
 				size_t ifinsns;
 			} ifelse;
+			struct
+			{
+				size_t count;
+			} discard;
 			uint64_t union_value; static_assert(sizeof(size_t) <= sizeof(uint64_t));
 		};
 		std::vector<UniquePtr<irExpression>> children{};

@@ -364,7 +364,7 @@ namespace soup
 					ret = soup::make_unique<irExpression>(IR_CALL);
 					ret->call.index = m.getPrintFunctionIndex();
 					funcargs(lp, m, fn, *ret);
-					auto ptrExpr = std::move(ret->children.at(0));
+					auto ptrExpr = oneret(m, std::move(ret->children.at(0)));
 					ret->children.at(0) = soup::make_unique<irExpression>(IR_I64_TO_PTR);
 					ret->children.at(0)->children.emplace_back(std::move(ptrExpr));
 				}
@@ -405,5 +405,19 @@ namespace soup
 			lp.advance(); // skip ','
 		}
 		if (lp.hasMore()) { lp.advance(); } // skip ')'
+	}
+
+	UniquePtr<irExpression> laPlutoFrontend::oneret(irModule& m, UniquePtr<irExpression>&& insn)
+	{
+		if (insn->type == IR_CALL)
+		{
+			auto nret = m.getFunction(insn->call.index).returns.size();
+			SOUP_ASSERT(nret != 0);
+			auto discardInsn = soup::make_unique<irExpression>(IR_DISCARD);
+			discardInsn->discard.count = nret - 1;
+			discardInsn->children.emplace_back(std::move(insn));
+			return discardInsn;
+		}
+		SOUP_MOVE_RETURN(insn);
 	}
 }

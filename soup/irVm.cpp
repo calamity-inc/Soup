@@ -141,6 +141,17 @@ namespace soup
 			}
 			return {};
 
+		case IR_DISCARD:
+			{
+				SOUP_ASSERT(insn.children.size() == 1);
+				auto vars = execute(m, *insn.children[0]);
+				for (size_t i = 0; i != insn.discard.count; ++i)
+				{
+					vars.pop_back();
+				}
+				return vars;
+			}
+
 		case IR_ADD_I32:
 			{
 				SOUP_ASSERT(insn.children.size() == 2);

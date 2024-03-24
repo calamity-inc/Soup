@@ -493,6 +493,13 @@ namespace soup
 			b = 0x0b; w.u8(b); // end of 'loop'
 			return 0;
 
+		case IR_DISCARD:
+			{
+				auto nitems = compileExpression(m, w, *e.children.at(0));
+				discard(w, e.discard.count);
+				return nitems - e.discard.count;
+			}
+
 		case IR_ADD_I32:
 		case IR_ADD_PTR:
 			SOUP_ASSERT(e.children.size() == 2);
