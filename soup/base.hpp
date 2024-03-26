@@ -75,6 +75,12 @@
 	#define SOUP_X86 false
 #endif
 
+#if defined(__arm__) || defined(__aarch64__)
+	#define SOUP_ARM true
+#else
+	#define SOUP_ARM false
+#endif
+
 // === Determine if code inspector
 
 #ifdef __INTELLISENSE__
