@@ -11,12 +11,12 @@
 
 namespace soup
 {
-	static Editor* inst;
+	static Editor* editor_inst;
 
 	Editor::Editor()
 		: ConuiApp()
 	{
-		inst = this;
+		editor_inst = this;
 
 		children.emplace_back(make_unique<EditorText>(this, 0, 1, 0, 0));
 
@@ -28,7 +28,7 @@ namespace soup
 			}
 			else
 			{
-				auto& edit = *inst;
+				auto& edit = *editor_inst;
 				auto& text = edit.getTextChild();
 				text.file.contents.at(text.file.y).insert(text.file.contents.at(text.file.y).cbegin() + (text.file.x++), c);
 				edit.draw();
@@ -36,7 +36,7 @@ namespace soup
 		});
 		console.control_handler.set([](ControlInput c, const Capture&)
 		{
-			auto& edit = *inst;
+			auto& edit = *editor_inst;
 			auto& text = edit.getTextChild();
 			switch (c)
 			{
@@ -116,7 +116,7 @@ namespace soup
 		});
 		console.overrideCtrlC([]
 		{
-			auto& edit = *inst;
+			auto& edit = *editor_inst;
 			for (auto i = edit.tabsBegin(); i != edit.tabsEnd(); ++i)
 			{
 				auto& tab = *static_cast<EditorTab*>(i->get());

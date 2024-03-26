@@ -910,3 +910,5 @@ namespace soup
 		return res;
 	}
 }
+
+#undef F

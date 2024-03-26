@@ -377,3 +377,9 @@ namespace soup
 		return hash;
 	}
 }
+
+#undef F
+#undef G
+#undef H
+#undef I
+#undef J
