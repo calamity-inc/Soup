@@ -126,10 +126,18 @@ namespace soup
 					}
 					if (val->type == IR_CALL)
 					{
-						// TODO: mulret should be pruned unless this is the last return value
-						for (const auto& type : m.func_exports.at(val->call.index).returns)
+						if (lp.getTokenKeyword() == TK_COMMA) // Not the last return value?
 						{
-							fn.returns.emplace_back(type);
+							// Prune to only a single return value.
+							fn.returns.emplace_back(m.func_exports.at(val->call.index).returns.front());
+							val = oneret(m, std::move(val));
+						}
+						else
+						{
+							for (const auto& type : m.func_exports.at(val->call.index).returns)
+							{
+								fn.returns.emplace_back(type);
+							}
 						}
 					}
 					else
