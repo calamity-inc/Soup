@@ -986,21 +986,6 @@
     <ClInclude Include="Diff.hpp">
       <Filter>util\string</Filter>
     </ClInclude>
-    <ClInclude Include="aglContent.hpp">
-      <Filter>lang\agnostic</Filter>
-    </ClInclude>
-    <ClInclude Include="aglLang.hpp">
-      <Filter>lang\agnostic</Filter>
-    </ClInclude>
-    <ClInclude Include="aglStat.hpp">
-      <Filter>lang\agnostic</Filter>
-    </ClInclude>
-    <ClInclude Include="aglStatEcho.hpp">
-      <Filter>lang\agnostic</Filter>
-    </ClInclude>
-    <ClInclude Include="aglTranspiler.hpp">
-      <Filter>lang\agnostic</Filter>
-    </ClInclude>
     <ClInclude Include="PrimitiveRaii.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -2081,12 +2066,6 @@
     <ClCompile Include="Diff.cpp">
       <Filter>util\string</Filter>
     </ClCompile>
-    <ClCompile Include="aglTranspiler.cpp">
-      <Filter>lang\agnostic</Filter>
-    </ClCompile>
-    <ClCompile Include="aglContent.cpp">
-      <Filter>lang\agnostic</Filter>
-    </ClCompile>
     <ClCompile Include="soup.cpp" />
     <ClCompile Include="InquiryLang.cpp">
       <Filter>lang</Filter>
@@ -2546,9 +2525,6 @@
     </Filter>
     <Filter Include="lang\reflection">
       <UniqueIdentifier>{9004d1b5-0669-4083-b4a5-aa132fc59a80}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lang\agnostic">
-      <UniqueIdentifier>{0e0d3a1f-48a7-430f-8958-a7e3e6db45ad}</UniqueIdentifier>
     </Filter>
     <Filter Include="ling\chatbot">
       <UniqueIdentifier>{fb1ff912-9766-484b-92a8-d22cd7b0ef54}</UniqueIdentifier>
