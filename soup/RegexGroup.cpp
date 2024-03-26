@@ -456,12 +456,21 @@ namespace soup
 						{
 							non_capturing = true;
 						}
-						auto upGC = soup::make_unique<RegexGroupConstraint>(s, non_capturing);
-						upGC->data.parent = this;
-						upGC->data.name = std::move(name);
-						success_transitions.setTransitionTo(upGC->data.initial);
-						success_transitions.data = std::move(s.alternatives_transitions);
-						a.constraints.emplace_back(std::move(upGC));
+						if (*s.it == ')' // No contents?
+							&& non_capturing // Not a capturing group?
+							)
+						{
+							// No need to add a dummy constraint.
+						}
+						else
+						{
+							auto upGC = soup::make_unique<RegexGroupConstraint>(s, non_capturing);
+							upGC->data.parent = this;
+							upGC->data.name = std::move(name);
+							success_transitions.setTransitionTo(upGC->data.initial);
+							success_transitions.data = std::move(s.alternatives_transitions);
+							a.constraints.emplace_back(std::move(upGC));
+						}
 						s.flags = restore_flags;
 					}
 					if (s.it == s.end)
