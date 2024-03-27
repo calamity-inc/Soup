@@ -19,6 +19,7 @@
 #include "filesystem.hpp"
 #include "rand.hpp"
 #include "string.hpp"
+#include "unicode.hpp"
 #include "UniquePtr.hpp"
 
 namespace soup
@@ -174,6 +175,34 @@ namespace soup
 	}
 
 #if SOUP_WINDOWS
+	static bool copy_to_clipboard_utf16(const std::wstring& text)
+	{
+		const size_t len = (text.length() + 1) * sizeof(wchar_t);
+		HGLOBAL hMem = GlobalAlloc(GHND | GMEM_DDESHARE, len);
+		if (hMem != nullptr)
+		{
+			void* pMem = GlobalLock(hMem);
+			if (pMem != nullptr)
+			{
+				memcpy(pMem, text.data(), len);
+				GlobalUnlock(hMem);
+				if (OpenClipboard(nullptr))
+				{
+					bool success = (EmptyClipboard() && SetClipboardData(CF_UNICODETEXT, hMem) != nullptr);
+					CloseClipboard();
+					return success;
+				}
+				GlobalFree(hMem);
+			}
+		}
+		return false;
+	}
+
+	bool os::copyToClipboard(const std::string& text)
+	{
+		return copy_to_clipboard_utf16(unicode::utf8_to_utf16(text));
+	}
+
 	void os::simulateKeyPress(Key key)
 	{
 		return simulateKeyPress(std::vector<Key>{ key });

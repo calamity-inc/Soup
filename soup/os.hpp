@@ -36,6 +36,8 @@ namespace soup
 		[[nodiscard]] static unsigned int getProcessId() noexcept;
 
 #if SOUP_WINDOWS
+		static bool copyToClipboard(const std::string& text);
+
 		static void simulateKeyPress(Key key);
 		static void simulateKeyPress(bool ctrl, bool shift, bool alt, Key key);
 		static void simulateKeyPress(bool ctrl, bool shift, bool alt, bool meta, Key key);
