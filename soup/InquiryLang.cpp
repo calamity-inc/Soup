@@ -185,7 +185,7 @@ keyword("qrcode", OP_QRCODE); \
 	{
 		if (res.isCanvas())
 		{
-			return unicode::utf16_to_utf8(res.getCanvas().toStringDownsampledDoublewidth(true));
+			return unicode::utf16_to_utf8(res.getCanvas().toStringDownsampledDoublewidth(true, true));
 		}
 		auto str = formatResultLine(res);
 		str.push_back('\n');

@@ -226,108 +226,207 @@ namespace soup
 		return str;
 	}
 
-	std::u16string Canvas::toStringDownsampled(bool explicit_nl)
+	std::u16string Canvas::toStringDownsampled(bool explicit_nl, bool reset_on_nl)
 	{
 		ensureWidthAndHeightAreEven();
 
 		std::u16string str{};
 		str.reserve((unsigned int)width * height);
-		for (int y = 0; y != height; y += 2)
+		Rgb bg = pixels.at(0);
+		Rgb fg = bg;
+		bool commited_bg = false;
+		bool commited_fg = false;
+		for (unsigned int y = 0; y != height; y += 2)
 		{
-			for (int x = 0; x != width; x += 2)
+			for (unsigned int x = 0; x != width; x += 2)
 			{
-				Rgb bg = pixels.at(x + (y * width));
-				Rgb fg = bg;
 				uint8_t chunkset = 0;
+				{
+					const Rgb& pxclr = pixels.at(x + (y * width));
+					if (pxclr != bg)
+					{
+						if (pxclr == fg)
+						{
+							chunkset |= 0b1000;
+						}
+						else
+						{
+							chunkset |= 0b1000;
+							fg = pxclr;
+							commited_fg = false;
+						}
+					}
+				}
 				{
 					const Rgb& pxclr = pixels.at(x + 1 + (y * width));
 					if (pxclr != bg)
 					{
-						fg = pxclr;
-						chunkset |= 0b0100;
+						if (pxclr == fg)
+						{
+							chunkset |= 0b0100;
+						}
+						else if (commited_fg)
+						{
+							chunkset |= 0b0100;
+							fg = pxclr;
+							commited_fg = false;
+						}
+						else
+						{
+							bg = pxclr;
+							commited_bg = false;
+						}
 					}
 				}
 				{
 					const Rgb& pxclr = pixels.at(x + ((y + 1) * width));
 					if (pxclr != bg)
 					{
-						fg = pxclr;
-						chunkset |= 0b0010;
+						if (pxclr == fg)
+						{
+							chunkset |= 0b0010;
+						}
+						else if (commited_fg)
+						{
+							chunkset |= 0b00010;
+							fg = pxclr;
+							commited_fg = false;
+						}
+						else
+						{
+							bg = pxclr;
+							commited_bg = false;
+						}
 					}
 				}
 				{
 					const Rgb& pxclr = pixels.at(x + 1 + ((y + 1) * width));
 					if (pxclr != bg)
 					{
-						fg = pxclr;
-						chunkset |= 0b0001;
+						if (pxclr == fg)
+						{
+							chunkset |= 0b0001;
+						}
+						else if (commited_fg)
+						{
+							chunkset |= 0b00001;
+							fg = pxclr;
+							commited_fg = false;
+						}
+						else
+						{
+							bg = pxclr;
+							commited_bg = false;
+						}
 					}
 				}
-				str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
-				str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
+				if (!commited_bg)
+				{
+					commited_bg = true;
+					str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
+				}
+				if (!commited_fg)
+				{
+					commited_fg = true;
+					str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
+				}
 				str.push_back(downsampleChunkToChar(chunkset));
 			}
 			if (explicit_nl)
 			{
+				if (reset_on_nl)
+				{
+					commited_fg = false;
+					commited_bg = false;
+					str.append(console.strResetColour<std::u16string>());
+				}
 				str.push_back(u'\n');
 			}
 		}
 		return str;
 	}
 
-	std::u16string Canvas::toStringDownsampledDoublewidth(bool explicit_nl)
+	std::u16string Canvas::toStringDownsampledDoublewidth(bool explicit_nl, bool reset_on_nl)
 	{
 		ensureHeightIsEven();
 
 		std::u16string str{};
 		str.reserve((unsigned int)width * height);
-		for (int y = 0; y != height; y += 2)
+		Rgb bg = pixels.at(0);
+		Rgb fg = bg;
+		bool commited_bg = false;
+		bool commited_fg = false;
+		for (unsigned int y = 0; y != height; y += 2)
 		{
-			for (int x = 0; x != width; ++x)
+			for (unsigned int x = 0; x != width; ++x)
 			{
-				Rgb bg = pixels.at(x + (y * width));
-				Rgb fg = bg;
 				uint8_t chunkset = 0;
 				{
 					const Rgb& pxclr = pixels.at(x + (y * width));
 					if (pxclr != bg)
 					{
-						fg = pxclr;
-						chunkset |= 0b0100;
+						if (pxclr == fg)
+						{
+							chunkset |= 0b1100;
+						}
+						else
+						{
+							chunkset |= 0b1100;
+							fg = pxclr;
+							commited_fg = false;
+						}
 					}
 				}
 				{
 					const Rgb& pxclr = pixels.at(x + ((y + 1) * width));
 					if (pxclr != bg)
 					{
-						fg = pxclr;
-						chunkset |= 0b0010;
+						if (pxclr == fg)
+						{
+							chunkset |= 0b0011;
+						}
+						else if (commited_fg)
+						{
+							chunkset |= 0b0011;
+							fg = pxclr;
+							commited_fg = false;
+						}
+						else
+						{
+							bg = pxclr;
+							commited_bg = false;
+						}
 					}
 				}
+				if (!commited_bg)
 				{
-					const Rgb& pxclr = pixels.at(x + ((y + 1) * width));
-					if (pxclr != bg)
-					{
-						fg = pxclr;
-						chunkset |= 0b0001;
-					}
+					commited_bg = true;
+					str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
 				}
-				str.append(console.strSetBackgroundColour<std::u16string>(bg.r, bg.g, bg.b));
-				str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
+				if (!commited_fg)
+				{
+					commited_fg = true;
+					str.append(console.strSetForegroundColour<std::u16string>(fg.r, fg.g, fg.b));
+				}
 				str.push_back(downsampleChunkToChar(chunkset));
 			}
 			if (explicit_nl)
 			{
-				str.append(console.strResetColour<std::u16string>());
+				if (reset_on_nl)
+				{
+					commited_fg = false;
+					commited_bg = false;
+					str.append(console.strResetColour<std::u16string>());
+				}
 				str.push_back(u'\n');
 			}
 		}
 		return str;
 	}
 
-	std::string Canvas::toStringDownsampledDoublewidthUtf8(bool explicit_nl)
+	std::string Canvas::toStringDownsampledDoublewidthUtf8(bool explicit_nl, bool reset_on_nl)
 	{
-		return unicode::utf16_to_utf8(toStringDownsampledDoublewidth(explicit_nl));
+		return unicode::utf16_to_utf8(toStringDownsampledDoublewidth(explicit_nl, reset_on_nl));
 	}
 
 	char16_t Canvas::downsampleChunkToChar(uint8_t chunkset) noexcept
@@ -335,10 +434,10 @@ namespace soup
 		switch (chunkset)
 		{
 			// 1 px
-		case 0b1000: return u'\u2598';
-		case 0b0100: return u'\u259D';
-		case 0b0010: return u'\u2596';
-		case 0b0001: return u'\u2597';
+		case 0b1000: return u'\u2598'; // top left
+		case 0b0100: return u'\u259D'; // top right
+		case 0b0010: return u'\u2596'; // bottom left
+		case 0b0001: return u'\u2597'; // bottom right
 			// 2 px, sides
 		case 0b1100: return u'\u2580';
 		case 0b0011: return u'\u2584';
@@ -356,7 +455,7 @@ namespace soup
 		case 0b1111: return u'\u2588';
 		}
 		// 0 px
-		return '-';
+		return ' ';
 	}
 
 

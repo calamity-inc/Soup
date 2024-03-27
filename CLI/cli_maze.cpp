@@ -31,7 +31,7 @@ void cli_maze()
 			RenderTargetCanvas rt(c);
 			mg.render(rt);
 			console.clearScreen();
-			console << c.toStringDownsampledDoublewidth(true);
+			console << c.toStringDownsampledDoublewidth(true, true);
 			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		}
 	});

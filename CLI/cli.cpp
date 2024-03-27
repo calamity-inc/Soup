@@ -60,7 +60,7 @@ int main(int argc, const char** argv)
 					std::cout << res.response << std::endl;
 					if (res.type == CB_RES_IMAGE)
 					{
-						std::cout << res.extra.getCanvas().toStringDownsampledDoublewidthUtf8(true);
+						std::cout << res.extra.getCanvas().toStringDownsampledDoublewidthUtf8(true, true);
 					}
 				}
 				catch (std::exception& e)
@@ -423,7 +423,7 @@ int main(int argc, const char** argv)
 			}
 			auto qrcode = QrCode::encodeText(argv[2]);
 			console.init(false);
-			console << qrcode.toCanvas(4, true).toStringDownsampledDoublewidth(true);
+			console << qrcode.toCanvas(4, true).toStringDownsampledDoublewidth(true, true);
 			console.resetColour();
 			return 0;
 		}
