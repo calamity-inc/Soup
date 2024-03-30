@@ -2,6 +2,7 @@
 
 #include <cstring> // memset
 
+#include "alloc.hpp"
 #include "bitutil.hpp"
 #include "Reader.hpp"
 #include "StringRefReader.hpp"

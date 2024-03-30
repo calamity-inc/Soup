@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef> // ptrdiff_t
 #include <type_traits>
 
 #include "base.hpp"

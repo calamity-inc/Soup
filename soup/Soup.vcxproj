@@ -430,6 +430,7 @@
     <ClInclude Include="acme.hpp" />
     <ClInclude Include="adler32.hpp" />
     <ClInclude Include="aes.hpp" />
+    <ClInclude Include="alloc.hpp" />
     <ClInclude Include="AllocRaii.hpp" />
     <ClInclude Include="AllocRaiiLocalBase.hpp" />
     <ClInclude Include="AllocRaiiRemote.hpp" />
@@ -964,6 +965,7 @@
     <ClCompile Include="acme.cpp" />
     <ClCompile Include="adler32.cpp" />
     <ClCompile Include="aes.cpp" />
+    <ClCompile Include="alloc.cpp" />
     <ClCompile Include="AnalogueKeyboard.cpp" />
     <ClCompile Include="Asn1Identifier.cpp" />
     <ClCompile Include="Asn1Sequence.cpp" />

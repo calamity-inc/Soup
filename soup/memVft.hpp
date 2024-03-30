@@ -3,6 +3,8 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
+#include <cstddef> // size_t
+
 #include "cursed.hpp" // ub_pointer_cast
 
 namespace soup
