@@ -833,9 +833,6 @@
     <ClInclude Include="Exception.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="CpuInfo.hpp">
-      <Filter>cpu\x64</Filter>
-    </ClInclude>
     <ClInclude Include="TinyPngOut.hpp">
       <Filter>vis</Filter>
     </ClInclude>
@@ -1593,6 +1590,9 @@
     <ClInclude Include="alloc.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="CpuInfo.hpp">
+      <Filter>cpu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2009,9 +2009,6 @@
     <ClCompile Include="FactoriseProofOfWork.cpp">
       <Filter>crypto\proof_of_work</Filter>
     </ClCompile>
-    <ClCompile Include="CpuInfo.cpp">
-      <Filter>cpu\x64</Filter>
-    </ClCompile>
     <ClCompile Include="TinyPngOut.cpp">
       <Filter>vis</Filter>
     </ClCompile>
@@ -2358,6 +2355,9 @@
     </ClCompile>
     <ClCompile Include="alloc.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="CpuInfo.cpp">
+      <Filter>cpu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
