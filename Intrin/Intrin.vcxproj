@@ -16,7 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aes_helper.cpp" />
-    <ClCompile Include="crc32_pclmul.cpp" />
+    <ClCompile Include="crc32_intrin.cpp" />
     <ClCompile Include="hardware_rng.cpp" />
     <ClCompile Include="sha1_transform_intrin.cpp" />
     <ClCompile Include="sha256_transform_intrin.cpp" />
