@@ -63,7 +63,7 @@
 
 // === CPU macros
 
-#if defined(__x86_64__) || defined(_M_X64) || defined(__ppc64__) || defined(__aarch64__)
+#if defined(__x86_64__) || defined(_M_X64) || defined(__ppc64__) || defined(__aarch64__) || defined(_M_ARM64)
 	#define SOUP_BITS 64
 #else
 	#define SOUP_BITS 32
@@ -75,7 +75,7 @@
 	#define SOUP_X86 false
 #endif
 
-#if defined(__arm__) || defined(__aarch64__)
+#if defined(__arm__) || defined(__aarch64__) || defined(_M_ARM) || defined(_M_ARM64)
 	#define SOUP_ARM true
 #else
 	#define SOUP_ARM false
