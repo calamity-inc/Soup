@@ -79,8 +79,9 @@ namespace soup
 			}
 			std::vector<const MessageT*> res{};
 			// Work backwards (forwards in time) to get all unread messages.
-			while (e-- != entries.begin())
+			while (e != entries.begin())
 			{
+				--e;
 				res.emplace_back(&e->msg);
 			}
 			entries.begin()->recipients.emplace(recipient);
