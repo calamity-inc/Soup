@@ -9,7 +9,7 @@
 		#include <cpuid.h>
 	#endif
 #elif SOUP_ARM
-	#ifdef SOUP_WINDOWS
+	#if SOUP_WINDOWS
 		#include <Windows.h>
 	#else
 		#include <sys/auxv.h>
