@@ -2188,9 +2188,6 @@
     <ClCompile Include="CidrSubnetInterface.cpp">
       <Filter>net\cidr\interface</Filter>
     </ClCompile>
-    <ClCompile Include="TransientToken.cpp">
-      <Filter>mem</Filter>
-    </ClCompile>
     <ClCompile Include="Fiber.cpp">
       <Filter>os</Filter>
     </ClCompile>

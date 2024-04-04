@@ -1287,7 +1287,6 @@
     <ClCompile Include="textmate_grammar.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="TinyPngOut.cpp" />
-    <ClCompile Include="TransientToken.cpp" />
     <ClCompile Include="TreeReader.cpp" />
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="gmText.cpp" />
