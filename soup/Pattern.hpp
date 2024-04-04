@@ -16,11 +16,8 @@ namespace soup
 		std::vector<std::optional<uint8_t>> bytes;
 
 		explicit Pattern() = default;
-
 		Pattern(const CompiletimePatternWithOptBytesBase& sig);
 		Pattern(std::string_view ida_sig);
-
-		void addBytesFromIdaSig(std::string_view ida_sig);
 
 		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 	};

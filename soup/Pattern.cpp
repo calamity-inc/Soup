@@ -14,11 +14,6 @@ namespace soup
 
 	Pattern::Pattern(std::string_view ida_sig)
 	{
-		addBytesFromIdaSig(ida_sig);
-	}
-
-	void Pattern::addBytesFromIdaSig(std::string_view ida_sig)
-	{
 		auto to_upper = [](char c) -> char
 		{
 			return c >= 'a' && c <= 'z' ? static_cast<char>(c + ('A' - 'a')) : static_cast<char>(c);
