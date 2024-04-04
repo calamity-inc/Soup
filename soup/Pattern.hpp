@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "fwd.hpp"
@@ -17,7 +16,8 @@ namespace soup
 
 		explicit Pattern() = default;
 		Pattern(const CompiletimePatternWithOptBytesBase& sig);
-		Pattern(std::string_view ida_sig);
+		Pattern(const std::string& str);
+		Pattern(const char* str, size_t len);
 
 		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 	};

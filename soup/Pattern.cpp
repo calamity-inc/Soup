@@ -12,7 +12,12 @@ namespace soup
 	{
 	}
 
-	Pattern::Pattern(std::string_view ida_sig)
+	Pattern::Pattern(const std::string& str)
+		: Pattern(str.data(), str.size())
+	{
+	}
+
+	Pattern::Pattern(const char* str, size_t len)
 	{
 		auto to_hex = [&](char c) -> std::optional<std::uint8_t>
 		{
@@ -55,18 +60,20 @@ namespace soup
 			}
 		};
 
-		for (std::size_t i = 0; i < ida_sig.size(); ++i)
+		for (size_t i = 0; i < len; ++i)
 		{
-			if (ida_sig[i] == ' ')
+			if (str[i] == ' ')
+			{
 				continue;
+			}
 
-			bool last = (i == ida_sig.size() - 1);
-			if (ida_sig[i] != '?')
+			const bool last = (i == len - 1);
+			if (str[i] != '?')
 			{
 				if (!last)
 				{
-					auto c1 = to_hex(ida_sig[i]);
-					auto c2 = to_hex(ida_sig[i + 1]);
+					auto c1 = to_hex(str[i]);
+					auto c2 = to_hex(str[i + 1]);
 
 					if (c1 && c2)
 					{
