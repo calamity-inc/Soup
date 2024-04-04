@@ -3,6 +3,7 @@
 #include "Module.hpp"
 #include "CompiletimePatternWithOptBytesBase.hpp"
 #include "Pointer.hpp"
+#include "string.hpp"
 
 namespace soup
 {
@@ -88,5 +89,27 @@ namespace soup
 				bytes.emplace_back(std::nullopt);
 			}
 		}
+	}
+
+	std::string Pattern::toString() const SOUP_EXCAL
+	{
+		std::string str;
+		for (const auto& b : bytes)
+		{
+			if (b.has_value())
+			{
+				str.append(string::lpad(string::hex(b.value()), 2, '0'));
+			}
+			else
+			{
+				str.push_back('?');
+			}
+			str.push_back(' ');
+		}
+		if (!str.empty())
+		{
+			str.pop_back();
+		}
+		return str;
 	}
 }

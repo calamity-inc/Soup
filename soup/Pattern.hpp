@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -20,5 +21,7 @@ namespace soup
 		Pattern(std::string_view ida_sig);
 
 		void addBytesFromIdaSig(std::string_view ida_sig);
+
+		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 	};
 }
