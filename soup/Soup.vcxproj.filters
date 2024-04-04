@@ -96,9 +96,6 @@
     <ClInclude Include="rsa.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
-    <ClInclude Include="shortint.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="rand.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -123,9 +120,6 @@
     <ClInclude Include="base.hpp" />
     <ClInclude Include="Packet.hpp">
       <Filter>io</Filter>
-    </ClInclude>
-    <ClInclude Include="shortint_impl.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="scoped_enum.hpp">
       <Filter>util</Filter>

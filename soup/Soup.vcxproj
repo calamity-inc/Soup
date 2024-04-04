@@ -1094,10 +1094,8 @@
     <ClInclude Include="scoped_enum.hpp" />
     <ClInclude Include="sha1.hpp" />
     <ClInclude Include="sha256.hpp" />
-    <ClInclude Include="shortint_impl.hpp" />
     <ClInclude Include="Socket.hpp" />
     <ClInclude Include="Ray.hpp" />
-    <ClInclude Include="shortint.hpp" />
     <ClInclude Include="FileReader.hpp" />
     <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="string.hpp" />
