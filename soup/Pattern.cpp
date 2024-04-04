@@ -14,14 +14,9 @@ namespace soup
 
 	Pattern::Pattern(std::string_view ida_sig)
 	{
-		auto to_upper = [](char c) -> char
-		{
-			return c >= 'a' && c <= 'z' ? static_cast<char>(c + ('A' - 'a')) : static_cast<char>(c);
-		};
-
 		auto to_hex = [&](char c) -> std::optional<std::uint8_t>
 		{
-			switch (to_upper(c))
+			switch (string::upper_char(c))
 			{
 			case '0':
 				return static_cast<std::uint8_t>(0);
