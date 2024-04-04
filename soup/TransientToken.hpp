@@ -35,7 +35,7 @@ namespace soup
 			sp.reset();
 		}
 
-		void refresh() noexcept
+		void refresh() SOUP_EXCAL
 		{
 			invalidate();
 			sp = soup::make_shared<bool>(true);
@@ -46,7 +46,7 @@ namespace soup
 	{
 		using TransientTokenBase::TransientTokenBase;
 
-		~TransientToken()
+		~TransientToken() noexcept
 		{
 			invalidate();
 		}
