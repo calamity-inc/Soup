@@ -3,8 +3,9 @@
 #include "base.hpp"
 
 #include <iostream>
+#include <thread>
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS || SOUP_LINUX
 #include <aud_common.hpp>
 #include <audDevice.hpp>
 #include <audMixer.hpp>
@@ -20,7 +21,7 @@
 
 using namespace soup;
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS || SOUP_LINUX
 static void maintainNote(audMixer& mix, SharedPtr<audNoteEnvelope>(&sounds)[AUDNOTE_SIZE], audNote_t note, bool should_be_playing)
 {
 	if (should_be_playing)
@@ -45,7 +46,7 @@ static void maintainNote(audMixer& mix, SharedPtr<audNoteEnvelope>(&sounds)[AUDN
 
 void cli_midi(int argc, const char** argv)
 {
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS || SOUP_LINUX
 	if (argc > 0)
 	{
 		std::string subcommand = argv[0];
@@ -53,6 +54,7 @@ void cli_midi(int argc, const char** argv)
 
 		if (subcommand == "keyboard")
 		{
+#if SOUP_WINDOWS
 			auto dev = audDevice::getDefault();
 			std::cout << "Playing on " << dev.getName() << std::endl;
 			auto pb = dev.open();
@@ -81,6 +83,9 @@ void cli_midi(int argc, const char** argv)
 				maintainNote(mix, sounds, AUDNOTE_DSHARP5, keyboard.keys[KEY_SEMICOLON]);
 				maintainNote(mix, sounds, AUDNOTE_E5, keyboard.keys[KEY_SLASH]);
 			}
+#else
+			std::cout << "Sorry, this only works on Windows due Linux having no direct keyboard API.\n";
+#endif
 			return;
 		}
 		
@@ -135,6 +140,6 @@ void cli_midi(int argc, const char** argv)
 	}
 	std::cout << "Syntax: soup midi [keyboard|play [file]]\n";
 #else
-	std::cout << "Sorry, this only works on Windows (for now).\n";
+	std::cout << "Sorry, audio is currently not supported on your platform.\n";
 #endif
 }

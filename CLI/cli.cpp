@@ -489,7 +489,7 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "wav")
 		{
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS || SOUP_LINUX
 			if (argc != 3)
 			{
 				std::cout << "Syntax: soup wav [file]" << std::endl;
@@ -524,7 +524,7 @@ int main(int argc, const char** argv)
 			}
 			std::cout << "WAV is bad.\n";
 #else
-			std::cout << "Sorry, this only works on Windows (for now).\n";
+			std::cout << "Sorry, audio is currently not supported on your platform.\n";
 #endif
 			return 0;
 		}
