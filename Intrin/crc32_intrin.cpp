@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdint>
 
 #if defined(__x86_64__) || defined(_M_X64)

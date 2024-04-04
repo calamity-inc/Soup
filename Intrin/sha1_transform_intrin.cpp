@@ -3,7 +3,7 @@
 #if defined(__x86_64__) || defined(_M_X64)
 	#include <immintrin.h>
 #elif defined(__aarch64__) || defined(_M_ARM64)
-	#include <arm64_neon.h>
+	#include <arm_neon.h>
 #endif
 
 namespace soup
