@@ -6,12 +6,13 @@ namespace soup
 {
 	struct cbCmdHowAreYou : public cbCmd
 	{
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTrigger("how are you");
+			static Regex r(R"(\b(?:how are you)\b)");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
 			return "Running smoothly.";
 		}

@@ -49,12 +49,7 @@ namespace soup
 	struct cbMeasurement
 	{
 		double quantity;
-		cbUnit unit = CB_NOUNIT;
-
-		[[nodiscard]] constexpr bool isValid() const noexcept
-		{
-			return unit != CB_NOUNIT;
-		}
+		cbUnit unit;
 
 		[[nodiscard]] double getQuantityIn(cbUnit to_unit) const noexcept
 		{

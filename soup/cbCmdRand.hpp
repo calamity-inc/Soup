@@ -8,29 +8,23 @@ namespace soup
 {
 	struct cbCmdRand : public cbCmd
 	{
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTrigger("number between");
+			static Regex r(R"(\bnumber between\s*(?'a'\d+).+?(?'b'\d+)\b)");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
-			auto as = p.getArgNumeric();
-			if (int64_t a; string::toInt<int64_t, string::TI_FULL>(as).consume(a))
+			auto a = string::toInt<int64_t>(m.findGroupByName("a")->toString(), 0);
+			auto b = string::toInt<int64_t>(m.findGroupByName("b")->toString(), 0);
+			if (a > b)
 			{
-				auto bs = p.getArgNumericSecond();
-				if (int64_t b; string::toInt<int64_t, string::TI_FULL>(bs).consume(b))
-				{
-					if (a > b)
-					{
-						std::swap(a, b);
-					}
-					std::string msg = std::to_string(soup::rand.t<long long>(a, b));
-					msg.push_back('.');
-					return cbResult(std::move(msg));
-				}
+				std::swap(a, b);
 			}
-			return "Number between ... and ...?";
+			std::string msg = std::to_string(soup::rand.t<long long>(a, b));
+			msg.push_back('.');
+			return cbResult(std::move(msg));
 		}
 	};
 }

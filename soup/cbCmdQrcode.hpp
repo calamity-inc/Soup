@@ -10,24 +10,26 @@ namespace soup
 {
 	struct cbCmdQrcode : public cbCmd
 	{
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTriggers({ "qrcode", "qr code" });
+			static Regex r(R"EOR(qr ?code(?:.+"(?'quoted'[^"]+)"|\s+(?'direct'[^\s]+)))EOR");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
-			auto to_encode = p.getArgPhrase();
-			if (to_encode.empty())
+			std::string to_encode;
+			if (auto g = m.findGroupByName("quoted"))
 			{
-				return cbResult("I'm sorry, I didn't catch what the QR code is supposed to encode.");
+				to_encode = g->toString();
 			}
 			else
 			{
-				cbResult res(CB_RES_IMAGE, format("Here's a QR code that reads \"{}\".", to_encode));
-				res.extra = QrCode::encodeText(to_encode).toCanvas(4, true);
-				return res;
+				to_encode = m.findGroupByName("direct")->toString();
 			}
+			cbResult res(CB_RES_IMAGE, format("Here's a QR code that reads \"{}\".", to_encode));
+			res.extra = QrCode::encodeText(to_encode).toCanvas(4, true);
+			return res;
 		}
 	};
 }

@@ -95,7 +95,6 @@ namespace soup
 
 	// ling.chatbot
 	struct cbCmd;
-	class cbParser;
 
 	// math
 	class Bigint;

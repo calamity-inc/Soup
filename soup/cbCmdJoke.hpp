@@ -16,30 +16,23 @@ namespace soup
 		* cbCmdJoke::jb->read(fr);
 		*/
 
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTriggers({ "joke", "jokes" });
+			static Regex r(R"(\b(?:(?'type'programming) )?jokes?\b)");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
 			if (!jb)
 			{
 				return "I'd love to tell you jokes, but soup::cbCmdJoke::jb is uninitialised, so I have no data. :|";
 			}
-			auto type = p.getArgModifier();
-			if (type.empty())
+			if (auto type = m.findGroupByName("type"))
 			{
-				return jb->getRandomJoke().toString();
+				return jb->getRandomJokeByType(type->toString()).toString();
 			}
-			if (!jb->hasType(type))
-			{
-				std::string msg = "I'm sorry, I don't know any ";
-				msg.append(type);
-				msg.append(" jokes.");
-				return cbResult(std::move(msg));
-			}
-			return jb->getRandomJokeByType(type).toString();
+			return jb->getRandomJoke().toString();
 		}
 	};
 }

@@ -993,9 +993,6 @@
     <ClInclude Include="Chatbot.hpp">
       <Filter>ling\chatbot</Filter>
     </ClInclude>
-    <ClInclude Include="cbParser.hpp">
-      <Filter>ling\chatbot</Filter>
-    </ClInclude>
     <ClInclude Include="cbCmdDefine.hpp">
       <Filter>ling\chatbot</Filter>
     </ClInclude>
@@ -2068,9 +2065,6 @@
       <Filter>lang</Filter>
     </ClCompile>
     <ClCompile Include="Chatbot.cpp">
-      <Filter>ling\chatbot</Filter>
-    </ClCompile>
-    <ClCompile Include="cbParser.cpp">
       <Filter>ling\chatbot</Filter>
     </ClCompile>
     <ClCompile Include="Jokebook.cpp">

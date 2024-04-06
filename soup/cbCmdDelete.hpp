@@ -6,21 +6,17 @@ namespace soup
 {
 	struct cbCmdDelete : public cbCmd
 	{
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTrigger("delete");
+			static Regex r(R"(\bdelete.+?(?'amount'\d+))");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
-			auto s = p.getArgNumeric();
-			if (int64_t i; string::toInt<int64_t, string::TI_FULL>(s).consume(i))
-			{
-				cbResult res(CB_RES_DELETE);
-				res.extra = static_cast<int64_t>(i);
-				return res;
-			}
-			return "Delete ...?";
+			cbResult res(CB_RES_DELETE);
+			res.extra = string::toInt<int64_t>(m.findGroupByName("amount")->toString(), 0);
+			return res;
 		}
 	};
 }

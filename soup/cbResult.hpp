@@ -46,9 +46,9 @@ namespace soup
 			return type == CB_RES_DELETE;
 		}
 
-		[[nodiscard]] int getDeleteNum() const
+		[[nodiscard]] int64_t getDeleteNum() const
 		{
-			return static_cast<int>(extra.getInt());
+			return extra.getInt();
 		}
 	};
 }

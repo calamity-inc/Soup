@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cbParser.hpp"
 #include "cbResult.hpp"
+#include "Regex.hpp"
 
 namespace soup
 {
@@ -9,7 +9,7 @@ namespace soup
 	{
 		virtual ~cbCmd() = default;
 
-		[[nodiscard]] virtual bool checkTriggers(cbParser& p) const noexcept = 0;
-		[[nodiscard]] virtual cbResult process(cbParser& p) const noexcept = 0;
+		[[nodiscard]] virtual RegexMatchResult checkTriggers(const std::string& str) const = 0;
+		[[nodiscard]] virtual cbResult process(const RegexMatchResult& m) const = 0;
 	};
 }

@@ -6,12 +6,13 @@ namespace soup
 {
 	struct cbCmdCapabilities : public cbCmd
 	{
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTriggers({ "what can you", "what do you" });
+			static Regex r(R"(\bwhat (?:can|do) you\b)");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
 			std::string msg = "I can do basic conversations, arithmetics, unit conversions (distance & weight)";
 			if (cbCmdDefine::dict)

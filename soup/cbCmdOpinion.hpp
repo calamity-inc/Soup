@@ -6,12 +6,13 @@ namespace soup
 {
 	struct cbCmdOpinion : public cbCmd
 	{
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTriggers({ "do you think", "do you like", "your opinion" });
+			static Regex r(R"(\b(?:do you think|do you like|your opinion)\b)");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
 			return "I don't have an opinion on that.";
 		}

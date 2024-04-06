@@ -16,18 +16,19 @@ namespace soup
 		* cbCmdDefine::dict->read(fr);
 		*/
 
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTriggers({ "define", "definition of" });
+			static Regex r(R"((?:define|definition of)\s+(?'word'\w+))");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
 			if (!dict)
 			{
 				return "I'd love to help you with definitions, but soup::cbCmdDefine::dict is uninitialised, so I have no data. :|";
 			}
-			auto word = p.getArgWord();
+			auto word = m.findGroupByName("word")->toString();
 			if (!word.empty())
 			{
 				if (auto dw = dict->find(word);

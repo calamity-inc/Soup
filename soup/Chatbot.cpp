@@ -75,26 +75,22 @@ namespace soup
 		}
 	}
 
-	cbResult Chatbot::process(const std::string& text)
-	{
-		cbParser p(text);
-		return process(p);
-	}
-
-	cbResult Chatbot::process(cbParser& p)
+	cbResult Chatbot::process(const std::string& str)
 	{
 		for (const auto& cmd : getAllCommands())
 		{
-			if (cmd->checkTriggers(p))
+			auto m = cmd->checkTriggers(str);
+			if (m.isSuccess())
 			{
-				return cmd->process(p);
+				//std::cout << m.toString() << "\n";
+				return cmd->process(m);
 			}
 		}
 		return "I'm sorry, I don't understand. :/";
 	}
 
-	std::string Chatbot::getResponse(const std::string& text)
+	std::string Chatbot::getResponse(const std::string& str)
 	{
-		return process(text).response;
+		return process(str).response;
 	}
 }

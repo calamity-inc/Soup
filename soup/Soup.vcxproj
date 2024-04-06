@@ -681,7 +681,6 @@
     <ClInclude Include="cbCmdQrcode.hpp" />
     <ClInclude Include="cbCmdRand.hpp" />
     <ClInclude Include="cbCmdThanks.hpp" />
-    <ClInclude Include="cbParser.hpp" />
     <ClInclude Include="cbResult.hpp" />
     <ClInclude Include="cbMeasurement.hpp" />
     <ClInclude Include="Chatbot.hpp" />
@@ -1201,7 +1200,6 @@
     <ClCompile Include="Capture.cpp" />
     <ClCompile Include="cat.cpp" />
     <ClCompile Include="cbMeasurement.cpp" />
-    <ClCompile Include="cbParser.cpp" />
     <ClCompile Include="Chatbot.cpp" />
     <ClCompile Include="CidrSubnet6.cpp" />
     <ClCompile Include="CidrSubnetInterface.cpp" />

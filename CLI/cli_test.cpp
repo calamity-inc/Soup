@@ -49,8 +49,6 @@
 #include <rflStruct.hpp>
 
 // ling.chatbot
-#include <cbCmd.hpp>
-#include <cbParser.hpp>
 #include <Chatbot.hpp>
 
 // math
@@ -1171,49 +1169,6 @@ endif;)") == "");
 	});
 }
 
-static bool test_chatbot_trigger(const std::string& text, const std::string& expected_trigger)
-{
-	cbParser p(text);
-	for (const auto& cmd : Chatbot::getAllCommands())
-	{
-		if (cmd->checkTriggers(p))
-		{
-			return p.getTrigger() == expected_trigger;
-		}
-	}
-	return false;
-}
-
-static void test_chatbot_triggers()
-{
-#define ASSERT_TRIGGER(text, expected_trigger) assert(test_chatbot_trigger(text, expected_trigger));
-
-	ASSERT_TRIGGER("hi", "hi");
-	ASSERT_TRIGGER("Hi!", "Hi!");
-	ASSERT_TRIGGER("define autonomous", "define");
-	ASSERT_TRIGGER("Define autonomous", "Define");
-	ASSERT_TRIGGER("Can you define autonomous?", "define");
-	ASSERT_TRIGGER("definition of autonomous", "definition of");
-	ASSERT_TRIGGER("flip a coin", "flip a coin");
-	ASSERT_TRIGGER("123 + 456", "+");
-	ASSERT_TRIGGER("123 - 456", "-");
-	ASSERT_TRIGGER("123 * 456", "*");
-	ASSERT_TRIGGER("123 / 456", "/");
-}
-
-static void test_chatbot_args()
-{
-#define ASSERT_ARG(text, trigger, getArg, arg) { cbParser p(text); p.checkTrigger(trigger); assert(p.hasCommand()); assert(p.getArg() == arg); }
-
-	ASSERT_ARG("define autonomous", "define", getArgWord, "autonomous");
-	ASSERT_ARG("Can you define autonomous?", "define", getArgWord, "autonomous");
-	ASSERT_ARG("definition of autonomous", "definition of", getArgWord, "autonomous");
-	ASSERT_ARG("123 + 456", "+", getArgNumericLefthand, "123");
-	ASSERT_ARG("123 + 456", "+", getArgNumeric, "456");
-	ASSERT_ARG("Number between 1 and 10.", "number between", getArgNumeric, "1");
-	ASSERT_ARG("Number between 1 and 10.", "number between", getArgNumericSecond, "10");
-}
-
 static void test_chatbot_implementables()
 {
 	{
@@ -1225,8 +1180,12 @@ static void test_chatbot_implementables()
 
 static void test_chatbot_results()
 {
+	// cbCmdArithmetic
 	assert(Chatbot::process("1000 + 234").response.find("1234") != std::string::npos);
 	assert(Chatbot::process("1000+234").response.find("1234") != std::string::npos);
+	assert(Chatbot::process("What's 1 + 2 + 3?").response.find("6") != std::string::npos);
+
+	// cbCmdConvert
 	assert(Chatbot::process("6900 kg in tonnes").response.find("6.9") != std::string::npos);
 }
 
@@ -1542,8 +1501,6 @@ void cli_test()
 		{
 			unit("chatbot")
 			{
-				test("triggers", &test_chatbot_triggers);
-				test("args", &test_chatbot_args);
 				test("implementables", &test_chatbot_implementables);
 				test("results", &test_chatbot_results);
 			}

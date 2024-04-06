@@ -12,7 +12,7 @@ namespace soup
 		case CB_CM: return "cm";
 		case CB_M: return "m";
 		case CB_KM: return "km";
-		case CB_IN: return "in";
+		case CB_IN: return "inches";
 		case CB_FT: return "ft";
 		case CB_YARDS: return "yards";
 		case CB_RODS: return "rods";

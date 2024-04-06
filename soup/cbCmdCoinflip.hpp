@@ -8,12 +8,13 @@ namespace soup
 {
 	struct cbCmdCoinflip : public cbCmd
 	{
-		[[nodiscard]] bool checkTriggers(cbParser& p) const noexcept final
+		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			return p.checkTriggers({ "coinflip", "flip a coin" });
+			static Regex r(R"(\b(?:coinflip|flip a coin)\b)");
+			return r.search(str);
 		}
 
-		[[nodiscard]] cbResult process(cbParser& p) const noexcept final
+		[[nodiscard]] cbResult process(const RegexMatchResult& m) const final
 		{
 			return soup::rand.coinflip() ? "Heads." : "Tails.";
 		}
