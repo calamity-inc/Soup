@@ -27,7 +27,7 @@ namespace soup
 			return true;
 		}
 
-		[[nodiscard]] const RegexConstraint* getEntrypoint() const noexcept final
+		[[nodiscard]] RegexConstraint* getEntrypoint() noexcept final
 		{
 			return data.initial;
 		}
@@ -73,7 +73,7 @@ namespace soup
 		[[nodiscard]] UniquePtr<RegexConstraint> clone() const final
 		{
 			auto upClone = soup::make_unique<RegexGroupConstraint>(data.index);
-			std::unordered_map<const RegexConstraint*, const RegexConstraint*> constraint_clones{};
+			std::unordered_map<const RegexConstraint*, RegexConstraint*> constraint_clones{};
 			for (const auto& a : data.alternatives)
 			{
 				RegexAlternative& ac = upClone->data.alternatives.emplace_back();
@@ -90,7 +90,7 @@ namespace soup
 			upClone->data.parent = data.parent;
 			if (auto e = constraint_clones.find(data.initial); e != constraint_clones.end())
 			{
-				upClone->data.initial = static_cast<const RegexConstraint*>(e->second);
+				upClone->data.initial = e->second;
 			}
 			for (const auto& a : upClone->data.alternatives)
 			{
@@ -98,11 +98,11 @@ namespace soup
 				{
 					if (auto e = constraint_clones.find(c->success_transition); e != constraint_clones.end())
 					{
-						c->success_transition = static_cast<const RegexConstraint*>(e->second);
+						c->success_transition = e->second;
 					}
 					if (auto e = constraint_clones.find(c->rollback_transition); e != constraint_clones.end())
 					{
-						c->rollback_transition = static_cast<const RegexConstraint*>(e->second);
+						c->rollback_transition = e->second;
 					}
 				}
 			}

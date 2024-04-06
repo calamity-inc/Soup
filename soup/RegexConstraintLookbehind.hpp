@@ -14,7 +14,7 @@ namespace soup
 		{
 		}
 
-		[[nodiscard]] const RegexConstraint* getEntrypoint() const noexcept final
+		[[nodiscard]] RegexConstraint* getEntrypoint() noexcept final
 		{
 			return group.initial;
 		}

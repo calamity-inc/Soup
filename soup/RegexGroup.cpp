@@ -29,15 +29,15 @@ namespace soup
 {
 	struct TransitionsVector
 	{
-		std::vector<const RegexConstraint**> data;
-		std::vector<const RegexConstraint**> prev_data;
+		std::vector<RegexConstraint**> data;
+		std::vector<RegexConstraint**> prev_data;
 
-		void emplace(const RegexConstraint** p)
+		void emplace(RegexConstraint** p)
 		{
 			data.emplace_back(p);
 		}
 
-		void emplaceRollback(const RegexConstraint** p)
+		void emplaceRollback(RegexConstraint** p)
 		{
 			data.emplace_back(p);
 
@@ -45,7 +45,7 @@ namespace soup
 			*reinterpret_cast<uintptr_t*>(p) = 1;
 		}
 
-		void setPreviousTransitionTo(const RegexConstraint* c) noexcept
+		void setPreviousTransitionTo(RegexConstraint* c) noexcept
 		{
 			for (const auto& p : prev_data)
 			{
@@ -53,7 +53,7 @@ namespace soup
 			}
 		}
 
-		void setTransitionTo(const RegexConstraint* c, bool save_checkpoint = false) noexcept
+		void setTransitionTo(RegexConstraint* c, bool save_checkpoint = false) noexcept
 		{
 			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & 1) == 0);
 			if (save_checkpoint)
@@ -69,7 +69,7 @@ namespace soup
 			data.clear();
 		}
 
-		void discharge(std::vector<const RegexConstraint**>& outTransitions) noexcept
+		void discharge(std::vector<RegexConstraint**>& outTransitions) noexcept
 		{
 			for (const auto& p : data)
 			{
@@ -113,7 +113,7 @@ namespace soup
 
 		RegexAlternative a{};
 
-		std::vector<const RegexConstraint**> alternatives_transitions{};
+		std::vector<RegexConstraint**> alternatives_transitions{};
 
 		bool escape = false;
 		for (; s.it != s.end; ++s.it)
@@ -382,12 +382,12 @@ namespace soup
 						}
 
 						// last-lookahead-constraint --[success]-> fail
-						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraint*>(0b10));
+						success_transitions.setTransitionTo(reinterpret_cast<RegexConstraint*>(0b10));
 
 						if (upGC->group.initial)
 						{
 							// first-lookahead-constraint --[rollback]-> next-constraint
-							success_transitions.emplaceRollback(&const_cast<RegexConstraint*>(upGC->group.initial)->rollback_transition);
+							success_transitions.emplaceRollback(&upGC->group.initial->rollback_transition);
 						}
 
 						a.constraints.emplace_back(std::move(upGC));
@@ -443,7 +443,7 @@ namespace soup
 
 						// last-lookbehind-constraint --[success]-> fail
 						success_transitions.data = std::move(s.alternatives_transitions);
-						success_transitions.setTransitionTo(reinterpret_cast<const RegexConstraint*>(0b10));
+						success_transitions.setTransitionTo(reinterpret_cast<RegexConstraint*>(0b10));
 
 						// group --[rollback]--> next-constraint
 						success_transitions.emplaceRollback(&upGC->rollback_transition);
@@ -511,7 +511,7 @@ namespace soup
 					}
 
 					// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-					const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->group.setBool(true);
+					pModifiedConstraint->getEntrypoint()->group.setBool(true);
 					pModifiedConstraint->group = this;
 
 					// constraint --[success]-> quantifier
@@ -565,7 +565,7 @@ namespace soup
 					}
 
 					// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-					const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->group.setBool(true);
+					pModifiedConstraint->getEntrypoint()->group.setBool(true);
 					pModifiedConstraint->group = this;
 
 					if (greedy)
@@ -603,7 +603,7 @@ namespace soup
 					pModifiedConstraint->group = this;
 
 					// constraint --[rollback]-> next-constraint
-					success_transitions.emplaceRollback(&const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->rollback_transition);
+					success_transitions.emplaceRollback(&pModifiedConstraint->getEntrypoint()->rollback_transition);
 
 					a.constraints.back() = std::move(upOptConstraint);
 					continue;
@@ -740,7 +740,7 @@ namespace soup
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 						
 						// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-						const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->group.setBool(true);
+						pModifiedConstraint->getEntrypoint()->group.setBool(true);
 						pModifiedConstraint->group = this;
 
 						while (--min_reps != 0)
@@ -772,7 +772,7 @@ namespace soup
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 						
 						// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-						const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->group.setBool(true);
+						pModifiedConstraint->getEntrypoint()->group.setBool(true);
 						pModifiedConstraint->group = this;
 
 						while (--min_reps != 0)
@@ -820,7 +820,7 @@ namespace soup
 							upRepConstraint->min_reps = min_reps;
 							
 							// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-							const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->group.setBool(true);
+							pModifiedConstraint->getEntrypoint()->group.setBool(true);
 							pModifiedConstraint->group = this;
 
 							size_t required_reps = min_reps;
@@ -851,7 +851,7 @@ namespace soup
 								rep_transitions.emplace(&upClone->success_transition);
 
 								// clone --[rollback]-> next-constraint
-								success_transitions.emplaceRollback(&const_cast<RegexConstraint*>(upClone->getEntrypoint())->rollback_transition);
+								success_transitions.emplaceRollback(&upClone->getEntrypoint()->rollback_transition);
 
 								upRepConstraint->constraints.emplace_back(std::move(upClone));
 							}
@@ -868,7 +868,7 @@ namespace soup
 							upRepConstraint->min_reps = min_reps;
 							
 							// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-							const_cast<RegexConstraint*>(pModifiedConstraint->getEntrypoint())->group.setBool(true);
+							pModifiedConstraint->getEntrypoint()->group.setBool(true);
 							pModifiedConstraint->group = this;
 
 							size_t required_reps = min_reps;

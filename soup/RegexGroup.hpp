@@ -15,7 +15,7 @@ namespace soup
 			const char* end;
 			mutable uint16_t flags;
 			mutable size_t next_index = 0;
-			mutable std::vector<const RegexConstraint**> alternatives_transitions{};
+			mutable std::vector<RegexConstraint**> alternatives_transitions{};
 
 			ConstructorState(const char* it, const char* end, uint16_t flags)
 				: it(it), end(end), flags(flags)
@@ -30,7 +30,7 @@ namespace soup
 
 		const size_t index = 0;
 		const RegexGroup* parent = nullptr;
-		const RegexConstraint* initial = nullptr;
+		RegexConstraint* initial = nullptr;
 		std::vector<RegexAlternative> alternatives{};
 		std::string name{};
 		bool lookahead_or_lookbehind = false;

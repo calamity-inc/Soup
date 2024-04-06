@@ -11,8 +11,8 @@ namespace soup
 {
 	struct RegexConstraint
 	{
-		const RegexConstraint* success_transition = nullptr;
-		const RegexConstraint* rollback_transition = nullptr;
+		RegexConstraint* success_transition = nullptr;
+		RegexConstraint* rollback_transition = nullptr;
 		PointerAndBool<const RegexGroup*> group = nullptr;
 
 		RegexConstraint() = default;
@@ -27,7 +27,7 @@ namespace soup
 		// May only modify `m.it` and only if the constraint matches.
 		[[nodiscard]] virtual bool matches(RegexMatcher& m) const noexcept = 0;
 
-		[[nodiscard]] virtual const RegexConstraint* getEntrypoint() const noexcept
+		[[nodiscard]] virtual RegexConstraint* getEntrypoint() noexcept
 		{
 			return this;
 		}

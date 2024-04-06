@@ -17,7 +17,7 @@ namespace soup
 			return true;
 		}
 
-		[[nodiscard]] const RegexConstraint* getEntrypoint() const noexcept final
+		[[nodiscard]] RegexConstraint* getEntrypoint() noexcept final
 		{
 			return constraints.at(0)->getEntrypoint();
 		}
