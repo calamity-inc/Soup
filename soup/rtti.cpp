@@ -2,29 +2,29 @@
 
 #include <cstring> // strlen
 
-namespace soup::rtti
+namespace soup
 {
-	const char* type_info::getMangledName() const noexcept
+	const char* RttiTypeInfo::getMangledName() const noexcept
 	{
 		return &name[0];
 	}
 
-	size_t type_info::getMangledNameLength() const noexcept
+	size_t RttiTypeInfo::getMangledNameLength() const noexcept
 	{
 		return strlen(getMangledName());
 	}
 
-	std::string type_info::getName() const noexcept
+	std::string RttiTypeInfo::getName() const noexcept
 	{
 		return demangle(getMangledName());
 	}
 
-	std::string type_info::demangle(const std::string& str) noexcept
+	std::string RttiTypeInfo::demangle(const std::string& str) noexcept
 	{
 		return demangle(str.c_str());
 	}
 
-	std::string type_info::demangle(const char* c) noexcept
+	std::string RttiTypeInfo::demangle(const char* c) noexcept
 	{
 		if (*c == '\0')
 		{
@@ -55,7 +55,7 @@ if (*c == '\0') \
 	break; \
 }
 
-	std::string type_info::demangleNamespace(const char*& c) noexcept
+	std::string RttiTypeInfo::demangleNamespace(const char*& c) noexcept
 	{
 		std::string res{};
 		while (true)
@@ -75,7 +75,7 @@ if (*c == '\0') \
 		return res;
 	}
 
-	std::string type_info::demangleType(const char*& c) noexcept
+	std::string RttiTypeInfo::demangleType(const char*& c) noexcept
 	{
 		if (*c == 'V') // class prefix
 		{
@@ -106,7 +106,7 @@ if (*c == '\0') \
 		return res;
 	}
 
-	std::string type_info::demangleName(const char*& c) noexcept
+	std::string RttiTypeInfo::demangleName(const char*& c) noexcept
 	{
 		const char* start = c;
 		while (true)
@@ -117,32 +117,32 @@ if (*c == '\0') \
 		return std::string(start, c - start - 1);
 	}
 
-	object* object::fromVft(void** vftable) noexcept
+	RttiObject* RttiObject::fromVft(void** vftable) noexcept
 	{
-		return reinterpret_cast<object*>(vftable[-1]);
+		return reinterpret_cast<RttiObject*>(vftable[-1]);
 	}
 
-	object* object::fromInstance(const void* inst) noexcept
+	RttiObject* RttiObject::fromInstance(const void* inst) noexcept
 	{
 		return fromVft(*reinterpret_cast<void** const*>(inst));
 	}
 
-	uintptr_t object::getImageBase() const noexcept
+	uintptr_t RttiObject::getImageBase() const noexcept
 	{
 		return reinterpret_cast<uintptr_t>(this) - this_rva;
 	}
 
-	type_info* object::getTypeInfo() const noexcept
+	RttiTypeInfo* RttiObject::getTypeInfo() const noexcept
 	{
-		return followRVA<type_info>(type_info_rva);
+		return followRVA<RttiTypeInfo>(type_info_rva);
 	}
 
-	hierarchy_info* object::getHierarchyInfo() const noexcept
+	RttiHierarchyInfo* RttiObject::getHierarchyInfo() const noexcept
 	{
-		return followRVA<hierarchy_info>(hierarchy_info_rva);
+		return followRVA<RttiHierarchyInfo>(hierarchy_info_rva);
 	}
 
-	std::string object::getHierarchyString() const noexcept
+	std::string RttiObject::getHierarchyString() const noexcept
 	{
 		std::string res = getTypeInfo()->getName();
 		for (auto i = 0; i != getNumParentClasses(); ++i)
@@ -153,41 +153,41 @@ if (*c == '\0') \
 		return res;
 	}
 
-	uint32_t object::getNumBaseClasses() const noexcept
+	uint32_t RttiObject::getNumBaseClasses() const noexcept
 	{
 		return getHierarchyInfo()->base_classes_size;
 	}
 
-	uint32_t* object::getBaseClassArray() const noexcept
+	uint32_t* RttiObject::getBaseClassArray() const noexcept
 	{
 		return followRVA<uint32_t>(getHierarchyInfo()->base_classes_rva);
 	}
 
-	base_class* object::getBaseClassInfo(uint32_t index) const noexcept
+	RttiBaseClass* RttiObject::getBaseClassInfo(uint32_t index) const noexcept
 	{
 		if (index < getNumBaseClasses())
 		{
-			return followRVA<base_class>(getBaseClassArray()[index]);
+			return followRVA<RttiBaseClass>(getBaseClassArray()[index]);
 		}
 		return nullptr;
 	}
 
-	type_info* object::getBaseClassTypeInfo(uint32_t index) const noexcept
+	RttiTypeInfo* RttiObject::getBaseClassTypeInfo(uint32_t index) const noexcept
 	{
-		return followRVA<type_info>(getBaseClassInfo(index)->type_info_rva);
+		return followRVA<RttiTypeInfo>(getBaseClassInfo(index)->type_info_rva);
 	}
 
-	uint32_t object::getNumParentClasses() const noexcept
+	uint32_t RttiObject::getNumParentClasses() const noexcept
 	{
 		return getNumBaseClasses() - 1;
 	}
 
-	bool object::hasParentClass() const noexcept
+	bool RttiObject::hasParentClass() const noexcept
 	{
 		return getNumParentClasses() > 0;
 	}
 
-	type_info* object::getParentClassTypeInfo(uint32_t index) const noexcept
+	RttiTypeInfo* RttiObject::getParentClassTypeInfo(uint32_t index) const noexcept
 	{
 		return getBaseClassTypeInfo(index + 1);
 	}

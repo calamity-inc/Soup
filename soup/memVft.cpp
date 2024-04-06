@@ -28,8 +28,8 @@ namespace soup
 	}
 #endif
 
-	rtti::object* memVft::getRtti() const noexcept
+	RttiObject* memVft::getRtti() const noexcept
 	{
-		return rtti::object::fromVft(vft);
+		return RttiObject::fromVft(vft);
 	}
 }

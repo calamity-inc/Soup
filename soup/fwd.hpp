@@ -130,10 +130,7 @@ namespace soup
 
 	// mem.vft
 	struct memVft;
-	namespace rtti
-	{
-		struct object;
-	}
+	struct RttiObject;
 
 	// misc.chess
 	struct ChessCoordinate;

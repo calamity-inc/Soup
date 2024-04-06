@@ -19,7 +19,7 @@ namespace soup
 #if SOUP_WINDOWS // Because Module is not cross-platfom *yet*
 		[[nodiscard]] bool hasRtti() const noexcept;
 #endif
-		[[nodiscard]] rtti::object* getRtti() const noexcept;
+		[[nodiscard]] RttiObject* getRtti() const noexcept;
 
 		template <typename Class, typename FuncT>
 		[[nodiscard]] static size_t getOffset(FuncT Class::* func) noexcept

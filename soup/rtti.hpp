@@ -5,12 +5,12 @@
 
 #include "Bitset.hpp"
 
-namespace soup::rtti
+namespace soup
 {
 #pragma pack(push, 1)
-	struct type_info
+	struct RttiTypeInfo
 	{
-		virtual ~type_info() = default;
+		virtual ~RttiTypeInfo() = default;
 		size_t runtime_reference;
 		const char name[1]; // this is as long as it needs to be
 
@@ -27,7 +27,7 @@ namespace soup::rtti
 		[[nodiscard]] static std::string demangleName(const char*& c) noexcept;
 	};
 
-	struct hierarchy_info
+	struct RttiHierarchyInfo
 	{
 		uint32_t signature;
 		uint32_t attributes;
@@ -35,7 +35,7 @@ namespace soup::rtti
 		uint32_t base_classes_rva;
 	};
 
-	struct base_class
+	struct RttiBaseClass
 	{
 		uint32_t type_info_rva;
 		uint32_t num_parent_classes;
@@ -46,7 +46,7 @@ namespace soup::rtti
 		uint32_t hierarchy_info_rva;
 	};
 
-	struct object
+	struct RttiObject
 	{
 		uint32_t signature; // seems to always be 1
 		int32_t vftable_offset;
@@ -55,8 +55,8 @@ namespace soup::rtti
 		uint32_t hierarchy_info_rva;
 		uint32_t this_rva;
 
-		[[nodiscard]] static object* fromVft(void** vftable) noexcept;
-		[[nodiscard]] static object* fromInstance(const void* inst) noexcept;
+		[[nodiscard]] static RttiObject* fromVft(void** vftable) noexcept;
+		[[nodiscard]] static RttiObject* fromInstance(const void* inst) noexcept;
 
 		[[nodiscard]] uintptr_t getImageBase() const noexcept;
 
@@ -66,18 +66,18 @@ namespace soup::rtti
 			return reinterpret_cast<T*>(getImageBase() + rva);
 		}
 
-		[[nodiscard]] type_info* getTypeInfo() const noexcept;
-		[[nodiscard]] hierarchy_info* getHierarchyInfo() const noexcept;
+		[[nodiscard]] RttiTypeInfo* getTypeInfo() const noexcept;
+		[[nodiscard]] RttiHierarchyInfo* getHierarchyInfo() const noexcept;
 		[[nodiscard]] std::string getHierarchyString() const noexcept;
 
 		[[nodiscard]] uint32_t getNumBaseClasses() const noexcept;
 		[[nodiscard]] uint32_t* getBaseClassArray() const noexcept;
-		[[nodiscard]] base_class* getBaseClassInfo(uint32_t index) const noexcept;
-		[[nodiscard]] type_info* getBaseClassTypeInfo(uint32_t index) const noexcept;
+		[[nodiscard]] RttiBaseClass* getBaseClassInfo(uint32_t index) const noexcept;
+		[[nodiscard]] RttiTypeInfo* getBaseClassTypeInfo(uint32_t index) const noexcept;
 
 		[[nodiscard]] uint32_t getNumParentClasses() const noexcept;
 		[[nodiscard]] bool hasParentClass() const noexcept;
-		[[nodiscard]] type_info* getParentClassTypeInfo(uint32_t index = 0) const noexcept;
+		[[nodiscard]] RttiTypeInfo* getParentClassTypeInfo(uint32_t index = 0) const noexcept;
 	};
 #pragma pack(pop)
 }
