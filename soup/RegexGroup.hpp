@@ -7,8 +7,9 @@
 
 namespace soup
 {
-	struct RegexGroup
+	class RegexGroup
 	{
+	public:
 		struct ConstructorState
 		{
 			mutable const char* it;
@@ -48,7 +49,10 @@ namespace soup
 		}
 
 		RegexGroup(const ConstructorState& s, bool non_capturing = false);
+	protected:
+		void processRepeatingConstraint(RegexConstraint* pModifiedConstraint);
 
+	public:
 		[[nodiscard]] bool isNonCapturing() const noexcept
 		{
 			return index == -1;

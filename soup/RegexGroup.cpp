@@ -510,9 +510,7 @@ namespace soup
 						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<true, false>>(std::move(upModifiedConstraint));
 					}
 
-					// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-					pModifiedConstraint->getEntrypoint()->group.setBool(true);
-					pModifiedConstraint->group = this;
+					processRepeatingConstraint(pModifiedConstraint);
 
 					// constraint --[success]-> quantifier
 					success_transitions.setTransitionTo(upQuantifierConstraint.get());
@@ -564,9 +562,7 @@ namespace soup
 						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<false, false>>(std::move(upModifiedConstraint));
 					}
 
-					// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-					pModifiedConstraint->getEntrypoint()->group.setBool(true);
-					pModifiedConstraint->group = this;
+					processRepeatingConstraint(pModifiedConstraint);
 
 					if (greedy)
 					{
@@ -738,10 +734,8 @@ namespace soup
 
 						auto upRepConstraint = soup::make_unique<RegexExactQuantifierConstraint>();
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
-						
-						// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-						pModifiedConstraint->getEntrypoint()->group.setBool(true);
-						pModifiedConstraint->group = this;
+
+						processRepeatingConstraint(pModifiedConstraint);
 
 						while (--min_reps != 0)
 						{
@@ -770,10 +764,8 @@ namespace soup
 							upRepConstraint = soup::make_unique<RegexOpenEndedRangeQuantifierConstraint<false>>();
 						}
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
-						
-						// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-						pModifiedConstraint->getEntrypoint()->group.setBool(true);
-						pModifiedConstraint->group = this;
+
+						processRepeatingConstraint(pModifiedConstraint);
 
 						while (--min_reps != 0)
 						{
@@ -818,10 +810,8 @@ namespace soup
 							auto upRepConstraint = soup::make_unique<RegexRangeQuantifierConstraintGreedy>();
 							upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 							upRepConstraint->min_reps = min_reps;
-							
-							// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-							pModifiedConstraint->getEntrypoint()->group.setBool(true);
-							pModifiedConstraint->group = this;
+
+							processRepeatingConstraint(pModifiedConstraint);
 
 							size_t required_reps = min_reps;
 							while (--required_reps != 0)
@@ -866,10 +856,8 @@ namespace soup
 							auto upRepConstraint = soup::make_unique<RegexRangeQuantifierConstraintLazy>();
 							upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 							upRepConstraint->min_reps = min_reps;
-							
-							// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-							pModifiedConstraint->getEntrypoint()->group.setBool(true);
-							pModifiedConstraint->group = this;
+
+							processRepeatingConstraint(pModifiedConstraint);
 
 							size_t required_reps = min_reps;
 							while (--required_reps != 0)
@@ -989,6 +977,13 @@ namespace soup
 		}
 
 		s.alternatives_transitions = std::move(alternatives_transitions);
+	}
+
+	void RegexGroup::processRepeatingConstraint(RegexConstraint* pModifiedConstraint)
+	{
+		// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
+		pModifiedConstraint->getEntrypoint()->group.setBool(true);
+		pModifiedConstraint->group = this;
 	}
 
 	std::string RegexGroup::toString() const SOUP_EXCAL

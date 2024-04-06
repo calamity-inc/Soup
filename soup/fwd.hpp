@@ -44,7 +44,7 @@ namespace soup
 
 	// data.regex
 	struct RegexConstraint;
-	struct RegexGroup;
+	class RegexGroup;
 	struct RegexMatcher;
 
 	// data.xml
