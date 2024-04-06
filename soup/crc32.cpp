@@ -14,6 +14,14 @@
 #include "Endian.hpp"
 #include "Reader.hpp"
 
+#if CRC32_USE_INTRIN
+namespace soup_intrin
+{
+	extern uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc) noexcept;
+	extern uint32_t crc32_armv8(const uint8_t* p, size_t size, uint32_t crc) noexcept;
+}
+#endif
+
 namespace soup
 {
 	static const uint32_t crc32_lookup4[4][256] = {
@@ -92,11 +100,7 @@ namespace soup
 		return ~checksum;
 	}
 
-#if CRC32_USE_INTRIN
-	extern uint32_t crc32_pclmul(const uint8_t* p, size_t size, uint32_t crc) noexcept;
-	extern uint32_t crc32_armv8(const uint8_t* p, size_t size, uint32_t crc) noexcept;
-
-	#if SOUP_X86
+#if CRC32_USE_INTRIN && SOUP_X86
 	static uint32_t crc32_sse41_simd(const uint8_t* data, size_t size, uint32_t init) noexcept
 	{
 		if (size < 16)
@@ -105,10 +109,9 @@ namespace soup
 		}
 
 		uint32_t simd_len = size & ~15;
-		uint32_t c = crc32_pclmul(data, simd_len, init);
+		uint32_t c = soup_intrin::crc32_pclmul(data, simd_len, init);
 		return crc32_slice_by_4(data + simd_len, size - simd_len, c);
 	}
-	#endif
 #endif
 
 	uint32_t crc32::hash(const uint8_t* data, size_t size, uint32_t init) noexcept
@@ -125,7 +128,7 @@ namespace soup
 	#elif SOUP_ARM
 		if (CpuInfo::get().armv8_crc32)
 		{
-			return crc32_armv8(data, size, init);
+			return soup_intrin::crc32_armv8(data, size, init);
 		}
 	#endif
 #endif

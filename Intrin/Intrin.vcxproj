@@ -18,8 +18,8 @@
     <ClCompile Include="aes_helper.cpp" />
     <ClCompile Include="crc32_intrin.cpp" />
     <ClCompile Include="hardware_rng.cpp" />
-    <ClCompile Include="sha1_transform_intrin.cpp" />
-    <ClCompile Include="sha256_transform_intrin.cpp" />
+    <ClCompile Include="sha1_transform.cpp" />
+    <ClCompile Include="sha256_transform.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
