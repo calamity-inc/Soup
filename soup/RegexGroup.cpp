@@ -982,7 +982,12 @@ namespace soup
 	void RegexGroup::processRepeatingConstraint(RegexConstraint* pModifiedConstraint)
 	{
 		// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-		pModifiedConstraint->getEntrypoint()->group.setBool(true);
+		if (pModifiedConstraint->getEntrypoint()->group
+			&& !pModifiedConstraint->getEntrypoint()->group->isNonCapturing()
+			)
+		{
+			pModifiedConstraint->getEntrypoint()->group.setBool(true);
+		}
 		pModifiedConstraint->group = this;
 	}
 
