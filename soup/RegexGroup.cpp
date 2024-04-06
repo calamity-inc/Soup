@@ -495,6 +495,7 @@ namespace soup
 					}
 					greedy ^= s.hasFlag(RE_UNGREEDY);
 
+					SOUP_ASSERT(!a.constraints.empty(), "Invalid modifier");
 					RegexConstraint* pModifiedConstraint;
 					UniquePtr<RegexConstraint> upQuantifierConstraint;
 					if (greedy)
@@ -547,6 +548,7 @@ namespace soup
 					}
 					greedy ^= s.hasFlag(RE_UNGREEDY);
 
+					SOUP_ASSERT(!a.constraints.empty(), "Invalid modifier");
 					RegexConstraint* pModifiedConstraint;
 					UniquePtr<RegexConstraint> upQuantifierConstraint;
 					if (greedy)
@@ -592,6 +594,7 @@ namespace soup
 				}
 				else if (*s.it == '?')
 				{
+					SOUP_ASSERT(!a.constraints.empty(), "Invalid modifier");
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 					auto pModifiedConstraint = upModifiedConstraint.get();
 					auto upOptConstraint = soup::make_unique<RegexOptConstraint>(std::move(upModifiedConstraint));
@@ -721,6 +724,7 @@ namespace soup
 					}
 					greedy ^= s.hasFlag(RE_UNGREEDY);
 
+					SOUP_ASSERT(!a.constraints.empty(), "Invalid modifier");
 					UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 					auto pModifiedConstraint = upModifiedConstraint.get();
 					if (min_reps == 0)
