@@ -1587,6 +1587,9 @@
     <ClInclude Include="CpuInfo.hpp">
       <Filter>cpu</Filter>
     </ClInclude>
+    <ClInclude Include="laMathFrontend.hpp">
+      <Filter>lang\compiler\frontend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2349,6 +2352,9 @@
     </ClCompile>
     <ClCompile Include="CpuInfo.cpp">
       <Filter>cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="laMathFrontend.cpp">
+      <Filter>lang\compiler\frontend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

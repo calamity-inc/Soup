@@ -1,80 +1,22 @@
 #include "MathExpr.hpp"
 
-#include "LangDesc.hpp"
-#include "LangVm.hpp"
-#include "ParserState.hpp"
-#include "parse_tree.hpp" // astBlock
-#include "StringReader.hpp"
-#include "StringWriter.hpp"
+#include "irModule.hpp"
+#include "irVm.hpp"
+#include "laMathFrontend.hpp"
 
 namespace soup
 {
-	enum
+	Optional<int64_t> MathExpr::evaluate(const std::string& str)
 	{
-		OP_ADD,
-		OP_SUB,
-		OP_MUL,
-		OP_DIV,
-	};
-
-	int64_t MathExpr::evaluate(const std::string& str)
-	{
-		LangDesc ld;
-
-		ld.addToken("*", [](ParserState& ps)
+		laMathFrontend f;
+		auto m = f.parse(str);
+		auto memory = m.getContiguousMemory();
+		irVm vm(memory);
+		auto ret = vm.execute(m, m.func_exports.at(0));
+		if (!ret.empty())
 		{
-			ps.setOp(OP_MUL);
-			ps.consumeLefthandValue();
-			ps.consumeRighthandValue();
-		});
-		ld.addTokenWithSamePrecedenceAsPreviousToken("/", [](ParserState& ps)
-		{
-			ps.setOp(OP_DIV);
-			ps.consumeLefthandValue();
-			ps.consumeRighthandValue();
-		});
-
-		ld.addToken("+", [](ParserState& ps)
-		{
-			ps.setOp(OP_ADD);
-			ps.consumeLefthandValue();
-			ps.consumeRighthandValue();
-		});
-		ld.addTokenWithSamePrecedenceAsPreviousToken("-", [](ParserState& ps)
-		{
-			ps.setOp(OP_SUB);
-			ps.consumeLefthandValue();
-			ps.consumeRighthandValue();
-		});
-
-		astBlock root = ld.parse(ld.tokenise(str));
-
-		StringWriter w;
-		root.compile(w);
-
-		StringReader r{ std::move(w.data) };	
-		LangVm vm{ r };
-		for (uint8_t op; vm.getNextOp(op); )
-		{
-			switch (op)
-			{
-			case OP_ADD:
-				vm.push(vm.pop()->getInt() + vm.pop()->getInt());
-				break;
-
-			case OP_SUB:
-				vm.push(vm.pop()->getInt() - vm.pop()->getInt());
-				break;
-
-			case OP_MUL:
-				vm.push(vm.pop()->getInt() * vm.pop()->getInt());
-				break;
-
-			case OP_DIV:
-				vm.push(vm.pop()->getInt() / vm.pop()->getInt());
-				break;
-			}
+			return ret.at(0).value.i64;
 		}
-		return vm.pop()->getInt();
+		return std::nullopt;
 	}
 }

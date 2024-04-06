@@ -989,6 +989,11 @@ endif;)") == "");
 		test("order of operations", []
 		{
 			assert(MathExpr::evaluate("3 - 2 + 1") == 2);
+			assert(MathExpr::evaluate("1 * 2 + 3 * 4") == 14);
+		});
+		test("unspaced equations", []
+		{
+			assert(MathExpr::evaluate("1+2") == 3);
 		});
 	}
 

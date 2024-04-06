@@ -735,6 +735,7 @@
     <ClInclude Include="Keyboard.hpp" />
     <ClInclude Include="laBackend.hpp" />
     <ClInclude Include="laFrontend.hpp" />
+    <ClInclude Include="laMathFrontend.hpp" />
     <ClInclude Include="laPlutoFrontend.hpp" />
     <ClInclude Include="laWasmBackend.hpp" />
     <ClInclude Include="MathExpr.hpp" />
@@ -1243,6 +1244,7 @@
     <ClCompile Include="kbRgbWooting.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Key.cpp" />
+    <ClCompile Include="laMathFrontend.cpp" />
     <ClCompile Include="laPlutoFrontend.cpp" />
     <ClCompile Include="laWasmBackend.cpp" />
     <ClCompile Include="LcgRng.cpp" />
