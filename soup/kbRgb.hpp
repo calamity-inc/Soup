@@ -7,7 +7,7 @@
 #include "Rgb.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct kbRgb
 	{

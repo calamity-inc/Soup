@@ -5,7 +5,7 @@
 
 #include "unicode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Someone once expressed to me that they don't understand text encoding and there should just be an abstraction that hides it away for them.
 	// So, this is that abstraction.

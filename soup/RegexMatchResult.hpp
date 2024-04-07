@@ -5,7 +5,7 @@
 
 #include "RegexMatchedGroup.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexMatchResult
 	{

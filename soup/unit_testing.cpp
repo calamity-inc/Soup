@@ -31,7 +31,7 @@ void assert_impl(bool b, soup::SourceLocation sl)
 	Test::currently_running->last_successful_test = std::move(sl);
 }
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void TestUnit::onFinishedBuildingTree()
 	{

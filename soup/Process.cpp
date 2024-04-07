@@ -7,7 +7,7 @@
 #include "HandleRaii.hpp"
 #include "Module.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Process::Process(DWORD id, std::string&& name)
 		: id(id), name(std::move(name))

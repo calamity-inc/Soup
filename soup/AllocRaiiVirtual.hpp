@@ -5,7 +5,7 @@
 #include "memProtFlags.hpp"
 #include "os.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct AllocRaiiVirtual : public AllocRaiiLocalBase
 	{

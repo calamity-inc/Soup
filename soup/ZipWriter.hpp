@@ -5,7 +5,7 @@
 
 #include "ZipIndexedFile.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class ZipWriter
 	{

@@ -1,6 +1,8 @@
 #pragma once
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	template <typename Desired, typename Actual>
 	[[nodiscard]] Desired ub_pointer_cast(Actual a)

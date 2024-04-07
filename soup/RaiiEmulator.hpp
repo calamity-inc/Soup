@@ -6,7 +6,7 @@
 #include "deleter.hpp"
 #include "Exception.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// For when your "favourite" web scripting language is missing important OOP features.
 	struct RaiiEmulator

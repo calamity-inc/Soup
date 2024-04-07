@@ -4,7 +4,7 @@
 
 #include "Fiber.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <typename Base = Task>
 	class FiberTask : public Base

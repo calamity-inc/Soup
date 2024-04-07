@@ -52,7 +52,7 @@ using udev_device_get_sysattr_value_t = const char*(*)(udev_device*, const char*
 #define udev_list_entry_foreach(list_entry, first_entry) for (list_entry = first_entry; list_entry; list_entry = udev_list_entry_get_next(list_entry))
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_LINUX
 	[[nodiscard]] static bool parse_uevent_info(std::string uevent, unsigned short& vendor_id, unsigned short& product_id, std::string& product_name_utf8, std::string& serial_number_utf8)

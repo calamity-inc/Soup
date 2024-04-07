@@ -4,7 +4,7 @@
 
 #include "RegexMatcher.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <bool unicode>
 	struct RegexPositiveLookbehindConstraint : public RegexConstraintLookbehindImpl<unicode>

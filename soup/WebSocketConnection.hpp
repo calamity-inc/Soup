@@ -7,7 +7,7 @@
 #include "SharedPtr.hpp"
 #include "WebSocketMessage.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class WebSocketConnection : public Socket
 	{

@@ -4,7 +4,7 @@
 #if !SOUP_ANDROID
 #include "dnsResolver.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct dnsOsResolver : public dnsResolver
 	{

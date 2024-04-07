@@ -2,7 +2,7 @@
 
 #include "RenderTarget.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RenderTargetCanvas : public RenderTarget
 	{

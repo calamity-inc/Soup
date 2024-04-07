@@ -4,7 +4,7 @@
 
 #if !SOUP_WASM
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<Keyboard> Keyboard::getAll()
 	{

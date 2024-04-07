@@ -3,7 +3,7 @@
 #include "ioSizeMeasurer.hpp"
 #include "Reader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <typename T>
 	[[nodiscard]] size_t measurePacket()

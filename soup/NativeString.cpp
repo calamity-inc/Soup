@@ -12,7 +12,7 @@ static_assert(sizeof(wchar_t) == 2); // UTF-16
 static_assert(sizeof(wchar_t) == 4); // UTF-32
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	NativeString::NativeString(const wchar_t* str)
 		: m_data(str)

@@ -1,6 +1,6 @@
 #include "Rgba.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Rgba Rgba::fromHex(std::string hex)
 	{

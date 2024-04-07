@@ -4,7 +4,7 @@
 #include "Editor.hpp"
 #include "EditorText.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void EditorTab::onClick(MouseButton b, unsigned int x, unsigned int y)
 	{

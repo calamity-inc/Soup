@@ -2,7 +2,7 @@
 
 #include "Rgb.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	union Rgba
 	{

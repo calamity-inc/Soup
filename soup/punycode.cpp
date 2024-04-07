@@ -2,7 +2,7 @@
 
 #include <algorithm> // clamp
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct PunycodeState
 	{

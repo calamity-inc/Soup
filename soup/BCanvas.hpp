@@ -4,7 +4,7 @@
 
 #include "fwd.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Black & White Canvas.
 	struct BCanvas

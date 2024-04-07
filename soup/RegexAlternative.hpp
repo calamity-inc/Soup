@@ -5,7 +5,7 @@
 #include "UniquePtr.hpp"
 #include "RegexConstraint.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexAlternative
 	{

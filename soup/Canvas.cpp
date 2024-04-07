@@ -9,7 +9,7 @@
 #include "TinyPngOut.hpp"
 #include "unicode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void Canvas::fill(const Rgb colour)
 	{

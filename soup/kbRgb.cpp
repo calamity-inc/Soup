@@ -8,7 +8,7 @@
 #include "kbRgbRazerChroma.hpp"
 #include "kbRgbWooting.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<UniquePtr<kbRgb>> kbRgb::getAll(bool include_razer_chroma, bool include_no_permission)
 	{

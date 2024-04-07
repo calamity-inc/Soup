@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <string>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct WebResource
 	{

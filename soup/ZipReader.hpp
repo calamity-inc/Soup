@@ -6,7 +6,7 @@
 
 #include "ZipIndexedFile.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct ZipReader
 	{

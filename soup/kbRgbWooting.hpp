@@ -4,7 +4,7 @@
 
 #include "hwHid.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class kbRgbWooting final : public kbRgb
 	{

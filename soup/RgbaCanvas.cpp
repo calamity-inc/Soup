@@ -5,7 +5,7 @@
 #include "Canvas.hpp"
 #include "Writer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void RgbaCanvas::fill(const Rgba colour)
 	{

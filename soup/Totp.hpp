@@ -2,7 +2,7 @@
 
 #include "Hotp.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Time-based one-time password
 	struct Totp : public Hotp

@@ -9,7 +9,7 @@
 
 #undef min
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static Editor* editor_inst;
 

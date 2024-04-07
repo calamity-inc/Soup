@@ -3,7 +3,7 @@
 #include "joaat.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	const Rgb Rgb::BLACK{ 0, 0, 0 };
 	const Rgb Rgb::WHITE{ 255, 255, 255 };

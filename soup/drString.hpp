@@ -2,7 +2,7 @@
 
 #include "drData.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct drString : public drData
 	{

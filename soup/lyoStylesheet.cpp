@@ -6,7 +6,7 @@
 
 //#include <iostream>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void lyoStylesheet::addRulesFromCss(const std::string& css)
 	{

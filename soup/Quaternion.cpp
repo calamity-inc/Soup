@@ -3,7 +3,7 @@
 #include "Matrix.hpp"
 #include "Vector3.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Quaternion::Quaternion(float angle, const Vector3& axis) noexcept
 	{

@@ -3,7 +3,7 @@
 #include "fwd.hpp"
 #include "Vector4.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 #pragma pack(push, 1)
 	class Quaternion : public Vector4

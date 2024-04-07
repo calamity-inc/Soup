@@ -7,7 +7,7 @@
 #include "fwd.hpp"
 #include "Rgb.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/*
 	 * Original source: https://www.nayuki.io/page/qr-code-generator-library

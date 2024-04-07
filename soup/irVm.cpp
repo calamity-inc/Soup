@@ -2,7 +2,7 @@
 
 #include "rand.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]] static irVm::Variable oneret(std::vector<irVm::Variable>&& ret)
 	{

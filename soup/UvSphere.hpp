@@ -5,7 +5,7 @@
 #include "Sphere.hpp"
 #include <vector>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct UvSphere : public Sphere
 	{

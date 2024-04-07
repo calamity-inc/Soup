@@ -1,6 +1,10 @@
 #pragma once
 
-namespace soup
+#include <cstdint>
+
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	enum BuiltinOp : uint8_t
 	{

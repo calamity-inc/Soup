@@ -3,9 +3,10 @@
 #include <filesystem>
 #include <string>
 
+#include "base.hpp"
 #include "Tempfile.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct CompiledExecutable
 	{

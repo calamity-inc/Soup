@@ -2,7 +2,7 @@
 
 #include "RasterFont.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
     std::vector<gmBox> gmText::getVoxels() const
 	{

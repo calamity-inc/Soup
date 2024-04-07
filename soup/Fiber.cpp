@@ -6,7 +6,7 @@
 #include <Windows.h>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
 	void __stdcall Fiber::entry(void* _f)

@@ -2,7 +2,7 @@
 
 #include "drString.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	UniquePtr<drData> drData::adaptor_toString(const drData& data, const Capture&)
 	{

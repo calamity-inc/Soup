@@ -6,7 +6,7 @@
 #include <Windows.h>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum memProtFlags : int
 	{

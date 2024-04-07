@@ -2,7 +2,7 @@
 
 #include "math.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <typename T, typename Base /*= VectorBase<3, T>*/>
 	struct Vector3Base : public Base

@@ -6,7 +6,7 @@
 #include "HttpRequestTask.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct GetFileContentsTask : public PromiseTask<std::string>
 	{

@@ -13,7 +13,7 @@
 #include "X509Certchain.hpp"
 #include "X509Certificate.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class SocketTlsHandshaker
 	{

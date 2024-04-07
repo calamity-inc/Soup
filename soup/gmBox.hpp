@@ -7,7 +7,7 @@
 #include "Matrix.hpp"
 #include "Vector3.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/**
 	 * From https://www.3dkingdoms.com/weekly/weekly.php?a=21

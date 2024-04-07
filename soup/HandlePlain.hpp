@@ -2,7 +2,7 @@
 
 #include "HandleBase.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct HandlePlain : public HandleBase
 	{

@@ -3,7 +3,7 @@
 #include "Bigint.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using namespace literals;
 

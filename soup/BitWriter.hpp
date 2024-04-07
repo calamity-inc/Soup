@@ -4,7 +4,7 @@
 
 #include "Writer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class BitWriter
 	{

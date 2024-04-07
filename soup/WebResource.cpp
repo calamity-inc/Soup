@@ -12,7 +12,7 @@
 #endif
 #include "time.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	WebResource::WebResource(std::string&& host, std::string&& path)
 		: host(std::move(host)), path(std::move(path))

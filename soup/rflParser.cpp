@@ -6,7 +6,7 @@
 #include "rflType.hpp"
 #include "rflVar.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	rflParser::rflParser(const std::string& code)
 		: LexemeParser(LangDesc{}, code)

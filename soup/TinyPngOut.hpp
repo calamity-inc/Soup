@@ -7,7 +7,7 @@
 
 #include "Writer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/*
 	 * Original source: https://www.nayuki.io/page/tiny-png-output

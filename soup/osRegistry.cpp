@@ -8,7 +8,7 @@
 
 #pragma comment(lib, "Advapi32")
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool osRegistry::Key::hasSubkey(const char* name) const noexcept
 	{

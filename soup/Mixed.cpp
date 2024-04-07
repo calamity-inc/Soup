@@ -8,7 +8,7 @@
 #include "QrCode.hpp"
 #include "SharedPtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Mixed::Mixed(const Mixed& b)
 		: type(b.type)

@@ -22,7 +22,7 @@
 #include "unicode.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void os::escape(std::string& str)
 	{

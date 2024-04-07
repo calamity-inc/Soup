@@ -3,8 +3,9 @@
 #include <cfloat>
 
 #include "aud_common.hpp"
+#include "base.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void audSound::prepare()
 	{

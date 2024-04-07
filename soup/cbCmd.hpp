@@ -3,7 +3,7 @@
 #include "cbResult.hpp"
 #include "Regex.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmd
 	{

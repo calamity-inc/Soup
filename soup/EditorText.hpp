@@ -4,7 +4,7 @@
 
 #include "EditorFile.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct EditorText : public ConuiBase
 	{

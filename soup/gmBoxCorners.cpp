@@ -2,7 +2,7 @@
 
 #include "Poly.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	gmBoxCorners::gmBoxCorners(const Vector3& origin, const Vector3& extent, const Vector3& right, const Vector3& forward, const Vector3& up) noexcept
 	{

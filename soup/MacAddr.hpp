@@ -4,7 +4,9 @@
 #include <cstring> // memcpy
 #include <string>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	struct MacAddr
 	{

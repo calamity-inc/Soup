@@ -7,7 +7,7 @@
 
 #include "IpcSocket.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class kbRgbCorsairCue : public kbRgb
 	{

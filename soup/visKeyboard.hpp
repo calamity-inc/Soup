@@ -6,7 +6,7 @@
 
 #include "Key.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class visKeyboard
 	{

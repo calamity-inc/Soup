@@ -5,7 +5,7 @@
 #include "audNote.hpp"
 #include "fwd.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum MidiEventType : uint8_t
 	{

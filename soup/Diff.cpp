@@ -3,7 +3,7 @@
 #include "FormattedText.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using Line = Diff::Line;
 

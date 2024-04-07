@@ -4,7 +4,7 @@
 
 #include "CidrSubnet4.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct CidrSubnet4Interface : public CidrSubnetInterface
 	{

@@ -5,7 +5,7 @@
 #include "szCompressResult.hpp"
 #include "szMethod.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class szCompressor
 	{

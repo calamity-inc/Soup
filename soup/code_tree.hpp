@@ -4,7 +4,9 @@
 
 #define SOUP_CODE_TREE_NODE(type, ...) if (::soup::CodeTreeNodeRaii<type> _{}; new type(__VA_ARGS__), true)
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	template <typename T>
 	struct CodeTreeNode

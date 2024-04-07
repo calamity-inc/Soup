@@ -2,7 +2,7 @@
 
 #include "StringWriter.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void laWasmBackend::linkPosix(irModule& m)
 	{

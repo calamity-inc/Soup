@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	enum netMeshMsgType : uint8_t
 	{

@@ -5,7 +5,7 @@
 #include "BitWriter.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string TreeReader::toString(const void* root, const std::string& prefix) const
 	{

@@ -11,7 +11,7 @@
 #include "Range.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class Module
 	{

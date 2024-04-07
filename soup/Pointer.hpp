@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class Pointer : public Pointerlike<Pointer>
 	{

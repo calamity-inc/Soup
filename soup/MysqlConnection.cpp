@@ -14,7 +14,7 @@
 #include "sha1.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]] static std::string mysql_native_auth(const std::string& password, std::string salt)
 	{

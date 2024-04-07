@@ -9,7 +9,7 @@
 #include "Matrix.hpp"
 #include "Poly.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct gmText
 	{

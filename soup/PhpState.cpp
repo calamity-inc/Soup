@@ -10,7 +10,7 @@
 #include "StringWriter.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum PhpOpCodes : int
 	{

@@ -3,7 +3,7 @@
 #include "console.hpp"
 #include "MouseButton.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void ChessCli::run()
 	{

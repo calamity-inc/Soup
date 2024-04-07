@@ -15,7 +15,7 @@
 #include "unicode.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	audDevice audDevice::get(unsigned int i)
 	{

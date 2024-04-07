@@ -4,7 +4,7 @@
 
 #include "SharedLibrary.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class JitModule
 	{

@@ -3,7 +3,7 @@
 #include "Mesh.hpp"
 #include "Poly.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Mesh UvSphere::toMesh(unsigned int quality) const
 	{

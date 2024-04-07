@@ -3,7 +3,7 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Notifyable : public std::condition_variable
 	{

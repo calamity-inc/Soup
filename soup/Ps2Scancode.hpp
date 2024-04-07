@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	/*
 	* My PCs haven't had a PS/2 port in a few generations, but... Windows. :)

@@ -6,7 +6,7 @@
 #include "fwd.hpp"
 #include "Lexeme.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct LexemeParser
 	{

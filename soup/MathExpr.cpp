@@ -4,7 +4,7 @@
 #include "irVm.hpp"
 #include "laMathFrontend.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Optional<int64_t> MathExpr::evaluate(const std::string& str)
 	{

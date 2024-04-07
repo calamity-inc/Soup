@@ -16,7 +16,7 @@
 #include "SharedLibrary.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_LINUX
 	using snd_pcm_t = void;

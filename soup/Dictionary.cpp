@@ -5,7 +5,7 @@
 #include "JsonString.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]] static std::vector<std::string> processRelatedWords(const std::string& word, const JsonArray& arr)
 	{

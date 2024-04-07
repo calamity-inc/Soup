@@ -5,7 +5,7 @@
 #include "buttons.hpp"
 #include "Rgb.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class hwGamepad
 	{

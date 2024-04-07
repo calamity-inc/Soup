@@ -8,7 +8,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class netMeshService : public ServerWebService
 	{

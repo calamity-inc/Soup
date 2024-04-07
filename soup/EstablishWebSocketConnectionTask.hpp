@@ -9,7 +9,7 @@
 #include "Uri.hpp"
 #include "WebSocketConnection.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct EstablishWebSocketConnectionTask : public Task
 	{

@@ -11,7 +11,7 @@
 #include "sha1.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	YubikeyValidator::YubikeyValidator(const std::string& id, const std::string& secret)
 		: base_path("/wsapi/2.0/verify?id="), secret(base64::decode(secret))

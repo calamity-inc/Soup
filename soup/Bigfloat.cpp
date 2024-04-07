@@ -1,6 +1,6 @@
 #include "Bigfloat.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Bigfloat Bigfloat::operator+(const Bigfloat& b) const noexcept
 	{

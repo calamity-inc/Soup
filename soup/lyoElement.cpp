@@ -4,7 +4,7 @@
 #include "lyoFlatDocument.hpp"
 #include "RenderTarget.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	lyoDocument& lyoElement::getDocument() noexcept
 	{

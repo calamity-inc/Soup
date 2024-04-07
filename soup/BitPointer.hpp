@@ -2,7 +2,7 @@
 
 #include "Bitset.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class BitPointer
 	{

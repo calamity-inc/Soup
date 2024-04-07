@@ -4,7 +4,7 @@
 
 #include "Ray.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool Poly::operator==(const Poly& b) const
 	{

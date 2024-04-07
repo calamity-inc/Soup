@@ -4,7 +4,7 @@
 
 #include <cstdlib>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct AllocRaii : public AllocRaiiLocalBase
 	{

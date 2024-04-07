@@ -5,7 +5,7 @@
 #include "drInt.hpp"
 #include "IpAddr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct drIpAddr : public drString
 	{

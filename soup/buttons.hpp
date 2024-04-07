@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum buttons : uint8_t
 	{

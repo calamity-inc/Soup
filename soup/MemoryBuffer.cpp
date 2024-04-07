@@ -6,7 +6,7 @@
 
 #include "Module.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	MemoryBuffer::MemoryBuffer() noexcept
 		: start(nullptr), data(nullptr), size(0)

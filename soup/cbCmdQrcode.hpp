@@ -6,7 +6,7 @@
 #include "format.hpp"
 #include "QrCode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmdQrcode : public cbCmd
 	{

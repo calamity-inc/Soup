@@ -7,7 +7,7 @@
 #include "audSound.hpp"
 #include "Reader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct audWav : public audSound
 	{

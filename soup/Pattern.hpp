@@ -8,7 +8,7 @@
 #include "fwd.hpp"
 #include "base.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Pattern
 	{

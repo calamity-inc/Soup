@@ -2,7 +2,7 @@
 
 #include "szCompressor.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct szUnicodeCompressor : public szCompressor
 	{

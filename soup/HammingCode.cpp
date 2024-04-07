@@ -4,7 +4,7 @@
 
 #include "bitutil.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<bool> HammingCode::encode(const std::vector<bool>& in)
 	{

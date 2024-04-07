@@ -3,7 +3,7 @@
 #include "bitutil.hpp"
 #include "rand.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::array<uint32_t, 4> CidrSubnet6::random() const noexcept
 	{

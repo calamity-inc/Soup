@@ -2,7 +2,7 @@
 
 #include "unicode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool BitWriter::commitByte()
 	{

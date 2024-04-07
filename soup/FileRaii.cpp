@@ -1,6 +1,6 @@
 #include "Tempfile.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	FileRaii::FileRaii(std::filesystem::path path)
 		: path(std::move(path))

@@ -2,7 +2,7 @@
 
 #include "lyoElement.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void lyoFlatDocument::draw(RenderTarget& rt) const
 	{

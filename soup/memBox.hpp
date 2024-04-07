@@ -3,7 +3,9 @@
 #include <cstddef> // size_t
 #include <memory> // destroy_at
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	using destroyer_t = void(*)(void*);
 

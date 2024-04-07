@@ -5,7 +5,7 @@
 #include "Dictionary.hpp"
 #include "SharedPtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmdDefine : public cbCmd
 	{

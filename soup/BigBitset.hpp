@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <cstring> // memcpy
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 #pragma pack(push, 1)
 	template <size_t Bytes>

@@ -3,7 +3,7 @@
 #include "Compiler.hpp"
 #include "filesystem.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	JitModule::~JitModule()
 	{

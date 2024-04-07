@@ -4,7 +4,7 @@
 
 #include "cbMeasurement.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmdConvert : public cbCmd
 	{

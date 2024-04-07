@@ -5,7 +5,7 @@
 #include "sha1.hpp"
 #include "StringWriter.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string Hotp::generateSecret(size_t bytes)
 	{

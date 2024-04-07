@@ -16,7 +16,7 @@
 #include "Thread.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct VirtualFilesystem
 	{

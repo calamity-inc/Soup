@@ -7,7 +7,7 @@
 
 #include "unicode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
 	int main_impl::windows_gui(entrypoint_t entrypoint, LPWSTR lpCmdLine)

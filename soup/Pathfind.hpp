@@ -4,7 +4,9 @@
 #include <unordered_map>
 #include <vector>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	// QueryInterface needs the following functions:
 	//   static uint64_t getUniqueId(const Node& node)

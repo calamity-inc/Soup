@@ -2,7 +2,7 @@
 
 #include "Exception.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SharedLibrary::SharedLibrary(const std::string& path)
 	{

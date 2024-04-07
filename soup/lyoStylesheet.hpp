@@ -5,7 +5,7 @@
 
 #include "lyoStyle.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct lyoRule
 	{

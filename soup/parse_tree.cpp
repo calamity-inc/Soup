@@ -5,7 +5,7 @@
 #include "ParseError.hpp"
 #include "StringWriter.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string astNode::toString(const std::string& prefix) const
 	{

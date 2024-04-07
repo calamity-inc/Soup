@@ -5,7 +5,7 @@
 #include <vector>
 #include "WordType.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SOUP_PACKET(WordMeaning)
 	{

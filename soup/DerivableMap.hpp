@@ -7,7 +7,7 @@
 #include "base.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <typename Key, typename Value>
 	class DerivableMap

@@ -9,7 +9,7 @@
 #include "HttpRequestTask.hpp"
 #include "JsonObject.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class kbRgbRazerChroma : public kbRgb
 	{

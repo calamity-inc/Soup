@@ -5,7 +5,7 @@
 #include "ZipEndOfCentralDirectory.hpp"
 #include "ZipLocalFileHeader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	ZipIndexedFile ZipWriter::addFile(std::string name, const std::string& contents_uncompressed, uint16_t compression_method, const std::string& contents_compressed) const
 	{

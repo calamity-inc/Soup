@@ -2,7 +2,7 @@
 
 #include "Vector3.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 #pragma pack(push, 1)
 	struct Ray

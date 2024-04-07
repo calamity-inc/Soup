@@ -1,8 +1,9 @@
 #pragma once
 
+#include "base.hpp"
 #include "type_traits.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <typename T, SOUP_RESTRICT(std::is_pointer_v<T>)>
 	class PointerAndBool

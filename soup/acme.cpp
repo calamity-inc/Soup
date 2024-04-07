@@ -18,7 +18,7 @@
 #include "rsa.hpp"
 #include "sha256.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string AcmeChallenge::getHttpValue(const AcmeAccount& acct) const
 	{

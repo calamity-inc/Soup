@@ -4,7 +4,7 @@
 
 #include "cat.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct catTreeWriter : public TreeWriter
 	{

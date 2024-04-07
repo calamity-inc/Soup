@@ -5,7 +5,7 @@
 #include "drJsonObject.hpp"
 #include "json.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	UniquePtr<drString> drString::reflect(std::string str)
 	{

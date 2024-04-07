@@ -5,7 +5,7 @@
 #include "aud_common.hpp"
 #include "audNote.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class audNoteEnvelope : public audSound
 	{

@@ -3,7 +3,7 @@
 #include "base.hpp"
 #include "fwd.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct memObject
 	{

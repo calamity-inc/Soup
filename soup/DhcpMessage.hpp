@@ -7,7 +7,7 @@
 
 #include "MacAddr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SOUP_PACKET(DhcpMessage)
 	{

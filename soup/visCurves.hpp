@@ -2,7 +2,7 @@
 
 #include "Vector2.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct visCurves
 	{

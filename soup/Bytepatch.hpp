@@ -1,9 +1,11 @@
 #pragma once
 
-#include <cstdint>
 #include <cstddef> // size_t
+#include <cstdint>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	class Bytepatch
 	{

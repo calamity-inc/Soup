@@ -2,7 +2,7 @@
 
 #include "RngInterface.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Not meant for usage, just for demonstration purposes.
 	struct MsvcRng

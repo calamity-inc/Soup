@@ -4,7 +4,7 @@
 #include "os.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void AssemblyBuilder::funcBegin()
 	{

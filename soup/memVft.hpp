@@ -7,7 +7,7 @@
 
 #include "cursed.hpp" // ub_pointer_cast
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct memVft
 	{

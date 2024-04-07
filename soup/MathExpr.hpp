@@ -4,7 +4,7 @@
 
 #include "Optional.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Evaluates expressions rougly in this format: (?:\d+\s*[+\-*\/%]\s*)+\d+
 	// TODO: Handle parens

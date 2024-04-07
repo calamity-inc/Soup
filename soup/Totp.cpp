@@ -4,7 +4,7 @@
 #include "Hotp.hpp"
 #include "time.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string Totp::getQrCodeUri(const std::string& label, const std::string& issuer) const
 	{

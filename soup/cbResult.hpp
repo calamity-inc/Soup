@@ -5,7 +5,7 @@
 #include "base.hpp"
 #include "Mixed.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum cbResultType : uint8_t
 	{

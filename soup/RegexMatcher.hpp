@@ -8,7 +8,7 @@
 #include "Regex.hpp"
 #include "RegexMatchResult.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexMatcher
 	{

@@ -2,7 +2,7 @@
 
 #include "Vector3.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Sphere
 	{

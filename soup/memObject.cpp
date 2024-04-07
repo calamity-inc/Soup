@@ -3,7 +3,7 @@
 #include "memVft.hpp"
 #include "Module.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
 	bool memObject::hasVft() const noexcept

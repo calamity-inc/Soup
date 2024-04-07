@@ -4,7 +4,7 @@
 #include "HttpRequest.hpp"
 #include "IpAddr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	IpAddr netInfo::getPublicAddress()
 	{

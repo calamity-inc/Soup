@@ -8,7 +8,7 @@
 #undef min
 #undef max
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <typename T>
 	[[nodiscard]] constexpr T pow2(T i) noexcept

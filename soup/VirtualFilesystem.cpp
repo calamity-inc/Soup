@@ -71,7 +71,7 @@ struct fuse_file_info
 };
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool VirtualFilesystem::isAvailable()
 	{

@@ -2,7 +2,7 @@
 
 #include "plist.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void TmGrammar::fromPlist(const PlistDict& dict)
 	{

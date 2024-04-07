@@ -2,7 +2,7 @@
 
 #include "CustomEncoding.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Base40: A human-writable binary data encoding.
 	//

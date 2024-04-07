@@ -4,7 +4,7 @@
 
 #include "MathExpr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmdArithmetic : public cbCmd
 	{

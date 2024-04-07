@@ -7,7 +7,7 @@
 #include "Endian.hpp"
 #include "MacAddr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct dhcp
 	{

@@ -4,7 +4,7 @@
 
 #include "json.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct szJsonCompressor : public szCompressor
 	{

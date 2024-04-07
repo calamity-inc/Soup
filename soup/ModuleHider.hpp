@@ -5,7 +5,7 @@
 #if SOUP_WINDOWS && SOUP_BITS == 64
 #include <Windows.h>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class ModuleHider
 	{

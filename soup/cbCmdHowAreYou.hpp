@@ -2,7 +2,7 @@
 
 #include "cbCmd.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmdHowAreYou : public cbCmd
 	{

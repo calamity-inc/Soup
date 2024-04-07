@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <string>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	enum x64Register : uint8_t
 	{

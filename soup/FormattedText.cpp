@@ -4,7 +4,7 @@
 #include "RenderTarget.hpp"
 #include "RasterFont.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void FormattedText::addSpan(std::string text)
 	{

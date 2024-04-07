@@ -14,7 +14,7 @@ namespace soup_intrin
 }
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// HardwareRng
 

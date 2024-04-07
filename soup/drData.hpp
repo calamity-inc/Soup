@@ -6,7 +6,7 @@
 #include "drAdaptor.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class drData
 	{

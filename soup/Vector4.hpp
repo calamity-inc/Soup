@@ -2,7 +2,7 @@
 
 #include "VectorBase.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 #pragma pack(push, 1)
 	struct Vector4 : public VectorBase<4, Vector4>

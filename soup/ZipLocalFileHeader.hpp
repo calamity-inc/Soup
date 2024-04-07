@@ -2,7 +2,7 @@
 
 #include "ZipFileCommon.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SOUP_PACKET(ZipLocalFileHeader)
 	{

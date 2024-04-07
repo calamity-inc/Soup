@@ -2,7 +2,7 @@
 
 #include "Mixed.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Lexeme
 	{

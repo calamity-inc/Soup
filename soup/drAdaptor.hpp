@@ -5,7 +5,7 @@
 #include "Capture.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct drAdaptor
 	{

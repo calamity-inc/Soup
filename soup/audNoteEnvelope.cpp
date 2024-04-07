@@ -1,6 +1,6 @@
 #include "audNoteEnvelope.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void audNoteEnvelope::prepare()
 	{

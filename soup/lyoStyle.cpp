@@ -10,7 +10,7 @@ f(font_size); \
 f(color); \
 f(background_color);
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void lyoStyle::overrideWith(const lyoStyle& b) noexcept
 	{

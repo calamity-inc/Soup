@@ -2,7 +2,7 @@
 
 #include "rand.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	LcgRng::LcgRng()
 		: LcgRng(rand.getSeed())

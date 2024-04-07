@@ -3,7 +3,7 @@
 #include "BitString.hpp"
 #include "szPreservationLevel.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct szCompressResult
 	{

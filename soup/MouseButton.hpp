@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	enum MouseButton : uint8_t
 	{

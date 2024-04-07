@@ -3,7 +3,7 @@
 #include "Poly.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Mesh Mesh::fromObj(const std::string& obj)
 	{

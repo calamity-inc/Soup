@@ -38,7 +38,7 @@ static_assert(sizeof(LdrDataTableEntry) == 0x68);
 #pragma clang diagnostic pop
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void ModuleHider::enable(HMODULE mod)
 	{

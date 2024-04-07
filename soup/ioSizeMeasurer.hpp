@@ -2,7 +2,7 @@
 
 #include "Writer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class ioSizeMeasurer final : public Writer
 	{

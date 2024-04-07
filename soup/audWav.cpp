@@ -9,7 +9,7 @@
 #include "riff.hpp"
 #include "WavFmtChunk.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	audWav::audWav(Reader& r)
 		: r(r)

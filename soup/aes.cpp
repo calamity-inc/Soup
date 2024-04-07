@@ -57,7 +57,7 @@ namespace soup_intrin
 }
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static constexpr int Nb = 4;
 	static constexpr unsigned int blockBytesLen = 4 * Nb * sizeof(uint8_t);

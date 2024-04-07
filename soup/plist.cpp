@@ -5,7 +5,7 @@
 #include "format.hpp"
 #include "xml.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string PlistNode::toString(const std::string& prefix) const noexcept
 	{

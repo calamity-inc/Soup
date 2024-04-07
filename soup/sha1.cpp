@@ -21,7 +21,7 @@ namespace soup_intrin
 }
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Original source: https://github.com/vog/sha1
 	// Original licence: Dedicated to the public domain.

@@ -2,7 +2,7 @@
 
 #include "Canvas.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	RenderTargetCanvas::RenderTargetCanvas(Canvas& canvas)
 		: RenderTarget{ canvas.width, canvas.height }, canvas(canvas)

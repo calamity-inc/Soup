@@ -2,7 +2,7 @@
 
 #include <cstring> // strlen
 
-namespace soup
+NAMESPACE_SOUP
 {
 	const char* RttiTypeInfo::getMangledName() const noexcept
 	{

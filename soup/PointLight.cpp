@@ -2,7 +2,7 @@
 
 #include "Poly.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	float PointLight::getPointBrightness(const Vector3& p, const Poly& t) const
 	{

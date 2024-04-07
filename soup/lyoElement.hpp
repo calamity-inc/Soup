@@ -10,7 +10,7 @@
 #define LYO_DEBUG_POS		false
 #define LYO_DEBUG_STYLE		false
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct lyoElement
 	{

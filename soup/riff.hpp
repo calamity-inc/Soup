@@ -1,6 +1,6 @@
 #pragma once
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RiffChunk
 	{

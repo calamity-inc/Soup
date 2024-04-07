@@ -3,7 +3,7 @@
 #include "Pointer.hpp"
 #include "rtti.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	size_t memVft::getNumFunctions() const noexcept
 	{

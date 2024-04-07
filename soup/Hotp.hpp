@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <string>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	// HMAC-based one-time password
 	class Hotp

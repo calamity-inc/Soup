@@ -4,7 +4,9 @@
 #include <utility>
 #include <vector>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	// An implementation of extended hamming codes.
 	struct HammingCode

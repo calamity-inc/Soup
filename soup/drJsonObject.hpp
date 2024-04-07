@@ -4,7 +4,7 @@
 
 #include "JsonObject.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct drJsonObject : public drString
 	{

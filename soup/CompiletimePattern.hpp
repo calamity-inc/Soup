@@ -2,7 +2,7 @@
 
 #include "CompiletimePatternBase.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <size_t len>
 	struct CompiletimePattern : public CompiletimePatternBase

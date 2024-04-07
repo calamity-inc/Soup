@@ -2,7 +2,7 @@
 
 #include "SceneRenderer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class SceneRaytracingRenderer : public SceneRenderer
 	{

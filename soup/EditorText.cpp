@@ -3,7 +3,7 @@
 #include "console.hpp"
 #include "unicode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void EditorText::draw() const
 	{

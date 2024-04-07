@@ -7,7 +7,7 @@
 
 #include "Pointer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class Range
 	{

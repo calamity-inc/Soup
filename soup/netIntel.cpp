@@ -13,7 +13,7 @@
 #include "wasm.hpp"
 #include "WebResource.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void netIntel::init(bool ipv4, bool ipv6)
 	{

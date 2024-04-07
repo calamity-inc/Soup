@@ -10,7 +10,7 @@
 #include "unicode.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void lyoTextElement::updateFlatSize()
 	{

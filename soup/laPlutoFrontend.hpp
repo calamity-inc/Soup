@@ -5,7 +5,7 @@
 #include "fwd.hpp" // LexemeParser
 #include <stack>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Can convert a small subset of Pluto (https://pluto-lang.org) code into Soup IR.
 	class laPlutoFrontend : public laFrontend

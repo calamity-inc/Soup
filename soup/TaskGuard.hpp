@@ -5,7 +5,7 @@
 #include "base.hpp"
 #include "Exception.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class TaskGuard
 	{

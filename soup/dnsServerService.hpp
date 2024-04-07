@@ -11,7 +11,7 @@
 #include "dns_records.hpp"
 #include "SharedPtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// serv.bindUdp(53, &dns_srv);
 	class dnsServerService : public ServerServiceUdp

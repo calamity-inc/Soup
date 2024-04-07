@@ -4,7 +4,7 @@
 
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <bool at_least_one, bool greedy>
 	struct RegexRepeatConstraint : public RegexConstraint

@@ -3,7 +3,7 @@
 #include "Canvas.hpp"
 #include "wooting_enums.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]] static uint16_t wootingEncodeColour(Rgb colour) noexcept
 	{

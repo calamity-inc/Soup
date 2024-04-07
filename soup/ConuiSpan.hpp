@@ -6,7 +6,7 @@
 
 #include "Rgb.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct ConuiSpan : public ConuiBase
 	{

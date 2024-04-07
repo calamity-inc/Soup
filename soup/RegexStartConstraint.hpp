@@ -4,7 +4,7 @@
 
 #include "RegexMatcher.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <bool escape_sequence, bool multi_line>
 	struct RegexStartConstraint : public RegexConstraint

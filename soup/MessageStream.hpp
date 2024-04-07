@@ -2,7 +2,9 @@
 
 #include <unordered_set>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	// Intended for networked environments where clients want to pull from a message/event source without keeping track of state themselves.
 	template <typename MessageT, typename RecipientT = size_t>

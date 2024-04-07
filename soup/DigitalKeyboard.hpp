@@ -10,7 +10,7 @@
 
 #include "Key.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct DigitalKeyboard
 	{

@@ -4,7 +4,7 @@
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void visKeyboard::draw(RenderTarget& rt, unsigned int x, unsigned int y, uint8_t scale) const
 	{

@@ -5,7 +5,7 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-namespace soup
+NAMESPACE_SOUP
 {
 	DigitalKeyboard::~DigitalKeyboard() noexcept
 	{

@@ -6,7 +6,7 @@
 #include "BigBitset.hpp"
 #include "RegexMatcher.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexRangeConstraint : public RegexConstraint
 	{

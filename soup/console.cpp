@@ -26,7 +26,7 @@
 #define OSC ESC "]"
 #define ST  ESC "\\"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void console_impl::init(bool fullscreen)
 	{

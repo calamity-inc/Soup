@@ -7,7 +7,7 @@
 
 #include "IpAddr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class netInfo
 	{

@@ -6,7 +6,7 @@
 #include "string.hpp"
 #include "StringBuilder.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static const char* reg_names[] = {
 		"a",

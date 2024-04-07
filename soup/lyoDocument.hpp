@@ -8,7 +8,7 @@
 
 #include "lyoStylesheet.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct lyoDocument : public lyoContainer
 	{

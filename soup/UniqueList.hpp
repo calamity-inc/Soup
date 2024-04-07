@@ -2,7 +2,7 @@
 
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Like std::vector<UniquePtr<T>> but more intrusive for less allocations.
 	// Requires the following in T: soup::UniqueListLink<T> unique_list_link;

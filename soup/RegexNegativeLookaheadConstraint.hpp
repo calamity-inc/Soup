@@ -5,7 +5,7 @@
 #include "RegexGroup.hpp"
 #include "RegexMatcher.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexNegativeLookaheadConstraint : public RegexConstraint
 	{

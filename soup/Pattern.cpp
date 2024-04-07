@@ -5,7 +5,7 @@
 #include "Pointer.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Pattern::Pattern(const CompiletimePatternWithOptBytesBase& sig)
 		: bytes(sig.getVec())

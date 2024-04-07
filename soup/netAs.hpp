@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <string>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct netAs
 	{

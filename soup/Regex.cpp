@@ -14,7 +14,7 @@
 #include <iostream>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Regex Regex::fromFullString(const std::string& str)
 	{

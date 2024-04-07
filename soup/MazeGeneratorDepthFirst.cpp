@@ -4,7 +4,7 @@
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	MazeGeneratorDepthFirst::MazeGeneratorDepthFirst(size_t width, size_t height)
 		: width(width), height(height)

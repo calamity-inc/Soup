@@ -2,7 +2,7 @@
 
 #include "RegexConstraint.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <bool escape_sequence, bool multi_line, bool end_only>
 	struct RegexEndConstraint : public RegexConstraint

@@ -8,7 +8,7 @@
 #include "Scene.hpp"
 #include "Vector2.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static void translatePos(Vector3& v)
 	{

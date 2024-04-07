@@ -5,7 +5,7 @@
 #include "Canvas.hpp"
 #include "unicode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using Glyph = RasterFont::Glyph;
 

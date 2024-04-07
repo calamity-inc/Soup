@@ -4,7 +4,7 @@
 
 #include "LcgRng.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct LcgRngInterface : public RngInterface
 	{

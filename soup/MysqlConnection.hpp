@@ -6,7 +6,7 @@
 #include "Callback.hpp"
 #include "MysqlColumnDefinition.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class MysqlConnection : public Socket
 	{

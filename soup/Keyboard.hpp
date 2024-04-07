@@ -3,7 +3,7 @@
 #include "AnalogueKeyboard.hpp"
 #include "kbRgb.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// A structure for keyboards that are (at least partially) supported by Soup.
 	class Keyboard

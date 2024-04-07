@@ -3,7 +3,7 @@
 #include "Reader.hpp"
 #include "StringReader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct MidiTrack
 	{

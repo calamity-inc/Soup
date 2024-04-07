@@ -2,7 +2,7 @@
 
 #include "filesystem.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Tempfile::Tempfile(const std::string& ext)
 		: FileRaii(filesystem::tempfile(ext))

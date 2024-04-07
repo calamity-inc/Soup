@@ -6,7 +6,7 @@
 #include "szFile.hpp"
 #include "Writer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void szArchive::write(Writer& w)
 	{

@@ -7,7 +7,7 @@
 
 #include "ServerService.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class ServerWebService : public ServerService
 	{

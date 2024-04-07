@@ -4,7 +4,7 @@
 
 #include "time.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct drDatetime final : public drString
 	{

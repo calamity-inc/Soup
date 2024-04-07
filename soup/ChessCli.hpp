@@ -5,7 +5,7 @@
 #include "Chessboard.hpp"
 #include "ChessCoordinate.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct ChessCli
 	{

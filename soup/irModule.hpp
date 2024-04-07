@@ -5,7 +5,7 @@
 
 #include "irFunction.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct irModule
 	{

@@ -3,7 +3,7 @@
 #include "Poly.hpp"
 #include <vector>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct PolyVector : public std::vector<Poly>
 	{

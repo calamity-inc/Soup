@@ -7,7 +7,7 @@
 #include "ChessCoordinate.hpp"
 #include "ChessSquare.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class Chessboard
 	{

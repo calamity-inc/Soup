@@ -4,7 +4,7 @@
 
 #include "os.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Compiler::Compiler()
 		: prog("clang"),

@@ -13,7 +13,7 @@
 #include "unicode.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static std::unordered_map<Window::handle_t, Window::Config> window_configs{};
 

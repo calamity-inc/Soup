@@ -8,7 +8,7 @@
 #include "Pointer.hpp"
 #include "x64.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static constexpr auto longjump_trampoline_size = 13;
 

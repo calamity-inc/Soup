@@ -2,7 +2,7 @@
 
 #include "WordMeaning.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SOUP_PACKET(DictionaryWord)
 	{

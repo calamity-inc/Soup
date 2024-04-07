@@ -6,7 +6,7 @@
 #include "Window.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
 	[[nodiscard]] static int soup_key_to_virtual_key_common(uint8_t key)

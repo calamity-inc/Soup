@@ -2,7 +2,7 @@
 
 #include "rflVar.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct rflMember : public rflVar
 	{

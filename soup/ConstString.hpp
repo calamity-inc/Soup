@@ -2,7 +2,7 @@
 
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class ConstString
 	{

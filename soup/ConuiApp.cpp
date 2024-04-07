@@ -2,7 +2,7 @@
 
 #include "console.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	ConuiApp::ConuiApp()
 		: ConuiDiv(nullptr, 1, 1, -1, -1)

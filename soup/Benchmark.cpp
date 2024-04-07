@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void Benchmark::run(const std::string& name, benchmark_t bm) noexcept
 	{

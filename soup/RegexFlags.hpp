@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	enum RegexFlags : uint16_t
 	{

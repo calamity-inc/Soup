@@ -6,7 +6,7 @@
 
 #include "cbResult.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Chatbot
 	{

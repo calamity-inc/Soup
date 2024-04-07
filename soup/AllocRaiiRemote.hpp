@@ -4,7 +4,7 @@
 
 #include "Pointer.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct AllocRaiiRemote
 	{

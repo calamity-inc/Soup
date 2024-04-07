@@ -3,7 +3,7 @@
 #include "netMeshMsgType.hpp"
 #include "rsa.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/*
 	 * Soup Mesh Network is a simple way to remotely manage your servers.

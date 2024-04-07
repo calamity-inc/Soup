@@ -5,7 +5,7 @@
 #include <array>
 #include <cstdint>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]]
 #if SOUP_CPP20

@@ -8,7 +8,7 @@
 
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class laMathFrontend : public laFrontend
 	{

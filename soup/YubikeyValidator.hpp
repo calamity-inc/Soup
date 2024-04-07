@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class YubikeyValidator
 	{

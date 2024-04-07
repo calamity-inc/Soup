@@ -6,7 +6,7 @@
 
 #include "fwd.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct AssemblyBuilder
 	{

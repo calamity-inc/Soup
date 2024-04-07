@@ -16,7 +16,7 @@
 // - https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/blob/master/bluetooth_hid_notes.md
 // - https://wiki.handheldlegend.com/analog-stick-data
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using Status = hwGamepad::Status;
 

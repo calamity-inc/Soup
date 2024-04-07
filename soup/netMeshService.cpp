@@ -13,7 +13,7 @@
 #include "StringWriter.hpp"
 #include "WebSocketMessage.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct netMeshConnectionInfo
 	{

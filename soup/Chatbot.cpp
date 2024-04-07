@@ -22,7 +22,7 @@
 #include "cbCmdOpinionFollowup.hpp"
 #include "cbCmdThanks.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]] static std::vector<UniquePtr<cbCmd>> getAllCommandsImpl()
 	{

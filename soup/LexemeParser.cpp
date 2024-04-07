@@ -2,7 +2,7 @@
 
 #include "LangDesc.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	LexemeParser::LexemeParser(const LangDesc& ld, const std::string& code)
 		: LexemeParser(ld.tokenise(code))

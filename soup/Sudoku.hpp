@@ -5,7 +5,7 @@
 
 #include "fwd.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/* To load in a grid:
 	constexpr auto _ = 0;

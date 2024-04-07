@@ -7,7 +7,7 @@
 
 #include "macros.hpp" // COUNT
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Bytepatch::~Bytepatch() noexcept
 	{

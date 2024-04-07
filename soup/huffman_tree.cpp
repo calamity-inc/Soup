@@ -3,7 +3,7 @@
 #include "BitReader.hpp"
 #include "BitWriter.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void htNode::serialise(BitWriter& bw, void(*serialise_data_node)(BitWriter&, const htNode&)) const
 	{

@@ -7,7 +7,7 @@
 
 #include "math.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	union Rgb
 	{

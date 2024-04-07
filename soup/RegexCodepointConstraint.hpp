@@ -4,7 +4,7 @@
 
 #include "RegexMatcher.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexCodepointConstraint : public RegexConstraint
 	{

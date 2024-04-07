@@ -7,7 +7,7 @@
 #include "szStoreCompressor.hpp"
 #include "szUnicodeCompressor.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	UniquePtr<szCompressor> szCompressor::fromMethod(szMethod method)
 	{

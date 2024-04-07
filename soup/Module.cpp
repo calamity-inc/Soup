@@ -10,7 +10,7 @@
 #include "Pointer.hpp"
 #include "AllocRaiiRemote.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Module::Module(UniquePtr<HandleBase>&& h, Range&& range)
 		: h(std::move(h)), range(std::move(range))

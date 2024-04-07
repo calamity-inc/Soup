@@ -6,7 +6,7 @@
 
 #include "bitutil.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <typename Key, typename Value>
 	class Hashmap

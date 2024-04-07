@@ -5,7 +5,7 @@
 #include "RegexMatcher.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <bool inverted>
 	struct RegexWordBoundaryConstraint : public RegexConstraint

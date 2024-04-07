@@ -4,7 +4,7 @@
 #include "RenderTarget.hpp"
 #include "Scene.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool SceneRaytracingRenderer::hasLineOfSight(const Scene& s, const Vector3& p1, const Vector3& p2) const
 	{

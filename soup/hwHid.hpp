@@ -9,7 +9,7 @@
 #include "Buffer.hpp"
 #include "HandleRaii.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// A human interface device.
 	class hwHid

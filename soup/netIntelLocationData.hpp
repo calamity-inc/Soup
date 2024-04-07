@@ -4,7 +4,7 @@
 
 #include "ShortString.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct netIntelLocationData
 	{

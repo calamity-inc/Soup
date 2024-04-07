@@ -35,7 +35,7 @@ case 20: return reinterpret_cast<uintptr_t(cc*)(uintptr_t, uintptr_t, uintptr_t,
 } \
 SOUP_THROW(BadCall());
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool ffi::isSafeToCall(void* func) noexcept
 	{

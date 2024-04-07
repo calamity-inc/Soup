@@ -3,7 +3,7 @@
 #include "string.hpp"
 #include "StringBuilder.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool StringMatch::search(const std::string& query, std::string item)
 	{

@@ -5,7 +5,7 @@
 
 #include "fwd.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class TreeReader
 	{

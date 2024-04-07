@@ -20,7 +20,7 @@
 #define BCRYPT_BLOCKS 6		/* Ciphertext blocks */
 #define BCRYPT_MINROUNDS 16	/* we have log2(rounds) in salt */
 
-namespace soup
+NAMESPACE_SOUP
 {
 	typedef struct BlowfishContext {
 		uint32_t S[4][256];	/* S-Boxes */

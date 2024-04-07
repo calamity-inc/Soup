@@ -12,7 +12,7 @@
 #pragma comment(lib, "winmm.lib")
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using audSample = int16_t;
 

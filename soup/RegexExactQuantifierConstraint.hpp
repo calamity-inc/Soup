@@ -6,7 +6,7 @@
 
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexExactQuantifierConstraint : public RegexConstraint
 	{

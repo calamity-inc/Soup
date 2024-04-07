@@ -4,7 +4,7 @@
 
 #include "Key.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/*
 	* Based on https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-sdk/src/keycode.rs

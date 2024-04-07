@@ -5,7 +5,7 @@
 
 #include "base.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct CountryNamesEntry
 	{

@@ -10,7 +10,7 @@
 #include "Mixed.hpp"
 #include "SharedPtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct PhpState
 	{

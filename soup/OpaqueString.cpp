@@ -1,6 +1,6 @@
 #include "OpaqueString.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	OpaqueString::OpaqueString(const char* str) noexcept
 		: data(unicode::utf8_to_utf32(str))

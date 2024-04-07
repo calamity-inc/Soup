@@ -12,7 +12,7 @@
 #include "netMeshService.hpp"
 #include "Server.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using Peer = netMesh::Peer;
 	using MyConfig = netMesh::MyConfig;

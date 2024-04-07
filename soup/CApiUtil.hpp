@@ -8,7 +8,7 @@
 #include "rflParser.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/*
 	std::ofstream out(R"(C:\Users\Sainan\Desktop\Repos\Soup\bindings\cwraps.js)");

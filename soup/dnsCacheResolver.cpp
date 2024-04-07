@@ -9,7 +9,7 @@
 #include "log.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<UniquePtr<dnsRecord>> dnsCacheResolver::lookup(dnsType qtype, const std::string& name) const
 	{

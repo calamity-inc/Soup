@@ -2,7 +2,7 @@
 
 #include "base.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<std::string> csv::parseLine(const std::string& line)
 	{

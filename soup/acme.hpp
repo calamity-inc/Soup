@@ -12,7 +12,7 @@
 #include "rsa.hpp"
 #include "Uri.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SOUP_PACKET(AcmeAccount)
 	{

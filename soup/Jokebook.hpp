@@ -8,7 +8,7 @@
 
 #include "StringPool.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Joke
 	{

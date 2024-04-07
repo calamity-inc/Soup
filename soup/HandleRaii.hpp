@@ -8,7 +8,7 @@
 #include <unistd.h> // close
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
 	struct HandleRaii final : public HandleBase

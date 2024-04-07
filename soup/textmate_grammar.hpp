@@ -10,7 +10,7 @@
 #include "Regex.hpp"
 #include "StringParser.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct TmPattern
 	{

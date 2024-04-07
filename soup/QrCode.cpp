@@ -5,7 +5,7 @@
 #include "Canvas.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using SegmentMode = QrCode::SegmentMode;
 	using Segment = QrCode::Segment;

@@ -12,7 +12,7 @@
 #include "StringRefReader.hpp"
 #include "StringWriter.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using index_t = Sudoku::index_t;
 	using value_t = Sudoku::value_t;

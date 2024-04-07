@@ -3,7 +3,7 @@
 #include "BufferRefReader.hpp"
 #include "HidScancode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]] static std::string checkDeviceName(const hwHid& hid)
 	{

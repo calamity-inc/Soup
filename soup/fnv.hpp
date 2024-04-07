@@ -2,7 +2,7 @@
 
 #include "Bigint.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using namespace ::soup::literals;
 

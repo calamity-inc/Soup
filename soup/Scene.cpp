@@ -5,7 +5,7 @@
 #include "Ray.hpp"
 #include "Vector2.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Matrix Scene::getCameraMatrix() const
 	{

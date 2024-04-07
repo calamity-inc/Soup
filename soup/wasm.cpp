@@ -19,7 +19,7 @@
 // - https://webassembly.github.io/wabt/demo/wat2wasm/
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// WasmScript
 

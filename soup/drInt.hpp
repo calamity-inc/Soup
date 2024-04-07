@@ -4,7 +4,7 @@
 
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct drInt : public drData
 	{

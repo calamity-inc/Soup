@@ -4,7 +4,7 @@
 #include "JsonInt.hpp"
 #include "JsonString.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	drJsonObject::drJsonObject(std::string&& string_data, UniquePtr<JsonObject>&& jsonobject_data)
 		: drString(std::move(string_data)), jsonobject_data(std::move(jsonobject_data))

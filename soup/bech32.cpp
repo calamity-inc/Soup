@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/** The Bech32 character set for encoding. */
 	static const char* CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";

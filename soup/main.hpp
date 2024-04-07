@@ -19,7 +19,7 @@
 #endif
 
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct main_impl
 	{

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cstdint>
+
+#include "base.hpp"
 #include "scoped_enum.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SCOPED_ENUM(WebSocketFrameType, uint8_t,
 		CONTINUATION = 0,

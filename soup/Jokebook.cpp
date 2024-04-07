@@ -5,7 +5,7 @@
 #include "JsonString.hpp"
 #include "rand.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool Joke::isSingleLine() const
 	{

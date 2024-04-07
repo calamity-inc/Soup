@@ -7,7 +7,7 @@
 
 #include "type_traits.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class FileReader final : public Reader
 	{

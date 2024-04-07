@@ -9,7 +9,7 @@
 #include "log.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	lyoTextElement* lyoContainer::addText(const std::string& text)
 	{

@@ -7,7 +7,7 @@
 #include "visCurves.hpp"
 #include "Vector2.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void BCanvas::set(unsigned int x, unsigned int y, bool b) noexcept
 	{

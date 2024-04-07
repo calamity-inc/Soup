@@ -7,7 +7,7 @@
 #include "ZipEndOfCentralDirectory.hpp"
 #include "ZipLocalFileHeader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	ZipReader::ZipReader(Reader& is)
 		: is(is)

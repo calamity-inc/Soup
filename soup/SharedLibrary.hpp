@@ -12,7 +12,7 @@
 
 #include "type_traits.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct SharedLibrary
 	{

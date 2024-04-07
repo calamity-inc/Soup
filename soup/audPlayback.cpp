@@ -6,7 +6,7 @@
 #include <chrono>
 #include <thread>
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_LINUX
 	using snd_pcm_hw_params_t = void;

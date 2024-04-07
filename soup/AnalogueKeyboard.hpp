@@ -8,7 +8,7 @@
 #include "Key.hpp"
 #include "Percentage.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct AnalogueKeyboard
 	{

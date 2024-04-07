@@ -5,7 +5,7 @@
 #include "IpAddr.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	UniquePtr<CidrSubnetInterface> CidrSubnetInterface::construct(const std::string& str)
 	{

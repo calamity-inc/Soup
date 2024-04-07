@@ -8,7 +8,7 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/websocket.h>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Emscripten documentation kinda poo, but there's this:
 	// - https://github.com/emscripten-core/emscripten/blob/main/system/include/emscripten/websocket.h

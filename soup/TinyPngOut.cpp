@@ -9,7 +9,7 @@
 #include "crc32.hpp"
 #include "Endian.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	TinyPngOut::TinyPngOut(uint32_t w, uint32_t h, Writer& out)
 		: width(w),

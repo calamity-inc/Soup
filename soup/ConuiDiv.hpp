@@ -5,7 +5,7 @@
 #include "ConuiBase.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct ConuiDiv : public ConuiBase
 	{

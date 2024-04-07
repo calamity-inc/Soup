@@ -13,7 +13,7 @@
 #include <iostream>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static std::vector<std::string> getWordListImpl()
 	{

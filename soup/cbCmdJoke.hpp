@@ -5,7 +5,7 @@
 #include "Jokebook.hpp"
 #include "SharedPtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmdJoke : public cbCmd
 	{

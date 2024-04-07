@@ -10,7 +10,7 @@
 #include "unicode.hpp"
 #include "Vector2.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void RenderTarget::fill(Rgb colour)
 	{

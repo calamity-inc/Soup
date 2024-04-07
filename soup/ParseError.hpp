@@ -2,7 +2,7 @@
 
 #include "Exception.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct ParseError : public Exception
 	{

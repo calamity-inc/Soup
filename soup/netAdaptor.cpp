@@ -9,7 +9,7 @@
 #include "IpAddr.hpp"
 #include "MacAddr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<netAdaptor> netAdaptor::getAll()
 	{

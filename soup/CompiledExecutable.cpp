@@ -2,7 +2,7 @@
 
 #include "Compiler.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	CompiledExecutable CompiledExecutable::fromCpp(const FileRaii& file)
 	{

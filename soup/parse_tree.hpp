@@ -8,7 +8,7 @@
 #include "Op.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct astNode
 	{

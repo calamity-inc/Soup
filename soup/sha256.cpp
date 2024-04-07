@@ -25,7 +25,7 @@ namespace soup_intrin
 }
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct sha256_state
 	{

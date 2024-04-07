@@ -6,7 +6,7 @@
 #include <stack>
 #include <vector>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct MazeGeneratorDepthFirst : public MazeGenerator
 	{

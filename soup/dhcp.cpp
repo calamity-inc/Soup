@@ -10,7 +10,7 @@
 #include <iostream>
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	using Info = dhcp::Info;
 

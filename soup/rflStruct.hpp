@@ -4,7 +4,7 @@
 
 #include "rflMember.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct rflStruct
 	{

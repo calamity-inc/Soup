@@ -5,7 +5,7 @@
 #include "Mixed.hpp"
 #include "SharedPtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Soup Inquiry Language. I would've called it Soup Query Language, but the acronym SQL is already "taken."
 	struct InquiryLang

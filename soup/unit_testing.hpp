@@ -15,7 +15,7 @@ extern void test(const char* name, void(*test)());
 
 extern void assert_impl(bool b, soup::SourceLocation sl);
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct AssertionFailed { };
 

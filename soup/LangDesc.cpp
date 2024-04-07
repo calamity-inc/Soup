@@ -12,7 +12,7 @@
 #include <iostream>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	[[nodiscard]] static std::string getString(const std::string& code, std::string::const_iterator& i)
 	{

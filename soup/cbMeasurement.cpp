@@ -3,7 +3,7 @@
 #include "joaat.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	const char* cbUnitToString(cbUnit unit)
 	{

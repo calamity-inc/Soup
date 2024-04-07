@@ -6,7 +6,7 @@
 
 #include "Thread.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct ParallelRangeIteration
 	{

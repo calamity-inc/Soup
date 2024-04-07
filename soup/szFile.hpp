@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	/*
 	* Sip/sz is a prototype of what a zip alternative that is truly focused on minimising the file size would look like.

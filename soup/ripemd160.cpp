@@ -31,7 +31,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 (They also state that this is not covered by any patents, so, cool!)
 */
 
-namespace soup
+NAMESPACE_SOUP
 {
     /* macro definitions */
 

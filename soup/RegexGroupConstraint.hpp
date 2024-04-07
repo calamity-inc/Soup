@@ -6,7 +6,7 @@
 
 #include <unordered_map>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexGroupConstraint : public RegexConstraint
 	{

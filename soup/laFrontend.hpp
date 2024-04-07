@@ -2,7 +2,7 @@
 
 #include "irModule.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct laFrontend
 	{

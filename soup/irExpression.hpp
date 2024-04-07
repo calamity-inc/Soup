@@ -8,7 +8,7 @@
 #include "irType.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum irExpressionType : uint8_t
 	{

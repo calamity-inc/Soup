@@ -7,7 +7,7 @@
 #include "BigBitset.hpp"
 #include "Token.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class LangDesc
 	{

@@ -2,7 +2,9 @@
 
 #include <string>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	// A codepoint-safe wrapper for std::wstring, so this will store UTF-16 on Windows and UTF-32 on Linux.
 	// Obviously all operations are trivial with UTF-32 but there is additional surrogate pair handling for UTF-16.

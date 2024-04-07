@@ -4,7 +4,7 @@
 
 #include "aud_common.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SOUP_PACKET(WavFmtChunk)
 	{

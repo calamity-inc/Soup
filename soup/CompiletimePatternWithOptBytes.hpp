@@ -4,7 +4,7 @@
 
 #include <array>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <size_t len>
 	struct CompiletimePatternWithOptBytes : public CompiletimePatternWithOptBytesBase

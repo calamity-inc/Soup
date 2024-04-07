@@ -6,7 +6,7 @@
 #include "sha256.hpp"
 #include "TlsHandshake.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SocketTlsHandshaker::SocketTlsHandshaker(void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& callback_capture) noexcept
 		: callback(callback), callback_capture(std::move(callback_capture))

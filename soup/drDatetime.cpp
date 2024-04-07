@@ -2,7 +2,7 @@
 
 #include "drInt.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<drAdaptor> drDatetime::getAdaptors() const
 	{

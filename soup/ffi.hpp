@@ -7,7 +7,7 @@
 
 #undef CDECL
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct BadCall : public Exception
 	{

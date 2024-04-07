@@ -6,7 +6,7 @@
 #include "irType.hpp"
 #include "irExpression.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct irFunction
 	{

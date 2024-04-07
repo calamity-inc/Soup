@@ -7,7 +7,7 @@
 #include "Exception.hpp"
 #include "PointerAndBool.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexConstraint
 	{

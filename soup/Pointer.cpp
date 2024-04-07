@@ -2,7 +2,7 @@
 
 #include "Module.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
 	Pointer Pointer::externalRip(const Module& mod) const noexcept

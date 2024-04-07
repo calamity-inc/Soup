@@ -3,7 +3,7 @@
 #include "BitWriter.hpp"
 #include "StringWriter.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class BitString
 	{

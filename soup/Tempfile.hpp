@@ -2,7 +2,7 @@
 
 #include "FileRaii.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Tempfile : public FileRaii
 	{

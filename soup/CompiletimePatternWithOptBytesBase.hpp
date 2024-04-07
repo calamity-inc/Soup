@@ -5,7 +5,7 @@
 #include <optional>
 #include <vector>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct CompiletimePatternWithOptBytesBase : public CompiletimePatternBase
 	{

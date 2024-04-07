@@ -2,7 +2,7 @@
 
 #include "Bigint.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Not really meant to be used:
 	// a) Can't represent 0.01

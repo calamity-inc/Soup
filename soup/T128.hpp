@@ -1,6 +1,8 @@
 #pragma once
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	template <typename T>
 	struct T128

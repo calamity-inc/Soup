@@ -5,7 +5,7 @@
 #include "rand.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Chessboard::Chessboard()
 	{

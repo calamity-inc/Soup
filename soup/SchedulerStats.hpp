@@ -4,7 +4,7 @@
 
 #include "Scheduler.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct SchedulerStats : public Task
 	{

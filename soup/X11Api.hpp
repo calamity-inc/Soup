@@ -5,7 +5,7 @@
 #include "Exception.hpp"
 #include "SharedLibrary.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct X11Api : public SharedLibrary
 	{

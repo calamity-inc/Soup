@@ -2,7 +2,7 @@
 
 #include "Task.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	//template <typename Task = Task>
 	struct StateMachineTask : public Task

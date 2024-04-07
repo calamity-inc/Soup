@@ -6,7 +6,7 @@
 #include "hwHid.hpp"
 #include "json.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool kbRgbRazerChroma::isAvailable()
 	{

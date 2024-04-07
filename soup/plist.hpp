@@ -5,10 +5,11 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base.hpp"
 #include "fwd.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct PlistNode
 	{

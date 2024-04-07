@@ -8,7 +8,7 @@
 #include <iostream>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool BitReader::finishByte() noexcept
 	{

@@ -2,7 +2,7 @@
 
 #include "BitReader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void TreeWriter::fromBinary(BitReader& r, void* root) const
 	{

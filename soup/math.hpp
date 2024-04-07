@@ -10,7 +10,9 @@
 
 #define RAD_TO_DEG(rad) ((rad) / (float(M_PI) / 180.0f))
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	template <typename T = float>
 	[[nodiscard]] constexpr T lerp(T a, T b, float t)

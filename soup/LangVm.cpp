@@ -16,7 +16,7 @@
 #include <iostream>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	LangVm::LangVm(Reader& r, std::stack<SharedPtr<Mixed>>&& stack) noexcept
 		: r(r), stack(std::move(stack))

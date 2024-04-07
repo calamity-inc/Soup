@@ -5,7 +5,7 @@
 #include "DictionaryWord.hpp"
 #include <map>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	SOUP_PACKET(Dictionary)
 	{

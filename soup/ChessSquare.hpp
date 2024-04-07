@@ -5,7 +5,7 @@
 #include "fwd.hpp"
 #include "ChessPiece.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class ChessSquare
 	{

@@ -1,6 +1,6 @@
 ﻿#include "country_names.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	CountryNamesEntry country_names[] = {
 		{"AD", "AF", u8"Andorra"},

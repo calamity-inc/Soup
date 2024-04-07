@@ -4,7 +4,7 @@
 
 #include "Reader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class BitReader
 	{

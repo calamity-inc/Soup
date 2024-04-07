@@ -3,7 +3,7 @@
 #include "AllocRaii.hpp"
 #include "Module.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct BytepatchExternal
 	{

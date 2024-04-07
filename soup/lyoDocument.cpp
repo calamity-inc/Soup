@@ -12,7 +12,7 @@
 #include "log.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	lyoDocument::lyoDocument()
 		: lyoContainer(nullptr)

@@ -42,7 +42,7 @@ for ($i = 0; $i != $max_args + 1; ++$i)
 }
 fwrite($fh, "} \\\n");
 fwrite($fh, "throw BadCall();");
-fwrite($fh, "\n\nnamespace soup\n{\nuintptr_t ffi::call(CallConv conv, void* func, const std::vector<uintptr_t>& args)\n{\nswitch(conv){\n");
+fwrite($fh, "\n\nNAMESPACE_SOUP\n{\nuintptr_t ffi::call(CallConv conv, void* func, const std::vector<uintptr_t>& args)\n{\nswitch(conv){\n");
 foreach($convs as $conv)
 {
 	fwrite($fh, "case ".$conv[0].": return ".$conv[2]."(func, args);\n");

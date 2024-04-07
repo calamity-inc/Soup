@@ -4,7 +4,7 @@
 
 #include "EditorTab.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Editor : public ConuiApp
 	{

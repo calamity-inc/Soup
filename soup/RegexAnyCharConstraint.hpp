@@ -4,7 +4,7 @@
 
 #include "RegexMatcher.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	template <bool dotall, bool unicode>
 	struct RegexAnyCharConstraint : public RegexConstraint

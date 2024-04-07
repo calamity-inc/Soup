@@ -3,7 +3,7 @@
 #include "irFunction.hpp"
 #include "irVm.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string irExpression::toString(unsigned int depth) const noexcept
 	{

@@ -5,7 +5,7 @@
 
 #include <deque>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct lyoFlatDocument
 	{

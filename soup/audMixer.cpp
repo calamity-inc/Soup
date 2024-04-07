@@ -6,7 +6,7 @@
 #include "audPlayback.hpp"
 #include "audSound.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void audMixer::setOutput(audPlayback& pb)
 	{

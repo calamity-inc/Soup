@@ -22,7 +22,7 @@
 
 #include "QrCode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum InquiryOp
 	{

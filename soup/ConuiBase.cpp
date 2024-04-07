@@ -1,6 +1,6 @@
 #include "ConuiBase.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void ConuiBase::onClick(MouseButton b, unsigned int x, unsigned int y)
 	{

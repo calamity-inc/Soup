@@ -25,7 +25,7 @@
 #include "RegexWordBoundaryConstraint.hpp"
 #include "RegexWordCharConstraint.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct TransitionsVector
 	{

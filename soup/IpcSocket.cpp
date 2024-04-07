@@ -5,7 +5,7 @@
 
 #pragma comment(lib, "Advapi32.lib")
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool IpcSocket::bind(std::string name)
 	{

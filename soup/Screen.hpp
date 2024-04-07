@@ -4,7 +4,7 @@
 #if SOUP_WINDOWS
 #include <Windows.h>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Screen
 	{

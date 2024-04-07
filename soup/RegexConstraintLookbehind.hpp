@@ -2,7 +2,7 @@
 
 #include "RegexConstraint.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RegexConstraintLookbehind : public RegexConstraint
 	{

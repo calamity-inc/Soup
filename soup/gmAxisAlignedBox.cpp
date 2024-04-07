@@ -1,6 +1,6 @@
 #include "gmAxisAlignedBox.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// From https://www.3dkingdoms.com/weekly/weekly.php?a=3
 

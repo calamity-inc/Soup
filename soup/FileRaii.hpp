@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <string>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	struct FileRaii
 	{

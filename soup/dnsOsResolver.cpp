@@ -12,7 +12,7 @@
 #include "dnsClass.hpp" // for DNS_IN because C_IN is not available on MacOS, not even in <arpa/nameser.h>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<UniquePtr<dnsRecord>> dnsOsResolver::lookup(dnsType qtype, const std::string& name) const
 	{

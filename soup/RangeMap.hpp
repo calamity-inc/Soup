@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <vector>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	template <typename K, typename V>
 	struct RangeMap

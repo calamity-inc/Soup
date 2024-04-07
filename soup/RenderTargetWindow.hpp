@@ -13,7 +13,7 @@
 #include "X11Api.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RenderTargetWindow : public RenderTarget
 	{

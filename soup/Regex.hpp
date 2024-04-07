@@ -4,7 +4,7 @@
 #include "RegexGroup.hpp"
 #include "RegexMatchResult.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct Regex
 	{

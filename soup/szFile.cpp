@@ -5,7 +5,7 @@
 #include "szCompressor.hpp"
 #include "UniquePtr.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static constexpr auto method_bits = bitutil::getBitsNeededToEncodeRange(SM_SIZE);
 

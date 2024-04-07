@@ -7,7 +7,7 @@
 #include "irModule.hpp"
 #include "irType.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Although I think it's a bit weird to have a VM for IR, I think it does make sense to have a "ground truth", such that:
 	// - An exception/assert in the IR VM would indicate a faulty frontend.

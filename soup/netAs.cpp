@@ -4,7 +4,7 @@
 #include "string.hpp"
 #include "wasm.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Checks the ASN and slug against https://github.com/calamity-inc/soup-extra-data/blob/senpai/index.blume
 	bool netAs::isHosting(const netIntel& intel) const SOUP_EXCAL

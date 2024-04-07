@@ -6,7 +6,7 @@
 
 #include "RasterFont.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct lyoTextElement : public lyoElement
 	{

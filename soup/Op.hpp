@@ -2,7 +2,9 @@
 
 #include <vector>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	struct Op
 	{

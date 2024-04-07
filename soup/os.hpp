@@ -11,7 +11,7 @@
 #include <Winternl.h>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class os
 	{

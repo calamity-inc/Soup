@@ -21,7 +21,7 @@
 #define OSC ESC "]"
 #define ST  ESC "\\"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class console_impl
 	{

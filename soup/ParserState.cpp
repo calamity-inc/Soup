@@ -10,7 +10,7 @@
 
 #define ENSURE_SANITY false
 
-namespace soup
+NAMESPACE_SOUP
 {
 	void ParserState::setOp(int type)
 	{

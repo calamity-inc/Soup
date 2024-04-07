@@ -4,7 +4,7 @@
 #include "Lexeme.hpp"
 #include "LexemeParser.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	static constexpr const char* TK_LOCAL = "local";
 	static constexpr const char* TK_FUNCTION = "function";

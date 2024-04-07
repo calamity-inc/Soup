@@ -7,7 +7,7 @@
 
 #include "type_traits.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class FileWriter final : public Writer
 	{

@@ -10,7 +10,7 @@
 #include "visCurves.hpp"
 #include "xml.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Svg::Svg(const XmlTag& data)
 		: data(data)

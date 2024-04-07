@@ -4,7 +4,7 @@
 #include "string.hpp"
 #include "unicode.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string MorseSequence::toPattern() const
 	{

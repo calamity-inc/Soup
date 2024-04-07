@@ -4,7 +4,7 @@
 
 #include "rand.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct cbCmdCoinflip : public cbCmd
 	{

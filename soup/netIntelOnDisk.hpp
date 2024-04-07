@@ -9,7 +9,7 @@
 #include "FileReader.hpp"
 #include "netIntelLocationData.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct netIntelOnDisk
 	{

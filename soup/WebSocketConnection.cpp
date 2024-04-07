@@ -10,7 +10,7 @@
 #include "WebSocketFrameType.hpp"
 #include "WebSocketMessage.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct CaptureWsUpgrade
 	{

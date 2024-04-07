@@ -5,7 +5,7 @@
 #include "sha1.hpp"
 #include "StringRefReader.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string WebSocket::generateKey()
 	{

@@ -2,7 +2,7 @@
 
 #include "ChessCoordinate.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	const char* ChessSquare::toString(bool inverted) const noexcept
 	{

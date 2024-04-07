@@ -6,7 +6,7 @@
 #include "math.hpp"
 #include "Vector3.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	Matrix::Matrix() noexcept
 	{

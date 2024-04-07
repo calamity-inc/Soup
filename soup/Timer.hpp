@@ -2,7 +2,7 @@
 
 #include "time.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class Timer
 	{

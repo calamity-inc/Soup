@@ -3,9 +3,10 @@
 #include <cstdint>
 #include <string>
 
+#include "base.hpp"
 #include "Bitset.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 #pragma pack(push, 1)
 	struct RttiTypeInfo

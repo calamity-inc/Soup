@@ -4,7 +4,7 @@
 #include "Poly.hpp"
 #include "Ray.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	//
 	// Returns a 3x3 rotation matrix as vectors

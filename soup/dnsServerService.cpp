@@ -8,7 +8,7 @@
 #include "Socket.hpp"
 #include "string.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	dnsServerService::dnsServerService(on_query_t on_query)
 		: ServerServiceUdp([](Socket& s, SocketAddr&& addr, std::string&& data, ServerServiceUdp& srv)

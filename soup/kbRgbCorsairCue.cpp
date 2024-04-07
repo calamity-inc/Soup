@@ -6,7 +6,7 @@
 #include "StringWriter.hpp"
 #include "os.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	bool kbRgbCorsairCue::ensureConnected()
 	{

@@ -47,7 +47,7 @@
 #include "log.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if !SOUP_WINDOWS
 	static void sigpipe_handler_proc(int)

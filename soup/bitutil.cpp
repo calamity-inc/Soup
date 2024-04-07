@@ -1,6 +1,6 @@
 #include "bitutil.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::vector<bool> bitutil::interleave(const std::vector<std::vector<bool>>& data)
 	{

@@ -1,6 +1,8 @@
 #pragma once
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	template <size_t size>
 	struct ByteTraits {};

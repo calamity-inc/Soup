@@ -6,7 +6,7 @@
 #include "audSound.hpp"
 #include "time.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct MorseTiming
 	{

@@ -13,7 +13,7 @@
 #include "StringLiteral.hpp"
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 #if SOUP_CPP20
 	template <StringLiteral AlphaStr>

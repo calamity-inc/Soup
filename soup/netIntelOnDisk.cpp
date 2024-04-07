@@ -4,7 +4,7 @@
 
 #include "netIntelLocationData4OnDisk.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	netIntelOnDisk::netIntelOnDisk(const std::filesystem::path& dir)
 		: location_pool(dir / "location_pool.bin"),

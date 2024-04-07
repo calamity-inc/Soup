@@ -1,6 +1,6 @@
 #include "irModule.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	std::string irModule::getContiguousMemory() const
 	{

@@ -5,7 +5,7 @@
 #include "fwd.hpp"
 #include "Rgba.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	struct RgbaCanvas
 	{

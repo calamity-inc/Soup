@@ -2,7 +2,7 @@
 
 #if SOUP_WASM || SOUP_CODE_INSPECTOR
 
-namespace soup
+NAMESPACE_SOUP
 {
 	WebSocketConnectionEmscripten::WebSocketConnectionEmscripten(const std::string& url)
 	{

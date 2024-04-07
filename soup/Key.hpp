@@ -4,7 +4,7 @@
 
 #include "base.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	enum Key : uint8_t
 	{

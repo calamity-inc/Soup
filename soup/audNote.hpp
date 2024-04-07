@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <cmath>
 
-namespace soup
+NAMESPACE_SOUP
 {
 	// Soup represents notes just like MIDI does.
 	// See Appendix 1.3 of https://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html.

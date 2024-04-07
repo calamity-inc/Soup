@@ -4,7 +4,7 @@
 
 #include <cstring> // memcpy
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class BufferRefReader final : public Reader
 	{

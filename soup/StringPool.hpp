@@ -2,7 +2,9 @@
 
 #include <unordered_set>
 
-namespace soup
+#include "base.hpp"
+
+NAMESPACE_SOUP
 {
 	struct StringPool
 	{

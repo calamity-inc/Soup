@@ -8,7 +8,7 @@
 #include <ucontext.h>
 #endif
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class Fiber
 	{

@@ -5,7 +5,7 @@
 
 #include "RegexAlternative.hpp"
 
-namespace soup
+NAMESPACE_SOUP
 {
 	class RegexGroup
 	{
