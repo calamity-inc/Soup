@@ -59,12 +59,12 @@ NAMESPACE_SOUP
 
 	void ServerWebService::sendHtml(Socket& s, std::string body)
 	{
-		sendData(s, "text/html; charset=\"utf-8\"", std::move(body));
+		sendData(s, "text/html; charset=utf-8", std::move(body));
 	}
 
 	void ServerWebService::sendText(Socket& s, std::string body)
 	{
-		sendData(s, "text/plain; charset=\"utf-8\"", std::move(body));
+		sendData(s, "text/plain; charset=utf-8", std::move(body));
 	}
 
 	void ServerWebService::sendData(Socket& s, const char* mime_type, std::string body)
