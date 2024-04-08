@@ -170,6 +170,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <AdditionalOptions>/Zc:__cplusplus /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -191,6 +192,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <AdditionalOptions>/Zc:__cplusplus /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -213,6 +215,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <AdditionalOptions>/Zc:__cplusplus /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -233,6 +236,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <AdditionalOptions>/Zc:__cplusplus /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -254,6 +258,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <AdditionalOptions>/Zc:__cplusplus /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -277,6 +282,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IncludeInUnityFile>false</IncludeInUnityFile>
       <AdditionalOptions>/Zc:__cplusplus /utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
