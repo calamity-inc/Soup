@@ -36,6 +36,9 @@ NAMESPACE_SOUP
 #endif
 
 	public:
+		using char_handler_t = void(*)(char32_t);
+		using control_handler_t = void(*)(ControlInput);
+
 		EventHandler<void(char32_t)> char_handler;
 		EventHandler<void(ControlInput)> control_handler;
 	private:

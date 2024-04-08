@@ -162,7 +162,7 @@ void cli_3d()
 		updateScene();
 		render();
 	});
-	console.char_handler = (void(*)(char32_t))[](char32_t c)
+	console.char_handler = (soup::console_impl::char_handler_t)[](char32_t c)
 	{
 		if (c == 'w')
 		{
@@ -219,7 +219,7 @@ void cli_3d()
 			render();
 		}
 	};
-	console.control_handler = (void(*)(ControlInput))[](ControlInput i)
+	console.control_handler = (console_impl::control_handler_t)[](ControlInput i)
 	{
 		if (i == RIGHT)
 		{
