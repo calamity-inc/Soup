@@ -7,6 +7,16 @@
 
 #include "math.hpp"
 
+#undef BLACK
+#undef WHITE
+#undef RED
+#undef YELLOW
+#undef GREEN
+#undef BLUE
+#undef MAGENTA
+#undef GREY
+#undef LIGHTGREY
+
 NAMESPACE_SOUP
 {
 	union Rgb
