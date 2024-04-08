@@ -687,7 +687,7 @@ NAMESPACE_SOUP
 						script.function_imports.at(function_index).ptr(*this);
 						break;
 					}
-					function_index -= script.function_imports.size();
+					function_index -= static_cast<uint32_t>(script.function_imports.size());
 					SOUP_IF_UNLIKELY (function_index >= script.functions.size() || function_index >= script.code.size())
 					{
 #if DEBUG_VM
@@ -730,7 +730,7 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					function_index -= script.function_imports.size();
+					function_index -= static_cast<uint32_t>(script.function_imports.size());
 					SOUP_IF_UNLIKELY (type_index != script.functions.at(function_index))
 					{
 #if DEBUG_VM

@@ -385,7 +385,7 @@ NAMESPACE_SOUP
 				}
 				if (e.call.index >= 0)
 				{
-					auto overflow = nargs - m.func_exports.at(e.call.index).parameters.size();
+					auto overflow = static_cast<int>(nargs - m.func_exports.at(e.call.index).parameters.size());
 					discard(w, overflow);
 					b = 0x10; w.u8(b); // call
 					w.oml(e.call.index + m.imports.size());
@@ -393,7 +393,7 @@ NAMESPACE_SOUP
 				}
 				else
 				{
-					auto overflow = nargs - m.imports.at(~e.call.index).func.parameters.size();
+					auto overflow = static_cast<int>(nargs - m.imports.at(~e.call.index).func.parameters.size());
 					discard(w, overflow);
 					b = 0x10; w.u8(b); // call
 					w.oml(~e.call.index);
@@ -496,8 +496,8 @@ NAMESPACE_SOUP
 		case IR_DISCARD:
 			{
 				auto nitems = compileExpression(m, w, *e.children.at(0));
-				discard(w, e.discard.count);
-				return nitems - e.discard.count;
+				discard(w, static_cast<int>(e.discard.count));
+				return static_cast<int>(nitems - e.discard.count);
 			}
 
 		case IR_ADD_I32:
