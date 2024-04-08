@@ -254,11 +254,13 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -284,11 +286,13 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -314,12 +318,14 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -345,12 +351,14 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -376,11 +384,13 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -406,12 +416,14 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -439,12 +451,14 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -473,12 +487,14 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -507,12 +523,14 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -541,12 +559,14 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -575,12 +595,14 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -609,12 +631,14 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <StringPooling>true</StringPooling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -754,6 +778,7 @@
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="parallel.hpp" />
     <ClInclude Include="Pathfind.hpp" />
+    <ClInclude Include="pch.hpp" />
     <ClInclude Include="Percentage.hpp" />
     <ClInclude Include="plist.hpp" />
     <ClInclude Include="plusaes.hpp" />
@@ -1267,6 +1292,20 @@
     <ClCompile Include="netStatus.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="parallel.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugEXE|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugEXE|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugEXE|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="plist.cpp" />
     <ClCompile Include="Promise.cpp" />
     <ClCompile Include="punycode.cpp" />

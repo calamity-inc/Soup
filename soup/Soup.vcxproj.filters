@@ -1587,6 +1587,7 @@
     <ClInclude Include="laMathFrontend.hpp">
       <Filter>lang\compiler\frontend</Filter>
     </ClInclude>
+    <ClInclude Include="pch.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2350,6 +2351,7 @@
     <ClCompile Include="laMathFrontend.cpp">
       <Filter>lang\compiler\frontend</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
