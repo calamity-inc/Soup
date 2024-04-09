@@ -345,7 +345,7 @@ SOUP_CEXPORT Mixed* InquiryLang_execute(const char* x)
 {
 	if (auto res = InquiryLang::execute(x))
 	{
-		return res.release();
+		return heap.add(res.release());
 	}
 	return nullptr;
 }
