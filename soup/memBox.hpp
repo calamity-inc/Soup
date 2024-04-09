@@ -4,6 +4,7 @@
 #include <memory> // destroy_at
 
 #include "base.hpp"
+#include "memory.hpp" // construct_at
 
 NAMESPACE_SOUP
 {
