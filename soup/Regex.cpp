@@ -123,6 +123,9 @@ NAMESPACE_SOUP
 				}
 				if (m.c->group.getBool())
 				{
+#if REGEX_DEBUG_MATCH
+					std::cout << "reset capture for group " << m.c->group->index << "; ";
+#endif
 					m.result.groups.at(m.c->group->index)->begin = _it;
 				}
 
