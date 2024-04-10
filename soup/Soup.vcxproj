@@ -812,6 +812,7 @@
     <ClInclude Include="RegexExactQuantifierConstraint.hpp" />
     <ClInclude Include="RegexRangeQuantifierConstraint.hpp" />
     <ClInclude Include="RegexStartConstraint.hpp" />
+    <ClInclude Include="RegexTransitionsVector.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="RegexWordCharConstraint.hpp" />
     <ClInclude Include="SelfDeletingThread.hpp" />

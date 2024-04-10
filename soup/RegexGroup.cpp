@@ -1,6 +1,7 @@
 #include "RegexGroup.hpp"
 
 #include "RegexFlags.hpp"
+#include "RegexTransitionsVector.hpp"
 #include "string.hpp"
 #include "unicode.hpp"
 
@@ -27,70 +28,7 @@
 
 NAMESPACE_SOUP
 {
-	struct TransitionsVector
-	{
-		std::vector<RegexConstraint**> data;
-		std::vector<RegexConstraint**> prev_data;
-
-		void emplace(RegexConstraint** p)
-		{
-			data.emplace_back(p);
-		}
-
-		void emplaceRollback(RegexConstraint** p)
-		{
-			data.emplace_back(p);
-
-			// If we don't have a next constraint, rollback is match success.
-			*reinterpret_cast<uintptr_t*>(p) = 1;
-		}
-
-		void setPreviousTransitionTo(RegexConstraint* c) noexcept
-		{
-			for (const auto& p : prev_data)
-			{
-				*p = c;
-			}
-		}
-
-		void setTransitionTo(RegexConstraint* c, bool save_checkpoint = false) noexcept
-		{
-			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & 1) == 0);
-			if (save_checkpoint)
-			{
-				reinterpret_cast<uintptr_t&>(c) |= 1;
-			}
-
-			for (const auto& p : data)
-			{
-				*p = c;
-			}
-			prev_data = std::move(data);
-			data.clear();
-		}
-
-		void discharge(std::vector<RegexConstraint**>& outTransitions) noexcept
-		{
-			for (const auto& p : data)
-			{
-				outTransitions.emplace_back(p);
-			}
-			data.clear();
-		}
-
-		void rollback() noexcept
-		{
-			data = std::move(prev_data);
-			prev_data.clear();
-
-			for (const auto& p : data)
-			{
-				*p = nullptr;
-			}
-		}
-	};
-
-	static void discharge_alternative(RegexGroup& g, TransitionsVector& success_transitions, RegexAlternative& a)
+	static void discharge_alternative(RegexGroup& g, RegexTransitionsVector& success_transitions, RegexAlternative& a)
 	{
 		// Ensure all alternatives have at least one constraint so we can set up transitions
 		if (a.constraints.empty())
@@ -108,7 +46,7 @@ NAMESPACE_SOUP
 	RegexGroup::RegexGroup(const ConstructorState& s, bool non_capturing)
 		: index(non_capturing ? -1 : s.next_index++)
 	{
-		TransitionsVector success_transitions;
+		RegexTransitionsVector success_transitions;
 		success_transitions.data = { &initial };
 
 		RegexAlternative a{};
@@ -743,14 +681,8 @@ NAMESPACE_SOUP
 
 						while (--min_reps != 0)
 						{
-							auto upClone = pModifiedConstraint->clone();
+							auto upClone = pModifiedConstraint->clone(success_transitions);
 							upClone->group = this;
-
-							// constraint --[success]-> clone
-							success_transitions.setTransitionTo(upClone->getEntrypoint());
-
-							// clone --[success]-> whatever-comes-next
-							success_transitions.emplace(&upClone->success_transition);
 
 							upRepConstraint->constraints.emplace_back(std::move(upClone));
 						}
@@ -773,14 +705,8 @@ NAMESPACE_SOUP
 
 						while (--min_reps != 0)
 						{
-							auto upClone = pModifiedConstraint->clone();
+							auto upClone = pModifiedConstraint->clone(success_transitions);
 							upClone->group = this;
-
-							// constraint --[success]-> clone
-							success_transitions.setTransitionTo(upClone->getEntrypoint());
-
-							// clone --[success]-> whatever-comes-next
-							success_transitions.emplace(&upClone->success_transition);
 
 							upRepConstraint->constraints.emplace_back(std::move(upClone));
 						}
@@ -820,29 +746,17 @@ NAMESPACE_SOUP
 							size_t required_reps = min_reps;
 							while (--required_reps != 0)
 							{
-								auto upClone = pModifiedConstraint->clone();
+								auto upClone = pModifiedConstraint->clone(success_transitions);
 								upClone->group = this;
-
-								// constraint --[success]-> clone
-								success_transitions.setTransitionTo(upClone->getEntrypoint());
-
-								// clone --[success]-> whatever-comes-next
-								success_transitions.emplace(&upClone->success_transition);
 
 								upRepConstraint->constraints.emplace_back(std::move(upClone));
 							}
-							TransitionsVector rep_transitions;
+							RegexTransitionsVector rep_transitions;
 							success_transitions.discharge(rep_transitions.data);
 							for (size_t optional_reps = (max_reps - min_reps); optional_reps != 0; --optional_reps)
 							{
-								auto upClone = pModifiedConstraint->clone();
+								auto upClone = pModifiedConstraint->clone(rep_transitions);
 								upClone->group = this;
-
-								// constraint --[success]-> clone
-								rep_transitions.setTransitionTo(upClone->getEntrypoint());
-
-								// clone --[success]-> next-clone
-								rep_transitions.emplace(&upClone->success_transition);
 
 								// clone --[rollback]-> next-constraint
 								success_transitions.emplaceRollback(&upClone->getEntrypoint()->rollback_transition);
@@ -866,25 +780,16 @@ NAMESPACE_SOUP
 							size_t required_reps = min_reps;
 							while (--required_reps != 0)
 							{
-								auto upClone = pModifiedConstraint->clone();
+								auto upClone = pModifiedConstraint->clone(success_transitions);
 								upClone->group = this;
-
-								// constraint --[success]-> clone
-								success_transitions.setTransitionTo(upClone->getEntrypoint());
-
-								// clone --[success]-> whatever-comes-next
-								success_transitions.emplace(&upClone->success_transition);
 
 								upRepConstraint->constraints.emplace_back(std::move(upClone));
 							}
 
-							TransitionsVector rep_transitions;
+							RegexTransitionsVector rep_transitions;
 							success_transitions.discharge(rep_transitions.data);
 							for (size_t optional_reps = (max_reps - min_reps); optional_reps != 0; --optional_reps)
 							{
-								auto upClone = pModifiedConstraint->clone();
-								upClone->group = this;
-
 								auto upDummy = soup::make_unique<RegexDummyConstraint>();
 
 								// last-constraint --[success]-> dummy
@@ -893,11 +798,12 @@ NAMESPACE_SOUP
 								// dummy --[success]-> next-constraint
 								success_transitions.emplace(&upDummy->success_transition);
 
+								// clone --[success]-> next-dummy
+								auto upClone = pModifiedConstraint->clone(rep_transitions);
+								upClone->group = this;
+
 								// dummy --[rollback]-> clone
 								upDummy->rollback_transition = upClone->getEntrypoint();
-
-								// clone --[success]-> next-dummy
-								rep_transitions.emplace(&upClone->success_transition);
 
 								upRepConstraint->constraints.emplace_back(std::move(upClone));
 								upRepConstraint->constraints.emplace_back(std::move(upDummy));

@@ -48,6 +48,7 @@ NAMESPACE_SOUP
 	struct RegexConstraint;
 	class RegexGroup;
 	struct RegexMatcher;
+	struct RegexTransitionsVector;
 
 	// data.xml
 	struct PlistDict;

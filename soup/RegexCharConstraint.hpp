@@ -55,9 +55,12 @@ NAMESPACE_SOUP
 			return 1;
 		}
 
-		[[nodiscard]] UniquePtr<RegexConstraint> clone() const final
+		[[nodiscard]] UniquePtr<RegexConstraint> clone(RegexTransitionsVector& success_transitions) const final
 		{
-			return soup::make_unique<RegexCharConstraint>(c);
+			auto cc = soup::make_unique<RegexCharConstraint>(c);
+			success_transitions.setTransitionTo(cc->getEntrypoint());
+			success_transitions.emplace(&cc->success_transition);
+			return cc;
 		}
 	};
 }

@@ -1588,6 +1588,9 @@
       <Filter>lang\compiler\frontend</Filter>
     </ClInclude>
     <ClInclude Include="pch.hpp" />
+    <ClInclude Include="RegexTransitionsVector.hpp">
+      <Filter>data\regex</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

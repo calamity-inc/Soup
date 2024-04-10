@@ -37,7 +37,7 @@ NAMESPACE_SOUP
 			SOUP_THROW(Exception("Constraint is not fixed-width"));
 		}
 
-		[[nodiscard]] virtual UniquePtr<RegexConstraint> clone() const
+		[[nodiscard]] virtual UniquePtr<RegexConstraint> clone(RegexTransitionsVector& success_transitions) const
 		{
 			SOUP_THROW(Exception("Constraint is not clonable"));
 		}

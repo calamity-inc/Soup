@@ -70,46 +70,26 @@ NAMESPACE_SOUP
 			return data.getCursorAdvancement();
 		}
 
-		[[nodiscard]] UniquePtr<RegexConstraint> clone() const final
+		[[nodiscard]] UniquePtr<RegexConstraint> clone(RegexTransitionsVector& success_transitions) const final
 		{
 			auto upClone = soup::make_unique<RegexGroupConstraint>(data.index);
-			std::unordered_map<const RegexConstraint*, RegexConstraint*> constraint_clones{};
 			for (const auto& a : data.alternatives)
 			{
 				RegexAlternative& ac = upClone->data.alternatives.emplace_back();
 				for (const auto& c : a.constraints)
 				{
-					auto pConstraintClone = ac.constraints.emplace_back(c->clone()).get();
-					pConstraintClone->success_transition = c->success_transition;
-					pConstraintClone->rollback_transition = c->rollback_transition;
+					auto pConstraintClone = ac.constraints.emplace_back(c->clone(success_transitions)).get();
 					pConstraintClone->group.set(&upClone->data, c->group.getBool());
-					constraint_clones.emplace(c.get(), pConstraintClone);
+					if (c.get() == data.initial)
+					{
+						upClone->data.initial = pConstraintClone;
+					}
 				}
 			}
 
 			upClone->data.parent = data.parent;
-			if (auto e = constraint_clones.find(data.initial); e != constraint_clones.end())
-			{
-				upClone->data.initial = e->second;
-			}
-			for (const auto& a : upClone->data.alternatives)
-			{
-				for (auto& c : a.constraints)
-				{
-					if (auto e = constraint_clones.find(c->success_transition); e != constraint_clones.end())
-					{
-						c->success_transition = e->second;
-					}
-					if (auto e = constraint_clones.find(c->rollback_transition); e != constraint_clones.end())
-					{
-						c->rollback_transition = e->second;
-					}
-				}
-			}
 			upClone->data.name = data.name;
 			upClone->data.lookahead_or_lookbehind = data.lookahead_or_lookbehind;
-
-			upClone->data.alternatives.back().constraints.back()->success_transition = upClone.get();
 
 			return upClone;
 		}
