@@ -80,9 +80,16 @@ NAMESPACE_SOUP
 				{
 					auto pConstraintClone = ac.constraints.emplace_back(c->clone(success_transitions)).get();
 					pConstraintClone->group.set(&upClone->data, c->group.getBool());
-					if (c.get() == data.initial)
+					if (!upClone->data.initial)
 					{
-						upClone->data.initial = pConstraintClone;
+						if (data.initial == c.get())
+						{
+							upClone->data.initial = pConstraintClone;
+						}
+						else if (data.initial == c->getEntrypoint())
+						{
+							upClone->data.initial = pConstraintClone->getEntrypoint();
+						}
 					}
 				}
 			}
@@ -90,6 +97,8 @@ NAMESPACE_SOUP
 			upClone->data.parent = data.parent;
 			upClone->data.name = data.name;
 			upClone->data.lookahead_or_lookbehind = data.lookahead_or_lookbehind;
+
+			SOUP_ASSERT(upClone->data.initial, "Failed to find initial constraint for cloned group");
 
 			return upClone;
 		}

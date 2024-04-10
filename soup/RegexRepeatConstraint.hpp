@@ -22,6 +22,11 @@ NAMESPACE_SOUP
 			return true;
 		}
 
+		[[nodiscard]] virtual RegexConstraint* getEntrypoint() noexcept final
+		{
+			return constraint->getEntrypoint();
+		}
+
 		void setupTransitionsAtLeastOne(RegexTransitionsVector& success_transitions)
 		{
 			success_transitions.setTransitionTo(this);
