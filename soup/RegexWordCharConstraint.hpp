@@ -24,5 +24,13 @@ NAMESPACE_SOUP
 		{
 			return 1;
 		}
+
+		[[nodiscard]] UniquePtr<RegexConstraint> clone(RegexTransitionsVector& success_transitions) const final
+		{
+			auto cc = soup::make_unique<RegexWordCharConstraint>();
+			success_transitions.setTransitionTo(cc->getEntrypoint());
+			success_transitions.emplace(&cc->success_transition);
+			return cc;
+		}
 	};
 }

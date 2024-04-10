@@ -441,35 +441,17 @@ NAMESPACE_SOUP
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 						pModifiedConstraint = upModifiedConstraint.get();
 						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<true, true>>(std::move(upModifiedConstraint));
+						static_cast<RegexRepeatConstraint<true, true>*>(upQuantifierConstraint.get())->setupTransitionsAtLeastOne(success_transitions);
 					}
 					else
 					{
 						UniquePtr<RegexConstraint> upModifiedConstraint = std::move(a.constraints.back());
 						pModifiedConstraint = upModifiedConstraint.get();
 						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<true, false>>(std::move(upModifiedConstraint));
+						static_cast<RegexRepeatConstraint<true, false>*>(upQuantifierConstraint.get())->setupTransitionsAtLeastOne(success_transitions);
 					}
 
 					processRepeatingConstraint(pModifiedConstraint);
-
-					// constraint --[success]-> quantifier
-					success_transitions.setTransitionTo(upQuantifierConstraint.get());
-
-					if (greedy)
-					{
-						// quantifier --[success]-> constraint
-						upQuantifierConstraint->success_transition = pModifiedConstraint->getEntrypoint();
-
-						// quantifier --[rollback]-> next-constraint
-						success_transitions.emplaceRollback(&upQuantifierConstraint->rollback_transition);
-					}
-					else
-					{
-						// quantifier --[success]-> next-constraint
-						success_transitions.emplace(&upQuantifierConstraint->success_transition);
-
-						// quantifier --[rollback]-> constraint
-						upQuantifierConstraint->rollback_transition = pModifiedConstraint->getEntrypoint();
-					}
 
 					a.constraints.back() = std::move(upQuantifierConstraint);
 					continue;

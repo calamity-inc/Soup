@@ -22,6 +22,38 @@ NAMESPACE_SOUP
 			return true;
 		}
 
+		void setupTransitionsAtLeastOne(RegexTransitionsVector& success_transitions)
+		{
+			success_transitions.setTransitionTo(this);
+			if (greedy)
+			{
+				// quantifier --[success]-> constraint
+				success_transition = constraint->getEntrypoint();
+
+				// quantifier --[rollback]-> next-constraint
+				success_transitions.emplaceRollback(&rollback_transition);
+			}
+			else
+			{
+				// quantifier --[success]-> next-constraint
+				success_transitions.emplace(&success_transition);
+
+				// quantifier --[rollback]-> constraint
+				rollback_transition = constraint->getEntrypoint();
+			}
+		}
+
+		[[nodiscard]] UniquePtr<RegexConstraint> clone(RegexTransitionsVector& success_transitions) const final
+		{
+			if (at_least_one)
+			{
+				auto cc = soup::make_unique<RegexRepeatConstraint>(constraint->clone(success_transitions));
+				cc->setupTransitionsAtLeastOne(success_transitions);
+				return cc;
+			}
+			return RegexConstraint::clone(success_transitions);
+		}
+
 		[[nodiscard]] std::string toString() const noexcept final
 		{
 			std::string str = constraint->toString();
