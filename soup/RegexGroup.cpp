@@ -320,7 +320,7 @@ NAMESPACE_SOUP
 						}
 
 						// last-lookahead-constraint --[success]-> fail
-						success_transitions.setTransitionTo(reinterpret_cast<RegexConstraint*>(0b10));
+						success_transitions.setTransitionTo(RegexConstraint::SUCCESS_TO_FAIL);
 
 						if (upGC->group.initial)
 						{
@@ -381,7 +381,7 @@ NAMESPACE_SOUP
 
 						// last-lookbehind-constraint --[success]-> fail
 						success_transitions.data = std::move(s.alternatives_transitions);
-						success_transitions.setTransitionTo(reinterpret_cast<RegexConstraint*>(0b10));
+						success_transitions.setTransitionTo(RegexConstraint::SUCCESS_TO_FAIL);
 
 						// group --[rollback]--> next-constraint
 						success_transitions.emplaceRollback(&upGC->rollback_transition);

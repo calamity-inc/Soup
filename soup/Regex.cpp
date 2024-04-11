@@ -137,7 +137,7 @@ NAMESPACE_SOUP
 #endif
 					m.saveCheckpoint();
 				}
-				if (reinterpret_cast<uintptr_t>(m.c) != 0b10)
+				if (m.c != RegexConstraint::SUCCESS_TO_FAIL)
 				{
 #if REGEX_DEBUG_MATCH
 					std::cout << "matched\n";
@@ -166,7 +166,8 @@ NAMESPACE_SOUP
 				std::cout << "; rolling back\n";
 #endif
 				m.restoreRollback();
-				if (reinterpret_cast<uintptr_t>(m.c) == 1)
+				SOUP_ASSERT(!m.shouldSaveCheckpoint());
+				if (m.c == RegexConstraint::ROLLBACK_TO_SUCCESS)
 				{
 #if REGEX_DEBUG_MATCH
 					std::cout << "rollback says we should succeed now\n";
@@ -314,19 +315,17 @@ NAMESPACE_SOUP
 		ss << R"( [shape="rect"];)";
 		ss << '\n';
 
-		if (reinterpret_cast<uintptr_t>(node->success_transition) > 0b10)
+		if (node->getSuccessTransition() == nullptr)
 		{
-			const auto success_transition = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(node->success_transition) & ~1);
-
-			node_to_graphviz_dot(ss, mapped_nodes, success_transition);
+			add_success_node(ss, mapped_nodes);
 
 			ss << node_to_graphviz_dot_string(node);
 			ss << " -> ";
-			ss << node_to_graphviz_dot_string(success_transition);
+			ss << R"("success")";
 			ss << R"( [label="success"];)";
 			ss << '\n';
 		}
-		else if (reinterpret_cast<uintptr_t>(node->success_transition) == 0b10)
+		else if (node->getSuccessTransition() == RegexConstraint::SUCCESS_TO_FAIL)
 		{
 			add_fail_node(ss, mapped_nodes);
 
@@ -338,34 +337,34 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			add_success_node(ss, mapped_nodes);
+			node_to_graphviz_dot(ss, mapped_nodes, node->getSuccessTransition());
 
 			ss << node_to_graphviz_dot_string(node);
 			ss << " -> ";
-			ss << R"("success")";
+			ss << node_to_graphviz_dot_string(node->getSuccessTransition());
 			ss << R"( [label="success"];)";
 			ss << '\n';
 		}
 
-		if (node->rollback_transition)
+		if (node->getRollbackTransition() != nullptr)
 		{
-			if (reinterpret_cast<uintptr_t>(node->rollback_transition) > 1)
-			{
-				node_to_graphviz_dot(ss, mapped_nodes, node->rollback_transition);
-
-				ss << node_to_graphviz_dot_string(node);
-				ss << " -> ";
-				ss << node_to_graphviz_dot_string(node->rollback_transition);
-				ss << R"( [label="rollback"];)";
-				ss << '\n';
-			}
-			else
+			if (node->getRollbackTransition() == RegexConstraint::ROLLBACK_TO_SUCCESS)
 			{
 				add_success_node(ss, mapped_nodes);
 
 				ss << node_to_graphviz_dot_string(node);
 				ss << " -> ";
 				ss << R"("success")";
+				ss << R"( [label="rollback"];)";
+				ss << '\n';
+			}
+			else
+			{
+				node_to_graphviz_dot(ss, mapped_nodes, node->getRollbackTransition());
+
+				ss << node_to_graphviz_dot_string(node);
+				ss << " -> ";
+				ss << node_to_graphviz_dot_string(node->getRollbackTransition());
 				ss << R"( [label="rollback"];)";
 				ss << '\n';
 			}

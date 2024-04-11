@@ -19,7 +19,7 @@ NAMESPACE_SOUP
 			data.emplace_back(p);
 
 			// If we don't have a next constraint, rollback is match success.
-			*reinterpret_cast<uintptr_t*>(p) = 1;
+			*p = RegexConstraint::ROLLBACK_TO_SUCCESS;
 		}
 
 		void setPreviousTransitionTo(RegexConstraint* c) noexcept
@@ -32,7 +32,7 @@ NAMESPACE_SOUP
 
 		void setTransitionTo(RegexConstraint* c, bool save_checkpoint = false) noexcept
 		{
-			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & 1) == 0);
+			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & RegexConstraint::MASK) == 0);
 			if (save_checkpoint)
 			{
 				reinterpret_cast<uintptr_t&>(c) |= 1;

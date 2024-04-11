@@ -11,6 +11,10 @@ NAMESPACE_SOUP
 {
 	struct RegexConstraint
 	{
+		inline static RegexConstraint* SUCCESS_TO_FAIL = reinterpret_cast<RegexConstraint*>(0b10);
+		inline static RegexConstraint* ROLLBACK_TO_SUCCESS = reinterpret_cast<RegexConstraint*>(0b10);
+		inline static uintptr_t MASK = 0b1;
+
 		RegexConstraint* success_transition = nullptr;
 		RegexConstraint* rollback_transition = nullptr;
 		PointerAndBool<const RegexGroup*> group = nullptr;
@@ -23,6 +27,16 @@ NAMESPACE_SOUP
 		}
 
 		virtual ~RegexConstraint() = default;
+
+		[[nodiscard]] RegexConstraint* getSuccessTransition() const noexcept
+		{
+			return reinterpret_cast<RegexConstraint*>(reinterpret_cast<uintptr_t>(success_transition) & ~MASK);
+		}
+
+		[[nodiscard]] RegexConstraint* getRollbackTransition() const noexcept
+		{
+			return reinterpret_cast<RegexConstraint*>(reinterpret_cast<uintptr_t>(rollback_transition) & ~MASK);
+		}
 
 		// May only modify `m.it` and only if the constraint matches.
 		[[nodiscard]] virtual bool matches(RegexMatcher& m) const noexcept = 0;
