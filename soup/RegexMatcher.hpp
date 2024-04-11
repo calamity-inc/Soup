@@ -53,12 +53,22 @@ NAMESPACE_SOUP
 			rollback_points.pop_back();
 		}
 
-		bool shouldSaveCheckpoint()
+		bool shouldSaveCheckpoint() noexcept
 		{
-			if (reinterpret_cast<uintptr_t>(c) & 1)
+			if (reinterpret_cast<uintptr_t>(c) & 0b1)
 			{
-				c = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(c) & ~1);
+				c = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(c) & ~0b1);
 				SOUP_ASSERT(c != nullptr);
+				return true;
+			}
+			return false;
+		}
+
+		bool shouldResetCapture() noexcept
+		{
+			if (reinterpret_cast<uintptr_t>(c) & 0b10)
+			{
+				c = reinterpret_cast<const RegexConstraint*>(reinterpret_cast<uintptr_t>(c) & ~0b10);
 				return true;
 			}
 			return false;

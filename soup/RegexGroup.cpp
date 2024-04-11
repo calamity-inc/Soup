@@ -451,7 +451,7 @@ NAMESPACE_SOUP
 						static_cast<RegexRepeatConstraint<true, false>*>(upQuantifierConstraint.get())->setupTransitionsAtLeastOne(success_transitions);
 					}
 
-					processRepeatingConstraint(pModifiedConstraint);
+					pModifiedConstraint->group = this;
 
 					a.constraints.back() = std::move(upQuantifierConstraint);
 					continue;
@@ -484,7 +484,7 @@ NAMESPACE_SOUP
 						upQuantifierConstraint = soup::make_unique<RegexRepeatConstraint<false, false>>(std::move(upModifiedConstraint));
 					}
 
-					processRepeatingConstraint(pModifiedConstraint);
+					pModifiedConstraint->group = this;
 
 					if (greedy)
 					{
@@ -659,10 +659,14 @@ NAMESPACE_SOUP
 						auto upRepConstraint = soup::make_unique<RegexExactQuantifierConstraint>();
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 
-						processRepeatingConstraint(pModifiedConstraint);
+						pModifiedConstraint->group = this;
 
 						while (--min_reps != 0)
 						{
+							if (pModifiedConstraint->shouldResetCapture())
+							{
+								success_transitions.setResetCapture();
+							}
 							auto upClone = pModifiedConstraint->clone(success_transitions);
 							upClone->group = this;
 
@@ -683,10 +687,14 @@ NAMESPACE_SOUP
 						}
 						upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 
-						processRepeatingConstraint(pModifiedConstraint);
+						pModifiedConstraint->group = this;
 
 						while (--min_reps != 0)
 						{
+							if (pModifiedConstraint->shouldResetCapture())
+							{
+								success_transitions.setResetCapture();
+							}
 							auto upClone = pModifiedConstraint->clone(success_transitions);
 							upClone->group = this;
 
@@ -699,7 +707,12 @@ NAMESPACE_SOUP
 						if (greedy)
 						{
 							// quantifier --[success]-> last-clone
-							upRepConstraint->success_transition = upRepConstraint->constraints.back()->getEntrypoint();
+							success_transitions.emplace(&upRepConstraint->success_transition);
+							if (pModifiedConstraint->shouldResetCapture())
+							{
+								success_transitions.setResetCapture();
+							}
+							success_transitions.setTransitionTo(upRepConstraint->constraints.back()->getEntrypoint());
 
 							// quantifier --[rollback]-> next-constraint
 							success_transitions.emplaceRollback(&upRepConstraint->rollback_transition);
@@ -707,7 +720,12 @@ NAMESPACE_SOUP
 						else
 						{
 							// quantifier --[rollback]-> last-clone
-							upRepConstraint->rollback_transition = upRepConstraint->constraints.back()->getEntrypoint();
+							success_transitions.emplaceRollback(&upRepConstraint->rollback_transition);
+							if (pModifiedConstraint->shouldResetCapture())
+							{
+								success_transitions.setResetCapture();
+							}
+							success_transitions.setTransitionTo(upRepConstraint->constraints.back()->getEntrypoint());
 
 							// quantifier --[success]-> next-constraint
 							success_transitions.emplace(&upRepConstraint->success_transition);
@@ -723,11 +741,15 @@ NAMESPACE_SOUP
 							upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 							upRepConstraint->min_reps = min_reps;
 
-							processRepeatingConstraint(pModifiedConstraint);
+							pModifiedConstraint->group = this;
 
 							size_t required_reps = min_reps;
 							while (--required_reps != 0)
 							{
+								if (pModifiedConstraint->shouldResetCapture())
+								{
+									success_transitions.setResetCapture();
+								}
 								auto upClone = pModifiedConstraint->clone(success_transitions);
 								upClone->group = this;
 
@@ -737,6 +759,10 @@ NAMESPACE_SOUP
 							success_transitions.discharge(rep_transitions.data);
 							for (size_t optional_reps = (max_reps - min_reps); optional_reps != 0; --optional_reps)
 							{
+								if (pModifiedConstraint->shouldResetCapture())
+								{
+									rep_transitions.setResetCapture();
+								}
 								auto upClone = pModifiedConstraint->clone(rep_transitions);
 								upClone->group = this;
 
@@ -757,11 +783,15 @@ NAMESPACE_SOUP
 							upRepConstraint->constraints.emplace_back(std::move(upModifiedConstraint));
 							upRepConstraint->min_reps = min_reps;
 
-							processRepeatingConstraint(pModifiedConstraint);
+							pModifiedConstraint->group = this;
 
 							size_t required_reps = min_reps;
 							while (--required_reps != 0)
 							{
+								if (pModifiedConstraint->shouldResetCapture())
+								{
+									success_transitions.setResetCapture();
+								}
 								auto upClone = pModifiedConstraint->clone(success_transitions);
 								upClone->group = this;
 
@@ -869,18 +899,6 @@ NAMESPACE_SOUP
 		}
 
 		s.alternatives_transitions = std::move(alternatives_transitions);
-	}
-
-	void RegexGroup::processRepeatingConstraint(RegexConstraint* pModifiedConstraint)
-	{
-		// Mark this constraint as belonging to this group. And, if constraint is a group itself, make its initial constraint reset the capture.
-		if (pModifiedConstraint->getEntrypoint()->group
-			&& !pModifiedConstraint->getEntrypoint()->group->isNonCapturing()
-			)
-		{
-			pModifiedConstraint->getEntrypoint()->group.setBool(true);
-		}
-		pModifiedConstraint->group = this;
 	}
 
 	std::string RegexGroup::toString() const SOUP_EXCAL

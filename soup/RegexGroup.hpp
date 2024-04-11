@@ -7,9 +7,8 @@
 
 NAMESPACE_SOUP
 {
-	class RegexGroup
+	struct RegexGroup
 	{
-	public:
 		struct ConstructorState
 		{
 			mutable const char* it;
@@ -49,10 +48,7 @@ NAMESPACE_SOUP
 		}
 
 		RegexGroup(const ConstructorState& s, bool non_capturing = false);
-	protected:
-		void processRepeatingConstraint(RegexConstraint* pModifiedConstraint);
 
-	public:
 		[[nodiscard]] bool isNonCapturing() const noexcept
 		{
 			return index == -1;

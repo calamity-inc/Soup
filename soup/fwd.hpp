@@ -46,7 +46,7 @@ NAMESPACE_SOUP
 
 	// data.regex
 	struct RegexConstraint;
-	class RegexGroup;
+	struct RegexGroup;
 	struct RegexMatcher;
 	struct RegexTransitionsVector;
 

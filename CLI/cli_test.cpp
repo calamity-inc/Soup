@@ -812,7 +812,8 @@ spanning over multiple lines */
 		assert(Regex(R"((?<!(?<!\.)\.)\w)").search(".a").isSuccess() == false);
 		assert(Regex(R"((?<!(?<!\.)\.)\w)").search("..a").isSuccess() == true);
 
-		assert(Regex(R"EOR((\w+,){3})EOR").matchesFully("abc,def,ghi,") == true); // TODO: Group 1 here should be capturing "ghi,"
+		assert(Regex(R"EOR((\w+,){3})EOR").match("abc,def,ghi,").toString() == R"(0="abc,def,ghi,", 1="ghi,")");
+		assert(Regex(R"EOR((\w+,)+)EOR").match("abc,def,ghi,").toString() == R"(0="abc,def,ghi,", 1="ghi,")");
 	});
 
 	test("MessageStream", []

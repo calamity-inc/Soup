@@ -33,7 +33,12 @@ NAMESPACE_SOUP
 			if (greedy)
 			{
 				// quantifier --[success]-> constraint
-				success_transition = constraint->getEntrypoint();
+				success_transitions.emplace(&success_transition);
+				if (constraint->shouldResetCapture())
+				{
+					success_transitions.setResetCapture();
+				}
+				success_transitions.setTransitionTo(constraint->getEntrypoint());
 
 				// quantifier --[rollback]-> next-constraint
 				success_transitions.emplaceRollback(&rollback_transition);
@@ -42,6 +47,10 @@ NAMESPACE_SOUP
 			{
 				// quantifier --[success]-> next-constraint
 				success_transitions.emplace(&success_transition);
+				if (constraint->shouldResetCapture())
+				{
+					success_transitions.setResetCapture();
+				}
 
 				// quantifier --[rollback]-> constraint
 				rollback_transition = constraint->getEntrypoint();
@@ -53,6 +62,7 @@ NAMESPACE_SOUP
 			if (at_least_one)
 			{
 				auto cc = soup::make_unique<RegexRepeatConstraint>(constraint->clone(success_transitions));
+				cc->constraint->group = constraint->group;
 				cc->setupTransitionsAtLeastOne(success_transitions);
 				return cc;
 			}

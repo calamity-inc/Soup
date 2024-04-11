@@ -5,19 +5,18 @@
 #include "fwd.hpp"
 
 #include "Exception.hpp"
-#include "PointerAndBool.hpp"
 
 NAMESPACE_SOUP
 {
 	struct RegexConstraint
 	{
-		inline static RegexConstraint* SUCCESS_TO_FAIL = reinterpret_cast<RegexConstraint*>(0b10);
-		inline static RegexConstraint* ROLLBACK_TO_SUCCESS = reinterpret_cast<RegexConstraint*>(0b10);
-		inline static uintptr_t MASK = 0b1;
+		inline static RegexConstraint* SUCCESS_TO_FAIL = reinterpret_cast<RegexConstraint*>(0b100);
+		inline static RegexConstraint* ROLLBACK_TO_SUCCESS = reinterpret_cast<RegexConstraint*>(0b100);
+		inline static uintptr_t MASK = 0b11;
 
 		RegexConstraint* success_transition = nullptr;
 		RegexConstraint* rollback_transition = nullptr;
-		PointerAndBool<const RegexGroup*> group = nullptr;
+		const RegexGroup* group = nullptr;
 
 		RegexConstraint() = default;
 
@@ -36,6 +35,11 @@ NAMESPACE_SOUP
 		[[nodiscard]] RegexConstraint* getRollbackTransition() const noexcept
 		{
 			return reinterpret_cast<RegexConstraint*>(reinterpret_cast<uintptr_t>(rollback_transition) & ~MASK);
+		}
+
+		[[nodiscard]] virtual bool shouldResetCapture() const noexcept
+		{
+			return false;
 		}
 
 		// May only modify `m.it` and only if the constraint matches.

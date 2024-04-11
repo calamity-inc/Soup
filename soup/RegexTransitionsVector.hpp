@@ -24,24 +24,36 @@ NAMESPACE_SOUP
 
 		void setPreviousTransitionTo(RegexConstraint* c) noexcept
 		{
+			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & RegexConstraint::MASK) == 0);
+
 			for (const auto& p : prev_data)
 			{
-				*p = c;
+				*p = reinterpret_cast<RegexConstraint*>(reinterpret_cast<uintptr_t>(c) | (reinterpret_cast<uintptr_t>(*p) & 0b10));
+			}
+		}
+
+		void setResetCapture() noexcept
+		{
+			for (const auto& p : data)
+			{
+				*reinterpret_cast<uintptr_t*>(p) = 0b10;
 			}
 		}
 
 		void setTransitionTo(RegexConstraint* c, bool save_checkpoint = false) noexcept
 		{
 			SOUP_ASSERT((reinterpret_cast<uintptr_t>(c) & RegexConstraint::MASK) == 0);
+
 			if (save_checkpoint)
 			{
-				reinterpret_cast<uintptr_t&>(c) |= 1;
+				reinterpret_cast<uintptr_t&>(c) |= 0b1;
 			}
 
 			for (const auto& p : data)
 			{
-				*p = c;
+				*p = reinterpret_cast<RegexConstraint*>(reinterpret_cast<uintptr_t>(c) | (reinterpret_cast<uintptr_t>(*p) & 0b10));
 			}
+
 			prev_data = std::move(data);
 			data.clear();
 		}
@@ -62,7 +74,7 @@ NAMESPACE_SOUP
 
 			for (const auto& p : data)
 			{
-				*p = nullptr;
+				*reinterpret_cast<uintptr_t*>(p) &= 0b10;
 			}
 		}
 	};

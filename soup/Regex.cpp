@@ -79,6 +79,8 @@ NAMESPACE_SOUP
 		{
 			m.saveCheckpoint();
 		}
+		SOUP_ASSERT(!m.shouldResetCapture());
+		bool reset_capture = false;
 		while (m.c != nullptr)
 		{
 #if REGEX_DEBUG_MATCH
@@ -93,11 +95,20 @@ NAMESPACE_SOUP
 				m.saveRollback(m.c->rollback_transition);
 			}
 
+			if (reset_capture)
+			{
+				reset_capture = false;
+#if REGEX_DEBUG_MATCH
+				std::cout << "reset capture for group " << m.c->group->index << "; ";
+#endif
+				m.result.groups.at(m.c->group->index)->begin = m.it;
+			}
+
 			// Matches?
-			auto _it = m.it;
+			const auto _it = m.it;
 			if (m.c->matches(m))
 			{
-				for (auto g = m.c->group.getPointer(); g; g = g->parent)
+				for (auto g = m.c->group; g; g = g->parent)
 				{
 					if (g->lookahead_or_lookbehind)
 					{
@@ -121,13 +132,6 @@ NAMESPACE_SOUP
 						m.result.groups.at(g->index) = RegexMatchedGroup{ g->name, _it, m.it };
 					}
 				}
-				if (m.c->group.getBool())
-				{
-#if REGEX_DEBUG_MATCH
-					std::cout << "reset capture for group " << m.c->group->index << "; ";
-#endif
-					m.result.groups.at(m.c->group->index)->begin = _it;
-				}
 
 				m.c = m.c->success_transition;
 				if (m.shouldSaveCheckpoint())
@@ -137,6 +141,7 @@ NAMESPACE_SOUP
 #endif
 					m.saveCheckpoint();
 				}
+				reset_capture = m.shouldResetCapture();
 				if (m.c != RegexConstraint::SUCCESS_TO_FAIL)
 				{
 #if REGEX_DEBUG_MATCH
@@ -167,6 +172,7 @@ NAMESPACE_SOUP
 #endif
 				m.restoreRollback();
 				SOUP_ASSERT(!m.shouldSaveCheckpoint());
+				reset_capture = m.shouldResetCapture();
 				if (m.c == RegexConstraint::ROLLBACK_TO_SUCCESS)
 				{
 #if REGEX_DEBUG_MATCH

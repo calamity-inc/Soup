@@ -22,6 +22,11 @@ NAMESPACE_SOUP
 		{
 		}
 
+		[[nodiscard]] bool shouldResetCapture() const noexcept final
+		{
+			return !data.isNonCapturing();
+		}
+
 		[[nodiscard]] bool matches(RegexMatcher& m) const noexcept final
 		{
 			return true;
@@ -79,7 +84,7 @@ NAMESPACE_SOUP
 				for (const auto& c : a.constraints)
 				{
 					auto pConstraintClone = ac.constraints.emplace_back(c->clone(success_transitions)).get();
-					pConstraintClone->group.set(&upClone->data, c->group.getBool());
+					pConstraintClone->group = &upClone->data;
 					if (!upClone->data.initial)
 					{
 						if (data.initial == c.get())
