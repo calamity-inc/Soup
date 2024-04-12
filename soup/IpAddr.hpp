@@ -174,6 +174,18 @@ NAMESPACE_SOUP
 			memset(&data, 0, sizeof(data));
 		}
 
+		[[nodiscard]] constexpr bool isZero() const noexcept
+		{
+			for (const auto& s : shorts)
+			{
+				if (s != 0)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		[[nodiscard]] bool isLoopback() const noexcept;
 		[[nodiscard]] bool isPrivate() const noexcept;
 		[[nodiscard]] bool isLocalnet() const noexcept; // Loopback or private network?
