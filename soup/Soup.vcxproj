@@ -768,6 +768,7 @@
     <ClInclude Include="MidiComposition.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
+    <ClInclude Include="netIce.hpp" />
     <ClInclude Include="netStatus.hpp" />
     <ClInclude Include="netIntelLocationData4OnDisk.hpp" />
     <ClInclude Include="netIntelOnDisk.hpp" />
@@ -1286,6 +1287,7 @@
     <ClCompile Include="netAdaptor.cpp" />
     <ClCompile Include="netConfig.cpp" />
     <ClCompile Include="netConnectTask.cpp" />
+    <ClCompile Include="netIce.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="MacAddr.cpp" />
     <ClCompile Include="netIntelOnDisk.cpp" />

@@ -1,7 +1,9 @@
 #include "netStun.hpp"
 #if !SOUP_WASM
 
+#include "crc32.hpp"
 #include "Scheduler.hpp"
+#include "sha1.hpp"
 #include "Socket.hpp"
 #include "StringReader.hpp"
 #include "StringWriter.hpp"
@@ -65,6 +67,38 @@ NAMESPACE_SOUP
 		}
 
 		return ret;
+	}
+
+	void netStun::addMessageIntegrity(std::string& data, const std::string& key) SOUP_EXCAL
+	{
+		// Compute data to HMAC
+		StringWriter sw;
+		sw.data = data.substr(0, 2); // keep type
+		uint16_t s = ((data.size() - 20) + 24); sw.u16_be(s); // message length excludes header but includes MESSAGE-INTEGRITY
+		sw.data.append(data.substr(4));
+
+		// Compute checksum
+		auto chksum = sha1::hmac(sw.data, key);
+
+		// Add MESSAGE-INTEGRITY to data
+		sw.data = std::move(data);
+		uint32_t i = (0x0008 << 16) | 20; // MESSAGE-INTEGRITY, length 20
+		sw.u32_be(i);
+		sw.str(20, chksum);
+		data = std::move(sw.data);
+	}
+
+	void netStun::addFingerprint(std::string& data) noexcept
+	{
+		StringWriter sw;
+		sw.data = std::move(data);
+
+		uint32_t chksum = crc32::hash(sw.data) ^ 0x5354554e;
+		uint32_t i = (0x8028 << 16) | 4; // FINGERPRINT, length 4
+		sw.u32_be(i);
+		sw.u32_be(chksum);
+
+		data = std::move(sw.data);
 	}
 }
 

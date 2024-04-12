@@ -1594,6 +1594,9 @@
     <ClInclude Include="netStun.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="netIce.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2359,6 +2362,9 @@
     </ClCompile>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="netStun.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="netIce.cpp">
       <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
