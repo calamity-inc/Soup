@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#if !SOUP_WASM
 #include "IpAddr.hpp"
 
 NAMESPACE_SOUP
@@ -12,3 +13,4 @@ NAMESPACE_SOUP
 		[[nodiscard]] static IpAddr queryBinding(const IpAddr& server_addr, uint16_t server_port, unsigned int timeout_ms = 200);
 	};
 }
+#endif

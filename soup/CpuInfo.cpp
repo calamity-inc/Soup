@@ -1,4 +1,5 @@
 #include "CpuInfo.hpp"
+#if !SOUP_WASM
 
 #if SOUP_X86
 	#include "string.hpp"
@@ -166,3 +167,5 @@ NAMESPACE_SOUP
 	}
 #endif
 }
+
+#endif

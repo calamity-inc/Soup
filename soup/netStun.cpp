@@ -1,4 +1,5 @@
 #include "netStun.hpp"
+#if !SOUP_WASM
 
 #include "Scheduler.hpp"
 #include "Socket.hpp"
@@ -66,3 +67,5 @@ NAMESPACE_SOUP
 		return ret;
 	}
 }
+
+#endif
