@@ -45,7 +45,7 @@ NAMESPACE_SOUP
 
 	protected:
 		void httpRecv(Socket& s) SOUP_EXCAL;
-		void wsRecv(Socket& s) SOUP_EXCAL;
+		void wsRecv(Socket& s);
 	};
 }
 #endif

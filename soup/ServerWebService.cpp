@@ -240,9 +240,9 @@ NAMESPACE_SOUP
 		}, this);
 	}
 
-	void ServerWebService::wsRecv(Socket& s) SOUP_EXCAL
+	void ServerWebService::wsRecv(Socket& s)
 	{
-		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
+		s.recv([](Socket& s, std::string&& data, Capture&& cap) // on_websocket_message may throw
 		{
 			ServerWebService& srv = *cap.get<ServerWebService*>();
 
