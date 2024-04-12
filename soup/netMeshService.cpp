@@ -39,7 +39,7 @@ NAMESPACE_SOUP
 
 	netMeshService::netMeshService()
 	{
-		should_accept_websocket_connection = [](Socket&, const HttpRequest&, ServerWebService&) -> bool
+		should_accept_websocket_connection = [](Socket&, const HttpRequest&, ServerWebService&) SOUP_EXCAL -> bool
 		{
 			return true;
 		};

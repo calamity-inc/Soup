@@ -310,7 +310,7 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 	{
 		std::cout << s.peer.toString() << " + connection established" << std::endl;
 	};
-	web_srv.should_accept_websocket_connection = [](soup::Socket& s, const soup::HttpRequest& req, soup::ServerWebService&)
+	web_srv.should_accept_websocket_connection = [](soup::Socket& s, const soup::HttpRequest& req, soup::ServerWebService&) SOUP_EXCAL
 	{
 		std::cout << s.peer.toString() << " > WEBSOCKET " << req.path << std::endl;
 		return true;

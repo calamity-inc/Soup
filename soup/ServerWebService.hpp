@@ -13,7 +13,7 @@ NAMESPACE_SOUP
 	{
 	public:
 		using handle_request_t = void(*)(Socket&, HttpRequest&&, ServerWebService&);
-		using should_accept_websocket_connection_t = bool(*)(Socket&, const HttpRequest&, ServerWebService&);
+		using should_accept_websocket_connection_t = bool(*)(Socket&, const HttpRequest&, ServerWebService&) SOUP_EXCAL;
 		using on_websocket_connection_established_t = void(*)(Socket&, const HttpRequest&, ServerWebService&);
 		using on_websocket_message_t = void(*)(WebSocketMessage&, Socket&, ServerWebService&);
 
