@@ -774,6 +774,7 @@
     <ClInclude Include="netMesh.hpp" />
     <ClInclude Include="netMeshMsgType.hpp" />
     <ClInclude Include="netMeshService.hpp" />
+    <ClInclude Include="netStun.hpp" />
     <ClInclude Include="Optional.hpp" />
     <ClInclude Include="osRegistry.hpp" />
     <ClInclude Include="parallel.hpp" />
@@ -1291,6 +1292,7 @@
     <ClCompile Include="netMesh.cpp" />
     <ClCompile Include="netMeshService.cpp" />
     <ClCompile Include="netStatus.cpp" />
+    <ClCompile Include="netStun.cpp" />
     <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="parallel.cpp" />
     <ClCompile Include="pch.cpp">

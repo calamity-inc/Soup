@@ -92,8 +92,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-	private:
-		// Could be confused for SOUP_IPV4
+		// THIS IS FOR IPv6! USE `SOUP_IPV4` macro for easy IPv4 construction.
 		explicit constexpr IpAddr(native_u32_t a, native_u32_t b, native_u32_t c, native_u32_t d)
 			: IpAddr(
 				native_u16_t(a), native_u16_t(a >> 16),
@@ -104,7 +103,6 @@ NAMESPACE_SOUP
 		{
 		}
 
-	public:
 		explicit constexpr IpAddr(native_u64_t hi, native_u64_t lo)
 			: IpAddr(
 				native_u32_t((uint32_t)hi), native_u32_t(hi >> 32),

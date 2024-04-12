@@ -1591,6 +1591,9 @@
     <ClInclude Include="RegexTransitionsVector.hpp">
       <Filter>data\regex</Filter>
     </ClInclude>
+    <ClInclude Include="netStun.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2355,6 +2358,9 @@
       <Filter>lang\compiler\frontend</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="netStun.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
