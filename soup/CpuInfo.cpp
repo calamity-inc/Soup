@@ -77,7 +77,13 @@ NAMESPACE_SOUP
 		armv8_sha1 = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
 		armv8_sha2 = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
 		armv8_crc32 = IsProcessorFeaturePresent(PF_ARM_V8_CRC32_INSTRUCTIONS_AVAILABLE);
+	#elif SOUP_BITS == 32
+		armv8_aes = false;
+		armv8_sha1 = false;
+		armv8_sha2 = false;
+		armv8_crc32 = false;
 	#else
+		// These HWCAP_* are only defined on aarch64.
 		armv8_aes = getauxval(AT_HWCAP) & HWCAP_AES;
 		armv8_sha1 = getauxval(AT_HWCAP) & HWCAP_SHA1;
 		armv8_sha2 = getauxval(AT_HWCAP) & HWCAP_SHA2;
