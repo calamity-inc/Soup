@@ -17,6 +17,8 @@ NAMESPACE_SOUP
 		// Handles low-level exceptions like access violation (segfault) and stack overflow and rethrows them as osException.
 		static Capture isolate(Capture(*f)(Capture&&), Capture&& cap = {});
 
+		[[nodiscard]] static std::string addr2name(const void* addr);
+
 #if SOUP_WINDOWS
 		[[nodiscard]] static std::string getName(_EXCEPTION_POINTERS* exp);
 #endif

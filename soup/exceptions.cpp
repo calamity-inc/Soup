@@ -7,6 +7,10 @@
 
 #include "Thread.hpp"
 #include "unicode.hpp"
+#elif SOUP_POSIX && !SOUP_WASM
+#include <setjmp.h>
+#include <signal.h>
+#include <string.h> // strsignal
 #endif
 
 NAMESPACE_SOUP
@@ -27,6 +31,164 @@ NAMESPACE_SOUP
 		raise_exp(exp);
 		while (processing_exp.load());
 		return EXCEPTION_EXECUTE_HANDLER;
+	}
+#elif SOUP_POSIX && !SOUP_WASM
+	static char alt_stack[0x2000];
+	static sigjmp_buf jump_buffer;
+	static std::string exception_name;
+
+	struct ScopedSignalHandler
+	{
+		int signum;
+		struct sigaction oldact;
+
+		ScopedSignalHandler(int signum, void(*handler)(int, siginfo_t*, void*))
+			: signum(signum)
+		{
+			struct sigaction sa;
+			sa.sa_flags = SA_ONSTACK | SA_SIGINFO;
+			sa.sa_sigaction = handler;
+			sigemptyset(&sa.sa_mask);
+			sigaction(signum, &sa, &oldact);
+		}
+
+		~ScopedSignalHandler()
+		{
+			sigaction(signum, &oldact, nullptr);
+		}
+	};
+
+	static void handle_signal(int signum, siginfo_t* si, void* arg)
+	{
+		exception_name = strsignal(signum);
+		switch (signum)
+		{
+		case SIGILL:
+			switch (si->si_code)
+			{
+			case ILL_ILLOPC:
+				exception_name.append(": Illegal opcode.");
+				break;
+
+			case ILL_ILLOPN:
+				exception_name.append(": Illegal operand.");
+				break;
+
+			case ILL_ILLADR:
+				exception_name.append(": Illegal addressing mode.");
+				break;
+
+			case ILL_ILLTRP:
+				exception_name.append(": Illegal trap.");
+				break;
+
+			case ILL_PRVOPC:
+				exception_name.append(": Privileged opcode.");
+				break;
+
+			case ILL_PRVREG:
+				exception_name.append(": Privileged register.");
+				break;
+
+			case ILL_COPROC:
+				exception_name.append(": Coprocessor error.");
+				break;
+
+			case ILL_BADSTK:
+				exception_name.append(": Internal stack error.");
+				break;
+			}
+			exception_name.append(": ").append(exceptions::addr2name(si->si_addr));
+			break;
+
+		case SIGFPE:
+			switch (si->si_code)
+			{
+			case FPE_INTDIV:
+				exception_name.append(": Integer divide by zero");
+				break;
+
+			case FPE_INTOVF:
+				exception_name.append(": Integer overflow");
+				break;
+
+			case FPE_FLTDIV:
+				exception_name.append(": Floating-point divide by zero");
+				break;
+
+			case FPE_FLTOVF:
+				exception_name.append(": Floating-point overflow");
+				break;
+
+			case FPE_FLTUND:
+				exception_name.append(": Floating-point underflow");
+				break;
+
+			case FPE_FLTRES:
+				exception_name.append(": Floating-point inexact result");
+				break;
+
+			case FPE_FLTINV:
+				exception_name.append(": Floating-point invalid operation");
+				break;
+
+			case FPE_FLTSUB:
+				exception_name.append(": Subscript out of range");
+				break;
+			}
+			exception_name.append(": ").append(exceptions::addr2name(si->si_addr));
+			break;
+
+		case SIGBUS:
+			switch (si->si_code)
+			{
+			case BUS_ADRALN:
+				exception_name.append(": Invalid address alignment");
+				break;
+
+			case BUS_ADRERR:
+				exception_name.append(": Nonexistent physical address");
+				break;
+
+			case BUS_OBJERR:
+				exception_name.append(": Object-specific hardware error");
+				break;
+
+#if SOUP_LINUX
+			case BUS_MCEERR_AR:
+			case BUS_MCEERR_AO:
+				exception_name.append(": Hardware memory error");
+				break;
+#endif
+			}
+			exception_name.append(": ").append(exceptions::addr2name(si->si_addr));
+			break;
+
+		case SIGSEGV:
+			switch (si->si_code)
+			{
+			case SEGV_MAPERR:
+				exception_name.append(": Address not mapped to object");
+				break;
+
+			case SEGV_ACCERR:
+				exception_name.append(": Invalid permissions for mapped object");
+				break;
+
+#if SOUP_LINUX
+			case SEGV_BNDERR:
+				exception_name.append(": Failed address bound checks");
+				break;
+
+			case SEGV_PKUERR:
+				exception_name.append(": Access was denied by memory protection keys");
+				break;
+#endif
+			}
+			exception_name.append(": ").append(exceptions::addr2name(si->si_addr));
+			break;
+		}
+		siglongjmp(jump_buffer, 1);
 	}
 #endif
 
@@ -71,7 +233,29 @@ NAMESPACE_SOUP
 
 		raise_exp(reinterpret_cast<EXCEPTION_POINTERS*>(1));
 #elif SOUP_POSIX && !SOUP_WASM
-		// TODO
+		stack_t ss = {};
+		ss.ss_sp = alt_stack;
+		ss.ss_size = sizeof(alt_stack);
+		ss.ss_flags = 0;
+		sigaltstack(&ss, NULL);
+
+		ScopedSignalHandler _SIGABRT(SIGABRT, &handle_signal);
+		ScopedSignalHandler _SIGALRM(SIGALRM, &handle_signal);
+		ScopedSignalHandler _SIGBUS(SIGBUS, &handle_signal);
+		ScopedSignalHandler _SIGFPE(SIGFPE, &handle_signal);
+		ScopedSignalHandler _SIGILL(SIGILL, &handle_signal);
+		ScopedSignalHandler _SIGSEGV(SIGSEGV, &handle_signal);
+		ScopedSignalHandler _SIGSYS(SIGSYS, &handle_signal);
+		ScopedSignalHandler _SIGTERM(SIGTERM, &handle_signal);
+
+		if (sigsetjmp(jump_buffer, 1) == 0)
+		{
+			ret = f(std::move(cap));
+		}
+		else
+		{
+			SOUP_THROW(osException(std::move(exception_name)));
+		}
 #else
 		ret = f(std::move(cap));
 #endif
