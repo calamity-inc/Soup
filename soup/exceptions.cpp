@@ -144,86 +144,86 @@ NAMESPACE_SOUP
 			break;
 
 		case EXCEPTION_ACCESS_VIOLATION:
-			exception_name = "ACCESS_VIOLATION";
+			exception_name = "Access violation";
 			parseExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
 			break;
 
 		case EXCEPTION_IN_PAGE_ERROR:
-			exception_name = "IN_PAGE_ERROR";
+			exception_name = "In-page error";
 			parseExceptionInformation(exception_name, exp->ExceptionRecord->ExceptionInformation);
 			exception_name.append(" (Status ").append(std::to_string(exp->ExceptionRecord->ExceptionInformation[2])).push_back(')');
 			break;
 
 		case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-			exception_name = "ARRAY_BOUNDS_EXCEEDED";
+			exception_name = "Array bounds exceeded";
 			break;
 
 		case EXCEPTION_BREAKPOINT:
-			exception_name = "BREAKPOINT";
+			exception_name = "Breakpoint";
 			break;
 
 		case EXCEPTION_DATATYPE_MISALIGNMENT:
-			exception_name = "DATATYPE_MISALIGNMENT";
+			exception_name = "Data type misalignment";
 			break;
 
 		case EXCEPTION_FLT_DENORMAL_OPERAND:
-			exception_name = "FLT_DENORMAL_OPERAND";
+			exception_name = "Float denormal operand";
 			break;
 
 		case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-			exception_name = "FLT_DIVIDE_BY_ZERO";
+			exception_name = "Float divide by zero";
 			break;
 
 		case EXCEPTION_FLT_INEXACT_RESULT:
-			exception_name = "FLT_INEXACT_RESULT";
+			exception_name = "Float inexact result";
 			break;
 
 		case EXCEPTION_FLT_INVALID_OPERATION:
-			exception_name = "FLT_INVALID_OPERATION";
+			exception_name = "Float invalid operation";
 			break;
 
 		case EXCEPTION_FLT_OVERFLOW:
-			exception_name = "FLT_OVERFLOW";
+			exception_name = "Float overflow";
 			break;
 
 		case EXCEPTION_FLT_STACK_CHECK:
-			exception_name = "FLT_STACK_CHECK";
+			exception_name = "Float stack check";
 			break;
 
 		case EXCEPTION_FLT_UNDERFLOW:
-			exception_name = "FLT_UNDERFLOW";
+			exception_name = "Float underflow";
 			break;
 
 		case EXCEPTION_ILLEGAL_INSTRUCTION:
-			exception_name = "ILLEGAL_INSTRUCTION";
+			exception_name = "Illegal instruction";
 			break;
 
 		case EXCEPTION_INT_DIVIDE_BY_ZERO:
-			exception_name = "INT_DIVIDE_BY_ZERO";
+			exception_name = "Int divide by zero";
 			break;
 
 		case EXCEPTION_INT_OVERFLOW:
-			exception_name = "INT_OVERFLOW";
+			exception_name = "Int overflow";
 			break;
 
 		case EXCEPTION_INVALID_DISPOSITION:
-			exception_name = "INVALID_DISPOSITION";
+			exception_name = "Invalid disposition";
 			break;
 
 		case EXCEPTION_NONCONTINUABLE_EXCEPTION:
-			exception_name = "NONCONTINUABLE_EXCEPTION";
+			exception_name = "Noncontinuable exception";
 			break;
 
 		case EXCEPTION_PRIV_INSTRUCTION:
-			exception_name = "PRIV_INSTRUCTION";
+			exception_name = "Privileged instruction";
 			break;
 
 		case EXCEPTION_SINGLE_STEP:
-			exception_name = "SINGLE_STEP";
+			exception_name = "Single step";
 			break;
 
 		case EXCEPTION_STACK_OVERFLOW:
-			exception_name = "STACK_OVERFLOW";
+			exception_name = "Stack overflow";
 			break;
 		}
 		return exception_name;
