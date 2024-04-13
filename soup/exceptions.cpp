@@ -1,8 +1,9 @@
 #include "exceptions.hpp"
 
+#include <sstream>
+
 #if SOUP_WINDOWS
 #include <atomic>
-#include <sstream>
 
 #include "Thread.hpp"
 #include "unicode.hpp"
@@ -78,8 +79,7 @@ NAMESPACE_SOUP
 		return ret;
 	}
 
-#if SOUP_WINDOWS
-	[[nodiscard]] static std::string addr2name(const void* addr)
+	std::string exceptions::addr2name(const void* addr)
 	{
 		// TODO: Could use symbol names.
 		std::ostringstream oss;
@@ -87,6 +87,7 @@ NAMESPACE_SOUP
 		return oss.str();
 	}
 
+#if SOUP_WINDOWS
 	static void parseExceptionInformation(std::string& exception_name, ULONG_PTR info[15])
 	{
 		switch (info[0])
@@ -95,22 +96,22 @@ NAMESPACE_SOUP
 			exception_name.append(" while ");
 			exception_name.append(std::to_string(info[0]));
 			exception_name.append(" at ");
-			exception_name.append(addr2name((void*)info[1]));
+			exception_name.append(exceptions::addr2name((void*)info[1]));
 			break;
 
 		case 0:
 			exception_name.append(" while reading from ");
-			exception_name.append(addr2name((void*)info[1]));
+			exception_name.append(exceptions::addr2name((void*)info[1]));
 			break;
 
 		case 1:
 			exception_name.append(" while writing to ");
-			exception_name.append(addr2name((void*)info[1]));
+			exception_name.append(exceptions::addr2name((void*)info[1]));
 			break;
 
 		case 8:
 			exception_name.append(" (DEP at ");
-			exception_name.append(addr2name((void*)info[1]));
+			exception_name.append(exceptions::addr2name((void*)info[1]));
 			exception_name.push_back(')');
 			break;
 		}
