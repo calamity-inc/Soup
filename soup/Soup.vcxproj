@@ -736,6 +736,7 @@
     <ClInclude Include="DummyTask.hpp" />
     <ClInclude Include="ecc.hpp" />
     <ClInclude Include="EstablishWebSocketConnectionTask.hpp" />
+    <ClInclude Include="exceptions.hpp" />
     <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="filesystem.hpp" />
     <ClInclude Include="fnv.hpp" />
@@ -1220,6 +1221,7 @@
     <ClCompile Include="BitReader.cpp" />
     <ClCompile Include="bitutil.cpp" />
     <ClCompile Include="BitWriter.cpp" />
+    <ClCompile Include="exceptions.cpp" />
     <ClCompile Include="gmBox.cpp" />
     <ClCompile Include="gmAxisAlignedBox.cpp" />
     <ClCompile Include="gmBoxCorners.cpp" />
