@@ -67,35 +67,35 @@ NAMESPACE_SOUP
 			switch (si->si_code)
 			{
 			case ILL_ILLOPC:
-				exception_name.append(": Illegal opcode.");
+				exception_name.append(": Illegal opcode");
 				break;
 
 			case ILL_ILLOPN:
-				exception_name.append(": Illegal operand.");
+				exception_name.append(": Illegal operand");
 				break;
 
 			case ILL_ILLADR:
-				exception_name.append(": Illegal addressing mode.");
+				exception_name.append(": Illegal addressing mode");
 				break;
 
 			case ILL_ILLTRP:
-				exception_name.append(": Illegal trap.");
+				exception_name.append(": Illegal trap");
 				break;
 
 			case ILL_PRVOPC:
-				exception_name.append(": Privileged opcode.");
+				exception_name.append(": Privileged opcode");
 				break;
 
 			case ILL_PRVREG:
-				exception_name.append(": Privileged register.");
+				exception_name.append(": Privileged register");
 				break;
 
 			case ILL_COPROC:
-				exception_name.append(": Coprocessor error.");
+				exception_name.append(": Coprocessor error");
 				break;
 
 			case ILL_BADSTK:
-				exception_name.append(": Internal stack error.");
+				exception_name.append(": Internal stack error");
 				break;
 			}
 			exception_name.append(": ").append(exceptions::addr2name(si->si_addr));
