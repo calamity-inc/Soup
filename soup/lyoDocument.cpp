@@ -118,7 +118,6 @@ NAMESPACE_SOUP
 		return flat;
 	}
 
-#if SOUP_WINDOWS
 	struct lyoWindowCapture
 	{
 		lyoDocument* doc;
@@ -133,18 +132,18 @@ NAMESPACE_SOUP
 		{
 			lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
 
-			auto [width, height] = w.getSize();
-
-			if (cap.doc->flat_width != width
-				|| cap.doc->flat_height != height
+			// Handle resize here, I guess.
+			if (cap.doc->flat_width != rt.width
+				|| cap.doc->flat_height != rt.height
 				)
 			{
-				cap.flat = cap.doc->flatten(width, height);
+				cap.flat = cap.doc->flatten(rt.width, rt.height);
 			}
 
 			rt.fill(Rgb::BLACK);
 			cap.flat.draw(rt);
 		});
+#if SOUP_WINDOWS
 		w.setMouseInformer([](Window w, unsigned int x, unsigned int y) -> Window::on_click_t
 		{
 			lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
@@ -168,7 +167,7 @@ NAMESPACE_SOUP
 			};
 		});
 		w.setResizable(true);
+#endif
 		return w;
 	}
-#endif
 }

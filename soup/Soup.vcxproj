@@ -762,6 +762,7 @@
     <ClInclude Include="laMathFrontend.hpp" />
     <ClInclude Include="laPlutoFrontend.hpp" />
     <ClInclude Include="laWasmBackend.hpp" />
+    <ClInclude Include="lyoInputElement.hpp" />
     <ClInclude Include="MathExpr.hpp" />
     <ClInclude Include="memBox.hpp" />
     <ClInclude Include="memProtFlags.hpp" />

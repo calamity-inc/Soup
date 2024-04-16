@@ -33,8 +33,6 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] lyoFlatDocument flatten(int width, int height);
 
-#if SOUP_WINDOWS
 		[[nodiscard]] Window createWindow(const std::string& title);
-#endif
 	};
 }

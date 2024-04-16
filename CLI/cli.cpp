@@ -329,6 +329,17 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "html")
+		{
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup html [file]" << std::endl;
+				return 0;
+			}
+			cli_html(argv[2]);
+			return 0;
+		}
+
 		if (subcommand == "http")
 		{
 			if (argc != 3)
@@ -556,6 +567,7 @@ Available tools:
 - gamepad
 - geoip [ip]
 - hid
+- html [file]
 - http [uri]
 - inquire
 - ircserver

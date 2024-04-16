@@ -34,6 +34,7 @@
     <ClCompile Include="cli_dig.cpp" />
     <ClCompile Include="cli_dnsserver.cpp" />
     <ClCompile Include="cli_dvd.cpp" />
+    <ClCompile Include="cli_html.cpp" />
     <ClCompile Include="cli_ircserver.cpp" />
     <ClCompile Include="cli_keyboard.cpp" />
     <ClCompile Include="cli_maze.cpp" />

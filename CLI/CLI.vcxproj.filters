@@ -19,6 +19,7 @@
     <ClCompile Include="cli_mesh.cpp" />
     <ClCompile Include="cli_midi.cpp" />
     <ClCompile Include="cli_mouse.cpp" />
+    <ClCompile Include="cli_html.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

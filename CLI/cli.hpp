@@ -6,6 +6,7 @@ void cli_datareflection();
 void cli_dig(int argc, const char** argv);
 void cli_dnsserver(int argc, const char** argv);
 void cli_dvd();
+void cli_html(const char* file);
 int cli_ircserver();
 void cli_keyboard();
 void cli_maze();
