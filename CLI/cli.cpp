@@ -43,6 +43,12 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "bench")
+		{
+			cli_bench();
+			return 0;
+		}
+
 		if (subcommand == "chatbot")
 		{
 			while (true)
@@ -553,7 +559,7 @@ int main(int argc, const char** argv)
 
 	std::cout << R"EOC(Syntax: soup [tool]
 
-Available tools: 3d, chatbot, chatgpt, chess, datareflection, dhcp, dig, dnsserver, dvd, edit, gamepad, geoip, hid, html, http, inquire, ircserver, keyboard, maze, mesh, midi, morse, mouse, qr, repl, script, snake, test, wasm, wav, websrv
+Available tools: 3d, bench, chatbot, chatgpt, chess, datareflection, dhcp, dig, dnsserver, dvd, edit, gamepad, geoip, hid, html, http, inquire, ircserver, keyboard, maze, mesh, midi, morse, mouse, qr, repl, script, snake, test, wasm, wav, websrv
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;

@@ -20,6 +20,7 @@
     <ClCompile Include="cli_midi.cpp" />
     <ClCompile Include="cli_mouse.cpp" />
     <ClCompile Include="cli_html.cpp" />
+    <ClCompile Include="cli_bench.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />
