@@ -553,38 +553,7 @@ int main(int argc, const char** argv)
 
 	std::cout << R"EOC(Syntax: soup [tool]
 
-Available tools:
-- 3d
-- chatbot
-- chatgpt [token] <model>
-- chess <FEN>
-- datareflection
-- dhcp
-- dig [domain] <type=A> <@<doh:>[server]>
-- dnsserver [file] <bind-ip>
-- dvd
-- edit [files...]
-- gamepad
-- geoip [ip]
-- hid
-- html [file]
-- http [uri]
-- inquire
-- ircserver
-- keyboard
-- maze
-- mesh [link|list]
-- midi [keyboard|play [file]]
-- morse [key|encode [text]] <--silent>
-- mouse
-- qr [contents]
-- repl
-- script [.cpp file]
-- snake
-- test
-- wasm [file]
-- wav [file]
-- websrv [dir]
+Available tools: 3d, chatbot, chatgpt, chess, datareflection, dhcp, dig, dnsserver, dvd, edit, gamepad, geoip, hid, html, http, inquire, ircserver, keyboard, maze, mesh, midi, morse, mouse, qr, repl, script, snake, test, wasm, wav, websrv
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;
