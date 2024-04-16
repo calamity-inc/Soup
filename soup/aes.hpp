@@ -30,6 +30,7 @@ NAMESPACE_SOUP
 
 	private:
 		static void expandKey(uint8_t w[240], const uint8_t* key, size_t key_len) noexcept;
+		static void expandKeyForDecryption(uint8_t w[240], const uint8_t* key, size_t key_len) noexcept;
 		[[nodiscard]] static int getNk(size_t key_len) noexcept;
 		[[nodiscard]] static int getNr(size_t key_len) noexcept;
 		[[nodiscard]] static int getNr(const int Nk) noexcept;

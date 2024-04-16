@@ -45,15 +45,18 @@ SOFTWARE.
 #if AES_USE_INTRIN
 namespace soup_intrin
 {
-	extern void aes_encrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept;
-	extern void aes_encrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept;
-	extern void aes_encrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept;
-	extern void aes_decrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept;
-	extern void aes_decrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept;
-	extern void aes_decrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept;
 	extern void aes_expand_key_128(uint8_t w[176], const uint8_t key[16]) noexcept;
 	extern void aes_expand_key_192(uint8_t w[208], const uint8_t key[24]) noexcept;
 	extern void aes_expand_key_256(uint8_t w[240], const uint8_t key[32]) noexcept;
+	extern void aes_encrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept;
+	extern void aes_encrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept;
+	extern void aes_encrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept;
+	extern void aes_prepare_decryption_128(uint8_t w[176]) noexcept;
+	extern void aes_prepare_decryption_192(uint8_t w[208]) noexcept;
+	extern void aes_prepare_decryption_256(uint8_t w[240]) noexcept;
+	extern void aes_decrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept;
+	extern void aes_decrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept;
+	extern void aes_decrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept;
 }
 #endif
 
@@ -301,7 +304,7 @@ NAMESPACE_SOUP
 
 		const auto Nr = getNr(key_len);
 		alignas(16) uint8_t roundKeys[240];
-		expandKey(roundKeys, key, key_len);
+		expandKeyForDecryption(roundKeys, key, key_len);
 
 		uint8_t block_heap_a[blockBytesLen];
 		uint8_t block_heap_b[blockBytesLen];
@@ -362,7 +365,7 @@ NAMESPACE_SOUP
 
 		const auto Nr = getNr(key_len);
 		alignas(16) uint8_t roundKeys[240];
-		expandKey(roundKeys, key, key_len);
+		expandKeyForDecryption(roundKeys, key, key_len);
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			decryptBlock(&data[i], &data[i], roundKeys, Nr);
@@ -615,6 +618,31 @@ NAMESPACE_SOUP
 			w[i + 3] = w[i + 3 - 4 * Nk] ^ temp[3];
 			i += 4;
 		}
+	}
+
+	void aes::expandKeyForDecryption(uint8_t w[240], const uint8_t* key, size_t key_len) noexcept
+	{
+		expandKey(w, key, key_len);
+
+#if AES_USE_INTRIN
+	#if SOUP_X86
+		if (CpuInfo::get().supportsAESNI())
+		{
+			if (key_len == 16)
+			{
+				soup_intrin::aes_prepare_decryption_128(w);
+			}
+			else if (key_len == 24)
+			{
+				return soup_intrin::aes_prepare_decryption_192(w);
+			}
+			else if (key_len == 32)
+			{
+				return soup_intrin::aes_prepare_decryption_256(w);
+			}
+		}
+	#endif
+#endif
 	}
 
 	int aes::getNk(size_t key_len) noexcept
