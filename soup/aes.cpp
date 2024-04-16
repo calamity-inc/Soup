@@ -627,6 +627,9 @@ NAMESPACE_SOUP
 #if AES_USE_INTRIN
 	#if SOUP_X86
 		if (CpuInfo::get().supportsAESNI())
+	#else
+		if (CpuInfo::get().armv8_aes)
+	#endif
 		{
 			if (key_len == 16)
 			{
@@ -641,7 +644,6 @@ NAMESPACE_SOUP
 				return soup_intrin::aes_prepare_decryption_256(w);
 			}
 		}
-	#endif
 #endif
 	}
 

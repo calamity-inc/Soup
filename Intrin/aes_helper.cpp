@@ -317,19 +317,64 @@ namespace soup_intrin
 		vst1q_u8(out, data);
 	}
 
+	void aes_prepare_decryption_128(uint8_t w[176]) noexcept
+	{
+		vst1q_u8(&w[1 * 16], vaesimcq_u8(vld1q_u8(&w[1 * 16])));
+		vst1q_u8(&w[2 * 16], vaesimcq_u8(vld1q_u8(&w[2 * 16])));
+		vst1q_u8(&w[3 * 16], vaesimcq_u8(vld1q_u8(&w[3 * 16])));
+		vst1q_u8(&w[4 * 16], vaesimcq_u8(vld1q_u8(&w[4 * 16])));
+		vst1q_u8(&w[5 * 16], vaesimcq_u8(vld1q_u8(&w[5 * 16])));
+		vst1q_u8(&w[6 * 16], vaesimcq_u8(vld1q_u8(&w[6 * 16])));
+		vst1q_u8(&w[7 * 16], vaesimcq_u8(vld1q_u8(&w[7 * 16])));
+		vst1q_u8(&w[8 * 16], vaesimcq_u8(vld1q_u8(&w[8 * 16])));
+		vst1q_u8(&w[9 * 16], vaesimcq_u8(vld1q_u8(&w[9 * 16])));
+	}
+
+	void aes_prepare_decryption_192(uint8_t w[208]) noexcept
+	{
+		vst1q_u8(&w[1 * 16], vaesimcq_u8(vld1q_u8(&w[1 * 16])));
+		vst1q_u8(&w[2 * 16], vaesimcq_u8(vld1q_u8(&w[2 * 16])));
+		vst1q_u8(&w[3 * 16], vaesimcq_u8(vld1q_u8(&w[3 * 16])));
+		vst1q_u8(&w[4 * 16], vaesimcq_u8(vld1q_u8(&w[4 * 16])));
+		vst1q_u8(&w[5 * 16], vaesimcq_u8(vld1q_u8(&w[5 * 16])));
+		vst1q_u8(&w[6 * 16], vaesimcq_u8(vld1q_u8(&w[6 * 16])));
+		vst1q_u8(&w[7 * 16], vaesimcq_u8(vld1q_u8(&w[7 * 16])));
+		vst1q_u8(&w[8 * 16], vaesimcq_u8(vld1q_u8(&w[8 * 16])));
+		vst1q_u8(&w[9 * 16], vaesimcq_u8(vld1q_u8(&w[9 * 16])));
+		vst1q_u8(&w[10 * 16], vaesimcq_u8(vld1q_u8(&w[10 * 16])));
+		vst1q_u8(&w[11 * 16], vaesimcq_u8(vld1q_u8(&w[11 * 16])));
+	}
+
+	void aes_prepare_decryption_256(uint8_t w[240]) noexcept
+	{
+		vst1q_u8(&w[1 * 16], vaesimcq_u8(vld1q_u8(&w[1 * 16])));
+		vst1q_u8(&w[2 * 16], vaesimcq_u8(vld1q_u8(&w[2 * 16])));
+		vst1q_u8(&w[3 * 16], vaesimcq_u8(vld1q_u8(&w[3 * 16])));
+		vst1q_u8(&w[4 * 16], vaesimcq_u8(vld1q_u8(&w[4 * 16])));
+		vst1q_u8(&w[5 * 16], vaesimcq_u8(vld1q_u8(&w[5 * 16])));
+		vst1q_u8(&w[6 * 16], vaesimcq_u8(vld1q_u8(&w[6 * 16])));
+		vst1q_u8(&w[7 * 16], vaesimcq_u8(vld1q_u8(&w[7 * 16])));
+		vst1q_u8(&w[8 * 16], vaesimcq_u8(vld1q_u8(&w[8 * 16])));
+		vst1q_u8(&w[9 * 16], vaesimcq_u8(vld1q_u8(&w[9 * 16])));
+		vst1q_u8(&w[10 * 16], vaesimcq_u8(vld1q_u8(&w[10 * 16])));
+		vst1q_u8(&w[11 * 16], vaesimcq_u8(vld1q_u8(&w[11 * 16])));
+		vst1q_u8(&w[12 * 16], vaesimcq_u8(vld1q_u8(&w[12 * 16])));
+		vst1q_u8(&w[13 * 16], vaesimcq_u8(vld1q_u8(&w[13 * 16])));
+	}
+
 	void aes_decrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept
 	{
 		auto data = vld1q_u8(in);
 		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[10 * 16])));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[9 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[8 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[7 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[6 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[5 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[4 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[3 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[2 * 16]))));
-		data = vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[1 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[9 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[8 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[7 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[6 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[5 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[4 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[3 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[2 * 16])));
+		data = vaesdq_u8(data, vld1q_u8(&roundKeys[1 * 16]));
 		data = veorq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
 		vst1q_u8(out, data);
 	}
@@ -338,17 +383,17 @@ namespace soup_intrin
 	{
 		auto data = vld1q_u8(in);
 		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[12 * 16])));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[11 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[10 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[9 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[8 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[7 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[6 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[5 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[4 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[3 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[2 * 16]))));
-		data = vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[1 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[11 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[10 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[9 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[8 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[7 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[6 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[5 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[4 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[3 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[2 * 16])));
+		data = vaesdq_u8(data, vld1q_u8(&roundKeys[1 * 16]));
 		data = veorq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
 		vst1q_u8(out, data);
 	}
@@ -357,19 +402,19 @@ namespace soup_intrin
 	{
 		auto data = vld1q_u8(in);
 		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[14 * 16])));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[13 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[12 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[11 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[10 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[9 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[8 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[7 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[6 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[5 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[4 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[3 * 16]))));
-		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[2 * 16]))));
-		data = vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[1 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[13 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[12 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[11 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[10 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[9 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[8 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[7 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[6 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[5 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[4 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[3 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[2 * 16])));
+		data = vaesdq_u8(data, vld1q_u8(&roundKeys[1 * 16]));
 		data = veorq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
 		vst1q_u8(out, data);
 	}
