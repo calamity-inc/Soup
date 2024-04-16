@@ -1,14 +1,20 @@
-#if defined(__x86_64__) || defined(_M_X64)
-
 #include <cstdint>
 
-#include <wmmintrin.h>
+#if defined(__x86_64__) || defined(_M_X64)
+	#include <wmmintrin.h>
+#elif defined(__aarch64__) || defined(_M_ARM64)
+	#include <arm_neon.h>
+#endif
 
-// https://gist.github.com/acapola/d5b940da024080dfaf5f
-// https://www.intel.com/content/dam/doc/white-paper/advanced-encryption-standard-new-instructions-set-paper.pdf
+// x86:
+// - https://gist.github.com/acapola/d5b940da024080dfaf5f
+// - https://www.intel.com/content/dam/doc/white-paper/advanced-encryption-standard-new-instructions-set-paper.pdf
+// ARM:
+// - https://blog.michaelbrase.com/2018/06/04/optimizing-x86-aes-intrinsics-on-armv8-a/
 
 namespace soup_intrin
 {
+#if defined(__x86_64__) || defined(_M_X64)
 	[[nodiscard]] static __m128i aes_expand_key_step(__m128i key0, __m128i key1) noexcept
 	{
 		key0 = _mm_xor_si128(key0, _mm_slli_si128(key0, 4));
@@ -208,6 +214,62 @@ namespace soup_intrin
 		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), _mm_aesimc_si128(reinterpret_cast<const __m128i*>(roundKeys)[1]));
 		*reinterpret_cast<__m128i*>(out) = _mm_aesdeclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[0]);
 	}
-}
+#elif defined(__aarch64__) || defined(_M_ARM64)
+	void aes_encrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept
+	{
+		auto data = vld1q_u8(in);
+		data = vaeseq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[1 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[2 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[3 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[4 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[5 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[6 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[7 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[8 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[9 * 16]));
+		data = veorq_u8(data, vld1q_u8(&roundKeys[10 * 16]));
+		vst1q_u8(out, data);
+	}
 
+	void aes_encrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept
+	{
+		auto data = vld1q_u8(in);
+		data = vaeseq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[1 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[2 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[3 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[4 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[5 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[6 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[7 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[8 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[9 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[10 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[11 * 16]));
+		data = veorq_u8(data, vld1q_u8(&roundKeys[12 * 16]));
+		vst1q_u8(out, data);
+	}
+
+	void aes_encrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept
+	{
+		auto data = vld1q_u8(in);
+		data = vaeseq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[1 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[2 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[3 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[4 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[5 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[6 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[7 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[8 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[9 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[10 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[11 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[12 * 16]));
+		data = vaeseq_u8(vaesmcq_u8(data), vld1q_u8(&roundKeys[13 * 16]));
+		data = veorq_u8(data, vld1q_u8(&roundKeys[14 * 16]));
+		vst1q_u8(out, data);
+	}
 #endif
+}

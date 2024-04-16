@@ -4,7 +4,7 @@
 
 #include "base.hpp"
 
-#if SOUP_X86 && SOUP_BITS == 64 && defined(SOUP_USE_INTRIN)
+#if defined(SOUP_USE_INTRIN) && SOUP_BITS == 64 && (SOUP_X86 || SOUP_ARM)
 #define AES_USE_INTRIN true
 #else
 #define AES_USE_INTRIN false
@@ -427,7 +427,11 @@ NAMESPACE_SOUP
 	void aes::encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr) noexcept
 	{
 #if AES_USE_INTRIN
+	#if SOUP_X86
 		if (CpuInfo::get().supportsAESNI())
+	#else
+		if (CpuInfo::get().armv8_aes)
+	#endif
 		{
 			if (Nr == 10)
 			{
@@ -488,6 +492,7 @@ NAMESPACE_SOUP
 	void aes::decryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr) noexcept
 	{
 #if AES_USE_INTRIN
+	#if SOUP_X86
 		if (CpuInfo::get().supportsAESNI())
 		{
 			if (Nr == 10)
@@ -503,6 +508,7 @@ NAMESPACE_SOUP
 				return soup_intrin::aes_decrypt_block_256(in, out, roundKeys);
 			}
 		}
+	#endif
 #endif
 
 		uint8_t state_0[4 * Nb];
@@ -547,6 +553,7 @@ NAMESPACE_SOUP
 	void aes::expandKey(uint8_t w[240], const uint8_t* key, size_t key_len) noexcept
 	{
 #if AES_USE_INTRIN
+	#if SOUP_X86
 		if (CpuInfo::get().supportsAESNI())
 		{
 			if (key_len == 16)
@@ -562,6 +569,7 @@ NAMESPACE_SOUP
 				return soup_intrin::aes_expand_key_256(w, key);
 			}
 		}
+	#endif
 #endif
 
 		const auto Nk = getNk(key_len);
