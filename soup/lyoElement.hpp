@@ -26,6 +26,7 @@ NAMESPACE_SOUP
 		lyoStyle style;
 
 		void(*on_click)(lyoElement&, lyoDocument&) = nullptr;
+		void(*on_char)(char32_t, lyoElement&, lyoDocument&) = nullptr;
 
 		lyoElement(lyoContainer* parent)
 			: parent(parent)

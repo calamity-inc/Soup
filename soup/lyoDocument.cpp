@@ -1,6 +1,7 @@
 #include "lyoDocument.hpp"
 
 #include "lyoFlatDocument.hpp"
+#include "lyoInputElement.hpp"
 #include "lyoTextElement.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
@@ -38,7 +39,7 @@ NAMESPACE_SOUP
 		stylesheets.emplace_back(std::move(uas));
 	}
 
-	static void loadMarkup(lyoContainer* div, const XmlTag& tag)
+	static void loadMarkup(lyoDocument& doc, lyoContainer* div, const XmlTag& tag)
 	{
 		for (const auto& node : tag.children)
 		{
@@ -48,10 +49,22 @@ NAMESPACE_SOUP
 			}
 			else
 			{
-				auto inner_div = soup::make_unique<lyoContainer>(div);
-				inner_div->tag_name = static_cast<const XmlTag*>(node.get())->name;
-				loadMarkup(inner_div.get(), *static_cast<const XmlTag*>(node.get()));
-				div->children.emplace_back(std::move(inner_div));
+				if (static_cast<const XmlTag*>(node.get())->name == "input")
+				{
+					auto input = soup::make_unique<lyoInputElement>(div);
+					if (doc.focus == nullptr)
+					{
+						doc.focus = input.get();
+					}
+					div->children.emplace_back(std::move(input));
+				}
+				else
+				{
+					auto inner_div = soup::make_unique<lyoContainer>(div);
+					inner_div->tag_name = static_cast<const XmlTag*>(node.get())->name;
+					loadMarkup(doc, inner_div.get(), *static_cast<const XmlTag*>(node.get()));
+					div->children.emplace_back(std::move(inner_div));
+				}
 			}
 		}
 	}
@@ -74,7 +87,7 @@ NAMESPACE_SOUP
 			import_root->tag_name = root.name;
 		}
 
-		loadMarkup(import_root, root);
+		loadMarkup(*doc, import_root, root);
 		doc->propagateStyle();
 		return doc;
 	}
@@ -153,7 +166,7 @@ NAMESPACE_SOUP
 			{
 				lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
 				auto elm = cap.flat.getElementAtPos(x, y);
-				if (elm && elm->on_click != nullptr)
+				if (elm && elm->on_click)
 				{
 					elm->on_click(*elm, *cap.doc);
 					if (!cap.doc->isValid())
@@ -162,6 +175,19 @@ NAMESPACE_SOUP
 					}
 				}
 			};
+		});
+		w.setCharCallback([](Window w, char32_t c)
+		{
+			lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
+			auto elm = cap.doc->focus;
+			if (elm && elm->on_char)
+			{
+				elm->on_char(c, *elm, *cap.doc);
+				if (!cap.doc->isValid())
+				{
+					w.redraw();
+				}
+			}
 		});
 		w.setResizable(true);
 #endif

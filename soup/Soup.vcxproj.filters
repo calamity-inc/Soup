@@ -2376,6 +2376,9 @@
     <ClCompile Include="exceptions.cpp">
       <Filter>os</Filter>
     </ClCompile>
+    <ClCompile Include="lyoInputElement.cpp">
+      <Filter>vis\layout</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

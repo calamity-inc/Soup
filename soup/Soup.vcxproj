@@ -1279,6 +1279,7 @@
     <ClCompile Include="LcgRng.cpp" />
     <ClCompile Include="LexemeParser.cpp" />
     <ClCompile Include="log.cpp" />
+    <ClCompile Include="lyoInputElement.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="lyoStylesheet.cpp" />
     <ClCompile Include="MathExpr.cpp" />

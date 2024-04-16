@@ -13,6 +13,7 @@ NAMESPACE_SOUP
 	struct lyoDocument : public lyoContainer
 	{
 		std::vector<lyoStylesheet> stylesheets;
+		lyoElement* focus = nullptr;
 
 		lyoDocument();
 
