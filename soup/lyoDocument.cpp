@@ -106,14 +106,11 @@ NAMESPACE_SOUP
 
 		flat_width = width;
 		flat_height = height;
-		updateFlatSize();
 
 		unsigned int x = 0;
 		unsigned int y = 0;
 		unsigned int wrap_y = 0;
-		updateFlatPos(x, y, wrap_y);
-
-		narrowFlatSize();
+		updateFlatValues(x, y, wrap_y);
 
 		return flat;
 	}

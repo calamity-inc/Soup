@@ -26,8 +26,6 @@ NAMESPACE_SOUP
 		void propagateStyleToChildren() const;
 
 		void populateFlatDocument(lyoFlatDocument& fdoc) final;
-		void updateFlatSize() final;
-		void updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y) final;
-		void narrowFlatSize() final;
+		void updateFlatValues(unsigned int& x, unsigned int& y, unsigned int& wrap_y) final;
 	};
 }

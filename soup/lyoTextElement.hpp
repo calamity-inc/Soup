@@ -18,8 +18,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		void updateFlatSize() final;
-		void updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y) final;
+		void updateFlatValues(unsigned int& x, unsigned int& y, unsigned int& wrap_y) final;
 
 		void draw(RenderTarget& rt) const final;
 	};

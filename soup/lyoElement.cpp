@@ -39,7 +39,7 @@ NAMESPACE_SOUP
 		fdoc.elms.emplace_back(this);
 	}
 
-	void lyoElement::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
+	void lyoElement::updateFlatValues(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
 	{
 		x += style.margin_left;
 		if (style.display_block)
@@ -71,10 +71,6 @@ NAMESPACE_SOUP
 			x = container->flat_x;
 			y = wrap_y + 3;
 		}
-	}
-
-	void lyoElement::narrowFlatSize()
-	{
 	}
 
 	void lyoElement::draw(RenderTarget& rt) const

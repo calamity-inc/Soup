@@ -42,11 +42,9 @@ NAMESPACE_SOUP
 		virtual void propagateStyle();
 
 		virtual void populateFlatDocument(lyoFlatDocument& fdoc);
-		virtual void updateFlatSize() = 0;
-		virtual void updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y);
+		virtual void updateFlatValues(unsigned int& x, unsigned int& y, unsigned int& wrap_y);
 		void setFlatPos(unsigned int x, unsigned int y);
 		void wrapLine(unsigned int& x, unsigned int& y, unsigned int& wrap_y);
-		virtual void narrowFlatSize();
 
 		virtual void draw(RenderTarget& rt) const;
 	};

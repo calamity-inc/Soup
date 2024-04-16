@@ -77,31 +77,24 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void lyoContainer::updateFlatSize()
+	void lyoContainer::updateFlatValues(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
 	{
+		// Initial values for flat size
 		if (parent != nullptr)
 		{
 			flat_width = parent->flat_width;
 			flat_height = parent->flat_height;
 		}
 
-		for (auto& elm : children)
-		{
-			elm->updateFlatSize();
-		}
-	}
-
-	void lyoContainer::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
-	{
 #if LYO_DEBUG_POS
-		logWriteLine(format("lyoContainer({})::updateFlatPos - Start: {}, {}", tag_name, x, y));
+		logWriteLine(format("lyoContainer({}) - Start: {}, {}", tag_name, x, y));
 #endif
 
 		// Process margins
-		lyoElement::updateFlatPos(x, y, wrap_y);
+		lyoElement::updateFlatValues(x, y, wrap_y);
 
 #if LYO_DEBUG_POS
-		logWriteLine(format("lyoContainer({})::updateFlatPos - Margin: {}, {}", tag_name, x, y));
+		logWriteLine(format("lyoContainer({}) - Margin: {}, {}", tag_name, x, y));
 #endif
 
 		// Check line wrap
@@ -112,31 +105,24 @@ NAMESPACE_SOUP
 			wrapLine(x, y, wrap_y);
 
 #if LYO_DEBUG_POS
-			logWriteLine(format("lyoContainer({})::updateFlatPos - Wrap: {}, {}", tag_name, x, y));
+			logWriteLine(format("lyoContainer({}) - Wrap: {}, {}", tag_name, x, y));
 #endif
 		}
 
 		// Done positioning this element
 		setFlatPos(x, y);
 
-		// Position children
+		// Process children
 		for (auto& elm : children)
 		{
-			elm->updateFlatPos(x, y, wrap_y);
+			elm->updateFlatValues(x, y, wrap_y);
 		}
 
 #if LYO_DEBUG_POS
-		logWriteLine(format("lyoContainer({})::updateFlatPos - End: {}, {}", tag_name, x, y));
+		logWriteLine(format("lyoContainer({}) - End: {}, {}", tag_name, x, y));
 #endif
-	}
 
-	void lyoContainer::narrowFlatSize()
-	{
-		for (auto& elm : children)
-		{
-			elm->narrowFlatSize();
-		}
-
+		// Narrow flat size
 		if (parent != nullptr)
 		{
 			flat_width = 0;

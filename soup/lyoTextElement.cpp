@@ -12,18 +12,15 @@
 
 NAMESPACE_SOUP
 {
-	void lyoTextElement::updateFlatSize()
+	void lyoTextElement::updateFlatValues(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
 	{
 		auto [measured_width, measured_height] = font->measure(text);
 		const auto scale = style.getFontScale();
 		flat_width = static_cast<unsigned int>(measured_width * scale);
 		flat_height = static_cast<unsigned int>(measured_height * scale);
-	}
 
-	void lyoTextElement::updateFlatPos(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
-	{
 #if LYO_DEBUG_POS
-		logWriteLine(format("lyoTextElement({})::updateFlatPos - Start: {}, {}", unicode::utf32_to_utf8(text), x, y));
+		logWriteLine(format("lyoTextElement({}) - Start: {}, {}", unicode::utf32_to_utf8(text), x, y));
 #endif
 
 		// Update wrap_y
@@ -37,7 +34,7 @@ NAMESPACE_SOUP
 			wrapLine(x, y, wrap_y);
 
 #if LYO_DEBUG_POS
-			logWriteLine(format("lyoTextElement({})::updateFlatPos - Wrap: {}, {}", unicode::utf32_to_utf8(text), x, y));
+			logWriteLine(format("lyoTextElement({}) - Wrap: {}, {}", unicode::utf32_to_utf8(text), x, y));
 #endif
 		}
 
@@ -57,7 +54,7 @@ NAMESPACE_SOUP
 		}
 
 #if LYO_DEBUG_POS
-		logWriteLine(format("lyoTextElement({})::updateFlatPos - End: {}, {}", unicode::utf32_to_utf8(text), x, y));
+		logWriteLine(format("lyoTextElement({}) - End: {}, {}", unicode::utf32_to_utf8(text), x, y));
 #endif
 	}
 
