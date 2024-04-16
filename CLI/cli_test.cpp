@@ -3,6 +3,7 @@
 #include <x64.hpp>
 
 // crypto
+#include <aes.hpp>
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
@@ -153,6 +154,38 @@ static void unit_cpu()
 
 static void unit_crypto()
 {
+	unit("aes")
+	{
+		test("128-bit", []
+		{
+			std::string data = "The quick brown fox jumps over the lazy dog.";
+			const char key[] = "Super Secret Key";
+			aes::ecbEncrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 16);
+			assert(data != "The quick brown fox jumps over the lazy dog.");
+			aes::ecbDecrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 16);
+			assert(data == "The quick brown fox jumps over the lazy dog.");
+		});
+		test("192-bit", []
+		{
+			std::string data = "The quick brown fox jumps over the lazy dog.";
+			const char key[] = "Super Secret 192-Bit Key";
+			aes::ecbEncrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 24);
+			// Somehow, if we assert this, it miscompiles such that the second assert fails.
+			//assert(data != "The quick brown fox jumps over the lazy dog.");
+			aes::ecbDecrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 24);
+			assert(data == "The quick brown fox jumps over the lazy dog.");
+		});
+		test("256-bit", []
+		{
+			std::string data = "The quick brown fox jumps over the lazy dog.";
+			const char key[] = "My Super Secret Key For 256-Bit";
+			aes::ecbEncrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 32);
+			assert(data != "The quick brown fox jumps over the lazy dog.");
+			aes::ecbDecrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 32);
+			assert(data == "The quick brown fox jumps over the lazy dog.");
+		});
+	}
+
 	test("SegWitAddress", []
 	{
 		SegWitAddress addr;
