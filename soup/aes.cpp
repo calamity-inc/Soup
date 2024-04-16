@@ -494,6 +494,9 @@ NAMESPACE_SOUP
 #if AES_USE_INTRIN
 	#if SOUP_X86
 		if (CpuInfo::get().supportsAESNI())
+	#else
+		if (CpuInfo::get().armv8_aes)
+	#endif
 		{
 			if (Nr == 10)
 			{
@@ -508,7 +511,6 @@ NAMESPACE_SOUP
 				return soup_intrin::aes_decrypt_block_256(in, out, roundKeys);
 			}
 		}
-	#endif
 #endif
 
 		uint8_t state_0[4 * Nb];

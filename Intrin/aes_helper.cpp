@@ -271,5 +271,62 @@ namespace soup_intrin
 		data = veorq_u8(data, vld1q_u8(&roundKeys[14 * 16]));
 		vst1q_u8(out, data);
 	}
+
+	void aes_decrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept
+	{
+		auto data = vld1q_u8(in);
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[10 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[9 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[8 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[7 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[6 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[5 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[4 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[3 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[2 * 16]))));
+		data = vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[1 * 16])));
+		data = veorq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
+		vst1q_u8(out, data);
+	}
+
+	void aes_decrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept
+	{
+		auto data = vld1q_u8(in);
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[12 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[11 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[10 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[9 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[8 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[7 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[6 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[5 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[4 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[3 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[2 * 16]))));
+		data = vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[1 * 16])));
+		data = veorq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
+		vst1q_u8(out, data);
+	}
+
+	void aes_decrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept
+	{
+		auto data = vld1q_u8(in);
+		data = vaesimcq_u8(vaesdq_u8(data, vld1q_u8(&roundKeys[14 * 16])));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[13 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[12 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[11 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[10 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[9 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[8 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[7 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[6 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[5 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[4 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[3 * 16]))));
+		data = vaesimcq_u8(vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[2 * 16]))));
+		data = vaesdq_u8(data, vaesimcq_u8(vld1q_u8(&roundKeys[1 * 16])));
+		data = veorq_u8(data, vld1q_u8(&roundKeys[0 * 16]));
+		vst1q_u8(out, data);
+	}
 #endif
 }
