@@ -115,53 +115,59 @@ namespace soup_intrin
 
 	void aes_encrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept
 	{
-		*reinterpret_cast<__m128i*>(out) = _mm_xor_si128(*reinterpret_cast<const __m128i*>(in), reinterpret_cast<const __m128i*>(roundKeys)[0]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[1]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[2]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[3]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[4]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[5]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[6]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[7]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[8]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[9]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[10]);
+		__m128i data = *reinterpret_cast<const __m128i*>(in);
+		data = _mm_xor_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[1]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[2]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[3]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[4]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[5]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[6]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[7]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[8]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[9]);
+		data = _mm_aesenclast_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[10]);
+		*reinterpret_cast<__m128i*>(out) = data;
 	}
 
 	void aes_encrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept
 	{
-		*reinterpret_cast<__m128i*>(out) = _mm_xor_si128(*reinterpret_cast<const __m128i*>(in), reinterpret_cast<const __m128i*>(roundKeys)[0]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[1]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[2]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[3]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[4]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[5]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[6]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[7]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[8]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[9]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[10]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[11]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[12]);
+		__m128i data = *reinterpret_cast<const __m128i*>(in);
+		data = _mm_xor_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[1]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[2]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[3]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[4]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[5]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[6]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[7]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[8]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[9]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[10]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[11]);
+		data = _mm_aesenclast_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[12]);
+		*reinterpret_cast<__m128i*>(out) = data;
 	}
 
 	void aes_encrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept
 	{
-		*reinterpret_cast<__m128i*>(out) = _mm_xor_si128(*reinterpret_cast<const __m128i*>(in), reinterpret_cast<const __m128i*>(roundKeys)[0]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[1]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[2]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[3]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[4]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[5]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[6]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[7]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[8]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[9]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[10]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[11]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[12]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenc_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[13]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesenclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[14]);
+		__m128i data = *reinterpret_cast<const __m128i*>(in);
+		data = _mm_xor_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[1]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[2]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[3]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[4]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[5]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[6]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[7]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[8]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[9]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[10]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[11]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[12]);
+		data = _mm_aesenc_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[13]);
+		data = _mm_aesenclast_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[14]);
+		*reinterpret_cast<__m128i*>(out) = data;
 	}
 
 	void aes_prepare_decryption_128(uint8_t w[176]) noexcept
@@ -211,53 +217,59 @@ namespace soup_intrin
 
 	void aes_decrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept
 	{
-		*reinterpret_cast<__m128i*>(out) = _mm_xor_si128(*reinterpret_cast<const __m128i*>(in), reinterpret_cast<const __m128i*>(roundKeys)[10]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[9]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[8]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[7]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[6]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[5]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[4]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[3]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[2]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[1]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdeclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		__m128i data = *reinterpret_cast<const __m128i*>(in);
+		data = _mm_xor_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[10]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[9]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[8]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[7]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[6]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[5]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[4]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[3]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[2]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[1]);
+		data = _mm_aesdeclast_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		*reinterpret_cast<__m128i*>(out) = data;
 	}
 
 	void aes_decrypt_block_192(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[208]) noexcept
 	{
-		*reinterpret_cast<__m128i*>(out) = _mm_xor_si128(*reinterpret_cast<const __m128i*>(in), reinterpret_cast<const __m128i*>(roundKeys)[12]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[11]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[10]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[9]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[8]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[7]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[6]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[5]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[4]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[3]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[2]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[1]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdeclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		__m128i data = *reinterpret_cast<const __m128i*>(in);
+		data = _mm_xor_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[12]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[11]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[10]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[9]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[8]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[7]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[6]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[5]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[4]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[3]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[2]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[1]);
+		data = _mm_aesdeclast_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		*reinterpret_cast<__m128i*>(out) = data;
 	}
 
 	void aes_decrypt_block_256(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240]) noexcept
 	{
-		*reinterpret_cast<__m128i*>(out) = _mm_xor_si128(*reinterpret_cast<const __m128i*>(in), reinterpret_cast<const __m128i*>(roundKeys)[14]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[13]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[12]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[11]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[10]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[9]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[8]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[7]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[6]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[5]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[4]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[3]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[2]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdec_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[1]);
-		*reinterpret_cast<__m128i*>(out) = _mm_aesdeclast_si128(*reinterpret_cast<const __m128i*>(out), reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		__m128i data = *reinterpret_cast<const __m128i*>(in);
+		data = _mm_xor_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[14]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[13]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[12]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[11]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[10]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[9]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[8]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[7]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[6]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[5]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[4]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[3]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[2]);
+		data = _mm_aesdec_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[1]);
+		data = _mm_aesdeclast_si128(data, reinterpret_cast<const __m128i*>(roundKeys)[0]);
+		*reinterpret_cast<__m128i*>(out) = data;
 	}
 #elif defined(__aarch64__) || defined(_M_ARM64)
 	void aes_encrypt_block_128(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[176]) noexcept
