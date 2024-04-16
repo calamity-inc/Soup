@@ -60,6 +60,12 @@ namespace soup_intrin
 }
 #endif
 
+#if SOUP_X86
+	#define IS_AES_INTRIN_AVAILBLE CpuInfo::get().supportsAESNI()
+#else
+	#define IS_AES_INTRIN_AVAILBLE CpuInfo::get().armv8_aes
+#endif
+
 NAMESPACE_SOUP
 {
 	static constexpr int Nb = 4;
@@ -350,9 +356,41 @@ NAMESPACE_SOUP
 	{
 		data_len -= (data_len % blockBytesLen);
 
-		const auto Nr = getNr(key_len);
 		alignas(16) uint8_t roundKeys[240];
+#if AES_USE_INTRIN
+		if (IS_AES_INTRIN_AVAILBLE)
+		{
+			if (key_len == 16)
+			{
+				soup_intrin::aes_expand_key_128(roundKeys, key);
+				for (size_t i = 0; i != data_len; i += blockBytesLen)
+				{
+					soup_intrin::aes_encrypt_block_128(&data[i], &data[i], roundKeys);
+				}
+				return;
+			}
+			else if (key_len == 24)
+			{
+				soup_intrin::aes_expand_key_192(roundKeys, key);
+				for (size_t i = 0; i != data_len; i += blockBytesLen)
+				{
+					soup_intrin::aes_encrypt_block_192(&data[i], &data[i], roundKeys);
+				}
+				return;
+			}
+			else if (key_len == 32)
+			{
+				soup_intrin::aes_expand_key_256(roundKeys, key);
+				for (size_t i = 0; i != data_len; i += blockBytesLen)
+				{
+					soup_intrin::aes_encrypt_block_256(&data[i], &data[i], roundKeys);
+				}
+				return;
+			}
+		}
+#endif
 		expandKey(roundKeys, key, key_len);
+		const auto Nr = getNr(key_len);
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			encryptBlock(&data[i], &data[i], roundKeys, Nr);
@@ -363,9 +401,44 @@ NAMESPACE_SOUP
 	{
 		data_len -= (data_len % blockBytesLen);
 
-		const auto Nr = getNr(key_len);
 		alignas(16) uint8_t roundKeys[240];
-		expandKeyForDecryption(roundKeys, key, key_len);
+#if AES_USE_INTRIN
+		if (IS_AES_INTRIN_AVAILBLE)
+		{
+			if (key_len == 16)
+			{
+				soup_intrin::aes_expand_key_128(roundKeys, key);
+				soup_intrin::aes_prepare_decryption_128(roundKeys);
+				for (size_t i = 0; i != data_len; i += blockBytesLen)
+				{
+					soup_intrin::aes_decrypt_block_128(&data[i], &data[i], roundKeys);
+				}
+				return;
+			}
+			else if (key_len == 24)
+			{
+				soup_intrin::aes_expand_key_192(roundKeys, key);
+				soup_intrin::aes_prepare_decryption_192(roundKeys);
+				for (size_t i = 0; i != data_len; i += blockBytesLen)
+				{
+					soup_intrin::aes_decrypt_block_192(&data[i], &data[i], roundKeys);
+				}
+				return;
+			}
+			else if (key_len == 32)
+			{
+				soup_intrin::aes_expand_key_256(roundKeys, key);
+				soup_intrin::aes_prepare_decryption_256(roundKeys);
+				for (size_t i = 0; i != data_len; i += blockBytesLen)
+				{
+					soup_intrin::aes_decrypt_block_256(&data[i], &data[i], roundKeys);
+				}
+				return;
+			}
+		}
+#endif
+		expandKey(roundKeys, key, key_len);
+		const auto Nr = getNr(key_len);
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			decryptBlock(&data[i], &data[i], roundKeys, Nr);
@@ -430,11 +503,7 @@ NAMESPACE_SOUP
 	void aes::encryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr) noexcept
 	{
 #if AES_USE_INTRIN
-	#if SOUP_X86
-		if (CpuInfo::get().supportsAESNI())
-	#else
-		if (CpuInfo::get().armv8_aes)
-	#endif
+		if (IS_AES_INTRIN_AVAILBLE)
 		{
 			if (Nr == 10)
 			{
@@ -495,11 +564,7 @@ NAMESPACE_SOUP
 	void aes::decryptBlock(const uint8_t in[16], uint8_t out[16], const uint8_t roundKeys[240], const int Nr) noexcept
 	{
 #if AES_USE_INTRIN
-	#if SOUP_X86
-		if (CpuInfo::get().supportsAESNI())
-	#else
-		if (CpuInfo::get().armv8_aes)
-	#endif
+		if (IS_AES_INTRIN_AVAILBLE)
 		{
 			if (Nr == 10)
 			{
@@ -559,7 +624,7 @@ NAMESPACE_SOUP
 	{
 #if AES_USE_INTRIN
 	#if SOUP_X86
-		if (CpuInfo::get().supportsAESNI())
+		if (IS_AES_INTRIN_AVAILBLE)
 		{
 			if (key_len == 16)
 			{
