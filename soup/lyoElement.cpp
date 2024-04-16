@@ -56,9 +56,19 @@ NAMESPACE_SOUP
 
 	void lyoElement::wrapLine(unsigned int& x, unsigned int& y, unsigned int& wrap_y)
 	{
-		if (x != parent->flat_x)
+		lyoContainer* container = parent;
+		while (x == container->flat_x)
 		{
-			x = parent->flat_x;
+			container = container->parent;
+			if (!container)
+			{
+				return;
+			}
+		}
+
+		if (x != container->flat_x)
+		{
+			x = container->flat_x;
 			y = wrap_y + 3;
 		}
 	}
