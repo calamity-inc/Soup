@@ -1,6 +1,8 @@
 +*.cpp
 dynamic
 
+arg -O3
+
 compiler em++
 
 arg -fwasm-exceptions

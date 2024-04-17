@@ -36,7 +36,6 @@ if(is_dir(__DIR__."/Intrin"))
 	{
 		$clang .= " -maes -mpclmul -mrdrnd -mrdseed -msha -msse4.1";
 	}
-	$clang .= " -O3";
 	foreach(scandir(__DIR__."/Intrin") as $file)
 	{
 		if(substr($file, -4) == ".cpp")
