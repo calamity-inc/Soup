@@ -34,7 +34,7 @@ if(is_dir(__DIR__."/Intrin"))
 	}
 	else
 	{
-		$clang .= " -maes -mpclmul -mrdrnd -mrdseed -msha -msse4.1";
+		$clang .= " -maes -mpclmul -mrdrnd -mrdseed -msha -msse4.1 -O3";
 	}
 	foreach(scandir(__DIR__."/Intrin") as $file)
 	{

@@ -11,3 +11,5 @@ arg -msse4.1
 if not windows
 	arg -fPIC
 endif
+
+arg -O3
