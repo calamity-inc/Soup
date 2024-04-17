@@ -32,8 +32,8 @@ NAMESPACE_SOUP
 		static void expandKey(uint8_t w[240], const uint8_t* key, size_t key_len) noexcept;
 		static void expandKeyForDecryption(uint8_t w[240], const uint8_t* key, size_t key_len) noexcept;
 		[[nodiscard]] static int getNk(size_t key_len) noexcept;
-		[[nodiscard]] static int getNr(size_t key_len) noexcept;
-		[[nodiscard]] static int getNr(const int Nk) noexcept;
+		[[nodiscard]] static int getNrFromKeyLen(size_t key_len) noexcept;
+		[[nodiscard]] static int getNrFromNk(const int Nk) noexcept;
 
 		static void subBytes(uint8_t** state) noexcept;
 		static void shiftRow(uint8_t** state, int i, int n) noexcept;    // shift row i on n positions

@@ -289,7 +289,7 @@ NAMESPACE_SOUP
 	{
 		data_len -= (data_len % blockBytesLen);
 
-		const auto Nr = getNr(key_len);
+		const auto Nr = getNrFromKeyLen(key_len);
 		alignas(16) uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
 
@@ -308,7 +308,7 @@ NAMESPACE_SOUP
 	{
 		data_len -= (data_len % blockBytesLen);
 
-		const auto Nr = getNr(key_len);
+		const auto Nr = getNrFromKeyLen(key_len);
 		alignas(16) uint8_t roundKeys[240];
 		expandKeyForDecryption(roundKeys, key, key_len);
 
@@ -334,7 +334,7 @@ NAMESPACE_SOUP
 
 		uint8_t block[blockBytesLen]{};
 		uint8_t encryptedBlock[blockBytesLen]{};
-		const auto Nr = getNr(key_len);
+		const auto Nr = getNrFromKeyLen(key_len);
 		alignas(16) uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
 		memcpy(block, iv, blockBytesLen);
@@ -390,7 +390,7 @@ NAMESPACE_SOUP
 		}
 #endif
 		expandKey(roundKeys, key, key_len);
-		const auto Nr = getNr(key_len);
+		const auto Nr = getNrFromKeyLen(key_len);
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			encryptBlock(&data[i], &data[i], roundKeys, Nr);
@@ -438,7 +438,7 @@ NAMESPACE_SOUP
 		}
 #endif
 		expandKey(roundKeys, key, key_len);
-		const auto Nr = getNr(key_len);
+		const auto Nr = getNrFromKeyLen(key_len);
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
 			decryptBlock(&data[i], &data[i], roundKeys, Nr);
@@ -447,7 +447,7 @@ NAMESPACE_SOUP
 
 	void aes::gcmEncrypt(uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t* key, size_t key_len, const uint8_t* iv, size_t iv_len, uint8_t tag[16]) SOUP_EXCAL
 	{
-		const auto Nr = getNr(key_len);
+		const auto Nr = getNrFromKeyLen(key_len);
 		alignas(16) uint8_t roundKeys[240];
 		aes::expandKey(roundKeys, key, key_len);
 
@@ -471,7 +471,7 @@ NAMESPACE_SOUP
 
 	bool aes::gcmDecrypt(uint8_t* data, size_t data_len, const uint8_t* aadata, size_t aadata_len, const uint8_t* key, size_t key_len, const uint8_t* iv, size_t iv_len, const uint8_t tag[16]) SOUP_EXCAL
 	{
-		const auto Nr = getNr(key_len);
+		const auto Nr = getNrFromKeyLen(key_len);
 		alignas(16) uint8_t roundKeys[240];
 		aes::expandKey(roundKeys, key, key_len);
 
@@ -643,7 +643,7 @@ NAMESPACE_SOUP
 #endif
 
 		const auto Nk = getNk(key_len);
-		const auto Nr = getNr(Nk);
+		const auto Nr = getNrFromNk(Nk);
 
 		SOUP_ASSUME((4 * Nb * (Nr + 1)) <= 240);
 
@@ -717,12 +717,12 @@ NAMESPACE_SOUP
 		return static_cast<int>(key_len / 4);
 	}
 
-	int aes::getNr(size_t key_len) noexcept
+	int aes::getNrFromKeyLen(size_t key_len) noexcept
 	{
-		return getNr(getNk(key_len));
+		return getNrFromNk(getNk(key_len));
 	}
 
-	int aes::getNr(const int Nk) noexcept
+	int aes::getNrFromNk(const int Nk) noexcept
 	{
 		return Nk + 6;
 	}
