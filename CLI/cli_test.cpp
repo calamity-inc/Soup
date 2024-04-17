@@ -170,8 +170,7 @@ static void unit_crypto()
 			std::string data = "The quick brown fox jumps over the lazy dog.";
 			const char key[] = "Super Secret 192-Bit Key";
 			aes::ecbEncrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 24);
-			// Somehow, if we assert this, it miscompiles such that the second assert fails.
-			//assert(data != "The quick brown fox jumps over the lazy dog.");
+			assert(data != "The quick brown fox jumps over the lazy dog.");
 			aes::ecbDecrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 24);
 			assert(data == "The quick brown fox jumps over the lazy dog.");
 		});
