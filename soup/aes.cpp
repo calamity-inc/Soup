@@ -293,13 +293,13 @@ NAMESPACE_SOUP
 		alignas(16) uint8_t roundKeys[240];
 		expandKey(roundKeys, key, key_len);
 
-		uint8_t last_block[blockBytesLen];
+		alignas(16) uint8_t last_block[blockBytesLen];
 		memcpy(last_block, iv, blockBytesLen);
 
 		for (size_t i = 0; i != data_len; i += blockBytesLen)
 		{
-			xorBlocks(last_block, &data[i]);
-			encryptBlock(last_block, &data[i], roundKeys, Nr);
+			xorBlocks(&data[i], last_block);
+			encryptBlock(&data[i], &data[i], roundKeys, Nr);
 			memcpy(last_block, &data[i], blockBytesLen);
 		}
 	}
