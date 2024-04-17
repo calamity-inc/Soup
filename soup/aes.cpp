@@ -289,18 +289,20 @@ NAMESPACE_SOUP
 	{
 		data_len -= (data_len % blockBytesLen);
 
-		const auto Nr = getNrFromKeyLen(key_len);
-		alignas(16) uint8_t roundKeys[240];
-		expandKey(roundKeys, key, key_len);
-
-		alignas(16) uint8_t last_block[blockBytesLen];
-		memcpy(last_block, iv, blockBytesLen);
-
-		for (size_t i = 0; i != data_len; i += blockBytesLen)
+		SOUP_IF_LIKELY (data_len != 0)
 		{
-			xorBlocks(&data[i], last_block);
-			encryptBlock(&data[i], &data[i], roundKeys, Nr);
-			memcpy(last_block, &data[i], blockBytesLen);
+			const auto Nr = getNrFromKeyLen(key_len);
+			alignas(16) uint8_t roundKeys[240];
+			expandKey(roundKeys, key, key_len);
+
+			xorBlocks(&data[0], iv);
+			encryptBlock(&data[0], &data[0], roundKeys, Nr);
+
+			for (size_t i = blockBytesLen; i != data_len; i += blockBytesLen)
+			{
+				xorBlocks(&data[i], &data[i - blockBytesLen]);
+				encryptBlock(&data[i], &data[i], roundKeys, Nr);
+			}
 		}
 	}
 
