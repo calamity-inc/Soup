@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="fwd.hpp" />
-    <ClInclude Include="macros.hpp" />
     <ClInclude Include="Bytepatch.hpp">
       <Filter>mem</Filter>
     </ClInclude>
@@ -1602,6 +1601,9 @@
     </ClInclude>
     <ClInclude Include="lyoInputElement.hpp">
       <Filter>vis\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="macros.hpp">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
