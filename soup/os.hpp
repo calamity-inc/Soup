@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 #include "fwd.hpp"
+#include "type.hpp"
 
 #include <string>
 #include <vector>
@@ -33,7 +34,7 @@ NAMESPACE_SOUP
 		static void virtualFree(void* addr, size_t len);
 		static void changeProtection(void* addr, size_t len, int prot);
 
-		[[nodiscard]] static unsigned int getProcessId() noexcept;
+		[[nodiscard]] static pid_t getProcessId() noexcept;
 
 #if SOUP_WINDOWS
 		static bool copyToClipboard(const std::string& text);

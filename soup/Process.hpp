@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 #include "fwd.hpp"
+#include "type.hpp"
 #include "UniquePtr.hpp"
 
 #include <vector>
@@ -11,16 +12,10 @@
 	#include <string>
 
 	#include <Windows.h>
-#else
-	#include <sys/types.h> // pid_t
 #endif
 
 NAMESPACE_SOUP
 {
-#if SOUP_WINDOWS
-	using pid_t = DWORD;
-#endif
-
 	class Process
 	{
 	public:

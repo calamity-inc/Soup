@@ -165,7 +165,7 @@ NAMESPACE_SOUP
 #endif
 	}
 
-	unsigned int os::getProcessId() noexcept
+	pid_t os::getProcessId() noexcept
 	{
 #if SOUP_WINDOWS
 		return GetCurrentProcessId();
