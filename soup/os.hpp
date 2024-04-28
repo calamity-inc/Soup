@@ -52,6 +52,16 @@ NAMESPACE_SOUP
 		[[nodiscard]] static PEB* getCurrentPeb();
 
 		[[nodiscard]] static std::string makeScreenshotBmp(int x, int y, int width, int height);
+
+		[[nodiscard]] static int getPrimaryScreenWidth()
+		{
+			return GetSystemMetrics(SM_CXSCREEN);
+		}
+
+		[[nodiscard]] static int getPrimaryScreenHeight()
+		{
+			return GetSystemMetrics(SM_CYSCREEN);
+		}
 #endif
 	};
 }

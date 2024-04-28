@@ -1079,9 +1079,6 @@
     <ClInclude Include="catTreeReader.hpp">
       <Filter>data\cat</Filter>
     </ClInclude>
-    <ClInclude Include="Screen.hpp">
-      <Filter>os</Filter>
-    </ClInclude>
     <ClInclude Include="TreeReader.hpp">
       <Filter>util\tree</Filter>
     </ClInclude>
