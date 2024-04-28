@@ -1,34 +1,54 @@
 #pragma once
 
 #include "base.hpp"
-#if SOUP_WINDOWS
-#include <Windows.h>
-
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "fwd.hpp"
 #include "UniquePtr.hpp"
 
+#include <vector>
+
+#if SOUP_WINDOWS
+	#include <memory>
+	#include <string>
+
+	#include <Windows.h>
+#else
+	#include <sys/types.h> // pid_t
+#endif
+
 NAMESPACE_SOUP
 {
+#if SOUP_WINDOWS
+	using pid_t = DWORD;
+#endif
+
 	class Process
 	{
 	public:
-		const DWORD id;
+		const pid_t id;
+#if SOUP_WINDOWS
 		const std::string name;
+#endif
 
-		Process(DWORD id, std::string&& name);
+#if SOUP_WINDOWS
+		Process(pid_t id, std::string&& name)
+			: id(id), name(std::move(name))
+		{
+		}
+#else
+		Process(pid_t id)
+			: id(id)
+		{
+		}
+#endif
 
+		[[nodiscard]] static UniquePtr<Process> get(pid_t id);
+#if SOUP_WINDOWS
 		[[nodiscard]] static UniquePtr<Process> get(const char* name);
-		[[nodiscard]] static UniquePtr<Process> get(DWORD id);
 		[[nodiscard]] static std::vector<UniquePtr<Process>> getAll();
 
 		[[nodiscard]] std::shared_ptr<Module> open(DWORD desired_access = PROCESS_CREATE_THREAD | PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | SYNCHRONIZE) const;
+#endif
 
 		[[nodiscard]] std::vector<Range> getAllocations() const;
 	};
 }
-
-#endif

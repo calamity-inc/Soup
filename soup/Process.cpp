@@ -1,19 +1,45 @@
 #include "Process.hpp"
 
 #if SOUP_WINDOWS
+	#include <TlHelp32.h>
 
-#include <TlHelp32.h>
-
-#include "HandleRaii.hpp"
-#include "Module.hpp"
+	#include "HandleRaii.hpp"
+	#include "Module.hpp"
+#else
+	#include "FileReader.hpp"
+	#include "Range.hpp"
+	#include "Regex.hpp"
+	#include "string.hpp"
+#endif
 
 NAMESPACE_SOUP
 {
-	Process::Process(DWORD id, std::string&& name)
-		: id(id), name(std::move(name))
+	UniquePtr<Process> Process::get(pid_t id)
 	{
+#if SOUP_WINDOWS
+		HandleRaii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (hSnap)
+		{
+			PROCESSENTRY32 entry;
+			entry.dwSize = sizeof(entry);
+			if (Process32First(hSnap, &entry))
+			{
+				do
+				{
+					if (entry.th32ProcessID == id)
+					{
+						return soup::make_unique<Process>(entry.th32ProcessID, entry.szExeFile);
+					}
+				} while (Process32Next(hSnap, &entry));
+			}
+		}
+		return {};
+#else
+		return soup::make_unique<Process>(id);
+#endif
 	}
 
+#if SOUP_WINDOWS
 	UniquePtr<Process> Process::get(const char* name)
 	{
 		HandleRaii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -26,27 +52,6 @@ NAMESPACE_SOUP
 				do
 				{
 					if (strcmp(entry.szExeFile, name) == 0)
-					{
-						return soup::make_unique<Process>(entry.th32ProcessID, entry.szExeFile);
-					}
-				} while (Process32Next(hSnap, &entry));
-			}
-		}
-		return {};
-	}
-
-	UniquePtr<Process> Process::get(DWORD id)
-	{
-		HandleRaii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-		if (hSnap)
-		{
-			PROCESSENTRY32 entry;
-			entry.dwSize = sizeof(entry);
-			if (Process32First(hSnap, &entry))
-			{
-				do
-				{
-					if (entry.th32ProcessID == id)
 					{
 						return soup::make_unique<Process>(entry.th32ProcessID, entry.szExeFile);
 					}
@@ -95,12 +100,36 @@ NAMESPACE_SOUP
 		}
 		return {};
 	}
+#endif
 
 	std::vector<Range> Process::getAllocations() const
 	{
+#if SOUP_WINDOWS
 		auto m = open();
 		return m->getAllocations();
+#else
+		std::vector<Range> res{};
+		Regex r(R"(^(?'start'[0-9A-Fa-f]+)-(?'end'[0-9A-Fa-f]+) +(?'prots'[a-z\-]+) +[^ ]+ +[^ ]+ +[^ ]+ +(?'mappedfile'.*)$)");
+		FileReader fr("/proc/" + std::to_string(this->id) + "/maps");
+		for (std::string line; fr.getLine(line); )
+		{
+			auto m = r.match(line);
+			if (m.findGroupByName("prots")->begin[0] != 'r')
+			{
+				continue;
+			}
+			if (auto mappedfile = m.findGroupByName("mappedfile"))
+			{
+				if (mappedfile->length() != 0)
+				{
+					continue;
+				}
+			}
+			auto start = string::hexToInt<uintptr_t>(m.findGroupByName("start")->toString()).value();
+			auto end = string::hexToInt<uintptr_t>(m.findGroupByName("end")->toString()).value();
+			res.emplace_back(start, end - start);
+		}
+		return res;
+#endif
 	}
 }
-
-#endif
