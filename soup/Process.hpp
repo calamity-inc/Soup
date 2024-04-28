@@ -25,7 +25,9 @@ NAMESPACE_SOUP
 		[[nodiscard]] static UniquePtr<Process> get(DWORD id);
 		[[nodiscard]] static std::vector<UniquePtr<Process>> getAll();
 
-		[[nodiscard]] std::shared_ptr<Module> open(DWORD desired_access = PROCESS_CREATE_THREAD | PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | SYNCHRONIZE);
+		[[nodiscard]] std::shared_ptr<Module> open(DWORD desired_access = PROCESS_CREATE_THREAD | PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | SYNCHRONIZE) const;
+
+		[[nodiscard]] std::vector<Range> getAllocations() const;
 	};
 }
 

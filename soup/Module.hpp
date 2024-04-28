@@ -77,6 +77,7 @@ NAMESPACE_SOUP
 		UniquePtr<HandleRaii> executeAsync(void* rip, uintptr_t rcx) const noexcept;
 		void executeSync(void* rip, uintptr_t rcx) const noexcept;
 
+		// This function is a bit misplaced here and will probably be removed in the future. Use Process::getAllocations instead.
 		[[nodiscard]] std::vector<Range> getAllocations() const;
 	};
 }

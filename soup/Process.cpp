@@ -75,7 +75,7 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	std::shared_ptr<Module> Process::open(DWORD desired_access)
+	std::shared_ptr<Module> Process::open(DWORD desired_access) const
 	{
 		HandleRaii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, id);
 		if (hSnap)
@@ -94,6 +94,12 @@ NAMESPACE_SOUP
 			}
 		}
 		return {};
+	}
+
+	std::vector<Range> Process::getAllocations() const
+	{
+		auto m = open();
+		return m->getAllocations();
 	}
 }
 
