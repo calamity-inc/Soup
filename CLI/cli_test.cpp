@@ -846,6 +846,9 @@ spanning over multiple lines */
 
 		assert(Regex(R"EOR((\w+,){3})EOR").match("abc,def,ghi,").toString() == R"(0="abc,def,ghi,", 1="ghi,")");
 		assert(Regex(R"EOR((\w+,)+)EOR").match("abc,def,ghi,").toString() == R"(0="abc,def,ghi,", 1="ghi,")");
+
+		assert(Regex("a(.*)z").match("az").toString() == R"(0="az", 1="")");
+		assert(Regex("a(.*)z").match("abz").toString() == R"(0="abz", 1="b")");
 	});
 
 	test("MessageStream", []

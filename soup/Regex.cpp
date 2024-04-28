@@ -87,6 +87,28 @@ NAMESPACE_SOUP
 			std::cout << m.c->toString() << ": ";
 #endif
 
+			// Insert missing capturing groups
+			for (auto g = m.c->group; g; g = g->parent)
+			{
+				if (g->lookahead_or_lookbehind)
+				{
+					break;
+				}
+				if (g->isNonCapturing())
+				{
+					continue;
+				}
+				//std::cout << "group " << g->index << "; ";
+				while (g->index >= m.result.groups.size())
+				{
+					m.result.groups.emplace_back(std::nullopt);
+				}
+				if (!m.result.groups.at(g->index).has_value())
+				{
+					m.result.groups.at(g->index) = RegexMatchedGroup{ g->name, m.it, m.it };
+				}
+			}
+
 			if (m.c->rollback_transition)
 			{
 #if REGEX_DEBUG_MATCH
@@ -105,9 +127,9 @@ NAMESPACE_SOUP
 			}
 
 			// Matches?
-			const auto _it = m.it;
 			if (m.c->matches(m))
 			{
+				// Update 'end' of applicable capturing groups
 				for (auto g = m.c->group; g; g = g->parent)
 				{
 					if (g->lookahead_or_lookbehind)
@@ -118,19 +140,7 @@ NAMESPACE_SOUP
 					{
 						continue;
 					}
-					//std::cout << "group " << g->index << "; ";
-					while (g->index >= m.result.groups.size())
-					{
-						m.result.groups.emplace_back(std::nullopt);
-					}
-					if (m.result.groups.at(g->index).has_value())
-					{
-						m.result.groups.at(g->index)->end = m.it;
-					}
-					else
-					{
-						m.result.groups.at(g->index) = RegexMatchedGroup{ g->name, _it, m.it };
-					}
+					m.result.groups.at(g->index)->end = m.it;
 				}
 
 				m.c = m.c->success_transition;
