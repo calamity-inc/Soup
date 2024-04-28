@@ -14,8 +14,9 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] void* getEffectiveTarget() const;
 
+		[[nodiscard]] bool isCreated() const noexcept { return original != nullptr; }
 		void create();
-		void remove();
+		void destroy();
 
 		void enable();
 		void disable();

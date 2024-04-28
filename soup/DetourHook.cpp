@@ -8,9 +8,19 @@
 #include "Pointer.hpp"
 #include "x64.hpp"
 
+#define DH_DEBUG false
+
+#if DH_DEBUG
+#include <iostream>
+#include "string.hpp"
+#endif
+
 NAMESPACE_SOUP
 {
-	static constexpr auto longjump_trampoline_size = 13;
+	static uint8_t longjump_trampoline[] = {
+		0x49, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // movabs r10, (8 bytes)
+		0x41, 0xff, 0xe2, // jmp r10
+	};
 
 	void* DetourHook::getEffectiveTarget() const
 	{
@@ -40,15 +50,19 @@ NAMESPACE_SOUP
 					SOUP_THROW(Exception("Instruction interacts with instruction pointer"));
 				}
 			}
-		} while (og_bytes < longjump_trampoline_size);
+		} while (og_bytes < sizeof(longjump_trampoline));
 
-		original = malloc(og_bytes + longjump_trampoline_size);
-		os::changeProtection(original, og_bytes + longjump_trampoline_size, MEM_PROT_READ | MEM_PROT_WRITE | MEM_PROT_EXEC);
+		original = malloc(og_bytes + sizeof(longjump_trampoline));
+		os::changeProtection(original, og_bytes + sizeof(longjump_trampoline), MEM_PROT_READ | MEM_PROT_WRITE | MEM_PROT_EXEC);
 		memcpy(original, effective_target, og_bytes);
 		writeLongjumpTrampoline((uint8_t*)original + og_bytes, (uint8_t*)effective_target + og_bytes);
+
+#if DH_DEBUG
+		std::cout << "original proc: " << string::bin2hex(std::string((const char*)original, og_bytes + sizeof(longjump_trampoline))) << std::endl;
+#endif
 	}
 
-	void DetourHook::remove()
+	void DetourHook::destroy()
 	{
 		if (original != nullptr)
 		{
@@ -59,28 +73,19 @@ NAMESPACE_SOUP
 
 	void DetourHook::enable()
 	{
-		writeLongjumpTrampoline(getEffectiveTarget(), detour);
+		void* addr = getEffectiveTarget();
+		os::changeProtection(addr, sizeof(longjump_trampoline), MEM_PROT_READ | MEM_PROT_WRITE | MEM_PROT_EXEC);
+		writeLongjumpTrampoline(addr, detour);
 	}
 
 	void DetourHook::disable()
 	{
-		memcpy(getEffectiveTarget(), original, longjump_trampoline_size);
+		memcpy(getEffectiveTarget(), original, sizeof(longjump_trampoline));
 	}
 
 	void DetourHook::writeLongjumpTrampoline(void* addr, void* target)
 	{
-		x64Instruction ins;
-		ins.setOperationFromOpcode(0xB8); // mov
-		ins.operands[0].setReg(R10, ACCESS_64);
-		ins.operands[1].setImm(reinterpret_cast<uint64_t>(target));
-
-		auto bytecode = ins.toBytecode();
-
-		ins.setOperationFromOpcode(0xFF, 5); // jmp
-		// operands[0] is already set up
-
-		bytecode += ins.toBytecode();
-
-		memcpy(addr, bytecode.data(), bytecode.size());
+		*(void**)(longjump_trampoline + 2) = target;
+		memcpy(addr, longjump_trampoline, sizeof(longjump_trampoline));
 	}
 }
