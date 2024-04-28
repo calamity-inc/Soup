@@ -62,6 +62,15 @@ NAMESPACE_SOUP
 		addBytes(bytes);
 	}
 
+	void AssemblyBuilder::setC(uint64_t val)
+	{
+		uint8_t bytes[] = {
+			0x48, 0xB9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+		};
+		*(uint64_t*)(&bytes[0] + 2) = val;
+		addBytes(bytes);
+	}
+
 	void AssemblyBuilder::setD(uint64_t val)
 	{
 		uint8_t bytes[] = {

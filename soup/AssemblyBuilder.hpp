@@ -30,6 +30,7 @@ NAMESPACE_SOUP
 
 		void setA(uint32_t val);
 		void setA(uint64_t val);
+		void setC(uint64_t val);
 		void setD(uint64_t val);
 		void set8(uint64_t val);
 		void set14(uint64_t val);
