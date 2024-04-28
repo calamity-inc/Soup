@@ -1,18 +1,18 @@
 #pragma once
 
 #include "base.hpp"
-#include "fwd.hpp"
-#include "type.hpp"
-#include "UniquePtr.hpp"
+#include "type.hpp" // pid_t
 
+#include <memory>
 #include <vector>
-
 #if SOUP_WINDOWS
-	#include <memory>
 	#include <string>
 
 	#include <Windows.h>
 #endif
+
+#include "ProcessHandle.hpp"
+#include "UniquePtr.hpp"
 
 NAMESPACE_SOUP
 {
@@ -40,10 +40,8 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 		[[nodiscard]] static UniquePtr<Process> get(const char* name);
 		[[nodiscard]] static std::vector<UniquePtr<Process>> getAll();
-
-		[[nodiscard]] std::shared_ptr<Module> open(DWORD desired_access = PROCESS_CREATE_THREAD | PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | SYNCHRONIZE) const;
 #endif
 
-		[[nodiscard]] std::vector<Range> getAllocations() const;
+		[[nodiscard]] std::shared_ptr<ProcessHandle> open() const;
 	};
 }

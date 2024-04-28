@@ -4,7 +4,6 @@
 	#include <TlHelp32.h>
 
 	#include "HandleRaii.hpp"
-	#include "Module.hpp"
 #else
 	#include "FileReader.hpp"
 	#include "Range.hpp"
@@ -79,9 +78,13 @@ NAMESPACE_SOUP
 		}
 		return res;
 	}
+#endif
 
-	std::shared_ptr<Module> Process::open(DWORD desired_access) const
+	std::shared_ptr<ProcessHandle> Process::open() const
 	{
+#if SOUP_WINDOWS
+		const DWORD desired_access = PROCESS_CREATE_THREAD | PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | SYNCHRONIZE;
+
 		HandleRaii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, id);
 		if (hSnap)
 		{
@@ -93,43 +96,14 @@ NAMESPACE_SOUP
 				{
 					if (this->id == entry.th32ProcessID)
 					{
-						return std::make_shared<Module>(make_unique<HandleRaii>(OpenProcess(desired_access, FALSE, id)), Range(entry.modBaseAddr, entry.modBaseSize));
+						return std::make_shared<ProcessHandle>(make_unique<HandleRaii>(OpenProcess(desired_access, FALSE, id)), Range(entry.modBaseAddr, entry.modBaseSize));
 					}
 				} while (Module32Next(hSnap, &entry));
 			}
 		}
 		return {};
-	}
-#endif
-
-	std::vector<Range> Process::getAllocations() const
-	{
-#if SOUP_WINDOWS
-		auto m = open();
-		return m->getAllocations();
 #else
-		std::vector<Range> res{};
-		Regex r(R"(^(?'start'[0-9A-Fa-f]+)-(?'end'[0-9A-Fa-f]+) +(?'prots'[a-z\-]+) +[^ ]+ +[^ ]+ +[^ ]+ +(?'mappedfile'.*)$)");
-		FileReader fr("/proc/" + std::to_string(this->id) + "/maps");
-		for (std::string line; fr.getLine(line); )
-		{
-			auto m = r.match(line);
-			if (m.findGroupByName("prots")->begin[0] != 'r')
-			{
-				continue;
-			}
-			if (auto mappedfile = m.findGroupByName("mappedfile"))
-			{
-				if (mappedfile->length() != 0)
-				{
-					continue;
-				}
-			}
-			auto start = string::hexToInt<uintptr_t>(m.findGroupByName("start")->toString()).value();
-			auto end = string::hexToInt<uintptr_t>(m.findGroupByName("end")->toString()).value();
-			res.emplace_back(start, end - start);
-		}
-		return res;
+		return std::make_shared<ProcessHandle>(this->id);
 #endif
 	}
 }

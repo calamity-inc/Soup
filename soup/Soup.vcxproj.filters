@@ -1602,6 +1602,9 @@
     <ClInclude Include="macros.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="ProcessHandle.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2377,6 +2380,9 @@
     </ClCompile>
     <ClCompile Include="lyoInputElement.cpp">
       <Filter>vis\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessHandle.cpp">
+      <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

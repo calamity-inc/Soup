@@ -13,6 +13,9 @@
 
 NAMESPACE_SOUP
 {
+	// Module refers to a process (launched executable) or a shared library that is loaded in memory.
+	//
+	// Most functions here (external*, allocate, copyInto, execute*) should be on ProcessHandle and will be moved there in the future.
 	class Module
 	{
 	public:
@@ -76,9 +79,6 @@ NAMESPACE_SOUP
 
 		UniquePtr<HandleRaii> executeAsync(void* rip, uintptr_t rcx) const noexcept;
 		void executeSync(void* rip, uintptr_t rcx) const noexcept;
-
-		// This function is a bit misplaced here and will probably be removed in the future. Use Process::getAllocations instead.
-		[[nodiscard]] std::vector<Range> getAllocations() const;
 	};
 }
 #endif
