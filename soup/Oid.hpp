@@ -13,7 +13,12 @@ NAMESPACE_SOUP
 
 		static Oid COMMON_NAME;
 		static Oid RSA_ENCRYPTION;
+		static Oid SHA1_WITH_RSA_ENCRYPTION;
 		static Oid SHA256_WITH_RSA_ENCRYPTION;
+		static Oid SHA384_WITH_RSA_ENCRYPTION;
+		static Oid SHA512_WITH_RSA_ENCRYPTION;
+		static Oid ECDSA_WITH_SHA256;
+		static Oid ECDSA_WITH_SHA384;
 		static Oid SUBJECT_ALT_NAME;
 		static Oid EC_PUBLIC_KEY;
 		static Oid PRIME256V1; // aka. secp256r1

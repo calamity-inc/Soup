@@ -10,7 +10,12 @@ NAMESPACE_SOUP
 {
 	Oid Oid::COMMON_NAME = { 2, 5, 4, 3 };
 	Oid Oid::RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 1 };
+	Oid Oid::SHA1_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 5 };
 	Oid Oid::SHA256_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 11 };
+	Oid Oid::SHA384_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 12 };
+	Oid Oid::SHA512_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 13 };
+	Oid Oid::ECDSA_WITH_SHA256 = { 1, 2, 840, 10045, 4, 3, 2 };
+	Oid Oid::ECDSA_WITH_SHA384 = { 1, 2, 840, 10045, 4, 3, 3 };
 	Oid Oid::SUBJECT_ALT_NAME = { 2, 5, 29, 17 };
 	Oid Oid::EC_PUBLIC_KEY = { 1, 2, 840, 10045, 2, 1 };
 	Oid Oid::PRIME256V1 = { 1, 2, 840, 10045, 3, 1, 7 };
