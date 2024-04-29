@@ -238,6 +238,8 @@ NAMESPACE_SOUP
 		{ "cmp", 0x3D, AI, 32 },
 		{ "cmp", 0x38, MR, 8 },
 		{ "cmp", 0x39, MR },
+		{ "cmp", 0x3A, RM, 8 },
+		{ "cmp", 0x3B, RM },
 		{ "lea", 0x8D, RM },
 		{ "jz", 0x74, D, 8 },
 		{ "jnz", 0x75, D, 8 },
