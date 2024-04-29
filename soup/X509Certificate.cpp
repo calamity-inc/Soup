@@ -13,18 +13,7 @@ NAMESPACE_SOUP
 {
 	bool X509Certificate::fromDer(const std::string& str) noexcept
 	{
-#if SOUP_EXCEPTIONS
-		try
-		{
-#endif
-			return load(Asn1Sequence::fromDer(str));
-#if SOUP_EXCEPTIONS
-		}
-		catch (...)
-		{
-		}
-		return false;
-#endif
+		return load(Asn1Sequence::fromDer(str));
 	}
 
 	bool X509Certificate::load(const Asn1Sequence& cert) noexcept
