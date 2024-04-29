@@ -96,9 +96,10 @@ void cli_dnsserver(int argc, const char** argv)
 
 	if (netMesh::isEnabled())
 	{
-		if (netMesh::bind(serv))
+		netMeshService mesh_service;
+		if (mesh_service.bind(serv))
 		{
-			g_mesh_service.app_msg_handlers.emplace("dns_list_records", [](Socket& s, std::string&&)
+			mesh_service.app_msg_handlers.emplace("dns_list_records", [](Socket& s, std::string&&)
 			{
 				for (const auto& vec : records)
 				{
@@ -113,7 +114,7 @@ void cli_dnsserver(int argc, const char** argv)
 				}
 				netMeshService::reply(s, {});
 			});
-			g_mesh_service.app_msg_handlers.emplace("dns_add_record", [](Socket& s, std::string&& data)
+			mesh_service.app_msg_handlers.emplace("dns_add_record", [](Socket& s, std::string&& data)
 			{
 				if (auto root = json::decode(data))
 				{
@@ -132,7 +133,7 @@ void cli_dnsserver(int argc, const char** argv)
 				}
 				netMeshService::replyNegative(s, "Invalid request");
 			});
-			g_mesh_service.app_msg_handlers.emplace("dns_remove_record", [](Socket& s, std::string&& data)
+			mesh_service.app_msg_handlers.emplace("dns_remove_record", [](Socket& s, std::string&& data)
 			{
 				if (auto root = json::decode(data))
 				{

@@ -73,17 +73,18 @@ int cli_mesh(int argc, const char** argv)
 				std::cout << " Found " << ip.toString4() << "\n";
 
 				Server serv;
-				if (!netMesh::bind(serv))
+				netMeshService mesh_service;
+				if (!mesh_service.bind(serv))
 				{
 					std::cout << "Failed to bind to TCP/7106\n";
 					return 1;
 				}
 
-				g_mesh_service.link_passnum = soup::rand(0, -1);
+				mesh_service.link_passnum = soup::rand(0, -1);
 
 				StringWriter sw;
 				sw.u32(ip.getV4NativeEndian());
-				sw.u64(g_mesh_service.link_passnum);
+				sw.u64(mesh_service.link_passnum);
 
 				std::cout << "\nReady to link: " << base64::encode(sw.data + my_config.kp.n.toBinary()) << "\n";
 

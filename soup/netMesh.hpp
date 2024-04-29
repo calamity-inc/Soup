@@ -52,7 +52,5 @@ NAMESPACE_SOUP
 #if false
 		static void enableCryptoClient(Socket& s, const Bigint& remote_pub_n) SOUP_EXCAL;
 #endif
-
-		static bool bind(Server& serv);
 	};
 }

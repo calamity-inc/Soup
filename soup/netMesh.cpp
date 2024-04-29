@@ -9,8 +9,6 @@
 #include "FileWriter.hpp"
 #include "filesystem.hpp"
 #include "fnv.hpp"
-#include "netMeshService.hpp"
-#include "Server.hpp"
 
 NAMESPACE_SOUP
 {
@@ -146,11 +144,6 @@ NAMESPACE_SOUP
 		static_cast<WebSocketConnection&>(s).wsSend(RsaPublicKey(remote_pub_n).encryptPkcs1(bytes).toBinary());
 	}
 #endif
-
-	bool netMesh::bind(Server& serv)
-	{
-		return serv.bind(7106, &g_mesh_service);
-	}
 
 	Peer* netMesh::MyConfig::findPeer(uint32_t ip) noexcept
 	{

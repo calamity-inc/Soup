@@ -7,6 +7,7 @@
 #include "netMesh.hpp"
 #include "netMeshMsgType.hpp"
 #include "rand.hpp"
+#include "Server.hpp"
 #include "sha256.hpp"
 #include "Socket.hpp"
 #include "StringRefReader.hpp"
@@ -44,7 +45,7 @@ NAMESPACE_SOUP
 			return true;
 		};
 
-		on_websocket_message = [](WebSocketMessage& msg, Socket& s, ServerWebService&) -> void
+		on_websocket_message = [](WebSocketMessage& msg, Socket& s, ServerWebService& srv) -> void
 		{
 			if (s.custom_data.isStructInMap(netMeshConnectionInfo))
 			{
@@ -62,7 +63,7 @@ NAMESPACE_SOUP
 						{
 							if (uint64_t passnum; sr.u64(passnum))
 							{
-								if (passnum == g_mesh_service.link_passnum)
+								if (passnum == static_cast<netMeshService&>(srv).link_passnum)
 								{
 									con_info.send(s, std::string(1, MESH_MSG_AFFIRMATIVE));
 									auto remote_pub_n = Bigint::fromBinary(msg.data.data() + 9, msg.data.size() - 9);
@@ -113,7 +114,7 @@ NAMESPACE_SOUP
 							if (con_info.authenticated_as != 0)
 							{
 								std::string resp(1, MESH_MSG_CAPABILITIES);
-								for (const auto& e : g_mesh_service.app_msg_handlers)
+								for (const auto& e : static_cast<netMeshService&>(srv).app_msg_handlers)
 								{
 									resp.append(e.first);
 									resp.push_back(',');
@@ -138,8 +139,8 @@ NAMESPACE_SOUP
 									auto sep = msg.data.find(',', 5);
 									if (sep != std::string::npos)
 									{
-										if (auto e = g_mesh_service.app_msg_handlers.find(msg.data.substr(5, sep - 5));
-											e != g_mesh_service.app_msg_handlers.end()
+										if (auto e = static_cast<netMeshService&>(srv).app_msg_handlers.find(msg.data.substr(5, sep - 5));
+											e != static_cast<netMeshService&>(srv).app_msg_handlers.end()
 											)
 										{
 											try
@@ -173,6 +174,11 @@ NAMESPACE_SOUP
 			}
 			s.close();
 		};
+	}
+
+	bool netMeshService::bind(Server& serv)
+	{
+		return serv.bind(7106, this);
 	}
 
 	void netMeshService::reply(Socket& s, const std::string& data)

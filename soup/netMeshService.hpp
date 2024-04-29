@@ -20,13 +20,14 @@ NAMESPACE_SOUP
 
 		netMeshService();
 
+		bool bind(Server& serv);
+
 		static void reply(Socket& s, const std::string& data);
 		static void replyAffirmative(Socket& s, const std::string& data = {});
 		static void replyNegative(Socket& s, const std::string& data = {});
 	protected:
 		static void reply(Socket& s, uint8_t msg_type, const std::string& data);
 	};
-	inline netMeshService g_mesh_service;
 }
 
 #endif
