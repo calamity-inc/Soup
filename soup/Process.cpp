@@ -10,10 +10,16 @@
 	#include "Regex.hpp"
 	#include "string.hpp"
 #endif
+#include "os.hpp"
 
 NAMESPACE_SOUP
 {
-	UniquePtr<Process> Process::get(pid_t id)
+	UniquePtr<Process> Process::current()
+	{
+		return get(os::getProcessId());
+	}
+
+UniquePtr<Process> Process::get(pid_t id)
 	{
 #if SOUP_WINDOWS
 		HandleRaii hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);

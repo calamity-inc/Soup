@@ -36,6 +36,8 @@ NAMESPACE_SOUP
 		}
 #endif
 
+		[[nodiscard]] static UniquePtr<Process> current();
+
 		[[nodiscard]] static UniquePtr<Process> get(pid_t id);
 #if SOUP_WINDOWS
 		[[nodiscard]] static UniquePtr<Process> get(const char* name);
