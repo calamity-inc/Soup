@@ -118,12 +118,12 @@ NAMESPACE_SOUP
 		{
 			return connect(hostaddr, port);
 		}
-		auto res = netConfig::get().dns_resolver->lookupIPv4(host);
+		auto res = netConfig::get().getDnsResolver().lookupIPv4(host);
 		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;
 		}
-		res = netConfig::get().dns_resolver->lookupIPv6(host);
+		res = netConfig::get().getDnsResolver().lookupIPv6(host);
 		if (!res.empty() && connect(rand(res), port))
 		{
 			return true;
