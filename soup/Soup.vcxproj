@@ -707,6 +707,7 @@
     <ClInclude Include="cbCmdThanks.hpp" />
     <ClInclude Include="cbResult.hpp" />
     <ClInclude Include="cbMeasurement.hpp" />
+    <ClInclude Include="CertStore.hpp" />
     <ClInclude Include="Chatbot.hpp" />
     <ClInclude Include="CidrSubnet4.hpp" />
     <ClInclude Include="CidrSubnet4Interface.hpp" />
@@ -1090,7 +1091,6 @@
     <ClInclude Include="szUnicodeCompressor.hpp" />
     <ClInclude Include="Tempfile.hpp" />
     <ClInclude Include="Stopwatch.hpp" />
-    <ClInclude Include="TlsServerRsaData.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="console.hpp" />
     <ClInclude Include="HandleBase.hpp" />

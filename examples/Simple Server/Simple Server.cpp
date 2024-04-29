@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <CertStore.hpp>
 #include <crc32.hpp>
 #include <HttpRequest.hpp>
 #include <pem.hpp>
@@ -12,7 +13,6 @@
 #include <TlsClientHello.hpp>
 #include <TlsCipherSuite.hpp>
 #include <TlsExtensionType.hpp>
-#include <TlsServerRsaData.hpp>
 #include <WebSocketMessage.hpp>
 
 struct SimpleServerClientData
@@ -173,13 +173,6 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 	}
 }
 
-static soup::TlsServerRsaData server_rsa_data;
-
-static void cert_selector(soup::TlsServerRsaData& out, const std::string& server_name) SOUP_EXCAL
-{
-	out = server_rsa_data;
-}
-
 static void on_client_hello(soup::Socket& s, soup::TlsClientHello&& hello) SOUP_EXCAL
 {
 	auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
@@ -194,7 +187,10 @@ static void on_client_hello(soup::Socket& s, soup::TlsClientHello&& hello) SOUP_
 
 int main()
 {
-	server_rsa_data.der_encoded_certchain = {
+	auto certstore = soup::make_shared<soup::CertStore>();
+
+	soup::X509Certchain certchain;
+	certchain.fromDer({
 		soup::pem::decode(R"EOC(
 -----BEGIN CERTIFICATE-----
 MIIFEjCCA/qgAwIBAgISAzO1ak1tzkSo99OqAn2x+OfMMA0GCSqGSIb3DQEBCwUA
@@ -259,8 +255,8 @@ MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
 nLRbwHOoq7hHwg==
 -----END CERTIFICATE-----
 )EOC"),
-	};
-	server_rsa_data.private_key = soup::RsaPrivateKey::fromPem(R"EOC(
+	});
+	auto private_key = soup::RsaPrivateKey::fromPem(R"EOC(
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYbeJly69Nd+bP
 EnzCEAJZzqp/xsGr2YTgisYGyBKqp0ubWfl4ItRx7a50siEVy57oNBc4AGhQ6/A1
@@ -290,6 +286,7 @@ IWTRPUZRNojVvK1dQ+xPN/9HsFVUb6JWyU4e3gocnYoe2zGdyT9p9u0Pr3JikgAC
 QJg24g1I/Zb4EUJmo2WNBzGS
 -----END PRIVATE KEY-----
 )EOC");
+	certstore->add(std::move(certchain), std::move(private_key));
 
 	soup::Server serv{};
 	serv.on_work_done = [](soup::Worker& w, soup::Scheduler&)
@@ -325,7 +322,7 @@ QJg24g1I/Zb4EUJmo2WNBzGS
 		std::cout << "Failed to bind to port 80." << std::endl;
 		return 1;
 	}
-	if (!serv.bindCrypto(443, &web_srv, &cert_selector, &on_client_hello))
+	if (!serv.bindCrypto(443, &web_srv, std::move(certstore), &on_client_hello))
 	{
 		std::cout << "Failed to bind to port 443." << std::endl;
 		return 2;

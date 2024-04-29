@@ -211,9 +211,6 @@
     <ClInclude Include="TlsHelloExtensions.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
-    <ClInclude Include="TlsServerRsaData.hpp">
-      <Filter>net\tls</Filter>
-    </ClInclude>
     <ClInclude Include="Worker.hpp">
       <Filter>task</Filter>
     </ClInclude>
@@ -1604,6 +1601,9 @@
     </ClInclude>
     <ClInclude Include="ProcessHandle.hpp">
       <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="CertStore.hpp">
+      <Filter>crypto</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

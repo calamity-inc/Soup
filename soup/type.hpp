@@ -24,7 +24,6 @@ NAMESPACE_SOUP
 	using TlsCipherSuite_t = uint16_t;
 	using TlsContentType_t = uint8_t;
 	using TlsHandshakeType_t = uint8_t;
-	using tls_server_cert_selector_t = void(*)(TlsServerRsaData& out, const std::string& server_name) SOUP_EXCAL;
 	using tls_server_on_client_hello_t = void(*)(Socket&, TlsClientHello&&) SOUP_EXCAL;
 
 	// os
