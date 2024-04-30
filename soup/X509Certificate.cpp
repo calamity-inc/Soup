@@ -233,7 +233,16 @@ NAMESPACE_SOUP
 	{
 		Asn1Sequence algo_seq;
 		algo_seq.addOid(getAlgoOid());
-		//algo_seq.addNull(); // Some encoders add this, some encoders don't. I guess we'll just pick the shortest possible encoding.
+		switch (sig_type)
+		{
+		default: // RSA_WITH_*
+			algo_seq.addNull();
+			break;
+
+		case ECDSA_WITH_SHA256:
+		case ECDSA_WITH_SHA384:
+			break;
+		}
 
 		Asn1Sequence cert;
 		cert.addSeq(Asn1Sequence::fromDer(tbsCertDer));
