@@ -338,9 +338,7 @@ NAMESPACE_SOUP
 
 	bool Socket::certchain_validator_default(const X509Certchain& chain, const std::string& domain, StructMap&) SOUP_EXCAL
 	{
-		return chain.certs.at(0).valid_to >= time::unixSeconds()
-			&& chain.verify(domain, TrustStore::fromMozilla())
-			;
+		return chain.verify(domain, TrustStore::fromMozilla(), time::unixSeconds());
 	}
 
 	template <typename T>

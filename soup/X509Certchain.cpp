@@ -61,16 +61,17 @@ NAMESPACE_SOUP
 		}
 	}
 
-	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts) const SOUP_EXCAL
+	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts, time_t unix_timestamp) const SOUP_EXCAL
 	{
 		return certs.at(0).isValidForDomain(domain)
-			&& verify(ts)
+			&& verify(ts, unix_timestamp)
 			;
 	}
 
-	bool X509Certchain::verify(const TrustStore& ts) const SOUP_EXCAL
+	bool X509Certchain::verify(const TrustStore& ts, time_t unix_timestamp) const SOUP_EXCAL
 	{
-		return verifyTrust(ts)
+		return certs.at(0).valid_to >= unix_timestamp
+			&& verifyTrust(ts)
 			&& verifySignatures()
 			;
 	}
