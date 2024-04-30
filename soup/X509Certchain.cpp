@@ -66,7 +66,8 @@ NAMESPACE_SOUP
 
 	bool X509Certchain::verify(const std::string& domain, const TrustStore& ts, time_t unix_timestamp) const SOUP_EXCAL
 	{
-		return certs.at(0).isValidForDomain(domain)
+		return !certs.empty()
+			&& certs.at(0).isValidForDomain(domain)
 			&& verify(ts, unix_timestamp)
 			;
 	}
