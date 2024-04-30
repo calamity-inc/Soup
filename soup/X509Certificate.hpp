@@ -30,6 +30,7 @@ NAMESPACE_SOUP
 		X509RelativeDistinguishedName issuer;
 		X509RelativeDistinguishedName subject;
 		std::vector<std::string> subject_alt_names;
+		uint8_t max_children = 0;
 
 		bool is_ec;
 		EccPoint key;

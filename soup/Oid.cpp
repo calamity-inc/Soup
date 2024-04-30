@@ -16,7 +16,9 @@ NAMESPACE_SOUP
 	Oid Oid::SHA512_WITH_RSA_ENCRYPTION = { 1, 2, 840, 113549, 1, 1, 13 };
 	Oid Oid::ECDSA_WITH_SHA256 = { 1, 2, 840, 10045, 4, 3, 2 };
 	Oid Oid::ECDSA_WITH_SHA384 = { 1, 2, 840, 10045, 4, 3, 3 };
-	Oid Oid::SUBJECT_ALT_NAME = { 2, 5, 29, 17 };
+	Oid Oid::CE_KEYUSAGE = { 2, 5, 29, 15 };
+	Oid Oid::CE_SUBJECTALTNAME = { 2, 5, 29, 17 };
+	Oid Oid::CE_BASICCONSTRAINTS = { 2, 5, 29, 19 };
 	Oid Oid::EC_PUBLIC_KEY = { 1, 2, 840, 10045, 2, 1 };
 	Oid Oid::PRIME256V1 = { 1, 2, 840, 10045, 3, 1, 7 };
 	Oid Oid::ANSIP384R1 = { 1, 3, 132, 0, 34 };

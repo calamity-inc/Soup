@@ -19,7 +19,9 @@ NAMESPACE_SOUP
 		static Oid SHA512_WITH_RSA_ENCRYPTION;
 		static Oid ECDSA_WITH_SHA256;
 		static Oid ECDSA_WITH_SHA384;
-		static Oid SUBJECT_ALT_NAME;
+		static Oid CE_KEYUSAGE;
+		static Oid CE_SUBJECTALTNAME;
+		static Oid CE_BASICCONSTRAINTS;
 		static Oid EC_PUBLIC_KEY;
 		static Oid PRIME256V1; // aka. secp256r1
 		static Oid ANSIP384R1; // aka. secp384r1

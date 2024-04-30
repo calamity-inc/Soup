@@ -93,7 +93,8 @@ NAMESPACE_SOUP
 			for (size_t i = 0; i != extensions.countChildren(); ++i)
 			{
 				Asn1Sequence ext = extensions.getSeq(i);
-				if (ext.getOid(0) == Oid::SUBJECT_ALT_NAME)
+				const auto oid = ext.getOid(0);
+				if (oid == Oid::CE_SUBJECTALTNAME)
 				{
 					size_t data_idx = ((ext.at(1).identifier.type == ASN1_BOOLEAN) ? 2 : 1);
 					// RFC 2459, page 33
@@ -114,6 +115,22 @@ NAMESPACE_SOUP
 							{
 								subject_alt_names.emplace_back(IpAddr((uint8_t*)data.getString(j).data()).toString6());
 							}
+						}
+					}
+				}
+				else if (oid == Oid::CE_BASICCONSTRAINTS)
+				{
+					size_t data_idx = ((ext.at(1).identifier.type == ASN1_BOOLEAN) ? 2 : 1);
+					auto data = Asn1Sequence::fromDer(ext.getString(data_idx));
+					if (data.countChildren() > 0 && data.at(0).identifier.type == ASN1_BOOLEAN && data.at(0).data == "\xff") // Is CA?
+					{
+						if (data.countChildren() > 1) // Has chain size limit?
+						{
+							max_children = 1 + data.getInt(1).getChunk(0);
+						}
+						else
+						{
+							max_children = -1;
 						}
 					}
 				}
