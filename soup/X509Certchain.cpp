@@ -101,15 +101,9 @@ NAMESPACE_SOUP
 	{
 		for (auto i = certs.rbegin(); i != certs.rend(); ++i)
 		{
-			if (auto entry = ts.findCommonName(i->subject.getCommonName()))
+			if (ts.contains(*i))
 			{
-				if (entry->isEc() == i->isEc()
-					&& entry->key.x == i->key.x
-					&& entry->key.y == i->key.y
-					)
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 		return false;
