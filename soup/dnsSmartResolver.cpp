@@ -41,7 +41,7 @@ NAMESPACE_SOUP
 							}
 							else
 							{
-								std::string server = static_cast<dnsUdpResolver*>(resolv->subresolver.get())->server.ip.toString();
+								std::string server = resolv->server.toString();
 								http_resolver = soup::make_unique<dnsHttpResolver>();
 								static_cast<dnsHttpResolver*>(http_resolver.get())->server = std::move(server);
 								subtask = http_resolver->makeLookupTask(qtype, name);
