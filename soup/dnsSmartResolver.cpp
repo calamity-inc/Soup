@@ -37,6 +37,7 @@ NAMESPACE_SOUP
 							if (!subtask->result.empty())
 							{
 								resolv->tested_udp = true; // Yup, UDP works!
+								static_cast<dnsUdpResolver*>(resolv->subresolver.get())->num_retries = 1; // UDP resolver may now retry once to account for packet loss.
 								fulfil(std::move(subtask->result));
 							}
 							else
@@ -96,6 +97,7 @@ NAMESPACE_SOUP
 		{
 			subresolver = soup::make_unique<dnsUdpResolver>();
 			static_cast<dnsUdpResolver*>(subresolver.get())->server.ip = this->server;
+			static_cast<dnsUdpResolver*>(subresolver.get())->num_retries = 0; // No retries during testing phase.
 		}
 		return soup::make_unique<dnsSmartLookupTask>(*this, qtype, name);
 	}
