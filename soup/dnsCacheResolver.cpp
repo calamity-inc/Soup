@@ -11,13 +11,15 @@
 
 NAMESPACE_SOUP
 {
-	std::vector<UniquePtr<dnsRecord>> dnsCacheResolver::lookup(dnsType qtype, const std::string& name) const
+	Optional<std::vector<UniquePtr<dnsRecord>>> dnsCacheResolver::lookup(dnsType qtype, const std::string& name) const
 	{
 		auto res = findInCache(qtype, name);
 		if (res.empty())
 		{
-			res = underlying->lookup(qtype, name);
-			addToCache(res);
+			if (underlying->lookup(qtype, name).consume(res))
+			{
+				addToCache(res);
+			}
 		}
 		return res;
 	}
@@ -37,7 +39,10 @@ NAMESPACE_SOUP
 			if (underlying->tickUntilDone())
 			{
 				result = std::move(underlying->result);
-				resolver.addToCache(result);
+				if (result)
+				{
+					resolver.addToCache(*result);
+				}
 				setWorkDone();
 			}
 		}

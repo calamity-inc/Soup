@@ -29,7 +29,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		[[nodiscard]] std::vector<UniquePtr<dnsRecord>> lookup(dnsType qtype, const std::string& name) const final;
+		[[nodiscard]] Optional<std::vector<UniquePtr<dnsRecord>>> lookup(dnsType qtype, const std::string& name) const final;
 		[[nodiscard]] UniquePtr<dnsLookupTask> makeLookupTask(dnsType qtype, const std::string& name) const final;
 
 		[[nodiscard]] std::vector<UniquePtr<dnsRecord>> findInCache(dnsType qtype, const std::string& name) const;

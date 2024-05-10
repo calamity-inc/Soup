@@ -14,13 +14,13 @@
 
 NAMESPACE_SOUP
 {
-	std::vector<UniquePtr<dnsRecord>> dnsOsResolver::lookup(dnsType qtype, const std::string& name) const
+	Optional<std::vector<UniquePtr<dnsRecord>>> dnsOsResolver::lookup(dnsType qtype, const std::string& name) const
 	{
-		std::vector<UniquePtr<dnsRecord>> res{};
 #if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
 		if (DnsQuery_UTF8(name.c_str(), qtype, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
 		{
+			std::vector<UniquePtr<dnsRecord>> res{};
 			for (PDNS_RECORD i = pDnsRecord; i; i = i->pNext)
 			{
 				if (i->wType == DNS_TYPE_A)
@@ -62,12 +62,14 @@ NAMESPACE_SOUP
 				}
 			}
 			DnsRecordListFree(pDnsRecord, DnsFreeRecordListDeep);
+			return res;
 		}
 #else
 		unsigned char query_buffer[1024];
 		auto ret = res_query(name.c_str(), DNS_IN, qtype, query_buffer, sizeof(query_buffer));
 		if (ret > 0)
 		{
+			std::vector<UniquePtr<dnsRecord>> res{};
 			ns_msg nsMsg;
 			ns_initparse(query_buffer, ret, &nsMsg);
 			for (int i = 0; i < ns_msg_count(nsMsg, ns_s_an); ++i)
@@ -117,9 +119,10 @@ NAMESPACE_SOUP
 					res.emplace_back(soup::make_unique<dnsNsRecord>(ns_rr_name(rr), ns_rr_ttl(rr), hostname));
 				}
 			}
+			return res;
 		}
 #endif
-		return res;
+		return std::nullopt;
 	}
 }
 

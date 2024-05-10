@@ -49,8 +49,15 @@ void cli_dig(int argc, const char** argv)
 		}
 	}
 
-	for (const auto& rr : r->lookup(t, argv[0]))
+	if (auto records = r->lookup(t, argv[0]))
 	{
-		std::cout << dnsTypeToString(rr->type) << "\t" << rr->name << "\tvalue=" << rr->toString() << ", ttl=" << rr->ttl << "\n";
+		for (const auto& rr : *records)
+		{
+			std::cout << dnsTypeToString(rr->type) << "\t" << rr->name << "\tvalue=" << rr->toString() << ", ttl=" << rr->ttl << "\n";
+		}
+	}
+	else
+	{
+		std::cout << "Resolver did not answer\n";
 	}
 }

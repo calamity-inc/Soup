@@ -35,7 +35,7 @@ NAMESPACE_SOUP
 		}
 	};
 
-	std::vector<UniquePtr<dnsRecord>> dnsUdpResolver::lookup(dnsType qtype, const std::string& name) const
+	Optional<std::vector<UniquePtr<dnsRecord>>> dnsUdpResolver::lookup(dnsType qtype, const std::string& name) const
 	{
 		{
 			std::vector<UniquePtr<dnsRecord>> res;
@@ -61,7 +61,11 @@ NAMESPACE_SOUP
 			sched.runFor(timeout_ms);
 		} while (data.res.empty() && --remaining_requests);
 
-		return parseResponse(std::move(data.res));
+		if (!data.res.empty())
+		{
+			return parseResponse(std::move(data.res));
+		}
+		return std::nullopt;
 	}
 }
 
