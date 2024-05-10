@@ -1,6 +1,10 @@
 #include "netConnectTask.hpp"
 #if !SOUP_WASM
 
+#if !SOUP_WINDOWS
+#include <netinet/tcp.h> // TCP_NODELAY
+#endif
+
 #include "netConfig.hpp"
 #include "netStatus.hpp"
 #include "ObfusString.hpp"
@@ -98,7 +102,12 @@ NAMESPACE_SOUP
 			}
 			else
 			{
-				if (res == -1)
+				if (res != -1)
+				{
+					// Success
+					sock.setOpt<int>(IPPROTO_TCP, TCP_NODELAY, 1);
+				}
+				else
 				{
 					// Error
 					if (!second_lookup)
