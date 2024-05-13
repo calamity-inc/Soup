@@ -12,12 +12,11 @@ NAMESPACE_SOUP
 	struct dnsSmartLookupTask : public dnsLookupTask
 	{
 		WeakRef<const dnsSmartResolver> resolv_wr;
+		bool retry = false;
 		dnsType qtype;
 		std::string name;
-
 		UniquePtr<dnsLookupTask> subtask;
 		UniquePtr<dnsHttpResolver> http_resolver;
-		bool retry = false;
 
 		dnsSmartLookupTask(const dnsSmartResolver& resolv, dnsType qtype, const std::string& name)
 			: resolv_wr(&resolv), qtype(qtype), name(name), subtask(resolv.subresolver->makeLookupTask(qtype, name))
