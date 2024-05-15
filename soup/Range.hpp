@@ -25,11 +25,15 @@ NAMESPACE_SOUP
 		[[nodiscard]] static bool pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept;
 
 		[[nodiscard]] Pointer scan(const Pattern& sig) const noexcept;
+
+		template <size_t S>
+		[[nodiscard]] size_t scanWithMultipleResults(const Pattern& sig, Pointer(&buf)[S]) const noexcept
+		{
+			return scanWithMultipleResults(sig, buf, S);
+		}
+
+		[[nodiscard]] size_t scanWithMultipleResults(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept;
 	private:
-		[[nodiscard]] Pointer scanSimd(const Pattern& sig) const noexcept;
-	public:
-		[[nodiscard]] std::vector<Pointer> scanAll(const Pattern& sig, unsigned int limit = -1) const;
-	private:
-		[[nodiscard]] std::vector<Pointer> scanAllSimd(const Pattern& sig, unsigned int limit) const;
+		[[nodiscard]] size_t scanWithMultipleResultsSimd(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept;
 	};
 }
