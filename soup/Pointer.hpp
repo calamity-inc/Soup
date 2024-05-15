@@ -63,9 +63,9 @@ NAMESPACE_SOUP
 			return a.uptr <= b.uptr;
 		}
 
-		void operator=(uintptr_t ptr) noexcept
+		void operator=(uintptr_t uptr) noexcept
 		{
-			this->ptr = reinterpret_cast<void*>(ptr);
+			this->uptr = uptr;
 		}
 
 		[[nodiscard]] void* addr() const noexcept
