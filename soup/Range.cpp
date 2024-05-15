@@ -54,13 +54,6 @@ NAMESPACE_SOUP
 #endif
 	}
 
-	Pointer Range::scan(const Pattern& sig) const noexcept
-	{
-		Pointer ptr{};
-		SOUP_UNUSED(scanWithMultipleResults(sig, &ptr, 1));
-		return ptr;
-	}
-
 	size_t Range::scanWithMultipleResults(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept
 	{
 		const auto data = sig.bytes.data();

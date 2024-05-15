@@ -24,7 +24,12 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static bool pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept;
 
-		[[nodiscard]] Pointer scan(const Pattern& sig) const noexcept;
+		[[nodiscard]] Pointer scan(const Pattern& sig) const noexcept
+		{
+			Pointer ptr{};
+			SOUP_UNUSED(scanWithMultipleResults(sig, &ptr, 1));
+			return ptr;
+		}
 
 		template <size_t S>
 		[[nodiscard]] size_t scanWithMultipleResults(const Pattern& sig, Pointer(&buf)[S]) const noexcept
