@@ -70,7 +70,7 @@ NAMESPACE_SOUP
 			return 0;
 		}
 #if SOUP_X86 && SOUP_BITS == 64
-		SOUP_IF_LIKELY (data[0].has_value())
+		SOUP_IF_LIKELY (data[sig.most_unique_byte_index].has_value())
 		{
 			if (CpuInfo::get().supportsSSE2())
 			{
@@ -98,17 +98,17 @@ NAMESPACE_SOUP
 	{
 		const auto data = sig.bytes.data();
 		const auto length = sig.bytes.size();
-		const auto match = _mm_set1_epi8(*data[0]);
+		const auto match = _mm_set1_epi8(*data[sig.most_unique_byte_index]);
 		size_t accum = 0;
-		for (uintptr_t i = 0; i < (size - length); i += 16)
+		for (uintptr_t i = sig.most_unique_byte_index; i < (size - length); i += 16)
 		{
 			int mask = _mm_movemask_epi8(_mm_cmpeq_epi8(match, _mm_loadu_si128(base.add(i).as<__m128i*>())));
 			while (mask != 0)
 			{
 				const auto j = bitutil::getLeastSignificantSetBit(mask);
-				if (pattern_matches(base.add(i).add(j).add(1).as<uint8_t*>(), data + 1, length - 1))
+				if (pattern_matches(base.add(i).add(j).sub(sig.most_unique_byte_index).as<uint8_t*>(), data, length))
 				{
-					buf[accum++] = base.add(i).add(j);
+					buf[accum++] = base.add(i).add(j).sub(sig.most_unique_byte_index);
 					if (accum == buflen)
 					{
 						return buflen;
