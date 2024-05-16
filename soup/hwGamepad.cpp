@@ -160,15 +160,19 @@ NAMESPACE_SOUP
 			}
 		}
 
-		update();
-
 		const Buffer& report_data = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report_data.empty())
 		{
+			if (hid.vendor_id == 0x54c && isDs4StillAlive(hid))
+			{
+				return receiveStatus();
+			}
 			disconnected = true;
 		}
 		else
 		{
+			update();
+
 			if (hid.vendor_id == 0x54c) // DS4, Y Down
 			{
 				BufferRefReader r(report_data);
