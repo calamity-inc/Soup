@@ -17,12 +17,12 @@ NAMESPACE_SOUP
 		drawRect(0, 0, width, height, colour);
 	}
 
-	void RenderTarget::drawPixel(unsigned int x, unsigned int y, Rgb colour)
+	void RenderTarget::drawPixel(int x, int y, Rgb colour)
 	{
 		drawRect(x, y, 1, 1, colour);
 	}
 
-	void RenderTarget::drawHollowRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour)
+	void RenderTarget::drawHollowRect(int x, int y, unsigned int width, unsigned int height, Rgb colour)
 	{
 		drawLine(Vector2(static_cast<float>(x), static_cast<float>(y)), Vector2(static_cast<float>(x + width), static_cast<float>(y)), colour); // top
 		drawLine(Vector2(static_cast<float>(x), static_cast<float>(y)), Vector2(static_cast<float>(x), static_cast<float>(y + height)), colour); // left
@@ -30,15 +30,15 @@ NAMESPACE_SOUP
 		drawLine(Vector2(static_cast<float>(x), static_cast<float>(y + height)), Vector2(static_cast<float>(x + width), static_cast<float>(y + height)), colour); // bottom
 	}
 
-	void RenderTarget::drawHollowCircle(unsigned int x, unsigned int y, float r, Rgb colour)
+	void RenderTarget::drawHollowCircle(int x, int y, float r, Rgb colour)
 	{
 		for (float i = 0.01f; i < M_TAU; i += 0.01f)
 		{
-			drawRect(x + (unsigned int)(cos(i) * r), y + (unsigned int)(sin(i) * r), 1, 1, colour);
+			drawRect(x + (int)(cos(i) * r), y + (int)(sin(i) * r), 1, 1, colour);
 		}
 	}
 
-	void RenderTarget::drawCircle(unsigned int x, unsigned int y, float r, Rgb colour)
+	void RenderTarget::drawCircle(int x, int y, float r, Rgb colour)
 	{
 		drawEllipse(x, y, r, r, colour);
 	}
@@ -50,7 +50,7 @@ NAMESPACE_SOUP
 		return (dx * dx + dy * dy) < 1.0f;
 	}
 
-	void RenderTarget::drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour)
+	void RenderTarget::drawEllipse(int x, int y, float xr, float yr, Rgb colour)
 	{
 		// This could be more efficient by only going over the rectangle [x-xr, y-yr, x+xr, y+yr]
 		for (unsigned int px = 0; px != width; ++px)
@@ -81,7 +81,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	static void processPoint(std::map<unsigned int, std::pair<unsigned int, unsigned int>>& lines, unsigned int x, unsigned int y)
+	static void processPoint(std::map<unsigned int, std::pair<unsigned int, unsigned int>>& lines, int x, int y)
 	{
 		if (auto e = lines.find(y); e != lines.end())
 		{
@@ -127,12 +127,12 @@ NAMESPACE_SOUP
 		drawLine(c, a, colour);
 	}
 
-	void RenderTarget::drawText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	void RenderTarget::drawText(int x, int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		drawText(x, y, unicode::utf8_to_utf32(text), font, colour, scale);
 	}
 
-	void RenderTarget::drawText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	void RenderTarget::drawText(int x, int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		if (scale == 0)
 		{
@@ -159,27 +159,27 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void RenderTarget::drawCentredText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	void RenderTarget::drawCentredText(int x, int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		drawCentredText(x, y, unicode::utf8_to_utf32(text), font, colour, scale);
 	}
 
-	void RenderTarget::drawCentredText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	void RenderTarget::drawCentredText(int x, int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		drawText(static_cast<unsigned int>(x - ((font.measureWidth(text) * scale) / 2)), y, text, font, colour, scale);
 	}
 
-	void RenderTarget::drawRightboundText(unsigned int x, unsigned int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	void RenderTarget::drawRightboundText(int x, int y, const std::string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		drawRightboundText(x, y, unicode::utf8_to_utf32(text), font, colour, scale);
 	}
 
-	void RenderTarget::drawRightboundText(unsigned int x, unsigned int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
+	void RenderTarget::drawRightboundText(int x, int y, const std::u32string& text, const RasterFont& font, Rgb colour, uint8_t scale)
 	{
 		drawText(static_cast<unsigned int>(x - (font.measureWidth(text) * scale)), y, text, font, colour, scale);
 	}
 
-	void RenderTarget::drawCanvas(unsigned int x, unsigned int y, const Canvas& c)
+	void RenderTarget::drawCanvas(int x, int y, const Canvas& c)
 	{
 		for (unsigned int canvas_y = 0; canvas_y != c.height; ++canvas_y)
 		{
@@ -190,7 +190,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	Rgb RenderTarget::getPixel(unsigned int x, unsigned int y) const
+	Rgb RenderTarget::getPixel(int x, int y) const
 	{
 		Exception::purecall();
 	}

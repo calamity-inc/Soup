@@ -10,8 +10,8 @@ NAMESPACE_SOUP
 
 		RenderTargetCanvas(Canvas& canvas);
 
-		void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) final;
+		void drawRect(int x, int y, unsigned int width, unsigned int height, Rgb colour) final;
 
-		[[nodiscard]] Rgb getPixel(unsigned int x, unsigned int y) const final;
+		[[nodiscard]] Rgb getPixel(int x, int y) const final;
 	};
 }

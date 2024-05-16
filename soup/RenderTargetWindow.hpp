@@ -25,7 +25,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) final
+		void drawRect(int x, int y, unsigned int width, unsigned int height, Rgb colour) final
 		{
 			HBRUSH brush = CreateSolidBrush(RGB(colour.r, colour.g, colour.b));
 
@@ -48,12 +48,12 @@ NAMESPACE_SOUP
 			LineTo(hdc, static_cast<int>(b.x), static_cast<int>(b.y));
 		}
 
-		void drawCircle(unsigned int x, unsigned int y, float r, Rgb colour) final
+		void drawCircle(int x, int y, float r, Rgb colour) final
 		{
 			return drawEllipse(x, y, r, r, colour);
 		}
 
-		void drawEllipse(unsigned int x, unsigned int y, float xr, float yr, Rgb colour) final
+		void drawEllipse(int x, int y, float xr, float yr, Rgb colour) final
 		{
 			// Outline
 			SelectObject(hdc, GetStockObject(DC_PEN));
@@ -66,7 +66,7 @@ NAMESPACE_SOUP
 			Ellipse(hdc, static_cast<int>(x - xr), static_cast<int>(y - yr), static_cast<int>(x + xr), static_cast<int>(y + yr));
 		}
 
-		[[nodiscard]] Rgb getPixel(unsigned int x, unsigned int y) const final
+		[[nodiscard]] Rgb getPixel(int x, int y) const final
 		{
 			auto col = GetPixel(hdc, x, y);
 			return Rgb{ GetRValue(col), GetGValue(col), GetBValue(col) };
@@ -81,7 +81,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		void drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour) final
+		void drawRect(int x, int y, unsigned int width, unsigned int height, Rgb colour) final
 		{
 			const auto& xapi = X11Api::get();
 			xapi.setForeground(xapi.display, gc, colour.toInt());

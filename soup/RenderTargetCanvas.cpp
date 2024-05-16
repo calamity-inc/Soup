@@ -9,12 +9,12 @@ NAMESPACE_SOUP
 	{
 	}
 
-	void RenderTargetCanvas::drawRect(unsigned int x, unsigned int y, unsigned int width, unsigned int height, Rgb colour)
+	void RenderTargetCanvas::drawRect(int x, int y, unsigned int width, unsigned int height, Rgb colour)
 	{
 		canvas.addRect(x, y, width, height, colour);
 	}
 
-	Rgb RenderTargetCanvas::getPixel(unsigned int x, unsigned int y) const
+	Rgb RenderTargetCanvas::getPixel(int x, int y) const
 	{
 		return canvas.get(x, y);
 	}
