@@ -1605,6 +1605,9 @@
     <ClInclude Include="CertStore.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="osInput.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2382,6 +2385,9 @@
       <Filter>vis\layout</Filter>
     </ClCompile>
     <ClCompile Include="ProcessHandle.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="osInput.cpp">
       <Filter>os</Filter>
     </ClCompile>
   </ItemGroup>

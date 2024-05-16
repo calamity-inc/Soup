@@ -39,13 +39,6 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 		static bool copyToClipboard(const std::string& text);
 
-		static void simulateKeyPress(Key key);
-		static void simulateKeyPress(bool ctrl, bool shift, bool alt, Key key);
-		static void simulateKeyPress(bool ctrl, bool shift, bool alt, bool meta, Key key);
-		static void simulateKeyPress(const std::vector<Key>& keys);
-		static void simulateKeyDown(Key key);
-		static void simulateKeyRelease(Key key);
-
 		[[nodiscard]] static size_t getMemoryUsage();
 
 		[[nodiscard]] static bool isWine();
