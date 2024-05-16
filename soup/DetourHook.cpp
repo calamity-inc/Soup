@@ -4,6 +4,7 @@
 
 #include "Exception.hpp"
 #include "memProtFlags.hpp"
+#include "ObfusString.hpp"
 #include "os.hpp"
 #include "Pointer.hpp"
 #include "x64.hpp"
@@ -38,7 +39,7 @@ NAMESPACE_SOUP
 			auto ins = x64Disasm(op);
 			if (!ins.isValid())
 			{
-				SOUP_THROW(Exception("Unsupported instruction"));
+				SOUP_THROW(Exception(ObfusString("Unsupported instruction").str()));
 			}
 			og_bytes += (uint8_t)(op - op_start);
 			for (const auto& opr : ins.operands)
@@ -47,7 +48,7 @@ NAMESPACE_SOUP
 					|| opr.reg == soup::DIS
 					)
 				{
-					SOUP_THROW(Exception("Instruction interacts with instruction pointer"));
+					SOUP_THROW(Exception(ObfusString("Instruction interacts with instruction pointer").str()));
 				}
 			}
 		} while (og_bytes < sizeof(longjump_trampoline));
