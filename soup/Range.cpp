@@ -93,7 +93,7 @@ NAMESPACE_SOUP
 		const auto length = sig.bytes.size();
 		const auto match = _mm_set1_epi8(*data[sig.most_unique_byte_index]);
 		size_t accum = 0;
-		for (uintptr_t i = sig.most_unique_byte_index; i < (size - length); i += 16)
+		for (uintptr_t i = sig.most_unique_byte_index; i < (size - length - 15); i += 16)
 		{
 			int mask = _mm_movemask_epi8(_mm_cmpeq_epi8(match, _mm_loadu_si128(base.add(i).as<__m128i*>())));
 			while (mask != 0)
