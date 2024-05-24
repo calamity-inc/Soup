@@ -2,7 +2,7 @@
 
 #include "base.hpp"
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 
 #include "audSound.hpp"
 #include "Reader.hpp"

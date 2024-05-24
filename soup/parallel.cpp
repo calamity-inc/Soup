@@ -1,5 +1,5 @@
 #include "parallel.hpp"
-#if !SOUP_WASM
+#if !SOUP_WASM && (!SOUP_WINDOWS || !SOUP_CROSS_COMPILE)
 
 #include <thread>
 #include <vector>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base.hpp"
-#if SOUP_WINDOWS || SOUP_LINUX
+#if (SOUP_WINDOWS && !SOUP_CROSS_COMPILE) || SOUP_LINUX
 
 #include <atomic>
 

@@ -1,6 +1,6 @@
 #include "DigitalKeyboard.hpp"
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")

@@ -41,13 +41,17 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 		static bool copyToClipboard(const std::string& text);
 
+	#if !SOUP_CROSS_COMPILE
 		[[nodiscard]] static size_t getMemoryUsage();
+	#endif
 
 		[[nodiscard]] static bool isWine();
 
 		[[nodiscard]] static PEB* getCurrentPeb();
 
+	#if !SOUP_CROSS_COMPILE
 		[[nodiscard]] static std::string makeScreenshotBmp(int x, int y, int width, int height);
+	#endif
 
 		[[nodiscard]] static int getPrimaryScreenWidth()
 		{

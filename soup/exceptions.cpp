@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 #include <atomic>
 
 #include "Thread.hpp"
@@ -15,7 +15,7 @@
 
 NAMESPACE_SOUP
 {
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 	static std::atomic<_EXCEPTION_POINTERS*> processing_exp = nullptr;
 	static std::string exception_name;
 
@@ -196,7 +196,7 @@ NAMESPACE_SOUP
 	{
 		Capture ret;
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		// If we have a stack overflow, we need somewhere to safely handle the exception.
 		// Switching to a fiber needs stack space, so we need a thread to hand off to.
 		Thread t([](Capture&&)
@@ -271,7 +271,7 @@ NAMESPACE_SOUP
 		return oss.str();
 	}
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 	static void parseExceptionInformation(std::string& exception_name, ULONG_PTR info[15])
 	{
 		switch (info[0])

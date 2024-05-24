@@ -223,29 +223,15 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] std::string toString4() const noexcept
 		{
-#if !SOUP_WINDOWS || !SOUP_CROSS_COMPILE
 			char buf[INET_ADDRSTRLEN] = { '\0' };
 			inet_ntop(AF_INET, reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&data) + 12), buf, INET_ADDRSTRLEN);
 			return buf;
-#else
-			in_addr addr;
-			addr.s_addr = getV4NativeEndian();
-			return inet_ntoa(addr);
-#endif
 		}
 
 		[[nodiscard]] std::string toString6() const noexcept
 		{
 			char buf[INET6_ADDRSTRLEN] = { '\0' };
-#if !SOUP_WINDOWS || !SOUP_CROSS_COMPILE
 			inet_ntop(AF_INET6, &data, buf, INET6_ADDRSTRLEN);
-#else
-			SOCKADDR_IN6 sockaddr = {};
-			sockaddr.sin6_family = AF_INET6;
-			memcpy(&sockaddr.sin6_addr, &data, sizeof(data));
-			DWORD bufLen = sizeof(buf);
-			WSAAddressToStringA((LPSOCKADDR)&sockaddr, sizeof(sockaddr), nullptr, buf, &bufLen);
-#endif
 			return buf;
 
 		}

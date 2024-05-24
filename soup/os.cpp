@@ -229,12 +229,14 @@ NAMESPACE_SOUP
 		return copy_to_clipboard_utf16(unicode::utf8_to_utf16(text));
 	}
 
+	#if !SOUP_CROSS_COMPILE
 	size_t os::getMemoryUsage()
 	{
 		PROCESS_MEMORY_COUNTERS_EX pmc;
 		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
 		return pmc.PrivateUsage;
 	}
+	#endif
 
 	bool os::isWine()
 	{
@@ -256,6 +258,7 @@ NAMESPACE_SOUP
 		return ProcessInformation.PebBaseAddress;
 	}
 
+	#if !SOUP_CROSS_COMPILE
 	[[nodiscard]] static std::string HBMITMAP_to_BMP(HBITMAP hBitmap)
 	{
 		HDC hDC;
@@ -348,5 +351,6 @@ NAMESPACE_SOUP
 		DeleteObject(bmpTarget);
 		return bmp;
 	}
+	#endif
 #endif
 }

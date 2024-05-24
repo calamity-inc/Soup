@@ -4,7 +4,7 @@
 
 #if SOUP_WINDOWS
 #undef UNICODE
-#include "WinDNS.h"
+#include "windns.h"
 #pragma comment(lib, "Dnsapi.lib")
 #else
 #include <resolv.h>

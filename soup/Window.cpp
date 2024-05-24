@@ -1,7 +1,7 @@
 #include "Window.hpp"
 
 #if SOUP_WINDOWS
-#include <Windowsx.h> // GET_X_LPARAM, GET_Y_LPARAM
+#include <windowsx.h> // GET_X_LPARAM, GET_Y_LPARAM
 #endif
 
 #include <unordered_map>

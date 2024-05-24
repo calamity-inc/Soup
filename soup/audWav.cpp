@@ -1,6 +1,6 @@
 #include "audWav.hpp"
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 
 #include <iostream>
 

@@ -33,7 +33,7 @@ NAMESPACE_SOUP
 
 	bool Range::pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept
 	{
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		__try
 		{
 #endif
@@ -45,7 +45,7 @@ NAMESPACE_SOUP
 				}
 			}
 			return true;
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER)
 		{

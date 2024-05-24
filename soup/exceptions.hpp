@@ -19,7 +19,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static std::string addr2name(const void* addr);
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		[[nodiscard]] static std::string getName(_EXCEPTION_POINTERS* exp);
 #endif
 	};

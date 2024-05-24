@@ -19,7 +19,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		FileWriter(const std::wstring& path, bool little_endian = true)
 			: Writer(little_endian), s(path, std::ios::binary)
 		{

@@ -1,7 +1,7 @@
 #include "Process.hpp"
 
 #if SOUP_WINDOWS
-	#include <TlHelp32.h>
+	#include <tlhelp32.h>
 
 	#include "HandleRaii.hpp"
 #else
