@@ -158,11 +158,13 @@ NAMESPACE_SOUP
 		{
 			return ".js";
 		}
-#if SOUP_WINDOWS
-		return ".dll";
-#else
-		return ".so";
+#if SOUP_LINUX
+		if (!isCrossCompiler())
+		{
+			return ".so";
+		}
 #endif
+		return ".dll";
 	}
 
 	std::string Compiler::makeDynamicLibrary(const std::string& in, const std::string& out) const
