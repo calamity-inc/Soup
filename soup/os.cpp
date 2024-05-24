@@ -5,6 +5,8 @@
 #include <fstream>
 
 #if SOUP_WINDOWS
+#pragma comment(lib, "Gdi32.lib")
+
 #include <Psapi.h>
 
 #include "Exception.hpp"
