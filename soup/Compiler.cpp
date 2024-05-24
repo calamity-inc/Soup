@@ -19,22 +19,36 @@ NAMESPACE_SOUP
 	{
 	}
 
-	bool Compiler::isEmscripten() const
+	bool Compiler::isEmscripten() const noexcept
 	{
 		return prog == "em++";
+	}
+
+	bool Compiler::isCrossCompiler() const noexcept
+	{
+		return prog.find("mingw32") != std::string::npos;
 	}
 
 	std::vector<std::string> Compiler::getArgs() const
 	{
 		std::vector<std::string> args{
 #if SOUP_WINDOWS
-			"-D", "_CRT_SECURE_NO_WARNINGS",
-#else
-			"-pthreads", "-Wno-unused-command-line-argument",
+			"-D_CRT_SECURE_NO_WARNINGS",
 #endif
 			"-std="
 		};
 		args.back().append(lang);
+#if SOUP_POSIX && !SOUP_WASM && !SOUP_ANDROID
+		// Multi-threading on POSIX is delicate: It needs pthreads, but:
+		// - Tons of extra requirements with Emscripten (WASM)
+		// - Not supported on Termux (Android)
+		// - Can't pass `-pthreads` when cross-compiling
+		if (!isCrossCompiler())
+		{
+			args.emplace_back("-pthreads");
+			args.emplace_back("-Wno-unused-command-line-argument"); // And the compiler will cry when pthreads isn't actually used...
+		}
+#endif
 		if (!rtti)
 		{
 			args.emplace_back("-fno-rtti");
@@ -62,11 +76,17 @@ NAMESPACE_SOUP
 			args.emplace_back("-lstdc++fs");
 #endif
 #if !SOUP_ANDROID
-			args.emplace_back("-lresolv");
+			if (!isCrossCompiler())
+			{
+				args.emplace_back("-lresolv");
+			}
 #endif
 		}
 		args.emplace_back("-lm");
-		args.emplace_back("-ldl");
+		if (!isCrossCompiler())
+		{
+			args.emplace_back("-ldl");
+		}
 #endif
 		args.insert(args.end(), extra_linker_args.begin(), extra_linker_args.end());
 	}

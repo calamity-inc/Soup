@@ -18,7 +18,8 @@ NAMESPACE_SOUP
 
 		Compiler();
 
-		[[nodiscard]] bool isEmscripten() const;
+		[[nodiscard]] bool isEmscripten() const noexcept;
+		[[nodiscard]] bool isCrossCompiler() const noexcept;
 
 		[[nodiscard]] std::vector<std::string> getArgs() const;
 		void addLinkerArgs(std::vector<std::string>& args) const;
