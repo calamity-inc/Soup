@@ -47,7 +47,7 @@ NAMESPACE_SOUP
 		console.setCursorPos(0, 0);
 		console << c.toStringDownsampledDoublewidth(true);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		os::sleep(500);
 
 		s.eliminateImpossibleCandiates();
 
@@ -56,7 +56,7 @@ NAMESPACE_SOUP
 		console.setCursorPos(0, 0);
 		console << c.toStringDownsampledDoublewidth(true);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		os::sleep(500);
 	} while (s.step());
 	*/
 	struct Sudoku

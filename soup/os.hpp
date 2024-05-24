@@ -36,6 +36,8 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static pid_t getProcessId() noexcept;
 
+		static void sleep(unsigned int ms) noexcept;
+
 #if SOUP_WINDOWS
 		static bool copyToClipboard(const std::string& text);
 

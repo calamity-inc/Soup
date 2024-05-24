@@ -5,15 +5,18 @@
 #include <fstream>
 
 #if SOUP_WINDOWS
-#pragma comment(lib, "Gdi32.lib")
+	#pragma comment(lib, "Gdi32.lib")
 
-#include <psapi.h>
+	#include <psapi.h>
 
-#include "Exception.hpp"
-#include "ObfusString.hpp"
+	#include "Exception.hpp"
+	#include "ObfusString.hpp"
 #else
-#include <sys/mman.h>
-#include <unistd.h> // getpid
+	#include <sys/mman.h>
+	#include <unistd.h> // getpid, usleep
+	#if _POSIX_C_SOURCE >= 199309L
+		#include <time.h> // nanosleep
+	#endif
 #endif
 
 #include "AllocRaiiVirtual.hpp"
@@ -172,6 +175,28 @@ NAMESPACE_SOUP
 		return GetCurrentProcessId();
 #else
 		return ::getpid();
+#endif
+	}
+
+	void os::sleep(unsigned int ms) noexcept
+	{
+#ifdef _WIN32
+		::Sleep(ms);
+#elif _POSIX_C_SOURCE >= 199309L
+		struct timespec ts;
+		ts.tv_sec = ms / 1000;
+		ts.tv_nsec = (ms % 1000) * 1000000;
+		int res;
+		do
+		{
+			res = ::nanosleep(&ts, &ts);
+		} while (res && errno == EINTR);
+#else
+		if (ms >= 1000)
+		{
+			::sleep(ms / 1000);
+		}
+		::usleep((ms % 1000) * 1000);
 #endif
 	}
 

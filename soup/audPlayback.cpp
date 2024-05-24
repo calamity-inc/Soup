@@ -3,8 +3,8 @@
 
 #include <atomic>
 #include <cstring> // memset
-#include <chrono>
-#include <thread>
+
+#include "os.hpp"
 
 NAMESPACE_SOUP
 {
@@ -188,7 +188,7 @@ NAMESPACE_SOUP
 		thrd.awaitCompletion();
 		while (free_blocks != NUM_BLOCKS)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			os::sleep(10);
 		}
 	}
 
@@ -270,7 +270,7 @@ NAMESPACE_SOUP
 		{
 			while (free_blocks == 0)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				os::sleep(10);
 			}
 
 #if SOUP_WINDOWS

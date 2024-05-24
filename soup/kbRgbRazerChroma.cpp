@@ -1,10 +1,9 @@
 #include "kbRgbRazerChroma.hpp"
 #if !SOUP_WASM
 
-#include <thread>
-
 #include "hwHid.hpp"
 #include "json.hpp"
+#include "os.hpp"
 
 NAMESPACE_SOUP
 {
@@ -58,7 +57,7 @@ NAMESPACE_SOUP
 				{
 					base = jr->asObj().at("uri").asStr();
 				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(50));
+				os::sleep(50);
 			} while (base.empty() || !Socket::isPortLocallyBound(Uri(base).port));
 
 			task = sched.add<MaintainTask>(std::move(base));

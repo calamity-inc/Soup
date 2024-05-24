@@ -3,7 +3,6 @@
 #if !SOUP_WASM
 
 #include <iostream>
-#include <thread>
 
 #include "Asn1Sequence.hpp"
 #include "base64.hpp"
@@ -15,6 +14,7 @@
 #include "JsonArray.hpp"
 #include "JsonObject.hpp"
 #include "JsonString.hpp"
+#include "os.hpp"
 #include "rsa.hpp"
 #include "sha256.hpp"
 
@@ -303,7 +303,7 @@ NAMESPACE_SOUP
 			{
 				break;
 			}
-			std::this_thread::sleep_for(std::chrono::seconds(5));
+			os::sleep(5'000);
 		}
 		if (order.status == "ready")
 		{
@@ -312,7 +312,7 @@ NAMESPACE_SOUP
 			std::cout << "Order status: " << order.status << "\n";
 			while (order.status == "processing")
 			{
-				std::this_thread::sleep_for(std::chrono::seconds(5));
+				os::sleep(5'000);
 				order = getOrder(acct, order.uri);
 				std::cout << "Order status: " << order.status << "\n";
 			}

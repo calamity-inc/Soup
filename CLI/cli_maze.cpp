@@ -1,11 +1,10 @@
 #include "cli.hpp"
 
-#include <thread>
-
 #include <Canvas.hpp>
 #include <console.hpp>
 #include <LcgRngInterface.hpp>
 #include <MazeGeneratorDepthFirst.hpp>
+#include <os.hpp>
 #include <RenderTargetCanvas.hpp>
 
 using namespace soup;
@@ -32,7 +31,7 @@ void cli_maze()
 			mg.render(rt);
 			console.clearScreen();
 			console << c.toStringDownsampledDoublewidth(true, true);
-			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			os::sleep(200);
 		}
 	});
 	console.overrideCtrlC([]

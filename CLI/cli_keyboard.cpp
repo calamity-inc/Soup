@@ -1,10 +1,10 @@
 #include "cli.hpp"
 
 #include <iostream>
-#include <thread>
 
 #include <AnalogueKeyboard.hpp>
 #include <DigitalKeyboard.hpp>
+#include <os.hpp>
 #include <RasterFont.hpp>
 #include <RenderTarget.hpp>
 #include <Rgb.hpp>
@@ -92,7 +92,7 @@ void cli_keyboard()
 					}
 #endif
 
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					os::sleep(10);
 				}
 				else
 				{

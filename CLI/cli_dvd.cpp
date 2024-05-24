@@ -4,6 +4,7 @@
 
 #include <Canvas.hpp>
 #include <console.hpp>
+#include <os.hpp>
 #include <RasterFont.hpp>
 
 using namespace soup;
@@ -54,7 +55,7 @@ void cli_dvd()
 					c.addText(pos_x, pos_y, "SOUP", font);
 					console.setCursorPos(0, 0);
 					console << c.toStringDownsampledDoublewidth(false, false);
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					os::sleep(10);
 				}
 			});
 			t.detach();

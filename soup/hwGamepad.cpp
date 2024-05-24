@@ -1,10 +1,10 @@
 #include "hwGamepad.hpp"
 
 #include <algorithm> // clamp
-#include <thread>
 
 #include "BufferRefReader.hpp"
 #include "crc32.hpp"
+#include "os.hpp"
 #include "Packet.hpp"
 #include "time.hpp"
 
@@ -29,7 +29,7 @@ NAMESPACE_SOUP
 			{
 				return true;
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			os::sleep(1);
 		}
 		return false;
 	}
