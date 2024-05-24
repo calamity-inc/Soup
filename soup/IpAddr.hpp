@@ -236,13 +236,18 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] std::string toString6() const noexcept
 		{
-#if !SOUP_WINDOWS || !SOUP_CROSS_COMPILE
 			char buf[INET6_ADDRSTRLEN] = { '\0' };
+#if !SOUP_WINDOWS || !SOUP_CROSS_COMPILE
 			inet_ntop(AF_INET6, &data, buf, INET6_ADDRSTRLEN);
-			return buf;
 #else
-			return "toString6 not implemented";
+			SOCKADDR_IN6 sockaddr = {};
+			sockaddr.sin6_family = AF_INET6;
+			memcpy(&sockaddr.sin6_addr, &data, sizeof(data));
+			DWORD bufLen = sizeof(buf);
+			WSAAddressToStringA((LPSOCKADDR)&sockaddr, sizeof(sockaddr), nullptr, buf, &bufLen);
 #endif
+			return buf;
+
 		}
 
 		[[nodiscard]] std::string getArpaName() const;
