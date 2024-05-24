@@ -5,10 +5,9 @@
 
 #include "Exception.hpp"
 
-#undef CDECL
-
 NAMESPACE_SOUP
 {
+	// Raised if args.size() > 20
 	struct BadCall : public Exception
 	{
 		BadCall()
@@ -19,23 +18,13 @@ NAMESPACE_SOUP
 
 	struct ffi
 	{
-		enum CallConv : uint8_t
-		{
-			CDECL = 0,
-			FASTCALL,
-			STDCALL,
-			THISCALL,
-			VECTORCALL,
-		};
-
 		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
 
-		static uintptr_t call(CallConv conv, void* func, const std::vector<uintptr_t>& args);
+		static uintptr_t call(void* unc, const std::vector<uintptr_t>& args);
 
-		static uintptr_t cdeclCall(void* func, const std::vector<uintptr_t>& args);
-		static uintptr_t fastcall(void* func, const std::vector<uintptr_t>& args);
-		static uintptr_t stdcall(void* func, const std::vector<uintptr_t>& args);
-		static uintptr_t thiscall(void* func, const std::vector<uintptr_t>& args);
-		static uintptr_t vectorcall(void* func, const std::vector<uintptr_t>& args);
+		[[deprecated]] static uintptr_t fastcall(void* func, const std::vector<uintptr_t>& args)
+		{
+			return call(func, args);
+		}
 	};
 }
