@@ -1,7 +1,7 @@
 #include "osInput.hpp"
 #if SOUP_WINDOWS
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "Key.hpp"
 

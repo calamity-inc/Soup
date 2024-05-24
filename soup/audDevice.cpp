@@ -4,7 +4,7 @@
 #include "audPlayback.hpp"
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #include <mmeapi.h>
 #include <objbase.h>
 #include <mmdeviceapi.h>

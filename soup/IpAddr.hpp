@@ -9,7 +9,7 @@
 
 #if SOUP_WINDOWS
 #pragma comment(lib, "Ws2_32.lib")
-#include <Ws2tcpip.h>
+#include <ws2tcpip.h>
 #else
 #include <arpa/inet.h>
 #endif
@@ -223,16 +223,26 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] std::string toString4() const noexcept
 		{
+#if !SOUP_WINDOWS || !SOUP_CROSS_COMPILE
 			char buf[INET_ADDRSTRLEN] = { '\0' };
 			inet_ntop(AF_INET, reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&data) + 12), buf, INET_ADDRSTRLEN);
 			return buf;
+#else
+			in_addr addr;
+			addr.s_addr = getV4NativeEndian();
+			return inet_ntoa(addr);
+#endif
 		}
 
 		[[nodiscard]] std::string toString6() const noexcept
 		{
+#if !SOUP_WINDOWS || !SOUP_CROSS_COMPILE
 			char buf[INET6_ADDRSTRLEN] = { '\0' };
 			inet_ntop(AF_INET6, &data, buf, INET6_ADDRSTRLEN);
 			return buf;
+#else
+			return "toString6 not implemented";
+#endif
 		}
 
 		[[nodiscard]] std::string getArpaName() const;

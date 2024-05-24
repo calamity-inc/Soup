@@ -3,7 +3,7 @@
 #include "base.hpp"
 
 #if SOUP_WINDOWS && SOUP_BITS == 64
-#include <Windows.h>
+#include <windows.h>
 
 NAMESPACE_SOUP
 {

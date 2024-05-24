@@ -7,7 +7,7 @@
 #endif
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 #include "bitutil.hpp"

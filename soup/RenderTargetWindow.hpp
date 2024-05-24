@@ -7,7 +7,7 @@
 #include "Vector2.hpp"
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #pragma comment(lib, "Gdi32.lib")
 #else
 #include "X11Api.hpp"

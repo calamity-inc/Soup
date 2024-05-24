@@ -10,7 +10,7 @@
 #include "Thread.hpp"
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #include <mmeapi.h>
 #else
 #include "SharedLibrary.hpp"

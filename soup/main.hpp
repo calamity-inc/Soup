@@ -6,7 +6,7 @@
 #include <vector>
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 #if SOUP_WINDOWS

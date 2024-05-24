@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <Windows.h>
+#include <windows.h>
 
 NAMESPACE_SOUP
 {

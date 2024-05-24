@@ -7,7 +7,7 @@
 #if SOUP_WINDOWS
 #pragma comment(lib, "Gdi32.lib")
 
-#include <Psapi.h>
+#include <psapi.h>
 
 #include "Exception.hpp"
 #include "ObfusString.hpp"

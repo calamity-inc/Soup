@@ -8,7 +8,7 @@
 #if SOUP_WINDOWS
 	#include <string>
 
-	#include <Windows.h>
+	#include <windows.h>
 #endif
 
 #include "ProcessHandle.hpp"

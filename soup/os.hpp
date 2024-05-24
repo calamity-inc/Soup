@@ -8,8 +8,8 @@
 #include <vector>
 
 #if SOUP_WINDOWS
-#include <Windows.h>
-#include <Winternl.h>
+#include <windows.h>
+#include <winternl.h>
 #endif
 
 NAMESPACE_SOUP

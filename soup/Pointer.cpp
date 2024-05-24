@@ -42,7 +42,7 @@ NAMESPACE_SOUP
 	{
 		auto ptr = *this;
 		std::vector<Pointer> res{ ptr };
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		__try
 		{
 #endif
@@ -51,7 +51,7 @@ NAMESPACE_SOUP
 				ptr = ptr.add(1).rip();
 				res.emplace_back(ptr);
 			}
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		}
 		__except (GetExceptionInformation()->ExceptionRecord->ExceptionCode == STATUS_ACCESS_VIOLATION ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 		{

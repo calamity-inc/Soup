@@ -1,9 +1,9 @@
 #include "Fiber.hpp"
 
-#if SOUP_WINDOWS || SOUP_LINUX
+#if (SOUP_WINDOWS && !SOUP_CROSS_COMPILE) || SOUP_LINUX
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 NAMESPACE_SOUP

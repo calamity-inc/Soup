@@ -7,7 +7,7 @@
 #include <vector>
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #else
 #include "X11Api.hpp"
 #endif

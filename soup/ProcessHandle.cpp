@@ -3,7 +3,7 @@
 #include "Range.hpp"
 
 #if SOUP_WINDOWS
-	#include <Windows.h>
+	#include <windows.h>
 #else
 	#include "FileReader.hpp"
 	#include "Regex.hpp"

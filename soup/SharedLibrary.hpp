@@ -3,7 +3,7 @@
 #include "base.hpp"
 
 #if SOUP_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #else
 #include <dlfcn.h>
 #endif
