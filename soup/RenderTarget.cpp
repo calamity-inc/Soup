@@ -69,7 +69,7 @@ NAMESPACE_SOUP
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			drawRect(static_cast<unsigned int>(lerp(a.x, b.x, t)), static_cast<unsigned int>(lerp(a.y, b.y, t)), 1, 1, colour);
+			drawRect(static_cast<int>(lerp(a.x, b.x, t)), static_cast<int>(lerp(a.y, b.y, t)), 1, 1, colour);
 		}
 	}
 
@@ -77,11 +77,11 @@ NAMESPACE_SOUP
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			drawRect(static_cast<unsigned int>(lerp(a.x, b.x, t)), static_cast<unsigned int>(lerp(a.y, b.y, t)), 1, 1, Rgb::lerp(a_colour, b_colour, t));
+			drawRect(static_cast<int>(lerp(a.x, b.x, t)), static_cast<int>(lerp(a.y, b.y, t)), 1, 1, Rgb::lerp(a_colour, b_colour, t));
 		}
 	}
 
-	static void processPoint(std::map<unsigned int, std::pair<unsigned int, unsigned int>>& lines, int x, int y)
+	static void processPoint(std::map<int, std::pair<int, int>>& lines, int x, int y)
 	{
 		if (auto e = lines.find(y); e != lines.end())
 		{
@@ -96,21 +96,21 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			lines.emplace(y, std::pair<unsigned int, unsigned int>{ x, x });
+			lines.emplace(y, std::pair<int, int>{ x, x });
 		}
 	}
 
-	static void processLine(std::map<unsigned int, std::pair<unsigned int, unsigned int>>& lines, Vector2 a, Vector2 b)
+	static void processLine(std::map<int, std::pair<int, int>>& lines, Vector2 a, Vector2 b)
 	{
 		for (float t = 0.0f; t < 1.0f; t += (0.5f / a.distance(b)))
 		{
-			processPoint(lines, static_cast<unsigned int>(lerp(a.x, b.x, t)), static_cast<unsigned int>(lerp(a.y, b.y, t)));
+			processPoint(lines, static_cast<int>(lerp(a.x, b.x, t)), static_cast<int>(lerp(a.y, b.y, t)));
 		}
 	}
 
 	void RenderTarget::drawTriangle(Vector2 a, Vector2 b, Vector2 c, Rgb colour)
 	{
-		std::map<unsigned int, std::pair<unsigned int, unsigned int>> lines{};
+		std::map<int, std::pair<int, int>> lines{};
 		processLine(lines, a, b);
 		processLine(lines, b, c);
 		processLine(lines, c, a);
