@@ -108,9 +108,4 @@ NAMESPACE_SOUP
 		auto val = v;
 		return u8(prefix) && u64_le(val);
 	}
-
-	bool Writer::bigint_lp_u64_dyn(Bigint& v) SOUP_EXCAL
-	{
-		return str_lp_u64_dyn(v.toBinary());
-	}
 }

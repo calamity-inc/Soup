@@ -79,15 +79,4 @@ NAMESPACE_SOUP
 		}
 		return true;
 	}
-
-	bool Reader::bigint_lp_u64_dyn(Bigint& v) SOUP_EXCAL
-	{
-		std::string str;
-		SOUP_IF_LIKELY (str_lp_u64_dyn(str))
-		{
-			v = Bigint::fromBinary(str);
-			return true;
-		}
-		return false;
-	}
 }

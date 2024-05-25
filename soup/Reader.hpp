@@ -176,8 +176,6 @@ NAMESPACE_SOUP
 			return u64_dyn(len) && str((size_t)len, v);
 		}
 
-		bool bigint_lp_u64_dyn(Bigint& v) SOUP_EXCAL;
-
 		// Length-prefixed string, using mysql_lenenc for the length prefix.
 		bool str_lp_mysql(std::string& v)
 		{

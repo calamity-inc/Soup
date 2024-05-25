@@ -140,8 +140,6 @@ NAMESPACE_SOUP
 			return ret;
 		}
 
-		bool bigint_lp_u64_dyn(Bigint& v) SOUP_EXCAL;
-
 		// Length-prefixed string, using mysql_lenenc for the length prefix.
 		bool str_lp_mysql(const std::string& v) noexcept
 		{

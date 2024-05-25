@@ -50,7 +50,7 @@ NAMESPACE_SOUP
 			{
 				FileReader fr(kp_path);
 				Bigint p, q;
-				if (fr.bigint_lp_u64_dyn(p) && fr.bigint_lp_u64_dyn(q))
+				if (p.io(fr) && q.io(fr))
 				{
 					s_my_config.kp = RsaKeypair(std::move(p), std::move(q));
 				}
@@ -60,8 +60,8 @@ NAMESPACE_SOUP
 				std::cout << "One-time setup: Generating keypair for this machine...\n";
 				s_my_config.kp = RsaKeypair::generate(1536, true);
 				FileWriter fw(kp_path);
-				fw.bigint_lp_u64_dyn(s_my_config.kp.p);
-				fw.bigint_lp_u64_dyn(s_my_config.kp.q);
+				s_my_config.kp.p.io(fw);
+				s_my_config.kp.q.io(fw);
 			}
 
 			const auto peers_path = path / "peers.bin";
@@ -74,7 +74,7 @@ NAMESPACE_SOUP
 					while (num_peers--)
 					{
 						Peer& peer = s_my_config.peers.emplace_back();
-						fr.bigint_lp_u64_dyn(peer.n);
+						peer.n.io(fr);
 						fr.u32(peer.ip);
 						peer.n_hash = hashN(peer.n);
 					}
@@ -114,7 +114,7 @@ NAMESPACE_SOUP
 		fw.u64_dyn(s_my_config.peers.size());
 		for (auto& peer : s_my_config.peers)
 		{
-			fw.bigint_lp_u64_dyn(peer.n);
+			peer.n.io(fw);
 			fw.u32(peer.ip);
 		}
 	}
