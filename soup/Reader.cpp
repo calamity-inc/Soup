@@ -80,22 +80,6 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Reader::om_bigint(Bigint& v) SOUP_EXCAL
-	{
-		v.reset();
-		uint8_t byte;
-		while (u8(byte))
-		{
-			v <<= 7;
-			v |= (Bigint::chunk_t)(byte & 0x7F);
-			if (!(byte & 0x80))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	bool Reader::bigint_lp_u64_dyn(Bigint& v) SOUP_EXCAL
 	{
 		std::string str;

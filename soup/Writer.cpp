@@ -85,34 +85,6 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Writer::om_bigint(const Bigint& v) SOUP_EXCAL
-	{
-		auto chunks = 0;
-		{
-			Bigint val = v;
-			while (true)
-			{
-				val >>= 7;
-				if (!val)
-				{
-					break;
-				}
-				++chunks;
-			}
-		}
-		do
-		{
-			auto tmp = (v >> (size_t)(chunks * 7));
-			uint8_t byte = (tmp.getChunk(0) & 0x7F);
-			if (chunks != 0)
-			{
-				byte |= 0x80;
-			}
-			u8(byte);
-		} while (chunks--);
-		return true;
-	}
-
 	bool Writer::mysql_lenenc(const uint64_t& v) noexcept
 	{
 		if (v < 0xFB)

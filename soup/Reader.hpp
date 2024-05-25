@@ -56,9 +56,6 @@ NAMESPACE_SOUP
 			return false;
 		}
 
-		// Specialisation of the above for Bigint.
-		bool om_bigint(Bigint& v) SOUP_EXCAL;
-
 		// An integer where every byte's most significant bit is used to indicate if another byte follows, least significant byte first. This is compatible with unsigned LEB128.
 		template <typename Int>
 		bool oml(Int& v) noexcept
