@@ -60,7 +60,8 @@ NAMESPACE_SOUP
 		const auto length = sig.bytes.size();
 		SOUP_IF_UNLIKELY (length == 0)
 		{
-			return 0;
+			buf[0] = base;
+			return 1;
 		}
 #if SOUP_X86 && SOUP_BITS == 64
 		SOUP_IF_LIKELY (data[sig.most_unique_byte_index].has_value())
