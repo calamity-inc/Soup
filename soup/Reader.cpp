@@ -1,7 +1,5 @@
 #include "Reader.hpp"
 
-#include "Bigint.hpp"
-
 NAMESPACE_SOUP
 {
 	bool Reader::u64_dyn(uint64_t& v) noexcept
