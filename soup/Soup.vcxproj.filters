@@ -1608,6 +1608,9 @@
     <ClInclude Include="osInput.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="Hwid.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2390,6 +2393,7 @@
     <ClCompile Include="osInput.cpp">
       <Filter>os</Filter>
     </ClCompile>
+    <ClCompile Include="Hwid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

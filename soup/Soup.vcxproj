@@ -745,6 +745,7 @@
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="HidScancode.hpp" />
     <ClInclude Include="hwGamepad.hpp" />
+    <ClInclude Include="Hwid.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
     <ClInclude Include="EmailAddress.hpp" />
     <ClInclude Include="irExpression.hpp" />
@@ -1262,6 +1263,7 @@
     <ClCompile Include="HardwareRng.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />
     <ClCompile Include="hwGamepad.cpp" />
+    <ClCompile Include="Hwid.cpp" />
     <ClCompile Include="InquiryLang.cpp" />
     <ClCompile Include="IpcSocket.cpp" />
     <ClCompile Include="irExpression.cpp" />
