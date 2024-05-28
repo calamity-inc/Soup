@@ -233,7 +233,6 @@ NAMESPACE_SOUP
 			char buf[INET6_ADDRSTRLEN] = { '\0' };
 			inet_ntop(AF_INET6, &data, buf, INET6_ADDRSTRLEN);
 			return buf;
-
 		}
 
 		[[nodiscard]] std::string getArpaName() const;

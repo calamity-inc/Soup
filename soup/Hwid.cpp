@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-#include <Windows.h>
+#include <windows.h>
 #pragma comment(lib, "user32.lib") // EnumDisplayDevicesA
 
 #include "bitutil.hpp"
