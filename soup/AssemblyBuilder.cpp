@@ -1,7 +1,8 @@
 #include "AssemblyBuilder.hpp"
 
+#include <cstring> // memcpy
+
 #include "AllocRaiiVirtual.hpp"
-#include "os.hpp"
 #include "UniquePtr.hpp"
 
 NAMESPACE_SOUP
@@ -222,6 +223,8 @@ NAMESPACE_SOUP
 
 	UniquePtr<AllocRaiiVirtual> AssemblyBuilder::allocate() const
 	{
-		return os::allocateExecutable(m_data);
+		auto alloc = soup::make_unique<AllocRaiiVirtual>(m_data.size());
+		memcpy(alloc->addr, m_data.data(), m_data.size());
+		return alloc;
 	}
 }

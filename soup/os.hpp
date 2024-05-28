@@ -28,8 +28,6 @@ NAMESPACE_SOUP
 		static std::string executeInner(std::string program, const std::vector<std::string>& args);
 	public:
 
-		[[nodiscard]] static UniquePtr<AllocRaiiVirtual> allocateExecutable(const std::string& bytecode);
-		[[nodiscard]] static UniquePtr<AllocRaiiVirtual> allocateExecutable(const std::vector<uint8_t>& bytecode);
 		[[nodiscard]] static void* virtualAlloc(size_t len, int prot);
 		static void virtualFree(void* addr, size_t len);
 		static void changeProtection(void* addr, size_t len, int prot);

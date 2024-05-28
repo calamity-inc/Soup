@@ -19,8 +19,8 @@
 	#endif
 #endif
 
-#include "AllocRaiiVirtual.hpp"
 #include "filesystem.hpp"
+#include "memProtFlags.hpp"
 #include "rand.hpp"
 #include "string.hpp"
 #include "unicode.hpp"
@@ -125,20 +125,6 @@ NAMESPACE_SOUP
 		pclose(pipe);
 #endif
 		return result;
-	}
-
-	UniquePtr<AllocRaiiVirtual> os::allocateExecutable(const std::string& bytecode)
-	{
-		auto alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
-		memcpy(alloc->addr, bytecode.data(), bytecode.size());
-		return alloc;
-	}
-
-	UniquePtr<AllocRaiiVirtual> os::allocateExecutable(const std::vector<uint8_t>& bytecode)
-	{
-		auto alloc = soup::make_unique<AllocRaiiVirtual>(bytecode.size());
-		memcpy(alloc->addr, bytecode.data(), bytecode.size());
-		return alloc;
 	}
 
 	void* os::virtualAlloc(size_t len, int prot)
