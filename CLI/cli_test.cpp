@@ -526,6 +526,7 @@ static void unit_data()
 
 	test("json", []
 	{
+		// Basic test
 		{
 			auto tree = json::decode(R"({
 "firstName": "John",
@@ -562,6 +563,8 @@ static void unit_data()
 			assert(obj.at("phoneNumbers").asArr().at(0).asObj().at("type").asStr() == "home");
 			assert(obj.at("spouse").isNull());
 		}
+
+		// Comments
 		{
 			auto tree = json::decode(R"(// This is a comment
 
@@ -587,6 +590,8 @@ spanning over multiple lines */
 			JsonObject& obj = tree->asObj();
 			assert(obj.at("body").asStr() == "Hello, world!");
 		}
+
+		// Scientific notation
 		{
 			auto tree = json::decode(R"({"perc":1.23e-1,"score":1e+1})");
 			assert(tree);
@@ -594,6 +599,14 @@ spanning over multiple lines */
 			assert(tree->asObj().at("perc").isFloat());
 			assert(tree->asObj().at("perc").asFloat().value == 0.123);
 			assert(tree->asObj().at("score").asFloat().value == 10.0);
+		}
+
+		// Lefthand space on key-value separator (this is valid JSON as per the specs)
+		{
+			auto tree = json::decode(R"({"hello" : "world"})");
+			assert(tree);
+			assert(tree->asObj().contains("hello"));
+			assert(tree->asObj().at("hello").asStr() == "world");
 		}
 	});
 
