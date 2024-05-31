@@ -2393,8 +2393,12 @@
     <ClCompile Include="osInput.cpp">
       <Filter>os</Filter>
     </ClCompile>
-    <ClCompile Include="Hwid.cpp" />
-    <ClCompile Include="memGuard.cpp" />
+    <ClCompile Include="Hwid.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="memGuard.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
