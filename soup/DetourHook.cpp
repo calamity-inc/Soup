@@ -3,9 +3,8 @@
 #include <cstring> // memcpy
 
 #include "Exception.hpp"
-#include "memProtFlags.hpp"
+#include "memGuard.hpp"
 #include "ObfusString.hpp"
-#include "os.hpp"
 #include "Pointer.hpp"
 #include "x64.hpp"
 
@@ -54,7 +53,7 @@ NAMESPACE_SOUP
 		} while (og_bytes < sizeof(longjump_trampoline));
 
 		original = malloc(og_bytes + sizeof(longjump_trampoline));
-		os::changeProtection(original, og_bytes + sizeof(longjump_trampoline), MEM_PROT_READ | MEM_PROT_WRITE | MEM_PROT_EXEC);
+		memGuard::setAllowedAccess(original, og_bytes + sizeof(longjump_trampoline), memGuard::ACC_RWX);
 		memcpy(original, effective_target, og_bytes);
 		writeLongjumpTrampoline((uint8_t*)original + og_bytes, (uint8_t*)effective_target + og_bytes);
 
@@ -75,7 +74,7 @@ NAMESPACE_SOUP
 	void DetourHook::enable()
 	{
 		void* addr = getEffectiveTarget();
-		os::changeProtection(addr, sizeof(longjump_trampoline), MEM_PROT_READ | MEM_PROT_WRITE | MEM_PROT_EXEC);
+		memGuard::setAllowedAccess(addr, sizeof(longjump_trampoline), memGuard::ACC_RWX);
 		writeLongjumpTrampoline(addr, detour);
 	}
 

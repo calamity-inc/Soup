@@ -6,8 +6,7 @@
 #include <string>
 
 #include "macros.hpp" // COUNT
-#include "memProtFlags.hpp"
-#include "os.hpp"
+#include "memGuard.hpp"
 
 NAMESPACE_SOUP
 {
@@ -66,7 +65,7 @@ NAMESPACE_SOUP
 	void Bytepatch::initPatch(uint8_t* area, const uint8_t* patch, size_t size) noexcept
 	{
 		store(area, size);
-		os::changeProtection(area, size, MEM_PROT_READ | MEM_PROT_WRITE | MEM_PROT_EXEC);
+		memGuard::setAllowedAccess(area, size, memGuard::ACC_RWX);
 		memcpy(area, patch, size);
 	}
 

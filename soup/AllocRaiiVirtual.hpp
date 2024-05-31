@@ -2,8 +2,7 @@
 
 #include "AllocRaiiLocalBase.hpp"
 
-#include "memProtFlags.hpp"
-#include "os.hpp"
+#include "memGuard.hpp"
 
 NAMESPACE_SOUP
 {
@@ -11,14 +10,14 @@ NAMESPACE_SOUP
 	{
 		size_t size;
 
-		AllocRaiiVirtual(size_t size, int prot = (MEM_PROT_READ | MEM_PROT_WRITE | MEM_PROT_EXEC))
-			: AllocRaiiLocalBase(os::virtualAlloc(size, prot)), size(size)
+		AllocRaiiVirtual(size_t size, int allowed_access = memGuard::ACC_RWX)
+			: AllocRaiiLocalBase(memGuard::alloc(size, allowed_access)), size(size)
 		{
 		}
 
 		~AllocRaiiVirtual()
 		{
-			os::virtualFree(addr, size);
+			memGuard::free(addr, size);
 		}
 	};
 }

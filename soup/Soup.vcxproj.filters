@@ -1364,9 +1364,6 @@
     <ClInclude Include="DetourHook.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="memProtFlags.hpp">
-      <Filter>mem</Filter>
-    </ClInclude>
     <ClInclude Include="netIntelLocationData4OnDisk.hpp">
       <Filter>net\intel</Filter>
     </ClInclude>
@@ -1610,6 +1607,9 @@
     </ClInclude>
     <ClInclude Include="Hwid.hpp">
       <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="memGuard.hpp">
+      <Filter>mem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2394,6 +2394,7 @@
       <Filter>os</Filter>
     </ClCompile>
     <ClCompile Include="Hwid.cpp" />
+    <ClCompile Include="memGuard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
