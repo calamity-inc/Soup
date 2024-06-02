@@ -139,6 +139,10 @@ NAMESPACE_SOUP
 			case '\n':
 				str.append("\\n");
 				break;
+
+			case '\t':
+				str.append("\\t");
+				break;
 			}
 		}
 		str.push_back('"');
