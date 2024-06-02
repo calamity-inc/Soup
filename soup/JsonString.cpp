@@ -105,6 +105,13 @@ NAMESPACE_SOUP
 		}
 	}
 
+	bool JsonString::operator==(const JsonNode& b) const noexcept
+	{
+		return JSON_STRING == b.type
+			&& value == b.reinterpretAsStr().value
+			;
+	}
+
 	void JsonString::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
 	{
 		str.reserve(str.size() + value.size() + 2);
