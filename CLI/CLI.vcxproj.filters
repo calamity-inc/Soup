@@ -21,6 +21,7 @@
     <ClCompile Include="cli_mouse.cpp" />
     <ClCompile Include="cli_html.cpp" />
     <ClCompile Include="cli_bench.cpp" />
+    <ClCompile Include="cli_cat2json.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />

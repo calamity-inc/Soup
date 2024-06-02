@@ -30,6 +30,7 @@
     <ClCompile Include="cli.cpp" />
     <ClCompile Include="cli_3d.cpp" />
     <ClCompile Include="cli_bench.cpp" />
+    <ClCompile Include="cli_cat2json.cpp" />
     <ClCompile Include="cli_chatgpt.cpp" />
     <ClCompile Include="cli_datareflection.cpp" />
     <ClCompile Include="cli_dig.cpp" />
