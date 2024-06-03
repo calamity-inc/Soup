@@ -99,7 +99,6 @@ NAMESPACE_SOUP
 			}
 			req.header_fields.at("Host") = e->second.substr(0, sep);
 			req.path = e->second.substr(sep);
-			req.path_is_encoded = true;
 		}
 	}
 

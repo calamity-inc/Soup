@@ -35,8 +35,6 @@ NAMESPACE_SOUP
 	HttpRequest::HttpRequest(const Uri& uri)
 		: HttpRequest(uri.host, uri.getRequestPath())
 	{
-		path_is_encoded = true;
-
 		if (joaat::hash(uri.scheme) == joaat::hash("http"))
 		{
 			use_tls = false;
@@ -71,14 +69,7 @@ NAMESPACE_SOUP
 			str.push_back(':');
 			str.append(std::to_string(port));
 		}
-		if (path_is_encoded)
-		{
-			str.append(path);
-		}
-		else
-		{
-			str.append(urlenc::encode(path));
-		}
+		str.append(path);
 		return str;
 	}
 
@@ -179,7 +170,7 @@ NAMESPACE_SOUP
 		std::string data{};
 		data.append(method);
 		data.push_back(' ');
-		data.append(path_is_encoded ? path : urlenc::encodePathWithQuery(path));
+		data.append(path);
 		data.append(ObfusString(" HTTP/1.1").str());
 		data.append("\r\n");
 		data.append(toString());

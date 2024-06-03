@@ -161,7 +161,7 @@ NAMESPACE_SOUP
 
 	std::string Uri::getRequestPath() const SOUP_EXCAL
 	{
-		auto str = urlenc::encodePath(path);
+		auto str = path;
 		if (!query.empty())
 		{
 			str.push_back('?');
@@ -172,7 +172,7 @@ NAMESPACE_SOUP
 
 	Uri Uri::forFile(std::filesystem::path path) SOUP_EXCAL
 	{
-		return Uri("file:///" + urlenc::encodePath(string::fixType(std::filesystem::absolute(path).u8string())));
+		return Uri("file:///" + string::fixType(std::filesystem::absolute(path).u8string()));
 	}
 
 	bool Uri::isFile() const noexcept

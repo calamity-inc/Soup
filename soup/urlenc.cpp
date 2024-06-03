@@ -31,44 +31,6 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	std::string urlenc::encodePath(const std::string& data) SOUP_EXCAL
-	{
-		std::string res{};
-		for (const auto& c : data)
-		{
-			switch (c)
-			{
-			UNRESERVED
-			case '/':
-				res.push_back(c);
-				break;
-
-			default:
-				encode_percent(res, c);
-			}
-		}
-		return res;
-	}
-
-	std::string urlenc::encodePathWithQuery(const std::string& data) SOUP_EXCAL
-	{
-		std::string res{};
-		for (const auto& c : data)
-		{
-			switch (c)
-			{
-			UNRESERVED
-			case '/': case '?': case '=': case '&':
-				res.push_back(c);
-				break;
-
-			default:
-				encode_percent(res, c);
-			}
-		}
-		return res;
-	}
-
 	std::string urlenc::decode(const std::string& data) SOUP_EXCAL
 	{
 		std::string res;
