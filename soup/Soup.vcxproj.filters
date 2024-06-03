@@ -1611,6 +1611,9 @@
     <ClInclude Include="memGuard.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="crc32c.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2398,6 +2401,9 @@
     </ClCompile>
     <ClCompile Include="memGuard.cpp">
       <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="crc32c.cpp">
+      <Filter>data\hash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

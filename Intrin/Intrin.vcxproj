@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aes_helper.cpp" />
+    <ClCompile Include="crc32c_intrin.cpp" />
     <ClCompile Include="crc32_intrin.cpp" />
     <ClCompile Include="hardware_rng.cpp" />
     <ClCompile Include="sha1_transform.cpp" />

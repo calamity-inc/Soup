@@ -718,6 +718,7 @@
     <ClInclude Include="compiletime.hpp" />
     <ClInclude Include="country_names.hpp" />
     <ClInclude Include="CpuInfo.hpp" />
+    <ClInclude Include="crc32c.hpp" />
     <ClInclude Include="csv.hpp" />
     <ClInclude Include="cursed.hpp" />
     <ClInclude Include="DetourHook.hpp" />
@@ -1224,6 +1225,7 @@
     <ClCompile Include="BitReader.cpp" />
     <ClCompile Include="bitutil.cpp" />
     <ClCompile Include="BitWriter.cpp" />
+    <ClCompile Include="crc32c.cpp" />
     <ClCompile Include="exceptions.cpp" />
     <ClCompile Include="gmBox.cpp" />
     <ClCompile Include="gmAxisAlignedBox.cpp" />
