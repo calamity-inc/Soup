@@ -285,17 +285,17 @@ NAMESPACE_SOUP
 
 		// conversions
 
-		[[nodiscard]] static std::string bin2hex(const std::string& str, bool spaces = false)
+		[[nodiscard]] static std::string bin2hex(const std::string& str, bool spaces = false) SOUP_EXCAL
 		{
 			return bin2hexImpl(str, spaces, charset_hex);
 		}
 
-		[[nodiscard]] static std::string bin2hexLower(const std::string& str, bool spaces = false)
+		[[nodiscard]] static std::string bin2hexLower(const std::string& str, bool spaces = false) SOUP_EXCAL
 		{
 			return bin2hexImpl(str, spaces, charset_hex_lower);
 		}
 
-		[[nodiscard]] static std::string bin2hexImpl(const std::string& str, bool spaces, const char* map)
+		[[nodiscard]] static std::string bin2hexImpl(const std::string& str, bool spaces, const char* map) SOUP_EXCAL
 		{
 			std::string res{};
 			res.reserve(str.size() * 2);
@@ -314,6 +314,8 @@ NAMESPACE_SOUP
 			}
 			return res;
 		}
+
+		[[nodiscard]] static std::string hex2bin(const std::string& hex) SOUP_EXCAL;
 
 		enum ToIntFlags : uint8_t
 		{
