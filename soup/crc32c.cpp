@@ -1,5 +1,5 @@
 #include "crc32c.hpp"
-#if SOUP_X86 && defined(SOUP_USE_INTRIN)
+#if SOUP_X86 && defined(_MSC_VER) && defined(SOUP_USE_INTRIN)
 
 namespace soup_intrin
 {
