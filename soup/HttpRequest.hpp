@@ -17,6 +17,7 @@ NAMESPACE_SOUP
 		uint16_t port = 443;
 		std::string method{};
 		std::string path{};
+		bool path_is_encoded = false;
 
 		HttpRequest() = default;
 		HttpRequest(std::string method, std::string host, std::string path);
