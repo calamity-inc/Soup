@@ -1614,6 +1614,9 @@
     <ClInclude Include="crc32c.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="netIntrospectTask.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2404,6 +2407,9 @@
     </ClCompile>
     <ClCompile Include="crc32c.cpp">
       <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="netIntrospectTask.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

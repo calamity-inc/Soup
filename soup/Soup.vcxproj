@@ -774,6 +774,7 @@
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
     <ClInclude Include="netIce.hpp" />
+    <ClInclude Include="netIntrospectTask.hpp" />
     <ClInclude Include="netStatus.hpp" />
     <ClInclude Include="netIntelLocationData4OnDisk.hpp" />
     <ClInclude Include="netIntelOnDisk.hpp" />
@@ -1301,6 +1302,7 @@
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="MacAddr.cpp" />
     <ClCompile Include="netIntelOnDisk.cpp" />
+    <ClCompile Include="netIntrospectTask.cpp" />
     <ClCompile Include="netMesh.cpp" />
     <ClCompile Include="netMeshService.cpp" />
     <ClCompile Include="netStatus.cpp" />
