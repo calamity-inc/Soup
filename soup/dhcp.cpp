@@ -7,9 +7,6 @@
 #include "Scheduler.hpp"
 #include "Socket.hpp"
 
-#include <iostream>
-#include "string.hpp"
-
 NAMESPACE_SOUP
 {
 	using Info = dhcp::Info;
