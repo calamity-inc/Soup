@@ -24,6 +24,21 @@ NAMESPACE_SOUP
 		setContentLength();
 	}
 
+	std::string MimeMessage::getBody() const
+	{
+		if (auto enc = header_fields.find(ObfusString("Content-Encoding")); enc != header_fields.end())
+		{
+			auto enc_joaat = joaat::hash(enc->second);
+			switch (enc_joaat)
+			{
+			case joaat::hash("gzip"):
+			case joaat::hash("deflate"):
+				return deflate::decompress(body).decompressed;
+			}
+		}
+		return body;
+	}
+
 	void MimeMessage::setContentLength()
 	{
 		header_fields.emplace(ObfusString("Content-Length"), std::to_string(body.size()));
