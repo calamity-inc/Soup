@@ -145,6 +145,7 @@ NAMESPACE_SOUP
 			{
 			case joaat::hash("gzip"):
 			case joaat::hash("deflate"):
+				header_fields.erase(enc);
 				body = deflate::decompress(body).decompressed;
 				break;
 			}
