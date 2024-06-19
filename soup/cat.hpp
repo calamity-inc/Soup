@@ -36,6 +36,11 @@ NAMESPACE_SOUP
 		virtual ~catNode() = default;
 	};
 
-	// Returns a default-constructed UniquePtr in case of malformed data.
-	[[nodiscard]] UniquePtr<catNode> catParse(Reader& r) SOUP_EXCAL;
+	struct cat
+	{
+		// Returns a default-constructed UniquePtr in case of malformed data.
+		[[nodiscard]] static UniquePtr<catNode> parse(Reader& r) SOUP_EXCAL;
+	};
+
+	[[deprecated]] inline UniquePtr<catNode> catParse(Reader& r) SOUP_EXCAL { return cat::parse(r); }
 }

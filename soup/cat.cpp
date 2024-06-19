@@ -7,7 +7,7 @@ NAMESPACE_SOUP
 {
 #define CAT_ASSERT(x) SOUP_IF_UNLIKELY (!(x)) { return {}; }
 
-	UniquePtr<catNode> catParse(Reader& r) SOUP_EXCAL
+	UniquePtr<catNode> cat::parse(Reader& r) SOUP_EXCAL
 	{
 		std::string spaces;
 		auto root = soup::make_unique<catNode>(nullptr);

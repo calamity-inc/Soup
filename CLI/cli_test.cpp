@@ -366,7 +366,7 @@ static void unit_data()
 	test("cat", []
 	{
 		StringReader sr("Hello: World");
-		auto tree = catParse(sr);
+		auto tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "Hello");
@@ -383,7 +383,7 @@ static void unit_data()
 			"Final\n"
 			"\n"
 		);
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 4);
 		assert(tree->children.at(0)->name == "Hello");
@@ -396,7 +396,7 @@ static void unit_data()
 		assert(tree->children.at(3)->value.empty());
 
 		sr = ("Colon (\\:): Valid");
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "Colon (:)");
@@ -408,7 +408,7 @@ static void unit_data()
 			"  Nesting\n"
 			"    Nesting\n"
 		);
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "List");
@@ -420,7 +420,7 @@ static void unit_data()
 		assert(tree->children.at(0)->children.at(1)->value.empty());
 
 		sr = " ";
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 0);
 
@@ -428,7 +428,7 @@ static void unit_data()
 			"Some: Value\n"
 			" "
 		);
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "Some");
@@ -439,7 +439,7 @@ static void unit_data()
 			"Some: Value\n"
 			"Empty:\n" // Notice the lack of space after colon. Normally, ": " is the key-value separator, but in the "empty value" case, the space is optional.
 		);
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 2);
 		assert(tree->children.at(0)->name == "Some");
@@ -451,7 +451,7 @@ static void unit_data()
 			":\n"
 			"\tNested"
 		);
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "");
@@ -465,7 +465,7 @@ static void unit_data()
 			"\t\n"
 			"\tItem 2\n"
 		);
-		tree = catParse(sr);
+		tree = cat::parse(sr);
 		assert(tree);
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "List");

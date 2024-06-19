@@ -14,7 +14,7 @@ int cli_cat2json(int argc, const char** argv)
 	if (argc > 2)
 	{
 		FileReader fr(argv[2]);
-		if (auto cr = catParse(fr))
+		if (auto cr = cat::parse(fr))
 		{
 			auto jr = soup::make_unique<JsonObject>();
 			for (auto& child : cr->children)
