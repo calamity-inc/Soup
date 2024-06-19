@@ -470,6 +470,14 @@ static void unit_data()
 		assert(tree->children.size() == 1);
 		assert(tree->children.at(0)->name == "List");
 		assert(tree->children.at(0)->children.size() == 2);
+
+		// Optional feature: Value escaping.
+		sr = R"(Text: "Look at this backslash: \\\r\nLook at this quote: \"")";
+		tree = cat::parse(sr);
+		assert(tree);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "Text");
+		assert(tree->children.at(0)->value == "Look at this backslash: \\\r\nLook at this quote: \"");
 	});
 
 	test("ripemd160", []

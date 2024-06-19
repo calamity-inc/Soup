@@ -12,7 +12,7 @@ home
         hello.txt: Hello, world!
 ```
 
-Note that, on this page, 4 spaces are used instead of actual tab characters to ensure consistent rendering.
+Note that, on this page, 4 spaces are used instead of actual tab characters to ensure consistent rendering, although [this is also valid CaT](#spaces).
 
 ## Files
 
@@ -43,7 +43,7 @@ Without Value
 Explicitly Without Value: 
 ```
 
-The name of a node can also contain colons, in which case they must be escaped with a backslash:
+The name of a node can also contain colons, in which case they MUST be escaped with a backslash:
 
 ```
 Colons (\:): Check!
@@ -57,6 +57,28 @@ Nameless
 Nameless And Valueless
     :
 ```
+
+## Value Encoding
+
+In general, a value can simply be written as-is, but to prevent data loss or corruption, special handling SHOULD be performed for values that contain `"`, `\r`, or `\n` characters: Add a backslash (`\`) before each of these characters, as well as each `\` present in the source value, and wrap the value in quotes (`"`), for example:
+
+```
+Multi-line: "Several readers remarked that \"it's colons and tabs time\" and then put colons and tabs all over the place.\r\n\r\nContainment procedures are still being developed."
+```
+
+In this case, we have a single child node called "Multi-line" with a value of:
+
+```
+Several readers remarked that "it's colons and tabs time" and then put colons and tabs all over the place.
+
+Containment procedures are still being developed.
+```
+
+When decoding, such values wrapped in quotes (`"`) SHOULD be detected, unwrapped, and have the escape sequences resolved:
+- `\\n` -> `\n`
+- `\\r` -> `\r`
+- `\"` -> `"`
+- `\\` -> `\`
 
 ## Children
 
@@ -84,6 +106,6 @@ An empty line (even with indentation) must be ignored.
 
 ## Spaces
 
-A CaT parser *should* try to handle spaces as follows:
+A CaT parser SHOULD handle spaces as follows:
 - On the first occurrence of a space character: Count the number of space characters in a row and remember it as the "baseline count." Treat this as if a single tab character was written instead of the space characters.
 - On the next occurrence of a space character: Count the number of space characters in a row and each time it reaches the "baseline count," treat it like a single tab character.

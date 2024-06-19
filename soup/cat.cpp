@@ -14,7 +14,7 @@ NAMESPACE_SOUP
 		std::vector<catNode*> depths{ root.get() };
 		size_t depth = 0;
 		std::string line;
-		while (r.getLine(line)) // Could possibly have some mechanism for escaping NL e.g. "\\\n" to allow for multi-line values
+		while (r.getLine(line))
 		{
 			if (!line.empty() && line.back() == '\r')
 			{
@@ -116,6 +116,18 @@ NAMESPACE_SOUP
 				{
 					CAT_ASSERT(line_trimmed.at(delim + 1) == ' ');
 					node->value = line_trimmed.substr(delim + 2); // ": "
+					SOUP_IF_UNLIKELY (node->value.size() > 2
+						&& node->value.front() == '"'
+						&& node->value.back() == '"'
+						)
+					{
+						node->value.pop_back();
+						node->value.erase(0, 1);
+						string::replaceAll(node->value, "\\r", "\r");
+						string::replaceAll(node->value, "\\n", "\n");
+						string::replaceAll(node->value, "\\\"", "\"");
+						string::replaceAll(node->value, "\\\\", "\\");
+					}
 				}
 			}
 			else
@@ -138,8 +150,16 @@ NAMESPACE_SOUP
 		string::replaceAll(name, ":", "\\:");
 	}
 
-	void cat::encodeValue(std::string& value)
+	void cat::encodeValue(std::string& value) SOUP_EXCAL
 	{
-		SOUP_ASSERT(value.find('\n') == std::string::npos);
+		SOUP_IF_UNLIKELY (value.find_first_of("\"\n\r") != std::string::npos)
+		{
+			string::replaceAll(value, "\\", "\\\\");
+			string::replaceAll(value, "\"", "\\\"");
+			string::replaceAll(value, "\n", "\\n");
+			string::replaceAll(value, "\r", "\\r");
+			value.insert(0, 1, '"');
+			value.push_back('"');
+		}
 	}
 }
