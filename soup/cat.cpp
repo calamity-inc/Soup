@@ -131,4 +131,10 @@ NAMESPACE_SOUP
 		}
 		return root;
 	}
+
+	void cat::encodeName(std::string& name)
+	{
+		SOUP_ASSERT(name.find("\\:") == std::string::npos);
+		string::replaceAll(name, ":", "\\:");
+	}
 }

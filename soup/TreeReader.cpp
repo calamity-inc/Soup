@@ -3,6 +3,7 @@
 #include "base.hpp"
 
 #include "BitWriter.hpp"
+#include "cat.hpp"
 #include "string.hpp"
 
 NAMESPACE_SOUP
@@ -45,8 +46,7 @@ NAMESPACE_SOUP
 			auto name = getName(child);
 			if (name.find(':') != std::string::npos)
 			{
-				SOUP_ASSERT(name.find("\\:") == std::string::npos);
-				string::replaceAll(name, ":", "\\:");
+				cat::encodeName(name);
 			}
 			str.append(name);
 			auto value = getValue(child);

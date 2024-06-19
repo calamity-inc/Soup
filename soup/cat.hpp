@@ -40,6 +40,8 @@ NAMESPACE_SOUP
 	{
 		// Returns a default-constructed UniquePtr in case of malformed data.
 		[[nodiscard]] static UniquePtr<catNode> parse(Reader& r) SOUP_EXCAL;
+
+		static void encodeName(std::string& name);
 	};
 
 	[[deprecated]] inline UniquePtr<catNode> catParse(Reader& r) SOUP_EXCAL { return cat::parse(r); }
