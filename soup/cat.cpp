@@ -137,4 +137,9 @@ NAMESPACE_SOUP
 		SOUP_ASSERT(name.find("\\:") == std::string::npos);
 		string::replaceAll(name, ":", "\\:");
 	}
+
+	void cat::encodeValue(std::string& value)
+	{
+		SOUP_ASSERT(value.find('\n') == std::string::npos);
+	}
 }

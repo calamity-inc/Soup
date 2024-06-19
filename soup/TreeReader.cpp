@@ -52,7 +52,7 @@ NAMESPACE_SOUP
 			auto value = getValue(child);
 			if (!value.empty())
 			{
-				SOUP_ASSERT(value.find('\n') == std::string::npos);
+				cat::encodeValue(value);
 				str.append(": ");
 				str.append(value);
 			}

@@ -42,6 +42,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] static UniquePtr<catNode> parse(Reader& r) SOUP_EXCAL;
 
 		static void encodeName(std::string& name);
+		static void encodeValue(std::string& value);
 	};
 
 	[[deprecated]] inline UniquePtr<catNode> catParse(Reader& r) SOUP_EXCAL { return cat::parse(r); }
