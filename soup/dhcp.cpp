@@ -36,7 +36,7 @@ NAMESPACE_SOUP
 				msg.fromBinary(data);
 				if (auto dns_server = msg.findOption(0x06))
 				{
-					if (dns_server->size() == 4)
+					if (dns_server->size() >= 4)
 					{
 						cap.get<Info*>()->dns_server = *(network_u32_t*)dns_server->data();
 					}
