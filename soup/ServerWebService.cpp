@@ -159,9 +159,9 @@ NAMESPACE_SOUP
 		s.send(w.data);
 	}
 
-	void ServerWebService::httpRecv(Socket& s) SOUP_EXCAL
+	void ServerWebService::httpRecv(Socket& s)
 	{
-		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
+		s.recv([](Socket& s, std::string&& data, Capture&& cap)
 		{
 			HttpRequest req{};
 			auto method_end = data.find(' ');
