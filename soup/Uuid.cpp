@@ -40,8 +40,9 @@ NAMESPACE_SOUP
 		str += '-';
 		str += string::lpad(string::hexLower(words[3]), 4, '0');
 		str += '-';
-		str += string::lpad(string::hexLower(words[5]), 4, '0');
+		str += string::lpad(string::hexLower(words[4]), 4, '0');
 		str += '-';
+		str += string::lpad(string::hexLower(words[5]), 4, '0');
 		str += string::lpad(string::hexLower(words[6]), 4, '0');
 		str += string::lpad(string::hexLower(words[7]), 4, '0');
 		return str;
