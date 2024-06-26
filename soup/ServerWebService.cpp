@@ -58,25 +58,33 @@ NAMESPACE_SOUP
 		sendResponse(s, status, resp.toString());
 	}
 
-	void ServerWebService::sendHtml(Socket& s, std::string body)
+	void ServerWebService::sendHtml(Socket& s, const std::string& body)
 	{
-		sendData(s, MimeType::TEXT_HTML, std::move(body));
+		sendData(s, MimeType::TEXT_HTML, body, true);
 	}
 
-	void ServerWebService::sendText(Socket& s, std::string body)
+	void ServerWebService::sendText(Socket& s, const std::string& body)
 	{
-		sendData(s, MimeType::TEXT_PLAIN, std::move(body));
+		sendData(s, MimeType::TEXT_PLAIN, body, false);
 	}
 
-	void ServerWebService::sendData(Socket& s, const char* mime_type, std::string body)
+	void ServerWebService::sendData(Socket& s, const char* mime_type, const std::string& body, bool is_private)
 	{
-		auto len = body.size();
-		body.insert(0, "\r\n\r\n");
-		body.insert(0, std::to_string(len));
-		body.insert(0, "\r\nContent-Length: ");
-		body.insert(0, mime_type);
-		body.insert(0, "Cache-Control: private\r\nContent-Type: ");
-		sendResponse(s, "200", body);
+		std::string data;
+		data.reserve(body.size() + 120);
+		if (is_private)
+		{
+			data.append("Cache-Control: private");
+		}
+		else
+		{
+			data.append("Access-Control-Allow-Origin: *");
+		}
+		data.append("\r\nContent-Type: ").append(mime_type);
+		data.append("\r\nContent-Length: ").append(std::to_string(body.size()));
+		data.append("\r\n\r\n");
+		data.append(body);
+		sendResponse(s, "200", data);
 	}
 
 	void ServerWebService::sendRedirect(Socket& s, const std::string& location)
