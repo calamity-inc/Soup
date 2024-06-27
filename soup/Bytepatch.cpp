@@ -8,6 +8,10 @@
 #include "macros.hpp" // COUNT
 #include "memGuard.hpp"
 
+#if SOUP_WINDOWS
+#include <windows.h>
+#endif
+
 NAMESPACE_SOUP
 {
 	Bytepatch::~Bytepatch() noexcept
@@ -65,8 +69,16 @@ NAMESPACE_SOUP
 	void Bytepatch::initPatch(uint8_t* area, const uint8_t* patch, size_t size) noexcept
 	{
 		store(area, size);
+#if SOUP_WINDOWS
+		DWORD OldProtect;
+		VirtualProtect(area, size, PAGE_EXECUTE_READWRITE, &OldProtect);
+#else
 		memGuard::setAllowedAccess(area, size, memGuard::ACC_RWX);
+#endif
 		memcpy(area, patch, size);
+#if SOUP_WINDOWS
+		VirtualProtect(area, size, OldProtect, &OldProtect);
+#endif
 	}
 
 	bool Bytepatch::initPatchNOP(uint8_t* area, size_t size) noexcept
@@ -116,7 +128,14 @@ NAMESPACE_SOUP
 	{
 		if (isPatched())
 		{
+#if SOUP_WINDOWS
+			DWORD OldProtect;
+			VirtualProtect(area, size, PAGE_EXECUTE_READWRITE, &OldProtect);
+#endif
 			memcpy(area, og_area, size);
+#if SOUP_WINDOWS
+			VirtualProtect(area, size, OldProtect, &OldProtect);
+#endif
 			free(og_area);
 			forget();
 		}
