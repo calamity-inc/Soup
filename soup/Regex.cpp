@@ -84,30 +84,8 @@ NAMESPACE_SOUP
 		while (m.c != nullptr)
 		{
 #if REGEX_DEBUG_MATCH
-			std::cout << m.c->toString() << ": ";
+			std::cout << m.c->toString() << " (g " << m.c->group->index << "): ";
 #endif
-
-			// Insert missing capturing groups
-			for (auto g = m.c->group; g; g = g->parent)
-			{
-				if (g->lookahead_or_lookbehind)
-				{
-					break;
-				}
-				if (g->isNonCapturing())
-				{
-					continue;
-				}
-				//std::cout << "group " << g->index << "; ";
-				while (g->index >= m.result.groups.size())
-				{
-					m.result.groups.emplace_back(std::nullopt);
-				}
-				if (!m.result.groups.at(g->index).has_value())
-				{
-					m.result.groups.at(g->index) = RegexMatchedGroup{ g->name, m.it, m.it };
-				}
-			}
 
 			if (m.c->rollback_transition)
 			{
@@ -116,6 +94,8 @@ NAMESPACE_SOUP
 #endif
 				m.saveRollback(m.c->rollback_transition);
 			}
+
+			m.insertMissingCapturingGroups(m.c->group);
 
 			if (reset_capture)
 			{
@@ -180,7 +160,7 @@ NAMESPACE_SOUP
 #if REGEX_DEBUG_MATCH
 				std::cout << "; rolling back\n";
 #endif
-				m.restoreRollback();
+				const RegexGroup* g = m.restoreRollback();
 				SOUP_ASSERT(!m.shouldSaveCheckpoint());
 				reset_capture = m.shouldResetCapture();
 				if (m.c == RegexConstraint::ROLLBACK_TO_SUCCESS)
@@ -190,6 +170,7 @@ NAMESPACE_SOUP
 #endif
 					break;
 				}
+				m.insertMissingCapturingGroups(g);
 				continue;
 			}
 

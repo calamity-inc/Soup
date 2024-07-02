@@ -870,6 +870,8 @@ spanning over multiple lines */
 
 		assert(Regex("a(.*)z").match("az").toString() == R"(0="az", 1="")");
 		assert(Regex("a(.*)z").match("abz").toString() == R"(0="abz", 1="b")");
+
+		assert(Regex("(A)(B)?").match("A").toString() == R"(0="A", 1="A")");
 	});
 
 	test("MessageStream", []

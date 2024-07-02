@@ -14,6 +14,7 @@ NAMESPACE_SOUP
 	{
 		struct RollbackPoint
 		{
+			const RegexGroup* g;
 			const RegexConstraint* c;
 			const char* it;
 			RegexMatchResult result{};
@@ -42,15 +43,17 @@ NAMESPACE_SOUP
 
 		void saveRollback(const RegexConstraint* rollback_transition)
 		{
-			rollback_points.emplace_back(RollbackPoint{ rollback_transition, it, result });
+			rollback_points.emplace_back(RollbackPoint{ c->group, rollback_transition, it, result });
 		}
 
-		void restoreRollback()
+		[[nodiscard]] const RegexGroup* restoreRollback()
 		{
+			const RegexGroup* g = rollback_points.back().g;
 			c = rollback_points.back().c;
 			it = rollback_points.back().it;
 			result = std::move(rollback_points.back().result);
 			rollback_points.pop_back();
+			return g;
 		}
 
 		bool shouldSaveCheckpoint() noexcept
@@ -83,6 +86,29 @@ NAMESPACE_SOUP
 		{
 			it = checkpoints.back();
 			checkpoints.pop_back();
+		}
+
+		void insertMissingCapturingGroups(const RegexGroup* g)
+		{
+			for (; g; g = g->parent)
+			{
+				if (g->lookahead_or_lookbehind)
+				{
+					break;
+				}
+				if (g->isNonCapturing())
+				{
+					continue;
+				}
+				while (g->index >= this->result.groups.size())
+				{
+					this->result.groups.emplace_back(std::nullopt);
+				}
+				if (!this->result.groups.at(g->index).has_value())
+				{
+					this->result.groups.at(g->index) = RegexMatchedGroup{ g->name, this->it, this->it };
+				}
+			}
 		}
 	};
 }
