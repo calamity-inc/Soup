@@ -216,7 +216,7 @@ NAMESPACE_SOUP
 		{ "mov", 0xB8, OI },
 		{ "mov", 0xC6, MI, 8 },
 		{ "mov", 0xC7, MI, 32 },
-		{ "nop", 0xCC, ZO },
+		{ "int3", 0xCC, ZO },
 		{ "ret", 0xC3, ZO },
 		{ "push", 0x50, O, 64 },
 		{ "pop", 0x58, O, 64 },
