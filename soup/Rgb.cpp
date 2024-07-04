@@ -132,4 +132,25 @@ NAMESPACE_SOUP
 		}
 		return std::nullopt;
 	}
+
+	double Rgb::distance(const Rgb& e2) const noexcept
+	{
+		const Rgb& e1 = *this;
+#if false
+		// RGB Manhattan Distance, quick but dirty
+		return abs(e1.r - e2.r) + abs(e1.g - e2.g) + abs(e1.b - e2.b);
+#else
+		// https://stackoverflow.com/a/9085524
+		long rmean = ((long)e1.r + (long)e2.r) / 2;
+		long r = (long)e1.r - (long)e2.r;
+		long g = (long)e1.g - (long)e2.g;
+		long b = (long)e1.b - (long)e2.b;
+		return sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
+#endif
+	}
+
+	double Rgb::similarity(const Rgb& e2) const noexcept
+	{
+		return 1.0 - (distance(e2) / 765.0);
+	}
 }

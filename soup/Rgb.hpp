@@ -97,5 +97,8 @@ NAMESPACE_SOUP
 		{
 			return arr[i];
 		}
+
+		[[nodiscard]] double distance(const Rgb& e2) const noexcept;
+		[[nodiscard]] double similarity(const Rgb& e2) const noexcept;
 	};
 }
