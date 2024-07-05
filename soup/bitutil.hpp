@@ -74,6 +74,20 @@ NAMESPACE_SOUP
 #endif
 		}
 
+		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint16_t mask) noexcept
+		{
+			SOUP_DEBUG_ASSERT(mask != 0); // UB!
+
+			// These intrinsic functions just use the bsf instruction.
+#if defined(_MSC_VER) && !defined(__clang__)
+			unsigned long ret;
+			_BitScanForward(&ret, static_cast<uint32_t>(mask));
+			return ret;
+#else
+			return __builtin_ctz(mask);
+#endif
+		}
+
 		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint32_t mask) noexcept
 		{
 			SOUP_DEBUG_ASSERT(mask != 0); // UB!
@@ -92,6 +106,7 @@ NAMESPACE_SOUP
 		{
 			SOUP_DEBUG_ASSERT(mask != 0); // UB!
 
+			// These intrinsic functions just use the bsf instruction.
 #if defined(_MSC_VER) && !defined(__clang__)
 			unsigned long ret;
 			_BitScanForward64(&ret, mask);
