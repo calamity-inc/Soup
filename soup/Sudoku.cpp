@@ -21,7 +21,7 @@ NAMESPACE_SOUP
 
 	value_t Sudoku::maskToValue(mask_t mask) noexcept
 	{
-		return bitutil::getLeastSignificantSetBit(mask) + 1;
+		return bitutil::getLeastSignificantSetBit(static_cast<uint32_t>(mask)) + 1;
 	}
 
 	value_t Sudoku::Cell::getValue() const noexcept
@@ -783,7 +783,7 @@ NAMESPACE_SOUP
 							bool changed = false;
 							do
 							{
-								index_t x = bitutil::getLeastSignificantSetBit(candidates);
+								index_t x = bitutil::getLeastSignificantSetBit(static_cast<uint32_t>(candidates));
 								changed |= eliminateCandidate(~(value1_bf | value2_bf), x, y);
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
@@ -809,7 +809,7 @@ NAMESPACE_SOUP
 							bool changed = false;
 							do
 							{
-								index_t y = bitutil::getLeastSignificantSetBit(candidates);
+								index_t y = bitutil::getLeastSignificantSetBit(static_cast<uint32_t>(candidates));
 								changed |= eliminateCandidate(~(value1_bf | value2_bf), x, y);
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
@@ -852,7 +852,7 @@ NAMESPACE_SOUP
 							auto candidates = c_candidates;
 							do
 							{
-								index_t x = bitutil::getLeastSignificantSetBit(candidates);
+								index_t x = bitutil::getLeastSignificantSetBit(static_cast<uint32_t>(candidates));
 								changed |= eliminateCandidatesInColumn(value_bf, x, r1y, r2y);
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
@@ -884,7 +884,7 @@ NAMESPACE_SOUP
 							auto candidates = c_candidates;
 							do 
 							{
-								index_t y = bitutil::getLeastSignificantSetBit(candidates);
+								index_t y = bitutil::getLeastSignificantSetBit(static_cast<uint32_t>(candidates));
 								changed |= eliminateCandidatesInRow(value_bf, y, c1x, c2x);
 							} while (bitutil::unsetLeastSignificantSetBit(candidates), candidates);
 							if (changed)
@@ -919,7 +919,7 @@ NAMESPACE_SOUP
 				{
 					do
 					{
-						index_t x = bitutil::getLeastSignificantSetBit(candidates);
+						index_t x = bitutil::getLeastSignificantSetBit(static_cast<uint32_t>(candidates));
 						Sudoku cpy(*this);
 						cpy.getCell(x, y).candidates_bf &= ~value_bf;
 						while (cpy.stepNakedSingle() || cpy.stepHiddenSingle())

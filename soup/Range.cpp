@@ -96,7 +96,7 @@ NAMESPACE_SOUP
 		size_t accum = 0;
 		for (uintptr_t i = sig.most_unique_byte_index; i < (size - length - 15); i += 16)
 		{
-			int mask = _mm_movemask_epi8(_mm_cmpeq_epi8(match, _mm_loadu_si128(base.add(i).as<__m128i*>())));
+			uint32_t mask = _mm_movemask_epi8(_mm_cmpeq_epi8(match, _mm_loadu_si128(base.add(i).as<const __m128i*>())));
 			while (mask != 0)
 			{
 				const auto j = bitutil::getLeastSignificantSetBit(mask);

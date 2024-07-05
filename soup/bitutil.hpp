@@ -74,7 +74,7 @@ NAMESPACE_SOUP
 #endif
 		}
 
-		[[nodiscard]] static unsigned int getLeastSignificantSetBit(unsigned int mask) noexcept
+		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint32_t mask) noexcept
 		{
 			SOUP_DEBUG_ASSERT(mask != 0); // UB!
 
@@ -82,6 +82,19 @@ NAMESPACE_SOUP
 #if defined(_MSC_VER) && !defined(__clang__)
 			unsigned long ret;
 			_BitScanForward(&ret, mask);
+			return ret;
+#else
+			return __builtin_ctz(mask);
+#endif
+		}
+
+		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint64_t mask) noexcept
+		{
+			SOUP_DEBUG_ASSERT(mask != 0); // UB!
+
+#if defined(_MSC_VER) && !defined(__clang__)
+			unsigned long ret;
+			_BitScanForward64(&ret, mask);
 			return ret;
 #else
 			return __builtin_ctz(mask);
