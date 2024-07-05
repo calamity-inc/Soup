@@ -97,6 +97,11 @@ NAMESPACE_SOUP
 			return (extended_features_0_ebx >> 5) & 1;
 		}
 
+		[[nodiscard]] bool supportsAVX512F() const noexcept
+		{
+			return (extended_features_0_ebx >> 16) & 1;
+		}
+
 		[[nodiscard]] bool supportsRDSEED() const noexcept
 		{
 			return (extended_features_0_ebx >> 18) & 1;

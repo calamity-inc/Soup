@@ -4,6 +4,8 @@ static
 arg -O3
 
 arg -maes
+arg -mavx
+arg -mavx2
 arg -mpclmul
 arg -mrdrnd
 arg -mrdseed

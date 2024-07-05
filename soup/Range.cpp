@@ -66,6 +66,17 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 64
 		SOUP_IF_LIKELY (data[sig.most_unique_byte_index].has_value())
 		{
+	#ifdef SOUP_USE_INTRIN
+			// My i9-13900K doesn't support AVX-512 and I don't feel comfortable putting code in here I can't test...
+			/*if (CpuInfo::get().supportsAVX512F())
+			{
+				return scanWithMultipleResultsAvx512(sig, buf, buflen);
+			}*/
+			if (CpuInfo::get().supportsAVX2())
+			{
+				return scanWithMultipleResultsAvx2(sig, buf, buflen);
+			}
+	#endif
 			if (CpuInfo::get().supportsSSE2())
 			{
 				return scanWithMultipleResultsSimd(sig, buf, buflen);
