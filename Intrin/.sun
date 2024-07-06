@@ -12,6 +12,8 @@ arg -mrdseed
 arg -msha
 arg -msse4.1
 
+arg -DSOUP_USE_INTRIN
+
 if not windows
 	arg -fPIC
 endif
