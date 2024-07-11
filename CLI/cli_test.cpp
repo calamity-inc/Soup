@@ -161,7 +161,7 @@ static void unit_crypto()
 			std::string data = "The quick brown fox jumps over the lazy dog.";
 			const char key[] = "Super Secret Key";
 			aes::ecbEncrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 16);
-			assert(data != "The quick brown fox jumps over the lazy dog.");
+			assert(base64::encode(data) == "HodBOXWJGvXUR96GBIBiPX5VqQ8FMB+xfullVkHYvRloZSBsYXp5IGRvZy4=");
 			aes::ecbDecrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 16);
 			assert(data == "The quick brown fox jumps over the lazy dog.");
 		});
@@ -170,7 +170,7 @@ static void unit_crypto()
 			std::string data = "The quick brown fox jumps over the lazy dog.";
 			const char key[] = "Super Secret 192-Bit Key";
 			aes::ecbEncrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 24);
-			assert(data != "The quick brown fox jumps over the lazy dog.");
+			assert(base64::encode(data) == "4tNkWHmb6IL5+ipVNcsVPxWpI6cbOIwA8eqgM8NtsCFoZSBsYXp5IGRvZy4=");
 			aes::ecbDecrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 24);
 			assert(data == "The quick brown fox jumps over the lazy dog.");
 		});
@@ -179,7 +179,7 @@ static void unit_crypto()
 			std::string data = "The quick brown fox jumps over the lazy dog.";
 			const char key[] = "My Super Secret Key For 256-Bit";
 			aes::ecbEncrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 32);
-			assert(data != "The quick brown fox jumps over the lazy dog.");
+			assert(base64::encode(data) == "aVvJVxH5t2p5eofHD627Hj5si+ERM0TAH3pJKnAzj6hoZSBsYXp5IGRvZy4=");
 			aes::ecbDecrypt(reinterpret_cast<uint8_t*>(data.data()), data.size(), reinterpret_cast<const uint8_t*>(key), 32);
 			assert(data == "The quick brown fox jumps over the lazy dog.");
 		});
