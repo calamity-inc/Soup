@@ -18,7 +18,7 @@ NAMESPACE_SOUP
 		CpuInfo() noexcept;
 
 	public:
-		[[nodiscard]] static const CpuInfo& get() noexcept
+		[[nodiscard]] static SOUP_PURE const CpuInfo& get() noexcept
 		{
 			static CpuInfo inst;
 			return inst;
