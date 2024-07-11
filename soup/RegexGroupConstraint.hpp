@@ -32,9 +32,9 @@ NAMESPACE_SOUP
 			return true;
 		}
 
-		[[nodiscard]] RegexConstraint* getEntrypoint() noexcept final
+		[[nodiscard]] const RegexGroup* getGroupCaturedWithin() const noexcept final
 		{
-			return data.initial;
+			return &data;
 		}
 
 		[[nodiscard]] std::string toString() const noexcept final
@@ -78,6 +78,8 @@ NAMESPACE_SOUP
 		[[nodiscard]] UniquePtr<RegexConstraint> clone(RegexTransitionsVector& success_transitions) const final
 		{
 			auto upClone = soup::make_unique<RegexGroupConstraint>(data.index);
+			success_transitions.setTransitionTo(upClone.get());
+			success_transitions.emplace(&upClone->success_transition);
 			for (const auto& a : data.alternatives)
 			{
 				RegexAlternative& ac = upClone->data.alternatives.emplace_back();

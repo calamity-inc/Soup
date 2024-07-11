@@ -50,6 +50,11 @@ NAMESPACE_SOUP
 			return this;
 		}
 
+		[[nodiscard]] virtual const RegexGroup* getGroupCaturedWithin() const noexcept
+		{
+			return group;
+		}
+
 		[[nodiscard]] virtual size_t getCursorAdvancement() const
 		{
 			SOUP_THROW(Exception("Constraint is not fixed-width"));

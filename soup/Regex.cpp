@@ -84,8 +84,15 @@ NAMESPACE_SOUP
 		while (m.c != nullptr)
 		{
 #if REGEX_DEBUG_MATCH
-			std::cout << m.c->toString() << " (g " << m.c->group->index << "): ";
+			std::cout << m.c->toString();
+			if (m.c->group)
+			{
+				std::cout << " (g " << m.c->group->index << ")";
+			}
+			std::cout << ": ";
 #endif
+
+			m.insertMissingCapturingGroups(m.c->group);
 
 			if (m.c->rollback_transition)
 			{
@@ -95,15 +102,13 @@ NAMESPACE_SOUP
 				m.saveRollback(m.c->rollback_transition);
 			}
 
-			m.insertMissingCapturingGroups(m.c->group);
-
 			if (reset_capture)
 			{
 				reset_capture = false;
 #if REGEX_DEBUG_MATCH
-				std::cout << "reset capture for group " << m.c->group->index << "; ";
+				std::cout << "reset capture for group " << m.c->getGroupCaturedWithin()->index << "; ";
 #endif
-				m.result.groups.at(m.c->group->index)->begin = m.it;
+				m.result.groups.at(m.c->getGroupCaturedWithin()->index)->begin = m.it;
 			}
 
 			// Matches?
@@ -160,7 +165,7 @@ NAMESPACE_SOUP
 #if REGEX_DEBUG_MATCH
 				std::cout << "; rolling back\n";
 #endif
-				const RegexGroup* g = m.restoreRollback();
+				m.restoreRollback();
 				SOUP_ASSERT(!m.shouldSaveCheckpoint());
 				reset_capture = m.shouldResetCapture();
 				if (m.c == RegexConstraint::ROLLBACK_TO_SUCCESS)
@@ -170,7 +175,6 @@ NAMESPACE_SOUP
 #endif
 					break;
 				}
-				m.insertMissingCapturingGroups(g);
 				continue;
 			}
 

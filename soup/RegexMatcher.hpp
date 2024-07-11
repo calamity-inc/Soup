@@ -14,7 +14,6 @@ NAMESPACE_SOUP
 	{
 		struct RollbackPoint
 		{
-			const RegexGroup* g;
 			const RegexConstraint* c;
 			const char* it;
 			RegexMatchResult result{};
@@ -43,17 +42,15 @@ NAMESPACE_SOUP
 
 		void saveRollback(const RegexConstraint* rollback_transition)
 		{
-			rollback_points.emplace_back(RollbackPoint{ c->group, rollback_transition, it, result });
+			rollback_points.emplace_back(RollbackPoint{ rollback_transition, it, result });
 		}
 
-		[[nodiscard]] const RegexGroup* restoreRollback()
+		void restoreRollback()
 		{
-			const RegexGroup* g = rollback_points.back().g;
 			c = rollback_points.back().c;
 			it = rollback_points.back().it;
 			result = std::move(rollback_points.back().result);
 			rollback_points.pop_back();
-			return g;
 		}
 
 		bool shouldSaveCheckpoint() noexcept
