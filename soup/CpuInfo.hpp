@@ -71,7 +71,7 @@ NAMESPACE_SOUP
 		{
 			return (feature_flags_ecx >> 9) & 1;
 		}
-		
+
 		[[nodiscard]] bool supportsSSE4_1() const noexcept
 		{
 			return (feature_flags_ecx >> 19) & 1;
