@@ -2,12 +2,14 @@
 
 // === Namespace
 
-namespace soup
-{
-	namespace e1 {};
-	using namespace e1;
-};
-#define NAMESPACE_SOUP namespace soup::e1
+// When vendoring Soup, it is advisable to assign a unique namespace, like so:
+//
+// namespace soup { namespace PROJECTNAME_vendored {}; using namespace PROJECTNAME_vendored; };
+// #define NAMESPACE_SOUP namespace soup::PROJECTNAME_vendored
+//
+// Note that this does not change the way you use Soup.
+
+#define NAMESPACE_SOUP namespace soup
 
 // === Platform/ABI macros
 
