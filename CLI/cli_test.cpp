@@ -1229,16 +1229,34 @@ endif;)") == "");
 
 	test("reflection", []
 	{
-		rflParser par(R"EOC(struct Person { const char* name; int age; })EOC");
-		auto t = par.readStruct();
-		assert(t.name == "Person");
-		assert(t.members.size() == 2);
-		assert(t.members.at(0).type.name == "const char");
-		assert(t.members.at(0).type.toString() == "const char*");
-		assert(t.members.at(0).name == "name");
-		assert(t.members.at(1).type.name == "int");
-		assert(t.members.at(1).type.toString() == "int");
-		assert(t.members.at(1).name == "age");
+		{
+			struct Person { const char* name; int age; };
+			rflParser par(R"EOC(struct Person { const char* name; int age; };)EOC");
+			auto t = par.readStruct();
+			assert(t.name == "Person");
+			assert(t.members.size() == 2);
+			assert(t.members.at(0).type.name == "const char");
+			assert(t.members.at(0).type.toString() == "const char*");
+			assert(t.members.at(0).name == "name");
+			assert(t.members.at(1).type.name == "int");
+			assert(t.members.at(1).type.toString() == "int");
+			assert(t.members.at(1).name == "age");
+			assert(t.getOffsetOf("name") == offsetof(Person, name));
+			assert(t.getOffsetOf("age") == offsetof(Person, age));
+			assert(t.getSize() == sizeof(Person));
+		}
+
+		{
+			struct AlignmentTest { bool a; bool b; bool c; int i; };
+			rflParser par(R"EOC(struct AlignmentTest { bool a; bool b; bool c; int i; };)EOC");
+			auto t = par.readStruct();
+			assert(t.name == "AlignmentTest");
+			assert(t.getOffsetOf("a") == offsetof(AlignmentTest, a));
+			assert(t.getOffsetOf("b") == offsetof(AlignmentTest, b));
+			assert(t.getOffsetOf("c") == offsetof(AlignmentTest, c));
+			assert(t.getOffsetOf("i") == offsetof(AlignmentTest, i));
+			assert(t.getSize() == sizeof(AlignmentTest));
+		}
 	});
 }
 
