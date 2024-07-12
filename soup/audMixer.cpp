@@ -2,6 +2,7 @@
 #if (SOUP_WINDOWS && !SOUP_CROSS_COMPILE) || SOUP_LINUX
 
 #include <algorithm>
+#include <mutex> // lock_guard
 
 #include "audPlayback.hpp"
 #include "audSound.hpp"

@@ -772,6 +772,7 @@
     <ClInclude Include="memGuard.hpp" />
     <ClInclude Include="MessageStream.hpp" />
     <ClInclude Include="MidiComposition.hpp" />
+    <ClInclude Include="Mutex.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
     <ClInclude Include="netIce.hpp" />
@@ -796,6 +797,7 @@
     <ClInclude Include="ProcessHandle.hpp" />
     <ClInclude Include="Ps2Scancode.hpp" />
     <ClInclude Include="punycode.hpp" />
+    <ClInclude Include="RecursiveMutex.hpp" />
     <ClInclude Include="Regex.hpp" />
     <ClInclude Include="RegexAlternative.hpp" />
     <ClInclude Include="RegexCodepointConstraint.hpp" />

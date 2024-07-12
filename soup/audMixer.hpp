@@ -4,9 +4,9 @@
 #if (SOUP_WINDOWS && !SOUP_CROSS_COMPILE) || SOUP_LINUX
 #include "fwd.hpp"
 
-#include <mutex>
 #include <vector>
 
+#include "Mutex.hpp"
 #include "SharedPtr.hpp"
 
 NAMESPACE_SOUP
@@ -14,7 +14,7 @@ NAMESPACE_SOUP
 	class audMixer
 	{
 	public:
-		std::mutex mtx{};
+		Mutex mtx{};
 		std::vector<SharedPtr<audSound>> playing_sounds{};
 		bool stop_playback_when_done = false;
 

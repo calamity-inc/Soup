@@ -1620,6 +1620,12 @@
     <ClInclude Include="laX64Backend.hpp">
       <Filter>lang\compiler\backend</Filter>
     </ClInclude>
+    <ClInclude Include="Mutex.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="RecursiveMutex.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
