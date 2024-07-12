@@ -10,16 +10,14 @@
 
 NAMESPACE_SOUP
 {
-	class RecursiveMutex
+	struct RecursiveMutex
 	{
-	private:
 #if SOUP_WINDOWS
 		CRITICAL_SECTION cs;
 #else
 		pthread_mutex_t mutex;
 #endif
 
-	public:
 		RecursiveMutex() noexcept
 		{
 #if SOUP_WINDOWS
