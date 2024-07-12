@@ -2,6 +2,7 @@
 
 #include "ioSizeMeasurer.hpp"
 #include "Reader.hpp"
+#include "spaceship.hpp"
 
 NAMESPACE_SOUP
 {
@@ -14,7 +15,6 @@ NAMESPACE_SOUP
 		return sm.size;
 	}
 
-	// Requires C++20 or higher.
 	// All entries are assumed to have the same size.
 	struct DiskDbReader
 	{
@@ -34,7 +34,7 @@ NAMESPACE_SOUP
 
 		// cmp function should read (partial) entry and return hint <=> ...
 		template <typename T>
-		bool seekEntry(const T& hint, std::strong_ordering(*cmp)(Reader& r, const T& hint))
+		bool seekEntry(const T& hint, soup::strong_ordering(*cmp)(Reader& r, const T& hint))
 		{
 			size_t start = 0;
 			size_t end = getNumEntries();

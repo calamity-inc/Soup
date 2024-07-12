@@ -1,7 +1,5 @@
 #include "netIntelOnDisk.hpp"
 
-#if SOUP_CPP20
-
 #include "netIntelLocationData4OnDisk.hpp"
 
 NAMESPACE_SOUP
@@ -30,5 +28,3 @@ NAMESPACE_SOUP
 		return res;
 	}
 }
-
-#endif

@@ -2,6 +2,8 @@
 
 #include "Packet.hpp"
 
+#include "spaceship.hpp"
+
 NAMESPACE_SOUP
 {
 	SOUP_PACKET(netIntelLocationData4OnDisk)
@@ -23,18 +25,16 @@ NAMESPACE_SOUP
 				;
 		}
 
-#if SOUP_CPP20
-		[[nodiscard]] static std::strong_ordering cmp(Reader & r, const uint32_t & hint)
+		[[nodiscard]] static soup::strong_ordering cmp(Reader& r, const uint32_t& hint)
 		{
 			netIntelLocationData4OnDisk data;
 			r.u32(data.lower);
 			r.u32(data.upper);
 			if (data.lower <= hint && hint <= data.upper)
 			{
-				return std::strong_ordering::equal;
+				return soup::strong_ordering::equal;
 			}
-			return data.lower < hint ? std::strong_ordering::greater : std::strong_ordering::less;
+			return data.lower < hint ? soup::strong_ordering::greater : soup::strong_ordering::less;
 		}
-#endif
 	};
 }

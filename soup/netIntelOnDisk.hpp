@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-#if SOUP_CPP20
 
 #include <filesystem>
 
@@ -22,5 +21,3 @@ NAMESPACE_SOUP
 		[[nodiscard]] netIntelLocationDataSelfContained getLocationByIpv4(native_u32_t ip);
 	};
 }
-
-#endif
