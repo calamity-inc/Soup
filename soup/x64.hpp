@@ -29,6 +29,7 @@ NAMESPACE_SOUP
 
 		IMM,
 		DIS,
+		OFF,
 	};
 
 	enum x64RegisterAccessType : uint8_t
@@ -63,6 +64,12 @@ NAMESPACE_SOUP
 				/* 0 */ int64_t displacement;
 				/* 8 */
 			};
+			struct // offset
+			{
+				/* 0 */ x64Register a;
+				/* 1 */ x64Register b;
+				/* 2 */
+			} off;
 		};
 
 		void setReg(x64Register reg, x64RegisterAccessType access_type) noexcept
@@ -233,6 +240,7 @@ NAMESPACE_SOUP
 		{ "sub", 0x81, MI, 32, 5 },
 		{ "sub", 0x83, MI, 8, 5 },
 		{ "sub", 0x2B, RM, 32 },
+		{ "sub", 0x29, MR },
 		{ "cmp", 0x80, MI, 8, 7 },
 		{ "cmp", 0x83, MI, 8, 7 },
 		{ "cmp", 0x3C, AI, 8 },

@@ -67,6 +67,26 @@ NAMESPACE_SOUP
 			str.push_back(']');
 			return str;
 		}
+		if (reg == OFF)
+		{
+			std::string str;
+			str.push_back('[');
+			str.push_back('r');
+			str.append(reg_names[off.a]);
+			if (off.a < SP)
+			{
+				str.push_back('x');
+			}
+			str.push_back('+');
+			str.push_back('r');
+			str.append(reg_names[off.b]);
+			if (off.b < SP)
+			{
+				str.push_back('x');
+			}
+			str.push_back(']');
+			return str;
+		}
 
 		std::string name{};
 		if (reg < R8)
@@ -383,9 +403,17 @@ NAMESPACE_SOUP
 		{
 			rex |= (1 << 2);
 		}
+		if (operation->getOprEncoding(1) == M && operands[1].reg == OFF && (operands[1].off.b & 0x8))
+		{
+			rex |= (1 << 1);
+		}
 		if ((operation->getOprEncoding(0) == O && (operands[0].reg & 0x8))
 			|| (operation->getOprEncoding(0) == M && (operands[0].reg & 0x8))
-			|| (operation->getOprEncoding(1) == M && (operands[1].reg & 0x8))
+			|| (operation->getOprEncoding(1) == M
+				&& (
+					(operands[1].reg & 0x8)
+					|| (operands[1].reg == OFF && (operands[1].off.a & 0x8))
+				))
 			)
 		{
 			rex |= (1 << 0);
@@ -410,20 +438,35 @@ NAMESPACE_SOUP
 		if (operation->getNumModrmOperands() != 0)
 		{
 			uint8_t modrm = ((operation->distinguish & 0b111) << 3);
-			if (operands[0].deref_size == 0)
+			if (operands[1].reg == OFF)
 			{
-				modrm |= (0b11 << 6); // direct
+				modrm |= ((operands[0].reg & 0b111) << 3); // destination
+				modrm |= 4;
 			}
-			else if (operands[0].deref_offset != 0)
+			else
 			{
-				modrm |= (0b01 << 6);
+				if (operands[0].deref_size == 0)
+				{
+					modrm |= (0b11 << 6); // direct
+				}
+				else if (operands[0].deref_offset != 0)
+				{
+					modrm |= (0b01 << 6);
+				}
+				if (operation->getNumOperands() != 1)
+				{
+					modrm |= ((operands[1].reg & 0b111) << 3); // reg
+				}
+				modrm |= (operands[0].reg & 0b111); // r/m
 			}
-			if (operation->getNumOperands() != 1)
-			{
-				modrm |= ((operands[1].reg & 0b111) << 3); // reg
-			}
-			modrm |= (operands[0].reg & 0b111); // r/m
 			res.push_back(modrm);
+			if (operands[1].reg == OFF)
+			{
+				uint8_t sib = 0;
+				sib |= (operands[1].off.a & 0b111);
+				sib |= ((operands[1].off.b & 0b111) << 3);
+				res.push_back(sib);
+			}
 			if (operands[0].deref_size != 0
 				&& operands[0].deref_offset != 0
 				)
@@ -488,6 +531,7 @@ NAMESPACE_SOUP
 		bool default_operand_size = true;
 		bool reg_x = false;
 		bool rm_x = false;
+		bool off_b_x = false;
 
 		// "Mandatory" prefix
 		if (*code == 0x67)
@@ -510,6 +554,7 @@ NAMESPACE_SOUP
 				default_operand_size = false;
 			}
 			reg_x = ((*code >> 2) & 1);
+			off_b_x = ((*code >> 1) & 1);
 			rm_x = (*code & 1);
 			++code;
 		}
@@ -581,7 +626,7 @@ NAMESPACE_SOUP
 								{
 									opr.access_type = (address_size_override ? ACCESS_32 : ACCESS_64);
 									opr.deref_size = ((num_modrm_oprs == 2) ? 1 : operand_size); // Hiding pointer type when other operand makes it apparent
-									if (opr.reg == SP)
+									if ((modrm & 0b111) == SP)
 									{
 										sib = *++code;
 									}
@@ -595,13 +640,20 @@ NAMESPACE_SOUP
 									}
 									else if ((modrm >> 6) == 0b00)
 									{
-										if (opr.reg == SP)
+										if ((modrm & 0b111) == SP)
 										{
 											if (sib == 0x25)
 											{
 												// Absolute address
 												opr.reg = IMM;
 												getImmediate(opr.val, code, 4);
+											}
+											else if (sib != 0x24)
+											{
+												// Offset
+												opr.reg = OFF;
+												opr.off.a = (x64Register)((sib & 0b111) | (rm_x << 3));
+												opr.off.b = (x64Register)(((sib >> 3) & 0b111) | (off_b_x << 3));
 											}
 										}
 										else if (opr.reg == BP)

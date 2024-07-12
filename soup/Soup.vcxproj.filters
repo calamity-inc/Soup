@@ -1617,6 +1617,9 @@
     <ClInclude Include="netIntrospectTask.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="laX64Backend.hpp">
+      <Filter>lang\compiler\backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2410,6 +2413,9 @@
     </ClCompile>
     <ClCompile Include="netIntrospectTask.cpp">
       <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="laX64Backend.cpp">
+      <Filter>lang\compiler\backend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -765,6 +765,7 @@
     <ClInclude Include="laMathFrontend.hpp" />
     <ClInclude Include="laPlutoFrontend.hpp" />
     <ClInclude Include="laWasmBackend.hpp" />
+    <ClInclude Include="laX64Backend.hpp" />
     <ClInclude Include="lyoInputElement.hpp" />
     <ClInclude Include="MathExpr.hpp" />
     <ClInclude Include="memBox.hpp" />
@@ -1282,6 +1283,7 @@
     <ClCompile Include="laMathFrontend.cpp" />
     <ClCompile Include="laPlutoFrontend.cpp" />
     <ClCompile Include="laWasmBackend.cpp" />
+    <ClCompile Include="laX64Backend.cpp" />
     <ClCompile Include="LcgRng.cpp" />
     <ClCompile Include="LexemeParser.cpp" />
     <ClCompile Include="log.cpp" />
