@@ -146,13 +146,90 @@ static void render()
 
 void cli_3d()
 {
-	/*updateScene();
+#if false
+	updateScene();
 	auto w = Window::create("Soup 3D", 720, 480);
 	w.setDrawFunc([](Window, RenderTarget& rt)
 	{
+#if true // upsampling
+		c = Canvas(rt.width / 20, rt.height / 20);
+		renderOnto(c);
+		c.resizeNearestNeighbour(rt.width, rt.height);
+		rt.drawCanvas(0, 0, c);
+#else
 		sr.render(s, rt, fov);
+#endif
 	});
-	w.runMessageLoop();*/
+	w.setKeyCallback([](Window w, char32_t c, bool down, bool repeat)
+	{
+		if (!down)
+		{
+			return;
+		}
+		if (c == 'W')
+		{
+			s.cam_pos += (Vector3{ 0.0f, 0.0f, 0.0f + s.cam_rot.z }).toDirNoZ() * 0.1f;
+			w.redraw();
+		}
+		if (c == 'A')
+		{
+			s.cam_pos += (Vector3{ 0.0f, 0.0f, 270.0f + s.cam_rot.z }).toDirNoZ() * 0.1f;
+			w.redraw();
+		}
+		if (c == 'S')
+		{
+			s.cam_pos += (Vector3{ 0.0f, 0.0f, 180.0f + s.cam_rot.z }).toDirNoZ() * 0.1f;
+			w.redraw();
+		}
+		if (c == 'D')
+		{
+			s.cam_pos += (Vector3{ 0.0f, 0.0f, 90.0f + s.cam_rot.z }).toDirNoZ() * 0.1f;
+			w.redraw();
+		}
+		if (c == 'R')
+		{
+			s.cam_pos.z += 0.1f;
+			w.redraw();
+		}
+		if (c == 'F')
+		{
+			s.cam_pos.z -= 0.1f;
+			w.redraw();
+		}
+		if (c == 'Q')
+		{
+			fov -= 5.0f;
+			w.redraw();
+		}
+		if (c == 'E')
+		{
+			fov += 5.0f;
+			w.redraw();
+		}
+		if (c == 0x27) // right
+		{
+			s.cam_rot.z += 5.0f;
+			w.redraw();
+		}
+		if (c == 0x25) // left
+		{
+			s.cam_rot.z -= 5.0f;
+			w.redraw();
+		}
+		if (c == 0x26) // up
+		{
+			s.cam_rot.x += 5.0f;
+			w.redraw();
+		}
+		if (c == 0x28) // down
+		{
+			s.cam_rot.x -= 5.0f;
+			w.redraw();
+		}
+	});
+	w.setResizable(true);
+	w.runMessageLoop();
+#endif
 
 	console.init(true);
 	console.enableSizeTracking([](unsigned int width, unsigned int height, const Capture&)
