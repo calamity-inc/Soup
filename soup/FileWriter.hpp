@@ -17,12 +17,14 @@ NAMESPACE_SOUP
 		FileWriter(const std::string& path, bool little_endian = true)
 			: Writer(little_endian), s(path, std::ios::binary)
 		{
+			SOUP_ASSERT(s.is_open(), "Failed to open file for writing");
 		}
 
 #if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		FileWriter(const std::wstring& path, bool little_endian = true)
 			: Writer(little_endian), s(path, std::ios::binary)
 		{
+			SOUP_ASSERT(s.is_open(), "Failed to open file for writing");
 		}
 #endif
 
@@ -30,6 +32,7 @@ NAMESPACE_SOUP
 		FileWriter(const T& path, bool little_endian = true)
 			: Writer(little_endian), s(path, std::ios::binary)
 		{
+			SOUP_ASSERT(s.is_open(), "Failed to open file for writing");
 		}
 
 		~FileWriter() final = default;
