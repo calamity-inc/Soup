@@ -5,7 +5,6 @@
 #include "Canvas.hpp"
 #include "Exception.hpp"
 #include "parse_tree.hpp"
-#include "QrCode.hpp"
 #include "SharedPtr.hpp"
 
 NAMESPACE_SOUP
@@ -36,10 +35,6 @@ NAMESPACE_SOUP
 			val = reinterpret_cast<uint64_t>(new std::unordered_map<Mixed, SharedPtr<Mixed>>(b.getMixedSpMixedMap()));
 			break;
 
-		case QR_CODE:
-			val = reinterpret_cast<uint64_t>(new QrCode(*reinterpret_cast<QrCode*>(val)));
-			break;
-		
 		case CANVAS:
 			val = reinterpret_cast<uint64_t>(new Canvas(*reinterpret_cast<Canvas*>(val)));
 			break;
@@ -53,11 +48,6 @@ NAMESPACE_SOUP
 
 	Mixed::Mixed(astBlock* val)
 		: type(AST_BLOCK), val(reinterpret_cast<uint64_t>(val))
-	{
-	}
-
-	Mixed::Mixed(QrCode&& val)
-		: type(QR_CODE), val(reinterpret_cast<uint64_t>(new QrCode(std::move(val))))
 	{
 	}
 
@@ -87,10 +77,6 @@ NAMESPACE_SOUP
 
 		case AST_BLOCK:
 			delete reinterpret_cast<astBlock*>(val);
-			break;
-
-		case QR_CODE:
-			delete reinterpret_cast<QrCode*>(val);
 			break;
 
 		case CANVAS:
@@ -223,12 +209,6 @@ NAMESPACE_SOUP
 	{
 		assertType(AST_BLOCK);
 		return *reinterpret_cast<astBlock*>(val);
-	}
-
-	QrCode& Mixed::getQrCode() const
-	{
-		assertType(QR_CODE);
-		return *reinterpret_cast<QrCode*>(val);
 	}
 
 	Canvas& Mixed::getCanvas() const

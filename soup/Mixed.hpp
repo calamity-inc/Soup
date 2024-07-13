@@ -23,7 +23,6 @@ NAMESPACE_SOUP
 			VAR_NAME,
 			MIXED_SP_MIXED_MAP,
 			AST_BLOCK,
-			QR_CODE,
 			CANVAS,
 		};
 
@@ -84,7 +83,6 @@ NAMESPACE_SOUP
 
 		Mixed(astBlock* val); // takes ownership
 
-		Mixed(QrCode&& val);
 		Mixed(Canvas&& val);
 
 		~Mixed() noexcept
@@ -207,11 +205,6 @@ NAMESPACE_SOUP
 			return type == AST_BLOCK;
 		}
 
-		[[nodiscard]] constexpr bool isQrCode() const noexcept
-		{
-			return type == QR_CODE;
-		}
-
 		[[nodiscard]] constexpr bool isCanvas() const noexcept
 		{
 			return type == CANVAS;
@@ -234,7 +227,6 @@ NAMESPACE_SOUP
 		[[nodiscard]] std::string& getVarName() const;
 		[[nodiscard]] std::unordered_map<Mixed, SharedPtr<Mixed>>& getMixedSpMixedMap() const;
 		[[nodiscard]] astBlock& getAstBlock() const;
-		[[nodiscard]] QrCode& getQrCode() const;
 		[[nodiscard]] Canvas& getCanvas() const;
 	};
 }
