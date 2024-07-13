@@ -20,7 +20,7 @@ NAMESPACE_SOUP
 	{
 		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
 
-		static uintptr_t call(void* unc, const std::vector<uintptr_t>& args);
+		static uintptr_t call(void* func, const std::vector<uintptr_t>& args);
 
 		[[deprecated]] static uintptr_t fastcall(void* func, const std::vector<uintptr_t>& args)
 		{
