@@ -14,15 +14,15 @@
 #endif
 #include "StringRefReader.hpp"
 
-#if SHA1_USE_INTRIN
-namespace soup_intrin
-{
-	extern void sha1_transform(uint32_t state[5], const uint8_t data[64]) noexcept;
-}
-#endif
-
 NAMESPACE_SOUP
 {
+#if SHA1_USE_INTRIN
+	namespace intrin
+	{
+		extern void sha1_transform(uint32_t state[5], const uint8_t data[64]) noexcept;
+	}
+#endif
+
 	// Original source: https://github.com/vog/sha1
 	// Original licence: Dedicated to the public domain.
 
@@ -234,11 +234,11 @@ NAMESPACE_SOUP
 			if constexpr (intrin)
 			{
 	#if SOUP_X86
-				soup_intrin::sha1_transform(digest, (const uint8_t*)buffer.data());
+				intrin::sha1_transform(digest, (const uint8_t*)buffer.data());
 	#else
 				uint32_t block[BLOCK_INTS];
 				buffer_to_block<BLOCK_INTS, false>(buffer, block);
-				soup_intrin::sha1_transform(digest, (const uint8_t*)block);
+				intrin::sha1_transform(digest, (const uint8_t*)block);
 	#endif
 			}
 			else
@@ -274,7 +274,7 @@ NAMESPACE_SOUP
 #if SHA1_USE_INTRIN
 			if constexpr (intrin)
 			{
-				soup_intrin::sha1_transform(digest, (const uint8_t*)block);
+				intrin::sha1_transform(digest, (const uint8_t*)block);
 			}
 			else
 #endif
@@ -298,7 +298,7 @@ NAMESPACE_SOUP
 			block[BLOCK_INTS - 1] = (uint32_t)total_bits;
 			block[BLOCK_INTS - 2] = (uint32_t)(total_bits >> 32);
 	#endif
-			soup_intrin::sha1_transform(digest, (const uint8_t*)block);
+			intrin::sha1_transform(digest, (const uint8_t*)block);
 		}
 		else
 #endif

@@ -18,15 +18,15 @@ Original source: https://github.com/983/SHA-256
 Original licence: Dedicated to the public domain.
 */
 
-#if SHA256_USE_INTRIN
-namespace soup_intrin
-{
-	extern void sha256_transform(uint32_t state[8], const uint8_t data[64]) noexcept;
-}
-#endif
-
 NAMESPACE_SOUP
 {
+#if SHA256_USE_INTRIN
+	namespace intrin
+	{
+		extern void sha256_transform(uint32_t state[8], const uint8_t data[64]) noexcept;
+	}
+#endif
+
 	struct sha256_state
 	{
 		uint32_t state[8];
@@ -111,7 +111,7 @@ NAMESPACE_SOUP
 		static bool good_cpu = sha256_can_use_intrin();
 		if (good_cpu)
 		{
-			return soup_intrin::sha256_transform(sha->state, sha->buffer);
+			return intrin::sha256_transform(sha->state, sha->buffer);
 		}
 #endif
 
