@@ -1267,6 +1267,17 @@ endif;)") == "");
 			assert(t.getOffsetOf("i") == offsetof(AlignmentTest, i));
 			assert(t.getSize() == sizeof(AlignmentTest));
 		}
+
+		{
+			struct PackedTest { bool a, b, *c; };
+			rflParser par(R"EOC(struct PackedTest { bool a, b, *c; };)EOC");
+			auto t = par.readStruct();
+			assert(t.name == "PackedTest");
+			assert(t.getOffsetOf("a") == offsetof(PackedTest, a));
+			assert(t.getOffsetOf("b") == offsetof(PackedTest, b));
+			assert(t.getOffsetOf("c") == offsetof(PackedTest, c));
+			assert(t.getSize() == sizeof(PackedTest));
+		}
 	});
 }
 

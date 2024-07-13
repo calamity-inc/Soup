@@ -16,35 +16,47 @@ NAMESPACE_SOUP
 	rflType rflParser::readType()
 	{
 		rflType type;
-		type.name = readLiteral();
-		if (type.name == "const")
+		type.name = readRawType();
+		type.at = readAccessType();
+		return type;
+	}
+
+	std::string rflParser::readRawType()
+	{
+		std::string str;
+		str = readLiteral();
+		if (str == "const")
 		{
-			type.name.push_back(' ');
-			type.name.append(readLiteral());
+			str.push_back(' ');
+			str.append(readLiteral());
 		}
-		if (type.name == "unsigned")
+		if (str == "unsigned")
 		{
-			type.name.push_back(' ');
-			type.name.append(readLiteral());
+			str.push_back(' ');
+			str.append(readLiteral());
 		}
-		type.at = rflType::DIRECT;
+		return str;
+	}
+
+	rflType::AccessType rflParser::readAccessType()
+	{
 		const auto next_literal = peekLiteral();
 		if (next_literal == "*")
 		{
-			type.at = rflType::POINTER;
 			advance();
+			return rflType::POINTER;
 		}
 		else if (next_literal == "&")
 		{
-			type.at = rflType::REFERENCE;
 			advance();
+			return rflType::REFERENCE;
 		}
 		else if (next_literal == "&&")
 		{
-			type.at = rflType::RVALUE_REFERENCE;
 			advance();
+			return rflType::RVALUE_REFERENCE;
 		}
-		return type;
+		return rflType::DIRECT;
 	}
 
 	rflVar rflParser::readVar()
@@ -116,9 +128,15 @@ NAMESPACE_SOUP
 		}
 		while (peekLiteral() != "}")
 		{
-			rflMember& member = desc.members.emplace_back(rflMember{});
-			readVar(member);
-			member.accessibility = accessibility;
+			const auto type = readRawType();
+			do
+			{
+				rflMember& member = desc.members.emplace_back(rflMember{});
+				member.type.name = type;
+				member.type.at = readAccessType();
+				member.name = readLiteral();
+				member.accessibility = accessibility;
+			} while (peekLiteral() == "," && (advance(), true));
 		}
 		if (hasMore())
 		{
