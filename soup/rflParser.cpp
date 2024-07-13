@@ -141,21 +141,21 @@ NAMESPACE_SOUP
 		if (hasMore())
 		{
 			advance(); // skip '}'
-			if (hasMore())
-			{
-				align();
-			}
+			align();
 		}
 		return desc;
 	}
 
 	void rflParser::align()
 	{
-		while (i->isSpace()
-			|| (
-				i->isLiteral()
-				&& (i->getLiteral() == "//"
-					|| i->getLiteral().at(0) == '#'
+		while (hasMore()
+			&& (
+				i->isSpace()
+				|| (
+					i->isLiteral()
+					&& (i->getLiteral() == "//"
+						|| i->getLiteral().at(0) == '#'
+						)
 					)
 				)
 			)
@@ -178,6 +178,7 @@ NAMESPACE_SOUP
 	std::string rflParser::readLiteral()
 	{
 		align();
+		SOUP_ASSERT(hasMore());
 		SOUP_ASSERT(i->isLiteral());
 		return (i++)->val.getString();
 	}
@@ -185,7 +186,7 @@ NAMESPACE_SOUP
 	std::string rflParser::peekLiteral()
 	{
 		align();
-		if (i->isLiteral())
+		if (hasMore() && i->isLiteral())
 		{
 			return i->val.getString();
 		}
