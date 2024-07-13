@@ -13,12 +13,7 @@ NAMESPACE_SOUP
 	class rand_impl
 	{
 	public:
-		[[nodiscard]] static uint64_t getSeed() noexcept
-		{
-			std::random_device rd{};
-			static_assert(sizeof(std::random_device::result_type) == 4);
-			return ((uint64_t)rd() << 32) | rd();
-		}
+		[[nodiscard]] static uint64_t getSeed() noexcept;
 
 //#define getConstexprSeedCounted() getConstexprSeed(__COUNTER__ + 1)
 
