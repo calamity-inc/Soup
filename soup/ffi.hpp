@@ -7,7 +7,7 @@
 
 NAMESPACE_SOUP
 {
-	// Raised if args.size() > 20
+	// Raised if args.size() > ffi::MAX_ARGS
 	struct BadCall : public Exception
 	{
 		BadCall()
@@ -18,6 +18,8 @@ NAMESPACE_SOUP
 
 	struct ffi
 	{
+		constexpr static auto MAX_ARGS = 20;
+
 		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
 
 		static uintptr_t call(void* func, const std::vector<uintptr_t>& args);
