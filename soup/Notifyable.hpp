@@ -22,7 +22,7 @@ NAMESPACE_SOUP
 #endif
 		}
 
-		~Notifyable()
+		~Notifyable() noexcept
 		{
 #if !SOUP_WINDOWS
 			pthread_cond_destroy(&cond);
