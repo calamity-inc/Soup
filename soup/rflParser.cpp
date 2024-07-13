@@ -87,6 +87,10 @@ NAMESPACE_SOUP
 				}
 			}
 		}
+		if (hasMore())
+		{
+			align();
+		}
 		return f;
 	}
 
@@ -118,7 +122,14 @@ NAMESPACE_SOUP
 			readVar(member);
 			member.accessibility = accessibility;
 		}
-		advance(); // skip '}'
+		if (hasMore())
+		{
+			advance(); // skip '}'
+			if (hasMore())
+			{
+				align();
+			}
+		}
 		return desc;
 	}
 
@@ -138,7 +149,11 @@ NAMESPACE_SOUP
 				do
 				{
 					advance();
-				} while (!i->isNewLine());
+				} while (hasMore() && !i->isNewLine());
+			}
+			if (!hasMore())
+			{
+				break;
 			}
 			advance();
 		}
