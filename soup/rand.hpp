@@ -38,7 +38,7 @@ NAMESPACE_SOUP
 		}
 
 	public:
-		[[nodiscard]] static std::mt19937_64& getMersenneTwister() noexcept
+		[[nodiscard]] static SOUP_PURE std::mt19937_64& getMersenneTwister() noexcept
 		{
 			static std::mt19937_64 mt = getMersenneTwisterImpl();
 			return mt;
