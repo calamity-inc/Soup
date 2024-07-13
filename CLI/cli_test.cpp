@@ -1247,6 +1247,16 @@ endif;)") == "");
 		}
 
 		{
+			rflParser par(R"EOC(struct Person { const char *name; };)EOC");
+			auto t = par.readStruct();
+			assert(t.name == "Person");
+			assert(t.members.size() == 1);
+			assert(t.members.at(0).type.name == "const char");
+			assert(t.members.at(0).type.toString() == "const char*");
+			assert(t.members.at(0).name == "name");
+		}
+
+		{
 			struct AlignmentTest { bool a; bool b; bool c; int i; };
 			rflParser par(R"EOC(struct AlignmentTest { bool a; bool b; bool c; int i; };)EOC");
 			auto t = par.readStruct();

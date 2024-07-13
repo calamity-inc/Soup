@@ -28,23 +28,21 @@ NAMESPACE_SOUP
 			type.name.append(readLiteral());
 		}
 		type.at = rflType::DIRECT;
-		if (type.name.back() == '*')
+		const auto next_literal = peekLiteral();
+		if (next_literal == "*")
 		{
-			type.name.pop_back();
 			type.at = rflType::POINTER;
+			advance();
 		}
-		else if (type.name.back() == '&')
+		else if (next_literal == "&")
 		{
-			type.name.pop_back();
-			if (type.name.back() == '&')
-			{
-				type.name.pop_back();
-				type.at = rflType::RVALUE_REFERENCE;
-			}
-			else
-			{
-				type.at = rflType::REFERENCE;
-			}
+			type.at = rflType::REFERENCE;
+			advance();
+		}
+		else if (next_literal == "&&")
+		{
+			type.at = rflType::RVALUE_REFERENCE;
+			advance();
 		}
 		return type;
 	}
