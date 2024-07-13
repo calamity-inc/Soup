@@ -7,7 +7,7 @@
 
 NAMESPACE_SOUP
 {
-	// Raised if args.size() > ffi::MAX_ARGS
+	// Raised if nargs > ffi::MAX_ARGS
 	struct BadCall : public Exception
 	{
 		BadCall()
@@ -22,7 +22,12 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
 
-		static uintptr_t call(void* func, const std::vector<uintptr_t>& args);
+		static uintptr_t call(void* func, const uintptr_t* args, size_t nargs);
+
+		static uintptr_t call(void* func, const std::vector<uintptr_t>& args)
+		{
+			return call(func, args.data(), args.size());
+		}
 
 		[[deprecated]] static uintptr_t fastcall(void* func, const std::vector<uintptr_t>& args)
 		{
