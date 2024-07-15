@@ -127,6 +127,7 @@ void cli_keyboard()
 #if SOUP_WINDOWS
 	w.setInvisibleColour(Rgb::GREEN);
 	w.setTopmost(true);
+	w.setClickThrough(false);
 #endif
 	w.runMessageLoop();
 

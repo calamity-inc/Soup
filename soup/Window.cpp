@@ -432,10 +432,9 @@ NAMESPACE_SOUP
 	}
 
 #if SOUP_WINDOWS
-	// WS_EX_TRANSPARENT disables clicking on the window, even with visible pixels. May want to adjust this depending on mouse informer.
-
 	Window& Window::setInvisibleColour(Rgb rgb) noexcept
 	{
+		// Also setting WS_EX_TRANSPARENT to imply setClickThrough(true), may want to change this behaviour in future.
 		SetWindowLong(h, GWL_EXSTYLE, GetWindowLong(h, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 		SetLayeredWindowAttributes(h, RGB(rgb.r, rgb.g, rgb.b), 0, LWA_COLORKEY);
 		return *this;
@@ -443,6 +442,7 @@ NAMESPACE_SOUP
 
 	Window& Window::setTransparency(int a) noexcept
 	{
+		// Also setting WS_EX_TRANSPARENT to imply setClickThrough(true), may want to change this behaviour in future.
 		SetWindowLong(h, GWL_EXSTYLE, GetWindowLong(h, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 		SetLayeredWindowAttributes(h, 0, a, LWA_ALPHA);
 		return *this;
@@ -457,6 +457,19 @@ NAMESPACE_SOUP
 		else
 		{
 			SetWindowPos(h, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		}
+		return *this;
+	}
+
+	Window& Window::setClickThrough(bool on) noexcept
+	{
+		if (on)
+		{
+			SetWindowLong(h, GWL_EXSTYLE, GetWindowLong(h, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
+		}
+		else
+		{
+			SetWindowLong(h, GWL_EXSTYLE, GetWindowLong(h, GWL_EXSTYLE) & ~WS_EX_TRANSPARENT);
 		}
 		return *this;
 	}
