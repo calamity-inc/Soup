@@ -16,6 +16,7 @@ NAMESPACE_SOUP
 		hwHid hid;
 		bool has_ctx_key;
 		bool disconnected = false;
+		uint8_t consecutive_empty_reports = 0;
 
 		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll(bool include_no_permission = false);
 

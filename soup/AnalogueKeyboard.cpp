@@ -26,7 +26,7 @@ NAMESPACE_SOUP
 		// Razer
 		else if (hid.vendor_id == 0x1532)
 		{
-			if (hid.product_id == 0x266)
+			if (hid.product_id == 0x0266)
 			{
 				return "Razer Huntsman V2 Analog";
 			}
@@ -34,6 +34,15 @@ NAMESPACE_SOUP
 			{
 				return "Razer Huntsman Mini Analog"; // Untested
 			}
+			else if (hid.product_id == 0x02a6)
+			{
+				return "Razer Huntsman V3 Pro";
+			}
+			else if (hid.product_id == 0x02b0)
+			{
+				return "Razer Huntsman V3 Pro Mini"; // Don't own this one; PID from https://github.com/openrazer/openrazer/issues/2181
+			}
+			// There is also a "Razer Huntsman V3 Pro Tenkeyless" but I can't find any info about its PID.
 		}
 
 		return {};
@@ -52,7 +61,7 @@ NAMESPACE_SOUP
 				{
 					// Check metadata to ensure this is the right interface for analogue input
 					if (hid.usage_page == 0xFF54 // Wooting
-						|| hid.hasReportId(7) // Razer - Synapse may be needed to get these reports
+						|| hid.hasReportId(hid.product_id >= 0x02a6 ? 11 : 7) // Razer - Synapse may be needed to get these reports
 						)
 					{
 						res.emplace_back(AnalogueKeyboard{
@@ -195,7 +204,13 @@ NAMESPACE_SOUP
 		const Buffer& report = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report.empty())
 		{
-			disconnected = true;
+			//std::cout << "empty report" << std::endl;
+			if (hid.vendor_id != 0x1532
+				|| ++consecutive_empty_reports == 10
+				)
+			{
+				disconnected = true;
+			}
 		}
 		else
 		{
@@ -250,25 +265,53 @@ NAMESPACE_SOUP
 					}
 				}
 			}
-			else // Razer, up to 11 keys
+			else // Razer
 			{
-				r.skip(1); // ignore report id (7)
+				consecutive_empty_reports = 0;
 
-				uint8_t scancode;
-				uint8_t value;
-				while (r.hasMore()
-					&& r.u8(scancode)
-					&& scancode != 0
-					&& r.u8(value)
-					)
+				//std::cout << string::bin2hex(report.toString()) << std::endl;
+
+				r.skip(1); // ignore report id
+
+				if (hid.product_id >= 0x02a6) // Huntsman V3, up to 15 keys
 				{
-					const auto sk = razer_scancode_to_soup_key(scancode);
-					SOUP_IF_LIKELY (sk != KEY_NONE)
+					uint8_t scancode;
+					uint8_t value;
+					while (r.hasMore()
+						&& r.u8(scancode)
+						&& scancode != 0
+						&& r.u8(value)
+						&& r.skip(1) // unclear, might be something like "priority."
+						)
 					{
-						keys.emplace_back(ActiveKey{
-							sk,
-							value
-						});
+						const auto sk = razer_scancode_to_soup_key(scancode);
+						SOUP_IF_LIKELY(sk != KEY_NONE)
+						{
+							keys.emplace_back(ActiveKey{
+								sk,
+								value
+							});
+						}
+					}
+				}
+				else // Huntsman V2, up to 11 keys
+				{
+					uint8_t scancode;
+					uint8_t value;
+					while (r.hasMore()
+						&& r.u8(scancode)
+						&& scancode != 0
+						&& r.u8(value)
+						)
+					{
+						const auto sk = razer_scancode_to_soup_key(scancode);
+						SOUP_IF_LIKELY(sk != KEY_NONE)
+						{
+							keys.emplace_back(ActiveKey{
+								sk,
+								value
+							});
+						}
 					}
 				}
 			}
