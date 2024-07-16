@@ -77,7 +77,7 @@ NAMESPACE_SOUP
 
 		RenderTargetWindow(X11Api::Window w, X11Api::GC gc)
 			// TODO: Pass on Window's width & height
-			: RenderTarget(-1, -1), w(w), gc(gc)
+			: RenderTarget(10000, 10000), w(w), gc(gc)
 		{
 		}
 
