@@ -239,7 +239,7 @@ NAMESPACE_SOUP
 		{
 			buf.insert_back(257 - buf.size(), '\0');
 		}
-		if (arm_based)
+		if (small_report)
 		{
 			for (uint8_t i = 0; i != 4; ++i)
 			{

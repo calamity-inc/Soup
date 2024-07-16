@@ -11,14 +11,20 @@ NAMESPACE_SOUP
 	public:
 		hwHid hid;
 		uint8_t columns;
-		bool arm_based = false;
+		bool small_report = false;
 	protected:
 		bool inited = false;
 
 	public:
 		kbRgbWooting(const char* name, uint8_t columns, bool arm_based, hwHid&& hid)
-			: kbRgb(name), hid(std::move(hid)), columns(columns), arm_based(arm_based)
+			: kbRgb(name), hid(std::move(hid)), columns(columns)
 		{
+#if SOUP_WINDOWS
+			if (arm_based && hid.input_report_byte_length != 257)
+			{
+				small_report = true;
+			}
+#endif
 		}
 
 		~kbRgbWooting() final;

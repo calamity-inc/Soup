@@ -20,8 +20,8 @@ NAMESPACE_SOUP
 		uint16_t usage;
 		uint16_t usage_page;
 
-	private:
 #if SOUP_WINDOWS
+		uint16_t input_report_byte_length;
 		uint16_t output_report_byte_length;
 		uint16_t feature_report_byte_length;
 		bool pending_read = false;
@@ -32,6 +32,7 @@ NAMESPACE_SOUP
 		std::string product_name;
 		std::string serial_number;
 #endif
+	private:
 		HandleRaii handle;
 		Buffer read_buffer;
 

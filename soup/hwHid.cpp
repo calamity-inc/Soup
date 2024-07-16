@@ -355,6 +355,7 @@ NAMESPACE_SOUP
 					{
 						hid.usage = caps.Usage;
 						hid.usage_page = caps.UsagePage;
+						hid.input_report_byte_length = caps.InputReportByteLength;
 						hid.output_report_byte_length = caps.OutputReportByteLength;
 						hid.feature_report_byte_length = caps.FeatureReportByteLength;
 						hid.read_buffer.reserve(caps.InputReportByteLength);
