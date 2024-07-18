@@ -96,9 +96,9 @@ NAMESPACE_SOUP
 			{
 				str += "Could not find a DHCP server on the network. Probably a VPN.";
 			}
-			str += "\nDNS on UDP with 1.1.1.1:\n";
+			str += "\nDNS over UDP with 1.1.1.1:\n";
 			udp_pair.appendDiagnostic(str);
-			str += "\nDNS on HTTPS (DoH) with 1.1.1.1:\n";
+			str += "\nDNS over HTTPS (DoH) with 1.1.1.1:\n";
 			http_pair.appendDiagnostic(str);
 			return str;
 		}
