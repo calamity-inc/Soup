@@ -1345,6 +1345,18 @@ static void test_uri()
 	std::string str;
 	Uri uri;
 
+	str = "google.com";
+	uri = Uri(str);
+	assert(uri.scheme == "");
+	assert(uri.host == "google.com");
+	assert(uri.port == 0);
+	assert(uri.user == "");
+	assert(uri.pass == "");
+	assert(uri.path == "");
+	assert(uri.query == "");
+	assert(uri.fragment == "");
+	// Not asserting `uri.toString() == str` because Soup encodes it as "//google.com", which is perfectly fine as well.
+
 	str = "//google.com";
 	uri = Uri(str);
 	assert(uri.scheme == "");

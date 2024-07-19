@@ -31,51 +31,51 @@ NAMESPACE_SOUP
 		if (uri.length() > 2 && uri.substr(0, 2) == "//")
 		{
 			uri.erase(0, 2);
+		}
 
-			size_t authority_ends = uri.find('/');
+		size_t authority_ends = uri.find('/');
+		if (authority_ends == std::string::npos)
+		{
+			authority_ends = uri.find('?');
 			if (authority_ends == std::string::npos)
 			{
-				authority_ends = uri.find('?');
-				if (authority_ends == std::string::npos)
-				{
-					authority_ends = uri.find('#');
-				}
+				authority_ends = uri.find('#');
 			}
+		}
 
-			auto userinfo_sep = uri.find('@');
-			if (userinfo_sep < authority_ends)
+		auto userinfo_sep = uri.find('@');
+		if (userinfo_sep < authority_ends)
+		{
+			auto pass_sep = uri.find(':');
+			if (pass_sep < authority_ends)
 			{
-				auto pass_sep = uri.find(':');
-				if (pass_sep < authority_ends)
-				{
-					user = uri.substr(0, pass_sep);
-					pass = uri.substr((pass_sep + 1), userinfo_sep - (pass_sep + 1));
-				}
-				else
-				{
-					user = uri.substr(0, userinfo_sep);
-				}
-
-				uri.erase(0, userinfo_sep + 1);
-			}
-
-			auto port_sep = uri.find(':');
-			if (port_sep < authority_ends)
-			{
-				host = uri.substr(0, port_sep);
-				const char* pPort = &uri.at(port_sep + 1);
-				const char* i = pPort;
-				port = string::toIntImpl<uint16_t>(i);
-				++i;
-
-				uri.erase(0, port_sep + (i - pPort));
+				user = uri.substr(0, pass_sep);
+				pass = uri.substr((pass_sep + 1), userinfo_sep - (pass_sep + 1));
 			}
 			else
 			{
-				host = uri.substr(0, authority_ends);
-
-				uri.erase(0, authority_ends);
+				user = uri.substr(0, userinfo_sep);
 			}
+
+			uri.erase(0, userinfo_sep + 1);
+		}
+
+		auto port_sep = uri.find(':');
+		if (port_sep < authority_ends)
+		{
+			host = uri.substr(0, port_sep);
+			const char* pPort = &uri.at(port_sep + 1);
+			const char* i = pPort;
+			port = string::toIntImpl<uint16_t>(i);
+			++i;
+
+			uri.erase(0, port_sep + (i - pPort));
+		}
+		else
+		{
+			host = uri.substr(0, authority_ends);
+
+			uri.erase(0, authority_ends);
 		}
 
 		auto query_sep = uri.find('?');
