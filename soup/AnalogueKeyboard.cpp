@@ -50,9 +50,38 @@ NAMESPACE_SOUP
 
 	std::vector<AnalogueKeyboard> AnalogueKeyboard::getAll(bool include_no_permission)
 	{
-		std::vector<AnalogueKeyboard> res{};
+		auto devices = hwHid::getAll();
 
-		for (auto& hid : hwHid::getAll())
+		// For Razer keyboards, Synapse needs to be active for the keyboard to send analogue reports.
+		// However, for the Huntsman V2 Analog, we can enable analogue reports ourselves by setting the device mode to 3.
+		// This does work for the V3 Pro as well, but causes it to stop sending digital reports without Synapse. More research needed.
+		for (auto& hid : devices)
+		{
+			if (hid.vendor_id == 0x1532
+				&& hid.product_id == 0x0266
+#if SOUP_WINDOWS
+				&& hid.feature_report_byte_length == 91
+#endif
+				&& hid.havePermission()
+				)
+			{
+				Buffer buf;
+				buf.append(
+					"\x00" // HID report index
+					"\x00\x1f\x00\x00\x00\x02\x00\x04\x03\x00\x00\x00\x00\x00\x00\x00" \
+					"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+					"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+					"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+					"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+					"\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00"
+					, 91);
+				hid.sendFeatureReport(std::move(buf));
+				//hid.receiveFeatureReport(buf);
+			}
+		}
+
+		std::vector<AnalogueKeyboard> res{};
+		for (auto& hid : devices)
 		{
 			if (include_no_permission || hid.havePermission())
 			{
@@ -61,7 +90,7 @@ NAMESPACE_SOUP
 				{
 					// Check metadata to ensure this is the right interface for analogue input
 					if (hid.usage_page == 0xFF54 // Wooting
-						|| hid.hasReportId(hid.product_id >= 0x02a6 ? 11 : 7) // Razer - Synapse may be needed to get these reports
+						|| hid.hasReportId(hid.product_id >= 0x02a6 ? 11 : 7) // Razer
 						)
 					{
 						res.emplace_back(AnalogueKeyboard{
@@ -73,7 +102,6 @@ NAMESPACE_SOUP
 				}
 			}
 		}
-
 		return res;
 	}
 
