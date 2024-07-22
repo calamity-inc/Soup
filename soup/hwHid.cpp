@@ -534,6 +534,7 @@ NAMESPACE_SOUP
 #endif
 	}
 
+	// URB_INTERRUPT in
 	const Buffer& hwHid::receiveReport() noexcept
 	{
 		read_buffer.resize(0);
@@ -567,6 +568,7 @@ NAMESPACE_SOUP
 		return read_buffer;
 	}
 
+	// SET_REPORT response
 	void hwHid::receiveFeatureReport(Buffer& buf) const noexcept
 	{
 #if SOUP_WINDOWS
@@ -594,6 +596,7 @@ NAMESPACE_SOUP
 		return sendReport(buf.data(), buf.size());
 	}
 
+	// URB_INTERRUPT out
 	bool hwHid::sendReport(const void* data, size_t size) const noexcept
 	{
 #if SOUP_WINDOWS
@@ -614,6 +617,7 @@ NAMESPACE_SOUP
 #endif
 	}
 
+	// SET_REPORT request - bmRequestType = 0x21, bRequest = SET_REPORT (0x09), wValue = 0x0300 (ReportId = 0, ReportType = Feature (3))
 	bool hwHid::sendFeatureReport(Buffer&& buf) const noexcept
 	{
 #if SOUP_WINDOWS
