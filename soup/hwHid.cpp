@@ -568,6 +568,13 @@ NAMESPACE_SOUP
 		return read_buffer;
 	}
 
+#if SOUP_WINDOWS
+	void hwHid::cancelReceiveReport() noexcept
+	{
+		CancelIoEx(handle, &read_overlapped);
+	}
+#endif
+
 	// SET_REPORT response
 	void hwHid::receiveFeatureReport(Buffer& buf) const noexcept
 	{
