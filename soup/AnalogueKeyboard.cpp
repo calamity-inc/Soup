@@ -38,11 +38,14 @@ NAMESPACE_SOUP
 			{
 				return "Razer Huntsman V3 Pro";
 			}
+			else if (hid.product_id == 0x02a7)
+			{
+				return "Razer Huntsman V3 Pro Tenkeyless";
+			}
 			else if (hid.product_id == 0x02b0)
 			{
-				return "Razer Huntsman V3 Pro Mini"; // Don't own this one; PID from https://github.com/openrazer/openrazer/issues/2181
+				return "Razer Huntsman V3 Pro Mini";
 			}
-			// There is also a "Razer Huntsman V3 Pro Tenkeyless" but I can't find any info about its PID.
 		}
 
 		return {};
@@ -54,7 +57,7 @@ NAMESPACE_SOUP
 
 		// For Razer keyboards, Synapse needs to be active for the keyboard to send analogue reports.
 		// However, for the Huntsman V2 Analog, we can enable analogue reports ourselves by setting the device mode to 3.
-		// This does work for the V3 Pro as well, but causes it to stop sending digital reports without Synapse. More research needed.
+		// This does work for V3 Pro (+ TKL + Mini) as well, but causes them to stop sending digital reports without Synapse. More research needed.
 		for (auto& hid : devices)
 		{
 			if (hid.vendor_id == 0x1532
