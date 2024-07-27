@@ -59,10 +59,10 @@ void cli_keyboard()
 					viskbd.clear();
 					for (const auto& key : keys)
 					{
-						//std::cout << std::hex << "Scancode " << (int)key.scancode << ", SK " << (int)key.getSoupKey() << ", VK " << key.getVk() << ", VKT " << key.getVkTranslated() << "\n";
+						//std::cout << std::hex << "HID-SC " << (int)key.getHidScancode() << ", SK " << (int)key.getSoupKey() << ", VK " << key.getVk() << ", VKT " << key.getVkTranslated() << " - " << key.getFValue() << "\n";
 						if (auto sk = key.getSoupKey(); sk != KEY_NONE)
 						{
-							viskbd.values[sk] = key.value;
+							viskbd.values[sk] = static_cast<uint8_t>(key.fvalue * 255.0f);
 						}
 					}
 					w.redraw();

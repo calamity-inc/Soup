@@ -284,13 +284,13 @@ NAMESPACE_SOUP
 						{
 							if (key.getSoupKey() == sk)
 							{
-								key.value = value;
+								key.fvalue = static_cast<float>(value) / 255.0f;
 								goto _no_emplace;
 							}
 						}
 						keys.emplace_back(ActiveKey{
 							sk,
-							value
+							static_cast<float>(value) / 255.0f
 						});
 						_no_emplace:;
 					}
@@ -320,7 +320,7 @@ NAMESPACE_SOUP
 						{
 							keys.emplace_back(ActiveKey{
 								sk,
-								value
+								static_cast<float>(value) / 255.0f
 							});
 						}
 					}
@@ -340,7 +340,7 @@ NAMESPACE_SOUP
 						{
 							keys.emplace_back(ActiveKey{
 								sk,
-								value
+								static_cast<float>(value) / 255.0f
 							});
 						}
 					}

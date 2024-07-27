@@ -6,7 +6,6 @@
 
 #include "hwHid.hpp"
 #include "Key.hpp"
-#include "Percentage.hpp"
 
 NAMESPACE_SOUP
 {
@@ -24,7 +23,7 @@ NAMESPACE_SOUP
 		{
 		public:
 			Key sk;
-			Percentage<uint8_t> value;
+			float fvalue;
 
 			[[nodiscard]] Key getSoupKey() const noexcept
 			{
@@ -40,7 +39,7 @@ NAMESPACE_SOUP
 
 			[[nodiscard]] float getFValue() const noexcept
 			{
-				return value.toFloat();
+				return fvalue;
 			}
 
 #if SOUP_WINDOWS
