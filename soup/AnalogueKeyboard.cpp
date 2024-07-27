@@ -10,17 +10,23 @@ NAMESPACE_SOUP
 		// Wooting, https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-plugin/src/lib.rs
 		if (hid.vendor_id == 0x31E3)
 		{
-			return hid.getProductName();
+			if (hid.usage_page == 0xFF54)
+			{
+				return hid.getProductName();
+			}
 		}
 		else if (hid.vendor_id == 0x03EB)
 		{
-			if (hid.product_id == 0xFF01)
+			if (hid.usage_page == 0xFF54)
 			{
-				return "Wooting One (Old Firmware)";
-			}
-			if (hid.product_id == 0xFF02)
-			{
-				return "Wooting Two (Old Firmware)";
+				if (hid.product_id == 0xFF01)
+				{
+					return "Wooting One (Old Firmware)";
+				}
+				else if (hid.product_id == 0xFF02)
+				{
+					return "Wooting Two (Old Firmware)";
+				}
 			}
 		}
 		// Razer
@@ -28,23 +34,38 @@ NAMESPACE_SOUP
 		{
 			if (hid.product_id == 0x0266)
 			{
-				return "Razer Huntsman V2 Analog";
+				if (hid.hasReportId(7))
+				{
+					return "Razer Huntsman V2 Analog";
+				}
 			}
 			else if (hid.product_id == 0x0282)
 			{
-				return "Razer Huntsman Mini Analog"; // Untested
+				if (hid.hasReportId(7))
+				{
+					return "Razer Huntsman Mini Analog"; // Untested
+				}
 			}
 			else if (hid.product_id == 0x02a6)
 			{
-				return "Razer Huntsman V3 Pro";
+				if (hid.hasReportId(11))
+				{
+					return "Razer Huntsman V3 Pro";
+				}
 			}
 			else if (hid.product_id == 0x02a7)
 			{
-				return "Razer Huntsman V3 Pro Tenkeyless";
+				if (hid.hasReportId(11))
+				{
+					return "Razer Huntsman V3 Pro Tenkeyless";
+				}
 			}
 			else if (hid.product_id == 0x02b0)
 			{
-				return "Razer Huntsman V3 Pro Mini";
+				if (hid.hasReportId(11))
+				{
+					return "Razer Huntsman V3 Pro Mini";
+				}
 			}
 		}
 
@@ -88,20 +109,14 @@ NAMESPACE_SOUP
 		{
 			if (include_no_permission || hid.havePermission())
 			{
-				// Check PID/VID for supported device
+				// Check if this is a supported device and the right interface for it
 				if (auto name = checkDeviceName(hid); !name.empty())
 				{
-					// Check metadata to ensure this is the right interface for analogue input
-					if (hid.usage_page == 0xFF54 // Wooting
-						|| hid.hasReportId(hid.product_id >= 0x02a6 ? 11 : 7) // Razer
-						)
-					{
-						res.emplace_back(AnalogueKeyboard{
-							std::move(name),
-							std::move(hid),
-							hid.vendor_id == 0x1532 // Has context key? Wooting - false, Razer - true.
-						});
-					}
+					res.emplace_back(AnalogueKeyboard{
+						std::move(name),
+						std::move(hid),
+						hid.vendor_id == 0x1532 // Has context key? Wooting - false, Razer - true.
+					});
 				}
 			}
 		}
