@@ -2,6 +2,7 @@
 
 #include "BufferRefReader.hpp"
 #include "HidScancode.hpp"
+#include "NamedMutex.hpp"
 
 NAMESPACE_SOUP
 {
@@ -356,29 +357,42 @@ NAMESPACE_SOUP
 
 		if (hid.usage_page == 0xFF60) // Keychron
 		{
-			char data[33];
-			memset(data, 0, sizeof(data));
-			data[1] = 0xa9; // KC_HE
-			data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
-			for (const auto& key : keychron_keys)
+#if SOUP_WINDOWS
+			NamedMutex mtx("KeychronMtx");
+			mtx.lock();
+			for (auto& hid : hwHid::getAll())
 			{
-				data[3] = key.row;
-				data[4] = key.column;
-				hid.sendReport(data, sizeof(data));
-				const auto& report = hid.receiveReport();
-				SOUP_IF_UNLIKELY (report.empty())
+				if (hid.usage_page == 0xFF60)
 				{
-					disconnected = true;
-					break;
-				}
-				if (report.at(2) != 0)
-				{
-					keys.emplace_back(ActiveKey{
-						key.sk,
-						static_cast<float>(report.at(2)) / 40.0f
-					});
+#endif
+					char data[33];
+					memset(data, 0, sizeof(data));
+					data[1] = 0xa9; // KC_HE
+					data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
+					for (const auto& key : keychron_keys)
+					{
+						data[3] = key.row;
+						data[4] = key.column;
+						hid.sendReport(data, sizeof(data));
+						const auto& report = hid.receiveReport();
+						SOUP_IF_UNLIKELY(report.empty())
+						{
+							disconnected = true;
+							break;
+						}
+						if (report.at(2) != 0)
+						{
+							keys.emplace_back(ActiveKey{
+								key.sk,
+								static_cast<float>(report.at(2)) / 40.0f
+							});
+						}
+					}
+#if SOUP_WINDOWS
 				}
 			}
+			mtx.unlock();
+#endif
 			return keys;
 		}
 
