@@ -62,8 +62,11 @@ NAMESPACE_SOUP
 			return hid.havePermission();
 		}
 
+		// Poll-based analogue keyboard support is extremely laggy and can miss inputs.
+		[[nodiscard]] bool isPoll() const noexcept;
+
 		// Receives the latest report from the device and parses it.
-		// This will block unless `hid.hasReport()` is true.
+		// This will block unless `isPoll()` or `hid.hasReport()` is true.
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeys();
 	};
 }

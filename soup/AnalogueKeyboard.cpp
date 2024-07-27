@@ -68,6 +68,17 @@ NAMESPACE_SOUP
 				}
 			}
 		}
+		// Keychron
+		else if (hid.vendor_id == 0x3434)
+		{
+			if (hid.usage == 0x61 && hid.usage_page == 0xFF60)
+			{
+				if (hid.product_id == 0x0b10)
+				{
+					return "Keychron Q1 HE";
+				}
+			}
+		}
 
 		return {};
 	}
@@ -115,15 +126,13 @@ NAMESPACE_SOUP
 					res.emplace_back(AnalogueKeyboard{
 						std::move(name),
 						std::move(hid),
-						hid.vendor_id == 0x1532 // Has context key? Wooting - false, Razer - true.
+						hid.vendor_id == 0x1532 // Has context key? Only true for Razer.
 					});
 				}
 			}
 		}
 		return res;
 	}
-
-	using ActiveKey = AnalogueKeyboard::ActiveKey;
 
 	[[nodiscard]] static Key razer_scancode_to_soup_key(uint8_t scancode) noexcept
 	{
@@ -243,9 +252,135 @@ NAMESPACE_SOUP
 		return KEY_NONE;
 	}
 
+	struct hwKeyPosition
+	{
+		Key sk;
+		uint8_t row;
+		uint8_t column;
+	};
+
+	struct hwKeyPosition keychron_keys[] = {
+		{ KEY_ESCAPE, 0, 0 },
+		{ KEY_F1, 0, 1 },
+		{ KEY_F2, 0, 2 },
+		{ KEY_F3, 0, 3 },
+		{ KEY_F4, 0, 4 },
+		{ KEY_F5, 0, 5 },
+		{ KEY_F6, 0, 6 },
+		{ KEY_F7, 0, 7 },
+		{ KEY_F8, 0, 8 },
+		{ KEY_F9, 0, 9 },
+		{ KEY_F10, 0, 10 },
+		{ KEY_F11, 0, 11 },
+		{ KEY_F12, 0, 12 },
+		{ KEY_DEL, 0, 13 },
+		// mute key
+
+		{ KEY_BACKQUOTE, 1, 0 },
+		{ KEY_1, 1, 1 },
+		{ KEY_2, 1, 2 },
+		{ KEY_3, 1, 3 },
+		{ KEY_4, 1, 4 },
+		{ KEY_5, 1, 5 },
+		{ KEY_6, 1, 6 },
+		{ KEY_7, 1, 7 },
+		{ KEY_8, 1, 8 },
+		{ KEY_9, 1, 9 },
+		{ KEY_0, 1, 10 },
+		{ KEY_MINUS, 1, 11 },
+		{ KEY_EQUALS, 1, 12 },
+		{ KEY_BACKSPACE, 1, 13 },
+		{ KEY_PAGE_UP, 1, 14 },
+
+		{ KEY_TAB, 2, 0 },
+		{ KEY_Q, 2, 1 },
+		{ KEY_W, 2, 2 },
+		{ KEY_E, 2, 3 },
+		{ KEY_R, 2, 4 },
+		{ KEY_T, 2, 5 },
+		{ KEY_Y, 2, 6 },
+		{ KEY_U, 2, 7 },
+		{ KEY_I, 2, 8 },
+		{ KEY_O, 2, 9 },
+		{ KEY_P, 2, 10 },
+		{ KEY_BRACKET_LEFT, 2, 11 },
+		{ KEY_BRACKET_RIGHT, 2, 12 },
+		{ KEY_BACKSLASH, 2, 13 },
+
+		{ KEY_CAPS_LOCK, 3, 0 },
+		{ KEY_A, 3, 1 },
+		{ KEY_S, 3, 2 },
+		{ KEY_D, 3, 3 },
+		{ KEY_F, 3, 4 },
+		{ KEY_G, 3, 5 },
+		{ KEY_H, 3, 6 },
+		{ KEY_J, 3, 7 },
+		{ KEY_K, 3, 8 },
+		{ KEY_L, 3, 9 },
+		{ KEY_SEMICOLON, 3, 10 },
+		{ KEY_QUOTE, 3, 11 },
+		{ KEY_ENTER, 3, 12 },
+
+		{ KEY_LSHIFT, 4, 0 },
+		{ KEY_Z, 4, 2 },
+		{ KEY_X, 4, 3 },
+		{ KEY_C, 4, 4 },
+		{ KEY_V, 4, 5 },
+		{ KEY_B, 4, 6 },
+		{ KEY_N, 4, 7 },
+		{ KEY_M, 4, 8 },
+		{ KEY_COMMA, 4, 9 },
+		{ KEY_PERIOD, 4, 10 },
+		{ KEY_SLASH, 4, 12 },
+		{ KEY_RSHIFT, 4, 13 },
+
+		{ KEY_LCTRL, 5, 0 },
+		{ KEY_LMETA, 5, 1 },
+		{ KEY_LALT, 5, 2 },
+		{ KEY_SPACE, 5, 3 },
+		{ KEY_RMETA, 5, 3 },
+		{ KEY_FN, 5, 3 },
+		{ KEY_RCTRL, 5, 3 },
+	};
+
+	bool AnalogueKeyboard::isPoll() const noexcept
+	{
+		return hid.usage_page == 0xFF60; // Keychron
+	}
+
+	using ActiveKey = AnalogueKeyboard::ActiveKey;
+
 	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeys()
 	{
 		std::vector<ActiveKey> keys{};
+
+		if (hid.usage_page == 0xFF60) // Keychron
+		{
+			char data[33];
+			memset(data, 0, sizeof(data));
+			data[1] = 0xa9; // KC_HE
+			data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
+			for (const auto& key : keychron_keys)
+			{
+				data[3] = key.row;
+				data[4] = key.column;
+				hid.sendReport(data, sizeof(data));
+				const auto& report = hid.receiveReport();
+				SOUP_IF_UNLIKELY (report.empty())
+				{
+					disconnected = true;
+					break;
+				}
+				if (report.at(2) != 0)
+				{
+					keys.emplace_back(ActiveKey{
+						key.sk,
+						static_cast<float>(report.at(2)) / 40.0f
+					});
+				}
+			}
+			return keys;
+		}
 
 		const Buffer& report = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report.empty())

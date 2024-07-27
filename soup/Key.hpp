@@ -83,9 +83,9 @@ NAMESPACE_SOUP
 		KEY_LALT,
 		KEY_SPACE,
 		KEY_RALT,
-		KEY_RMETA, // Physical arrangement: [RALT] [RMETA] [FN] [RCTRL]
+		KEY_RMETA, // Physical arrangement: [RMETA] [FN] [RCTRL]
 		KEY_FN,
-		KEY_CTX, // Physical arrangement: [RALT] [FN] [CTX] [RCTRL]
+		KEY_CTX, // Physical arrangement: [FN] [CTX] [RCTRL]
 		KEY_RCTRL,
 
 		KEY_PRINT_SCREEN,
