@@ -845,6 +845,7 @@
     <ClInclude Include="UniqueListLink.hpp" />
     <ClInclude Include="Uuid.hpp" />
     <ClInclude Include="VirtualFilesystem.hpp" />
+    <ClInclude Include="VirtualHandleRaii.hpp" />
     <ClInclude Include="visCurves.hpp" />
     <ClInclude Include="CustomEncoding.hpp" />
     <ClInclude Include="DelayedCtor.hpp" />

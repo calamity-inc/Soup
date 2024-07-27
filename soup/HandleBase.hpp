@@ -41,13 +41,13 @@ NAMESPACE_SOUP
 		{
 		}
 
-		operator HANDLE() const noexcept
+		[[nodiscard]] operator HANDLE() const noexcept
 		{
 			return h;
 		}
 
 		template <typename T>
-		operator T() const noexcept
+		[[nodiscard]] operator T() const noexcept
 		{
 			return (T)h;
 		}

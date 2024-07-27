@@ -3,7 +3,7 @@
 #include "base.hpp"
 
 #if SOUP_WINDOWS
-#include "HandleBase.hpp"
+#include <windows.h>
 #else
 #include <unistd.h> // close
 #endif
@@ -11,22 +11,24 @@
 NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
-	struct HandleRaii final : public HandleBase
+	struct HandleRaii
 	{
-		using HandleBase::HandleBase;
+		HANDLE h = INVALID_HANDLE_VALUE;
+
+		HandleRaii() noexcept = default;
 
 		HandleRaii(HANDLE h) noexcept
-			: HandleBase(h)
+			: h(h)
 		{
 		}
 
 		HandleRaii(HandleRaii&& b) noexcept
-			: HandleBase(b.h)
+			: h(b.h)
 		{
 			b.h = INVALID_HANDLE_VALUE;
 		}
 
-		~HandleRaii() noexcept final
+		~HandleRaii() noexcept
 		{
 			if (isValid())
 			{
@@ -34,7 +36,31 @@ NAMESPACE_SOUP
 			}
 		}
 
-		using HandleBase::operator=;
+		void operator=(HANDLE h) noexcept
+		{
+			this->~HandleRaii();
+			this->h = h;
+		}
+
+		[[nodiscard]] operator bool() const noexcept
+		{
+			return isValid();
+		}
+
+		[[nodiscard]] operator HANDLE() const noexcept
+		{
+			return h;
+		}
+
+		[[nodiscard]] bool isValid() const noexcept
+		{
+			return h != INVALID_HANDLE_VALUE;
+		}
+
+		void invalidate() noexcept
+		{
+			h = INVALID_HANDLE_VALUE;
+		}
 	};
 #else
 	struct HandleRaii

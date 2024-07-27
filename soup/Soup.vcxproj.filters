@@ -80,9 +80,6 @@
     <ClInclude Include="Module.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="HandleRaii.hpp">
-      <Filter>os\windows</Filter>
-    </ClInclude>
     <ClInclude Include="HandleBase.hpp">
       <Filter>os\windows</Filter>
     </ClInclude>
@@ -1627,6 +1624,12 @@
       <Filter>os</Filter>
     </ClInclude>
     <ClInclude Include="NamedMutex.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualHandleRaii.hpp">
+      <Filter>os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="HandleRaii.hpp">
       <Filter>os</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,6 +4,7 @@
 	#include <tlhelp32.h>
 
 	#include "HandleRaii.hpp"
+	#include "VirtualHandleRaii.hpp"
 #else
 	#include "FileReader.hpp"
 	#include "Range.hpp"
@@ -102,7 +103,7 @@ UniquePtr<Process> Process::get(pid_t id)
 				{
 					if (this->id == entry.th32ProcessID)
 					{
-						return std::make_shared<ProcessHandle>(make_unique<HandleRaii>(OpenProcess(desired_access, FALSE, id)), Range(entry.modBaseAddr, entry.modBaseSize));
+						return std::make_shared<ProcessHandle>(make_unique<VirtualHandleRaii>(OpenProcess(desired_access, FALSE, id)), Range(entry.modBaseAddr, entry.modBaseSize));
 					}
 				} while (Module32Next(hSnap, &entry));
 			}
