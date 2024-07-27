@@ -773,6 +773,7 @@
     <ClInclude Include="MessageStream.hpp" />
     <ClInclude Include="MidiComposition.hpp" />
     <ClInclude Include="Mutex.hpp" />
+    <ClInclude Include="NamedMutex.hpp" />
     <ClInclude Include="netAdaptor.hpp" />
     <ClInclude Include="MacAddr.hpp" />
     <ClInclude Include="netIce.hpp" />

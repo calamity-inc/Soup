@@ -1626,6 +1626,9 @@
     <ClInclude Include="RecursiveMutex.hpp">
       <Filter>os</Filter>
     </ClInclude>
+    <ClInclude Include="NamedMutex.hpp">
+      <Filter>os</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
