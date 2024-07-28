@@ -364,6 +364,7 @@ NAMESPACE_SOUP
 			NamedMutex mtx("KeychronMtx");
 			mtx.lock();
 			static DigitalKeyboard dkbd;
+			static bool dkbd_okay = false;
 			dkbd.update();
 			bool found = false;
 			for (auto& hid : hwHid::getAll())
@@ -396,6 +397,20 @@ NAMESPACE_SOUP
 								break;
 							}
 							keychron.buffer[i] = report.at(2);
+
+#if SOUP_WINDOWS
+							if (!dkbd_okay && report.at(2) == 40)
+							{
+								if (dkbd.keys[key.sk])
+								{
+									dkbd_okay = true;
+								}
+								else
+								{
+									dkbd.deinit();
+								}
+							}
+#endif
 						}
 						if (keychron.buffer[i] != 0)
 						{

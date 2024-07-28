@@ -7,20 +7,7 @@
 
 NAMESPACE_SOUP
 {
-	DigitalKeyboard::~DigitalKeyboard() noexcept
-	{
-		if (pKeyboard)
-		{
-			pKeyboard->Unacquire();
-			pKeyboard->Release();
-		}
-		if (pDI)
-		{
-			pDI->Release();
-		}
-	}
-
-	void DigitalKeyboard::update()
+	void DigitalKeyboard::update() noexcept
 	{
 		if (!pDI)
 		{
@@ -167,6 +154,21 @@ NAMESPACE_SOUP
 			keys[KEY_F13] = state[DIK_F13];
 			keys[KEY_F14] = state[DIK_F14];
 			keys[KEY_F15] = state[DIK_F15];
+		}
+	}
+
+	void DigitalKeyboard::deinit() noexcept
+	{
+		if (pKeyboard)
+		{
+			pKeyboard->Unacquire();
+			pKeyboard->Release();
+			pKeyboard = nullptr;
+		}
+		if (pDI)
+		{
+			pDI->Release();
+			pDI = nullptr;
 		}
 	}
 }

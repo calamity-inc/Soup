@@ -18,9 +18,14 @@ NAMESPACE_SOUP
 		LPDIRECTINPUTDEVICE8A pKeyboard = nullptr;
 		bool keys[NUM_KEYS]{};
 
-		~DigitalKeyboard() noexcept;
+		~DigitalKeyboard() noexcept
+		{
+			deinit();
+		}
 
-		void update();
+		void update() noexcept;
+
+		void deinit() noexcept;
 	};
 }
 
