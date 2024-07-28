@@ -362,6 +362,7 @@ int main(int argc, const char** argv)
 			auto res = hr.execute();
 			if (res.has_value())
 			{
+				console.init(false); // to "correctly" display UTF-8 on Windows
 				std::cout << res->status_code << "\n";
 				std::cout << res->toString() << "\n";
 			}
