@@ -43,6 +43,7 @@ NAMESPACE_SOUP
 				pKeyboard = nullptr;
 				return;
 			}
+			pKeyboard->SetCooperativeLevel(NULL, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
 			pKeyboard->Acquire();
 		}
 
