@@ -360,10 +360,12 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 			NamedMutex mtx("KeychronMtx");
 			mtx.lock();
+			bool found = false;
 			for (auto& hid : hwHid::getAll())
 			{
 				if (hid.usage_page == 0xFF60)
 				{
+					found = true;
 #endif
 					char data[33];
 					memset(data, 0, sizeof(data));
@@ -392,6 +394,10 @@ NAMESPACE_SOUP
 				}
 			}
 			mtx.unlock();
+			if (!found)
+			{
+				disconnected = true;
+			}
 #endif
 			return keys;
 		}
