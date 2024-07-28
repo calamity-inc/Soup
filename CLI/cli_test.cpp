@@ -1426,7 +1426,7 @@ static void test_uri()
 	assert(uri.port == 0);
 	assert(uri.user == "");
 	assert(uri.pass == "");
-	assert(uri.path == "/..;@www.google.com:443/");
+	assert(uri.path == "/..;@www.google.com:%3443/");
 	assert(uri.query == "");
 	assert(uri.fragment == "");
 	// Not testing uri.toString because this one is very malformatted so it's expected that Soup re-encodes it more sanely.
@@ -1466,6 +1466,10 @@ static void test_uri()
 	assert(uri.query == "");
 	assert(uri.fragment == "");
 	assert(uri.toString() == str);
+
+	str = "https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=zh-CN&q=How+are+you%3F";
+	uri = Uri(str);
+	assert(uri.getRequestPath() == "/translate_a/t?client=dict-chrome-ex&sl=auto&tl=zh-CN&q=How+are+you%3F");
 }
 
 static void test_socket_raii_semantics()

@@ -114,12 +114,7 @@ NAMESPACE_SOUP
 			{
 				path = std::move(uri);
 			}
-			query = urlenc::decode(query);
 		}
-
-		path = urlenc::decode(path);
-		query = urlenc::decode(query);
-		fragment = urlenc::decode(fragment);
 	}
 
 	std::string Uri::toString() const SOUP_EXCAL
@@ -161,11 +156,11 @@ NAMESPACE_SOUP
 
 	std::string Uri::getRequestPath() const SOUP_EXCAL
 	{
-		auto str = urlenc::encodePath(path);
+		auto str = path;
 		if (!query.empty())
 		{
 			str.push_back('?');
-			str.append(urlenc::encodePathWithQuery(query));
+			str.append(query);
 		}
 		return str;
 	}
