@@ -1,7 +1,9 @@
 #include "AnalogueKeyboard.hpp"
 
 #include "BufferRefReader.hpp"
+#include "DigitalKeyboard.hpp"
 #include "HidScancode.hpp"
+#include "macros.hpp" // COUNT
 #include "NamedMutex.hpp"
 
 NAMESPACE_SOUP
@@ -343,6 +345,7 @@ NAMESPACE_SOUP
 		{ KEY_FN, 5, 3 },
 		{ KEY_RCTRL, 5, 3 },
 	};
+	static_assert(COUNT(keychron_keys) == 75); // has to match AnalogueKeyboard::buffer
 
 	bool AnalogueKeyboard::isPoll() const noexcept
 	{
@@ -360,6 +363,8 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 			NamedMutex mtx("KeychronMtx");
 			mtx.lock();
+			static DigitalKeyboard dkbd;
+			dkbd.update();
 			bool found = false;
 			for (auto& hid : hwHid::getAll())
 			{
@@ -371,24 +376,38 @@ NAMESPACE_SOUP
 					memset(data, 0, sizeof(data));
 					data[1] = 0xa9; // KC_HE
 					data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
-					for (const auto& key : keychron_keys)
+					for (uint8_t i = 0; i != COUNT(keychron_keys); ++i)
 					{
-						data[3] = key.row;
-						data[4] = key.column;
-						hid.sendReport(data, sizeof(data));
-						const auto& report = hid.receiveReport();
-						SOUP_IF_UNLIKELY(report.empty())
+						const auto& key = keychron_keys[i];
+						if (
+#if SOUP_WINDOWS
+							dkbd.keys[key.sk] ||
+#endif
+							keychron.buffer[i] || keychron.state == (i >> 2)
+							)
 						{
-							disconnected = true;
-							break;
+							data[3] = key.row;
+							data[4] = key.column;
+							hid.sendReport(data, sizeof(data));
+							const auto& report = hid.receiveReport();
+							SOUP_IF_UNLIKELY (report.empty())
+							{
+								disconnected = true;
+								break;
+							}
+							keychron.buffer[i] = report.at(2);
 						}
-						if (report.at(2) != 0)
+						if (keychron.buffer[i] != 0)
 						{
 							keys.emplace_back(ActiveKey{
 								key.sk,
-								static_cast<float>(report.at(2)) / 40.0f
+								static_cast<float>(keychron.buffer[i]) / 40.0f
 							});
 						}
+					}
+					if (keychron.state++ == (COUNT(keychron_keys) >> 2))
+					{
+						keychron.state = 0;
 					}
 #if SOUP_WINDOWS
 				}
@@ -407,7 +426,7 @@ NAMESPACE_SOUP
 		{
 			//std::cout << "empty report" << std::endl;
 			if (hid.vendor_id != 0x1532
-				|| ++consecutive_empty_reports == 10
+				|| ++razer.consecutive_empty_reports == 10
 				)
 			{
 				disconnected = true;
@@ -468,7 +487,7 @@ NAMESPACE_SOUP
 			}
 			else // Razer
 			{
-				consecutive_empty_reports = 0;
+				razer.consecutive_empty_reports = 0;
 
 				//std::cout << string::bin2hex(report.toString()) << std::endl;
 

@@ -15,7 +15,24 @@ NAMESPACE_SOUP
 		hwHid hid;
 		bool has_ctx_key;
 		bool disconnected = false;
-		uint8_t consecutive_empty_reports = 0;
+		union
+		{
+			struct
+			{
+				uint8_t consecutive_empty_reports;
+			} razer;
+			struct
+			{
+				uint8_t state;
+				uint8_t buffer[75];
+			} keychron;
+		};
+
+		AnalogueKeyboard(std::string&& name, hwHid&& hid, bool has_ctx_key)
+			: name(std::move(name)), hid(std::move(hid)), has_ctx_key(has_ctx_key)
+		{
+			razer.consecutive_empty_reports = 0; // also sets keychron.state to 0
+		}
 
 		[[nodiscard]] static std::vector<AnalogueKeyboard> getAll(bool include_no_permission = false);
 
