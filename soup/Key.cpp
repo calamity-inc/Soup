@@ -48,6 +48,11 @@ NAMESPACE_SOUP
 		const auto layout = GetKeyboardLayout(Window::getFocused().getOwnerTid());
 		return MapVirtualKeyExA(soup_key_to_ps2_scancode(key), MAPVK_VSC_TO_VK_EX, layout);
 	}
+
+	Key virtual_key_to_soup_key(int vk) noexcept
+	{
+		return ps2_scancode_to_soup_key(static_cast<uint16_t>(MapVirtualKeyA(vk, MAPVK_VK_TO_VSC_EX)));
+	}
 #endif
 
 	uint16_t soup_key_to_ps2_scancode(uint8_t key) noexcept
@@ -175,5 +180,132 @@ NAMESPACE_SOUP
 		case KEY_F15: return PS2_F15;
 		}
 		return 0;
+	}
+
+	Key ps2_scancode_to_soup_key(uint16_t scancode) noexcept
+	{
+		switch (scancode)
+		{
+		case PS2_ESCAPE: return KEY_ESCAPE;
+		case PS2_F1: return KEY_F1;
+		case PS2_F2: return KEY_F2;
+		case PS2_F3: return KEY_F3;
+		case PS2_F4: return KEY_F4;
+		case PS2_F5: return KEY_F5;
+		case PS2_F6: return KEY_F6;
+		case PS2_F7: return KEY_F7;
+		case PS2_F8: return KEY_F8;
+		case PS2_F9: return KEY_F9;
+		case PS2_F10: return KEY_F10;
+		case PS2_F11: return KEY_F11;
+		case PS2_F12: return KEY_F12;
+
+		case PS2_BACKQUOTE: return KEY_BACKQUOTE;
+		case PS2_1: return KEY_1;
+		case PS2_2: return KEY_2;
+		case PS2_3: return KEY_3;
+		case PS2_4: return KEY_4;
+		case PS2_5: return KEY_5;
+		case PS2_6: return KEY_6;
+		case PS2_7: return KEY_7;
+		case PS2_8: return KEY_8;
+		case PS2_9: return KEY_9;
+		case PS2_0: return KEY_0;
+		case PS2_MINUS: return KEY_MINUS;
+		case PS2_EQUALS: return KEY_EQUALS;
+		case PS2_BACKSPACE: return KEY_BACKSPACE;
+		case PS2_TAB: return KEY_TAB;
+		case PS2_Q: return KEY_Q;
+		case PS2_W: return KEY_W;
+		case PS2_E: return KEY_E;
+		case PS2_R: return KEY_R;
+		case PS2_T: return KEY_T;
+		case PS2_Y: return KEY_Y;
+		case PS2_U: return KEY_U;
+		case PS2_I: return KEY_I;
+		case PS2_O: return KEY_O;
+		case PS2_P: return KEY_P;
+		case PS2_BRACKET_LEFT: return KEY_BRACKET_LEFT;
+		case PS2_BRACKET_RIGHT: return KEY_BRACKET_RIGHT;
+		case PS2_ENTER: return KEY_ENTER;
+		case PS2_CAPS_LOCK: return KEY_CAPS_LOCK;
+		case PS2_A: return KEY_A;
+		case PS2_S: return KEY_S;
+		case PS2_D: return KEY_D;
+		case PS2_F: return KEY_F;
+		case PS2_G: return KEY_G;
+		case PS2_H: return KEY_H;
+		case PS2_J: return KEY_J;
+		case PS2_K: return KEY_K;
+		case PS2_L: return KEY_L;
+		case PS2_SEMICOLON: return KEY_SEMICOLON;
+		case PS2_QUOTE: return KEY_QUOTE;
+		case PS2_BACKSLASH: return KEY_BACKSLASH;
+		case PS2_LSHIFT: return KEY_LSHIFT;
+		case PS2_INTL_BACKSLASH: return KEY_INTL_BACKSLASH;
+		case PS2_Z: return KEY_Z;
+		case PS2_X: return KEY_X;
+		case PS2_C: return KEY_C;
+		case PS2_V: return KEY_V;
+		case PS2_B: return KEY_B;
+		case PS2_N: return KEY_N;
+		case PS2_M: return KEY_M;
+		case PS2_COMMA: return KEY_COMMA;
+		case PS2_PERIOD: return KEY_PERIOD;
+		case PS2_SLASH: return KEY_SLASH;
+		case PS2_RSHIFT: return KEY_RSHIFT;
+		case PS2_LCTRL: return KEY_LCTRL;
+		case PS2_LMETA: return KEY_LMETA;
+		case PS2_LALT: return KEY_LALT;
+		case PS2_SPACE: return KEY_SPACE;
+		case PS2_RALT: return KEY_RALT;
+		case PS2_RMETA: return KEY_RMETA;
+			//case PS2_FN: return KEY_FN;
+		case PS2_RCTRL: return KEY_RCTRL;
+
+		case PS2_PRINT_SCREEN: return KEY_PRINT_SCREEN;
+		case PS2_PAUSE: return KEY_PAUSE;
+		case PS2_SCROLL_LOCK: return KEY_SCROLL_LOCK;
+
+		case PS2_INSERT: return KEY_INSERT;
+		case PS2_HOME: return KEY_HOME;
+		case PS2_PAGE_UP: return KEY_PAGE_UP;
+		case PS2_DEL: return KEY_DEL;
+		case PS2_END: return KEY_END;
+		case PS2_PAGE_DOWN: return KEY_PAGE_DOWN;
+
+		case PS2_ARROW_UP: return KEY_ARROW_UP;
+		case PS2_ARROW_LEFT: return KEY_ARROW_LEFT;
+		case PS2_ARROW_DOWN: return KEY_ARROW_DOWN;
+		case PS2_ARROW_RIGHT: return KEY_ARROW_RIGHT;
+
+		case PS2_NUM_LOCK: return KEY_NUM_LOCK;
+		case PS2_NUMPAD_DIVIDE: return KEY_NUMPAD_DIVIDE;
+		case PS2_NUMPAD_MULTIPLY: return KEY_NUMPAD_MULTIPLY;
+		case PS2_NUMPAD_SUBTRACT: return KEY_NUMPAD_SUBTRACT;
+		case PS2_NUMPAD7: return KEY_NUMPAD7;
+		case PS2_NUMPAD8: return KEY_NUMPAD8;
+		case PS2_NUMPAD9: return KEY_NUMPAD9;
+		case PS2_NUMPAD_ADD: return KEY_NUMPAD_ADD;
+		case PS2_NUMPAD4: return KEY_NUMPAD4;
+		case PS2_NUMPAD5: return KEY_NUMPAD5;
+		case PS2_NUMPAD6: return KEY_NUMPAD6;
+		case PS2_NUMPAD1: return KEY_NUMPAD1;
+		case PS2_NUMPAD2: return KEY_NUMPAD2;
+		case PS2_NUMPAD3: return KEY_NUMPAD3;
+		case PS2_NUMPAD_ENTER: return KEY_NUMPAD_ENTER;
+		case PS2_NUMPAD0: return KEY_NUMPAD0;
+		case PS2_NUMPAD_DECIMAL: return KEY_NUMPAD_DECIMAL;
+
+		case PS2_STOP_MEDIA: return KEY_STOP_MEDIA;
+		case PS2_PREV_TRACK: return KEY_PREV_TRACK;
+		case PS2_PLAY_PAUSE: return KEY_PLAY_PAUSE;
+		case PS2_NEXT_TRACK: return KEY_NEXT_TRACK;
+
+		case PS2_F13: return KEY_F13;
+		case PS2_F14: return KEY_F14;
+		case PS2_F15: return KEY_F15;
+		}
+		return KEY_NONE;
 	}
 }
