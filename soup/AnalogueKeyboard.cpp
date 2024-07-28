@@ -340,10 +340,10 @@ NAMESPACE_SOUP
 		{ KEY_LCTRL, 5, 0 },
 		{ KEY_LMETA, 5, 1 },
 		{ KEY_LALT, 5, 2 },
-		{ KEY_SPACE, 5, 3 },
-		{ KEY_RMETA, 5, 3 },
-		{ KEY_FN, 5, 3 },
-		{ KEY_RCTRL, 5, 3 },
+		{ KEY_SPACE, 5, 6 },
+		{ KEY_RMETA, 5, 9 },
+		{ KEY_FN, 5, 10 },
+		{ KEY_RCTRL, 5, 11 },
 	};
 	static_assert(COUNT(keychron_keys) == 75); // has to match AnalogueKeyboard::buffer
 
