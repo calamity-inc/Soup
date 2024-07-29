@@ -91,8 +91,9 @@ NAMESPACE_SOUP
 		auto devices = hwHid::getAll();
 
 		// For Razer keyboards, Synapse needs to be active for the keyboard to send analogue reports.
-		// However, for the Huntsman V2 Analog and Huntsman Mini, we can enable analogue reports ourselves by setting the device mode to 3.
-		// This does work for V3 Pro (+ TKL + Mini) as well, but causes them to stop sending digital reports without Synapse. More research needed.
+		// We can enable analogue reports ourselves by setting the device mode to 3.
+		// However, this still requires Synapse to be installed (and running, for the V3 Pro series) as otherwise, digital input stops working.
+#if false
 		for (auto& hid : devices)
 		{
 			if (hid.vendor_id == 0x1532
@@ -117,6 +118,7 @@ NAMESPACE_SOUP
 				//hid.receiveFeatureReport(buf);
 			}
 		}
+#endif
 
 		std::vector<AnalogueKeyboard> res{};
 		for (auto& hid : devices)
