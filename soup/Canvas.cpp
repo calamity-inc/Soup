@@ -148,6 +148,26 @@ NAMESPACE_SOUP
 		*this = std::move(c);
 	}
 
+	void Canvas::resizeAveraged(unsigned int desired_width, unsigned int desired_height)
+	{
+		Canvas c{ desired_width, desired_height };
+		const auto area_width = (unsigned int)((double)width / (double)desired_width);
+		const auto area_height = (unsigned int)((double)height / (double)desired_height);
+		for (unsigned int y = 0; y != c.height; ++y)
+		{
+			for (unsigned int x = 0; x != c.width; ++x)
+			{
+				c.set(x, y, getAverageOfArea(
+					(unsigned int)(((double)x / c.width) * width),
+					(unsigned int)(((double)y / c.height) * height),
+					area_width,
+					area_height
+				));
+			}
+		}
+		*this = std::move(c);
+	}
+
 	Rgb Canvas::getAverageOfArea(unsigned int _x, unsigned int _y, unsigned int width, unsigned int height) const
 	{
 		unsigned long long r = 0;

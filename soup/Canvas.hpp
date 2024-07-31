@@ -55,6 +55,7 @@ NAMESPACE_SOUP
 		void ensureHeightIsEven();
 
 		void resizeNearestNeighbour(unsigned int desired_width, unsigned int desired_height); // Resizes the canvas and its contents, works for all changes.
+		void resizeAveraged(unsigned int desired_width, unsigned int desired_height); // Resizes the canvas and its contents, works for all changes.
 
 		[[nodiscard]] Rgb getAverageOfArea(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const;
 
