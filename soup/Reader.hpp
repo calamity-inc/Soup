@@ -36,7 +36,7 @@ NAMESPACE_SOUP
 		// Lua implementation: https://gist.github.com/Sainan/02c3ac9cea5015341412c92feec95e56
 		bool u64_dyn(uint64_t& v) noexcept;
 
-		// A signed 64-bit integer encoded in 1..9 bytes.
+		// A signed 64-bit integer encoded in 1..9 bytes. (Specialisation of u64_dyn.)
 		bool i64_dyn(int64_t& v) noexcept;
 
 		// An integer where every byte's most significant bit is used to indicate if another byte follows, most significant byte first.
