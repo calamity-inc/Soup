@@ -13,9 +13,10 @@ NAMESPACE_SOUP
 			{
 				return false;
 			}
-			bool has_next = (b >> 7); has_next &= (bits < 56);
-			if (has_next)
+			bool has_next = false;
+			SOUP_IF_LIKELY (bits < 56)
 			{
+				has_next = (b >> 7);
 				b &= 0x7F;
 			}
 			v |= ((uint64_t)b << bits);
