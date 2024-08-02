@@ -55,7 +55,7 @@ NAMESPACE_SOUP
 #endif
 
 	Socket::Socket() noexcept
-		: Worker(true)
+		: Worker(WORKER_TYPE_SOCKET)
 	{
 		onConstruct();
 	}
