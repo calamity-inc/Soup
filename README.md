@@ -29,4 +29,4 @@ For WASM, it can be done via `php wasm.php` (in the root folder) or `sun wasm` (
 
 ## Getting Started
 
-If you want some ideas as to how start using Soup, check out [the docs](https://docs.soup.do/).
+If you want some ideas as to how start using Soup, check out [the docs](docs).

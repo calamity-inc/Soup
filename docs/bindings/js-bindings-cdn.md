@@ -1,9 +1,9 @@
 # JS Bindings CDN
 
-You can use Soup's JavaScript bindings via `use.soup.do`.
+You can use Soup's JavaScript bindings via `use-soup-wasm.calamity.inc`.
 
 ```html
-<script src="https://use.soup.do"></script>
+<script src="https://use-soup-wasm.calamity.inc"></script>
 <script>
     soup.use(function()
     {

@@ -44,7 +44,7 @@ NAMESPACE_SOUP
 	"description": "Soup is a powerful framework for programmers.",
 	"author": {
 		"name": "Calamity, Inc.",
-		"contact": "https://soup.do"
+		"contact": "https://calamity.inc"
 	},
 	"device_supported": [
 		"keyboard"
