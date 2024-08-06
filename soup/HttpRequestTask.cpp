@@ -120,6 +120,7 @@ NAMESPACE_SOUP
 				else
 				{
 					//logWriteLine(soup::format("AWAIT_RESPONSE from {} - request failed", hr.getHost()));
+					await_response_finish_reason = NET_FAIL_L7_PREMATURE_END;
 					setWorkDone();
 				}
 			}
@@ -128,6 +129,7 @@ NAMESPACE_SOUP
 				//logWriteLine(soup::format("AWAIT_RESPONSE from {} - timeout", hr.getHost()));
 				sock->close();
 				sock.reset();
+				await_response_finish_reason = NET_FAIL_L7_TIMEOUT;
 				setWorkDone();
 			}
 			break;
@@ -155,6 +157,7 @@ NAMESPACE_SOUP
 	{
 		HttpRequest::recvResponse(*sock, [](Socket& s, Optional<HttpResponse>&& res, Capture&& cap) SOUP_EXCAL
 		{
+			cap.get<HttpRequestTask*>()->await_response_finish_reason = NET_OK;
 			cap.get<HttpRequestTask*>()->fulfil(std::move(res));
 			if (s.custom_data.isStructInMap(ReuseTag))
 			{
@@ -198,7 +201,7 @@ NAMESPACE_SOUP
 		switch (state)
 		{
 		case CONNECTING: return connector->getStatus();
-		case AWAIT_RESPONSE: return isWorkDone() ? (result.has_value() ? NET_OK : NET_FAIL_L7_TIMEOUT) : NET_PENDING;
+		case AWAIT_RESPONSE: return isWorkDone() ? await_response_finish_reason : NET_PENDING;
 		default: break; // keep the compiler happy
 		}
 		// Assuming `!isWorkDone()` because the task can only finish during CONNECTING and AWAIT_RESPONSE.

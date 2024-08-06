@@ -31,6 +31,7 @@ NAMESPACE_SOUP
 		bool dont_use_reusable_sockets = false;
 		bool dont_make_reusable_sockets = false;
 		bool retry_on_broken_pipe = false; // internal
+		netStatus await_response_finish_reason; // internal
 #endif
 		HttpRequest hr;
 #if !SOUP_WASM
