@@ -74,10 +74,20 @@ NAMESPACE_SOUP
 		// DrunkDeer
 		else if (hid.vendor_id == 0x352d)
 		{
-			if (hid.product_id == 0x2383 && hid.usage_page == 0xFF00)
+			if (hid.usage_page == 0xFF00)
 			{
-				// calls itself "Drunkdeer A75 US"
-				return "DrunkDeer A75";
+				if (hid.product_id == 0x2382)
+				{
+					return "DrunkDeer G65"; // untested
+				}
+				else if (hid.product_id == 0x2383)
+				{
+					return "DrunkDeer A75"; // calls itself "Drunkdeer A75 US"
+				}
+				else if (hid.product_id == 0x2384)
+				{
+					return "DrunkDeer G60"; // untested
+				}
 			}
 		}
 		// Keychron
