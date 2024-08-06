@@ -71,6 +71,15 @@ NAMESPACE_SOUP
 				}
 			}
 		}
+		// DrunkDeer
+		else if (hid.vendor_id == 0x352d)
+		{
+			if (hid.product_id == 0x2383 && hid.usage_page == 0xFF00)
+			{
+				// calls itself "Drunkdeer A75 US"
+				return "DrunkDeer A75";
+			}
+		}
 		// Keychron
 		else if (hid.vendor_id == 0x3434)
 		{
@@ -351,7 +360,9 @@ NAMESPACE_SOUP
 
 	bool AnalogueKeyboard::isPoll() const noexcept
 	{
-		return hid.usage_page == 0xFF60; // Keychron
+		return hid.usage_page == 0xFF00 // DrunkDeer
+			|| hid.usage_page == 0xFF60 // Keychron
+			;
 	}
 
 	using ActiveKey = AnalogueKeyboard::ActiveKey;
@@ -359,6 +370,131 @@ NAMESPACE_SOUP
 	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeys()
 	{
 		std::vector<ActiveKey> keys{};
+
+		if (hid.usage_page == 0xFF00) // DrunkDeer
+		{
+			Buffer buf;
+			buf.append(
+				"\x04\xb6\x03\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+				"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+				"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
+				"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+				, 64);
+			hid.sendReport(std::move(buf));
+
+			Buffer b0 = hid.receiveReport();
+			Buffer b1 = hid.receiveReport();
+			Buffer b2 = hid.receiveReport();
+			SOUP_IF_UNLIKELY (b0.empty() || b1.empty() || b2.empty())
+			{
+				disconnected = true;
+			}
+			else
+			{
+				Buffer combined((64 - 5) * 3);
+				combined.append(b0.data() + 5, b0.size() - 5);
+				combined.append(b1.data() + 5, b1.size() - 5);
+				combined.append(b2.data() + 5, b2.size() - 5);
+
+#define DRUNKDEER_KEY(key, row, column) { \
+	constexpr auto i = (row * 21) + column; \
+	if (combined[i]) \
+	{ \
+		keys.emplace_back(ActiveKey{ key, static_cast<float>(combined[i]) / 40.0f }); \
+	} \
+}
+
+				DRUNKDEER_KEY(KEY_ESCAPE, 0, 0);
+				DRUNKDEER_KEY(KEY_F1, 0, 2);
+				DRUNKDEER_KEY(KEY_F2, 0, 3);
+				DRUNKDEER_KEY(KEY_F3, 0, 4);
+				DRUNKDEER_KEY(KEY_F4, 0, 5);
+				DRUNKDEER_KEY(KEY_F5, 0, 6);
+				DRUNKDEER_KEY(KEY_F6, 0, 7);
+				DRUNKDEER_KEY(KEY_F7, 0, 8);
+				DRUNKDEER_KEY(KEY_F8, 0, 9);
+				DRUNKDEER_KEY(KEY_F9, 0, 10);
+				DRUNKDEER_KEY(KEY_F10, 0, 11);
+				DRUNKDEER_KEY(KEY_F11, 0, 12);
+				DRUNKDEER_KEY(KEY_F12, 0, 13);
+				DRUNKDEER_KEY(KEY_DEL, 0, 14);
+
+				DRUNKDEER_KEY(KEY_BACKQUOTE, 1, 0);
+				DRUNKDEER_KEY(KEY_1, 1, 1);
+				DRUNKDEER_KEY(KEY_2, 1, 2);
+				DRUNKDEER_KEY(KEY_3, 1, 3);
+				DRUNKDEER_KEY(KEY_4, 1, 4);
+				DRUNKDEER_KEY(KEY_5, 1, 5);
+				DRUNKDEER_KEY(KEY_6, 1, 6);
+				DRUNKDEER_KEY(KEY_7, 1, 7);
+				DRUNKDEER_KEY(KEY_8, 1, 8);
+				DRUNKDEER_KEY(KEY_9, 1, 9);
+				DRUNKDEER_KEY(KEY_0, 1, 10);
+				DRUNKDEER_KEY(KEY_MINUS, 1, 11);
+				DRUNKDEER_KEY(KEY_EQUALS, 1, 12);
+				DRUNKDEER_KEY(KEY_BACKSPACE, 1, 13);
+				DRUNKDEER_KEY(KEY_HOME, 1, 15);
+
+				DRUNKDEER_KEY(KEY_TAB, 2, 0);
+				DRUNKDEER_KEY(KEY_Q, 2, 1);
+				DRUNKDEER_KEY(KEY_W, 2, 2);
+				DRUNKDEER_KEY(KEY_E, 2, 3);
+				DRUNKDEER_KEY(KEY_R, 2, 4);
+				DRUNKDEER_KEY(KEY_T, 2, 5);
+				DRUNKDEER_KEY(KEY_Y, 2, 6);
+				DRUNKDEER_KEY(KEY_U, 2, 7);
+				DRUNKDEER_KEY(KEY_I, 2, 8);
+				DRUNKDEER_KEY(KEY_O, 2, 9);
+				DRUNKDEER_KEY(KEY_P, 2, 10);
+				DRUNKDEER_KEY(KEY_BRACKET_LEFT, 2, 11);
+				DRUNKDEER_KEY(KEY_BRACKET_RIGHT, 2, 12);
+				DRUNKDEER_KEY(KEY_BACKSLASH, 2, 13);
+				DRUNKDEER_KEY(KEY_PAGE_UP, 2, 15);
+
+				DRUNKDEER_KEY(KEY_CAPS_LOCK, 3, 0);
+				DRUNKDEER_KEY(KEY_A, 3, 1);
+				DRUNKDEER_KEY(KEY_S, 3, 2);
+				DRUNKDEER_KEY(KEY_D, 3, 3);
+				DRUNKDEER_KEY(KEY_F, 3, 4);
+				DRUNKDEER_KEY(KEY_G, 3, 5);
+				DRUNKDEER_KEY(KEY_H, 3, 6);
+				DRUNKDEER_KEY(KEY_J, 3, 7);
+				DRUNKDEER_KEY(KEY_K, 3, 8);
+				DRUNKDEER_KEY(KEY_L, 3, 9);
+				DRUNKDEER_KEY(KEY_SEMICOLON, 3, 10);
+				DRUNKDEER_KEY(KEY_QUOTE, 3, 11);
+				DRUNKDEER_KEY(KEY_ENTER, 3, 13);
+				DRUNKDEER_KEY(KEY_PAGE_DOWN, 3, 15);
+
+				DRUNKDEER_KEY(KEY_LSHIFT, 4, 0);
+				DRUNKDEER_KEY(KEY_Z, 4, 2);
+				DRUNKDEER_KEY(KEY_X, 4, 3);
+				DRUNKDEER_KEY(KEY_C, 4, 4);
+				DRUNKDEER_KEY(KEY_V, 4, 5);
+				DRUNKDEER_KEY(KEY_B, 4, 6);
+				DRUNKDEER_KEY(KEY_N, 4, 7);
+				DRUNKDEER_KEY(KEY_M, 4, 8);
+				DRUNKDEER_KEY(KEY_COMMA, 4, 9);
+				DRUNKDEER_KEY(KEY_PERIOD, 4, 10);
+				DRUNKDEER_KEY(KEY_SLASH, 4, 11);
+				DRUNKDEER_KEY(KEY_RSHIFT, 4, 13);
+				DRUNKDEER_KEY(KEY_ARROW_UP, 4, 14);
+				DRUNKDEER_KEY(KEY_END, 4, 15);
+
+				DRUNKDEER_KEY(KEY_LCTRL, 5, 0);
+				DRUNKDEER_KEY(KEY_LMETA, 5, 1);
+				DRUNKDEER_KEY(KEY_LALT, 5, 2);
+				DRUNKDEER_KEY(KEY_SPACE, 5, 6);
+				DRUNKDEER_KEY(KEY_RALT, 5, 10);
+				DRUNKDEER_KEY(KEY_FN, 5, 11);
+				DRUNKDEER_KEY(KEY_OEM_1, 5, 12); // Key says "Menu" on it, doesn't seem to do anything.
+				DRUNKDEER_KEY(KEY_ARROW_LEFT, 5, 14);
+				DRUNKDEER_KEY(KEY_ARROW_DOWN, 5, 15);
+				DRUNKDEER_KEY(KEY_ARROW_RIGHT, 5, 16);
+			}
+
+			return keys;
+		}
 
 		if (hid.usage_page == 0xFF60) // Keychron
 		{
