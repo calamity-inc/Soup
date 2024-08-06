@@ -20,6 +20,7 @@
 #include "Exception.hpp"
 #include "NamedCurves.hpp"
 #include "netConfig.hpp"
+#include "ObfusString.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
@@ -1305,9 +1306,10 @@ NAMESPACE_SOUP
 		{
 			if (content_type != TlsContentType::handshake)
 			{
-#if LOGGING
 				if (content_type == TlsContentType::alert)
 				{
+					s.custom_data.getStructFromMap(SocketCloseReason) = tls_alertToCloseReason(data);
+#if LOGGING
 					std::string msg = s.toString();
 					msg.append(" - Remote closing connection with ");
 					if (data.at(0) == 2)
@@ -1318,14 +1320,17 @@ NAMESPACE_SOUP
 					msg.append(std::to_string((int)data.at(1)));
 					msg.append(". See TlsAlertDescription for details.");
 					logWriteLine(std::move(msg));
+#endif
 				}
 				else
 				{
-					std::string msg = "Unexpected content type; expected handshake, found ";
+					std::string msg = ObfusString("Unexpected content type during handshake: ").str();
 					msg.append(std::to_string((int)content_type));
-					logWriteLine(std::move(msg));
-				}
+#if LOGGING
+					logWriteLine(msg);
 #endif
+					s.custom_data.getStructFromMap(SocketCloseReason) = std::move(msg);
+				}
 				s.tls_close(TlsAlertDescription::unexpected_message);
 				return;
 			}
@@ -1391,6 +1396,7 @@ NAMESPACE_SOUP
 			}
 			else if (content_type == TlsContentType::alert)
 			{
+				s.custom_data.getStructFromMap(SocketCloseReason) = tls_alertToCloseReason(data);
 #if LOGGING
 				{
 					std::string msg = s.toString();
@@ -1571,6 +1577,18 @@ NAMESPACE_SOUP
 
 			transport_close();
 		}
+	}
+
+	std::string Socket::tls_alertToCloseReason(const std::string& data)
+	{
+		std::string msg = ObfusString("Remote closing connection with ").str();
+		if (data.at(0) == 2)
+		{
+			msg.append(ObfusString("fatal ").str());
+		}
+		msg.append(ObfusString("alert: ").str());
+		msg.append(std::to_string((int)data.at(1)));
+		return msg;
 	}
 
 	bool Socket::transport_hasData() const

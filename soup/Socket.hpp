@@ -173,6 +173,8 @@ NAMESPACE_SOUP
 
 		void tls_close(TlsAlertDescription_t desc) SOUP_EXCAL;
 
+		[[nodiscard]] static std::string tls_alertToCloseReason(const std::string& data);
+
 		// Transport Layer
 
 		bool transport_send(const Buffer& buf) const noexcept;
