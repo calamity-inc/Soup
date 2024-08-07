@@ -80,13 +80,23 @@ NAMESPACE_SOUP
 				{
 					return "DrunkDeer G65"; // untested
 				}
-				else if (hid.product_id == 0x2383)
+				else if (hid.product_id == 0x2383) // 0x05ac:0x024f for Mac?
 				{
-					return "DrunkDeer A75"; // calls itself "Drunkdeer A75 US"
+					// Calls itself "Drunkdeer A75 US" for ANSI. Unsurprisingly, the same VID:PID also used for A75 ISO.
+					// However, this VID:PID is supposedly also used for the A75 Pro, which is somewhat surprising.
+					return "DrunkDeer A75";
 				}
 				else if (hid.product_id == 0x2384)
 				{
 					return "DrunkDeer G60"; // untested
+				}
+				else if (hid.product_id == 0x2386) // DrunkDeer G75 ANSI
+				{
+					return "DrunkDeer G75"; // untested
+				}
+				else if (hid.product_id == 0x2391) // DrunkDeer G75 JP
+				{
+					return "DrunkDeer G75"; // untested
 				}
 			}
 		}
