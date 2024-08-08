@@ -192,7 +192,25 @@ NAMESPACE_SOUP
 	}
 #endif
 
-	// In case you landed here because of an MSVC error: Set "Enable C++ exceptions" to "No". This doesn't actually disable C++ exceptions but allows it to generate this questionable code.
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
+	static void isolateNoUnwind(void(*f)(void*, void*, void*), void* a1, void* a2, void* a3)
+	{
+		bool is_stk_oflw;
+		__try
+		{
+			f(a1, a2, a3);
+		}
+		__except (is_stk_oflw = (GetExceptionInformation()->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW), handle_exp(GetExceptionInformation()))
+		{
+			if (is_stk_oflw)
+			{
+				_resetstkoflw();
+			}
+			SOUP_THROW(osException(std::move(exception_name)));
+		}
+	}
+#endif
+
 	Capture exceptions::isolate(Capture(*f)(Capture&&), Capture&& cap)
 	{
 		Capture ret;
@@ -218,19 +236,10 @@ NAMESPACE_SOUP
 			}
 		});
 
-		bool is_stk_oflw;
-		__try
+		isolateNoUnwind([](void* ret, void* f, void* cap)
 		{
-			ret = f(std::move(cap));
-		}
-		__except (is_stk_oflw = (GetExceptionInformation()->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW), handle_exp(GetExceptionInformation()))
-		{
-			if (is_stk_oflw)
-			{
-				_resetstkoflw();
-			}
-			SOUP_THROW(osException(std::move(exception_name)));
-		}
+			*reinterpret_cast<Capture*>(ret) = reinterpret_cast<Capture(*)(Capture&&)>(f)(std::move(*reinterpret_cast<Capture*>(cap)));
+		}, &ret, reinterpret_cast<void*>(f), &cap);
 
 		raise_exp(reinterpret_cast<EXCEPTION_POINTERS*>(1));
 #elif SOUP_POSIX && !SOUP_WASM
@@ -273,6 +282,18 @@ NAMESPACE_SOUP
 	}
 
 #if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
+	[[nodiscard]] static const char* tryGetExceptionWhat(_EXCEPTION_POINTERS* exp) noexcept
+	{
+		__try
+		{
+			return reinterpret_cast<std::exception*>(exp->ExceptionRecord->ExceptionInformation[1])->what();
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			return nullptr;
+		}
+	}
+
 	static void parseExceptionInformation(std::string& exception_name, ULONG_PTR info[15])
 	{
 		switch (info[0])
@@ -316,14 +337,14 @@ NAMESPACE_SOUP
 			break;
 
 		case 0xE06D7363:
-			__try
+			if (auto what = tryGetExceptionWhat(exp))
 			{
-				exception_name = reinterpret_cast<std::exception*>(exp->ExceptionRecord->ExceptionInformation[1])->what();
+				exception_name = what;
 				exception_name = unicode::utf16_to_utf8(unicode::acp_to_utf16(exception_name));
 				exception_name.insert(0, 1, '"');
 				exception_name.push_back('"');
 			}
-			__except (EXCEPTION_EXECUTE_HANDLER)
+			else
 			{
 				exception_name = "C++ exception";
 			}

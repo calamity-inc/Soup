@@ -38,10 +38,8 @@ NAMESPACE_SOUP
 	}
 #endif
 
-	std::vector<Pointer> Pointer::getJumps() const noexcept
+	static void getJumpsNoUnwind(std::vector<Pointer>& res, Pointer& ptr) noexcept
 	{
-		auto ptr = *this;
-		std::vector<Pointer> res{ ptr };
 #if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 		__try
 		{
@@ -57,6 +55,13 @@ NAMESPACE_SOUP
 		{
 		}
 #endif
+	}
+
+	std::vector<Pointer> Pointer::getJumps() const noexcept
+	{
+		auto ptr = *this;
+		std::vector<Pointer> res{ ptr };
+		getJumpsNoUnwind(res, ptr);
 		return res;
 	}
 
