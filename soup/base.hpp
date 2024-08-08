@@ -210,3 +210,12 @@ template <typename T> SOUP_FORCEINLINE void SOUP_UNUSED(T&&) {}
 // However, if we have a flat return value, `return std::move(flat);` could be a pessimisation.
 // This macro ensures the return value is moved out in both cases with zero overhead.
 #define SOUP_MOVE_RETURN(x) auto rvoable_return_value = std::move(x); return rvoable_return_value;
+
+// Enable compiler warning for unannotated fallthroughs
+#if defined(__clang__)
+#pragma clang diagnostic warning "-Wimplicit-fallthrough"
+//#elif defined(_MSC_VER)
+//#pragma warning(default: 5262) // MSVC is too retarded, it thinks everything is an implicit fallthrough.
+#elif defined(__GNUC__)
+#pragma GCC diagnostic warning "-Wimplicit-fallthrough"
+#endif

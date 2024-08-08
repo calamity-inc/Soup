@@ -54,7 +54,7 @@ NAMESPACE_SOUP
 			MEMORYSTATUSEX status;
 			status.dwLength = sizeof(status);
 			GlobalMemoryStatusEx(&status);
-			hwid.ram_mag = bitutil::getMostSignificantSetBit(status.ullTotalPhys / 1'000'000'000);
+			hwid.ram_mag = bitutil::getMostSignificantSetBit(static_cast<unsigned int>(status.ullTotalPhys / 1'000'000'000));
 		}
 
 		return hwid;

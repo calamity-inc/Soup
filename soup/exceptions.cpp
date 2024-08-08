@@ -192,6 +192,7 @@ NAMESPACE_SOUP
 	}
 #endif
 
+	// In case you landed here because of an MSVC error: Set "Enable C++ exceptions" to "No". This doesn't actually disable C++ exceptions but allows it to generate this questionable code.
 	Capture exceptions::isolate(Capture(*f)(Capture&&), Capture&& cap)
 	{
 		Capture ret;

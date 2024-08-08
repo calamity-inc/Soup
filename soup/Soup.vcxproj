@@ -257,7 +257,7 @@
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -289,7 +289,7 @@
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -322,7 +322,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -355,7 +355,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -387,7 +387,7 @@
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -420,7 +420,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -455,7 +455,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -491,7 +491,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -527,7 +527,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -563,7 +563,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -599,7 +599,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>
@@ -635,7 +635,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/Zc:__cplusplus -Wimplicit-fallthrough %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>$(MsBuildProjectDirectory)\pch.hpp</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(MsBuildProjectDirectory)\pch.hpp</ForcedIncludeFiles>

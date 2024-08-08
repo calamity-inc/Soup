@@ -531,7 +531,7 @@ NAMESPACE_SOUP
 				{
 					found = true;
 #endif
-					char data[33];
+					uint8_t data[33];
 					memset(data, 0, sizeof(data));
 					data[1] = 0xa9; // KC_HE
 					data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL

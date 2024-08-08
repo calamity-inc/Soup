@@ -24,7 +24,7 @@ NAMESPACE_SOUP
 			{
 				break;
 			}
-			size += (32 - bitutil::getLeastSignificantSetBit(part));
+			size += static_cast<uint8_t>(32 - bitutil::getLeastSignificantSetBit(part));
 		}
 		return size;
 	}

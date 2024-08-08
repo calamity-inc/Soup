@@ -10,10 +10,10 @@
 using namespace soup;
 
 static Canvas c{};
-static int64_t pos_x = 1;
-static int64_t pos_y = 1;
-static int64_t vel_x = 1;
-static int64_t vel_y = 1;
+static unsigned int pos_x = 1;
+static unsigned int pos_y = 1;
+static unsigned int vel_x = 1;
+static unsigned int vel_y = 1;
 static bool started_loop = false;
 
 void cli_dvd()
@@ -44,7 +44,7 @@ void cli_dvd()
 					}
 					if (pos_x >= c.width - font.measureWidth("SOUP"))
 					{
-						pos_x = c.width - font.measureWidth("SOUP");
+						pos_x = static_cast<unsigned int>(c.width - font.measureWidth("SOUP"));
 						vel_x = -1;
 					}
 					if (pos_y >= c.height - font.baseline_glyph_height)

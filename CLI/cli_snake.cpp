@@ -23,21 +23,21 @@ static std::vector<soup::Vector2> snake_tail{};
 
 static void clampPos(soup::Vector2& pos)
 {
-	if (pos.x < 0)
+	if (pos.x < 0.0f)
 	{
-		pos.x = c.width - 1;
+		pos.x = static_cast<float>(c.width - 1);
 	}
 	else if (pos.x == c.width)
 	{
-		pos.x = 0;
+		pos.x = 0.0f;
 	}
-	if (pos.y < 0)
+	if (pos.y < 0.0f)
 	{
-		pos.y = c.height - 1;
+		pos.y = static_cast<float>(c.height - 1);
 	}
 	else if (pos.y == c.height)
 	{
-		pos.y = 0;
+		pos.y = 0.0f;
 	}
 }
 
@@ -52,8 +52,8 @@ static void placeFruit()
 {
 	while (true)
 	{
-		int x = soup::rand(0, c.width - 1);
-		int y = soup::rand(0, c.height - 1);
+		auto x = soup::rand.t<unsigned int>(0, c.width - 1);
+		auto y = soup::rand.t<unsigned int>(0, c.height - 1);
 		if (c.get(x, y) == colour_bg)
 		{
 			c.set(x, y, colour_fruit);
@@ -72,7 +72,7 @@ static void setMomentum(soup::Vector2 momentum)
 {
 	auto next_pos = (snake_head + momentum);
 	clampPos(next_pos);
-	if (c.get(next_pos.x, next_pos.y) != colour_snake)
+	if (c.get(static_cast<unsigned int>(next_pos.x), static_cast<unsigned int>(next_pos.y)) != colour_snake)
 	{
 		snake_momentum = momentum;
 	}
@@ -106,21 +106,21 @@ static void startGameThread()
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(tickrate));
 			move();
-			const auto prev_colour = c.get(snake_head.x, snake_head.y);
+			const auto prev_colour = c.get(static_cast<unsigned int>(snake_head.x), static_cast<unsigned int>(snake_head.y));
 			if (prev_colour == colour_snake)
 			{
 				resetState();
 			}
 			else
 			{
-				c.set(snake_head.x, snake_head.y, colour_snake);
+				c.set(static_cast<unsigned int>(snake_head.x), static_cast<unsigned int>(snake_head.y), colour_snake);
 				if (prev_colour == colour_fruit)
 				{
 					placeFruit();
 				}
 				else
 				{
-					c.set(snake_tail.begin()->x, snake_tail.begin()->y, colour_bg);
+					c.set(static_cast<unsigned int>(snake_tail.begin()->x), static_cast<unsigned int>(snake_tail.begin()->y), colour_bg);
 					snake_tail.erase(snake_tail.begin());
 				}
 			}

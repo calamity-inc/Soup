@@ -14,7 +14,7 @@ NAMESPACE_SOUP
 		size_t username_pad = (4 - (username.size() % 4));
 
 		StringWriter sw;
-		uint32_t i = (0x0001 << 16) | (4 + username.size() + username_pad + 8 + 12 + 24 + 8); // Binding Request, length: USERNAME + PRIORITY + ICE-CONTROLLED + MESSAGE-INTEGRITY + FINGERPRINT
+		uint32_t i = static_cast<uint32_t>((0x0001 << 16) | (4 + username.size() + username_pad + 8 + 12 + 24 + 8)); // Binding Request, length: USERNAME + PRIORITY + ICE-CONTROLLED + MESSAGE-INTEGRITY + FINGERPRINT
 		sw.u32_be(i);
 		i = 0x2112A442;
 		sw.u32_be(i);

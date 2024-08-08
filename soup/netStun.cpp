@@ -74,7 +74,7 @@ NAMESPACE_SOUP
 		// Compute data to HMAC
 		StringWriter sw;
 		sw.data = data.substr(0, 2); // keep type
-		uint16_t s = ((data.size() - 20) + 24); sw.u16_be(s); // message length excludes header but includes MESSAGE-INTEGRITY
+		uint16_t s = static_cast<uint16_t>((data.size() - 20) + 24); sw.u16_be(s); // message length excludes header but includes MESSAGE-INTEGRITY
 		sw.data.append(data.substr(4));
 
 		// Compute checksum
