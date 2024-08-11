@@ -645,9 +645,7 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 	void hwHid::kickOffRead() noexcept
 	{
-		if (!ReadFile(handle, read_buffer.data(), static_cast<DWORD>(read_buffer.capacity()), &bytes_read, &read_overlapped)
-			&& GetLastError() == ERROR_IO_PENDING
-			)
+		if (!ReadFile(handle, read_buffer.data(), static_cast<DWORD>(read_buffer.capacity()), &bytes_read, &read_overlapped))
 		{
 			pending_read = true;
 		}
