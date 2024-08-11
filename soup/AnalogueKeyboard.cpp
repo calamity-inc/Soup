@@ -5,9 +5,21 @@
 #include "HidScancode.hpp"
 #include "macros.hpp" // COUNT
 #include "NamedMutex.hpp"
+#if SOUP_WINDOWS
+#include "Process.hpp"
+#endif
 
 NAMESPACE_SOUP
 {
+	[[nodiscard]] static bool areRazerAnalogueReportsEnabled()
+	{
+#if SOUP_WINDOWS
+		return Process::get("Razer Synapse 3.exe");
+#else
+		return true;
+#endif
+	}
+
 	[[nodiscard]] static std::string checkDeviceName(const hwHid& hid)
 	{
 		// Wooting, https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-plugin/src/lib.rs
@@ -37,35 +49,35 @@ NAMESPACE_SOUP
 		{
 			if (hid.product_id == 0x0266)
 			{
-				if (hid.hasReportId(7))
+				if (hid.hasReportId(7) && areRazerAnalogueReportsEnabled())
 				{
 					return "Razer Huntsman V2 Analog";
 				}
 			}
 			else if (hid.product_id == 0x0282)
 			{
-				if (hid.hasReportId(7))
+				if (hid.hasReportId(7) && areRazerAnalogueReportsEnabled())
 				{
 					return "Razer Huntsman Mini Analog";
 				}
 			}
 			else if (hid.product_id == 0x02a6)
 			{
-				if (hid.hasReportId(11))
+				if (hid.hasReportId(11) && areRazerAnalogueReportsEnabled())
 				{
 					return "Razer Huntsman V3 Pro";
 				}
 			}
 			else if (hid.product_id == 0x02a7)
 			{
-				if (hid.hasReportId(11))
+				if (hid.hasReportId(11) && areRazerAnalogueReportsEnabled())
 				{
 					return "Razer Huntsman V3 Pro Tenkeyless";
 				}
 			}
 			else if (hid.product_id == 0x02b0)
 			{
-				if (hid.hasReportId(11))
+				if (hid.hasReportId(11) && areRazerAnalogueReportsEnabled())
 				{
 					return "Razer Huntsman V3 Pro Mini";
 				}
