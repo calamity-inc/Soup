@@ -24,6 +24,7 @@ NAMESPACE_SOUP
 		uint16_t input_report_byte_length;
 		uint16_t output_report_byte_length;
 		uint16_t feature_report_byte_length;
+		bool is_bluetooth;
 		bool pending_read = false;
 		DWORD bytes_read{};
 		OVERLAPPED read_overlapped{};
@@ -75,6 +76,7 @@ NAMESPACE_SOUP
 #endif
 		}
 
+		[[nodiscard]] bool isBluetooth() const noexcept;
 		[[nodiscard]] bool hasReportId(uint8_t report_id) const noexcept;
 
 		[[nodiscard]] bool hasReport() noexcept;

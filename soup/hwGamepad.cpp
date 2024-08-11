@@ -189,8 +189,9 @@ NAMESPACE_SOUP
 				}
 				else
 				{
-					r.skip(1); // Sometimes bluetooth report starts with 01 ?!
-					ds4.is_bluetooth = true;
+					// Sometimes report stats with 01, in which case we need to check the HID itself.
+					r.skip(1);
+					ds4.is_bluetooth = hid.isBluetooth();
 				}
 
 				Ds4Report report;

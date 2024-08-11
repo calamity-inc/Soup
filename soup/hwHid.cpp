@@ -358,6 +358,11 @@ NAMESPACE_SOUP
 						hid.input_report_byte_length = caps.InputReportByteLength;
 						hid.output_report_byte_length = caps.OutputReportByteLength;
 						hid.feature_report_byte_length = caps.FeatureReportByteLength;
+
+						// Example USB path: \\?\HID#VID_31E3&PID_1230&MI_02#8&39d6d828&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+						// Example BT path: \\?\HID#{00001124-0000-1000-8000-00805f9b34fb}_VID&0002054c_PID&09cc#8&1e16befc&6&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+						hid.is_bluetooth = (wcsstr(device_interface, L"HID#{") != nullptr);
+
 						hid.read_buffer.reserve(caps.InputReportByteLength);
 
 						res.emplace_back(std::move(hid));
@@ -492,6 +497,15 @@ NAMESPACE_SOUP
 			&& product_id == b.product_id
 			&& getSerialNumber() == b.getSerialNumber()
 			;
+	}
+
+	bool hwHid::isBluetooth() const noexcept
+	{
+#if SOUP_WINDOWS
+		return is_bluetooth;
+#else
+		return false;
+#endif
 	}
 
 	bool hwHid::hasReportId(uint8_t report_id) const noexcept
