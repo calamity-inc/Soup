@@ -231,6 +231,27 @@ int main(int argc, const char** argv)
 							std::cout << string::join(buttons, ", ");
 						}
 						std::cout << "\n";
+						if (gp.hasTouchpad())
+						{
+							std::cout << "Touchpad: ";
+							std::vector<std::string> finger_coords{};
+							for (uint8_t i = 0; i != status.num_fingers_on_touchpad; ++i)
+							{
+								std::string str = std::to_string(status.finger_coords[i].x);
+								str.append(", ");
+								str.append(std::to_string(status.finger_coords[i].y));
+								finger_coords.emplace_back(std::move(str));
+							}
+							if (finger_coords.empty())
+							{
+								std::cout << "Inactive";
+							}
+							else
+							{
+								std::cout << string::join(finger_coords, "; ");
+							}
+							std::cout << "\n";
+						}
 						if (gp.canRumble())
 						{
 							std::cout << "Press DPAD UP+LEFT to rumble: Left trigger to actuate weak motor, right trigger to actuate strong motor.\n";

@@ -4,6 +4,7 @@
 
 #include "buttons.hpp"
 #include "Rgb.hpp"
+#include "Vector2.hpp"
 
 NAMESPACE_SOUP
 {
@@ -18,7 +19,9 @@ NAMESPACE_SOUP
 			float right_stick_y; // Y Down -- Top is 0.0f, bottom is 1.0f.
 			float left_trigger;
 			float right_trigger;
+			alignas(float) Vector2 finger_coords[2]; // data is only initialised up to `num_fingers_on_touchpad`
 			bool buttons[NUM_BUTTONS];
+			uint8_t num_fingers_on_touchpad = 0;
 
 			void setDpad(uint8_t dpad);
 		};
@@ -61,6 +64,9 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] bool hasAnalogueTriggers() const noexcept;
 		[[nodiscard]] bool hasInvertedActionButtons() const noexcept;
+
+		[[nodiscard]] bool hasTouchpad() const noexcept;
+		[[nodiscard]] Vector2 getTouchpadSize() const noexcept;
 
 	protected:
 		Rgb colour = Rgb::BLACK;

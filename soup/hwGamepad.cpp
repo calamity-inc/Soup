@@ -88,6 +88,8 @@ NAMESPACE_SOUP
 		//i16 accel_x; // 19-20
 		//i16 accel_y; // 21-22
 		//i16 accel_z; // 23-24
+		u8 finger_1_data[4]; // 35-38
+		u8 finger_2_data[4]; // 39-42
 
 		SOUP_PACKET_IO(s)
 		{
@@ -108,6 +110,9 @@ NAMESPACE_SOUP
 				//&& s.i16(accel_x)
 				//&& s.i16(accel_y)
 				//&& s.i16(accel_z)
+				&& s.skip(35 - 10)
+				&& s.u8(finger_1_data[0]) && s.u8(finger_1_data[1]) && s.u8(finger_1_data[2]) && s.u8(finger_1_data[3])
+				&& s.u8(finger_2_data[0]) && s.u8(finger_2_data[1]) && s.u8(finger_2_data[2]) && s.u8(finger_2_data[3])
 				;
 		}
 	};
@@ -218,6 +223,19 @@ NAMESPACE_SOUP
 				status.buttons[BTN_RSTICK] = (report.buttons_2 & (1 << 7));
 				status.buttons[BTN_META] = (report.buttons_3_and_counter & (1 << 0));
 				status.buttons[BTN_TOUCHPAD] = (report.buttons_3_and_counter & (1 << 1));
+
+				if (((report.finger_1_data[0] >> 7) & 1) == 0)
+				{
+					status.finger_coords[0].x = static_cast<float>((static_cast<unsigned int>(report.finger_1_data[2] & 0xf) << 8) | report.finger_1_data[1]);
+					status.finger_coords[0].y = static_cast<float>((static_cast<unsigned int>(report.finger_1_data[3]) << 4) | (report.finger_1_data[2] >> 4));
+					status.num_fingers_on_touchpad = 1;
+				}
+				if (((report.finger_2_data[0] >> 7) & 1) == 0)
+				{
+					status.finger_coords[status.num_fingers_on_touchpad].x = static_cast<float>((static_cast<unsigned int>(report.finger_2_data[2] & 0xf) << 8) | report.finger_2_data[1]);
+					status.finger_coords[status.num_fingers_on_touchpad].y = static_cast<float>((static_cast<unsigned int>(report.finger_2_data[3]) << 4) | (report.finger_2_data[2] >> 4));
+					status.num_fingers_on_touchpad++;
+				}
 			}
 			else if (hid.vendor_id == 0x57e) // Nintendo Switch Pro Controller, Y Up
 			{
@@ -343,6 +361,16 @@ NAMESPACE_SOUP
 	bool hwGamepad::hasInvertedActionButtons() const noexcept
 	{
 		return hid.vendor_id == 0x57e; // Nintendo Switch Pro Controller
+	}
+
+	bool hwGamepad::hasTouchpad() const noexcept
+	{
+		return hid.vendor_id == 0x54c; // DS4
+	}
+
+	Vector2 hwGamepad::getTouchpadSize() const noexcept
+	{
+		return Vector2(1920.0f, 943.0f); // DS4
 	}
 
 	// Should maybe be called "has programmable light" because Stadia Controller does have a light, we just can't modify it...
