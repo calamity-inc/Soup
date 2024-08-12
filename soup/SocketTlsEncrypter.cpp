@@ -1,6 +1,7 @@
 #include "SocketTlsEncrypter.hpp"
 
 #include "aes.hpp"
+#include "HmacState.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
@@ -25,15 +26,18 @@ NAMESPACE_SOUP
 	std::string SocketTlsEncrypter::calculateMac(TlsContentType_t content_type, const std::string& content) SOUP_EXCAL
 	{
 		auto msg = calculateMacBytes(content_type, content);
-		msg.append(content);
-
 		if (mac_key.size() == 20)
 		{
+			msg.append(content);
 			return sha1::hmac(msg, mac_key);
 		}
 		//else if (mac_key.size() == 32)
 		{
-			return sha256::hmac(msg, mac_key);
+			HmacState<sha256> st(mac_key);
+			st.append(msg.data(), msg.size());
+			st.append(content.data(), content.size());
+			st.finalise();
+			return st.getDigest();
 		}
 	}
 
