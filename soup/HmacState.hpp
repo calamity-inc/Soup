@@ -2,6 +2,8 @@
 
 #include "base.hpp"
 
+#include <cstring> // memset, memcpy
+
 NAMESPACE_SOUP
 {
 	template <typename T>
@@ -10,26 +12,32 @@ NAMESPACE_SOUP
 		typename T::State inner;
 		typename T::State outer;
 
-		HmacState(std::string key) SOUP_EXCAL
+		HmacState(const std::string& key) noexcept
+			: HmacState(key.data(), key.size())
 		{
-			if (key.length() > T::BLOCK_BYTES)
+		}
+
+		HmacState(const void* key_data, size_t key_size) noexcept
+		{
+			uint8_t header[T::BLOCK_BYTES];
+			memset(header, 0, sizeof(header));
+
+			if (key_size <= T::BLOCK_BYTES)
 			{
-				key = T::hash(key);
+				memcpy(header, key_data, key_size);
+			}
+			else
+			{
+				typename T::State st;
+				st.append(key_data, key_size);
+				st.finalise();
+				st.getDigest(header); static_assert(T::DIGEST_BYTES <= T::BLOCK_BYTES);
 			}
 
-			for (size_t i = 0; i != key.length(); ++i)
+			for (size_t i = 0; i != sizeof(header); ++i)
 			{
-				inner.appendByte(key[i] ^ 0x36);
-				outer.appendByte(key[i] ^ 0x5c);
-			}
-
-			{
-				auto diff = T::BLOCK_BYTES - key.length();
-				while (diff--)
-				{
-					inner.appendByte(0x36);
-					outer.appendByte(0x5c);
-				}
+				inner.appendByte(header[i] ^ 0x36);
+				outer.appendByte(header[i] ^ 0x5c);
 			}
 		}
 
