@@ -1,7 +1,6 @@
 #include "SocketTlsEncrypter.hpp"
 
 #include "aes.hpp"
-#include "HmacState.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
@@ -28,7 +27,7 @@ NAMESPACE_SOUP
 		auto msg = calculateMacBytes(content_type, size);
 		if (mac_key.size() == 20)
 		{
-			HmacState<sha1> st(mac_key);
+			sha1::HmacState st(mac_key);
 			st.append(msg.data(), msg.size());
 			st.append(data, size);
 			st.finalise();
@@ -36,7 +35,7 @@ NAMESPACE_SOUP
 		}
 		//else if (mac_key.size() == 32)
 		{
-			HmacState<sha256> st(mac_key);
+			sha256::HmacState st(mac_key);
 			st.append(msg.data(), msg.size());
 			st.append(data, size);
 			st.finalise();

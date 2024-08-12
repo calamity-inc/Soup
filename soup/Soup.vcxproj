@@ -745,7 +745,6 @@
     <ClInclude Include="HardwareRng.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="HidScancode.hpp" />
-    <ClInclude Include="HmacState.hpp" />
     <ClInclude Include="hwGamepad.hpp" />
     <ClInclude Include="Hwid.hpp" />
     <ClInclude Include="IpcSocket.hpp" />
