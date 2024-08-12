@@ -1102,13 +1102,13 @@ NAMESPACE_SOUP
 		return tls_encrypter_send.isActive();
 	}
 
-	bool Socket::send(const std::string& data) SOUP_EXCAL
+	bool Socket::send(const void* data, size_t size) SOUP_EXCAL
 	{
 		if (tls_encrypter_send.isActive())
 		{
-			return tls_sendRecordEncrypted(TlsContentType::application_data, data);
+			return tls_sendRecordEncrypted(TlsContentType::application_data, data, size);
 		}
-		return transport_send(data);
+		return transport_send(data, size);
 	}
 
 	bool Socket::initUdpBroadcast4()
@@ -1272,19 +1272,23 @@ NAMESPACE_SOUP
 
 	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const std::string& content) SOUP_EXCAL
 	{
-		auto body = tls_encrypter_send.encrypt(content_type, content);
+		return tls_sendRecordEncrypted(content_type, content.data(), content.size());
+	}
+
+	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const void* data, size_t size) SOUP_EXCAL
+	{
+		auto body = tls_encrypter_send.encrypt(content_type, data, size);
 
 		TlsRecord record{};
 		record.content_type = content_type;
 		record.length = static_cast<uint16_t>(body.size());
 
-		Buffer buf(5 + body.size());
-		BufferRefWriter bw(buf, ENDIAN_BIG);
+		Buffer header(5);
+		BufferRefWriter bw(header, ENDIAN_BIG);
 		record.write(bw);
 
-		buf.append(body.data(), body.size());
-
-		return transport_send(buf);
+		body.prepend(header.data(), header.size());
+		return transport_send(body);
 	}
 
 	struct CaptureSocketTlsRecvHandshake
@@ -1536,7 +1540,7 @@ NAMESPACE_SOUP
 						iv.insert(iv.end(), nonce_explicit.begin(), nonce_explicit.end());
 						data.erase(0, record_iv_length);
 
-						auto ad = s.tls_encrypter_recv.calculateMacBytes(cap.content_type, data);
+						auto ad = s.tls_encrypter_recv.calculateMacBytes(cap.content_type, data.size());
 
 						if (aes::gcmDecrypt(
 							(uint8_t*)data.data(), data.size(),
