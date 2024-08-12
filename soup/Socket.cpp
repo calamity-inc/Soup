@@ -1108,7 +1108,7 @@ NAMESPACE_SOUP
 		{
 			return tls_sendRecordEncrypted(TlsContentType::application_data, data, size);
 		}
-		return transport_send(data, size);
+		return transport_send(data, static_cast<int>(size));
 	}
 
 	bool Socket::initUdpBroadcast4()
