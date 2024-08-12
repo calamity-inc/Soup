@@ -18,8 +18,8 @@ NAMESPACE_SOUP
 
 		struct State
 		{
+			uint8_t buffer[BLOCK_BYTES];
 			uint32_t state[8];
-			uint8_t buffer[64];
 			uint64_t n_bits;
 			uint8_t buffer_counter;
 
@@ -38,7 +38,7 @@ NAMESPACE_SOUP
 				buffer[buffer_counter++] = byte;
 				n_bits += 8;
 
-				if (buffer_counter == 64)
+				if (buffer_counter == BLOCK_BYTES)
 				{
 					buffer_counter = 0;
 					transform();

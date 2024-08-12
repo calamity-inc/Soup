@@ -218,7 +218,7 @@ NAMESPACE_SOUP
 
 	void sha256::State::getDigest(uint8_t out[DIGEST_BYTES]) const noexcept
 	{
-		for (int i = 0; i < 8; i++)
+		for (unsigned int i = 0; i != DIGEST_BYTES / 4; i++)
 		{
 			for (int j = 3; j >= 0; j--)
 			{
@@ -229,7 +229,7 @@ NAMESPACE_SOUP
 
 	std::string sha256::State::getDigest() const SOUP_EXCAL
 	{
-		std::string digest(32, '\0');
+		std::string digest(DIGEST_BYTES, '\0');
 		getDigest((uint8_t*)digest.data());
 		return digest;
 	}

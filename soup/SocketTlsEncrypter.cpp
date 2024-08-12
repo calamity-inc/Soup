@@ -28,8 +28,11 @@ NAMESPACE_SOUP
 		auto msg = calculateMacBytes(content_type, content);
 		if (mac_key.size() == 20)
 		{
-			msg.append(content);
-			return sha1::hmac(msg, mac_key);
+			HmacState<sha1> st(mac_key);
+			st.append(msg.data(), msg.size());
+			st.append(content.data(), content.size());
+			st.finalise();
+			return st.getDigest();
 		}
 		//else if (mac_key.size() == 32)
 		{
