@@ -31,31 +31,12 @@ NAMESPACE_SOUP
 			return true;
 		}
 
-		[[nodiscard]] static std::string hmac(const std::string& msg, std::string key) SOUP_EXCAL
+		[[nodiscard]] static std::string hmac(const std::string& msg, const std::string& key) SOUP_EXCAL
 		{
-			if (key.length() > T::BLOCK_BYTES)
-			{
-				key = T::hash(key);
-			}
-
-			std::string inner = key;
-			std::string outer = key;
-
-			for (size_t i = 0; i != key.length(); ++i)
-			{
-				inner[i] ^= 0x36;
-				outer[i] ^= 0x5c;
-			}
-
-			if (auto diff = T::BLOCK_BYTES - key.length(); diff != 0)
-			{
-				inner.append(diff, '\x36');
-				outer.append(diff, '\x5c');
-			}
-
-			inner.append(msg);
-			outer.append(T::hash(std::move(inner)));
-			return T::hash(std::move(outer));
+			HmacState st(key);
+			st.append(msg.data(), msg.size());
+			st.finalise();
+			return st.getDigest();
 		}
 
 		// used as (secret, label, seed) in the RFC
