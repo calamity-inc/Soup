@@ -141,8 +141,8 @@ NAMESPACE_SOUP
 		state[5] = 0x9b05688c;
 		state[6] = 0x1f83d9ab;
 		state[7] = 0x5be0cd19;
-		n_bits = 0;
 		buffer_counter = 0;
+		n_bits = 0;
 	}
 
 	void sha256::State::transform() noexcept

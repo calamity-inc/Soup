@@ -20,8 +20,8 @@ NAMESPACE_SOUP
 		{
 			uint8_t buffer[BLOCK_BYTES];
 			uint32_t state[8];
-			uint64_t n_bits;
 			uint8_t buffer_counter;
+			uint64_t n_bits;
 
 			State() noexcept;
 

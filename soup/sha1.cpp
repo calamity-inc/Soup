@@ -235,8 +235,8 @@ NAMESPACE_SOUP
 		state[2] = 0x98badcfe;
 		state[3] = 0x10325476;
 		state[4] = 0xc3d2e1f0;
-		n_bits = 0;
 		buffer_counter = 0;
+		n_bits = 0;
 	}
 
 	void sha1::State::transform() noexcept
