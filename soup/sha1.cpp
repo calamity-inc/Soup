@@ -228,6 +228,20 @@ NAMESPACE_SOUP
 		return sha.getDigest();
 	}
 
+#if SHA1_USE_INTRIN
+	[[nodiscard]] static bool sha1_can_use_intrin() noexcept
+	{
+	#if SOUP_X86
+		const CpuInfo& cpu_info = CpuInfo::get();
+		return cpu_info.supportsSSSE3()
+			&& cpu_info.supportsSHA()
+			;
+	#elif SOUP_ARM
+		return CpuInfo::get().armv8_sha1;
+	#endif
+	}
+#endif
+
 	sha1::State::State()
 	{
 		state[0] = 0x67452301;
@@ -242,10 +256,8 @@ NAMESPACE_SOUP
 	void sha1::State::transform() noexcept
 	{
 #if SHA1_USE_INTRIN
-		const CpuInfo& cpu_info = CpuInfo::get();
-		if (cpu_info.supportsSSSE3()
-			&& cpu_info.supportsSHA()
-			)
+		static bool good_cpu = sha1_can_use_intrin();
+		if (good_cpu)
 		{
 	#if SOUP_X86
 			intrin::sha1_transform(state, buffer);
