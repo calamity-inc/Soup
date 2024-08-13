@@ -45,14 +45,14 @@ NAMESPACE_SOUP
 				{
 					if (isDs4StillAlive(hid))
 					{
-						res.emplace_back(hwGamepad("DualShock 4", std::move(hid)));
+						res.emplace_back("DualShock 4", std::move(hid));
 					}
 				}
 				else if (hid.vendor_id == 0x57e // Nintendo
 					&& hid.product_id == 0x2009 // Switch Pro Controller
 					)
 				{
-					res.emplace_back(hwGamepad("Nintendo Switch Pro Controller", std::move(hid))).switch_pro.has_calibration_data = false;
+					res.emplace_back("Nintendo Switch Pro Controller", std::move(hid)).switch_pro.has_calibration_data = false;
 				}
 				else if (hid.vendor_id == 0x18d1 // Google
 					&& hid.product_id == 0x9400 // Stadia Controller
@@ -61,7 +61,7 @@ NAMESPACE_SOUP
 					Buffer buf;
 					buf.push_back(0x05);
 					bool is_bluetooth = !hid.sendReport(std::move(buf));
-					res.emplace_back(hwGamepad("Stadia Controller", std::move(hid))).stadia.is_bluetooth = is_bluetooth;
+					res.emplace_back("Stadia Controller", std::move(hid)).stadia.is_bluetooth = is_bluetooth;
 				}
 			}
 		}
