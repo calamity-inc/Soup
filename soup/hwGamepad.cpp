@@ -41,11 +41,18 @@ NAMESPACE_SOUP
 		{
 			if (hid.usage == 0x05)
 			{
-				if (hid.vendor_id == 0x54c)
+				if (hid.vendor_id == 0x54c) // Sony
 				{
-					if (isDs4StillAlive(hid))
+					if (hid.product_id == 0xce6) // DualSense 5
 					{
-						res.emplace_back("DualShock 4", std::move(hid));
+						res.emplace_back("DualSense 5", std::move(hid));
+					}
+					else if (hid.product_id == 0x5c4 || hid.product_id == 0x9cc) // DualShock 4 (rev 1 + 2)
+					{
+						if (isDs4StillAlive(hid))
+						{
+							res.emplace_back("DualShock 4", std::move(hid));
+						}
 					}
 				}
 				else if (hid.vendor_id == 0x57e // Nintendo
@@ -68,51 +75,76 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	// https://www.psdevwiki.com/ps4/DS4-USB#Data_Format
-	SOUP_PACKET(Ds4Report)
+	SOUP_PACKET(DsReport)
 	{
-		u8 left_stick_x; // 1
-		u8 left_stick_y; // 2
-		u8 right_stick_x; // 3
-		u8 right_stick_y; // 4
-		u8 buttons_1; // 5
-		u8 buttons_2; // 6
-		u8 buttons_3_and_counter; // 7
-		u8 l2; // 8
-		u8 r2; // 9
-		//u16 timestamp; // 10-11
-		//u8 battery; // 12
-		//i16 gyro_x; // 13-14
-		//i16 gyro_y; // 15-16
-		//i16 gyro_z; // 17-18
-		//i16 accel_x; // 19-20
-		//i16 accel_y; // 21-22
-		//i16 accel_z; // 23-24
-		u8 finger_1_data[4]; // 35-38
-		u8 finger_2_data[4]; // 39-42
+		u8 left_stick_x;
+		u8 left_stick_y;
+		u8 right_stick_x;
+		u8 right_stick_y;
+		u8 buttons_1;
+		u8 buttons_2;
+		u8 buttons_3;
+		u8 l2;
+		u8 r2;
+		u8 finger_1_data[4];
+		u8 finger_2_data[4];
 
-		SOUP_PACKET_IO(s)
+		// https://www.psdevwiki.com/ps4/DS4-USB#Data_Format
+		bool readDs4(BufferRefReader& s)
 		{
-			return s.u8(left_stick_x)
-				&& s.u8(left_stick_y)
-				&& s.u8(right_stick_x)
-				&& s.u8(right_stick_y)
-				&& s.u8(buttons_1)
-				&& s.u8(buttons_2)
-				&& s.u8(buttons_3_and_counter)
-				&& s.u8(l2)
-				&& s.u8(r2)
-				//&& s.u16(timestamp)
-				//&& s.u8(battery)
-				//&& s.i16(gyro_x)
-				//&& s.i16(gyro_y)
-				//&& s.i16(gyro_z)
-				//&& s.i16(accel_x)
-				//&& s.i16(accel_y)
-				//&& s.i16(accel_z)
+			return s.u8(left_stick_x) // 1
+				&& s.u8(left_stick_y) // 2
+				&& s.u8(right_stick_x) // 3
+				&& s.u8(right_stick_y) // 4
+				&& s.u8(buttons_1) // 5
+				&& s.u8(buttons_2) // 6
+				&& s.u8(buttons_3) // 7
+				&& s.u8(l2) // 8
+				&& s.u8(r2) // 9
+				//&& s.u16(timestamp) // 10-11
+				//&& s.u8(battery) // 12
+				//&& s.i16(gyro_x) // 13-14
+				//&& s.i16(gyro_y) // 15-16
+				//&& s.i16(gyro_z) // 17-18
+				//&& s.i16(accel_x) // 19-20
+				//&& s.i16(accel_y) // 21-22
+				//&& s.i16(accel_z) // 23-24
 				&& s.skip(35 - 10)
+				&& s.u8(finger_1_data[0]) && s.u8(finger_1_data[1]) && s.u8(finger_1_data[2]) && s.u8(finger_1_data[3]) // 35-38
+				&& s.u8(finger_2_data[0]) && s.u8(finger_2_data[1]) && s.u8(finger_2_data[2]) && s.u8(finger_2_data[3]) // 39-42
+				;
+		}
+
+		// https://github.com/nondebug/dualsense
+		bool readDs5Usb(BufferRefReader& s)
+		{
+			return s.u8(left_stick_x) // 1
+				&& s.u8(left_stick_y) // 2
+				&& s.u8(right_stick_x) // 3
+				&& s.u8(right_stick_y) // 4
+				&& s.u8(l2) // 5
+				&& s.u8(r2) // 6
+				&& s.skip(1)
+				&& s.u8(buttons_1) // 8
+				&& s.u8(buttons_2) // 9
+				&& s.u8(buttons_3) // 10
+				&& s.skip(33 - 11)
 				&& s.u8(finger_1_data[0]) && s.u8(finger_1_data[1]) && s.u8(finger_1_data[2]) && s.u8(finger_1_data[3])
 				&& s.u8(finger_2_data[0]) && s.u8(finger_2_data[1]) && s.u8(finger_2_data[2]) && s.u8(finger_2_data[3])
+				;
+		}
+
+		bool readDs5Bt(BufferRefReader& s)
+		{
+			return s.u8(left_stick_x) // 1
+				&& s.u8(left_stick_y) // 2
+				&& s.u8(right_stick_x) // 3
+				&& s.u8(right_stick_y) // 4
+				&& s.u8(buttons_1) // 5
+				&& s.u8(buttons_2) // 6
+				&& s.u8(buttons_3) // 7
+				&& s.u8(l2) // 8
+				&& s.u8(r2) // 9
 				;
 		}
 	};
@@ -147,7 +179,7 @@ NAMESPACE_SOUP
 
 	bool hwGamepad::hasStatusUpdate()
 	{
-		return hid.vendor_id == 0x54c
+		return hid.vendor_id == 0x54c // DS4 & DS5 send constant reports
 			|| hid.hasReport()
 			;
 	}
@@ -178,29 +210,47 @@ NAMESPACE_SOUP
 		{
 			update();
 
+			//std::cout << string::bin2hex(report_data.toString(), true) << std::endl;
+
 			if (hid.vendor_id == 0x54c) // DS4, Y Down
 			{
 				BufferRefReader r(report_data);
 
-				if (report_data.at(0) == 0x11)
+				DsReport report;
+				if (hid.product_id == 0xce6) // DS5
 				{
-					r.skip(3); // Bluetooth report starts with 11 C0 00
-					ds4.is_bluetooth = true;
-				}
-				else if (report_data.at(0) == 0x05)
-				{
-					r.skip(1); // USB report starts with 05
-					ds4.is_bluetooth = false;
+					r.skip(1); // Report starts with 01
+					if (hid.isBluetooth())
+					{
+						report.readDs5Bt(r);
+						report.finger_1_data[0] = 0xff;
+						report.finger_2_data[0] = 0xff;
+					}
+					else
+					{
+						report.readDs5Usb(r);
+					}
 				}
 				else
 				{
-					// Sometimes report stats with 01, in which case we need to check the HID itself.
-					r.skip(1);
-					ds4.is_bluetooth = hid.isBluetooth();
+					if (report_data.at(0) == 0x11)
+					{
+						r.skip(3); // Bluetooth report starts with 11 C0 00
+						ds4.is_bluetooth = true;
+					}
+					else if (report_data.at(0) == 0x05)
+					{
+						r.skip(1); // USB report starts with 05
+						ds4.is_bluetooth = false;
+					}
+					else
+					{
+						// Sometimes report stats with 01, in which case we need to check the HID itself.
+						r.skip(1);
+						ds4.is_bluetooth = hid.isBluetooth();
+					}
+					report.readDs4(r);
 				}
-
-				Ds4Report report;
-				report.read(r);
 
 				status.left_stick_x = (static_cast<float>(report.left_stick_x) / 255.0f);
 				status.left_stick_y = (static_cast<float>(report.left_stick_y) / 255.0f);
@@ -212,7 +262,6 @@ NAMESPACE_SOUP
 				status.buttons[BTN_ACT_LEFT] = (report.buttons_1 & (1 << 4));
 				status.buttons[BTN_ACT_DOWN] = (report.buttons_1 & (1 << 5));
 				status.buttons[BTN_ACT_RIGHT] = (report.buttons_1 & (1 << 6));
-				status.buttons[BTN_ACT_UP] = (report.buttons_1 & (1 << 7));
 				status.buttons[BTN_LBUMPER] = (report.buttons_2 & (1 << 0));
 				status.buttons[BTN_RBUMPER] = (report.buttons_2 & (1 << 1));
 				status.buttons[BTN_LTRIGGER] = (report.buttons_2 & (1 << 2));
@@ -221,8 +270,8 @@ NAMESPACE_SOUP
 				status.buttons[BTN_OPTIONS] = (report.buttons_2 & (1 << 5));
 				status.buttons[BTN_LSTICK] = (report.buttons_2 & (1 << 6));
 				status.buttons[BTN_RSTICK] = (report.buttons_2 & (1 << 7));
-				status.buttons[BTN_META] = (report.buttons_3_and_counter & (1 << 0));
-				status.buttons[BTN_TOUCHPAD] = (report.buttons_3_and_counter & (1 << 1));
+				status.buttons[BTN_META] = (report.buttons_3 & (1 << 0));
+				status.buttons[BTN_TOUCHPAD] = (report.buttons_3 & (1 << 1));
 
 				if (((report.finger_1_data[0] >> 7) & 1) == 0)
 				{
@@ -365,18 +414,31 @@ NAMESPACE_SOUP
 
 	bool hwGamepad::hasTouchpad() const noexcept
 	{
-		return hid.vendor_id == 0x54c; // DS4
+		if (hid.vendor_id == 0x54c)
+		{
+			if (hid.product_id == 0xce6)
+			{
+				return !hid.isBluetooth(); // DS5 seemingly does not report touchpad state via BT
+			}
+			return true;
+		}
+		return false;
 	}
 
 	Vector2 hwGamepad::getTouchpadSize() const noexcept
 	{
+		if (hid.product_id == 0xce6)
+		{
+			return Vector2(1920.0f, 1080.0f); // DS5
+		}
 		return Vector2(1920.0f, 943.0f); // DS4
 	}
 
 	// Should maybe be called "has programmable light" because Stadia Controller does have a light, we just can't modify it...
 	bool hwGamepad::hasLight() const noexcept
 	{
-		return hid.vendor_id == 0x54c; // DS4
+		return hid.vendor_id == 0x54c && (hid.product_id == 0x5c4 || hid.product_id == 0x9cc); // DS4
+		// DS5 probably also applies, but unsure about the output report format.
 	}
 
 	void hwGamepad::setLight(Rgb colour)
@@ -390,11 +452,15 @@ NAMESPACE_SOUP
 
 	bool hwGamepad::canRumble() const noexcept
 	{
+		if (hid.vendor_id == 0x54c && hid.product_id == 0xce6) // DualSense 5
+		{
+			return false; // TODO: Look into this.
+		}
 		if (hid.vendor_id == 0x57e) // Nintendo Switch Pro Controller
 		{
 			return false; // This thing *can* rumble, but I just can't be arsed with their format right now -- let's say it's a TODO. :)
 		}
-		else if (hid.vendor_id == 0x18d1) // Stadia Controller; rumble only works via USB
+		if (hid.vendor_id == 0x18d1) // Stadia Controller; rumble only works via USB
 		{
 			return !stadia.is_bluetooth;
 		}
