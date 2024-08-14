@@ -76,7 +76,7 @@ NAMESPACE_SOUP
 		return path;
 	}
 
-	std::filesystem::path filesystem::getProgramData() noexcept
+	std::filesystem::path filesystem::getProgramData() SOUP_EXCAL
 	{
 #if SOUP_WINDOWS
 		wchar_t szPath[MAX_PATH];
