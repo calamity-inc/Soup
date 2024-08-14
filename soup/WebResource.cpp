@@ -121,7 +121,8 @@ NAMESPACE_SOUP
 			return false;
 		}
 		FileWriter w = getCacheFile();
-		return w.u64_dyn(data_expires)
+		return w.isOkay()
+			&& w.u64_dyn(data_expires)
 			&& w.str_lp_u64_dyn(data)
 			;
 	}

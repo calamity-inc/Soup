@@ -262,6 +262,7 @@ NAMESPACE_SOUP
 	{
 		auto acct = createAccount(RsaKeypair::generate(2048));
 		FileWriter fw(getAccountPath());
+		fw.throwIfFailed();
 		acct.write(fw);
 		return acct;
 	}

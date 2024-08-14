@@ -60,6 +60,7 @@ NAMESPACE_SOUP
 				std::cout << "One-time setup: Generating keypair for this machine...\n";
 				s_my_config.kp = RsaKeypair::generate(1536, true);
 				FileWriter fw(kp_path);
+				fw.throwIfFailed();
 				s_my_config.kp.p.io(fw);
 				s_my_config.kp.q.io(fw);
 			}
@@ -110,6 +111,7 @@ NAMESPACE_SOUP
 
 	_save_peers:
 		FileWriter fw(getDataPath() / "peers.bin");
+		fw.throwIfFailed();
 		{ uint8_t version = 0; fw.u8(version); }
 		fw.u64_dyn(s_my_config.peers.size());
 		for (auto& peer : s_my_config.peers)

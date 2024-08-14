@@ -385,6 +385,7 @@ NAMESPACE_SOUP
 		offsets.reserve(location_pool.pool.size());
 		{
 			FileWriter fw(dir / "location_pool.bin");
+			fw.throwIfFailed();
 			for (const auto& loc : location_pool.pool)
 			{
 				offsets.emplace(loc.c_str(), static_cast<uint32_t>(fw.s.tellp()));
@@ -394,6 +395,7 @@ NAMESPACE_SOUP
 		
 		{
 			FileWriter fw(dir / "ipv4tolocation.bin");
+			fw.throwIfFailed();
 			for (const auto& e : ipv4tolocation.data)
 			{
 				netIntelLocationData4OnDisk data;
