@@ -12,7 +12,6 @@ However, to help you get started or explain more complex topics, there are a few
 - [JSON](cpp/json.md)
 - [Programming a language](cpp/programming-a-language.md)
 - [RSA](cpp/rsa.md)
-- [STL Drop-in Replacements](cpp/stl-drop-in-replacements.md)
 
 ## Bindings
 
