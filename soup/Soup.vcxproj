@@ -768,7 +768,9 @@
     <ClInclude Include="laX64Backend.hpp" />
     <ClInclude Include="lyoInputElement.hpp" />
     <ClInclude Include="MathExpr.hpp" />
+    <ClInclude Include="memAllocator.hpp" />
     <ClInclude Include="memBox.hpp" />
+    <ClInclude Include="memCAllocator.hpp" />
     <ClInclude Include="memGuard.hpp" />
     <ClInclude Include="MessageStream.hpp" />
     <ClInclude Include="MidiComposition.hpp" />
