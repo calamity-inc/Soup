@@ -39,12 +39,12 @@ NAMESPACE_SOUP
 			uni <<= 6;
 			uni |= (ch & 0b111111);
 		}
-		SOUP_IF_UNLIKELY ((uni >= 0xD800 && uni <= 0xDFFF)
+		/*SOUP_IF_UNLIKELY ((uni >= 0xD800 && uni <= 0xDFFF)
 			|| uni > 0x10FFFF
 			)
 		{
 			return REPLACEMENT_CHAR;
-		}
+		}*/
 		return uni;
 	}
 
