@@ -1,5 +1,6 @@
 #include "lyoDocument.hpp"
 
+#include "joaat.hpp"
 #include "lyoFlatDocument.hpp"
 #include "lyoInputElement.hpp"
 #include "lyoTextElement.hpp"
@@ -49,21 +50,39 @@ NAMESPACE_SOUP
 			}
 			else
 			{
-				if (static_cast<const XmlTag*>(node.get())->name == "input")
+				switch (joaat::hash(static_cast<const XmlTag*>(node.get())->name))
 				{
-					auto input = soup::make_unique<lyoInputElement>(div);
-					if (doc.focus == nullptr)
+				case joaat::compileTimeHash("input"):
 					{
-						doc.focus = input.get();
+						auto input = soup::make_unique<lyoInputElement>(div);
+						if (doc.focus == nullptr)
+						{
+							doc.focus = input.get();
+						}
+						div->children.emplace_back(std::move(input));
 					}
-					div->children.emplace_back(std::move(input));
-				}
-				else
-				{
-					auto inner_div = soup::make_unique<lyoContainer>(div);
-					inner_div->tag_name = static_cast<const XmlTag*>(node.get())->name;
-					loadMarkup(doc, inner_div.get(), *static_cast<const XmlTag*>(node.get()));
-					div->children.emplace_back(std::move(inner_div));
+					break;
+
+				case joaat::compileTimeHash("style"):
+					for (const auto& child : static_cast<const XmlTag*>(node.get())->children)
+					{
+						if (child->isText())
+						{
+							lyoStylesheet& stylesheet = doc.stylesheets.emplace_back();
+							stylesheet.name = "<style> tag";
+							stylesheet.addRulesFromCss(static_cast<const XmlText*>(child.get())->contents);
+						}
+					}
+					break;
+
+				default:
+					{
+						auto inner_div = soup::make_unique<lyoContainer>(div);
+						inner_div->tag_name = static_cast<const XmlTag*>(node.get())->name;
+						loadMarkup(doc, inner_div.get(), *static_cast<const XmlTag*>(node.get()));
+						div->children.emplace_back(std::move(inner_div));
+					}
+					break;
 				}
 			}
 		}
