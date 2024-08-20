@@ -8,6 +8,14 @@
 
 NAMESPACE_SOUP
 {
+	// This is aimed at gamepads that report inputs via the HID standard, so the Xbox Controller will not be supported. (It's also uncomfortable af. Do yourself a favour and buy a proper controller. I can only recommend the DualShock 4.)
+	// Currently, support for gamepads is highly specialised in hopes of providing a good API, but in future I might bother parsing the HID input report descriptor, so it can support generics half-decently.
+	// With that out of the way, the list of currently supported gamepads is:
+	// - Sony's DualSense 5
+	// - Sony's DualShock 4
+	// - Nintendo's Switch Pro Controller
+	// - Google's Stadia Controller
+	// They are supported via USB & BT, but BT tends to have less functionality, e.g. the Stadia Controller can't vibrate via BT.
 	class hwGamepad
 	{
 	public:
