@@ -50,6 +50,10 @@ NAMESPACE_SOUP
 	bool filesystem::replace(const std::filesystem::path& replaced, const std::filesystem::path& replacement)
 	{
 #if SOUP_WINDOWS
+		SOUP_IF_UNLIKELY (!std::filesystem::exists(replaced))
+		{
+			return MoveFileW(replacement.c_str(), replaced.c_str()) != 0;
+		}
 		return ReplaceFileW(replaced.c_str(), replacement.c_str(), nullptr, 0, 0, 0) != 0;
 #else
 		return rename(replacement.c_str(), replaced.c_str()) == 0;
