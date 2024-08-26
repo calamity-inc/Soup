@@ -56,7 +56,7 @@ NAMESPACE_SOUP
 		}
 		return ReplaceFileW(replaced.c_str(), replacement.c_str(), nullptr, 0, 0, 0) != 0;
 #else
-		return rename(replacement.c_str(), replaced.c_str()) == 0;
+		return ::rename(replacement.c_str(), replaced.c_str()) == 0;
 #endif
 	}
 
