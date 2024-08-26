@@ -50,8 +50,8 @@ void cli_keyboard()
 					kbd_name = "Digital Keyboard";
 #else
 					kbd_name = "No Analogue Keyboard Detected";
-					w.redraw();
 #endif
+					w.redraw();
 				}
 				else
 				{
