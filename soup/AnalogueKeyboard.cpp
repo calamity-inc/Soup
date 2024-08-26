@@ -538,72 +538,60 @@ NAMESPACE_SOUP
 			static DigitalKeyboard dkbd;
 			static bool dkbd_okay = false;
 			dkbd.update();
-			bool found = false;
-			for (auto& hid : hwHid::getAll())
+#endif
+			uint8_t data[33];
+			memset(data, 0, sizeof(data));
+			data[1] = 0xa9; // KC_HE
+			data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
+			for (uint8_t i = 0; i != COUNT(keychron_keys); ++i)
 			{
-				if (hid.usage_page == 0xFF60)
-				{
-					found = true;
-#endif
-					uint8_t data[33];
-					memset(data, 0, sizeof(data));
-					data[1] = 0xa9; // KC_HE
-					data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
-					for (uint8_t i = 0; i != COUNT(keychron_keys); ++i)
-					{
-						const auto& key = keychron_keys[i];
-						if (
+				const auto& key = keychron_keys[i];
+				if (
 #if SOUP_WINDOWS
-							dkbd.keys[key.sk] ||
+					dkbd.keys[key.sk] ||
 #endif
-							keychron.buffer[i] || keychron.state == (i >> 2)
-							)
-						{
-							data[3] = key.row;
-							data[4] = key.column;
-							hid.sendReport(data, sizeof(data));
-							const auto& report = hid.receiveReport();
-							SOUP_IF_UNLIKELY (report.empty())
-							{
-								disconnected = true;
-								break;
-							}
-							keychron.buffer[i] = report.at(3);
+					keychron.buffer[i] || keychron.state == (i >> 2)
+					)
+				{
+					data[3] = key.row;
+					data[4] = key.column;
+					hid.sendReport(data, sizeof(data));
+					const auto& report = hid.receiveReport();
+					SOUP_IF_UNLIKELY (report.empty())
+					{
+						disconnected = true;
+						break;
+					}
+					keychron.buffer[i] = report.at(3);
 
 #if SOUP_WINDOWS
-							if (!dkbd_okay && report.at(3) >= 235)
-							{
-								if (dkbd.keys[key.sk])
-								{
-									dkbd_okay = true;
-								}
-								else
-								{
-									dkbd.deinit();
-								}
-							}
-#endif
-						}
-						if (keychron.buffer[i] >= 5)
-						{
-							keys.emplace_back(ActiveKey{
-								key.sk,
-								std::min(static_cast<float>(keychron.buffer[i]) / 235.0f, 1.0f)
-							});
-						}
-					}
-					if (keychron.state++ == (COUNT(keychron_keys) >> 2))
+					if (!dkbd_okay && report.at(3) >= 235)
 					{
-						keychron.state = 0;
+						if (dkbd.keys[key.sk])
+						{
+							dkbd_okay = true;
+						}
+						else
+						{
+							dkbd.deinit();
+						}
 					}
-#if SOUP_WINDOWS
+#endif
+				}
+				if (keychron.buffer[i] >= 5)
+				{
+					keys.emplace_back(ActiveKey{
+						key.sk,
+						std::min(static_cast<float>(keychron.buffer[i]) / 235.0f, 1.0f)
+					});
 				}
 			}
-			mtx.unlock();
-			if (!found)
+			if (keychron.state++ == (COUNT(keychron_keys) >> 2))
 			{
-				disconnected = true;
+				keychron.state = 0;
 			}
+#if SOUP_WINDOWS
+			mtx.unlock();
 #endif
 			return keys;
 		}
