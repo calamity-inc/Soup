@@ -2,8 +2,6 @@
 
 #if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
 
-#include <iostream>
-
 #include "audDevice.hpp" // AUD_MAX_SAMPLE
 #include "Exception.hpp"
 #include "riff.hpp"
