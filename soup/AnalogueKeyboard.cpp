@@ -171,11 +171,30 @@ NAMESPACE_SOUP
 				// Check if this is a supported device and the right interface for it
 				if (auto name = checkDeviceName(hid); !name.empty())
 				{
-					res.emplace_back(AnalogueKeyboard{
+					AnalogueKeyboard& kbd = res.emplace_back(AnalogueKeyboard{
 						std::move(name),
 						std::move(hid),
 						hid.vendor_id == 0x1532 // Has context key? Only true for Razer.
 					});
+#if KEYCHRON_CUSTOM_FIRMWARE
+					if (kbd.hid.vendor_id == 0x3434 // Keychron
+						&& kbd.hid.havePermission()
+						)
+					{
+						uint8_t data[33];
+						memset(data, 0, sizeof(data));
+						data[1] = 0xa9; // KC_HE
+						data[2] = 0x01; // AMC_GET_VERSION
+						kbd.hid.sendReport(data, sizeof(data));
+						const auto& report = kbd.hid.receiveReport();
+						if (report.at(2) >= 3)
+						{
+							kbd.keychron.state = 0xff;
+						}
+					}
+#else
+					SOUP_UNUSED(kbd);
+#endif
 				}
 			}
 		}
@@ -535,60 +554,102 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 			NamedMutex mtx("KeychronMtx");
 			mtx.lock();
-			static DigitalKeyboard dkbd;
-			static bool dkbd_okay = false;
-			dkbd.update();
 #endif
-			uint8_t data[33];
-			memset(data, 0, sizeof(data));
-			data[1] = 0xa9; // KC_HE
-			data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
-			for (uint8_t i = 0; i != COUNT(keychron_keys); ++i)
+#if KEYCHRON_CUSTOM_FIRMWARE
+			if (keychron.state == 0xff)
 			{
-				const auto& key = keychron_keys[i];
-				if (
-#if SOUP_WINDOWS
-					dkbd.keys[key.sk] ||
-#endif
-					keychron.buffer[i] || keychron.state == (i >> 2)
-					)
+				uint8_t data[33];
+				memset(data, 0, sizeof(data));
+				data[1] = 0xa9; // KC_HE
+				data[2] = 0x31; // AMC_GET_REALTIME_TRAVEL_ALL
+				hid.sendReport(data, sizeof(data));
+				Buffer b0 = hid.receiveReport();
+				Buffer b1 = hid.receiveReport();
+				Buffer b2 = hid.receiveReport();
+				Buffer b3 = hid.receiveReport();
+				SOUP_IF_UNLIKELY (b0.empty() || b1.empty() || b2.empty() || b3.empty())
 				{
-					data[3] = key.row;
-					data[4] = key.column;
-					hid.sendReport(data, sizeof(data));
-					const auto& report = hid.receiveReport();
-					SOUP_IF_UNLIKELY (report.empty())
-					{
-						disconnected = true;
-						break;
-					}
-					keychron.buffer[i] = report.at(3);
-
-#if SOUP_WINDOWS
-					if (!dkbd_okay && report.at(3) >= 235)
-					{
-						if (dkbd.keys[key.sk])
-						{
-							dkbd_okay = true;
-						}
-						else
-						{
-							dkbd.deinit();
-						}
-					}
-#endif
+					disconnected = true;
 				}
-				if (keychron.buffer[i] >= 5)
+				else
 				{
-					keys.emplace_back(ActiveKey{
-						key.sk,
-						std::min(static_cast<float>(keychron.buffer[i]) / 235.0f, 1.0f)
-					});
+					Buffer combined((32 - 2) * 4);
+					combined.append(b0.data() + 2, b0.size() - 2);
+					combined.append(b1.data() + 2, b1.size() - 2);
+					combined.append(b2.data() + 2, b2.size() - 2);
+					combined.append(b3.data() + 2, b3.size() - 2);
+					for (const auto& key : keychron_keys)
+					{
+						const auto travel = combined[key.row * 15 + key.column];
+						if (travel >= 5)
+						{
+							keys.emplace_back(ActiveKey{
+								key.sk,
+								std::min(static_cast<float>(travel) / 235.0f, 1.0f)
+							});
+						}
+					}
 				}
 			}
-			if (keychron.state++ == (COUNT(keychron_keys) >> 2))
+			else
+#endif
 			{
-				keychron.state = 0;
+#if SOUP_WINDOWS
+				static DigitalKeyboard dkbd;
+				static bool dkbd_okay = false;
+				dkbd.update();
+#endif
+				uint8_t data[33];
+				memset(data, 0, sizeof(data));
+				data[1] = 0xa9; // KC_HE
+				data[2] = 0x30; // AMC_GET_REALTIME_TRAVEL
+				for (uint8_t i = 0; i != COUNT(keychron_keys); ++i)
+				{
+					const auto& key = keychron_keys[i];
+					if (
+#if SOUP_WINDOWS
+						dkbd.keys[key.sk] ||
+#endif
+						keychron.buffer[i] || keychron.state == (i >> 2)
+						)
+					{
+						data[3] = key.row;
+						data[4] = key.column;
+						hid.sendReport(data, sizeof(data));
+						const auto& report = hid.receiveReport();
+						SOUP_IF_UNLIKELY(report.empty())
+						{
+							disconnected = true;
+							break;
+						}
+						keychron.buffer[i] = report.at(3);
+
+#if SOUP_WINDOWS
+						if (!dkbd_okay && report.at(3) >= 235)
+						{
+							if (dkbd.keys[key.sk])
+							{
+								dkbd_okay = true;
+							}
+							else
+							{
+								dkbd.deinit();
+							}
+						}
+#endif
+					}
+					if (keychron.buffer[i] >= 5)
+					{
+						keys.emplace_back(ActiveKey{
+							key.sk,
+							std::min(static_cast<float>(keychron.buffer[i]) / 235.0f, 1.0f)
+							});
+					}
+				}
+				if (keychron.state++ == (COUNT(keychron_keys) >> 2))
+				{
+					keychron.state = 0;
+				}
 			}
 #if SOUP_WINDOWS
 			mtx.unlock();

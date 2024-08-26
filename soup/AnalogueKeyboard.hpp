@@ -7,6 +7,9 @@
 #include "hwHid.hpp"
 #include "Key.hpp"
 
+// https://github.com/Keychron/qmk_firmware/pull/301
+#define KEYCHRON_CUSTOM_FIRMWARE false
+
 NAMESPACE_SOUP
 {
 	struct AnalogueKeyboard
