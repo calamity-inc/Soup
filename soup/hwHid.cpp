@@ -531,7 +531,7 @@ NAMESPACE_SOUP
 		if (!pending_read)
 		{
 			kickOffRead();
-			if (!pending_read)
+			if (!pending_read && !disconnected)
 			{
 				return true;
 			}
@@ -557,21 +557,27 @@ NAMESPACE_SOUP
 		{
 			kickOffRead();
 		}
-		if (pending_read
-			&& GetOverlappedResult(handle, &read_overlapped, &bytes_read, TRUE)
-			)
+		if (pending_read)
+		{
+			while (!GetOverlappedResult(handle, &read_overlapped, &bytes_read, FALSE)
+				&& GetLastError() == ERROR_IO_INCOMPLETE
+				)
+			{
+				Sleep(1);
+			}
+			pending_read = false;
+		}
+
+		if (bytes_read != 0)
 		{
 			read_buffer.resize(bytes_read);
 
 			// Windows puts a report id at the front, but we want the raw data, so erasing it.
-			if (bytes_read != 0
-				&& read_buffer.at(0) == '\0'
-				)
+			if (read_buffer.at(0) == '\0')
 			{
 				read_buffer.erase(0, 1);
 			}
 		}
-		pending_read = false;
 #elif SOUP_LINUX
 		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
 		if (bytes_read >= 0)
@@ -580,6 +586,16 @@ NAMESPACE_SOUP
 		}
 #endif
 		return read_buffer;
+	}
+
+	void hwHid::discardStaleReports() noexcept
+	{
+#if SOUP_WINDOWS
+		while (!pending_read && !disconnected)
+		{
+			kickOffRead();
+		}
+#endif
 	}
 
 #if SOUP_WINDOWS
@@ -659,9 +675,22 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 	void hwHid::kickOffRead() noexcept
 	{
+		bytes_read = 0;
+		if (disconnected)
+		{
+			return;
+		}
 		if (!ReadFile(handle, read_buffer.data(), static_cast<DWORD>(read_buffer.capacity()), &bytes_read, &read_overlapped))
 		{
-			pending_read = true;
+			SOUP_IF_LIKELY (GetLastError() == ERROR_IO_PENDING)
+			{
+				pending_read = true;
+			}
+			else
+			{
+				// Device was likely disconnected (ERROR_DEVICE_NOT_CONNECTED), in which case subsequent calls to ReadFile will block.
+				disconnected = true;
+			}
 		}
 	}
 #endif

@@ -24,6 +24,7 @@ NAMESPACE_SOUP
 	// DS4 may stay connected via BT despite being "powered off", so check if this one is actually live.
 	[[nodiscard]] static bool isDs4StillAlive(hwHid& hid)
 	{
+		hid.discardStaleReports();
 		for (int i = 0; i != 5; ++i)
 		{
 			if (hid.hasReport())

@@ -426,6 +426,11 @@ NAMESPACE_SOUP
 
 		if (hid.usage_page == 0xFF00) // DrunkDeer
 		{
+#if SOUP_WINDOWS
+			NamedMutex mtx("DrunkDeerMtx");
+			mtx.lock();
+#endif
+
 			Buffer buf;
 			buf.append(
 				"\x04\xb6\x03\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
@@ -433,6 +438,7 @@ NAMESPACE_SOUP
 				"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
 				"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 				, 64);
+			hid.discardStaleReports();
 			hid.sendReport(std::move(buf));
 
 			Buffer b0 = hid.receiveReport();
@@ -546,6 +552,10 @@ NAMESPACE_SOUP
 				DRUNKDEER_KEY(KEY_ARROW_RIGHT, 5, 16);
 			}
 
+#if SOUP_WINDOWS
+			mtx.unlock();
+#endif
+
 			return keys;
 		}
 
@@ -562,6 +572,7 @@ NAMESPACE_SOUP
 				memset(data, 0, sizeof(data));
 				data[1] = 0xa9; // KC_HE
 				data[2] = 0x31; // AMC_GET_REALTIME_TRAVEL_ALL
+				hid.discardStaleReports();
 				hid.sendReport(data, sizeof(data));
 				Buffer b0 = hid.receiveReport();
 				Buffer b1 = hid.receiveReport();

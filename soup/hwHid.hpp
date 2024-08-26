@@ -26,6 +26,7 @@ NAMESPACE_SOUP
 		uint16_t feature_report_byte_length;
 		bool is_bluetooth;
 		bool pending_read = false;
+		bool disconnected = false;
 		DWORD bytes_read{};
 		OVERLAPPED read_overlapped{};
 #else
@@ -81,6 +82,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] bool hasReport() noexcept;
 		[[nodiscard]] const Buffer& receiveReport() noexcept; // blocking if !hasReport()
+		void discardStaleReports() noexcept;
 #if SOUP_WINDOWS
 		void cancelReceiveReport() noexcept; // to be called from a different thread
 #endif
