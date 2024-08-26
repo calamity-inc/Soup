@@ -9,6 +9,8 @@
 #include "Process.hpp"
 #endif
 
+#undef min
+
 NAMESPACE_SOUP
 {
 	[[nodiscard]] static bool areRazerAnalogueReportsEnabled()
@@ -566,10 +568,10 @@ NAMESPACE_SOUP
 								disconnected = true;
 								break;
 							}
-							keychron.buffer[i] = report.at(2);
+							keychron.buffer[i] = report.at(3);
 
 #if SOUP_WINDOWS
-							if (!dkbd_okay && report.at(2) == 40)
+							if (!dkbd_okay && report.at(3) >= 235)
 							{
 								if (dkbd.keys[key.sk])
 								{
@@ -582,11 +584,11 @@ NAMESPACE_SOUP
 							}
 #endif
 						}
-						if (keychron.buffer[i] != 0)
+						if (keychron.buffer[i] >= 5)
 						{
 							keys.emplace_back(ActiveKey{
 								key.sk,
-								static_cast<float>(keychron.buffer[i]) / 40.0f
+								std::min(static_cast<float>(keychron.buffer[i]) / 235.0f, 1.0f)
 							});
 						}
 					}
