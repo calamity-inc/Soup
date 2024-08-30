@@ -119,7 +119,10 @@ NAMESPACE_SOUP
 		{
 			if (hid.usage == 0x61 && hid.usage_page == 0xFF60)
 			{
-				if (hid.product_id == 0x0b10)
+				if (hid.product_id == 0x0b10 // ANSI
+					|| hid.product_id == 0x0b11 // ISO
+					|| hid.product_id == 0x0b12 // JIS
+					)
 				{
 					return "Keychron Q1 HE";
 				}
