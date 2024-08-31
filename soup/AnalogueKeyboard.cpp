@@ -701,19 +701,24 @@ NAMESPACE_SOUP
 						switch (scancode)
 						{
 						default: sk = KEY_NONE; break;
+							// Usage Page 0x0C
 						case 0x3B5: sk = KEY_NEXT_TRACK; break;
 						case 0x3B6: sk = KEY_PREV_TRACK; break;
 						case 0x3B7: sk = KEY_STOP_MEDIA; break;
 						case 0x3CD: sk = KEY_PLAY_PAUSE; break;
-						case 0x403: sk = KEY_OEM_1; break;
-						case 0x404: sk = KEY_OEM_2; break;
-						case 0x405: sk = KEY_OEM_3; break;
-						case 0x408: sk = KEY_OEM_4; break;
+							// OEM-specific
+						case 0x401: sk = KEY_OEM_5; break; // Brightness Up
+						case 0x402: sk = KEY_OEM_6; break; // Brightness Down
+						case 0x403: sk = KEY_OEM_1; break; // Profile 1
+						case 0x404: sk = KEY_OEM_2; break; // Profile 2
+						case 0x405: sk = KEY_OEM_3; break; // Profile 3
+						case 0x408: sk = KEY_OEM_4; break; // Profile Switch
 						case 0x409: sk = KEY_FN; break;
 						}
 					}
 					else
 					{
+						// Usage Page 0x07
 						sk = hid_scancode_to_soup_key(static_cast<uint8_t>(scancode));
 					}
 					SOUP_IF_LIKELY (sk != KEY_NONE)
