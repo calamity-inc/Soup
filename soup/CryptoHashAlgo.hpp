@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 
+#include <cstdint> // uint8_t
 #include <cstring> // memset, memcpy
 #include <string>
 
