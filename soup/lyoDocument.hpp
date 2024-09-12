@@ -32,7 +32,7 @@ NAMESPACE_SOUP
 			flat_width = 0;
 		}
 
-		[[nodiscard]] lyoFlatDocument flatten(int width, int height);
+		[[nodiscard]] lyoFlatDocument flatten(unsigned int width, unsigned int height);
 
 		[[nodiscard]] Window createWindow(const std::string& title);
 	};

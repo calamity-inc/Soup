@@ -131,7 +131,7 @@ NAMESPACE_SOUP
 		propagateStyleToChildren();
 	}
 
-	lyoFlatDocument lyoDocument::flatten(int width, int height)
+	lyoFlatDocument lyoDocument::flatten(unsigned int width, unsigned int height)
 	{
 		lyoFlatDocument flat;
 		populateFlatDocument(flat);
