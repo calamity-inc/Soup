@@ -8,6 +8,7 @@
 #include "aud_common.hpp"
 #include "audDevice.hpp"
 #include "Thread.hpp"
+#include "TransientToken.hpp"
 
 #if SOUP_WINDOWS
 #include <windows.h>
@@ -54,6 +55,8 @@ NAMESPACE_SOUP
 		snd_pcm_writei_t snd_pcm_writei = nullptr;
 		snd_pcm_t* hwDevice = nullptr;
 #endif
+
+		TransientToken transient_token;
 
 		audPlayback();
 		audPlayback(audPlayback&&) = delete; // `this` pointer must stay the same

@@ -9,8 +9,18 @@
 
 NAMESPACE_SOUP
 {
+	audMixer::~audMixer()
+	{
+		if (auto pb = attached_to_pb.getPointer())
+		{
+			pb->src = &audPlayback::fillBlockSilenceSrc;
+			pb->user_data = nullptr;
+		}
+	}
+
 	void audMixer::setOutput(audPlayback& pb)
 	{
+		attached_to_pb = &pb;
 		pb.src = [](audPlayback& pb, audSample* block)
 		{
 			std::lock_guard lock(reinterpret_cast<audMixer*>(pb.user_data)->mtx);

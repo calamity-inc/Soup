@@ -6,17 +6,23 @@
 
 #include <vector>
 
+#include "audPlayback.hpp"
 #include "Mutex.hpp"
 #include "SharedPtr.hpp"
+#include "WeakRef.hpp"
 
 NAMESPACE_SOUP
 {
 	class audMixer
 	{
+	protected:
+		WeakRef<audPlayback> attached_to_pb{};
 	public:
 		Mutex mtx{};
 		std::vector<SharedPtr<audSound>> playing_sounds{};
 		bool stop_playback_when_done = false;
+
+		~audMixer();
 
 		void setOutput(audPlayback& pb);
 
