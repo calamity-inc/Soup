@@ -198,7 +198,10 @@ NAMESPACE_SOUP
 			return *reinterpret_cast<const network_u32_t*>(reinterpret_cast<uintptr_t>(&data) + 12);
 		}
 
-		[[nodiscard]] native_u32_t getV4NativeEndian() const noexcept;
+		[[nodiscard]] native_u32_t getV4NativeEndian() const noexcept
+		{
+			return Endianness::toNative(getV4());
+		}
 
 	private:
 		constexpr void maskToV4() noexcept
