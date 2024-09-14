@@ -95,6 +95,11 @@ NAMESPACE_SOUP
 		sendResponse(s, "302", cont);
 	}
 
+	void ServerWebService::send204(Socket& s)
+	{
+		sendResponse(s, "204", "Content-Length: 0\r\n\r\n");
+	}
+
 	void ServerWebService::send404(Socket& s)
 	{
 		sendResponse(s, "404", "Content-Length: 0\r\n\r\n");
