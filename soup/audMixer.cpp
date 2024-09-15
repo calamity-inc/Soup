@@ -21,7 +21,7 @@ NAMESPACE_SOUP
 	void audMixer::setOutput(audPlayback& pb)
 	{
 		attached_to_pb = &pb;
-		pb.src = [](audPlayback& pb, audSample* block)
+		pb.src = [](audPlayback& pb, audSample block[AUD_BLOCK_SAMPLES])
 		{
 			std::lock_guard lock(reinterpret_cast<audMixer*>(pb.user_data)->mtx);
 			if (reinterpret_cast<audMixer*>(pb.user_data)->stop_playback_when_done

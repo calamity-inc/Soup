@@ -21,7 +21,7 @@ NAMESPACE_SOUP
 
 	constexpr audSample AUD_MAX_SAMPLE = ((1ull << ((sizeof(audSample) * 8) - 1)) - 1);
 
-	using audFillBlock = void(*)(audPlayback&, audSample* block);
+	using audFillBlock = void(*)(audPlayback&, audSample block[AUD_BLOCK_SAMPLES]);
 
 	// Return the amplitude (-1.0 to +1.0) at a given point in time (audPlayback::getTime)
 	using audGetAmplitude = double(*)(audPlayback&);

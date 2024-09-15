@@ -76,9 +76,9 @@ NAMESPACE_SOUP
 		void awaitCompletion() noexcept;
 		void stop() noexcept;
 
-		static void fillBlockSilence(audSample* block);
-		static void fillBlockSilenceSrc(audPlayback&, audSample* block);
-		void fillBlockImpl(audSample* block, audGetAmplitude src);
+		static void fillBlockSilence(audSample block[AUD_BLOCK_SAMPLES]);
+		static void fillBlockSilenceSrc(audPlayback&, audSample block[AUD_BLOCK_SAMPLES]);
+		void fillBlockImpl(audSample block[AUD_BLOCK_SAMPLES], audGetAmplitude src);
 
 #if SOUP_WINDOWS
 		void handleMessage(UINT msg);

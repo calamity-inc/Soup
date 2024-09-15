@@ -197,17 +197,17 @@ NAMESPACE_SOUP
 		stopping = true;
 	}
 
-	void audPlayback::fillBlockSilence(audSample* block)
+	void audPlayback::fillBlockSilence(audSample block[AUD_BLOCK_SAMPLES])
 	{
 		memset(block, 0, AUD_BLOCK_BYTES);
 	}
 
-	void audPlayback::fillBlockSilenceSrc(audPlayback&, audSample* block)
+	void audPlayback::fillBlockSilenceSrc(audPlayback&, audSample block[AUD_BLOCK_SAMPLES])
 	{
 		fillBlockSilence(block);
 	}
 
-	void audPlayback::fillBlockImpl(audSample* block, audGetAmplitude src)
+	void audPlayback::fillBlockImpl(audSample block[AUD_BLOCK_SAMPLES], audGetAmplitude src)
 	{
 		for (int i = 0; i != AUD_BLOCK_SAMPLES; i += channels)
 		{
