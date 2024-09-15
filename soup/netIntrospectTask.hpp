@@ -26,8 +26,8 @@ NAMESPACE_SOUP
 
 			void init(dnsResolver& resolver)
 			{
-				ipv4_task = resolver.makeLookupTask(DNS_A, "testrr-1337.calamity.inc");
-				ipv6_task = resolver.makeLookupTask(DNS_AAAA, "testrr-cafe.calamity.inc");
+				ipv4_task = resolver.makeLookupTask(DNS_A, "testrr-1337.soup.do");
+				ipv6_task = resolver.makeLookupTask(DNS_AAAA, "testrr-cafe.soup.do");
 			}
 
 			bool tickUntilDone() const
