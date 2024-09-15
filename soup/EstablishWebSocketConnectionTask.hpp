@@ -24,6 +24,11 @@ NAMESPACE_SOUP
 		{
 		}
 
+		EstablishWebSocketConnectionTask(bool use_tls, const std::string& host, uint16_t port, const std::string& path)
+			: use_tls(use_tls), connect(host, port), host(host), path(path)
+		{
+		}
+
 		void onTick() final
 		{
 			if (!sock)
