@@ -179,7 +179,6 @@ NAMESPACE_SOUP
 						std::move(hid),
 						hid.vendor_id == 0x1532 // Has context key? Only true for Razer.
 					});
-#if KEYCHRON_CUSTOM_FIRMWARE
 					if (kbd.hid.vendor_id == 0x3434 // Keychron
 						&& kbd.hid.havePermission()
 						)
@@ -190,14 +189,12 @@ NAMESPACE_SOUP
 						data[2] = 0x01; // AMC_GET_VERSION
 						kbd.hid.sendReport(data, sizeof(data));
 						const auto& report = kbd.hid.receiveReport();
-						if (report.at(2) >= 3)
+						//if (report.at(2) >= 3) // https://github.com/Keychron/qmk_firmware/pull/301
+						if (report.back() == 0x45) // https://github.com/AnalogSense/qmk_firmware/commit/73dc606a8d29e1c32c343563c571c6da092f96dd
 						{
 							kbd.keychron.state = 0xff;
 						}
 					}
-#else
-					SOUP_UNUSED(kbd);
-#endif
 				}
 			}
 		}
@@ -568,7 +565,6 @@ NAMESPACE_SOUP
 			NamedMutex mtx("KeychronMtx");
 			mtx.lock();
 #endif
-#if KEYCHRON_CUSTOM_FIRMWARE
 			if (keychron.state == 0xff)
 			{
 				uint8_t data[33];
@@ -606,7 +602,6 @@ NAMESPACE_SOUP
 				}
 			}
 			else
-#endif
 			{
 #if SOUP_WINDOWS
 				static DigitalKeyboard dkbd;
