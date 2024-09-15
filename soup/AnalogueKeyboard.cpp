@@ -629,9 +629,10 @@ NAMESPACE_SOUP
 					{
 						data[3] = key.row;
 						data[4] = key.column;
+						hid.discardStaleReports();
 						hid.sendReport(data, sizeof(data));
 						const auto& report = hid.receiveReport();
-						SOUP_IF_UNLIKELY(report.empty())
+						SOUP_IF_UNLIKELY (report.empty())
 						{
 							disconnected = true;
 							break;
