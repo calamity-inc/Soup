@@ -767,6 +767,7 @@
     <ClInclude Include="laWasmBackend.hpp" />
     <ClInclude Include="laX64Backend.hpp" />
     <ClInclude Include="lyoInputElement.hpp" />
+    <ClInclude Include="MaintainWebSocketConnectionTask.hpp" />
     <ClInclude Include="MathExpr.hpp" />
     <ClInclude Include="memAllocator.hpp" />
     <ClInclude Include="memBox.hpp" />
@@ -1296,6 +1297,7 @@
     <ClCompile Include="lyoInputElement.cpp" />
     <ClCompile Include="lyoStyle.cpp" />
     <ClCompile Include="lyoStylesheet.cpp" />
+    <ClCompile Include="MaintainWebSocketConnectionTask.cpp" />
     <ClCompile Include="MathExpr.cpp" />
     <ClCompile Include="memGuard.cpp" />
     <ClCompile Include="memObject.cpp" />

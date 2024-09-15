@@ -1638,6 +1638,9 @@
     <ClInclude Include="memCAllocator.hpp">
       <Filter>mem\allocators</Filter>
     </ClInclude>
+    <ClInclude Include="MaintainWebSocketConnectionTask.hpp">
+      <Filter>net\web\websocket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2434,6 +2437,9 @@
     </ClCompile>
     <ClCompile Include="laX64Backend.cpp">
       <Filter>lang\compiler\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="MaintainWebSocketConnectionTask.cpp">
+      <Filter>net\web\websocket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
