@@ -52,7 +52,7 @@ NAMESPACE_SOUP
 
 	void WebSocketConnection::wsSend(std::string data, bool is_text) SOUP_EXCAL
 	{
-		wsSend((is_text ? WebSocketFrameType::TEXT : WebSocketFrameType::BINARY), data);
+		wsSend((is_text ? WebSocketFrameType::TEXT : WebSocketFrameType::BINARY), std::move(data));
 	}
 
 	void WebSocketConnection::wsSend(uint8_t opcode, std::string payload) SOUP_EXCAL
