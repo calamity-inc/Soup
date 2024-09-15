@@ -24,7 +24,7 @@ NAMESPACE_SOUP
 			struct
 			{
 				uint8_t state;
-				uint8_t buffer[75];
+				uint8_t buffer[81];
 			} keychron;
 		};
 

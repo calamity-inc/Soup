@@ -373,6 +373,7 @@ NAMESPACE_SOUP
 		{ KEY_BRACKET_LEFT, 2, 11 },
 		{ KEY_BRACKET_RIGHT, 2, 12 },
 		{ KEY_BACKSLASH, 2, 13 },
+		{ KEY_PAGE_DOWN, 2, 14 },
 
 		{ KEY_CAPS_LOCK, 3, 0 },
 		{ KEY_A, 3, 1 },
@@ -387,6 +388,7 @@ NAMESPACE_SOUP
 		{ KEY_SEMICOLON, 3, 10 },
 		{ KEY_QUOTE, 3, 11 },
 		{ KEY_ENTER, 3, 12 },
+		{ KEY_HOME, 3, 13 },
 
 		{ KEY_LSHIFT, 4, 0 },
 		{ KEY_Z, 4, 2 },
@@ -400,6 +402,7 @@ NAMESPACE_SOUP
 		{ KEY_PERIOD, 4, 10 },
 		{ KEY_SLASH, 4, 12 },
 		{ KEY_RSHIFT, 4, 13 },
+		{ KEY_ARROW_UP, 4, 14 },
 
 		{ KEY_LCTRL, 5, 0 },
 		{ KEY_LMETA, 5, 1 },
@@ -408,8 +411,11 @@ NAMESPACE_SOUP
 		{ KEY_RMETA, 5, 9 },
 		{ KEY_FN, 5, 10 },
 		{ KEY_RCTRL, 5, 11 },
+		{ KEY_ARROW_LEFT, 5, 12 },
+		{ KEY_ARROW_DOWN, 5, 13 },
+		{ KEY_ARROW_RIGHT, 5, 14 },
 	};
-	static_assert(COUNT(keychron_keys) == 75); // has to match AnalogueKeyboard::buffer
+	static_assert(COUNT(keychron_keys) == 81); // has to match AnalogueKeyboard::buffer
 
 	bool AnalogueKeyboard::isPoll() const noexcept
 	{
