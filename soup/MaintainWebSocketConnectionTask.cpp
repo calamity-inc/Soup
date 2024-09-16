@@ -35,6 +35,7 @@ NAMESPACE_SOUP
 			auto task = cap.get<MaintainWebSocketConnectionTask*>();
 			if (!msg.data.empty())
 			{
+				task->next_heartbeat = time::millis() + HEARTBEAT_INTERVAL_MS;
 				task->on_frame(s, std::move(msg));
 			}
 			task->recvLoop(s);
