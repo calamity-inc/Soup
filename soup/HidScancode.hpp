@@ -233,7 +233,9 @@ NAMESPACE_SOUP
 		case HID_CONTROL_LEFT: return KEY_LCTRL;
 		case HID_META_LEFT: return KEY_LMETA;
 		case HID_ALT_LEFT: return KEY_LALT;
+		case HID_LANG2: return KEY_IME_OFF;
 		case HID_SPACE: return KEY_SPACE;
+		case HID_LANG1: return KEY_IME_ON;
 		case HID_ALT_RIGHT: return KEY_RALT;
 		case HID_META_RIGHT: return KEY_RMETA;
 			// no HID for KEY_FN
@@ -362,7 +364,9 @@ NAMESPACE_SOUP
 		case KEY_LCTRL: return HID_CONTROL_LEFT;
 		case KEY_LMETA: return HID_META_LEFT;
 		case KEY_LALT: return HID_ALT_LEFT;
+		case KEY_IME_OFF: return HID_LANG2;
 		case KEY_SPACE: return HID_SPACE;
+		case KEY_IME_ON: return HID_LANG1;
 		case KEY_RALT: return HID_ALT_RIGHT;
 		case KEY_RMETA: return HID_META_RIGHT;
 			// no HID for KEY_FN

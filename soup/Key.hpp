@@ -81,7 +81,9 @@ NAMESPACE_SOUP
 		KEY_LCTRL,
 		KEY_LMETA,
 		KEY_LALT,
+		KEY_IME_OFF,
 		KEY_SPACE,
+		KEY_IME_ON,
 		KEY_RALT,
 		KEY_RMETA, // Physical arrangement: [RMETA] [FN] [RCTRL]
 		KEY_FN,
