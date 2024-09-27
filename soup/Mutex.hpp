@@ -14,7 +14,11 @@ NAMESPACE_SOUP
 		void lock()
 		{
 			mutex.lock();
-			SOUP_ASSERT(!locked, "Attempt to obtain recursive lock on non-recursive mutex");
+			SOUP_IF_UNLIKELY (locked)
+			{
+				mutex.unlock();
+				soup::throwAssertionFailed("Attempt to obtain recursive lock on non-recursive mutex");
+			}
 			locked = true;
 		}
 
@@ -22,7 +26,11 @@ NAMESPACE_SOUP
 		{
 			if (mutex.tryLock())
 			{
-				SOUP_ASSERT(!locked, "Attempt to obtain recursive lock on non-recursive mutex");
+				SOUP_IF_UNLIKELY (locked)
+				{
+					mutex.unlock();
+					soup::throwAssertionFailed("Attempt to obtain recursive lock on non-recursive mutex");
+				}
 				locked = true;
 				return true;
 			}
