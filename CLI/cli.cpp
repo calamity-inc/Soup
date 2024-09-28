@@ -408,7 +408,7 @@ int main(int argc, const char** argv)
 				}
 				try
 				{
-					std::cout << InquiryLang::formatResult(InquiryLang::execute(line));
+					std::cout << InquiryLang::formatResult(InquiryLang::execute(line)) << std::endl;
 				}
 				catch (std::exception& e)
 				{

@@ -187,9 +187,7 @@ keyword("qrcode", OP_QRCODE); \
 		{
 			return unicode::utf16_to_utf8(res.getCanvas().toStringDownsampledDoublewidth(true, true));
 		}
-		auto str = formatResultLine(res);
-		str.push_back('\n');
-		return str;
+		return formatResultLine(res);
 	}
 
 	std::string InquiryLang::formatResultLine(const Mixed& res)
