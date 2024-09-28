@@ -140,7 +140,7 @@ NAMESPACE_SOUP
 
 	void LangVm::push(Mixed&& val)
 	{
-		push(soup::make_shared<Mixed>(val));
+		push(soup::make_shared<Mixed>(std::move(val)));
 	}
 
 	void LangVm::execute()
