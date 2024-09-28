@@ -1,7 +1,7 @@
 <?php
 require "build_common.php";
 
-$clang = "em++ -O3 -std=c++17 -flto -fvisibility=hidden -fwasm-exceptions";
+$clang = "em++ -O3 -std=c++17 -flto -fvisibility=hidden";
 
 // Setup folders
 if(!is_dir("bin"))
