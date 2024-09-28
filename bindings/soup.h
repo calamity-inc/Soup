@@ -17,7 +17,6 @@
 	typedef void CidrSubnetInterface;
 	typedef void DetachedScheduler;
 	typedef void HttpRequest;
-	typedef void KeyGenId;
 	typedef void MimeMessage;
 	typedef void Mixed;
 	typedef void QrCode;
