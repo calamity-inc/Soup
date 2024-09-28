@@ -18,7 +18,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"(\b(?:(?'type'programming) )?jokes?\b)");
+			static Regex r(R"(\b(?:(?'type'programming) )?jokes?\b)", RE_INSENSITIVE);
 			return r.search(str);
 		}
 

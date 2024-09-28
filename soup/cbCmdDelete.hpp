@@ -8,7 +8,7 @@ NAMESPACE_SOUP
 	{
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"(\bdelete.+?(?'amount'\d+))");
+			static Regex r(R"(\bdelete.+?(?'amount'\d+))", RE_INSENSITIVE);
 			return r.search(str);
 		}
 

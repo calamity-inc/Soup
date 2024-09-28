@@ -10,7 +10,7 @@ NAMESPACE_SOUP
 	{
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"(\bnumber between\s*(?'a'\d+).+?(?'b'\d+)\b)");
+			static Regex r(R"(\bnumber between\s*(?'a'\d+).+?(?'b'\d+)\b)", RE_INSENSITIVE);
 			return r.search(str);
 		}
 

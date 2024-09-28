@@ -10,7 +10,7 @@ NAMESPACE_SOUP
 	{
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"(\b(?:coinflip|flip a coin)\b)");
+			static Regex r(R"(\b(?:coinflip|flip a coin)\b)", RE_INSENSITIVE);
 			return r.search(str);
 		}
 

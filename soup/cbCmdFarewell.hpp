@@ -8,7 +8,7 @@ NAMESPACE_SOUP
 	{
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"(\b(?:bye|goodbye|farewell)\b)");
+			static Regex r(R"(\b(?:bye|goodbye|farewell)\b)", RE_INSENSITIVE);
 			return r.search(str);
 		}
 

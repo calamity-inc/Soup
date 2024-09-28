@@ -1306,6 +1306,7 @@ static void test_chatbot_results()
 
 	// cbCmdConvert
 	assert(Chatbot::process("6900 kg in tonnes").response.find("6.9") != std::string::npos);
+	assert(Chatbot::process("6900 KG in tonnes").response.find("6.9") != std::string::npos);
 }
 
 static void unit_math_bigint()

@@ -8,7 +8,7 @@ NAMESPACE_SOUP
 	{
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"(\b(?:thanks|thank you)\b)");
+			static Regex r(R"(\b(?:thanks|thank you)\b)", RE_INSENSITIVE);
 			return r.search(str);
 		}
 

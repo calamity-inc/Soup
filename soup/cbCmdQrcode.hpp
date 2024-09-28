@@ -12,7 +12,7 @@ NAMESPACE_SOUP
 	{
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"EOR(qr ?code\s+(?:"(?'quoted'[^"]+)"|(?'direct'[^\s]+)))EOR");
+			static Regex r(R"EOR(qr ?code\s+(?:"(?'quoted'[^"]+)"|(?'direct'[^\s]+)))EOR", RE_INSENSITIVE);
 			return r.search(str);
 		}
 

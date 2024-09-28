@@ -18,7 +18,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] RegexMatchResult checkTriggers(const std::string& str) const final
 		{
-			static Regex r(R"((?:define|definition of)\s+(?'word'\w+))");
+			static Regex r(R"((?:define|definition of)\s+(?'word'\w+))", RE_INSENSITIVE);
 			return r.search(str);
 		}
 
