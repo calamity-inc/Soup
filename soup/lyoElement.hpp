@@ -25,7 +25,9 @@ NAMESPACE_SOUP
 
 		lyoStyle style;
 
-		void(*on_click)(lyoElement&, lyoDocument&) = nullptr;
+		using on_click_t = void(*)(lyoElement& target, lyoDocument&);
+
+		on_click_t on_click = nullptr;
 		void(*on_char)(char32_t, lyoElement&, lyoDocument&) = nullptr;
 
 		// This would be "EventTarget", but for now it's fine here.
@@ -40,6 +42,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] lyoDocument& getDocument() noexcept;
 		void focus() noexcept;
+		[[nodiscard]] on_click_t getClickHandler() const noexcept;
 
 		[[nodiscard]] bool matchesSelector(const std::string& selector) const noexcept;
 		virtual void querySelectorAll(std::vector<lyoElement*>& res, const std::string& selector);

@@ -177,20 +177,22 @@ NAMESPACE_SOUP
 		{
 			lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
 			auto elm = cap.flat.getElementAtPos(x, y);
-			if (!elm || !elm->on_click)
+			if (!elm || !elm->getClickHandler())
 			{
 				return nullptr;
 			}
 			return [](Window w, unsigned int x, unsigned int y)
 			{
 				lyoWindowCapture& cap = w.customData().get<lyoWindowCapture>();
-				auto elm = cap.flat.getElementAtPos(x, y);
-				if (elm && elm->on_click)
+				if (auto elm = cap.flat.getElementAtPos(x, y))
 				{
-					elm->on_click(*elm, *cap.doc);
-					if (!cap.doc->isValid())
+					if (auto on_click = elm->getClickHandler())
 					{
-						w.redraw();
+						on_click(*elm, *cap.doc);
+						if (!cap.doc->isValid())
+						{
+							w.redraw();
+						}
 					}
 				}
 			};

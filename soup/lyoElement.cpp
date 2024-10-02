@@ -22,6 +22,19 @@ NAMESPACE_SOUP
 		getDocument().focus = this;
 	}
 
+	lyoElement::on_click_t lyoElement::getClickHandler() const noexcept
+	{
+		const lyoElement* elm = this;
+		for (; elm->parent != nullptr; elm = elm->parent)
+		{
+			if (elm->on_click != nullptr)
+			{
+				break;
+			}
+		}
+		return elm->on_click;
+	}
+
 	bool lyoElement::matchesSelector(const std::string& selector) const noexcept
 	{
 		return tag_name == selector;
