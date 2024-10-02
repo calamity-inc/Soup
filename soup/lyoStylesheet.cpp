@@ -12,6 +12,7 @@ NAMESPACE_SOUP
 	{
 		LangDesc ld;
 		ld.space_characters.disable(';');
+		ld.special_characters.disable('-');
 		auto tks = ld.tokenise(css);
 		ld.eraseSpace(tks);
 
