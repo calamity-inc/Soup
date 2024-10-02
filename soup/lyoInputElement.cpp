@@ -15,6 +15,10 @@ NAMESPACE_SOUP
 			default:
 				static_cast<lyoInputElement&>(elm).text.push_back(c);
 				doc.invalidate();
+				if (elm.on_input)
+				{
+					elm.on_input(elm, doc);
+				}
 				break;
 
 			case 8: // Backspace
@@ -22,6 +26,10 @@ NAMESPACE_SOUP
 				{
 					static_cast<lyoInputElement&>(elm).text.pop_back();
 					doc.invalidate();
+					if (elm.on_input)
+					{
+						elm.on_input(elm, doc);
+					}
 				}
 				break;
 

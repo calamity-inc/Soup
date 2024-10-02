@@ -28,6 +28,9 @@ NAMESPACE_SOUP
 		void(*on_click)(lyoElement&, lyoDocument&) = nullptr;
 		void(*on_char)(char32_t, lyoElement&, lyoDocument&) = nullptr;
 
+		// This would be "EventTarget", but for now it's fine here.
+		void(*on_input)(lyoElement&, lyoDocument&) = nullptr;
+
 		lyoElement(lyoContainer* parent)
 			: parent(parent)
 		{
