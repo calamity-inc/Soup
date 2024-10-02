@@ -36,6 +36,7 @@ NAMESPACE_SOUP
 		virtual ~lyoElement() = default;
 
 		[[nodiscard]] lyoDocument& getDocument() noexcept;
+		void focus() noexcept;
 
 		[[nodiscard]] bool matchesSelector(const std::string& selector) const noexcept;
 		virtual void querySelectorAll(std::vector<lyoElement*>& res, const std::string& selector);

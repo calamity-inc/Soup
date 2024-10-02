@@ -1,6 +1,7 @@
 #include "lyoElement.hpp"
 
 #include "lyoContainer.hpp"
+#include "lyoDocument.hpp"
 #include "lyoFlatDocument.hpp"
 #include "RenderTarget.hpp"
 
@@ -14,6 +15,11 @@ NAMESPACE_SOUP
 			elm = static_cast<lyoElement*>(elm->parent);
 		}
 		return *reinterpret_cast<lyoDocument*>(this); // using reinterpret_cast because lyoDocument is not known in this compilation unit
+	}
+
+	void lyoElement::focus() noexcept
+	{
+		getDocument().focus = this;
 	}
 
 	bool lyoElement::matchesSelector(const std::string& selector) const noexcept
