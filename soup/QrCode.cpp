@@ -346,6 +346,25 @@ NAMESPACE_SOUP
 		return c;
 	}
 
+	Canvas QrCode::toCanvas(const Canvas& fg, Rgb bg) const
+	{
+		Canvas c(getSize() * fg.width, getSize() * fg.height);
+		c.fill(bg);
+
+		for (uint8_t x = 0; x != getSize(); ++x)
+		{
+			for (uint8_t y = 0; y != getSize(); ++y)
+			{
+				if (getModule(x, y))
+				{
+					c.addCanvas(x * fg.width, y * fg.height, fg);
+				}
+			}
+		}
+
+		return c;
+	}
+
 	BCanvas QrCode::toBCanvas() const
 	{
 		return BCanvas(getSize(), getSize(), modules);

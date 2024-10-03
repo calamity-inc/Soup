@@ -171,6 +171,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] Canvas toCanvas(unsigned int border, bool black_bg) const;
 		[[nodiscard]] Canvas toCanvas(unsigned int border, Rgb fg = Rgb::BLACK, Rgb bg = Rgb::WHITE) const;
+		[[nodiscard]] Canvas toCanvas(const Canvas& fg, Rgb bg) const;
 		[[nodiscard]] BCanvas toBCanvas() const;
 
 		/*---- Private helper methods for constructor: Drawing function modules ----*/
