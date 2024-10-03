@@ -26,6 +26,9 @@ NAMESPACE_SOUP
 
 	protected:
 		void recvLoop(WebSocketConnection& s);
+
+	public:
+		[[nodiscard]] std::string toString() const SOUP_EXCAL final;
 	};
 }
 

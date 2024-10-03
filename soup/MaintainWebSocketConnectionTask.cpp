@@ -1,6 +1,7 @@
 #include "MaintainWebSocketConnectionTask.hpp"
 #if !SOUP_WASM
 
+#include "ObfusString.hpp"
 #include "time.hpp"
 #include "WebSocketFrameType.hpp"
 
@@ -40,6 +41,14 @@ NAMESPACE_SOUP
 			}
 			task->recvLoop(s);
 		}, this);
+	}
+
+	std::string MaintainWebSocketConnectionTask::toString() const SOUP_EXCAL
+	{
+		std::string str = ObfusString("MaintainWebSocketConnectionTask: sock=[").str();
+		str.append(sock->toString());
+		str.push_back(']');
+		return str;
 	}
 }
 #endif
