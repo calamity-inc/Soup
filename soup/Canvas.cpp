@@ -478,7 +478,6 @@ NAMESPACE_SOUP
 		return ' ';
 	}
 
-
 	Canvas Canvas::fromBmp(Reader& r)
 	{
 		Canvas c;
@@ -486,16 +485,22 @@ NAMESPACE_SOUP
 		uint16_t sig;
 		SOUP_IF_LIKELY (r.u16(sig) && sig == 0x4D42)
 		{
-			uint32_t data_start, header_size;
+			uint32_t data_start, header_size, palette_size;
 			int32_t width, height;
-			//int16_t planes, bits_per_pixel;
+			int16_t bits_per_pixel;
 			SOUP_IF_LIKELY ((r.seek(0x0A), r.u32(data_start))
 				&& r.u32(header_size)
-				&& header_size == 40
+				&& header_size == 40 // BITMAPINFOHEADER
 				&& r.i32(width)
 				&& r.i32(height)
-				//&& r.i16(planes)
-				//&& r.i16(bits_per_pixel)
+				&& r.skip(2) // planes
+				&& r.i16(bits_per_pixel)
+				&& r.skip(4) // compression method
+				&& r.skip(4) // image size
+				&& r.skip(4) // horizontal resolution
+				&& r.skip(4) // vertical resolution
+				&& r.u32(palette_size)
+				&& r.skip(4) // important colours
 				)
 			{
 				const bool y_inverted = (height >= 0);
@@ -503,33 +508,67 @@ NAMESPACE_SOUP
 				{
 					height *= -1;
 				}
-
 				c.resize(width, height);
-				r.seek(data_start);
 
-				int32_t pixels_remaining_on_this_line = width;
-				for (auto& p : c.pixels)
+				if (bits_per_pixel == 4)
 				{
-					SOUP_IF_UNLIKELY (!r.u8(p.b)
-						|| !r.u8(p.g)
-						|| !r.u8(p.r)
-						)
+					Rgb palette[/* 1 << 4 */ 0x10];
+
+					for (uint32_t i = 0; i != palette_size; ++i)
 					{
-						break;
-					}
-					if (--pixels_remaining_on_this_line == 0)
-					{
-						const auto bytes_per_line = (width * 3);
-						if ((bytes_per_line % 4) != 0)
+						SOUP_IF_UNLIKELY (!r.u8(palette[i].b)
+							|| !r.u8(palette[i].g)
+							|| !r.u8(palette[i].r)
+							|| !r.skip(1)
+							)
 						{
-							auto pad_bytes = 4 - (bytes_per_line % 4);
-							while (pad_bytes--)
+							break;
+						}
+						//console.setForegroundColour(palette[i]);
+						//console << "Palette colour " << i << "\n";
+					}
+
+					r.seek(data_start);
+					int32_t pixels_remaining_on_this_line = width;
+					for (size_t i = 0; i != c.pixels.size(); )
+					{
+						uint32_t dw;
+						SOUP_IF_UNLIKELY (!r.u32(dw))
+						{
+							break;
+						}
+
+						for (uint8_t j = 0; j != 8; ++j)
+						{
+							c.pixels[i++] = palette[(dw >> ((j ^ 1) * 4)) & 0xf];
+							if (--pixels_remaining_on_this_line == 0)
 							{
-								uint8_t dummy;
-								r.u8(dummy);
+								pixels_remaining_on_this_line = width;
+								break;
 							}
 						}
-						pixels_remaining_on_this_line = width;
+					}
+				}
+				else
+				{
+					r.seek(data_start);
+					const auto bytes_per_line = ((width * bits_per_pixel + 31) / 32) * 4;
+					const auto pad_bytes = (4 - (bytes_per_line % 4)) % 4;
+					int32_t pixels_remaining_on_this_line = width;
+					for (auto& p : c.pixels)
+					{
+						SOUP_IF_UNLIKELY (!r.u8(p.b)
+							|| !r.u8(p.g)
+							|| !r.u8(p.r)
+							)
+						{
+							break;
+						}
+						if (--pixels_remaining_on_this_line == 0)
+						{
+							r.skip(pad_bytes);
+							pixels_remaining_on_this_line = width;
+						}
 					}
 				}
 
