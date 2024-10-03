@@ -120,6 +120,8 @@ NAMESPACE_SOUP
 			}
 
 			void onTick() final;
+
+			std::string toString() const SOUP_EXCAL final;
 		};
 
 		[[nodiscard]] bool isInited() const noexcept

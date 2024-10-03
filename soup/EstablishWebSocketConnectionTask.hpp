@@ -6,6 +6,7 @@
 #include "Task.hpp"
 
 #include "netConnectTask.hpp"
+#include "ObfusString.hpp"
 #include "Uri.hpp"
 #include "WebSocketConnection.hpp"
 
@@ -69,6 +70,22 @@ NAMESPACE_SOUP
 			{
 				cap.get<EstablishWebSocketConnectionTask*>()->setWorkDone();
 			}, this);
+		}
+
+		std::string toString() const SOUP_EXCAL final
+		{
+			std::string str = ObfusString("EstablishWebSocketConnectionTask: ");
+			if (!sock)
+			{
+				str.push_back('[');
+				str.append(connect.toString());
+				str.push_back(']');
+			}
+			else
+			{
+				str.append(ObfusString("Upgrading").str());
+			}
+			return str;
 		}
 	};
 }

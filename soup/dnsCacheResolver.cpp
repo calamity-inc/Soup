@@ -1,5 +1,6 @@
 #include "dnsCacheResolver.hpp"
 
+#include "ObfusString.hpp"
 #include "time.hpp"
 
 #define LOGGING false
@@ -45,6 +46,14 @@ NAMESPACE_SOUP
 				}
 				setWorkDone();
 			}
+		}
+
+		std::string toString() const SOUP_EXCAL final
+		{
+			std::string str = ObfusString("dnsLookupAndCacheTask: [");
+			str.append(underlying->toString());
+			str.push_back(']');
+			return str;
 		}
 	};
 

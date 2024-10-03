@@ -2,6 +2,7 @@
 
 #include "Task.hpp"
 
+#include "ObfusString.hpp"
 #include "Scheduler.hpp"
 
 NAMESPACE_SOUP
@@ -19,6 +20,11 @@ NAMESPACE_SOUP
 		{
 			num_workers = Scheduler::get()->getNumWorkers();
 			num_sockets = Scheduler::get()->getNumSockets();
+		}
+
+		std::string toString() const SOUP_EXCAL final
+		{
+			return ObfusString("SchedulerStats").str();
 		}
 	};
 }

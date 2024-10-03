@@ -14,6 +14,7 @@
 #include "JsonArray.hpp"
 #include "JsonObject.hpp"
 #include "JsonString.hpp"
+#include "ObfusString.hpp"
 #include "os.hpp"
 #include "rsa.hpp"
 #include "sha256.hpp"
@@ -333,6 +334,11 @@ NAMESPACE_SOUP
 			client.uri_newOrder = (std::string)directory.at("newOrder").asStr();
 			setWorkDone();
 		}
+	}
+
+	std::string AcmeClient::InitTask::toString() const SOUP_EXCAL
+	{
+		return ObfusString("AcmeClient::InitTask").str();
 	}
 }
 
