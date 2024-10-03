@@ -2,6 +2,7 @@
 
 #include <climits>
 
+#include "BCanvas.hpp"
 #include "Canvas.hpp"
 #include "string.hpp"
 
@@ -343,6 +344,11 @@ NAMESPACE_SOUP
 		}
 
 		return c;
+	}
+
+	BCanvas QrCode::toBCanvas() const
+	{
+		return BCanvas(getSize(), getSize(), modules);
 	}
 
 	int QrCode::getFormatBits(ecc ecl)
