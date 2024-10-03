@@ -44,7 +44,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		void onTick() SOUP_EXCAL
+		void onTick() SOUP_EXCAL final
 		{
 			if (task.tickUntilDone())
 			{
