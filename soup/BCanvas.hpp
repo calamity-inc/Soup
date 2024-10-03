@@ -39,5 +39,7 @@ NAMESPACE_SOUP
 		void addCubicBezier(const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d);
 
 		void floodFill(unsigned int x, unsigned int y);
+
+		[[nodiscard]] Canvas toCanvas() const;
 	};
 }

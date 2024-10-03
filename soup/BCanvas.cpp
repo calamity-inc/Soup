@@ -4,6 +4,7 @@
 
 #include "base.hpp"
 
+#include "Canvas.hpp"
 #include "visCurves.hpp"
 #include "Vector2.hpp"
 
@@ -73,5 +74,10 @@ NAMESPACE_SOUP
 			y = stk.top().second;
 			stk.pop();
 		}
+	}
+
+	Canvas BCanvas::toCanvas() const
+	{
+		return Canvas(width, height, pixels);
 	}
 }
