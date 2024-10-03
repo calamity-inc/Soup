@@ -7,6 +7,7 @@
 
 #include "netConnectTask.hpp"
 #include "ObfusString.hpp"
+#include "time.hpp"
 #include "Uri.hpp"
 #include "WebSocketConnection.hpp"
 
@@ -19,6 +20,7 @@ NAMESPACE_SOUP
 		SharedPtr<WebSocketConnection> sock; // Output
 		std::string host;
 		std::string path;
+		time_t upgrading_since = 0;
 
 		EstablishWebSocketConnectionTask(const Uri& uri)
 			: use_tls(uri.scheme != "ws"), connect(uri.host, (uri.port ? uri.port : (use_tls ? 443 : 80))), host(uri.host), path(uri.path)
@@ -42,6 +44,7 @@ NAMESPACE_SOUP
 						return;
 					}
 					sock = connect.getSocket();
+					upgrading_since = time::millis();
 					if (use_tls)
 					{
 						sock->enableCryptoClient(host, [](Socket& s, Capture&& cap) SOUP_EXCAL
@@ -57,6 +60,10 @@ NAMESPACE_SOUP
 			}
 			else
 			{
+				if (time::millisSince(upgrading_since) > 30'000)
+				{
+					sock->close();
+				}
 				if (sock->isWorkDoneOrClosed())
 				{
 					setWorkDone();
