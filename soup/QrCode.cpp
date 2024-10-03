@@ -262,8 +262,8 @@ NAMESPACE_SOUP
 	{
 		size = (ver * 4 + 17);
 		size_t sz = static_cast<size_t>(size);
-		modules = std::vector<std::vector<bool> >(sz, std::vector<bool>(sz));  // Initially all light
-		isFunction = std::vector<std::vector<bool> >(sz, std::vector<bool>(sz));
+		modules = std::vector<bool>(sz * sz);  // Initially all light
+		isFunction = std::vector<bool>(sz * sz);
 
 		// Compute ECC, draw modules
 		drawFunctionPatterns();
@@ -458,12 +458,12 @@ NAMESPACE_SOUP
 	void QrCode::setFunctionModule(int x, int y, bool isDark) {
 		size_t ux = static_cast<size_t>(x);
 		size_t uy = static_cast<size_t>(y);
-		modules.at(uy).at(ux) = isDark;
-		isFunction.at(uy).at(ux) = true;
+		modules.at(uy * size + ux) = isDark;
+		isFunction.at(uy * size + ux) = true;
 	}
 
 	bool QrCode::getModuleInbounds(int x, int y) const {
-		return modules.at(static_cast<size_t>(y)).at(static_cast<size_t>(x));
+		return modules[static_cast<size_t>(y) * size + static_cast<size_t>(x)];
 	}
 
 	std::vector<uint8_t> QrCode::addEccAndInterleave(const std::vector<uint8_t>& data) const {
@@ -514,8 +514,8 @@ NAMESPACE_SOUP
 					size_t x = static_cast<size_t>(right - j);  // Actual x coordinate
 					bool upward = ((right + 1) & 2) == 0;
 					size_t y = static_cast<size_t>(upward ? size - 1 - vert : vert);  // Actual y coordinate
-					if (!isFunction.at(y).at(x) && i < data.size() * 8) {
-						modules.at(y).at(x) = getBit(data.at(i >> 3), 7 - static_cast<int>(i & 7));
+					if (!isFunction.at(y * size + x) && i < data.size() * 8) {
+						modules.at(y * size + x) = getBit(data.at(i >> 3), 7 - static_cast<int>(i & 7));
 						i++;
 					}
 					// If this QR Code has any remainder bits (0 to 7), they were assigned as
@@ -541,7 +541,7 @@ NAMESPACE_SOUP
 				case 6:  invert = (x * y % 2 + x * y % 3) % 2 == 0;    break;
 				case 7:  invert = ((x + y) % 2 + x * y % 3) % 2 == 0;  break;
 				}
-				modules.at(y).at(x) = modules.at(y).at(x) ^ (invert & !isFunction.at(y).at(x));
+				modules.at(y * sz + x) = modules.at(y * sz + x) ^ (invert & !isFunction.at(y * sz + x));
 			}
 		}
 	}
@@ -609,10 +609,9 @@ NAMESPACE_SOUP
 
 		// Balance of dark and light modules
 		int dark = 0;
-		for (const std::vector<bool>& row : modules) {
-			for (bool color : row) {
-				if (color)
-					dark++;
+		for (bool colour : modules) {
+			if (colour) {
+				dark++;
 			}
 		}
 		int total = size * size;  // Note that size is odd, so dark/total != 1/2

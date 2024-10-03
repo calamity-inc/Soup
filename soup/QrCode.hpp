@@ -121,10 +121,10 @@ NAMESPACE_SOUP
 
 		// The modules of this QR Code (false = light, true = dark).
 		// Immutable after constructor finishes. Accessed through getModule().
-		std::vector<std::vector<bool> > modules;
+		std::vector<bool> modules;
 
 		// Indicates function modules that are not subjected to masking. Discarded when constructor finishes.
-		std::vector<std::vector<bool> > isFunction;
+		std::vector<bool> isFunction;
 
 		/*---- Constructor (low level) ----*/
 
