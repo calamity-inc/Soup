@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 
+#include "ObfusString.hpp"
 #include "Scheduler.hpp"
 
 NAMESPACE_SOUP
@@ -64,5 +65,10 @@ NAMESPACE_SOUP
 		sched.setAddWorkerCanWaitForeverForAllICare();
 		sched.add<TaskWrapper>(*this);
 		sched.run();
+	}
+
+	std::string Task::toString() const SOUP_EXCAL
+	{
+		return ObfusString("Task").str();
 	}
 }
