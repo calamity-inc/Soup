@@ -119,12 +119,27 @@ NAMESPACE_SOUP
 		{
 			if (hid.usage == 0x61 && hid.usage_page == 0xFF60)
 			{
-				if (hid.product_id == 0x0b10 // ANSI
-					|| hid.product_id == 0x0b11 // ISO
-					|| hid.product_id == 0x0b12 // JIS
+				if (hid.product_id == 0x0B10 // ANSI
+					|| hid.product_id == 0x0B11 // ISO
+					|| hid.product_id == 0x0B12 // JIS
 					)
 				{
 					return "Keychron Q1 HE";
+				}
+				if (hid.product_id == 0x0B30) // ANSI
+				{
+					return "Keychron Q3 HE";
+				}
+				if (hid.product_id == 0x0B50) // ANSI
+				{
+					return "Keychron Q5 HE";
+				}
+				if (hid.product_id == 0x0E20 // ANSI
+					|| hid.product_id == 0x0E21 // ISO
+					|| hid.product_id == 0x0E22 // JIS
+					)
+				{
+					return "Keychron K2 HE";
 				}
 			}
 		}
