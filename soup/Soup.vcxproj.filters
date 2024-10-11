@@ -1641,6 +1641,9 @@
     <ClInclude Include="MaintainWebSocketConnectionTask.hpp">
       <Filter>net\web\websocket</Filter>
     </ClInclude>
+    <ClInclude Include="ResponseCurve.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2441,6 +2444,7 @@
     <ClCompile Include="MaintainWebSocketConnectionTask.cpp">
       <Filter>net\web\websocket</Filter>
     </ClCompile>
+    <ClCompile Include="ResponseCurve.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

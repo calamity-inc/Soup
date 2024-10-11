@@ -832,6 +832,7 @@
     <ClInclude Include="RegexTransitionsVector.hpp" />
     <ClInclude Include="RegexWordBoundaryConstraint.hpp" />
     <ClInclude Include="RegexWordCharConstraint.hpp" />
+    <ClInclude Include="ResponseCurve.hpp" />
     <ClInclude Include="SelfDeletingThread.hpp" />
     <ClInclude Include="ServerServiceUdp.hpp" />
     <ClInclude Include="sha384.hpp" />
@@ -1341,6 +1342,7 @@
     <ClCompile Include="Reader.cpp" />
     <ClCompile Include="Regex.cpp" />
     <ClCompile Include="RegexGroup.cpp" />
+    <ClCompile Include="ResponseCurve.cpp" />
     <ClCompile Include="rflParser.cpp" />
     <ClCompile Include="Rgba.cpp" />
     <ClCompile Include="RgbaCanvas.cpp" />
