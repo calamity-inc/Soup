@@ -551,8 +551,27 @@ NAMESPACE_SOUP
 	// URB_INTERRUPT in
 	const Buffer& hwHid::receiveReport() noexcept
 	{
-		read_buffer.resize(0);
 #if SOUP_WINDOWS
+		SOUP_UNUSED(receiveReportWithReportId());
+		if (!read_buffer.empty())
+		{
+			read_buffer.erase(0, 1);
+		}
+#elif SOUP_LINUX
+		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
+		if (bytes_read >= 0)
+		{
+			read_buffer.resize(bytes_read);
+		}
+#endif
+		return read_buffer;
+	}
+
+#if SOUP_WINDOWS
+	// URB_INTERRUPT in
+	const Buffer& hwHid::receiveReportWithReportId() noexcept
+	{
+		read_buffer.resize(0);
 		if (!pending_read)
 		{
 			kickOffRead();
@@ -567,26 +586,13 @@ NAMESPACE_SOUP
 			}
 			pending_read = false;
 		}
-
 		if (bytes_read != 0)
 		{
 			read_buffer.resize(bytes_read);
-
-			// Windows puts a report id at the front, but we want the raw data, so erasing it.
-			if (read_buffer.at(0) == '\0')
-			{
-				read_buffer.erase(0, 1);
-			}
 		}
-#elif SOUP_LINUX
-		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
-		if (bytes_read >= 0)
-		{
-			read_buffer.resize(bytes_read);
-		}
-#endif
 		return read_buffer;
 	}
+#endif
 
 	void hwHid::discardStaleReports() noexcept
 	{
