@@ -90,7 +90,7 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 		void cancelReceiveReport() noexcept; // to be called from a different thread
 #endif
-		void receiveFeatureReport(Buffer& buf) const noexcept;
+		void receiveFeatureReport(Buffer& buf) const;
 
 		bool sendReport(Buffer&& buf) const noexcept;
 		bool sendReport(const void* data, size_t size) const noexcept;

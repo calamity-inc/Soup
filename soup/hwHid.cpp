@@ -615,7 +615,7 @@ NAMESPACE_SOUP
 #endif
 
 	// SET_REPORT response
-	void hwHid::receiveFeatureReport(Buffer& buf) const noexcept
+	void hwHid::receiveFeatureReport(Buffer& buf) const
 	{
 #if SOUP_WINDOWS
 		if (buf.size() < feature_report_byte_length)
