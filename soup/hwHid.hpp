@@ -19,6 +19,7 @@ NAMESPACE_SOUP
 		uint16_t product_id;
 		uint16_t usage;
 		uint16_t usage_page;
+		std::string path;
 
 #if SOUP_WINDOWS
 		uint16_t input_report_byte_length;

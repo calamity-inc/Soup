@@ -322,9 +322,10 @@ NAMESPACE_SOUP
 			}
 		} while (cr == CR_BUFFER_SMALL);
 
-		for (wchar_t* device_interface = device_interface_list; *device_interface; device_interface += wcslen(device_interface) + 1)
+		for (const wchar_t* device_interface = device_interface_list; *device_interface; device_interface += wcslen(device_interface) + 1)
 		{
 			hwHid hid{};
+			hid.path = unicode::utf16_to_utf8<std::wstring>(device_interface);
 
 			hid.handle = CreateFileW(
 				device_interface,
@@ -412,6 +413,8 @@ NAMESPACE_SOUP
 				const char* path = udev_list_entry_get_name(entry); // same as udev_device_get_syspath, /sys/devices/...
 
 				hwHid hid{};
+				hid.path = path;
+
 				if (parse_uevent_info(get_uevent_from_sysfs(path), hid.vendor_id, hid.product_id, hid.product_name, hid.serial_number))
 				{
 					hidraw_report_descriptor report_desc;
