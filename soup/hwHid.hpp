@@ -34,6 +34,8 @@ NAMESPACE_SOUP
 		std::string manufacturer_name;
 		std::string product_name;
 		std::string serial_number;
+		pthread_t read_thrd;
+		bool reading = false;
 #endif
 	private:
 		HandleRaii handle;
@@ -87,9 +89,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] const Buffer& receiveReportWithReportId() noexcept; // blocking if !hasReport()
 #endif
 		void discardStaleReports() noexcept;
-#if SOUP_WINDOWS
 		void cancelReceiveReport() noexcept; // to be called from a different thread
-#endif
 		void receiveFeatureReport(Buffer& buf) const;
 
 		bool sendReport(Buffer&& buf) const noexcept;

@@ -22,6 +22,7 @@
 #include <sys/ioctl.h>
 
 #include "SharedLibrary.hpp"
+#include "signal.hpp"
 #include "string.hpp"
 
 // https://github.com/systemd/systemd/blob/main/src/libudev/libudev.h
@@ -551,6 +552,11 @@ NAMESPACE_SOUP
 #endif
 	}
 
+#if SOUP_LINUX
+	static bool setup_sig_handler = false;
+	static thread_local bool killed_via_signal;
+#endif
+
 	// URB_INTERRUPT in
 	const Buffer& hwHid::receiveReport() noexcept
 	{
@@ -561,11 +567,19 @@ NAMESPACE_SOUP
 			read_buffer.erase(0, 1);
 		}
 #elif SOUP_LINUX
-		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
-		if (bytes_read >= 0)
+		if (!setup_sig_handler)
 		{
-			read_buffer.resize(bytes_read);
+			signal::handle(SIGUSR1, [](int)
+			{
+				killed_via_signal = true;
+			});
 		}
+		killed_via_signal = false;
+		read_thrd = pthread_self();
+		reading = true;
+		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
+		reading = false;
+		read_buffer.resize(bytes_read < 0 ? 0 : bytes_read);
 #endif
 		return read_buffer;
 	}
@@ -607,12 +621,17 @@ NAMESPACE_SOUP
 #endif
 	}
 
-#if SOUP_WINDOWS
 	void hwHid::cancelReceiveReport() noexcept
 	{
+#if SOUP_WINDOWS
 		CancelIoEx(handle, &read_overlapped);
-	}
+#elif SOUP_LINUX
+		if (reading)
+		{
+			pthread_kill(read_thrd, SIGUSR1);
+		}
 #endif
+	}
 
 	// SET_REPORT response
 	void hwHid::receiveFeatureReport(Buffer& buf) const
