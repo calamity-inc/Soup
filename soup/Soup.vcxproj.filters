@@ -2444,7 +2444,9 @@
     <ClCompile Include="MaintainWebSocketConnectionTask.cpp">
       <Filter>net\web\websocket</Filter>
     </ClCompile>
-    <ClCompile Include="ResponseCurve.cpp" />
+    <ClCompile Include="ResponseCurve.cpp">
+      <Filter>algos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
