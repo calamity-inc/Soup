@@ -45,6 +45,8 @@ NAMESPACE_SOUP
 	public:
 		[[nodiscard]] static std::vector<hwHid> getAll();
 
+		[[nodiscard]] bool isValid() const noexcept { return !path.empty(); }
+
 #if SOUP_WINDOWS
 		// Note: Getting this information may require communicating with the device, which can be bad as some mice will shortly void input for this.
 		[[nodiscard]] std::string getManufacturerName() const;
