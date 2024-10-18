@@ -431,10 +431,10 @@ NAMESPACE_SOUP
 		return read_buffer;
 	}
 
-#if SOUP_WINDOWS
 	// URB_INTERRUPT in
 	const Buffer& hwHid::receiveReportWithReportId() noexcept
 	{
+#if SOUP_WINDOWS
 		read_buffer.resize(0);
 		if (!pending_read)
 		{
@@ -454,19 +454,36 @@ NAMESPACE_SOUP
 		{
 			read_buffer.resize(bytes_read);
 		}
+#elif SOUP_LINUX
+		SOUP_UNUSED(receiveReport());
+		if (read_buffer.size() != input_report_byte_length)
+		{
+			read_buffer.insert_front(1, 0);
+		}
+#endif
 		return read_buffer;
 	}
 
+	// URB_INTERRUPT in
 	const Buffer& hwHid::receiveReportWithoutReportId() noexcept
 	{
+#if SOUP_WINDOWS
 		SOUP_UNUSED(receiveReportWithReportId());
 		if (!read_buffer.empty())
 		{
 			read_buffer.erase(0, 1);
 		}
+#elif SOUP_LINUX
+		SOUP_UNUSED(receiveReport());
+		if (input_report_byte_length != 0
+			&& read_buffer.size() == input_report_byte_length
+			)
+		{
+			read_buffer.erase(0, 1);
+		}
+#endif
 		return read_buffer;
 	}
-#endif
 
 	void hwHid::discardStaleReports() noexcept
 	{
