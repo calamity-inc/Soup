@@ -9,13 +9,17 @@ NAMESPACE_SOUP
 {
 	struct X11Api : public SharedLibrary
 	{
+		// https://codebrowser.dev/kde/include/X11/X.h.html
+		using XID = unsigned long;
+		using Window = XID;
+		using Drawable = XID;
+		using Pixmap = XID;
+		using KeySym = XID;
+
 		using Display = void;
-		using Window = unsigned long;
-		using Drawable = Window;
 		using GC = long long;
 		using Bool = int;
 		using Time = time_t;
-		using KeySym = unsigned long;
 
 		static constexpr Time CurrentTime = 0;
 
@@ -170,6 +174,9 @@ NAMESPACE_SOUP
 		//using XSetBackground_t = void(*)(Display*, GC, unsigned long);
 		//using XSetFillStyle_t = void(*)(Display*, GC, int);
 		using XFillRectangle_t = int(*)(Display*, Drawable, GC, int x, int y, unsigned int width, unsigned int height);
+		using XCreatePixmap_t = Pixmap(*)(Display*, Drawable, unsigned int width, unsigned int height, unsigned int depth);
+		using XFreePixmap_t = void(*)(Display*, Pixmap);
+		using XCopyArea_t = void(*)(Display*, Drawable src, Drawable dest, GC gc, int src_x, int src_y, unsigned int width, unsigned int height, int dest_x, int dest_y);
 
 		using XDefaultScreen_t = int(*)(Display*);
 		using XRootWindow_t = Window(*)(Display*, int screen);
@@ -194,6 +201,9 @@ NAMESPACE_SOUP
 		//XSetBackground_t setBackground;
 		//XSetFillStyle_t setFillStyle;
 		XFillRectangle_t fillRectangle;
+		XCreatePixmap_t createPixmap;
+		XFreePixmap_t freePixmap;
+		XCopyArea_t copyArea;
 
 		XDefaultScreen_t defaultScreen;
 		XRootWindow_t rootWindow; 
@@ -221,6 +231,9 @@ NAMESPACE_SOUP
 			//setBackground = (XSetBackground_t)getAddressMandatory("XSetBackground");
 			//setFillStyle = (XSetFillStyle_t)getAddressMandatory("XSetFillStyle");
 			fillRectangle = (XFillRectangle_t)getAddressMandatory("XFillRectangle");
+			createPixmap = (XCreatePixmap_t)getAddressMandatory("XCreatePixmap");
+			freePixmap = (XFreePixmap_t)getAddressMandatory("XFreePixmap");
+			copyArea = (XCopyArea_t)getAddressMandatory("XCopyArea");
 
 			defaultScreen = (XDefaultScreen_t)getAddressMandatory("XDefaultScreen");
 			rootWindow = (XRootWindow_t)getAddressMandatory("XRootWindow");

@@ -46,6 +46,8 @@ NAMESPACE_SOUP
 			callback_t on_focus = nullptr;
 			callback_t on_blur = nullptr;
 			callback_t on_close = nullptr;
+#else
+			unsigned int width, height;
 #endif
 		};
 

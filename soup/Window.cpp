@@ -248,7 +248,9 @@ NAMESPACE_SOUP
 		{
 			x.storeName(x.display, h, title.c_str());
 		}
-		window_configs.emplace(h, Window::Config{});
+		auto& wc = window_configs.emplace(h, Window::Config{}).first->second;
+		wc.width = width;
+		wc.height = height;
 		x.selectInput(x.display, h, X11Api::KeyPressMask | X11Api::KeyReleaseMask | X11Api::ExposureMask);
 		x.mapWindow(x.display, h);
 		x.flush(x.display); // if user doesn't call runMessageLoop, this allows the window to still appear.
@@ -422,9 +424,16 @@ NAMESPACE_SOUP
 		if (wc.draw_func)
 		{
 			const X11Api& x = X11Api::get();
-			RenderTargetWindow rt(h, x.createGc(x.display, h, 0, nullptr));
+
+			const auto gc = x.createGc(x.display, h, 0, nullptr);
+			RenderTargetWindow rt(wc.width, wc.height, gc, x.createPixmap(x.display, h, wc.width, wc.height, 24));
+
 			wc.draw_func(*this, rt);
-			x.freeGc(x.display, rt.gc);
+
+			x.copyArea(x.display, rt.d, h, gc, 0, 0, wc.width, wc.height, 0, 0);
+
+			x.freePixmap(x.display, rt.d);
+			x.freeGc(x.display, gc);
 			x.flush(x.display);
 		}
 #endif

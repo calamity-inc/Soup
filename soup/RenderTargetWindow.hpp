@@ -72,12 +72,11 @@ NAMESPACE_SOUP
 			return Rgb{ GetRValue(col), GetGValue(col), GetBValue(col) };
 		}
 #else
-		X11Api::Window w;
 		X11Api::GC gc;
+		X11Api::Drawable d;
 
-		RenderTargetWindow(X11Api::Window w, X11Api::GC gc)
-			// TODO: Pass on Window's width & height
-			: RenderTarget(10000, 10000), w(w), gc(gc)
+		RenderTargetWindow(unsigned int width, unsigned int height, X11Api::GC gc, X11Api::Drawable d)
+			: RenderTarget(width, height), gc(gc), d(d)
 		{
 		}
 
@@ -85,7 +84,7 @@ NAMESPACE_SOUP
 		{
 			const auto& xapi = X11Api::get();
 			xapi.setForeground(xapi.display, gc, colour.toInt());
-			xapi.fillRectangle(xapi.display, w, gc, x, y, width, height);
+			xapi.fillRectangle(xapi.display, d, gc, x, y, width, height);
 		}
 #endif
 	};
