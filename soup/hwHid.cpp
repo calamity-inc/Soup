@@ -259,7 +259,7 @@ NAMESPACE_SOUP
 
 				if (parse_uevent_info(get_uevent_from_sysfs(path), hid.vendor_id, hid.product_id, hid.product_name, hid.serial_number))
 				{
-					const auto rawdesc = string::fromFile(std::string(path) + "/device/report_descriptor");
+					const auto rawdesc = string::fromFile(hid.path + "/device/report_descriptor");
 					const auto report_desc = HidReportDescriptor::parse(rawdesc.data(), rawdesc.size());
 
 					hid.usage_page = report_desc.usage_page;
