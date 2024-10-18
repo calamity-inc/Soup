@@ -330,10 +330,10 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "hid")
 		{
-			std::cout << std::hex;
 			std::cout << "VID\tPID\n";
 			for (const auto& hid : hwHid::getAll())
 			{
+				std::cout << std::hex;
 				std::cout << hid.vendor_id << "\t" << hid.product_id << "\t";
 				if (auto name = hid.getProductName(); !name.empty())
 				{
@@ -348,8 +348,12 @@ int main(int argc, const char** argv)
 					std::cout << "[Product Name Not Provided]";
 				}
 				std::cout << "\n";
-				std::cout << "\t\t- Usage: " << hid.usage<< "\n";
 				std::cout << "\t\t- Usage Page: " << hid.usage_page << "\n";
+				std::cout << "\t\t- Usage: " << hid.usage << "\n";
+				std::cout << std::dec;
+				std::cout << "\t\t- Input Report Byte Length: " << hid.input_report_byte_length << "\n";
+				std::cout << "\t\t- Output Report Byte Length: " << hid.output_report_byte_length << "\n";
+				std::cout << "\t\t- Feature Report Byte Length: " << hid.feature_report_byte_length << "\n";
 #if !SOUP_WINDOWS
 				std::cout << "\t\t- Have Permission? " << (hid.havePermission() ? "Yes" : "No") << "\n";
 #endif

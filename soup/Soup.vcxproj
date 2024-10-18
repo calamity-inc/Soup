@@ -744,6 +744,7 @@
     <ClInclude Include="fnv.hpp" />
     <ClInclude Include="HardwareRng.hpp" />
     <ClInclude Include="Hashmap.hpp" />
+    <ClInclude Include="HidReportDescriptor.hpp" />
     <ClInclude Include="HidScancode.hpp" />
     <ClInclude Include="hwGamepad.hpp" />
     <ClInclude Include="Hwid.hpp" />
@@ -1273,6 +1274,7 @@
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="HardwareRng.cpp" />
+    <ClCompile Include="HidReportDescriptor.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />
     <ClCompile Include="hwGamepad.cpp" />
     <ClCompile Include="Hwid.cpp" />

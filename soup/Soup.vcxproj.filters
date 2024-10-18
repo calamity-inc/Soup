@@ -1644,6 +1644,9 @@
     <ClInclude Include="ResponseCurve.hpp">
       <Filter>algos</Filter>
     </ClInclude>
+    <ClInclude Include="HidReportDescriptor.hpp">
+      <Filter>hardware</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2446,6 +2449,9 @@
     </ClCompile>
     <ClCompile Include="ResponseCurve.cpp">
       <Filter>algos</Filter>
+    </ClCompile>
+    <ClCompile Include="HidReportDescriptor.cpp">
+      <Filter>hardware</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

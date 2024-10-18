@@ -15,16 +15,16 @@ NAMESPACE_SOUP
 	class hwHid
 	{
 	public:
+		std::string path;
 		uint16_t vendor_id;
 		uint16_t product_id;
-		uint16_t usage;
 		uint16_t usage_page;
-		std::string path;
+		uint16_t usage;
+		uint16_t input_report_byte_length; // including report id
+		uint16_t output_report_byte_length; // including report id
+		uint16_t feature_report_byte_length; // including report id
 
 #if SOUP_WINDOWS
-		uint16_t input_report_byte_length;
-		uint16_t output_report_byte_length;
-		uint16_t feature_report_byte_length;
 		bool is_bluetooth;
 		bool pending_read = false;
 		bool disconnected = false;
@@ -37,6 +37,7 @@ NAMESPACE_SOUP
 		pthread_t read_thrd;
 		bool reading = false;
 #endif
+
 	private:
 		HandleRaii handle;
 		Buffer read_buffer;

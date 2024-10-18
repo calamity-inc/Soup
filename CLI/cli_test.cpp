@@ -33,6 +33,9 @@
 #include <Regex.hpp>
 #include <xml.hpp>
 
+// hardware
+#include <HidReportDescriptor.hpp>
+
 // io
 #include <BitReader.hpp>
 #include <BitWriter.hpp>
@@ -904,6 +907,38 @@ spanning over multiple lines */
 	});
 }
 
+static void unit_hardware()
+{
+	test("HidReportDescriptor", []
+	{
+		const uint8_t report_desc_wooting_1337[] = { 0x06, 0x37, 0x13, 0x09, 0x01, 0xA1, 0x01, 0x09, 0x02, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x75, 0x08, 0x96, 0x00, 0x01, 0x81, 0x02, 0x09, 0x04, 0x96, 0x00, 0x01, 0x91, 0x02, 0x09, 0x06, 0x95, 0x07, 0xB1, 0x02, 0xC0 };
+		/* `hid-decode` Output:
+		# 0x06, 0x37, 0x13,              // Usage Page (Vendor Usage Page 0x1337) 0
+		# 0x09, 0x01,                    // Usage (Vendor Usage 0x01)           3
+		# 0xa1, 0x01,                    // Collection (Application)            5
+		# 0x09, 0x02,                    //  Usage (Vendor Usage 0x02)          7
+		# 0x15, 0x00,                    //  Logical Minimum (0)                9
+		# 0x26, 0xff, 0x00,              //  Logical Maximum (255)              11
+		# 0x75, 0x08,                    //  Report Size (8)                    14
+		# 0x96, 0x00, 0x01,              //  Report Count (256)                 16
+		# 0x81, 0x02,                    //  Input (Data,Var,Abs)               19
+		# 0x09, 0x04,                    //  Usage (Vendor Usage 0x04)          21
+		# 0x96, 0x00, 0x01,              //  Report Count (256)                 23
+		# 0x91, 0x02,                    //  Output (Data,Var,Abs)              26
+		# 0x09, 0x06,                    //  Usage (Vendor Usage 0x06)          28
+		# 0x95, 0x07,                    //  Report Count (7)                   30
+		# 0xb1, 0x02,                    //  Feature (Data,Var,Abs)             32
+		# 0xc0,                          // End Collection                      34
+		*/
+		auto desc = HidReportDescriptor::parse(report_desc_wooting_1337, sizeof(report_desc_wooting_1337));
+		assert(desc.usage_page == 0x1337);
+		assert(desc.usage == 0x6);
+		assert(desc.input_report_byte_length == 257);
+		assert(desc.output_report_byte_length == 257);
+		assert(desc.feature_report_byte_length == 8);
+	});
+}
+
 static void unit_io()
 {
 	test("BitReader", []
@@ -1624,6 +1659,10 @@ void cli_test()
 		unit("data")
 		{
 			unit_data();
+		}
+		unit("hardware")
+		{
+			unit_hardware();
 		}
 		unit("io")
 		{
