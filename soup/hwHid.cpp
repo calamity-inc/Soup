@@ -562,7 +562,9 @@ NAMESPACE_SOUP
 	{
 #if SOUP_WINDOWS
 		SOUP_UNUSED(receiveReportWithReportId());
-		if (!read_buffer.empty())
+		if (!read_buffer.empty()
+			&& read_buffer.at(0) == 0 // When a device uses report ids, `read` on Linux does prepend them, so to ensure we have the same result on both platforms, we only remove it on Windows when report ids are not being used.
+			)
 		{
 			read_buffer.erase(0, 1);
 		}
@@ -606,6 +608,16 @@ NAMESPACE_SOUP
 		if (bytes_read != 0)
 		{
 			read_buffer.resize(bytes_read);
+		}
+		return read_buffer;
+	}
+
+	const Buffer& hwHid::receiveReportWithoutReportId() noexcept
+	{
+		SOUP_UNUSED(receiveReportWithReportId());
+		if (!read_buffer.empty())
+		{
+			read_buffer.erase(0, 1);
 		}
 		return read_buffer;
 	}

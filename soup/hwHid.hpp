@@ -87,6 +87,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] const Buffer& receiveReport() noexcept; // blocking if !hasReport()
 #if SOUP_WINDOWS
 		[[nodiscard]] const Buffer& receiveReportWithReportId() noexcept; // blocking if !hasReport()
+		[[nodiscard]] const Buffer& receiveReportWithoutReportId() noexcept; // blocking if !hasReport()
 #endif
 		void discardStaleReports() noexcept;
 		void cancelReceiveReport() noexcept; // to be called from a different thread
