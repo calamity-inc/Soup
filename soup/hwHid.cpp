@@ -107,12 +107,6 @@ NAMESPACE_SOUP
 
 		return (found_id && found_name && found_serial);
 	}
-
-	[[nodiscard]] static std::string get_uevent_from_sysfs(std::string path)
-	{
-		path.append("/device/uevent");
-		return soup::string::fromFile(path);
-	}
 #endif
 
 	std::vector<hwHid> hwHid::getAll()
@@ -257,7 +251,7 @@ NAMESPACE_SOUP
 				hwHid hid{};
 				hid.path = path;
 
-				if (parse_uevent_info(get_uevent_from_sysfs(path), hid.vendor_id, hid.product_id, hid.product_name, hid.serial_number))
+				if (parse_uevent_info(string::fromFile(hid.path + "/device/uevent"), hid.vendor_id, hid.product_id, hid.product_name, hid.serial_number))
 				{
 					const auto rawdesc = string::fromFile(hid.path + "/device/report_descriptor");
 					const auto report_desc = HidReportDescriptor::parse(rawdesc.data(), rawdesc.size());
