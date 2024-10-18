@@ -88,6 +88,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] bool hasReport() noexcept;
 		[[nodiscard]] const Buffer& receiveReport() noexcept; // blocking if !hasReport()
+		[[nodiscard]] const Buffer& receiveReport(uint8_t& out_report_id) noexcept; // blocking if !hasReport()
 		[[nodiscard]] const Buffer& receiveReportWithReportId() noexcept; // blocking if !hasReport()
 		[[nodiscard]] const Buffer& receiveReportWithoutReportId() noexcept; // blocking if !hasReport()
 		void discardStaleReports() noexcept;

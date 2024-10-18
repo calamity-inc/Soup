@@ -431,6 +431,27 @@ NAMESPACE_SOUP
 		return read_buffer;
 	}
 
+	const Buffer& hwHid::receiveReport(uint8_t& out_report_id) noexcept
+	{
+		out_report_id = 0;
+#if SOUP_WINDOWS
+		SOUP_UNUSED(receiveReportWithReportId());
+		if (!read_buffer.empty())
+		{
+			out_report_id = read_buffer.at(0);
+			read_buffer.erase(0, 1);
+		}
+#elif SOUP_LINUX
+		SOUP_UNUSED(receiveReport());
+		if (read_buffer.size() == input_report_byte_length)
+		{
+			out_report_id = read_buffer.at(0);
+			read_buffer.erase(0, 1);
+		}
+#endif
+		return read_buffer;
+	}
+
 	// URB_INTERRUPT in
 	const Buffer& hwHid::receiveReportWithReportId() noexcept
 	{
