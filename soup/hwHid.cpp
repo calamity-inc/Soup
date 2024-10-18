@@ -267,6 +267,7 @@ NAMESPACE_SOUP
 					hid.input_report_byte_length = report_desc.input_report_byte_length;
 					hid.output_report_byte_length = report_desc.output_report_byte_length;
 					hid.feature_report_byte_length = report_desc.feature_report_byte_length;
+					hid.report_ids = std::move(report_desc.report_ids);
 
 					udev_device* device = udev_device_new_from_syspath(udev, path);
 					const char* dev_path = udev_device_get_devnode(device); // /dev/hidraw0 etc
@@ -370,6 +371,8 @@ NAMESPACE_SOUP
 			}
 			HidD_FreePreparsedData(pp_data);
 		}
+#elif SOUP_LINUX
+		ret = report_ids.count(report_id) != 0;
 #endif
 		return ret;
 	}

@@ -4,6 +4,9 @@
 
 #include <cstdint>
 #include <string>
+#if !SOUP_WINDOWS
+#include <unordered_set>
+#endif
 #include <vector>
 
 #include "Buffer.hpp"
@@ -31,6 +34,7 @@ NAMESPACE_SOUP
 		DWORD bytes_read{};
 		OVERLAPPED read_overlapped{};
 #else
+		std::unordered_set<uint8_t> report_ids{};
 		std::string manufacturer_name;
 		std::string product_name;
 		std::string serial_number;

@@ -127,7 +127,7 @@ NAMESPACE_SOUP
 				report_size = get_hid_report_bytes(rawdesc, size, data_len, pos);
 				break;
 
-			case 0x94: // Report count
+			case 0x94: // Report Count
 				report_count = get_hid_report_bytes(rawdesc, size, data_len, pos);
 				break;
 
@@ -141,6 +141,10 @@ NAMESPACE_SOUP
 
 			case 0xB0: // Feature
 				parsed.feature_report_byte_length = ((report_size * report_count) / 8) + 1;
+				break;
+
+			case 0x84: // Report ID
+				parsed.report_ids.emplace(static_cast<uint8_t>(get_hid_report_bytes(rawdesc, size, data_len, pos)));
 				break;
 			}
 
