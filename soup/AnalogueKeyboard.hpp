@@ -28,6 +28,8 @@ NAMESPACE_SOUP
 			} keychron;
 		};
 
+		AnalogueKeyboard() = default;
+
 		AnalogueKeyboard(std::string&& name, hwHid&& hid, bool has_ctx_key)
 			: name(std::move(name)), hid(std::move(hid)), has_ctx_key(has_ctx_key)
 		{
