@@ -3,8 +3,8 @@
 #include <algorithm> // clamp
 //#include <iostream>
 
-#include "BufferRefReader.hpp"
 #include "crc32.hpp"
+#include "MemoryRefReader.hpp"
 #include "os.hpp"
 #include "Packet.hpp"
 #include "time.hpp"
@@ -92,7 +92,7 @@ NAMESPACE_SOUP
 		u8 finger_2_data[4];
 
 		// https://www.psdevwiki.com/ps4/DS4-USB#Data_Format
-		bool readDs4(BufferRefReader& s)
+		bool readDs4(MemoryRefReader& s)
 		{
 			return s.u8(left_stick_x) // 1
 				&& s.u8(left_stick_y) // 2
@@ -118,7 +118,7 @@ NAMESPACE_SOUP
 		}
 
 		// https://github.com/nondebug/dualsense
-		bool readDs5Usb(BufferRefReader& s)
+		bool readDs5Usb(MemoryRefReader& s)
 		{
 			return s.u8(left_stick_x) // 1
 				&& s.u8(left_stick_y) // 2
@@ -136,7 +136,7 @@ NAMESPACE_SOUP
 				;
 		}
 
-		bool readDs5Bt01(BufferRefReader& s)
+		bool readDs5Bt01(MemoryRefReader& s)
 		{
 			return s.u8(left_stick_x) // 1
 				&& s.u8(left_stick_y) // 2
@@ -150,7 +150,7 @@ NAMESPACE_SOUP
 				;
 		}
 
-		bool readDs5Bt31(BufferRefReader& s)
+		bool readDs5Bt31(MemoryRefReader& s)
 		{
 			return s.u8(left_stick_x) // 1
 				&& s.u8(left_stick_y) // 2
@@ -234,7 +234,7 @@ NAMESPACE_SOUP
 
 			if (hid.vendor_id == 0x54c) // Sony, Y Down
 			{
-				BufferRefReader r(report_data);
+				MemoryRefReader r(report_data);
 
 				DsReport report;
 				if (hid.product_id == 0xce6) // DS5
@@ -397,7 +397,7 @@ NAMESPACE_SOUP
 			}
 			else // Stadia Controller, Y Down
 			{
-				BufferRefReader r(report_data);
+				MemoryRefReader r(report_data);
 
 				StadiaReport report;
 				report.read(r);

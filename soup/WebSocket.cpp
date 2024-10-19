@@ -1,9 +1,9 @@
 #include "WebSocket.hpp"
 
 #include "base64.hpp"
+#include "MemoryRefReader.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
-#include "StringRefReader.hpp"
 
 NAMESPACE_SOUP
 {
@@ -22,7 +22,7 @@ NAMESPACE_SOUP
 
 	WebSocket::ReadFrameStatus WebSocket::readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload) SOUP_EXCAL
 	{
-		StringRefReader r(data);
+		MemoryRefReader r(data);
 		uint8_t buf;
 		size_t header_size = 2;
 

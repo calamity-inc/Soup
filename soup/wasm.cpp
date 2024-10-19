@@ -4,8 +4,8 @@
 
 #include "alloc.hpp"
 #include "bitutil.hpp"
+#include "MemoryRefReader.hpp"
 #include "Reader.hpp"
-#include "StringRefReader.hpp"
 
 #define DEBUG_LOAD false
 #define DEBUG_VM false
@@ -30,7 +30,7 @@ NAMESPACE_SOUP
 
 	bool WasmScript::load(const std::string& data)
 	{
-		StringRefReader r(data);
+		MemoryRefReader r(data);
 		return load(r);
 	}
 
@@ -501,7 +501,7 @@ NAMESPACE_SOUP
 
 	bool WasmVm::run(const std::string& data) SOUP_EXCAL
 	{
-		StringRefReader r(data);
+		MemoryRefReader r(data);
 		return run(r);
 	}
 

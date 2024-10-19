@@ -1,9 +1,9 @@
 #include "AnalogueKeyboard.hpp"
 
-#include "BufferRefReader.hpp"
 #include "DigitalKeyboard.hpp"
 #include "HidScancode.hpp"
 #include "macros.hpp" // COUNT
+#include "MemoryRefReader.hpp"
 #include "NamedMutex.hpp"
 #if SOUP_WINDOWS
 #include "Process.hpp"
@@ -707,7 +707,7 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			BufferRefReader r(report);
+			MemoryRefReader r(report);
 			if (hid.usage_page == 0xFF54) // Wooting, up to 16 keys
 			{
 				uint16_t scancode;

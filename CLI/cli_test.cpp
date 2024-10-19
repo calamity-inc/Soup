@@ -40,8 +40,8 @@
 #include <BitReader.hpp>
 #include <BitWriter.hpp>
 #include <StringReader.hpp>
-#include <StringRefReader.hpp>
 #include <StringWriter.hpp>
+#include <MemoryRefReader.hpp>
 
 // lang
 #include <MathExpr.hpp>
@@ -986,7 +986,7 @@ static void unit_io()
 	test("StringRefReader", []
 	{
 		std::string s = "Hello\nWorld";
-		StringRefReader sr(s);
+		MemoryRefReader sr(s);
 		std::string line;
 		assert(sr.getLine(line));
 		assert(line == "Hello");

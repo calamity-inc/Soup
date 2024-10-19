@@ -805,7 +805,7 @@
     <ClInclude Include="dnsRawResolver.hpp">
       <Filter>net\dns\resolver</Filter>
     </ClInclude>
-    <ClInclude Include="StringRefReader.hpp">
+    <ClInclude Include="MemoryRefReader.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
     <ClInclude Include="StringRefWriter.hpp">
@@ -1384,9 +1384,6 @@
     </ClInclude>
     <ClInclude Include="Key.hpp">
       <Filter>hardware\keyboard</Filter>
-    </ClInclude>
-    <ClInclude Include="BufferRefReader.hpp">
-      <Filter>io\stream</Filter>
     </ClInclude>
     <ClInclude Include="kbRgbWooting.hpp">
       <Filter>hardware\keyboard\rgb</Filter>

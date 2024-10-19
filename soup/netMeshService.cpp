@@ -4,13 +4,13 @@
 #include <iostream>
 
 #include "aes.hpp"
+#include "MemoryRefReader.hpp"
 #include "netMesh.hpp"
 #include "netMeshMsgType.hpp"
 #include "rand.hpp"
 #include "Server.hpp"
 #include "sha256.hpp"
 #include "Socket.hpp"
-#include "StringRefReader.hpp"
 #include "StringWriter.hpp"
 #include "WebSocketMessage.hpp"
 
@@ -56,7 +56,7 @@ NAMESPACE_SOUP
 				);
 				if (aes::pkcs7Unpad(msg.data))
 				{
-					StringRefReader sr(msg.data);
+					MemoryRefReader sr(msg.data);
 					if (uint8_t msg_type; sr.u8(msg_type))
 					{
 						if (msg_type == MESH_MSG_LINK)

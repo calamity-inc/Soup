@@ -5,11 +5,11 @@
 #include "bitutil.hpp"
 #include "BitWriter.hpp"
 #include "format.hpp"
+#include "MemoryRefReader.hpp"
 #include "rand.hpp"
 #include "RasterFont.hpp"
 #include "RenderTarget.hpp"
 #include "Rgb.hpp"
-#include "StringRefReader.hpp"
 #include "StringWriter.hpp"
 
 NAMESPACE_SOUP
@@ -115,7 +115,7 @@ NAMESPACE_SOUP
 
 	void Sudoku::setGivenFromBinary(const std::string& str)
 	{
-		StringRefReader r(str);
+		MemoryRefReader r(str);
 		BitReader br(&r);
 		uint8_t version;
 		br.u8(3, version);
