@@ -1,5 +1,10 @@
 #include "HidReportDescriptor.hpp"
 
+//#include <iostream>
+
+#include "BitReader.hpp"
+#include "MemoryRefReader.hpp"
+
 NAMESPACE_SOUP
 {
 	static uint32_t get_hid_report_bytes(const uint8_t* rawdesc, size_t size, uint32_t num_bytes, uint32_t pos)
@@ -88,9 +93,14 @@ NAMESPACE_SOUP
 		const auto rawdesc = reinterpret_cast<const uint8_t*>(_rawdesc);
 
 		HidReportDescriptor parsed;
+		uint32_t input_report_bit_length = 0;
+		uint32_t output_report_bit_length = 0;
+		uint32_t feature_report_bit_length = 0;
 
-		uint32_t report_size = 8;
+		uint32_t report_size = 0;
 		uint32_t report_count = 0;
+		uint32_t usage_min = 0;
+		uint32_t usage_max = 0;
 
 		for (uint32_t pos = 0; pos < size; )
 		{
@@ -107,11 +117,11 @@ NAMESPACE_SOUP
 
 			switch (key_cmd)
 			{
-			case 0x4: /* Usage Page 6.2.2.7 (Global) */
+			case 0x04: /* Usage Page 6.2.2.7 (Global) */
 				parsed.usage_page = get_hid_report_bytes(rawdesc, size, data_len, pos);
 				break;
 
-			case 0x8: /* Usage 6.2.2.8 (Local) */
+			case 0x08: /* Usage 6.2.2.8 (Local) */
 				if (data_len == 4) /* Usages 5.5 / Usage Page 6.2.2.7 */
 				{
 					parsed.usage_page = get_hid_report_bytes(rawdesc, size, 2, pos + 2);
@@ -132,25 +142,67 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x80: // Input
-				parsed.input_report_byte_length = ((report_size * report_count) / 8) + 1;
+				input_report_bit_length += (report_size * report_count);
+				// ((usage_max + 1) - usage_min) should be equal to report_count
+				if (report_size == 1)
+				{
+					for (auto usage = usage_min; usage != (usage_max + 1); ++usage)
+					{
+						parsed.bit_index_to_usage_map.emplace_back(usage);
+					}
+				}
 				break;
 
 			case 0x90: // Output
-				parsed.output_report_byte_length = ((report_size * report_count) / 8) + 1;
+				output_report_bit_length += (report_size * report_count);
 				break;
 
 			case 0xB0: // Feature
-				parsed.feature_report_byte_length = ((report_size * report_count) / 8) + 1;
+				feature_report_bit_length += (report_size * report_count);
 				break;
 
 			case 0x84: // Report ID
 				parsed.report_ids.emplace(static_cast<uint8_t>(get_hid_report_bytes(rawdesc, size, data_len, pos)));
+				break;
+
+			case 0x18: // Usage Minimum
+				usage_min = get_hid_report_bytes(rawdesc, size, data_len, pos);
+				break;
+
+			case 0x28: // Usage Maximum
+				usage_max = get_hid_report_bytes(rawdesc, size, data_len, pos);
 				break;
 			}
 
 			pos += data_len + key_size;
 		}
 
+		parsed.input_report_byte_length = ((input_report_bit_length + 7) >> 3) + 1; // plus report id
+		parsed.output_report_byte_length = ((output_report_bit_length + 7) >> 3) + 1; // plus report id
+		parsed.feature_report_byte_length = ((feature_report_bit_length + 7) >> 3) + 1; // plus report id
+
 		return parsed;
+	}
+
+	std::vector<uint16_t> HidReportDescriptor::parseInputReport(const void* report, size_t size) const
+	{
+		std::vector<uint16_t> usage_ids{};
+
+		MemoryRefReader mr(report, size);
+		BitReader br(&mr);
+		for (const auto& usage_id : bit_index_to_usage_map)
+		{
+			bool on;
+			SOUP_IF_UNLIKELY (!br.b(on))
+			{
+				break;
+			}
+			if (on)
+			{
+				usage_ids.emplace_back(usage_id);
+			}
+		}
+
+		return usage_ids;
 	}
 }
