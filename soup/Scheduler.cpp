@@ -51,7 +51,7 @@ NAMESPACE_SOUP
 		std::vector<pollfd> pollfds{};
 		while (shouldKeepRunning())
 		{
-			uint8_t workload_flags = 0;
+			uint8_t workload_flags = default_workload_flags;
 #if LOG_TICK_DUR
 			Stopwatch t;
 #endif
@@ -81,7 +81,7 @@ NAMESPACE_SOUP
 		std::vector<pollfd> pollfds{};
 		while (shouldKeepRunning())
 		{
-			uint8_t workload_flags = 0;
+			uint8_t workload_flags = default_workload_flags;
 			tick(pollfds, workload_flags);
 			yieldBusyspin(pollfds, workload_flags);
 			if (time::millis() > deadline)
@@ -104,7 +104,7 @@ NAMESPACE_SOUP
 		this_thread_running_scheduler = this;
 
 		std::vector<pollfd> pollfds{};
-		uint8_t workload_flags = 0;
+		uint8_t workload_flags; // dummy for the out-param
 		tick(pollfds, workload_flags);
 #if !SOUP_WASM
 		if (poll(pollfds, 0) > 0)
