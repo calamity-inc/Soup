@@ -24,6 +24,7 @@ static AnalogueKeyboard* analogue_kbd = nullptr;
 
 void cli_keyboard()
 {
+#if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
 	Thread t([](Capture&&)
 	{
 		// Wait until window is created
@@ -142,4 +143,7 @@ void cli_keyboard()
 		analogue_kbd->hid.cancelReceiveReport();
 	}
 	t.awaitCompletion();
+#else
+	std::cout << "Sorry, this is currently not supported on your platform.\n";
+#endif
 }
