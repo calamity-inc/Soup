@@ -424,17 +424,19 @@ NAMESPACE_SOUP
 		if (wc.draw_func)
 		{
 			const X11Api& x = X11Api::get();
+			if (x.running_message_loop) // This function call would never finish otherwise
+			{
+				const auto gc = x.createGc(x.display, h, 0, nullptr);
+				RenderTargetWindow rt(wc.width, wc.height, gc, x.createPixmap(x.display, h, wc.width, wc.height, 24));
 
-			const auto gc = x.createGc(x.display, h, 0, nullptr);
-			RenderTargetWindow rt(wc.width, wc.height, gc, x.createPixmap(x.display, h, wc.width, wc.height, 24));
+				wc.draw_func(*this, rt);
 
-			wc.draw_func(*this, rt);
+				x.copyArea(x.display, rt.d, h, gc, 0, 0, wc.width, wc.height, 0, 0);
 
-			x.copyArea(x.display, rt.d, h, gc, 0, 0, wc.width, wc.height, 0, 0);
-
-			x.freePixmap(x.display, rt.d);
-			x.freeGc(x.display, gc);
-			x.flush(x.display);
+				x.freePixmap(x.display, rt.d);
+				x.freeGc(x.display, gc);
+				x.flush(x.display);
+			}
 		}
 #endif
 		return *this;
@@ -502,6 +504,7 @@ NAMESPACE_SOUP
 	void Window::runMessageLoop() noexcept
 	{
 		const X11Api& x = X11Api::get();
+		x.running_message_loop = true;
 		X11Api::XEvent event, prev_event;
 		while (true)
 		{
@@ -532,6 +535,7 @@ NAMESPACE_SOUP
 			}
 			prev_event = std::move(event);
 		}
+		x.running_message_loop = false;
 	}
 #endif
 }

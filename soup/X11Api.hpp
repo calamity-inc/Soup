@@ -208,6 +208,8 @@ NAMESPACE_SOUP
 		XDefaultScreen_t defaultScreen;
 		XRootWindow_t rootWindow; 
 
+		mutable bool running_message_loop = false;
+
 		X11Api()
 			: SharedLibrary("libX11.so.6")
 		{
