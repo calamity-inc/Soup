@@ -1,14 +1,21 @@
 #include "DigitalKeyboard.hpp"
 
-#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
+#if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
 
-#pragma comment(lib, "dinput8.lib")
-#pragma comment(lib, "dxguid.lib")
+#if SOUP_WINDOWS
+	#pragma comment(lib, "dinput8.lib")
+	#pragma comment(lib, "dxguid.lib")
+#else
+	#include "HidReportDescriptor.hpp"
+	#include "HidScancode.hpp"
+	#include "string.hpp"
+#endif
 
 NAMESPACE_SOUP
 {
 	void DigitalKeyboard::update() noexcept
 	{
+#if SOUP_WINDOWS
 		if (!pDI)
 		{
 			if (FAILED(DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pDI, NULL)))
@@ -155,10 +162,43 @@ NAMESPACE_SOUP
 			keys[KEY_F14] = state[DIK_F14];
 			keys[KEY_F15] = state[DIK_F15];
 		}
+#else
+		if (!hid.isValid())
+		{
+			for (auto& hid_ : hwHid::getAll())
+			{
+				if (hid_.havePermission() && hid_.usage_page == 0x07)
+				{
+					hid = std::move(hid_);
+					break;
+				}
+			}
+		}
+
+		if (hid.isValid())
+		{
+			if (hid.hasReport())
+			{
+				const auto rawdesc = string::fromFile(hid.path + "/device/report_descriptor");
+				const auto desc = HidReportDescriptor::parse(rawdesc.data(), rawdesc.size());
+				const auto& report = hid.receiveReport();
+				const auto usage_ids = desc.parseInputReport(report.data(), report.size());
+				memset(keys, 0, sizeof(keys));
+				for (const auto& usage_id : usage_ids)
+				{
+					if (const auto sk = hid_scancode_to_soup_key(usage_id); sk != KEY_NONE)
+					{
+						keys[sk] = true;
+					}
+				}
+			}
+		}
+#endif
 	}
 
 	void DigitalKeyboard::deinit() noexcept
 	{
+#if SOUP_WINDOWS
 		if (pKeyboard)
 		{
 			pKeyboard->Unacquire();
@@ -170,6 +210,9 @@ NAMESPACE_SOUP
 			pDI->Release();
 			pDI = nullptr;
 		}
+#else
+		hid.reset();
+#endif
 	}
 }
 

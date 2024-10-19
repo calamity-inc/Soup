@@ -17,11 +17,7 @@
 using namespace soup;
 
 static bool running = true;
-#if SOUP_WINDOWS
 static std::string kbd_name = "Digital Keyboard";
-#else
-static std::string kbd_name = "No Analogue Keyboard Detected";
-#endif
 static Window w;
 static visKeyboard viskbd;
 static AnalogueKeyboard* analogue_kbd = nullptr;
@@ -30,9 +26,13 @@ void cli_keyboard()
 {
 	Thread t([](Capture&&)
 	{
-#if SOUP_WINDOWS
+		// Wait until window is created
+		while (!w)
+		{
+			os::sleep(1);
+		}
+
 		DigitalKeyboard digital_kbd;
-#endif
 
 		while (running)
 		{
@@ -46,11 +46,7 @@ void cli_keyboard()
 					analogue_kbd = nullptr;
 
 					viskbd.has_ctx_key = false;
-#if SOUP_WINDOWS
 					kbd_name = "Digital Keyboard";
-#else
-					kbd_name = "No Analogue Keyboard Detected";
-#endif
 					w.redraw();
 				}
 				else
@@ -76,21 +72,30 @@ void cli_keyboard()
 #endif
 				if (analogue_kbds.empty())
 				{
-#if SOUP_WINDOWS
 					digital_kbd.update();
 
-					uint8_t dblbuf[NUM_KEYS];
-					for (auto i = 0; i != NUM_KEYS; ++i)
+					if (digital_kbd.isActive())
 					{
-						dblbuf[i] = digital_kbd.keys[i] ? 255 : 0;
-					}
+						uint8_t dblbuf[NUM_KEYS];
+						for (auto i = 0; i != NUM_KEYS; ++i)
+						{
+							dblbuf[i] = digital_kbd.keys[i] ? 255 : 0;
+						}
 
-					if (memcmp(viskbd.values, dblbuf, sizeof(dblbuf)) != 0)
+						if (memcmp(viskbd.values, dblbuf, sizeof(dblbuf)) != 0
+							|| kbd_name != "Digital Keyboard"
+							)
+						{
+							memcpy(viskbd.values, dblbuf, sizeof(dblbuf));
+							kbd_name = "Digital Keyboard";
+							w.redraw();
+						}
+					}
+					else if (kbd_name == "Digital Keyboard")
 					{
-						memcpy(viskbd.values, dblbuf, sizeof(dblbuf));
+						kbd_name = "Can't Read Digital Keyboard";
 						w.redraw();
 					}
-#endif
 
 					os::sleep(10);
 				}

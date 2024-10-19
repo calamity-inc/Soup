@@ -103,6 +103,12 @@ NAMESPACE_SOUP
 		bool sendReport(const void* data, size_t size) const noexcept;
 		bool sendFeatureReport(Buffer&& buf) const noexcept;
 
+		void reset() noexcept
+		{
+			path.clear();
+			handle.~HandleRaii();
+		}
+
 	private:
 #if SOUP_WINDOWS
 		void kickOffRead() noexcept;

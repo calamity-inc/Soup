@@ -95,7 +95,15 @@ NAMESPACE_SOUP
 
 		void operator=(int handle) noexcept
 		{
+			this->~HandleRaii();
 			this->handle = handle;
+		}
+
+		void operator=(HandleRaii&& b) noexcept
+		{
+			this->~HandleRaii();
+			this->handle = b.handle;
+			b.handle = -1;
 		}
 
 		operator int() const noexcept
