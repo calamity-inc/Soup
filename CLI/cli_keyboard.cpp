@@ -24,6 +24,7 @@ static std::string kbd_name = "No Analogue Keyboard Detected";
 #endif
 static Window w;
 static visKeyboard viskbd;
+static AnalogueKeyboard* analogue_kbd = nullptr;
 
 void cli_keyboard()
 {
@@ -32,7 +33,6 @@ void cli_keyboard()
 #if SOUP_WINDOWS
 		DigitalKeyboard digital_kbd;
 #endif
-		AnalogueKeyboard* analogue_kbd = nullptr;
 
 		while (running)
 		{
@@ -132,8 +132,9 @@ void cli_keyboard()
 	w.runMessageLoop();
 
 	running = false;
-#if SOUP_WINDOWS
-	CancelSynchronousIo(t.handle);
-#endif
+	if (analogue_kbd)
+	{
+		analogue_kbd->hid.cancelReceiveReport();
+	}
 	t.awaitCompletion();
 }
