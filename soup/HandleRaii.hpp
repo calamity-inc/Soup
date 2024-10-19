@@ -42,6 +42,13 @@ NAMESPACE_SOUP
 			this->h = h;
 		}
 
+		void operator=(HandleRaii&& b) noexcept
+		{
+			this->~HandleRaii();
+			this->h = b.h;
+			b.h = INVALID_HANDLE_VALUE;
+		}
+
 		[[nodiscard]] operator bool() const noexcept
 		{
 			return isValid();
