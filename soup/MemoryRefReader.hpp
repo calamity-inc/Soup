@@ -4,6 +4,8 @@
 
 #include <cstring> // memcpy
 
+#include "type_traits.hpp"
+
 NAMESPACE_SOUP
 {
 	class MemoryRefReader final : public Reader
@@ -18,7 +20,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		template <typename T>
+		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<T>)>
 		MemoryRefReader(const T& t, bool little_endian = true)
 			: MemoryRefReader(t.data(), t.size(), little_endian)
 		{
