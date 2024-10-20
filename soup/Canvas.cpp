@@ -647,6 +647,13 @@ NAMESPACE_SOUP
 		return res;
 	}
 
+	std::string Canvas::toBmp() const
+	{
+		StringWriter sw;
+		toBmp(sw);
+		return sw.data;
+	}
+
 	bool Canvas::toBmp(Writer& w) const
 	{
 		uint16_t s;
