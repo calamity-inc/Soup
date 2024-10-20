@@ -346,13 +346,13 @@ NAMESPACE_SOUP
 
 #define RMDsize 160
 
-	std::string ripemd160(const std::string& in)
+	std::string ripemd160(const void* data, size_t size)
 	{
 		uint32_t MDbuf[RMDsize / 32];
 		unsigned int i;
 		MDinit(MDbuf);
-		auto message = (const uint8_t*)in.data();
-		for (auto nbytes = in.length(); nbytes > 63; nbytes -= 64)
+		auto message = (const uint8_t*)data;
+		for (auto nbytes = size; nbytes > 63; nbytes -= 64)
 		{
 			uint32_t X[16];
 			for (i = 0; i < 16; i++)
@@ -363,7 +363,7 @@ NAMESPACE_SOUP
 			compress(MDbuf, X);
 		}
 
-		MDfinish(MDbuf, message, static_cast<uint32_t>(in.length()), 0);
+		MDfinish(MDbuf, message, static_cast<uint32_t>(size), 0);
 
 		std::string hash;
 		for (i = 0; i < RMDsize / 8; i += 4)
@@ -375,6 +375,11 @@ NAMESPACE_SOUP
 		}
 
 		return hash;
+	}
+
+	std::string ripemd160(const std::string& in)
+	{
+		return ripemd160(in.data(), in.size());
 	}
 }
 
