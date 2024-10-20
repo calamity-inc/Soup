@@ -17,7 +17,6 @@
 #include <HttpRequest.hpp>
 #include <hwGamepad.hpp>
 #include <hwHid.hpp>
-#include <InquiryLang.hpp>
 #include <netIntel.hpp>
 #include <os.hpp>
 #include <QrCode.hpp>
@@ -398,30 +397,6 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
-		if (subcommand == "inquire")
-		{
-			console.init(false);
-			std::cout << "Soup Inquiry Language REPL" << std::endl;
-			while (true)
-			{
-				std::cout << "> ";
-				std::string line;
-				if (!std::getline(std::cin, line))
-				{
-					break;
-				}
-				try
-				{
-					std::cout << InquiryLang::formatResult(InquiryLang::execute(line)) << std::endl;
-				}
-				catch (std::exception& e)
-				{
-					std::cout << "Error: " << e.what() << std::endl;
-				}
-			}
-			return 0;
-		}
-
 		if (subcommand == "ircserver")
 		{
 			return cli_ircserver();
@@ -590,7 +565,7 @@ int main(int argc, const char** argv)
 
 	std::cout << R"EOC(Syntax: soup [tool]
 
-Available tools: 3d, bench, cat2json, chatbot, chatgpt, chess, datareflection, dhcp, dig, dnsserver, dvd, edit, gamepad, geoip, hid, html, http, inquire, ircserver, keyboard, maze, mesh, midi, morse, mouse, qr, repl, script, snake, test, wasm, wav, websrv
+Available tools: 3d, bench, cat2json, chatbot, chatgpt, chess, datareflection, dhcp, dig, dnsserver, dvd, edit, gamepad, geoip, hid, html, http, ircserver, keyboard, maze, mesh, midi, morse, mouse, qr, repl, script, snake, test, wasm, wav, websrv
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;
