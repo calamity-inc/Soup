@@ -374,11 +374,14 @@ NAMESPACE_SOUP
 	bool hwHid::hasReport() noexcept
 	{
 #if SOUP_WINDOWS
-		if (!pending_read)
+		if (pending_read == 0)
 		{
 			kickOffRead();
 		}
-		return (pending_read && HasOverlappedIoCompleted(&read_overlapped)) || disconnected;
+		return pending_read == 1
+			|| (pending_read == 2 && HasOverlappedIoCompleted(&read_overlapped))
+			|| disconnected
+			;
 #elif SOUP_LINUX
 		pollfd pfd;
 		pfd.fd = handle;
@@ -449,11 +452,11 @@ NAMESPACE_SOUP
 	const Buffer& hwHid::receiveReportWithReportId() noexcept
 	{
 #if SOUP_WINDOWS
-		if (!pending_read)
+		if (pending_read == 0)
 		{
 			kickOffRead();
 		}
-		if (pending_read)
+		if (pending_read != 0)
 		{
 			while (!GetOverlappedResult(handle, &read_overlapped, &bytes_read, FALSE)
 				&& GetLastError() == ERROR_IO_INCOMPLETE
@@ -461,7 +464,7 @@ NAMESPACE_SOUP
 			{
 				Sleep(1);
 			}
-			pending_read = false;
+			pending_read = 0;
 		}
 		read_buffer.resize(bytes_read);
 #elif SOUP_LINUX
@@ -498,7 +501,7 @@ NAMESPACE_SOUP
 	void hwHid::discardStaleReports() noexcept
 	{
 #if SOUP_WINDOWS
-		while (!pending_read && !disconnected)
+		while (pending_read != 2 && !disconnected)
 		{
 			kickOffRead();
 		}
@@ -592,11 +595,15 @@ NAMESPACE_SOUP
 		{
 			return;
 		}
-		if (!ReadFile(handle, read_buffer.data(), static_cast<DWORD>(read_buffer.capacity()), &bytes_read, &read_overlapped))
+		if (ReadFile(handle, read_buffer.data(), static_cast<DWORD>(read_buffer.capacity()), &bytes_read, &read_overlapped))
+		{
+			pending_read = 1;
+		}
+		else
 		{
 			SOUP_IF_LIKELY (GetLastError() == ERROR_IO_PENDING)
 			{
-				pending_read = true;
+				pending_read = 2;
 			}
 			else
 			{

@@ -29,7 +29,7 @@ NAMESPACE_SOUP
 
 #if SOUP_WINDOWS
 		bool is_bluetooth;
-		bool pending_read = false;
+		uint8_t pending_read = 0;
 		bool disconnected = false;
 		DWORD bytes_read{};
 		OVERLAPPED read_overlapped{};
