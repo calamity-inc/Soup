@@ -377,12 +377,8 @@ NAMESPACE_SOUP
 		if (!pending_read)
 		{
 			kickOffRead();
-			if (!pending_read && !disconnected)
-			{
-				return true;
-			}
 		}
-		return HasOverlappedIoCompleted(&read_overlapped);
+		return (pending_read && HasOverlappedIoCompleted(&read_overlapped)) || disconnected;
 #elif SOUP_LINUX
 		pollfd pfd;
 		pfd.fd = handle;
