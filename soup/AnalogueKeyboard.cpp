@@ -769,6 +769,8 @@ NAMESPACE_SOUP
 
 				//std::cout << string::bin2hex(report.toString()) << std::endl;
 
+				r.skip(1); // skip report id
+
 				if (hid.product_id >= 0x02a6) // Huntsman V3, up to 15 keys
 				{
 					uint8_t scancode;
