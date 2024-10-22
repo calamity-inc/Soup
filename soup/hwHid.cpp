@@ -449,7 +449,6 @@ NAMESPACE_SOUP
 	const Buffer& hwHid::receiveReportWithReportId() noexcept
 	{
 #if SOUP_WINDOWS
-		read_buffer.resize(0);
 		if (!pending_read)
 		{
 			kickOffRead();
@@ -464,10 +463,7 @@ NAMESPACE_SOUP
 			}
 			pending_read = false;
 		}
-		if (bytes_read != 0)
-		{
-			read_buffer.resize(bytes_read);
-		}
+		read_buffer.resize(bytes_read);
 #elif SOUP_LINUX
 		SOUP_UNUSED(receiveReport());
 		if (read_buffer.size() != input_report_byte_length)
