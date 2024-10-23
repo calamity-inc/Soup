@@ -347,6 +347,7 @@ int main(int argc, const char** argv)
 					std::cout << "[Product Name Not Provided]";
 				}
 				std::cout << "\n";
+				std::cout << "\t\t- Path: " << hid.path << "\n";
 				std::cout << "\t\t- Usage Page: " << hid.usage_page << "\n";
 				std::cout << "\t\t- Usage: " << hid.usage << "\n";
 				std::cout << std::dec;
