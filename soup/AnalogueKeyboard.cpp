@@ -11,12 +11,6 @@
 
 #undef min
 
-#if SOUP_WINDOWS
-#define DRUNKDEER_USAGE_PAGE 0xFF00
-#else
-#define DRUNKDEER_USAGE_PAGE 0xFFFF
-#endif
-
 NAMESPACE_SOUP
 {
 	[[nodiscard]] static bool areRazerAnalogueReportsEnabled()
@@ -94,7 +88,7 @@ NAMESPACE_SOUP
 		// DrunkDeer
 		else if (hid.vendor_id == 0x352d)
 		{
-			if (hid.usage_page == DRUNKDEER_USAGE_PAGE)
+			if (hid.hasReportId(4))
 			{
 				if (hid.product_id == 0x2382)
 				{
@@ -440,7 +434,7 @@ NAMESPACE_SOUP
 
 	bool AnalogueKeyboard::isPoll() const noexcept
 	{
-		return hid.usage_page == DRUNKDEER_USAGE_PAGE
+		return hid.vendor_id == 0x352d // DrunkDeer
 			|| hid.usage_page == 0xFF60 // Keychron
 			;
 	}
@@ -451,7 +445,7 @@ NAMESPACE_SOUP
 	{
 		std::vector<ActiveKey> keys{};
 
-		if (hid.usage_page == DRUNKDEER_USAGE_PAGE)
+		if (hid.vendor_id == 0x352d)
 		{
 #if SOUP_WINDOWS
 			NamedMutex mtx("DrunkDeerMtx");
