@@ -2,6 +2,7 @@
 
 #include "string.hpp"
 #include "StringWriter.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 NAMESPACE_SOUP
 {

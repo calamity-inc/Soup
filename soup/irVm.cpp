@@ -1,6 +1,7 @@
 #include "irVm.hpp"
 
 #include "rand.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 NAMESPACE_SOUP
 {

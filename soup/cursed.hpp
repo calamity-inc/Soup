@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 NAMESPACE_SOUP
 {

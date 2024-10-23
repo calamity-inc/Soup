@@ -3,6 +3,7 @@
 #include "LangDesc.hpp"
 #include "Lexeme.hpp"
 #include "LexemeParser.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 NAMESPACE_SOUP
 {

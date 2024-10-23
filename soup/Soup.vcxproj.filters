@@ -1644,6 +1644,9 @@
     <ClInclude Include="HidReportDescriptor.hpp">
       <Filter>hardware</Filter>
     </ClInclude>
+    <ClInclude Include="utility.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
