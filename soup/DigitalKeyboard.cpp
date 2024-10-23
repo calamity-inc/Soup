@@ -180,7 +180,7 @@ NAMESPACE_SOUP
 
 		if (hid.isValid())
 		{
-			if (hid.hasReport())
+			while (hid.hasReport())
 			{
 				const auto rawdesc = string::fromFile(hid.path + "/device/report_descriptor");
 				const auto desc = HidReportDescriptor::parse(rawdesc.data(), rawdesc.size());
