@@ -167,7 +167,10 @@ NAMESPACE_SOUP
 		{
 			for (auto& hid_ : hwHid::getAll())
 			{
-				if (hid_.havePermission() && hid_.usage_page == 0x07)
+				if (hid_.havePermission()
+					&& hid_.usage_page == 0x01 // Generic Desktop
+					&& hid_.usage == 0x06 // Keyboard
+					)
 				{
 					hid = std::move(hid_);
 					break;

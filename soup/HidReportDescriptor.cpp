@@ -118,18 +118,30 @@ NAMESPACE_SOUP
 			switch (key_cmd)
 			{
 			case 0x04: /* Usage Page 6.2.2.7 (Global) */
-				parsed.usage_page = get_hid_report_bytes(rawdesc, size, data_len, pos);
+				if (parsed.usage_page == 0)
+				{
+					parsed.usage_page = get_hid_report_bytes(rawdesc, size, data_len, pos);
+				}
 				break;
 
 			case 0x08: /* Usage 6.2.2.8 (Local) */
 				if (data_len == 4) /* Usages 5.5 / Usage Page 6.2.2.7 */
 				{
-					parsed.usage_page = get_hid_report_bytes(rawdesc, size, 2, pos + 2);
-					parsed.usage = get_hid_report_bytes(rawdesc, size, 2, pos);
+					if (parsed.usage_page == 0)
+					{
+						parsed.usage_page = get_hid_report_bytes(rawdesc, size, 2, pos + 2);
+					}
+					if (parsed.usage == 0)
+					{
+						parsed.usage = get_hid_report_bytes(rawdesc, size, 2, pos);
+					}
 				}
 				else
 				{
-					parsed.usage = get_hid_report_bytes(rawdesc, size, data_len, pos);
+					if (parsed.usage == 0)
+					{
+						parsed.usage = get_hid_report_bytes(rawdesc, size, data_len, pos);
+					}
 				}
 				break;
 
