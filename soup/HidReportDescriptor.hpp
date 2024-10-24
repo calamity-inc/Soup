@@ -18,7 +18,14 @@ NAMESPACE_SOUP
 		uint16_t feature_report_byte_length = 0; // including report id
 		std::unordered_set<uint8_t> report_ids{};
 
-		std::vector<uint16_t> bit_index_to_usage_map{};
+		struct ReportField
+		{
+			bool is_variable;
+			uint16_t usage_min;
+			uint32_t size;
+			uint32_t count;
+		};
+		std::vector<ReportField> input_report_fields{};
 
 		[[nodiscard]] static HidReportDescriptor parse(const void* _rawdesc, size_t size);
 

@@ -100,7 +100,7 @@ NAMESPACE_SOUP
 		uint32_t report_size = 0;
 		uint32_t report_count = 0;
 		uint32_t usage_min = 0;
-		uint32_t usage_max = 0;
+		//uint32_t usage_max = 0;
 
 		for (uint32_t pos = 0; pos < size; )
 		{
@@ -154,14 +154,11 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x80: // Input
-				input_report_bit_length += (report_size * report_count);
-				// ((usage_max + 1) - usage_min) should be equal to report_count
-				if (report_size == 1)
 				{
-					for (auto usage = usage_min; usage != (usage_max + 1); ++usage)
-					{
-						parsed.bit_index_to_usage_map.emplace_back(usage);
-					}
+					input_report_bit_length += (report_size * report_count);
+
+					const auto flags = get_hid_report_bytes(rawdesc, size, data_len, pos);
+					parsed.input_report_fields.emplace_back(ReportField{ ((flags >> 1) & 1) != 0, static_cast<uint16_t>(usage_min), report_size, report_count });
 				}
 				break;
 
@@ -182,7 +179,7 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x28: // Usage Maximum
-				usage_max = get_hid_report_bytes(rawdesc, size, data_len, pos);
+				//usage_max = get_hid_report_bytes(rawdesc, size, data_len, pos);
 				break;
 			}
 
@@ -202,16 +199,47 @@ NAMESPACE_SOUP
 
 		MemoryRefReader mr(report, size);
 		BitReader br(&mr);
-		for (const auto& usage_id : bit_index_to_usage_map)
+		for (const auto& f : input_report_fields)
 		{
-			bool on;
-			SOUP_IF_UNLIKELY (!br.b(on))
+			if (f.is_variable)
 			{
-				break;
+				if (f.size == 1)
+				{
+					uint16_t usage = f.usage_min;
+					for (uint32_t i = 0; i != f.count; ++i, ++usage) // Note: count may be bigger than needed for usage_min..usage_max range. We just assume those bits will be set to 0 so it shouldn't be an issue.
+					{
+						bool on = false;
+						SOUP_UNUSED(br.b(on));
+						if (on)
+						{
+							usage_ids.emplace_back(usage);
+						}
+					}
+					continue;
+				}
 			}
-			if (on)
+			else // array
 			{
-				usage_ids.emplace_back(usage_id);
+				if (f.size == 8)
+				{
+					for (uint32_t i = 0; i != f.count; ++i)
+					{
+						uint8_t usage = 0;
+						SOUP_UNUSED(br.u8(8, usage));
+						if (usage != 0)
+						{
+							usage_ids.emplace_back(static_cast<uint16_t>(usage));
+						}
+					}
+					continue;
+				}
+			}
+
+			// Unhandled field; skip it.
+			for (uint32_t i = 0; i != f.count * f.size; ++i)
+			{
+				bool dummy;
+				SOUP_UNUSED(br.b(dummy));
 			}
 		}
 
