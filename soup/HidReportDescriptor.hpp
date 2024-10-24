@@ -21,6 +21,7 @@ NAMESPACE_SOUP
 		struct ReportField
 		{
 			bool is_variable;
+			uint16_t usage_page;
 			uint16_t usage_min;
 			uint32_t size;
 			uint32_t count;
@@ -29,6 +30,6 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static HidReportDescriptor parse(const void* _rawdesc, size_t size);
 
-		[[nodiscard]] std::vector<uint16_t> parseInputReport(const void* report, size_t size) const;
+		[[nodiscard]] std::vector<uint32_t> parseInputReport(const void* report, size_t size) const;
 	};
 }

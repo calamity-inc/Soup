@@ -189,9 +189,12 @@ NAMESPACE_SOUP
 				memset(keys, 0, sizeof(keys));
 				for (const auto& usage_id : usage_ids)
 				{
-					if (const auto sk = hid_scancode_to_soup_key(usage_id); sk != KEY_NONE)
+					if ((usage_id >> 16) == 0x07) // Keyboard
 					{
-						keys[sk] = true;
+						if (const auto sk = hid_scancode_to_soup_key(static_cast<uint8_t>(usage_id)); sk != KEY_NONE)
+						{
+							keys[sk] = true;
+						}
 					}
 				}
 			}

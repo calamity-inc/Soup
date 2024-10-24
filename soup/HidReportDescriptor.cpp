@@ -93,6 +93,7 @@ NAMESPACE_SOUP
 		const auto rawdesc = reinterpret_cast<const uint8_t*>(_rawdesc);
 
 		HidReportDescriptor parsed;
+		uint16_t usage_page = 0;
 		uint32_t input_report_bit_length = 0;
 		uint32_t output_report_bit_length = 0;
 		uint32_t feature_report_bit_length = 0;
@@ -118,18 +119,20 @@ NAMESPACE_SOUP
 			switch (key_cmd)
 			{
 			case 0x04: /* Usage Page 6.2.2.7 (Global) */
+				usage_page = get_hid_report_bytes(rawdesc, size, data_len, pos);
 				if (parsed.usage_page == 0)
 				{
-					parsed.usage_page = get_hid_report_bytes(rawdesc, size, data_len, pos);
+					parsed.usage_page = usage_page;
 				}
 				break;
 
 			case 0x08: /* Usage 6.2.2.8 (Local) */
 				if (data_len == 4) /* Usages 5.5 / Usage Page 6.2.2.7 */
 				{
+					usage_page = get_hid_report_bytes(rawdesc, size, 2, pos + 2);
 					if (parsed.usage_page == 0)
 					{
-						parsed.usage_page = get_hid_report_bytes(rawdesc, size, 2, pos + 2);
+						parsed.usage_page = usage_page;
 					}
 					if (parsed.usage == 0)
 					{
@@ -158,7 +161,7 @@ NAMESPACE_SOUP
 					input_report_bit_length += (report_size * report_count);
 
 					const auto flags = get_hid_report_bytes(rawdesc, size, data_len, pos);
-					parsed.input_report_fields.emplace_back(ReportField{ ((flags >> 1) & 1) != 0, static_cast<uint16_t>(usage_min), report_size, report_count });
+					parsed.input_report_fields.emplace_back(ReportField{ ((flags >> 1) & 1) != 0, usage_page, static_cast<uint16_t>(usage_min), report_size, report_count });
 				}
 				break;
 
@@ -193,9 +196,9 @@ NAMESPACE_SOUP
 		return parsed;
 	}
 
-	std::vector<uint16_t> HidReportDescriptor::parseInputReport(const void* report, size_t size) const
+	std::vector<uint32_t> HidReportDescriptor::parseInputReport(const void* report, size_t size) const
 	{
-		std::vector<uint16_t> usage_ids{};
+		std::vector<uint32_t> usage_ids{};
 
 		MemoryRefReader mr(report, size);
 		BitReader br(&mr);
@@ -212,7 +215,7 @@ NAMESPACE_SOUP
 						SOUP_UNUSED(br.b(on));
 						if (on)
 						{
-							usage_ids.emplace_back(usage);
+							usage_ids.emplace_back((static_cast<uint32_t>(f.usage_page) << 16) | usage);
 						}
 					}
 					continue;
@@ -228,7 +231,7 @@ NAMESPACE_SOUP
 						SOUP_UNUSED(br.u8(8, usage));
 						if (usage != 0)
 						{
-							usage_ids.emplace_back(static_cast<uint16_t>(usage));
+							usage_ids.emplace_back((static_cast<uint32_t>(f.usage_page) << 16) | usage);
 						}
 					}
 					continue;
