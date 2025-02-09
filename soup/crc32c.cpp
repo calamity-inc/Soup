@@ -4,41 +4,12 @@
 
 #if CRC32C_INTRIN
 #include <nmmintrin.h>
+
+#include "CpuInfo.hpp"
 #endif
 
 NAMESPACE_SOUP
 {
-#if CRC32C_INTRIN
-	#if defined(__GNUC__) || defined(__clang__)
-		__attribute__((target("sse4.2")))
-	#endif
-	uint32_t crc32c::hash(const uint8_t* data, size_t size, uint32_t initial) noexcept
-	{
-		uint32_t i = ~initial;
-#if SOUP_BITS >= 64
-		while (size >= 8)
-		{
-			i = (uint32_t)_mm_crc32_u64(i, *reinterpret_cast<const uint64_t*>(data));
-			data += 8;
-			size -= 8;
-		}
-#else
-		while (size >= 4)
-		{
-			i = _mm_crc32_u32(i, *reinterpret_cast<const uint32_t*>(data));
-			data += 4;
-			size -= 4;
-		}
-#endif
-		while (size > 0)
-		{
-			i = _mm_crc32_u8(i, *data);
-			data += 1;
-			size -= 1;
-		}
-		return ~i;
-	}
-#else
 	static uint32_t tab[] = {
 		0x00000000, 0xf26b8303, 0xe13b70f7, 0x1350f3f4, 0xc79a971f, 0x35f1141c,
 		0x26a1e7e8, 0xd4ca64eb, 0x8ad958cf, 0x78b2dbcc, 0x6be22838, 0x9989ab3b,
@@ -84,17 +55,49 @@ NAMESPACE_SOUP
 		0xd5cf889d, 0x27a40b9e, 0x79b737ba, 0x8bdcb4b9, 0x988c474d, 0x6ae7c44e,
 		0xbe2da0a5, 0x4c4623a6, 0x5f16d052, 0xad7d5351
 	};
+	#define STEP1(octet, crc) (tab[((crc) ^ (octet)) & 0xff] ^ ((crc) >> 8))
 
-#define STEP1(octet, crc) (tab[((crc) ^ (octet)) & 0xff] ^ ((crc) >> 8))
-
+#if CRC32C_INTRIN
+	#if defined(__GNUC__) || defined(__clang__)
+		__attribute__((target("sse4.2")))
+	#endif
+#endif
 	uint32_t crc32c::hash(const uint8_t* data, size_t size, uint32_t initial) noexcept
 	{
-		uint32_t value = ~initial;
-		for (; size; --size, ++data)
+		uint32_t i = ~initial;
+#if CRC32C_INTRIN
+		if (CpuInfo::get().supportsSSE4_2())
 		{
-			value = STEP1(*data, value);
+	#if SOUP_BITS >= 64
+			while (size >= 8)
+			{
+				i = (uint32_t)_mm_crc32_u64(i, *reinterpret_cast<const uint64_t*>(data));
+				data += 8;
+				size -= 8;
+			}
+	#else
+			while (size >= 4)
+			{
+				i = _mm_crc32_u32(i, *reinterpret_cast<const uint32_t*>(data));
+				data += 4;
+				size -= 4;
+			}
+	#endif
+			while (size > 0)
+			{
+				i = _mm_crc32_u8(i, *data);
+				data += 1;
+				size -= 1;
+			}
 		}
-		return ~value;
+		else
+	#endif
+		{
+			for (; size; --size, ++data)
+			{
+				i = STEP1(*data, i);
+			}
+		}
+		return ~i;
 	}
-#endif
 }
