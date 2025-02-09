@@ -1686,6 +1686,9 @@
     <ClInclude Include="CallsiteHook.hpp">
       <Filter>util\hooks</Filter>
     </ClInclude>
+    <ClInclude Include="md5.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2518,6 +2521,9 @@
     </ClCompile>
     <ClCompile Include="CallsiteHook.cpp">
       <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>data\hash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
