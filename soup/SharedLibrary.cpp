@@ -6,23 +6,23 @@
 
 NAMESPACE_SOUP
 {
-	SharedLibrary::SharedLibrary(const char* path)
+	SharedLibrary::SharedLibrary(const char* path) noexcept
 	{
 		load(path);
 	}
 
-	SharedLibrary::SharedLibrary(SharedLibrary&& b)
+	SharedLibrary::SharedLibrary(SharedLibrary&& b) noexcept
 		: handle(b.handle)
 	{
 		b.forget();
 	}
 
-	SharedLibrary::~SharedLibrary()
+	SharedLibrary::~SharedLibrary() noexcept
 	{
 		unload();
 	}
 
-	void SharedLibrary::operator=(SharedLibrary&& b)
+	void SharedLibrary::operator=(SharedLibrary&& b) noexcept
 	{
 		unload();
 		handle = b.handle;
@@ -34,7 +34,7 @@ NAMESPACE_SOUP
 		return handle != nullptr;
 	}
 
-	bool SharedLibrary::load(const char* path)
+	bool SharedLibrary::load(const char* path) noexcept
 	{
 #if SOUP_WINDOWS
 		handle = LoadLibraryA(path);
@@ -44,7 +44,7 @@ NAMESPACE_SOUP
 		return isLoaded();
 	}
 
-	void SharedLibrary::unload()
+	void SharedLibrary::unload() noexcept
 	{
 		if (isLoaded())
 		{
@@ -57,7 +57,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void SharedLibrary::forget()
+	void SharedLibrary::forget() noexcept
 	{
 		handle = nullptr;
 	}
