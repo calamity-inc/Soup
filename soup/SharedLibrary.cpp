@@ -1,14 +1,11 @@
 #include "SharedLibrary.hpp"
 
+#include <string>
+
 #include "Exception.hpp"
 
 NAMESPACE_SOUP
 {
-	SharedLibrary::SharedLibrary(const std::string& path)
-	{
-		load(path);
-	}
-
 	SharedLibrary::SharedLibrary(const char* path)
 	{
 		load(path);
@@ -35,11 +32,6 @@ NAMESPACE_SOUP
 	bool SharedLibrary::isLoaded() const noexcept
 	{
 		return handle != nullptr;
-	}
-
-	bool SharedLibrary::load(const std::string& path)
-	{
-		return load(path.c_str());
 	}
 
 	bool SharedLibrary::load(const char* path)

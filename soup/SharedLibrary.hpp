@@ -8,8 +8,6 @@
 #include <dlfcn.h>
 #endif
 
-#include <string>
-
 #include "type_traits.hpp"
 
 NAMESPACE_SOUP
@@ -25,7 +23,6 @@ NAMESPACE_SOUP
 		handle_t handle = nullptr;
 
 		explicit SharedLibrary() = default;
-		explicit SharedLibrary(const std::string& path);
 		explicit SharedLibrary(const char* path);
 		explicit SharedLibrary(SharedLibrary&& b);
 		~SharedLibrary();
@@ -33,7 +30,6 @@ NAMESPACE_SOUP
 		void operator=(SharedLibrary&& b);
 
 		[[nodiscard]] bool isLoaded() const noexcept;
-		bool load(const std::string& path);
 		bool load(const char* path);
 		void unload();
 		void forget();
