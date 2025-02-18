@@ -106,7 +106,7 @@ SOUP_CEXPORT void throwException(const char* msg)
 
 SOUP_CEXPORT const char* getCountryName(const char* country_code, const char* language_code)
 {
-	return soup::getCountryName(country_code, language_code);
+	returnString(soup::getCountryName(country_code, language_code));
 }
 
 // aes

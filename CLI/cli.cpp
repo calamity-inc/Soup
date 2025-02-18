@@ -309,7 +309,7 @@ int main(int argc, const char** argv)
 				{
 					std::cout << "State: " << loc->state << std::endl;
 				}
-				if (auto cn = getCountryName(loc->country_code.c_str()))
+				if (auto cn = getCountryName(loc->country_code.c_str()); !cn.empty())
 				{
 					std::cout << "Country: " << cn << std::endl;
 				}

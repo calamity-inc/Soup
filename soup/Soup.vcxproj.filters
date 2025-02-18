@@ -1689,6 +1689,9 @@
     <ClInclude Include="md5.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="loc.hpp">
+      <Filter>ling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2040,9 +2043,6 @@
       <Filter>cpu\x64</Filter>
     </ClCompile>
     <ClCompile Include="netIntel.cpp">
-      <Filter>net\intel</Filter>
-    </ClCompile>
-    <ClCompile Include="country_names.cpp">
       <Filter>net\intel</Filter>
     </ClCompile>
     <ClCompile Include="csv.cpp">
@@ -2524,6 +2524,9 @@
     </ClCompile>
     <ClCompile Include="md5.cpp">
       <Filter>data\hash</Filter>
+    </ClCompile>
+    <ClCompile Include="loc.cpp">
+      <Filter>ling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

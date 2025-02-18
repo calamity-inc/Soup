@@ -751,6 +751,7 @@
     <ClInclude Include="HidReportDescriptor.hpp" />
     <ClInclude Include="HidScancode.hpp" />
     <ClInclude Include="HidUsage.hpp" />
+    <ClInclude Include="loc.hpp" />
     <ClInclude Include="md5.hpp" />
     <ClInclude Include="ReplacementHook.hpp" />
     <ClInclude Include="HookBase.hpp" />
@@ -1292,6 +1293,7 @@
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="HardwareRng.cpp" />
     <ClCompile Include="HidReportDescriptor.cpp" />
+    <ClCompile Include="loc.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="ReplacementHook.cpp" />
     <ClCompile Include="HookBase.cpp" />
@@ -1405,7 +1407,6 @@
     <ClCompile Include="ConuiApp.cpp" />
     <ClCompile Include="ConuiBase.cpp" />
     <ClCompile Include="ConuiSpan.cpp" />
-    <ClCompile Include="country_names.cpp" />
     <ClCompile Include="crc32.cpp" />
     <ClCompile Include="csv.cpp" />
     <ClCompile Include="deflate.cpp" />
