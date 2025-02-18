@@ -51,6 +51,8 @@ NAMESPACE_SOUP
 
 		void replaceAll(std::string& str, const std::string& replacement) const;
 
+		void substitute(std::string& str, const std::string& substitution) const;
+
 		[[nodiscard]] std::string toString() const SOUP_EXCAL
 		{
 			return group.toString();

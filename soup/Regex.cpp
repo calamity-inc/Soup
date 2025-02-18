@@ -231,6 +231,61 @@ NAMESPACE_SOUP
 		}
 	}
 
+	void Regex::substitute(std::string& str, const std::string& substitution) const
+	{
+		if (RegexMatchResult m = match(str); m.isSuccess())
+		{
+			std::string res;
+			bool dollar = false;
+			for (const auto& c : substitution)
+			{
+				if (dollar)
+				{
+					dollar = false;
+					switch (c)
+					{
+					case '$':
+						res.push_back('$');
+						break;
+
+					case '0':
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6':
+					case '7':
+					case '8':
+					case '9':
+						if (auto group = m.findGroupByIndex(c - '0'))
+						{
+							res.append(group->toString());
+						}
+						else
+						{
+							res.push_back('$');
+							res.push_back(c);
+						}
+						break;
+					}
+				}
+				else
+				{
+					if (c == '$')
+					{
+						dollar = true;
+					}
+					else
+					{
+						res.push_back(c);
+					}
+				}
+			}
+			str = std::move(res);
+		}
+	}
+
 	std::string Regex::unparseFlags(uint16_t flags)
 	{
 		std::string str{};
