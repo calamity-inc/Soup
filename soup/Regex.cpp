@@ -222,20 +222,26 @@ NAMESPACE_SOUP
 
 	void Regex::replaceAll(std::string& str, const std::string& replacement) const
 	{
-		RegexMatchResult match;
-		while (match = search(str), match.isSuccess())
+		RegexMatchResult m;
+		while (m = search(str), m.isSuccess())
 		{
-			const size_t offset = (match.groups.at(0).value().begin - str.data());
-			str.erase(offset, match.length());
+			const size_t offset = (m.groups.at(0).value().begin - str.data());
+			str.erase(offset, m.length());
 			str.insert(offset, replacement);
 		}
 	}
 
-	void Regex::substitute(std::string& str, const std::string& substitution) const
+	std::string Regex::substituteAll(const std::string& str, const std::string& substitution) const
 	{
-		if (RegexMatchResult m = match(str); m.isSuccess())
+		std::string res;
+		size_t i = 0;
+		RegexMatchResult m;
+		while (m = search(&str.data()[i], &str.data()[str.size()]), m.isSuccess())
 		{
-			std::string res;
+			const size_t offset = (m.groups.at(0).value().begin - str.data());
+			res.append(str.data() + i, offset - i);
+			i = offset + m.groups.at(0).value().length();
+
 			bool dollar = false;
 			for (const auto& c : substitution)
 			{
@@ -282,8 +288,9 @@ NAMESPACE_SOUP
 					}
 				}
 			}
-			str = std::move(res);
 		}
+		res.append(str.data() + i, str.size() - i);
+		return res;
 	}
 
 	std::string Regex::unparseFlags(uint16_t flags)

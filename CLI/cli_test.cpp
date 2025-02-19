@@ -919,11 +919,8 @@ spanning over multiple lines */
 
 		assert(Regex("(.+a|b.+)").match("bca").toString() == R"(0="bca", 1="bca")");
 
-		{
-			std::string str = "10 cars";
-			Regex(R"((\d+) cars)").substitute(str, "$1 cats");
-			assert(str == "10 cats");
-		}
+		assert(Regex(R"((\d+) cars)").substituteAll("10 cars", "$1 cats") == "10 cats");
+		assert(Regex(R"((\d+) cars)").substituteAll("I have 10 cars.", "$1 cats") == "I have 10 cats.");
 	});
 
 	test("MessageStream", []
