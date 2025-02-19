@@ -31,7 +31,6 @@ NAMESPACE_SOUP
 		}
 
 		Regex() = default;
-		Regex(Regex&&) = default;
 
 		[[nodiscard]] static Regex fromFullString(const std::string& str);
 
