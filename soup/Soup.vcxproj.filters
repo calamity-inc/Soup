@@ -1692,6 +1692,9 @@
     <ClInclude Include="loc.hpp">
       <Filter>ling</Filter>
     </ClInclude>
+    <ClInclude Include="DetourHookNoreg.hpp">
+      <Filter>util\hooks</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2527,6 +2530,9 @@
     </ClCompile>
     <ClCompile Include="loc.cpp">
       <Filter>ling</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourHookNoreg.cpp">
+      <Filter>util\hooks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

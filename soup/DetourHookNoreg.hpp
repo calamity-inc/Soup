@@ -4,11 +4,10 @@
 
 NAMESPACE_SOUP
 {
-	// Uses r10 to store the jump target
-	struct DetourHook : public DetourHookBase
+	struct DetourHookNoreg : public DetourHookBase
 	{
 		[[nodiscard]] bool isCreated() const noexcept { return original != nullptr; }
-		void create() { return createOriginal(sizeof(longjump_trampoline_r10)); }
+		void create() { return createOriginal(sizeof(longjump_trampoline_noreg)); }
 		void destroy() noexcept { return destroyOriginal(); }
 
 		void enable();

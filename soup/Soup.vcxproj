@@ -726,6 +726,7 @@
     <ClInclude Include="cursed.hpp" />
     <ClInclude Include="DetourHook.hpp" />
     <ClInclude Include="DetourHookBase.hpp" />
+    <ClInclude Include="DetourHookNoreg.hpp" />
     <ClInclude Include="dhcp.hpp" />
     <ClInclude Include="DhcpMessage.hpp" />
     <ClInclude Include="DigitalKeyboard.hpp" />
@@ -1255,6 +1256,7 @@
     <ClCompile Include="CompactDetourHook.cpp" />
     <ClCompile Include="crc32c.cpp" />
     <ClCompile Include="DetourHookBase.cpp" />
+    <ClCompile Include="DetourHookNoreg.cpp" />
     <ClCompile Include="exceptions.cpp" />
     <ClCompile Include="gmBox.cpp" />
     <ClCompile Include="gmAxisAlignedBox.cpp" />
