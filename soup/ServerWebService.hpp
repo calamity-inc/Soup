@@ -25,7 +25,8 @@ NAMESPACE_SOUP
 		ServerWebService(handle_request_t handle_request = nullptr);
 
 		// HTTP
-		static void disableKeepAlive(Socket& s);
+		static void disableKeepAlive(Socket& s) { setKeepAlive(s, false); }
+		static void setKeepAlive(Socket& s, bool b);
 		static void sendContent(Socket& s, std::string body);
 		static void sendContent(Socket& s, const char* status, std::string body);
 		static void sendContent(Socket& s, HttpResponse&& resp);

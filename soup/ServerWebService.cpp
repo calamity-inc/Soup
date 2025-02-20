@@ -26,9 +26,9 @@ NAMESPACE_SOUP
 	{
 	}
 
-	void ServerWebService::disableKeepAlive(Socket& s)
+	void ServerWebService::setKeepAlive(Socket& s, bool b)
 	{
-		s.custom_data.getStructFromMap(WebServerClientData).keep_alive = false;
+		s.custom_data.getStructFromMap(WebServerClientData).keep_alive = b;
 	}
 
 	void ServerWebService::sendContent(Socket& s, std::string body)
