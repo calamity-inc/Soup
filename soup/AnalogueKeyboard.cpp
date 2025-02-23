@@ -21,7 +21,9 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool areRazerAnalogueReportsEnabled()
 	{
 #if SOUP_WINDOWS
-		return Process::get("Razer Synapse 3.exe");
+		return Process::get("RazerAppEngine.exe")
+			|| Process::get("Razer Synapse 3.exe")
+			;
 #else
 		return true;
 #endif
