@@ -5,11 +5,6 @@
 
 NAMESPACE_SOUP
 {
-	#define A 0x67452301
-	#define B 0xefcdab89
-	#define C 0x98badcfe
-	#define D 0x10325476
-
 	static uint32_t S[] = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
 						   5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
 						   4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
@@ -99,10 +94,10 @@ NAMESPACE_SOUP
 
 	md5::State::State()
 	{
-		state[0] = (uint32_t)A;
-		state[1] = (uint32_t)B;
-		state[2] = (uint32_t)C;
-		state[3] = (uint32_t)D;
+		state[0] = (uint32_t)0x67452301;
+		state[1] = (uint32_t)0xefcdab89;
+		state[2] = (uint32_t)0x98badcfe;
+		state[3] = (uint32_t)0x10325476;
 		buffer_counter = 0;
 		n_bits = 0;
 	}
