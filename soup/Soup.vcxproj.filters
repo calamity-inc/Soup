@@ -1695,6 +1695,9 @@
     <ClInclude Include="DetourHookNoreg.hpp">
       <Filter>util\hooks</Filter>
     </ClInclude>
+    <ClInclude Include="IrcServer.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2533,6 +2536,9 @@
     </ClCompile>
     <ClCompile Include="DetourHookNoreg.cpp">
       <Filter>util\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="IrcServer.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
