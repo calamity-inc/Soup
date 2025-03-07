@@ -67,6 +67,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] IrcClient getClient(const std::string& nick) const;
 		[[nodiscard]] std::vector<IrcChannelMember> getChannelMembers(const std::string& channel_name) const;
+		void broadcast(const std::string& raw_msg) const;
 	};
 }
 

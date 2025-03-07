@@ -396,6 +396,19 @@ NAMESPACE_SOUP
 		}
 		return ret;
 	}
+
+	void IrcServer::broadcast(const std::string& raw_msg) const
+	{
+		for (const auto& w : this->workers)
+		{
+			if (w->type == WORKER_TYPE_SOCKET
+				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(IrcClientData)
+				)
+			{
+				static_cast<Socket*>(w.get())->send(raw_msg);
+			}
+		}
+	}
 }
 
 #endif
