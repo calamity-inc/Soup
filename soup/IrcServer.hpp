@@ -19,6 +19,7 @@ NAMESPACE_SOUP
 	{
 		std::string buffer;
 		std::string nick;
+		//std::string name;
 		std::string failednick;
 		std::unordered_map<std::string, IrcChannelMembershipData> channels;
 

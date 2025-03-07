@@ -97,10 +97,6 @@ NAMESPACE_SOUP
 							s.send(msg);
 							cd.failednick.clear();
 						}
-
-						// Using ERR_NOMOTD so HexChat shows this like the MOTD and proceeds to do autojoin.
-						// Although this also means HexChat will start sending PING and disconnect if it doesn't get PONG.
-						s.send(":Soup 422 Soup :Welcome! /join <channel> to talk to people.\r\n");
 					}
 					else
 					{
@@ -137,6 +133,41 @@ NAMESPACE_SOUP
 						}
 
 						cd.nick = line.substr(5);
+					}
+				}
+				else if (line.substr(0, 4) == "USER" && line.length() > 5)
+				{
+					auto sep = line.find(' ', 5);
+					if (sep != std::string::npos)
+					{
+						//cd.name = line.substr(5, sep - 5);
+
+						{
+							std::string msg = ":Soup 001 ";
+							msg.append(cd.nick);
+							msg.append(" :Welcome ");
+							msg.append(cd.nick);
+							msg.push_back('!');
+							msg.append(line.substr(5, sep - 5)); //msg.append(cd.name);
+							msg.append("@Soup\r\n");
+							s.send(msg);
+						}
+
+						{
+							std::string msg = ":Soup 005 ";
+							msg.append(cd.nick);
+							msg.append(" LINELEN=512 :are supported by this server\r\n");
+							s.send(msg);
+						}
+
+						// Using ERR_NOMOTD so HexChat shows this like the MOTD and proceeds to do autojoin.
+						// Although this also means HexChat will start sending PING and disconnect if it doesn't get PONG.
+						{
+							std::string msg = ":Soup 422 ";
+							msg.append(cd.nick);
+							msg.append(" :Welcome! /join <channel> to talk to people.\r\n");
+							s.send(msg);
+						}
 					}
 				}
 				else if ((line.substr(0, 4) == "JOIN" || line.substr(0, 4) == "join") && line.length() > 5)
