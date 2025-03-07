@@ -9,11 +9,12 @@ using namespace soup;
 int main(int argc, const char** argv)
 {
 	Scheduler sched;
-	auto& con = static_cast<WebSocketConnection&>(sched.addSocket(soup::make_unique<WebSocketConnection>()));
-	if (con.connect(std::string("ws.postman-echo.com"), 443))
+	auto con = soup::make_shared<WebSocketConnection>();
+	sched.addSocket(con);
+	if (con->connect(std::string("ws.postman-echo.com"), 443))
 	{
 		std::cout << "TCP established.\n";
-		con.enableCryptoClient("ws.postman-echo.com", [](Socket& sock, Capture&&)
+		con->enableCryptoClient("ws.postman-echo.com", [](Socket& sock, Capture&&)
 		{
 			std::cout << "TLS established.\n";
 			auto& con = static_cast<WebSocketConnection&>(sock);
