@@ -154,6 +154,13 @@ NAMESPACE_SOUP
 				}
 			}
 		}
+		else if (hid.vendor_id == 0x362D) // Lemokey
+		{
+			if (hid.product_id == 0x0610) // ANSI
+			{
+				return "Lemokey P1 HE";
+			}
+		}
 		// NuPhy
 		else if (hid.vendor_id == 0x19f5)
 		{
@@ -221,6 +228,16 @@ NAMESPACE_SOUP
 		KEY_LCTRL,     KEY_LMETA, KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RALT,  KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN,   KEY_ARROW_RIGHT, KEY_NONE,
 	};
 	static_assert(sizeof(layout_keychron_k2_he) == 2 + 6 * 16);
+
+	static const uint8_t layout_lemokey_p1_he[] = { 6, 15,
+		KEY_ESCAPE,    KEY_F1,    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_DEL,        KEY_NONE /* mute */,
+		KEY_BACKQUOTE, KEY_1,     KEY_2,    KEY_3,    KEY_4,    KEY_5,    KEY_6,     KEY_7,    KEY_8,    KEY_9,     KEY_0,         KEY_MINUS,        KEY_EQUALS,        KEY_BACKSPACE,  KEY_HOME,
+		KEY_TAB,       KEY_Q,     KEY_W,    KEY_E,    KEY_R,    KEY_T,    KEY_Y,     KEY_U,    KEY_I,    KEY_O,     KEY_P,         KEY_BRACKET_LEFT, KEY_BRACKET_RIGHT, KEY_BACKSLASH,  KEY_PAGE_UP,
+		KEY_CAPS_LOCK, KEY_A,     KEY_S,    KEY_D,    KEY_F,    KEY_G,    KEY_H,     KEY_J,    KEY_K,    KEY_L,     KEY_SEMICOLON, KEY_QUOTE,        KEY_ENTER,         KEY_PAGE_DOWN,  KEY_NONE,
+		KEY_LSHIFT,    KEY_NONE,  KEY_Z,    KEY_X,    KEY_C,    KEY_V,    KEY_B,     KEY_N,    KEY_M,    KEY_COMMA, KEY_PERIOD,    KEY_NONE,         KEY_SLASH,         KEY_RSHIFT,     KEY_ARROW_UP,
+		KEY_LCTRL,     KEY_LMETA, KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RMETA, KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN, KEY_ARROW_RIGHT,
+	};
+	static_assert(sizeof(layout_lemokey_p1_he) == 2 + 6 * 15);
 
 	[[nodiscard]] static SOUP_PURE uint8_t layout_get_rows(const uint8_t* layout) noexcept { return layout[0]; }
 	[[nodiscard]] static SOUP_PURE uint8_t layout_get_cols(const uint8_t* layout) noexcept { return layout[1]; }
@@ -296,7 +313,9 @@ NAMESPACE_SOUP
 				{
 					const bool has_ctx_key = (hid.vendor_id == 0x1532 || hid.vendor_id == 0x373b);
 					AnalogueKeyboard& kbd = res.emplace_back(std::move(name), std::move(hid), has_ctx_key);
-					if (kbd.hid.vendor_id == 0x3434) // Keychron
+					if (kbd.hid.vendor_id == 0x3434 // Keychron
+						|| kbd.hid.vendor_id == 0x362D // Lemokey (a Keychron brand)
+						)
 					{
 						if (kbd.hid.havePermission())
 						{
@@ -328,9 +347,16 @@ NAMESPACE_SOUP
 						{
 							kbd.keychron.layout = layout_keychron_q5_he;
 						}
-						else
+						else if (hid.product_id == 0x0E20 // ANSI
+							|| hid.product_id == 0x0E21 // ISO
+							|| hid.product_id == 0x0E22 // JIS
+							)
 						{
 							kbd.keychron.layout = layout_keychron_k2_he;
+						}
+						else //if (kbd.hid.product_id == 0x0610)
+						{
+							kbd.keychron.layout = layout_lemokey_p1_he;
 						}
 					}
 					else if (kbd.hid.vendor_id == 0x373b) // Madlions
