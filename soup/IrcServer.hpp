@@ -12,7 +12,8 @@ NAMESPACE_SOUP
 {
 	struct IrcChannelMembershipData
 	{
-		bool op;
+		bool op; // '@' prefix
+		bool deaf = false;
 	};
 
 	struct IrcClientData
@@ -62,6 +63,7 @@ NAMESPACE_SOUP
 		virtual void onClientConnected(Socket& s) {}
 		virtual void onClientDisconnected(Socket& s) {}
 		virtual void onClientLineReceived(Socket& s, const std::string& line) {}
+		virtual void onClientJoinedChannel(Socket& s, const std::string& channel_name, IrcChannelMembershipData& md) {}
 
 		IrcServer();
 

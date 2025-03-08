@@ -10,7 +10,9 @@ NAMESPACE_SOUP
 	{
 		for (const auto& member : serv->getChannelMembers(channel_name))
 		{
-			if (member.socket != exclude)
+			if (member.socket != exclude
+				&& !member.memberhip_data->deaf
+				)
 			{
 				member.socket->send(msg);
 			}
@@ -195,9 +197,10 @@ NAMESPACE_SOUP
 							join_notify.append("\r\n");
 							s.send(join_notify);
 
+							IrcChannelMembershipData* md;
 							if (auto e = serv->channels.find(channel_name); e != serv->channels.end())
 							{
-								cd.channels.emplace(channel_name, IrcChannelMembershipData{ false });
+								md = &cd.channels.emplace(channel_name, IrcChannelMembershipData{ false }).first->second;
 
 								if (!e->second.topic.empty())
 								{
@@ -213,9 +216,10 @@ NAMESPACE_SOUP
 							}
 							else
 							{
-								cd.channels.emplace(channel_name, IrcChannelMembershipData{ true });
+								md = &cd.channels.emplace(channel_name, IrcChannelMembershipData{ true }).first->second;
 								serv->channels.emplace(channel_name, IrcChannelData{});
 							}
+							serv->onClientJoinedChannel(s, channel_name, *md);
 
 							std::string msg = ":Soup 353 ";
 							msg.append(cd.nick);
