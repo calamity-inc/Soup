@@ -221,6 +221,15 @@ NAMESPACE_SOUP
 							}
 							serv->onClientJoinedChannel(s, channel_name, *md);
 
+							if (md->op)
+							{
+								join_notify.append(":Soup MODE ");
+								join_notify.append(channel_name);
+								join_notify.append(" +o ");
+								join_notify.append(cd.nick);
+								join_notify.append("\r\n");
+							}
+
 							std::string msg = ":Soup 353 ";
 							msg.append(cd.nick);
 							msg.append(" = ");
