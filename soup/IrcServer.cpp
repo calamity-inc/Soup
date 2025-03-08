@@ -350,8 +350,7 @@ NAMESPACE_SOUP
 							sep = line.size();
 						}
 
-						// TODO: A query could be e.g. "Ca?", matching "Cat" and "Car".
-						if (const auto target = serv->getClient(line.substr(4, sep - 4)); target.isValid())
+						if (const auto target = serv->getClientWithWildcards(line.substr(4, sep - 4)); target.isValid())
 						{
 							std::string msg = ":Soup 352 "; // RPL_WHOREPLY
 							msg.append(cd.nick);
@@ -447,6 +446,24 @@ NAMESPACE_SOUP
 			{
 				IrcClientData& cd = static_cast<Socket*>(w.get())->custom_data.getStructFromMap(IrcClientData);
 				if (cd.nick == nick)
+				{
+					return { static_cast<Socket*>(w.get()), &cd };
+				}
+			}
+		}
+		return {};
+	}
+
+	IrcClient IrcServer::getClientWithWildcards(const std::string& query) const
+	{
+		for (const auto& w : this->workers)
+		{
+			if (w->type == WORKER_TYPE_SOCKET
+				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(IrcClientData)
+				)
+			{
+				IrcClientData& cd = static_cast<Socket*>(w.get())->custom_data.getStructFromMap(IrcClientData);
+				if (cd.nickMatchesQuery(query))
 				{
 					return { static_cast<Socket*>(w.get()), &cd };
 				}

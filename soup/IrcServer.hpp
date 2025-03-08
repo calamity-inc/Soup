@@ -32,6 +32,22 @@ NAMESPACE_SOUP
 			}
 			return nullptr;
 		}
+
+		[[nodiscard]] bool nickMatchesQuery(const std::string& query) const noexcept
+		{
+			if (query.size() != nick.size())
+			{
+				return false;
+			}
+			for (size_t i = 0; i != query.size(); ++i)
+			{
+				if (query[i] != nick[i] && query[i] != '?')
+				{
+					return false;
+				}
+			}
+			return true;
+		}
 	};
 
 	struct IrcChannelData
@@ -68,6 +84,7 @@ NAMESPACE_SOUP
 		IrcServer();
 
 		[[nodiscard]] IrcClient getClient(const std::string& nick) const;
+		[[nodiscard]] IrcClient getClientWithWildcards(const std::string& query) const;
 		[[nodiscard]] std::vector<IrcChannelMember> getChannelMembers(const std::string& channel_name) const;
 		void broadcast(const std::string& raw_msg) const;
 	};
