@@ -52,7 +52,7 @@ NAMESPACE_SOUP
 
 	struct IrcChannelMember : public IrcClient
 	{
-		IrcChannelMembershipData* memberhip_data;
+		IrcChannelMembershipData* membership_data;
 	};
 
 	struct IrcServer : public Server

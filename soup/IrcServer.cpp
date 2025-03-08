@@ -11,7 +11,7 @@ NAMESPACE_SOUP
 		for (const auto& member : serv->getChannelMembers(channel_name))
 		{
 			if (member.socket != exclude
-				&& !member.memberhip_data->deaf
+				&& !member.membership_data->deaf
 				)
 			{
 				member.socket->send(msg);
@@ -242,7 +242,7 @@ NAMESPACE_SOUP
 									member.socket->send(join_notify);
 								}
 
-								if (member.memberhip_data->op)
+								if (member.membership_data->op)
 								{
 									msg.push_back('@');
 								}
