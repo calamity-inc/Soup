@@ -354,11 +354,9 @@ NAMESPACE_SOUP
 						{
 							std::string msg = ":Soup 352 "; // RPL_WHOREPLY
 							msg.append(cd.nick);
-							msg.push_back(' ');
-							msg.append(line.substr(4, sep - 4));
-							msg.append(" #Soup "); // <channel>
+							msg.append(" * "); // <channel>
 							msg.append(target.data->name); // <user>
-							msg.append(" Soup "); // <host>
+							msg.append(" Soup Soup "); // <host> <server>
 							msg.append(target.data->nick); // <nick>
 							msg.append(" H :0 "); // <H|G>[*][@|+] :<hopcount>
 							msg.append(target.data->nick); // <realname> (kinda incorrect currently because we don't track this)
