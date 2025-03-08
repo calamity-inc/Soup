@@ -142,7 +142,7 @@ NAMESPACE_SOUP
 					auto sep = line.find(' ', 5);
 					if (sep != std::string::npos)
 					{
-						//cd.name = line.substr(5, sep - 5);
+						cd.name = line.substr(5, sep - 5);
 
 						{
 							std::string msg = ":Soup 001 ";
@@ -150,7 +150,7 @@ NAMESPACE_SOUP
 							msg.append(" :Welcome ");
 							msg.append(cd.nick);
 							msg.push_back('!');
-							msg.append(line.substr(5, sep - 5)); //msg.append(cd.name);
+							msg.append(cd.name);
 							msg.append("@Soup\r\n");
 							s.send(msg);
 						}
@@ -329,6 +329,70 @@ NAMESPACE_SOUP
 				{
 					std::string msg = ":Soup PONG";
 					msg.append(data.substr(4));
+					s.send(msg);
+				}
+				else if (line.substr(0, 4) == "WHO " || line.substr(0, 4) == "who ")
+				{
+					if (line.c_str()[4] != '#')
+					{
+						auto sep = line.find(' ', 4);
+						if (sep == std::string::npos)
+						{
+							sep = line.size();
+						}
+
+						// TODO: A query could be e.g. "Ca?", matching "Cat" and "Car".
+						if (const auto target = serv->getClient(line.substr(4, sep - 4)); target.isValid())
+						{
+							std::string msg = ":Soup 352 "; // RPL_WHOREPLY
+							msg.append(cd.nick);
+							msg.push_back(' ');
+							msg.append(line.substr(4, sep - 4));
+							msg.append(" #Soup "); // <channel>
+							msg.append(target.data->name); // <user>
+							msg.append(" Soup "); // <host>
+							msg.append(target.data->nick); // <nick>
+							msg.append(" H :0 "); // <H|G>[*][@|+] :<hopcount>
+							msg.append(target.data->nick); // <realname> (kinda incorrect currently because we don't track this)
+							msg.append("\r\n");
+							s.send(msg);
+						}
+
+						std::string msg = ":Soup 315 "; // RPL_ENDOFWHO
+						msg.append(cd.nick);
+						msg.push_back(' ');
+						msg.append(line.substr(4, sep - 4));
+						msg.append(" :End of /WHO list\r\n");
+						s.send(msg);
+					}
+				}
+				else if (line.substr(0, 6) == "WHOIS " || line.substr(0, 6) == "whois ")
+				{
+					auto sep = line.find(' ', 6);
+					if (sep == std::string::npos)
+					{
+						sep = line.size();
+					}
+
+					if (const auto target = serv->getClient(line.substr(6, sep - 6)); target.isValid())
+					{
+						std::string msg = ":Soup 311 "; // RPL_WHOISUSER
+						msg.append(cd.nick);
+						msg.push_back(' ');
+						msg.append(line.substr(6, sep - 6));
+						msg.push_back(' ');
+						msg.append(target.data->name); // <user>
+						msg.append(" Soup * :"); // <host>
+						msg.append(target.data->nick); // <realname> (kinda incorrect currently because we don't track this)
+						msg.append("\r\n");
+						s.send(msg);
+					}
+
+					std::string msg = ":Soup 318 "; // RPL_ENDOFWHOIS
+					msg.append(cd.nick);
+					msg.push_back(' ');
+					msg.append(line.substr(6, sep - 6));
+					msg.append(" :End of /WHOIS list\r\n");
 					s.send(msg);
 				}
 				else if (line.substr(0, 4) == "QUIT" || line.substr(0, 4) == "quit")
