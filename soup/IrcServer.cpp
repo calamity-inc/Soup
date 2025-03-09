@@ -287,6 +287,32 @@ NAMESPACE_SOUP
 						ircHandlePart(serv, cd, channel_name);
 					}
 				}
+				else if ((line.substr(0, 4) == "KICK" || line.substr(0, 4) == "kick") && line.length() > 5)
+				{
+					auto arr = string::explode(line.substr(5), ' ');
+					SOUP_IF_UNLIKELY(arr.size() != 2)
+					{
+						return;
+					}
+					if (auto membership = cd.getMembership(arr.at(0)))
+					{
+						if (membership->op)
+						{
+							if (auto target = serv->getClient(arr.at(1)); target.isValid())
+							{
+								ircHandlePart(serv, *target.data, arr.at(0));
+							}
+						}
+						else
+						{
+							s.send(":Soup 482 Soup :You're not a channel operator.\r\n");
+						}
+					}
+					else
+					{
+						s.send(":Soup 442 Soup :You're not in that channel.\r\n");
+					}
+				}
 				else if ((line.substr(0, 5) == "TOPIC" || line.substr(0, 5) == "topic") && line.length() > 6)
 				{
 					auto arr = string::explode(line.substr(6), " :");
