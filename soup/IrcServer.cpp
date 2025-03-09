@@ -44,6 +44,23 @@ NAMESPACE_SOUP
 		}
 	}
 
+	[[nodiscard]] static std::string ircEncodeLine(const std::vector<std::string>& params)
+	{
+		std::string str;
+		if (!params.empty())
+		{
+			for (size_t i = 0; i != params.size() - 1; ++i)
+			{
+				str.append(params[i]);
+				str.push_back(' ');
+			}
+			str.push_back(':');
+			str.append(params.back());
+			str.append("\r\n");
+		}
+		return str;
+	}
+
 	static void ircClientRecvLoop(IrcServer* serv, Socket& s) SOUP_EXCAL
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
@@ -350,18 +367,69 @@ NAMESPACE_SOUP
 							sep = line.size();
 						}
 
+						bool bNarrow = false;
+						bool bChannel = true;
+						bool bUser = true;
+						bool bHost = true;
+						bool bServer = true;
+						bool bNick = true;
+						bool bFlags = true;
+						bool bHops = true;
+						bool bRealname = true;
+						if (line.find('%', sep) != std::string::npos)
+						{
+							bNarrow = true;
+							bChannel = line.find('c', sep) != std::string::npos;
+							bUser = line.find('u', sep) != std::string::npos;
+							bHost = line.find('h', sep) != std::string::npos;
+							bServer = line.find('s', sep) != std::string::npos;
+							bNick = line.find('n', sep) != std::string::npos;
+							bFlags = line.find('f', sep) != std::string::npos;
+							bHops = line.find('d', sep) != std::string::npos;
+							bRealname = line.find('r', sep) != std::string::npos;
+						}
+
 						if (const auto target = serv->getClientWithWildcards(line.substr(4, sep - 4)); target.isValid())
 						{
-							std::string msg = ":Soup 352 "; // RPL_WHOREPLY
-							msg.append(cd.nick);
-							msg.append(" * "); // <channel>
-							msg.append(target.data->name); // <user>
-							msg.append(" Soup Soup "); // <host> <server>
-							msg.append(target.data->nick); // <nick>
-							msg.append(" H :0 "); // <H|G>[*][@|+] :<hopcount>
-							msg.append(target.data->nick); // <realname> (kinda incorrect currently because we don't track this)
-							msg.append("\r\n");
-							s.send(msg);
+							std::vector<std::string> params = { ":Soup", bNarrow ? "354" : "352", cd.nick }; // bNarrow ? RPL_WHOSPCRPL : RPL_WHOREPLY
+							if (bChannel)
+							{
+								params.emplace_back("*");
+							}
+							if (bUser)
+							{
+								params.emplace_back(target.data->name);
+							}
+							if (bHost)
+							{
+								params.emplace_back("Soup");
+							}
+							if (bServer)
+							{
+								params.emplace_back("Soup");
+							}
+							if (bNick)
+							{
+								params.emplace_back(target.data->nick);
+							}
+							if (bFlags)
+							{
+								params.emplace_back("H");
+							}
+							std::string realnamestr;
+							if (bHops)
+							{
+								realnamestr = "0 ";
+							}
+							if (bRealname)
+							{
+								realnamestr.append(target.data->nick); // kinda incorrect currently because we don't track this
+							}
+							if (!realnamestr.empty())
+							{
+								params.emplace_back(std::move(realnamestr));
+							}
+							s.send(ircEncodeLine(params));
 						}
 
 						std::string msg = ":Soup 315 "; // RPL_ENDOFWHO
