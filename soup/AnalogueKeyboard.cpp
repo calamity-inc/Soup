@@ -158,7 +158,7 @@ NAMESPACE_SOUP
 		{
 			if (hid.product_id == 0x0610) // ANSI
 			{
-				return "Lemokey P1 HE";
+				return "Lemokey P1 HE"; // Thanks to Azarattum for providing the layout
 			}
 		}
 		// NuPhy
