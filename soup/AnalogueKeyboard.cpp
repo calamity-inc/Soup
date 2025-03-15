@@ -536,7 +536,7 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			SOUP_UNREACHABLE;
+			SOUP_ASSERT_UNREACHABLE;
 		}
 	}
 
