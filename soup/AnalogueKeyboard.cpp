@@ -522,7 +522,7 @@ NAMESPACE_SOUP
 		{
 			return getActiveKeysDrunkdeer();
 		}
-		else if (hid.vendor_id == 0x3434)
+		else if (hid.vendor_id == 0x3434 || hid.vendor_id == 0x362D)
 		{
 			return getActiveKeysKeychron();
 		}
