@@ -322,6 +322,10 @@ NAMESPACE_SOUP
 					{
 						if (kbd.hid.havePermission())
 						{
+#if SOUP_WINDOWS
+							NamedMutex mtx("KeychronMtx");
+							mtx.lock();
+#endif
 							uint8_t data[33];
 							memset(data, 0, sizeof(data));
 							data[1] = 0xa9; // KC_HE
@@ -333,6 +337,9 @@ NAMESPACE_SOUP
 							{
 								kbd.keychron.state = 0xff;
 							}
+#if SOUP_WINDOWS
+							mtx.unlock();
+#endif
 						}
 
 						if (kbd.hid.product_id == 0x0B10 // ANSI
