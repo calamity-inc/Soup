@@ -320,28 +320,6 @@ NAMESPACE_SOUP
 						|| kbd.hid.vendor_id == 0x362D // Lemokey (a Keychron brand)
 						)
 					{
-						if (kbd.hid.havePermission())
-						{
-#if SOUP_WINDOWS
-							NamedMutex mtx("KeychronMtx");
-							mtx.lock();
-#endif
-							uint8_t data[33];
-							memset(data, 0, sizeof(data));
-							data[1] = 0xa9; // KC_HE
-							data[2] = 0x01; // AMC_GET_VERSION
-							kbd.hid.sendReport(data, sizeof(data));
-							const auto& report = kbd.hid.receiveReport();
-							kbd.keychron.am_version = report.at(2);
-							if (report.back() == 0x45) // https://github.com/AnalogSense/qmk_firmware/commit/73dc606a8d29e1c32c343563c571c6da092f96dd
-							{
-								kbd.keychron.state = 0xff;
-							}
-#if SOUP_WINDOWS
-							mtx.unlock();
-#endif
-						}
-
 						if (kbd.hid.product_id == 0x0B10 // ANSI
 							|| kbd.hid.product_id == 0x0B11 // ISO
 							|| kbd.hid.product_id == 0x0B12 // JIS
@@ -826,6 +804,25 @@ if (combined[i]) \
 		NamedMutex mtx("KeychronMtx");
 		mtx.lock();
 #endif
+		SOUP_IF_UNLIKELY (!keychron.state && hid.havePermission())
+		{
+			uint8_t data[33];
+			memset(data, 0, sizeof(data));
+			data[1] = 0xa9; // KC_HE
+			data[2] = 0x01; // AMC_GET_VERSION
+			hid.sendReport(data, sizeof(data));
+			const auto& report = hid.receiveReport();
+			keychron.am_version = report.at(2);
+			if (report.back() == 0x45) // https://github.com/AnalogSense/qmk_firmware/commit/73dc606a8d29e1c32c343563c571c6da092f96dd
+			{
+				keychron.state = 0xff;
+			}
+			else
+			{
+				keychron.state = 0x1;
+			}
+		}
+
 		if (keychron.state == 0xff)
 		{
 			uint8_t data[33];
@@ -899,7 +896,7 @@ if (combined[i]) \
 #if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
 					dkbd.keys[sk] ||
 #endif
-					keychron.buffer[sk] || keychron.state == (i >> 2)
+					keychron.buffer[sk] || keychron.state == (i >> 2) + 1
 					)
 				{
 					data[3] = layout_index_to_row(keychron.layout, i);
@@ -936,9 +933,9 @@ if (combined[i]) \
 					});
 				}
 			}
-			if (keychron.state++ == (layout_get_size(keychron.layout) >> 2))
+			if (keychron.state++ == (layout_get_size(keychron.layout) >> 2) + 1)
 			{
-				keychron.state = 0;
+				keychron.state = 1;
 			}
 		}
 #if SOUP_WINDOWS
