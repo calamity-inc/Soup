@@ -156,9 +156,12 @@ NAMESPACE_SOUP
 		}
 		else if (hid.vendor_id == 0x362D) // Lemokey
 		{
-			if (hid.product_id == 0x0610) // ANSI
+			if (hid.usage_page == 0xFF60 && hid.usage == 0x61)
 			{
-				return "Lemokey P1 HE"; // Thanks to Azarattum for providing the layout
+				if (hid.product_id == 0x0610) // ANSI
+				{
+					return "Lemokey P1 HE"; // Thanks to Azarattum for providing the layout
+				}
 			}
 		}
 		// NuPhy
