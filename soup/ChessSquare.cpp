@@ -1,4 +1,6 @@
-﻿#include "ChessSquare.hpp"
+﻿#ifdef SOUP_ENABLE_CHESS
+
+#include "ChessSquare.hpp"
 
 #include "ChessCoordinate.hpp"
 
@@ -164,3 +166,5 @@ NAMESPACE_SOUP
 		}
 	}
 }
+
+#endif

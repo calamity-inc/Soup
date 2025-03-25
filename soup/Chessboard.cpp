@@ -1,4 +1,6 @@
-﻿#include "Chessboard.hpp"
+﻿#ifdef SOUP_ENABLE_CHESS
+
+#include "Chessboard.hpp"
 
 #include <cstring> // memset
 
@@ -233,3 +235,5 @@ NAMESPACE_SOUP
 		playMove(move_from, move_to);
 	}
 }
+
+#endif

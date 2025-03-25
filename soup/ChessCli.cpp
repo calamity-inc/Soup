@@ -1,3 +1,5 @@
+#ifdef SOUP_ENABLE_CHESS
+
 #include "ChessCli.hpp"
 
 #include "console.hpp"
@@ -106,3 +108,5 @@ NAMESPACE_SOUP
 		console.run();
 	}
 }
+
+#endif

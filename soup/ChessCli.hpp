@@ -1,4 +1,5 @@
 #pragma once
+#ifdef SOUP_ENABLE_CHESS
 
 #include <utility> // pair
 
@@ -26,3 +27,4 @@ NAMESPACE_SOUP
 		void run();
 	};
 }
+#endif

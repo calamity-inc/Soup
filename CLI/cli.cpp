@@ -94,6 +94,7 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+#ifdef SOUP_ENABLE_CHESS
 		if (subcommand == "chess")
 		{
 			ChessCli cc{};
@@ -104,6 +105,7 @@ int main(int argc, const char** argv)
 			cc.run();
 			return 0;
 		}
+#endif
 
 		if (subcommand == "datareflection")
 		{
@@ -566,9 +568,45 @@ int main(int argc, const char** argv)
 		}
 	}
 
+	std::string all_tools;
+	string::listAppend(all_tools, "3d");
+	string::listAppend(all_tools, "bench");
+	string::listAppend(all_tools, "cat2json");
+	string::listAppend(all_tools, "chatbot");
+	string::listAppend(all_tools, "chatgpt");
+#ifdef SOUP_ENABLE_CHESS
+	string::listAppend(all_tools, "chess");
+#endif
+	string::listAppend(all_tools, "datareflection");
+	string::listAppend(all_tools, "dhcp");
+	string::listAppend(all_tools, "dig");
+	string::listAppend(all_tools, "dnsserver");
+	string::listAppend(all_tools, "dvd");
+	string::listAppend(all_tools, "edit");
+	string::listAppend(all_tools, "gamepad");
+	string::listAppend(all_tools, "geoip");
+	string::listAppend(all_tools, "hid");
+	string::listAppend(all_tools, "html");
+	string::listAppend(all_tools, "http");
+	string::listAppend(all_tools, "ircserver");
+	string::listAppend(all_tools, "keyboard");
+	string::listAppend(all_tools, "maze");
+	string::listAppend(all_tools, "mesh");
+	string::listAppend(all_tools, "midi");
+	string::listAppend(all_tools, "morse");
+	string::listAppend(all_tools, "mouse");
+	string::listAppend(all_tools, "qr");
+	string::listAppend(all_tools, "repl");
+	string::listAppend(all_tools, "script");
+	string::listAppend(all_tools, "snake");
+	string::listAppend(all_tools, "test");
+	string::listAppend(all_tools, "wasm");
+	string::listAppend(all_tools, "wav");
+	string::listAppend(all_tools, "websrv");
+
 	std::cout << R"EOC(Syntax: soup [tool]
 
-Available tools: 3d, bench, cat2json, chatbot, chatgpt, chess, datareflection, dhcp, dig, dnsserver, dvd, edit, gamepad, geoip, hid, html, http, ircserver, keyboard, maze, mesh, midi, morse, mouse, qr, repl, script, snake, test, wasm, wav, websrv
+Available tools: )EOC" << all_tools << R"EOC(
 
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;
