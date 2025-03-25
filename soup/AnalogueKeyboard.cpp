@@ -192,6 +192,20 @@ NAMESPACE_SOUP
 		return {};
 	}
 
+	[[nodiscard]] static Buffer safeReceiveReport(hwHid& hid, uint8_t command_id, uint8_t value_id)
+	{
+		Buffer report = hid.receiveReport();
+		while (report.size() < 2 || report[0] != command_id || report[1] != value_id)
+		{
+			SOUP_IF_UNLIKELY (report.empty())
+			{
+				return report;
+			}
+			report = hid.receiveReport();
+		}
+		return report;
+	}
+
 	static const uint8_t layout_keychron_q1_he[] = { 6, 15,
 		KEY_ESCAPE,    KEY_F1,    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_DEL,        KEY_NONE /* mute */,
 		KEY_BACKQUOTE, KEY_1,     KEY_2,    KEY_3,    KEY_4,    KEY_5,    KEY_6,     KEY_7,    KEY_8,    KEY_9,     KEY_0,         KEY_MINUS,        KEY_EQUALS,        KEY_BACKSPACE,  KEY_PAGE_UP,
@@ -811,15 +825,22 @@ if (combined[i]) \
 			data[1] = 0xa9; // KC_HE
 			data[2] = 0x01; // AMC_GET_VERSION
 			hid.sendReport(data, sizeof(data));
-			const auto& report = hid.receiveReport();
-			keychron.am_version = report.at(2);
-			if (report.back() == 0x45) // https://github.com/AnalogSense/qmk_firmware/commit/73dc606a8d29e1c32c343563c571c6da092f96dd
+			const auto& report = safeReceiveReport(hid, data[1], data[2]);
+			SOUP_IF_UNLIKELY (report.empty())
 			{
-				keychron.state = 0xff;
+				disconnected = true;
 			}
 			else
 			{
-				keychron.state = 0x1;
+				keychron.am_version = report.at(2);
+				if (report.back() == 0x45) // https://github.com/AnalogSense/qmk_firmware/commit/73dc606a8d29e1c32c343563c571c6da092f96dd
+				{
+					keychron.state = 0xff;
+				}
+				else
+				{
+					keychron.state = 0x1;
+				}
 			}
 		}
 
@@ -831,10 +852,10 @@ if (combined[i]) \
 			data[2] = 0x31; // AMC_GET_REALTIME_TRAVEL_ALL
 			hid.discardStaleReports();
 			hid.sendReport(data, sizeof(data));
-			Buffer b0 = hid.receiveReport();
-			Buffer b1 = hid.receiveReport();
-			Buffer b2 = hid.receiveReport();
-			Buffer b3 = hid.receiveReport();
+			Buffer b0 = safeReceiveReport(hid, data[1], data[2]);
+			Buffer b1 = safeReceiveReport(hid, data[1], data[2]);
+			Buffer b2 = safeReceiveReport(hid, data[1], data[2]);
+			Buffer b3 = safeReceiveReport(hid, data[1], data[2]);
 			/*std::cout << string::bin2hex(b0.toString(), true) << std::endl;
 			std::cout << string::bin2hex(b1.toString(), true) << std::endl;
 			std::cout << string::bin2hex(b2.toString(), true) << std::endl;
@@ -872,7 +893,7 @@ if (combined[i]) \
 				}
 			}
 		}
-		else
+		else if (keychron.state > 0)
 		{
 #if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
 			static DigitalKeyboard dkbd;
@@ -903,7 +924,7 @@ if (combined[i]) \
 					data[4] = layout_index_to_col(keychron.layout, i);
 					hid.discardStaleReports();
 					hid.sendReport(data, sizeof(data));
-					const auto& report = hid.receiveReport();
+					const auto& report = safeReceiveReport(hid, data[1], data[2]);
 					SOUP_IF_UNLIKELY (report.empty())
 					{
 						disconnected = true;
