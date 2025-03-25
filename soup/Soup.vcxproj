@@ -747,6 +747,7 @@
     <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="filesystem.hpp" />
     <ClInclude Include="fnv.hpp" />
+    <ClInclude Include="GarbageCollector.hpp" />
     <ClInclude Include="HardwareRng.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="HidReportDescriptor.hpp" />
@@ -1259,6 +1260,7 @@
     <ClCompile Include="DetourHookBase.cpp" />
     <ClCompile Include="DetourHookNoreg.cpp" />
     <ClCompile Include="exceptions.cpp" />
+    <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="gmBox.cpp" />
     <ClCompile Include="gmAxisAlignedBox.cpp" />
     <ClCompile Include="gmBoxCorners.cpp" />
