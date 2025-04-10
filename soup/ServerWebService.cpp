@@ -17,6 +17,12 @@ NAMESPACE_SOUP
 		bool keep_alive = false;
 	};
 
+	struct WebServerWsClientData
+	{
+		std::string data_buf;
+		WebSocketMessage msg_buf;
+	};
+
 	ServerWebService::ServerWebService(handle_request_t handle_request)
 		: ServerService([](Socket& s, ServerService& srv, Server&) SOUP_EXCAL
 		{
@@ -239,6 +245,7 @@ NAMESPACE_SOUP
 							s.send(cont);
 
 							s.custom_data.removeStructFromMap(WebServerClientData);
+							s.custom_data.addStructToMap(WebServerWsClientData, WebServerWsClientData{});
 
 							if (srv.on_websocket_connection_established)
 							{
@@ -276,34 +283,36 @@ NAMESPACE_SOUP
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap) // on_websocket_message may throw
 		{
+			auto& cd = s.custom_data.getStructFromMapConst(WebServerWsClientData);
 			ServerWebService& srv = *cap.get<ServerWebService*>();
+
+			cd.data_buf.append(data);
 
 			bool fin;
 			uint8_t opcode;
 			std::string payload;
-			while (WebSocket::readFrame(data, fin, opcode, payload) == WebSocket::OK)
+			WebSocket::ReadFrameStatus status;
+			while (status = WebSocket::readFrame(cd.data_buf, fin, opcode, payload), status == WebSocket::OK)
 			{
 				if (opcode <= WebSocketFrameType::_NON_CONTROL_MAX) // non-control frame
 				{
-					WebSocketMessage& msg_buf = s.custom_data.getStructFromMap(WebSocketMessage);
-
 					if (opcode != 0)
 					{
-						msg_buf.data = std::move(payload);
-						msg_buf.is_text = (opcode == WebSocketFrameType::TEXT);
+						cd.msg_buf.data = std::move(payload);
+						cd.msg_buf.is_text = (opcode == WebSocketFrameType::TEXT);
 					}
 					else
 					{
-						msg_buf.data.append(payload);
+						cd.msg_buf.data.append(payload);
 					}
 
 					if (fin)
 					{
 						if (srv.on_websocket_message)
 						{
-							srv.on_websocket_message(msg_buf, s, srv);
+							srv.on_websocket_message(cd.msg_buf, s, srv);
 						}
-						msg_buf.data.clear();
+						cd.msg_buf.data.clear();
 					}
 				}
 				else // control frame
@@ -319,6 +328,10 @@ NAMESPACE_SOUP
 					}
 				}
 
+				srv.wsRecv(s);
+			}
+			if (status == WebSocket::PAYLOAD_INCOMPLETE)
+			{
 				srv.wsRecv(s);
 			}
 		}, this);
