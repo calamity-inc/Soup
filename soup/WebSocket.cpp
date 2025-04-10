@@ -14,10 +14,13 @@ NAMESPACE_SOUP
 		return base64::encode((const char*)b, sizeof(b));
 	}
 
-	std::string WebSocket::hashKey(std::string key)
+	std::string WebSocket::hashKey(const std::string& key)
 	{
-		key.append("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-		return base64::encode(sha1::hash(key));
+		sha1::State st;
+		st.append(key.data(), key.size());
+		st.append("258EAFA5-E914-47DA-95CA-C5AB0DC85B11", 36);
+		st.finalise();
+		return base64::encode(st.getDigest());
 	}
 
 	WebSocket::ReadFrameStatus WebSocket::readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload) SOUP_EXCAL

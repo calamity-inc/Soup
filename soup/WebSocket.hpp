@@ -17,7 +17,7 @@ NAMESPACE_SOUP
 		};
 
 		[[nodiscard]] static std::string generateKey();
-		[[nodiscard]] static std::string hashKey(std::string key);
+		[[nodiscard]] static std::string hashKey(const std::string& key);
 		[[nodiscard]] static ReadFrameStatus readFrame(std::string& data, bool& fin, uint8_t& opcode, std::string& payload) SOUP_EXCAL;
 	};
 }
