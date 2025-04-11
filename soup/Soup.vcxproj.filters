@@ -1701,6 +1701,9 @@
     <ClInclude Include="GarbageCollector.hpp">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="tunables.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2544,6 +2547,9 @@
       <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="GarbageCollector.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="tunables.cpp">
       <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
