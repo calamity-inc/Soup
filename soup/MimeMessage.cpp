@@ -213,7 +213,7 @@ NAMESPACE_SOUP
 		return map;
 	}
 
-	std::string MimeMessage::toString() const
+	std::string MimeMessage::toString() const SOUP_EXCAL
 	{
 		std::string res{};
 		for (const auto& header : headers)
