@@ -73,7 +73,7 @@ NAMESPACE_SOUP
 		obj->add("signature", base64::urlEncode(kp.getPrivate().sign<sha256>(protected_str).toBinary()));
 
 		auto res = executeRequest(uri_newAccount, obj->encode());
-		return AcmeAccount(res.header_fields.at("Location"), kp.getPrivate());
+		return AcmeAccount(res.findHeader("Location").value(), kp.getPrivate());
 	}
 
 	AcmeOrder AcmeClient::createOrder(const AcmeAccount& acct, const std::vector<std::string>& domains)
@@ -158,16 +158,16 @@ NAMESPACE_SOUP
 		}
 		HttpRequest req(uri_newNonce.host, uri_newNonce.path);
 		auto res = req.execute();
-		return res->header_fields.at("Replay-Nonce");
+		return res->findHeader("Replay-Nonce").value();
 	}
 
 	HttpResponse AcmeClient::executeRequest(const Uri& uri, std::string payload)
 	{
 		HttpRequest req("POST", uri.host, uri.path);
-		req.header_fields.emplace("Content-Type", "application/jose+json");
+		req.setHeader("Content-Type", "application/jose+json");
 		req.setPayload(std::move(payload));
 		auto res = req.execute();
-		nonce = res->header_fields.at("Replay-Nonce");
+		nonce = res->findHeader("Replay-Nonce").value();
 		return *res;
 	}
 
@@ -201,9 +201,9 @@ NAMESPACE_SOUP
 		auto j = json::decode(res.body);
 		JsonObject& jo = j->asObj();
 		AcmeOrder order{};
-		if (auto e = res.header_fields.find("Location"); e != res.header_fields.end())
+		if (auto e = res.findHeader("Location"))
 		{
-			order.uri = e->second;
+			order.uri = *e;
 		}
 		order.status = jo.at("status").asStr();
 		for (const auto& id : jo.at("identifiers").asArr())

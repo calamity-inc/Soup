@@ -79,26 +79,26 @@ NAMESPACE_SOUP
 			{
 				break;
 			}
-			auto e = res->header_fields.find("Location");
-			if (e == res->header_fields.end())
+			auto e = res->findHeader("Location");
+			if (!e)
 			{
 				// TODO: Respect "Cache-Control: max-age=..."
 				data_expires = time::unixSeconds() + (60 * 60 * 24);
 				data = std::move(res->body);
 				break;
 			}
-			if (e->second.substr(0, 8) != "https://")
+			if (e->substr(0, 8) != "https://")
 			{
 				break;
 			}
-			e->second.erase(0, 8);
-			auto sep = e->second.find('/');
+			e->erase(0, 8);
+			auto sep = e->find('/');
 			if (sep == std::string::npos)
 			{
 				break;
 			}
-			req.header_fields.at("Host") = e->second.substr(0, sep);
-			req.path = e->second.substr(sep);
+			req.setHeader("Host", e->substr(0, sep));
+			req.path = e->substr(sep);
 			req.path_is_encoded = true;
 		}
 	}

@@ -18,9 +18,9 @@ static std::unordered_map<std::string, soup::UniquePtr<soup::JitModule>> jit_mod
 
 static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::ServerWebService&)
 {
-	auto host = req.header_fields.find("Host");
-	if (host == req.header_fields.end()
-		|| host->second.empty()
+	auto host = req.findHeader("Host");
+	if (!host
+		|| host->empty()
 		)
 	{
 		std::cout << s.peer.toString() << " > " << req.method << " " << req.path << " [400 - no host]" << std::endl;
@@ -28,7 +28,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 		return;
 	}
 
-	std::string req_url = host->second;
+	std::string req_url = *host;
 	req_url.append(req.path);
 
 	if (req_url.find("..") != std::string::npos)
@@ -48,7 +48,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 		if (!std::filesystem::is_regular_file(file_path))
 		{
 			file_path = base_dir;
-			file_path.append(host->second);
+			file_path.append(*host);
 			file_path.append("/index.php");
 		}
 	}
@@ -85,7 +85,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 				t = soup::time::nanos() - t;
 				std::string timing = "PHP;dur=";
 				timing.append(std::to_string(t / 1000000.0));
-				resp.header_fields.emplace("Server-Timing", std::move(timing));
+				resp.setHeader("Server-Timing", std::move(timing));
 			}
 			else if (file_path.substr(file_path.length() - 4) == ".cpp")
 			{
@@ -135,7 +135,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 					}
 				}
 
-				resp.header_fields.emplace("Server-Timing", std::move(timing));
+				resp.setHeader("Server-Timing", std::move(timing));
 			}
 		}
 		soup::ServerWebService::sendContent(s, std::move(resp));

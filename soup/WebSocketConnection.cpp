@@ -43,10 +43,10 @@ NAMESPACE_SOUP
 	void WebSocketConnection::sendUpgradeRequest(std::string host, std::string path) SOUP_EXCAL
 	{
 		HttpRequest req(std::move(host), std::move(path));
-		req.header_fields.at("Connection") = "Upgrade";
-		req.header_fields.emplace("Upgrade", "websocket");
-		req.header_fields.emplace("Sec-WebSocket-Key", WebSocket::generateKey());
-		req.header_fields.emplace("Sec-WebSocket-Version", "13");
+		req.setHeader("Connection", "Upgrade");
+		req.setHeader("Upgrade", "websocket");
+		req.setHeader("Sec-WebSocket-Key", WebSocket::generateKey());
+		req.setHeader("Sec-WebSocket-Version", "13");
 		req.send(*this);
 	}
 

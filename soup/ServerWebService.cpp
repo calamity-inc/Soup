@@ -261,9 +261,9 @@ NAMESPACE_SOUP
 
 			if (srv.handle_request)
 			{
-				if (auto connection_entry = req.header_fields.find("Connection"); connection_entry != req.header_fields.end())
+				if (auto connection_entry = req.findHeader("Connection"))
 				{
-					if (connection_entry->second == "keep-alive")
+					if (*connection_entry == "keep-alive")
 					{
 						s.custom_data.getStructFromMap(WebServerClientData).keep_alive = true;
 					}

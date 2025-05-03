@@ -362,13 +362,12 @@ SOUP_CEXPORT void MimeMessage_addHeader(MimeMessage* x, const char* key, const c
 	MimeMessage& mm = heap.get(x);
 	if (strcmp(key, "User-Agent") == 0)
 	{
-		if (auto e = mm.header_fields.find(key); e != mm.header_fields.end())
-		{
-			e->second = value;
-			return;
-		}
+		mm.setHeader(key, value);
 	}
-	mm.header_fields.emplace(key, value);
+	else
+	{
+		mm.addHeader(key, value);
+	}
 }
 
 // Mixed
