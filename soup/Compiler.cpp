@@ -65,7 +65,6 @@ NAMESPACE_SOUP
 		{
 			args.emplace_back("-luser32");
 			args.emplace_back("-lgdi32");
-			args.emplace_back("-lversion");
 		}
 #else
 #if !SOUP_MACOS
