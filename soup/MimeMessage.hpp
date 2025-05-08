@@ -35,7 +35,6 @@ NAMESPACE_SOUP
 		static void normaliseHeaderCasingInplace(char* data, size_t size) noexcept;
 		void decode() SOUP_EXCAL;
 
-		// Provided for backwards compat but please note that the behaviour is undefined when multiple headers have the same key (e.g. Set-Cookie).
 		[[nodiscard]] std::unordered_map<std::string, std::string> getHeaderFields() const SOUP_EXCAL;
 
 		[[nodiscard]] std::string toString() const SOUP_EXCAL;

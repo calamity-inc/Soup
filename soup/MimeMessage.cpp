@@ -208,7 +208,17 @@ NAMESPACE_SOUP
 		{
 			const auto sep = header.find(": ");
 			SOUP_DEBUG_ASSERT(sep != std::string::npos);
-			map.emplace(header.substr(0, sep), header.substr(sep + 2));
+			auto key = header.substr(0, sep);
+			auto value = header.substr(sep + 2);
+			if (auto e = map.find(key); e != map.end())
+			{
+				e->second.append(", ");
+				e->second.append(value);
+			}
+			else
+			{
+				map.emplace(std::move(key), std::move(value));
+			}
 		}
 		return map;
 	}
