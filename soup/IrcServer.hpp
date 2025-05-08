@@ -3,9 +3,11 @@
 #include "Server.hpp"
 #if !SOUP_WASM
 
+#include <deque>
 #include <string>
 #include <unordered_map>
 
+#include "Promise.hpp"
 #include "ServerService.hpp"
 
 NAMESPACE_SOUP
@@ -23,6 +25,8 @@ NAMESPACE_SOUP
 		std::string name;
 		std::string failednick;
 		std::unordered_map<std::string, IrcChannelMembershipData> channels;
+		std::deque<std::string> pending_joins;
+		UniquePtr<Promise<std::string>> promise;
 
 		[[nodiscard]] IrcChannelMembershipData* getMembership(const std::string& channel_name) noexcept
 		{
@@ -80,6 +84,7 @@ NAMESPACE_SOUP
 		virtual void onClientConnected(Socket& s) {}
 		virtual void onClientDisconnected(Socket& s) {}
 		virtual void onClientLineReceived(Socket& s, const std::string& line) {}
+		virtual void canClientJoinChannel(Socket& s, const std::string& channel_name, Promise<std::string>& reject_reason_promise) { reject_reason_promise.fulfil({}); }
 		virtual void onClientJoinedChannel(Socket& s, const std::string& channel_name, IrcChannelMembershipData& md) {}
 
 		IrcServer();
@@ -91,6 +96,7 @@ NAMESPACE_SOUP
 
 	protected:
 		void clientRecvLoop(Socket& s) SOUP_EXCAL;
+		void clientProcessPendingJoins(Socket& s) SOUP_EXCAL;
 	};
 }
 

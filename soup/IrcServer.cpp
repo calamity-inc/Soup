@@ -201,81 +201,9 @@ NAMESPACE_SOUP
 						{
 							s.send(":Soup 443 Soup :You're already in this channel.\r\n");
 						}
-						else if (serv->getClient(channel_name).isValid())
-						{
-							s.send(":Soup 405 Soup :This channel name is unavailable.\r\n");
-						}
 						else
 						{
-							std::string join_notify(1, ':');
-							join_notify.append(cd.nick);
-							join_notify.append(" JOIN :");
-							join_notify.append(channel_name);
-							join_notify.append("\r\n");
-							s.send(join_notify);
-
-							IrcChannelMembershipData* md;
-							if (auto e = serv->channels.find(channel_name); e != serv->channels.end())
-							{
-								md = &cd.channels.emplace(channel_name, IrcChannelMembershipData{ false }).first->second;
-
-								if (!e->second.topic.empty())
-								{
-									std::string msg = ":Soup 332 ";
-									msg.append(cd.nick);
-									msg.push_back(' ');
-									msg.append(channel_name);
-									msg.append(" :");
-									msg.append(e->second.topic);
-									msg.append("\r\n");
-									s.send(msg);
-								}
-							}
-							else
-							{
-								md = &cd.channels.emplace(channel_name, IrcChannelMembershipData{ true }).first->second;
-								serv->channels.emplace(channel_name, IrcChannelData{});
-							}
-							serv->onClientJoinedChannel(s, channel_name, *md);
-
-							if (md->op)
-							{
-								join_notify.append(":Soup MODE ");
-								join_notify.append(channel_name);
-								join_notify.append(" +o ");
-								join_notify.append(cd.nick);
-								join_notify.append("\r\n");
-							}
-
-							std::string msg = ":Soup 353 ";
-							msg.append(cd.nick);
-							msg.append(" = ");
-							msg.append(channel_name);
-							msg.append(" :");
-							for (const auto& member : serv->getChannelMembers(channel_name))
-							{
-								if (member.socket != &s)
-								{
-									member.socket->send(join_notify);
-								}
-
-								if (member.membership_data->op)
-								{
-									msg.push_back('@');
-								}
-								msg.append(member.data->nick);
-								msg.push_back(' ');
-							}
-							msg.pop_back();
-							msg.append("\r\n");
-							s.send(msg);
-
-							msg = ":Soup 366 ";
-							msg.append(cd.nick);
-							msg.push_back(' ');
-							msg.append(channel_name);
-							msg.append(" :End of /NAMES list\r\n");
-							s.send(msg);
+							cd.pending_joins.emplace_back(channel_name);
 						}
 					}
 				}
@@ -500,6 +428,125 @@ NAMESPACE_SOUP
 					return;
 				}
 			}
+
+			if (cd.pending_joins.empty())
+			{
+				serv->clientRecvLoop(s);
+			}
+			else
+			{
+				serv->clientProcessPendingJoins(s);
+			}
+		}, this);
+	}
+
+	void IrcServer::clientProcessPendingJoins(Socket& s) SOUP_EXCAL
+	{
+		IrcClientData& cd = s.custom_data.getStructFromMapConst(IrcClientData);
+		if (cd.pending_joins.empty())
+		{
+			return clientRecvLoop(s);
+		}
+		const auto& channel_name = cd.pending_joins.front();
+		cd.promise = soup::make_unique<Promise<std::string>>();
+		this->canClientJoinChannel(s, channel_name, *cd.promise);
+		s.awaitPromiseCompletion(cd.promise.get(), [](Worker& w, Capture&& cap) SOUP_EXCAL
+		{
+			const auto serv = cap.get<IrcServer*>();
+			Socket& s = static_cast<Socket&>(w);
+			IrcClientData& cd = s.custom_data.getStructFromMapConst(IrcClientData);
+			const auto& channel_name = cd.pending_joins.front();
+
+			if (!cd.promise->getResult().empty())
+			{
+				std::string msg = ":Soup 474 ";
+				msg.append(cd.nick);
+				msg.push_back(' ');
+				msg.append(channel_name);
+				msg.append(" :");
+				msg.append(cd.promise->getResult());
+				msg.append("\r\n");
+				s.send(msg);
+			}
+			else if (serv->getClient(channel_name).isValid())
+			{
+				s.send(":Soup 405 Soup :This channel name is unavailable.\r\n");
+			}
+			else
+			{
+				std::string join_notify(1, ':');
+				join_notify.append(cd.nick);
+				join_notify.append(" JOIN :");
+				join_notify.append(channel_name);
+				join_notify.append("\r\n");
+				s.send(join_notify);
+
+				IrcChannelMembershipData* md;
+				if (auto e = serv->channels.find(channel_name); e != serv->channels.end())
+				{
+					md = &cd.channels.emplace(channel_name, IrcChannelMembershipData{ false }).first->second;
+
+					if (!e->second.topic.empty())
+					{
+						std::string msg = ":Soup 332 ";
+						msg.append(cd.nick);
+						msg.push_back(' ');
+						msg.append(channel_name);
+						msg.append(" :");
+						msg.append(e->second.topic);
+						msg.append("\r\n");
+						s.send(msg);
+					}
+				}
+				else
+				{
+					md = &cd.channels.emplace(channel_name, IrcChannelMembershipData{ true }).first->second;
+					serv->channels.emplace(channel_name, IrcChannelData{});
+				}
+				serv->onClientJoinedChannel(s, channel_name, *md);
+
+				if (md->op)
+				{
+					join_notify.append(":Soup MODE ");
+					join_notify.append(channel_name);
+					join_notify.append(" +o ");
+					join_notify.append(cd.nick);
+					join_notify.append("\r\n");
+				}
+
+				std::string msg = ":Soup 353 ";
+				msg.append(cd.nick);
+				msg.append(" = ");
+				msg.append(channel_name);
+				msg.append(" :");
+				for (const auto& member : serv->getChannelMembers(channel_name))
+				{
+					if (member.socket != &s)
+					{
+						member.socket->send(join_notify);
+					}
+
+					if (member.membership_data->op)
+					{
+						msg.push_back('@');
+					}
+					msg.append(member.data->nick);
+					msg.push_back(' ');
+				}
+				msg.pop_back();
+				msg.append("\r\n");
+				s.send(msg);
+
+				msg = ":Soup 366 ";
+				msg.append(cd.nick);
+				msg.push_back(' ');
+				msg.append(channel_name);
+				msg.append(" :End of /NAMES list\r\n");
+				s.send(msg);
+			}
+
+			cd.pending_joins.pop_front();
+			cd.promise.reset();
 			serv->clientRecvLoop(s);
 		}, this);
 	}
