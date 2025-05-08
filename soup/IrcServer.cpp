@@ -61,7 +61,7 @@ NAMESPACE_SOUP
 		return str;
 	}
 
-	static void ircClientRecvLoop(IrcServer* serv, Socket& s) SOUP_EXCAL
+	void IrcServer::clientRecvLoop(Socket& s) SOUP_EXCAL
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 		{
@@ -500,15 +500,15 @@ NAMESPACE_SOUP
 					return;
 				}
 			}
-			ircClientRecvLoop(serv, s);
-		}, serv);
+			serv->clientRecvLoop(s);
+		}, this);
 	}
 
 	IrcServer::IrcServer()
 		: srv([](Socket& s, ServerService&, Server& serv) SOUP_EXCAL
 		{
 			static_cast<IrcServer&>(serv).onClientConnected(s);
-			ircClientRecvLoop(&static_cast<IrcServer&>(serv), s);
+			static_cast<IrcServer&>(serv).clientRecvLoop(s);
 		})
 	{
 		on_work_done = [](Worker& w, Scheduler& s)

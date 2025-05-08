@@ -71,8 +71,9 @@ NAMESPACE_SOUP
 		IrcChannelMembershipData* membership_data;
 	};
 
-	struct IrcServer : public Server
+	class IrcServer : public Server
 	{
+	public:
 		ServerService srv;
 		std::unordered_map<std::string, IrcChannelData> channels;
 
@@ -87,6 +88,9 @@ NAMESPACE_SOUP
 		[[nodiscard]] IrcClient getClientWithWildcards(const std::string& query) const;
 		[[nodiscard]] std::vector<IrcChannelMember> getChannelMembers(const std::string& channel_name) const;
 		void broadcast(const std::string& raw_msg) const;
+
+	protected:
+		void clientRecvLoop(Socket& s) SOUP_EXCAL;
 	};
 }
 
