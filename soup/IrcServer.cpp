@@ -543,6 +543,15 @@ NAMESPACE_SOUP
 				msg.append(channel_name);
 				msg.append(" :End of /NAMES list\r\n");
 				s.send(msg);
+
+				if (md->op)
+				{
+					std::string msg = ":Soup MODE ";
+					join_notify.append(channel_name);
+					join_notify.append(" +o ");
+					join_notify.append(cd.nick);
+					join_notify.append("\r\n");
+				}
 			}
 
 			cd.pending_joins.pop_front();
