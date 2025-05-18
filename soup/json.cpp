@@ -14,11 +14,6 @@ NAMESPACE_SOUP
 {
 	UniquePtr<JsonNode> json::decode(const std::string& data, int max_depth)
 	{
-		SOUP_IF_UNLIKELY (data.empty())
-		{
-			return {};
-		}
-
 		JsonTreeWriter jtw;
 		jtw.allocArray = [](void*) -> void* { return new JsonArray(); };
 		jtw.allocObject = [](void*) -> void* { return new JsonObject(); };
