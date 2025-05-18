@@ -21,9 +21,9 @@ NAMESPACE_SOUP
 	{
 	}
 
-	JsonString::JsonString(const char*& c) SOUP_EXCAL
-		: JsonString()
+	std::string JsonString::decodeValue(const char*& c)
 	{
+		std::string value;
 		for (bool escaped = false; *c != 0; ++c)
 		{
 			if (escaped)
@@ -108,6 +108,7 @@ NAMESPACE_SOUP
 			}
 			value.push_back(*c);
 		}
+		return value;
 	}
 
 	bool JsonString::operator==(const JsonNode& b) const noexcept

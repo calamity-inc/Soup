@@ -13,7 +13,6 @@ NAMESPACE_SOUP
 		explicit JsonString() noexcept;
 		explicit JsonString(const std::string& value) noexcept;
 		explicit JsonString(std::string&& value) noexcept;
-		explicit JsonString(const char*& c) SOUP_EXCAL;
 
 		bool operator ==(const JsonNode& b) const noexcept final;
 
@@ -34,5 +33,7 @@ NAMESPACE_SOUP
 		{
 			return value == b;
 		}
+
+		[[nodiscard]] static std::string decodeValue(const char*& c) SOUP_EXCAL;
 	};
 }

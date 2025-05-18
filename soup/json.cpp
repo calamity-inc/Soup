@@ -32,7 +32,7 @@ NAMESPACE_SOUP
 		{
 		case '"':
 			++c;
-			return soup::make_unique<JsonString>(c);
+			return soup::make_unique<JsonString>(JsonString::decodeValue(c));
 
 		case '[':
 			++c;
