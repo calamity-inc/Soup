@@ -12,7 +12,7 @@
 
 NAMESPACE_SOUP
 {
-	UniquePtr<JsonNode> json::decode(const std::string& data, int max_depth)
+	UniquePtr<JsonNode> json::decode(const char* data, size_t size, int max_depth)
 	{
 		JsonTreeWriter jtw;
 		jtw.allocArray = [](void*) -> void* { return new JsonArray(); };
@@ -25,40 +25,38 @@ NAMESPACE_SOUP
 		jtw.addToArray = [](void*, void* arr, void* value) -> void { ((JsonArray*)arr)->children.emplace_back((JsonNode*)value); };
 		jtw.addToObject = [](void*, void* obj, void* key, void* value) -> void { ((JsonObject*)obj)->children.emplace_back((JsonNode*)key, (JsonNode*)value); };
 		jtw.free = [](void*, void* node) -> void { delete (JsonNode*)node; };
-
-		const char* c = data.c_str();
-		return (JsonNode*)decode(jtw, nullptr, c, max_depth);
+		return (JsonNode*)decode(jtw, nullptr, data, size, max_depth);
 	}
 
-	void* json::decode(const JsonTreeWriter& tw, void* user_data, const char*& c, int max_depth)
+	void* json::decode(const JsonTreeWriter& tw, void* user_data, const char*& c, size_t& s, int max_depth)
 	{
 		SOUP_ASSERT(max_depth-- != 0, "Depth limit exceeded");
 
-		handleLeadingSpace(c);
+		handleLeadingSpace(c, s);
 
-		switch (*c)
+		switch (s != 0 ? *c : 0)
 		{
 		case '"':
-			++c;
-			return tw.allocString(user_data, JsonString::decodeValue(c));
+			++c; --s;
+			return tw.allocString(user_data, JsonString::decodeValue(c, s));
 
 		case '[': {
-			++c;
+			++c; --s;
 			auto arr = tw.allocArray(user_data);
 			while (true)
 			{
-				handleLeadingSpace(c);
-				auto val = decode(tw, user_data, c, max_depth);
+				handleLeadingSpace(c, s);
+				auto val = decode(tw, user_data, c, s, max_depth);
 				SOUP_IF_UNLIKELY (!val)
 				{
 					break;
 				}
 				tw.addToArray(user_data, arr, val);
-				while (*c == ',' || string::isSpace(*c))
+				while (s != 0 && (*c == ',' || string::isSpace(*c)))
 				{
-					++c;
+					++c; --s;
 				}
-				if (*c == ']' || *c == 0)
+				if (s == 0 || *c == ']')
 				{
 					break;
 				}
@@ -67,26 +65,29 @@ NAMESPACE_SOUP
 			{
 				tw.onArrayFinished(user_data, arr);
 			}
-			++c;
+			SOUP_IF_LIKELY (s != 0)
+			{
+				++c; --s;
+			}
 			return arr;
 		}
 
 		case '{': {
-			++c;
+			++c; --s;
 			auto obj = tw.allocObject(user_data);
 			while (true)
 			{
-				handleLeadingSpace(c);
-				if (*c == '}' || *c == 0)
+				handleLeadingSpace(c, s);
+				if (s == 0 || *c == '}')
 				{
 					break;
 				}
-				auto key = decode(tw, user_data, c, max_depth);
-				while (string::isSpace(*c) || *c == ':')
+				auto key = decode(tw, user_data, c, s, max_depth);
+				while (s != 0 && (string::isSpace(*c) || *c == ':'))
 				{
-					++c;
+					++c; --s;
 				}
-				auto val = decode(tw, user_data, c, max_depth);
+				auto val = decode(tw, user_data, c, s, max_depth);
 				SOUP_IF_UNLIKELY (!key || !val)
 				{
 					if (val)
@@ -100,12 +101,15 @@ NAMESPACE_SOUP
 					break;
 				}
 				tw.addToObject(user_data, obj, key, val);
-				while (*c == ',' || string::isSpace(*c))
+				while (s != 0 && (*c == ',' || string::isSpace(*c)))
 				{
-					++c;
+					++c; --s;
 				}
 			}
-			++c;
+			SOUP_IF_LIKELY (s != 0)
+			{
+				++c; --s;
+			}
 			return obj;
 		}
 		}
@@ -113,7 +117,7 @@ NAMESPACE_SOUP
 		std::string buf{};
 		bool is_int = true;
 		bool is_float = false;
-		for (; *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != ':' && *c != 0; ++c)
+		for (; s != 0 && *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != ':'; ++c, --s)
 		{
 			if ((is_int || is_float) && (*c == 'e' || *c == 'E'))
 			{
@@ -131,7 +135,7 @@ NAMESPACE_SOUP
 		int exponent = 0;
 		if (*c == 'e' || *c == 'E')
 		{
-			++c;
+			++c; --s;
 			is_int = false;
 			is_float = true;
 
@@ -140,9 +144,9 @@ NAMESPACE_SOUP
 			{
 				return {};
 			}
-			++c;
+			++c; --s;
 
-			for (; *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != ':' && *c != 0; ++c)
+			for (; s != 0 && *c != ',' && !string::isSpace(*c) && *c != '}' && *c != ']' && *c != ':'; ++c, --s)
 			{
 				exponent *= 10;
 				exponent += ((*c) - '0');
@@ -278,17 +282,17 @@ NAMESPACE_SOUP
 		return {};
 	}
 
-	void json::handleLeadingSpace(const char*& c)
+	void json::handleLeadingSpace(const char*& c, size_t& s)
 	{
-		while (*c != 0)
+		while (s != 0)
 		{
 			if (string::isSpace(*c))
 			{
-				++c;
+				++c; --s;
 			}
 			else if (*c == '/')
 			{
-				handleComment(c);
+				handleComment(c, s);
 			}
 			else
 			{
@@ -297,31 +301,32 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void json::handleComment(const char*& c)
+	void json::handleComment(const char*& c, size_t& s)
 	{
-		++c;
+		++c; --s;
 		if (*c == '/')
 		{
 			do
 			{
-				++c;
+				++c; --s;
 			} while (*c != '\n' && *c != 0);
 		}
 		else if (*c == '*')
 		{
 			do
 			{
-				++c;
+				++c; --s;
 				if (*c == '*' && *(c + 1) == '/')
 				{
 					c += 2;
+					s -= 2;
 					break;
 				}
-			} while (*c != 0);
+			} while (s != 0);
 		}
 		else
 		{
-			--c;
+			--c; ++s;
 		}
 	}
 }

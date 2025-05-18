@@ -34,6 +34,6 @@ NAMESPACE_SOUP
 			return value == b;
 		}
 
-		[[nodiscard]] static std::string decodeValue(const char*& c) SOUP_EXCAL;
+		[[nodiscard]] static std::string decodeValue(const char*& c, size_t& s) SOUP_EXCAL;
 	};
 }

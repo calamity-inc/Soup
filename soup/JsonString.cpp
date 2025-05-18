@@ -21,10 +21,10 @@ NAMESPACE_SOUP
 	{
 	}
 
-	std::string JsonString::decodeValue(const char*& c)
+	std::string JsonString::decodeValue(const char*& c, size_t& s)
 	{
 		std::string value;
-		for (bool escaped = false; *c != 0; ++c)
+		for (bool escaped = false; s != 0; ++c, --s)
 		{
 			if (escaped)
 			{
@@ -48,32 +48,32 @@ NAMESPACE_SOUP
 					break;
 
 				case 'u':
-					++c;
-					if (c[0] && c[1] && c[2] && c[3])
+					++c; --s;
+					if (s >= 4)
 					{
 						if (char32_t w1; string::hexToIntOpt<char32_t>(std::string(c, 4)).consume(w1))
 						{
-							c += 4;
+							c += 4; s -= 4;
 							if ((w1 >> 10) == 0x36) // Surrogate pair?
 							{
-								if (c[0] == '\\' && c[1] == 'u' && c[2] && c[3] && c[4] && c[5])
+								if (s >= 6 && c[0] == '\\' && c[1] == 'u' && c[2] && c[3] && c[4] && c[5])
 								{
-									c += 2;
+									c += 2; s -= 2;
 									if (char32_t w2; string::hexToIntOpt<char32_t>(std::string(c, 4)).consume(w2))
 									{
-										c += 4;
+										c += 4; s -= 2;
 										value.append(unicode::utf32_to_utf8(unicode::utf16_to_utf32(w1, w2)));
 									}
 									else
 									{
-										c -= 2;
-										c -= 4;
+										c -= 2; s += 2;
+										c -= 4; s += 4;
 										value.push_back('u');
 									}
 								}
 								else
 								{
-									c -= 4;
+									c -= 4; s += 4;
 									value.push_back('u');
 								}
 							}
@@ -91,14 +91,14 @@ NAMESPACE_SOUP
 					{
 						value.push_back('u');
 					}
-					--c;
+					--c; ++s;
 					break;
 				}
 				continue;
 			}
 			if (*c == '"')
 			{
-				++c;
+				++c; --s;
 				break;
 			}
 			if (*c == '\\')
