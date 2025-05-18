@@ -106,6 +106,10 @@ NAMESPACE_SOUP
 					++c; --s;
 				}
 			}
+			if (tw.onObjectFinished)
+			{
+				tw.onObjectFinished(user_data, obj);
+			}
 			SOUP_IF_LIKELY (s != 0)
 			{
 				++c; --s;

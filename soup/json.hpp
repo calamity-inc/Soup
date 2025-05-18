@@ -47,5 +47,6 @@ NAMESPACE_SOUP
 		void(*free)(void* user_data, void* node);
 
 		void(*onArrayFinished)(void* user_data, void* array) = nullptr;
+		void(*onObjectFinished)(void* user_data, void* object) = nullptr;
 	};
 }
