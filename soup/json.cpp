@@ -38,13 +38,16 @@ NAMESPACE_SOUP
 		{
 		case '"': {
 			++c; --s;
-			size_t encoded_size = JsonString::getEncodedSize(c, s);
+			const auto encoded_size = JsonString::getEncodedSize(c, s);
 			if (tw.allocUnescapedString && std::string_view(c, encoded_size).find('\\') == std::string::npos)
 			{
 				const auto str = tw.allocUnescapedString(user_data, c, encoded_size);
-				encoded_size += 1; // also skip the closing quote
 				c += encoded_size;
 				s -= encoded_size;
+				SOUP_IF_LIKELY (s != 0)
+				{
+					++c; --s;
+				}
 				return str;
 			}
 			else
