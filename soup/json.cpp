@@ -18,13 +18,26 @@ NAMESPACE_SOUP
 		{
 			return {};
 		}
+
+		JsonTreeWriter jtw;
+		jtw.allocArray = [](void*) -> void* { return new JsonArray(); };
+		jtw.allocObject = [](void*) -> void* { return new JsonObject(); };
+		jtw.allocString = [](void*, std::string&& value) -> void* { return new JsonString(std::move(value)); };
+		jtw.allocInt = [](void*, int64_t value) -> void* { return new JsonInt(value); };
+		jtw.allocFloat = [](void*, double value) -> void* { return new JsonFloat(value); };
+		jtw.allocBool = [](void*, bool value) -> void* { return new JsonBool(value); };
+		jtw.allocNull = [](void*) -> void* { return new JsonNull(); };
+		jtw.addToArray = [](void*, void* arr, void* value) -> void { ((JsonArray*)arr)->children.emplace_back((JsonNode*)value); };
+		jtw.addToObject = [](void*, void* obj, void* key, void* value) -> void { ((JsonObject*)obj)->children.emplace_back((JsonNode*)key, (JsonNode*)value); };
+		jtw.free = [](void*, void* node) -> void { delete (JsonNode*)node; };
+
 		const char* c = data.c_str();
-		return decode(c, max_depth);
+		return (JsonNode*)decode(jtw, nullptr, c, max_depth);
 	}
 
-	UniquePtr<JsonNode> json::decode(const char*& c, int max_depth)
+	void* json::decode(const JsonTreeWriter& tw, void* user_data, const char*& c, int max_depth)
 	{
-		SOUP_ASSERT(max_depth != 0, "Depth limit exceeded");
+		SOUP_ASSERT(max_depth-- != 0, "Depth limit exceeded");
 
 		handleLeadingSpace(c);
 
@@ -32,15 +45,74 @@ NAMESPACE_SOUP
 		{
 		case '"':
 			++c;
-			return soup::make_unique<JsonString>(JsonString::decodeValue(c));
+			return tw.allocString(user_data, JsonString::decodeValue(c));
 
-		case '[':
+		case '[': {
 			++c;
-			return soup::make_unique<JsonArray>(c, max_depth - 1);
+			auto arr = tw.allocArray(user_data);
+			while (true)
+			{
+				handleLeadingSpace(c);
+				auto val = decode(tw, user_data, c, max_depth);
+				SOUP_IF_UNLIKELY (!val)
+				{
+					break;
+				}
+				tw.addToArray(user_data, arr, val);
+				while (*c == ',' || string::isSpace(*c))
+				{
+					++c;
+				}
+				if (*c == ']' || *c == 0)
+				{
+					break;
+				}
+			}
+			if (tw.onArrayFinished)
+			{
+				tw.onArrayFinished(user_data, arr);
+			}
+			++c;
+			return arr;
+		}
 
-		case '{':
+		case '{': {
 			++c;
-			return soup::make_unique<JsonObject>(c, max_depth - 1);
+			auto obj = tw.allocObject(user_data);
+			while (true)
+			{
+				handleLeadingSpace(c);
+				if (*c == '}' || *c == 0)
+				{
+					break;
+				}
+				auto key = decode(tw, user_data, c, max_depth);
+				while (string::isSpace(*c) || *c == ':')
+				{
+					++c;
+				}
+				auto val = decode(tw, user_data, c, max_depth);
+				SOUP_IF_UNLIKELY (!key || !val)
+				{
+					if (val)
+					{
+						tw.free(user_data, val);
+					}
+					if (key)
+					{
+						tw.free(user_data, key);
+					}
+					break;
+				}
+				tw.addToObject(user_data, obj, key, val);
+				while (*c == ',' || string::isSpace(*c))
+				{
+					++c;
+				}
+			}
+			++c;
+			return obj;
+		}
 		}
 
 		std::string buf{};
@@ -92,7 +164,7 @@ NAMESPACE_SOUP
 				auto opt = string::toIntOpt<int64_t>(buf);
 				if (opt.has_value())
 				{
-					return soup::make_unique<JsonInt>(opt.value());
+					return tw.allocInt(user_data, opt.value());
 				}
 			}
 			else if (is_float)
@@ -105,23 +177,23 @@ NAMESPACE_SOUP
 					{
 						val *= std::pow(10.0, exponent);
 					}
-					return soup::make_unique<JsonFloat>(val);
+					return tw.allocFloat(user_data, val);
 				}
 			}
 			else if (buf == "true")
 			{
-				return soup::make_unique<JsonBool>(true);
+				return tw.allocBool(user_data, true);
 			}
 			else if (buf == "false")
 			{
-				return soup::make_unique<JsonBool>(false);
+				return tw.allocBool(user_data, false);
 			}
 			else if (buf == "null")
 			{
-				return soup::make_unique<JsonNull>();
+				return tw.allocNull(user_data);
 			}
 		}
-		return {};
+		return nullptr;
 	}
 
 	UniquePtr<JsonNode> json::binaryDecode(Reader& r)
