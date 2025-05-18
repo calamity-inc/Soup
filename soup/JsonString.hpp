@@ -34,6 +34,7 @@ NAMESPACE_SOUP
 			return value == b;
 		}
 
+		[[nodiscard]] static size_t getEncodedSize(const char* data, size_t size) noexcept;
 		[[nodiscard]] static std::string decodeValue(const char*& c, size_t& s) SOUP_EXCAL;
 	};
 }

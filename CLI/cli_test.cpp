@@ -658,6 +658,14 @@ spanning over multiple lines */
 			assert(tree->asObj().contains("hello"));
 			assert(tree->asObj().at("hello").asStr() == "world");
 		}
+
+		// String reserve size
+		{
+			assert(JsonString::getEncodedSize(R"(a")", 2) == 1);
+			assert(JsonString::getEncodedSize(R"(\"")", 3) == 2);
+			assert(JsonString::getEncodedSize(R"(\\")", 3) == 2);
+			assert(JsonString::getEncodedSize(R"(\\\"")", 5) == 4);
+		}
 	});
 
 	test("xml", []

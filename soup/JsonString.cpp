@@ -21,9 +21,28 @@ NAMESPACE_SOUP
 	{
 	}
 
+	size_t JsonString::getEncodedSize(const char* data, size_t size) noexcept
+	{
+		std::string_view sw(data, size);
+		for (size_t i = 0; i = sw.find('"', i), i != std::string::npos; ++i)
+		{
+			size_t escapes = 0;
+			for (size_t j = i; j-- != 0 && data[j] == '\\'; )
+			{
+				++escapes;
+			}
+			if ((escapes & 1) == 0)
+			{
+				return i;
+			}
+		}
+		return 0;
+	}
+
 	std::string JsonString::decodeValue(const char*& c, size_t& s)
 	{
 		std::string value;
+		value.reserve(getEncodedSize(c, s));
 		for (bool escaped = false; s != 0; ++c, --s)
 		{
 			if (escaped)
@@ -108,6 +127,7 @@ NAMESPACE_SOUP
 			}
 			value.push_back(*c);
 		}
+		value.shrink_to_fit();
 		return value;
 	}
 
