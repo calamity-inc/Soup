@@ -14,7 +14,7 @@ NAMESPACE_SOUP
 {
 	UniquePtr<JsonNode> json::decode(const std::string& data, int max_depth)
 	{
-		if (data.empty())
+		SOUP_IF_UNLIKELY (data.empty())
 		{
 			return {};
 		}
