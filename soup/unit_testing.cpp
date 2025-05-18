@@ -40,7 +40,7 @@ NAMESPACE_SOUP
 		runTests();
 		if (failed_tests == 0)
 		{
-			std::cout << "All " << total_tests << " tests ran successfully!";
+			std::cout << "All " << total_tests << " tests ran successfully!\n";
 			erase();
 			exit(0);
 		}
