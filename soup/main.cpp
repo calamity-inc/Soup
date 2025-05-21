@@ -23,8 +23,9 @@ NAMESPACE_SOUP
 			freopen_s(&f, "CONOUT$", "w", stdout);
 		}
 
+		// lpCmdLine seems to shift argv[1] to argv[0], so using GetCommandLineW
 		int argc;
-		wchar_t** argv = CommandLineToArgvW(lpCmdLine, &argc);
+		wchar_t** argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
 		return windows(argc, argv, entrypoint, console);
 	}
