@@ -185,6 +185,10 @@ NAMESPACE_SOUP
 				{
 					return "Madlions MAD68HE"; // Thanks to CaelTheColher for providing the layout
 				}
+				else if (hid.product_id == 0x10A7)
+				{
+					return "Madlions MAD68R"; // Sorta the same as MAD68HE
+				}
 				// If I wanted to be stupid, I could buy their FIRE68 Ultra & NANO68 Pro just to map in the layouts for the shitty polling interface.
 			}
 		}
