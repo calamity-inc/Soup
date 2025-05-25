@@ -25,7 +25,7 @@ foreach (scandir("../../lang") as $file)
 				$uncompressed .= "\0";
 			}
 		}
-		$bin_str = gzcompress($uncompressed);
+		$bin_str = gzcompress($uncompressed, 9);
 		fwrite($fh, "static const char compressed_".$code."[] = { '\\x".join("', '\\x", array_map("dechex", array_map("ord", str_split($bin_str))))."' };\n");
 	}
 }
