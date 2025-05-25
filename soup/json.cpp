@@ -1,5 +1,6 @@
 #include "json.hpp"
 
+#include "filesystem.hpp"
 #include "JsonArray.hpp"
 #include "JsonBool.hpp"
 #include "JsonFloat.hpp"
@@ -26,6 +27,18 @@ NAMESPACE_SOUP
 		jtw.addToObject = [](void*, void* obj, void* key, void* value) -> void { ((JsonObject*)obj)->children.emplace_back((JsonNode*)key, (JsonNode*)value); };
 		jtw.free = [](void*, void* node) -> void { delete (JsonNode*)node; };
 		return (JsonNode*)decode(jtw, nullptr, data, size, max_depth);
+	}
+
+	UniquePtr<JsonNode> json::decodeFile(const std::filesystem::path& path, int max_depth)
+	{
+		UniquePtr<JsonNode> res;
+		size_t size;
+		if (auto data = filesystem::createFileMapping(path, size))
+		{
+			res = json::decode((const char*)data, size, max_depth);
+			filesystem::destroyFileMapping(data, size);
+		}
+		return res;
 	}
 
 	void* json::decode(const JsonTreeWriter& tw, void* user_data, const char*& c, size_t& s, int max_depth)
