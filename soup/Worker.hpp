@@ -30,13 +30,6 @@ NAMESPACE_SOUP
 			PROMISE_VOID,
 		};
 
-		enum SchedulingDisposition : int
-		{
-			HIGH_FREQUENCY = (1 << 1) | (1 << 0),
-			NEUTRAL = 1 << 0,
-			LOW_FREQUENCY = 0,
-		};
-
 		uint8_t type;
 		uint8_t recursions = 0;
 		HoldupType holdup_type = NONE;

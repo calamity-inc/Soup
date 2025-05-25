@@ -182,7 +182,7 @@ NAMESPACE_SOUP
 			});
 #endif
 
-			int dispo = Worker::NEUTRAL;
+			int dispo = Task::NEUTRAL;
 
 			if (w.holdup_type == Worker::IDLE)
 			{
@@ -208,9 +208,9 @@ NAMESPACE_SOUP
 			}
 
 			workload_flags |= dispo;
-			static_assert((int)Worker::HIGH_FREQUENCY == ((int)HAS_HIGH_FREQUENCY_TASKS | (int)NOT_JUST_SOCKETS));
-			static_assert((int)Worker::NEUTRAL == (int)NOT_JUST_SOCKETS);
-			static_assert((int)Worker::LOW_FREQUENCY == (int)0);
+			static_assert((int)Task::HIGH_FREQUENCY == ((int)HAS_HIGH_FREQUENCY_TASKS | (int)NOT_JUST_SOCKETS));
+			static_assert((int)Task::NEUTRAL == (int)NOT_JUST_SOCKETS);
+			static_assert((int)Task::LOW_FREQUENCY == (int)0);
 		}
 	}
 
