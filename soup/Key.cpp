@@ -165,6 +165,18 @@ NAMESPACE_SOUP
 		return MapVirtualKeyA(soup_key_to_ps2_scancode(key), MAPVK_VSC_TO_VK_EX);
 	}
 
+	int char_to_virtual_key(char c) noexcept
+	{
+		if ((c >= 'A' && c <= 'Z')
+			|| (c >= '0' && c <= '9')
+			|| c == ' '
+			)
+		{
+			return static_cast<int>(c);
+		}
+		return 0;
+	}
+
 	Key virtual_key_to_soup_key(int vk) noexcept
 	{
 		return ps2_scancode_to_soup_key(static_cast<uint16_t>(MapVirtualKeyA(vk, MAPVK_VK_TO_VSC_EX)));
