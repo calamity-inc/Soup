@@ -197,7 +197,7 @@ NAMESPACE_SOUP
 				{
 					if (e.second == letter_pattern)
 					{
-						str.append(unicode::utf32_to_utf8(e.first));
+						str.append(unicode::utf32_to_utf8(static_cast<char32_t>(e.first)));
 						goto _continue_2;
 					}
 				}
