@@ -174,6 +174,10 @@ NAMESPACE_SOUP
 		{
 			return static_cast<int>(c);
 		}
+		if (c >= 'a' && c <= 'z')
+		{
+			return static_cast<int>(c + ('A' - 'a'));
+		}
 		return 0;
 	}
 
