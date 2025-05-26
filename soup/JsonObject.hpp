@@ -36,6 +36,7 @@ NAMESPACE_SOUP
 		void erase(const JsonNode& k) noexcept;
 		void erase(std::string k) noexcept;
 		void erase(Container::const_iterator it) noexcept;
+		[[nodiscard]] bool empty() const noexcept { return children.empty(); }
 		void clear() noexcept;
 		[[nodiscard]] auto begin() noexcept { return children.begin(); }
 		[[nodiscard]] auto end() noexcept { return children.end(); }
