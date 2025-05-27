@@ -1,6 +1,7 @@
 #include "TreeWriter.hpp"
 
 #include "BitReader.hpp"
+#include "Reader.hpp"
 
 NAMESPACE_SOUP
 {
@@ -17,6 +18,26 @@ NAMESPACE_SOUP
 			}
 			std::string value;
 			if (!r.str_utf8_nt(value))
+			{
+				break;
+			}
+			fromBinary(r, createChild(root, std::move(name), std::move(value)));
+		}
+	}
+
+	void TreeWriter::fromBinary(Reader& r, void* root) const
+	{
+		while (true)
+		{
+			std::string name;
+			if (!r.str_lp_u64_dyn_v2(name)
+				|| name.empty()
+				)
+			{
+				break;
+			}
+			std::string value;
+			if (!r.str_lp_u64_dyn_v2(value))
 			{
 				break;
 			}

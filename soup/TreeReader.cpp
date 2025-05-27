@@ -5,6 +5,7 @@
 #include "BitWriter.hpp"
 #include "cat.hpp"
 #include "string.hpp"
+#include "Writer.hpp"
 
 NAMESPACE_SOUP
 {
@@ -118,5 +119,24 @@ NAMESPACE_SOUP
 			}
 		}
 		w.str_utf8_nt({});
+	}
+
+	void TreeReader::toBinary(Writer& w, const void* root) const
+	{
+		SOUP_ASSERT(canHaveChildren(root));
+		const size_t num_children = getNumChildren(root);
+		for (size_t i = 0; i != num_children; ++i)
+		{
+			const void* const child = getChild(root, i);
+			auto name = getName(child);
+			SOUP_ASSERT(!name.empty());
+			w.str_lp_u64_dyn_v2(name);
+			w.str_lp_u64_dyn_v2(getValue(child));
+			if (canHaveChildren(child))
+			{
+				toBinary(w, child);
+			}
+		}
+		w.str_lp_u64_dyn_v2({});
 	}
 }
