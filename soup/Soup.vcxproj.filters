@@ -1073,7 +1073,7 @@
     <ClInclude Include="GetFileContentsTask.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="ReuseTag.hpp">
+    <ClInclude Include="netReuseTag.hpp">
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="SchedulerStats.hpp">

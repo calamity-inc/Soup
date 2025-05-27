@@ -7,7 +7,7 @@
 #include "log.hpp"
 #include "os.hpp"
 #include "Promise.hpp"
-#include "ReuseTag.hpp"
+#include "netReuseTag.hpp"
 #include "Socket.hpp"
 #include "Task.hpp"
 #include "time.hpp"
@@ -372,10 +372,10 @@ NAMESPACE_SOUP
 		for (const auto& w : workers)
 		{
 			if (w->type == WORKER_TYPE_SOCKET
-				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
-				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).host == host
-				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).port == port
-				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).tls == tls
+				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(netReuseTag)
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(netReuseTag).host == host
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(netReuseTag).port == port
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(netReuseTag).tls == tls
 				)
 			{
 				return w;
@@ -387,10 +387,10 @@ NAMESPACE_SOUP
 		{
 			const SharedPtr<Socket>& w = node->data;
 			if (w->type == WORKER_TYPE_SOCKET
-				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
-				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).host == host
-				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).port == port
-				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).tls == tls
+				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(netReuseTag)
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(netReuseTag).host == host
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(netReuseTag).port == port
+				&& static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(netReuseTag).tls == tls
 				)
 			{
 				return w;
@@ -405,8 +405,8 @@ NAMESPACE_SOUP
 		for (const auto& w : workers)
 		{
 			if (w->type == WORKER_TYPE_SOCKET
-				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(ReuseTag)
-				&& !static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(ReuseTag).is_busy
+				&& static_cast<Socket*>(w.get())->custom_data.isStructInMap(netReuseTag)
+				&& !static_cast<Socket*>(w.get())->custom_data.getStructFromMapConst(netReuseTag).is_busy
 				)
 			{
 				static_cast<Socket*>(w.get())->close();

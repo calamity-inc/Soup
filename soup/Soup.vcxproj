@@ -898,7 +898,7 @@
     <ClInclude Include="NativeString.hpp" />
     <ClInclude Include="netConfig.hpp" />
     <ClInclude Include="netConnectTask.hpp" />
-    <ClInclude Include="ReuseTag.hpp" />
+    <ClInclude Include="netReuseTag.hpp" />
     <ClInclude Include="Rgba.hpp" />
     <ClInclude Include="RgbaCanvas.hpp" />
     <ClInclude Include="SchedulerStats.hpp" />
