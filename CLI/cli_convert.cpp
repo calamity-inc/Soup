@@ -4,7 +4,8 @@
 
 #include <cat.hpp>
 #include <FileReader.hpp>
-#include <JsonObject.hpp>
+#include <FileWriter.hpp>
+#include <json.hpp>
 #include <string.hpp>
 
 using namespace soup;
@@ -39,6 +40,26 @@ int cli_cat2json(int argc, const char** argv)
 	else
 	{
 		std::cout << "Syntax: soup cat2json <file>" << std::endl;
+	}
+	return 1;
+}
+
+int cli_json2bin(int argc, const char** argv)
+{
+	if (argc > 2)
+	{
+		std::string name = argv[2];
+		if (auto jr = json::decodeFile(name))
+		{
+			FileWriter fw(name + ".bin");
+			jr->binaryEncode(fw);
+			return 0;
+		}
+		std::cout << "Failed to parse input file." << std::endl;
+	}
+	else
+	{
+		std::cout << "Syntax: soup json2bin <file>" << std::endl;
 	}
 	return 1;
 }

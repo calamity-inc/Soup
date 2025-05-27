@@ -407,6 +407,11 @@ int main(int argc, const char** argv)
 			return cli_ircserver();
 		}
 
+		if (subcommand == "json2bin")
+		{
+			return cli_json2bin(argc, argv);
+		}
+
 		if (subcommand == "keyboard")
 		{
 			cli_keyboard();
@@ -589,6 +594,7 @@ int main(int argc, const char** argv)
 	string::listAppend(all_tools, "html");
 	string::listAppend(all_tools, "http");
 	string::listAppend(all_tools, "ircserver");
+	string::listAppend(all_tools, "json2bin");
 	string::listAppend(all_tools, "keyboard");
 	string::listAppend(all_tools, "maze");
 	string::listAppend(all_tools, "mesh");
