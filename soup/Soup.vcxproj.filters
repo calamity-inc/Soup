@@ -494,16 +494,16 @@
       <Filter>util\string</Filter>
     </ClInclude>
     <ClInclude Include="AtomicDeque.hpp">
-      <Filter>util\atomic_containers</Filter>
+      <Filter>data\container\atomic</Filter>
     </ClInclude>
     <ClInclude Include="AtomicStack.hpp">
-      <Filter>util\atomic_containers</Filter>
+      <Filter>data\container\atomic</Filter>
     </ClInclude>
     <ClInclude Include="PoppedNode.hpp">
-      <Filter>util\atomic_containers</Filter>
+      <Filter>data\container\atomic</Filter>
     </ClInclude>
     <ClInclude Include="LinkedIterator.hpp">
-      <Filter>util\atomic_containers</Filter>
+      <Filter>data\container\atomic</Filter>
     </ClInclude>
     <ClInclude Include="ModuleHider.hpp">
       <Filter>os</Filter>
@@ -2593,9 +2593,6 @@
     <Filter Include="data\enc">
       <UniqueIdentifier>{d42a16a2-9997-4a38-b9ab-9db1a0abfb79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="util\atomic_containers">
-      <UniqueIdentifier>{a887a824-7b3f-4831-b102-4a7c9d4530e3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net\mysql">
       <UniqueIdentifier>{9c39909c-d109-4853-b572-c2fa9de042e3}</UniqueIdentifier>
     </Filter>
@@ -2760,6 +2757,9 @@
     </Filter>
     <Filter Include="io\tar">
       <UniqueIdentifier>{362041cb-1458-4b94-a12e-e5369f3ce84e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\container\atomic">
+      <UniqueIdentifier>{a887a824-7b3f-4831-b102-4a7c9d4530e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
