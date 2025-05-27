@@ -3,7 +3,6 @@
 #include <fstream>
 
 #include "console.hpp"
-#include "ControlInput.hpp"
 #include "EditorText.hpp"
 #include "unicode.hpp"
 

@@ -5,7 +5,6 @@
 #include <gmBox.hpp>
 #include <Canvas.hpp>
 #include <console.hpp>
-#include <ControlInput.hpp>
 #include <Plane.hpp>
 #include <PointLight.hpp>
 #include <Poly.hpp>

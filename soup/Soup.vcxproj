@@ -1007,7 +1007,6 @@
     <ClInclude Include="ChessSquare.hpp" />
     <ClInclude Include="code_tree.hpp" />
     <ClInclude Include="ConstString.hpp" />
-    <ClInclude Include="ControlInput.hpp" />
     <ClInclude Include="ConuiApp.hpp" />
     <ClInclude Include="ConuiBase.hpp" />
     <ClInclude Include="ConuiDiv.hpp" />

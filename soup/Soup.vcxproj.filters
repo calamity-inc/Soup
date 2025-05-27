@@ -253,9 +253,6 @@
     <ClInclude Include="signal.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="ControlInput.hpp">
-      <Filter>os</Filter>
-    </ClInclude>
     <ClInclude Include="EditorFile.hpp">
       <Filter>vis\ui\editor</Filter>
     </ClInclude>

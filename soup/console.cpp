@@ -4,7 +4,6 @@
 
 #include <thread>
 
-#include "ControlInput.hpp"
 #include "MouseButton.hpp"
 #include "unicode.hpp"
 
