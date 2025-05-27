@@ -856,7 +856,6 @@
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="StringPool.hpp" />
     <ClInclude Include="Sudoku.hpp" />
-    <ClInclude Include="T128.hpp" />
     <ClInclude Include="TarIndexedFile.hpp" />
     <ClInclude Include="TarReader.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
