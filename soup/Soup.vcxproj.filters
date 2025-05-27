@@ -544,16 +544,10 @@
     <ClInclude Include="MysqlStmtExecute.hpp">
       <Filter>net\mysql</Filter>
     </ClInclude>
-    <ClInclude Include="Mixed.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="code_tree.hpp">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="unit_testing.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceLocation.hpp">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="Bigfloat.hpp">
@@ -568,14 +562,8 @@
     <ClInclude Include="ffi.hpp">
       <Filter>os</Filter>
     </ClInclude>
-    <ClInclude Include="Searchspace.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="FormattedText.hpp">
       <Filter>vis</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstString.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="Scene.hpp">
       <Filter>math\3d\scene</Filter>
@@ -796,9 +784,6 @@
     <ClInclude Include="SharedPtr.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="IntStruct.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="Endian.hpp">
       <Filter>util</Filter>
     </ClInclude>
@@ -903,12 +888,6 @@
     </ClInclude>
     <ClInclude Include="netInfo.hpp">
       <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="spaceship.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="version_compare.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="Task.hpp">
       <Filter>task</Filter>
@@ -1094,9 +1073,6 @@
     <ClInclude Include="GetFileContentsTask.hpp">
       <Filter>task</Filter>
     </ClInclude>
-    <ClInclude Include="memory.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="ReuseTag.hpp">
       <Filter>net</Filter>
     </ClInclude>
@@ -1111,12 +1087,6 @@
     </ClInclude>
     <ClInclude Include="Uuid.hpp">
       <Filter>data</Filter>
-    </ClInclude>
-    <ClInclude Include="UniqueList.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="Benchmark.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="textmate_grammar.hpp">
       <Filter>lang</Filter>
@@ -1222,9 +1192,6 @@
     </ClInclude>
     <ClInclude Include="Hashmap.hpp">
       <Filter>data\container</Filter>
-    </ClInclude>
-    <ClInclude Include="PointerAndBool.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="dnsCacheResolver.hpp">
       <Filter>net\dns</Filter>
@@ -1355,15 +1322,6 @@
     <ClInclude Include="Ps2Scancode.hpp">
       <Filter>hardware\keyboard</Filter>
     </ClInclude>
-    <ClInclude Include="Optional.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="UniqueListLink.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="parallel.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="netMesh.hpp">
       <Filter>net\mesh</Filter>
     </ClInclude>
@@ -1378,9 +1336,6 @@
     </ClInclude>
     <ClInclude Include="buttons.hpp">
       <Filter>hardware\gamepad</Filter>
-    </ClInclude>
-    <ClInclude Include="Percentage.hpp">
-      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="kbRgbRazerChroma.hpp">
       <Filter>hardware\keyboard\rgb</Filter>
@@ -1629,9 +1584,6 @@
     <ClInclude Include="sha256_intrin.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
-    <ClInclude Include="UnorderedMap.hpp">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="TarReader.hpp">
       <Filter>io\tar</Filter>
     </ClInclude>
@@ -1662,11 +1614,59 @@
     <ClInclude Include="IrcServer.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="GarbageCollector.hpp">
-      <Filter>util</Filter>
+    <ClInclude Include="PointerAndBool.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="UniqueList.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="UniqueListLink.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="Benchmark.hpp">
+      <Filter>util\time</Filter>
+    </ClInclude>
+    <ClInclude Include="UnorderedMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstString.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="Mixed.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="IntStruct.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="Optional.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceLocation.hpp">
+      <Filter>util\debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Searchspace.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="Percentage.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="parallel.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="version_compare.hpp">
+      <Filter>algos</Filter>
+    </ClInclude>
+    <ClInclude Include="spaceship.hpp">
+      <Filter>util\polyfill</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.hpp">
+      <Filter>util\polyfill</Filter>
     </ClInclude>
     <ClInclude Include="tunables.hpp">
-      <Filter>util</Filter>
+      <Filter>util\config</Filter>
+    </ClInclude>
+    <ClInclude Include="GarbageCollector.hpp">
+      <Filter>mem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1919,9 +1919,6 @@
     <ClCompile Include="OpaqueString.cpp">
       <Filter>util\string</Filter>
     </ClCompile>
-    <ClCompile Include="Mixed.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="unit_testing.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -2111,12 +2108,6 @@
     <ClCompile Include="Reader.cpp">
       <Filter>io\stream</Filter>
     </ClCompile>
-    <ClCompile Include="spaceship.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="version_compare.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="Task.cpp">
       <Filter>task</Filter>
     </ClCompile>
@@ -2201,9 +2192,6 @@
     </ClCompile>
     <ClCompile Include="Capture.cpp">
       <Filter>task</Filter>
-    </ClCompile>
-    <ClCompile Include="Benchmark.cpp">
-      <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="textmate_grammar.cpp">
       <Filter>lang</Filter>
@@ -2298,9 +2286,6 @@
     </ClCompile>
     <ClCompile Include="kbRgb.cpp">
       <Filter>hardware\keyboard\rgb</Filter>
-    </ClCompile>
-    <ClCompile Include="parallel.cpp">
-      <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="Key.cpp">
       <Filter>hardware\keyboard</Filter>
@@ -2498,11 +2483,26 @@
     <ClCompile Include="IrcServer.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="GarbageCollector.cpp">
-      <Filter>util</Filter>
+    <ClCompile Include="Benchmark.cpp">
+      <Filter>util\time</Filter>
+    </ClCompile>
+    <ClCompile Include="Mixed.cpp">
+      <Filter>data\container</Filter>
+    </ClCompile>
+    <ClCompile Include="parallel.cpp">
+      <Filter>algos</Filter>
+    </ClCompile>
+    <ClCompile Include="version_compare.cpp">
+      <Filter>algos</Filter>
+    </ClCompile>
+    <ClCompile Include="spaceship.cpp">
+      <Filter>util\polyfill</Filter>
     </ClCompile>
     <ClCompile Include="tunables.cpp">
-      <Filter>util</Filter>
+      <Filter>util\config</Filter>
+    </ClCompile>
+    <ClCompile Include="GarbageCollector.cpp">
+      <Filter>mem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2760,6 +2760,15 @@
     </Filter>
     <Filter Include="data\container\atomic">
       <UniqueIdentifier>{a887a824-7b3f-4831-b102-4a7c9d4530e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\debug">
+      <UniqueIdentifier>{3942a9eb-114b-4a54-8b75-e7e210eae7e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\polyfill">
+      <UniqueIdentifier>{ebbcf17a-7d82-4a37-b24b-08701d657633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util\config">
+      <UniqueIdentifier>{7c9623e7-7b68-4531-b297-c4c8f60a8a63}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
