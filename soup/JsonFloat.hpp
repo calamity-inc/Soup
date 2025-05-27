@@ -12,6 +12,7 @@ NAMESPACE_SOUP
 
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
 		bool binaryEncode(Writer& w) const final;
+		bool binaryEncodeV2(Writer& w) const final;
 
 		operator double() const noexcept
 		{

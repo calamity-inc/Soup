@@ -30,8 +30,41 @@ NAMESPACE_SOUP
 			return w.u8(b);
 		}
 		b |= (0b11111 << 3);
-		return w.u8(b)
-			&& w.i64_dyn(value)
-			;
+		bool ret = w.u8(b);
+		ret &= w.i64_dyn(value);
+		return ret;
+	}
+
+	bool JsonInt::binaryEncodeV2(Writer& w) const
+	{
+		bool ret;
+
+		uint64_t u;
+		bool neg = (value < 0);
+		if (neg)
+		{
+			u = (value * -1) - 1;
+		}
+		else
+		{
+			u = value;
+		}
+
+		// 2 type bits, 1 sign bit, 4 value bits, 1 'more' bit
+		uint8_t b = 1;
+		b |= (static_cast<uint8_t>(neg) << 2);
+		b |= (u & 0b1111) << 3;
+		u >>= 4;
+		if (u)
+		{
+			b |= 0x80;
+			ret = w.u8(b);
+			ret &= w.u64_dyn_v2(u);
+		}
+		else
+		{
+			ret = w.u8(b);
+		}
+		return ret;
 	}
 }

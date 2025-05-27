@@ -32,4 +32,10 @@ NAMESPACE_SOUP
 		b |= (value << 3);
 		return w.u8(b);
 	}
+
+	bool JsonBool::binaryEncodeV2(Writer& w) const
+	{
+		uint8_t b = (value << 2);
+		return w.u8(b);
+	}
 }

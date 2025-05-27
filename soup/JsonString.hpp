@@ -21,6 +21,7 @@ NAMESPACE_SOUP
 		static void encodeValue(std::string& str, const std::string& value) SOUP_EXCAL { return encodeValue(str, value.data(), value.size()); }
 		static void encodeValue(std::string& str, const char* data, size_t size) SOUP_EXCAL;
 		bool binaryEncode(Writer& w) const final;
+		bool binaryEncodeV2(Writer& w) const final;
 
 		operator std::string& () noexcept
 		{

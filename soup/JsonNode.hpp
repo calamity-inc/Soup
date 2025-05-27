@@ -31,7 +31,9 @@ NAMESPACE_SOUP
 		virtual void encodeAndAppendTo(std::string& str) const SOUP_EXCAL = 0;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 
-		virtual bool binaryEncode(Writer& w) const = 0; // specific to soup
+		// The binary formats are specific to Soup. (No real "binary JSON" standard exists afaict.)
+		virtual bool binaryEncode(Writer& w) const = 0;
+		virtual bool binaryEncodeV2(Writer& w) const = 0;
 
 		[[nodiscard]] UniquePtr<JsonNode> clone() const SOUP_EXCAL;
 

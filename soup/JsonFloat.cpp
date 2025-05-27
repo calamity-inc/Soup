@@ -24,4 +24,14 @@ NAMESPACE_SOUP
 			&& w.u64le(val)
 			;
 	}
+
+	bool JsonFloat::binaryEncodeV2(Writer& w) const
+	{
+		uint8_t b = (3 << 2);
+		uint64_t val;
+		*reinterpret_cast<double*>(&val) = value;
+		return w.u8(b)
+			&& w.u64le(val)
+			;
+	}
 }

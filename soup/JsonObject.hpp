@@ -22,6 +22,7 @@ NAMESPACE_SOUP
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 
 		bool binaryEncode(Writer& w) const final;
+		bool binaryEncodeV2(Writer& w) const final;
 
 		[[nodiscard]] JsonNode* find(std::string k) const noexcept;
 		[[nodiscard]] JsonNode* find(const JsonNode& k) const noexcept;

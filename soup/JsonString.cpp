@@ -219,4 +219,25 @@ NAMESPACE_SOUP
 			&& w.str_lp_u64_dyn(*this)
 			;
 	}
+
+	bool JsonString::binaryEncodeV2(Writer& w) const
+	{
+		bool ret;
+		size_t size = value.size();
+		uint8_t b = 2; // 2 type bits, 5 size bits, 1 'bigger' bit
+		b |= (size & 0b11111) << 2;
+		size >>= 5;
+		if (size)
+		{
+			b |= 0x80;
+			ret = w.u8(b);
+			ret &= w.u64_dyn_v2(size);
+		}
+		else
+		{
+			ret = w.u8(b);
+		}
+		ret &= w.raw(const_cast<char*>(value.data()), value.size());
+		return ret;
+	}
 }

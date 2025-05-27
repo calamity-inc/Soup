@@ -235,14 +235,14 @@ NAMESPACE_SOUP
 	UniquePtr<JsonNode> json::binaryDecode(Reader& r)
 	{
 		uint8_t b;
-		if (r.u8(b))
+		SOUP_IF_LIKELY (r.u8(b))
 		{
 			uint8_t type = (b & 0b111);
 			if (type == JSON_INT)
 			{
 				uint8_t extra = (b >> 3);
 				int64_t val;
-				if (extra == 0b11111
+				SOUP_IF_LIKELY (extra == 0b11111
 					? r.i64_dyn(val)
 					: (val = extra, true)
 					)
@@ -253,7 +253,7 @@ NAMESPACE_SOUP
 			else if (type == JSON_FLOAT)
 			{
 				uint64_t val;
-				if (r.u64le(val))
+				SOUP_IF_LIKELY (r.u64le(val))
 				{
 					return soup::make_unique<JsonFloat>(*reinterpret_cast<double*>(&val));
 				}
@@ -262,7 +262,7 @@ NAMESPACE_SOUP
 			{
 				uint8_t len = (b >> 3);
 				std::string val;
-				if (len == 0b11111
+				SOUP_IF_LIKELY (len == 0b11111
 					? r.str_lp_u64_dyn(val)
 					: r.str(len, val)
 					)
@@ -285,7 +285,7 @@ NAMESPACE_SOUP
 				{
 					UniquePtr<JsonNode> node;
 
-					if (node = binaryDecode(r), !node)
+					SOUP_IF_UNLIKELY (node = binaryDecode(r), !node)
 					{
 						break;
 					}
@@ -302,11 +302,11 @@ NAMESPACE_SOUP
 					UniquePtr<JsonNode> key;
 					UniquePtr<JsonNode> val;
 
-					if (key = binaryDecode(r), !key)
+					SOUP_IF_UNLIKELY (key = binaryDecode(r), !key)
 					{
 						break;
 					}
-					if (val = binaryDecode(r), !val)
+					SOUP_IF_UNLIKELY (val = binaryDecode(r), !val)
 					{
 						break;
 					}
@@ -314,6 +314,134 @@ NAMESPACE_SOUP
 					obj->children.emplace_back(std::move(key), std::move(val));
 				}
 				return obj;
+			}
+		}
+		return {};
+	}
+
+	UniquePtr<JsonNode> json::binaryDecodeV2(Reader& r)
+	{
+		uint8_t b;
+		SOUP_IF_LIKELY (r.u8(b))
+		{
+			switch (b & 0b11)
+			{
+			case 0:
+				switch (b >> 2)
+				{
+				case 0: // False
+					return soup::make_unique<JsonBool>(false);
+
+				case 1: // True
+					return soup::make_unique<JsonBool>(true);
+
+				case 2: // Null
+					return soup::make_unique<JsonNull>();
+
+				case 3: // Float
+					{
+						uint64_t val;
+						SOUP_IF_LIKELY (r.u64le(val))
+						{
+							return soup::make_unique<JsonFloat>(*reinterpret_cast<double*>(&val));
+						}
+					}
+					break;
+
+				case 4: // Array
+					{
+						auto arr = soup::make_unique<JsonArray>();
+						while (true)
+						{
+							UniquePtr<JsonNode> node;
+
+							SOUP_IF_UNLIKELY (node = binaryDecodeV2(r), !node)
+							{
+								break;
+							}
+
+							arr->children.emplace_back(std::move(node));
+						}
+						return arr;
+					}
+					break;
+
+				case 5: // Object
+					{
+						auto obj = soup::make_unique<JsonObject>();
+						while (true)
+						{
+							UniquePtr<JsonNode> key;
+							UniquePtr<JsonNode> val;
+
+							SOUP_IF_UNLIKELY (key = binaryDecodeV2(r), !key)
+							{
+								break;
+							}
+							SOUP_IF_UNLIKELY (val = binaryDecodeV2(r), !val)
+							{
+								break;
+							}
+
+							obj->children.emplace_back(std::move(key), std::move(val));
+						}
+						return obj;
+					}
+					break;
+				}
+				break;
+
+			case 1: // Int
+			{
+				bool neg = (b >> 2) & 1;
+				uint64_t u = (b >> 3) & 0b1111;
+				bool more = (b >> 7) & 1;
+				if (more)
+				{
+					uint64_t extra;
+					SOUP_IF_UNLIKELY (!r.u64_dyn_v2(extra))
+					{
+						return {};
+					}
+					u |= (extra << 4);
+				}
+
+				int64_t value;
+				if (neg)
+				{
+					value = (u * -1) - 1;
+				}
+				else
+				{
+					value = u;
+				}
+
+				return soup::make_unique<JsonInt>(value);
+			}
+
+			case 2: // String
+			{
+				size_t size = (b >> 2) & 0b11111;
+				bool bigger = (b >> 7) & 1;
+				if (bigger)
+				{
+					uint64_t extra;
+					SOUP_IF_UNLIKELY (!r.u64_dyn_v2(extra))
+					{
+						return {};
+					}
+					size |= (extra << 5);
+				}
+				std::string value;
+				SOUP_IF_UNLIKELY (!r.str(size, value))
+				{
+					return {};
+				}
+				return soup::make_unique<JsonString>(std::move(value));
+			}
+
+			case 3: // End of array/object (0xff)
+				break;
 			}
 		}
 		return {};

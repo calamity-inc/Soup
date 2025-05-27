@@ -59,7 +59,7 @@ NAMESPACE_SOUP
 	{
 		{
 			uint8_t b = JSON_ARRAY;
-			if (!w.u8(b))
+			SOUP_IF_UNLIKELY (!w.u8(b))
 			{
 				return false;
 			}
@@ -67,7 +67,7 @@ NAMESPACE_SOUP
 
 		for (const auto& child : children)
 		{
-			if (!child->binaryEncode(w))
+			SOUP_IF_UNLIKELY (!child->binaryEncode(w))
 			{
 				return false;
 			}
@@ -75,7 +75,36 @@ NAMESPACE_SOUP
 
 		{
 			uint8_t b = 0b111;
-			if (!w.u8(b))
+			SOUP_IF_UNLIKELY (!w.u8(b))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool JsonArray::binaryEncodeV2(Writer& w) const
+	{
+		{
+			uint8_t b = (4 << 2);
+			SOUP_IF_UNLIKELY (!w.u8(b))
+			{
+				return false;
+			}
+		}
+
+		for (const auto& child : children)
+		{
+			SOUP_IF_UNLIKELY (!child->binaryEncodeV2(w))
+			{
+				return false;
+			}
+		}
+
+		{
+			uint8_t b = 0xff;
+			SOUP_IF_UNLIKELY (!w.u8(b))
 			{
 				return false;
 			}
