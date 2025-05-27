@@ -147,6 +147,14 @@ NAMESPACE_SOUP
 			return ret;
 		}
 
+		// Length-prefixed string, using u64_dyn_v2 for the length prefix.
+		bool str_lp_u64_dyn_v2(const std::string& v) noexcept
+		{
+			bool ret = u64_dyn_v2(v.size());
+			ret &= raw(const_cast<char*>(v.data()), v.size());
+			return ret;
+		}
+
 		// Length-prefixed string, using mysql_lenenc for the length prefix.
 		bool str_lp_mysql(const std::string& v) noexcept
 		{
