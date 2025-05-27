@@ -721,38 +721,8 @@
     <ClInclude Include="huffman_tree.hpp">
       <Filter>data</Filter>
     </ClInclude>
-    <ClInclude Include="szArchive.hpp">
-      <Filter>io\sip</Filter>
-    </ClInclude>
-    <ClInclude Include="szFile.hpp">
-      <Filter>io\sip</Filter>
-    </ClInclude>
-    <ClInclude Include="szMethod.hpp">
-      <Filter>io\sip</Filter>
-    </ClInclude>
-    <ClInclude Include="szCompressResult.hpp">
-      <Filter>io\sip</Filter>
-    </ClInclude>
-    <ClInclude Include="szCompressor.hpp">
-      <Filter>io\sip\compressor</Filter>
-    </ClInclude>
     <ClInclude Include="BitString.hpp">
       <Filter>io\bits</Filter>
-    </ClInclude>
-    <ClInclude Include="szPreservationLevel.hpp">
-      <Filter>io\sip</Filter>
-    </ClInclude>
-    <ClInclude Include="szJsonCompressor.hpp">
-      <Filter>io\sip\compressor</Filter>
-    </ClInclude>
-    <ClInclude Include="szStoreCompressor.hpp">
-      <Filter>io\sip\compressor</Filter>
-    </ClInclude>
-    <ClInclude Include="szUnicodeCompressor.hpp">
-      <Filter>io\sip\compressor</Filter>
-    </ClInclude>
-    <ClInclude Include="szEnglishCompressor.hpp">
-      <Filter>io\sip\compressor</Filter>
     </ClInclude>
     <ClInclude Include="elo.hpp">
       <Filter>algos</Filter>
@@ -2072,20 +2042,8 @@
     <ClCompile Include="BitReader.cpp">
       <Filter>io\bits</Filter>
     </ClCompile>
-    <ClCompile Include="szArchive.cpp">
-      <Filter>io\sip</Filter>
-    </ClCompile>
-    <ClCompile Include="szFile.cpp">
-      <Filter>io\sip</Filter>
-    </ClCompile>
     <ClCompile Include="huffman_tree.cpp">
       <Filter>data</Filter>
-    </ClCompile>
-    <ClCompile Include="szCompressor.cpp">
-      <Filter>io\sip\compressor</Filter>
-    </ClCompile>
-    <ClCompile Include="szEnglishCompressor.cpp">
-      <Filter>io\sip\compressor</Filter>
     </ClCompile>
     <ClCompile Include="lyoStyle.cpp">
       <Filter>vis\layout</Filter>
@@ -2685,12 +2643,6 @@
     </Filter>
     <Filter Include="data\container">
       <UniqueIdentifier>{81e9b45e-7d1b-4a89-801c-fbdb09ba896d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="io\sip">
-      <UniqueIdentifier>{1b69c7f0-6589-4133-b608-2e0d70aa1dfc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="io\sip\compressor">
-      <UniqueIdentifier>{9f3701d9-0f6f-4d87-8ffe-48a0aa2cb91f}</UniqueIdentifier>
     </Filter>
     <Filter Include="net\dns">
       <UniqueIdentifier>{5b858f22-62ff-4489-bc21-838a71ed20a5}</UniqueIdentifier>
