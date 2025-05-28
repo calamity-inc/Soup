@@ -165,18 +165,51 @@ NAMESPACE_SOUP
 		return MapVirtualKeyA(soup_key_to_ps2_scancode(key), MAPVK_VSC_TO_VK_EX);
 	}
 
-	int char_to_virtual_key(char c) noexcept
+	int string_to_virtual_key(const char* data, size_t size) noexcept
 	{
-		if ((c >= 'A' && c <= 'Z')
-			|| (c >= '0' && c <= '9')
-			|| c == ' '
-			)
+		if (size == 1)
 		{
-			return static_cast<int>(c);
+			const char c = data[0];
+			if ((c >= 'A' && c <= 'Z')
+				|| (c >= '0' && c <= '9')
+				|| c == ' '
+				)
+			{
+				return static_cast<int>(c);
+			}
+			if (c >= 'a' && c <= 'z')
+			{
+				return static_cast<int>(c + ('A' - 'a'));
+			}
 		}
-		if (c >= 'a' && c <= 'z')
+		else if (size == 2)
 		{
-			return static_cast<int>(c + ('A' - 'a'));
+			if (data[0] == 'F'
+				&& (data[1] >= '1' && data[1] <= '9')
+				)
+			{
+				return VK_F1 + (data[1] - '1');
+			}
+		}
+		else if (size == 3)
+		{
+			if (data[0] == 'F')
+			{
+				if (data[1] == '1')
+				{
+					if (data[2] >= '0' && data[2] <= '9')
+					{
+						return VK_F10 + (data[1] - '0');
+					}
+				}
+				else if (data[1] == '2')
+				{
+					if (data[2] >= '0' && data[2] <= '4')
+					{
+						return VK_F20 + (data[1] - '0');
+					}
+				}
+			}
 		}
 		return 0;
 	}

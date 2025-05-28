@@ -157,7 +157,8 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 	[[nodiscard]] int soup_key_to_virtual_key(uint8_t key) noexcept; // E.g. KEY_Y -> 'Y'
 	[[nodiscard]] int soup_key_to_translated_virtual_key(uint8_t key) noexcept; // E.g. KEY_Y -> 'Y' or 'Z' depending on user's layout
-	[[nodiscard]] int char_to_virtual_key(char c) noexcept;
+	[[nodiscard]] int string_to_virtual_key(const char* data, size_t size) noexcept;
+	[[deprecated]] inline int char_to_virtual_key(const char c) noexcept { return string_to_virtual_key(&c, 1); }
 
 	[[nodiscard]] Key virtual_key_to_soup_key(int vk) noexcept;
 #endif
