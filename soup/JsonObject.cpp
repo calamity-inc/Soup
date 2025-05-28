@@ -113,7 +113,7 @@ NAMESPACE_SOUP
 		}
 
 		{
-			uint8_t b = 0xff;
+			uint8_t b = 0xfc;
 			SOUP_IF_UNLIKELY (!w.u8(b))
 			{
 				return false;

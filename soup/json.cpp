@@ -388,38 +388,13 @@ NAMESPACE_SOUP
 						return obj;
 					}
 					break;
+
+				case 0b111111: // End of array/object (0xfc)
+					break;
 				}
 				break;
 
-			case 1: // Int
-			{
-				bool neg = (b >> 2) & 1;
-				uint64_t u = (b >> 3) & 0b1111;
-				bool more = (b >> 7) & 1;
-				if (more)
-				{
-					uint64_t extra;
-					SOUP_IF_UNLIKELY (!r.u64_dyn_v2(extra))
-					{
-						return {};
-					}
-					u |= (extra << 4);
-				}
-
-				int64_t value;
-				if (neg)
-				{
-					value = (u * -1) - 1;
-				}
-				else
-				{
-					value = u;
-				}
-
-				return soup::make_unique<JsonInt>(value);
-			}
-
-			case 2: // String
+			case 1: // String
 			{
 				size_t size = (b >> 2) & 0b11111;
 				bool bigger = (b >> 7) & 1;
@@ -440,8 +415,34 @@ NAMESPACE_SOUP
 				return soup::make_unique<JsonString>(std::move(value));
 			}
 
-			case 3: // End of array/object (0xff)
-				break;
+			case 2: // Positive Int (0b10)
+			case 3: // Negative Int (0b11)
+			{
+				bool neg = b & 1;
+				uint64_t u = (b >> 2) & 0b11111;
+				bool more = (b >> 7) & 1;
+				if (more)
+				{
+					uint64_t extra;
+					SOUP_IF_UNLIKELY (!r.u64_dyn_v2(extra))
+					{
+						return {};
+					}
+					u |= (extra << 5);
+				}
+
+				int64_t value;
+				if (neg)
+				{
+					value = (u * -1) - 1;
+				}
+				else
+				{
+					value = u;
+				}
+
+				return soup::make_unique<JsonInt>(value);
+			}
 			}
 		}
 		return {};

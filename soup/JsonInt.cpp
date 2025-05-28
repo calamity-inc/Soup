@@ -50,11 +50,10 @@ NAMESPACE_SOUP
 			u = value;
 		}
 
-		// 2 type bits, 1 sign bit, 4 value bits, 1 'more' bit
-		uint8_t b = 1;
-		b |= (static_cast<uint8_t>(neg) << 2);
-		b |= (u & 0b1111) << 3;
-		u >>= 4;
+		// 2 type bits (incl. 1 sign bit), 5 value bits, 1 'more' bit
+		uint8_t b = 2 + neg;
+		b |= (u & 0b11111) << 2;
+		u >>= 5;
 		if (u)
 		{
 			b |= 0x80;

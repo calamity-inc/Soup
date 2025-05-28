@@ -224,7 +224,7 @@ NAMESPACE_SOUP
 	{
 		bool ret;
 		size_t size = value.size();
-		uint8_t b = 2; // 2 type bits, 5 size bits, 1 'bigger' bit
+		uint8_t b = 1; // 2 type bits, 5 size bits, 1 'bigger' bit
 		b |= (size & 0b11111) << 2;
 		size >>= 5;
 		if (size)
