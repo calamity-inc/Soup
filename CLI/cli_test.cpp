@@ -612,6 +612,26 @@ static void unit_data()
 			assert(obj.at("age").asInt() == 27);
 			assert(obj.at("phoneNumbers").asArr().at(0).asObj().at("type").asStr() == "home");
 			assert(obj.at("spouse").isNull());
+
+			// Binary formats
+			{
+				StringWriter sw;
+				tree->binaryEncode(sw);
+
+				MemoryRefReader r(sw.data);
+				auto decoded = json::binaryDecode(r);
+				assert(decoded);
+				assert(obj.encode() == decoded->encode());
+			}
+			{
+				StringWriter sw;
+				tree->binaryEncodeV2(sw);
+
+				MemoryRefReader r(sw.data);
+				auto decoded = json::binaryDecodeV2(r);
+				assert(decoded);
+				assert(obj.encode() == decoded->encode());
+			}
 		}
 
 		// Comments
