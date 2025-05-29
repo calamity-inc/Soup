@@ -148,7 +148,7 @@ NAMESPACE_SOUP
 			_BitScanReverse(&ret, mask);
 			return ret;
 #else
- 			return 31 - __builtin_clz(mask);
+			return 31 - __builtin_clz(mask);
 #endif
 		}
 
