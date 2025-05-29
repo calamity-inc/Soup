@@ -52,7 +52,7 @@ int cli_json2bin(int argc, const char** argv)
 		if (auto jr = json::decodeFile(name))
 		{
 			FileWriter fw(name + ".bin");
-			jr->binaryEncode(fw);
+			jr->binaryEncodeV2(fw);
 			return 0;
 		}
 		std::cout << "Failed to parse input file." << std::endl;
