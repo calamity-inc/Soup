@@ -382,6 +382,9 @@ static void unit_data()
 		assert(bitutil::getNumLeadingZeros((uint32_t)0) == 32);
 		assert(bitutil::getNumLeadingZeros((uint32_t)0b1100) == 28);
 		assert(bitutil::getNumLeadingZeros((uint32_t)-1) == 0);
+
+		assert(bitutil::getMostSignificantSetBit((uint32_t)0b1100) == 3);
+		assert(bitutil::getMostSignificantSetBit((uint32_t)-1) == 31);
 	});
 
 	test("unicode", []
