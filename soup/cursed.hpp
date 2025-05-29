@@ -8,10 +8,18 @@ NAMESPACE_SOUP
 	template <typename Desired, typename Actual>
 	[[nodiscard]] Desired ub_cast(Actual a)
 	{
+#if SOUP_CPP20
 		union {
 			Actual a;
 			Desired d;
 		} u{.a = a };
+#else
+		union {
+			Actual a;
+			Desired d;
+		} u;
+		u.a = a;
+#endif
 		SOUP_MOVE_RETURN(u.d);
 	}
 
