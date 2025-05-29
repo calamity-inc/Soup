@@ -14,6 +14,7 @@
 #include <base32.hpp>
 #include <base58.hpp>
 #include <base64.hpp>
+#include <bitutil.hpp>
 #include <cat.hpp>
 #include <punycode.hpp>
 #include <ripemd160.hpp>
@@ -375,6 +376,13 @@ static void unit_data()
 			assert(base64::urlDecode("8J-YgA==") == "😀");
 		});
 	}
+
+	test("bitutil", []
+	{
+		assert(bitutil::getNumLeadingZeros((uint32_t)0) == 32);
+		assert(bitutil::getNumLeadingZeros((uint32_t)0b1100) == 28);
+		assert(bitutil::getNumLeadingZeros((uint32_t)-1) == 0);
+	});
 
 	test("unicode", []
 	{
