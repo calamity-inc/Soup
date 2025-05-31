@@ -631,31 +631,13 @@ static void unit_data()
 			assert(obj.at("phoneNumbers").asArr().at(0).asObj().at("type").asStr() == "home");
 			assert(obj.at("spouse").isNull());
 
-			// Binary formats
+			// MessagePack encoding & decoding
 			{
 				StringWriter sw;
 				tree->msgpackEncode(sw);
 
 				MemoryRefReader r(sw.data);
 				auto decoded = json::msgpackDecode(r);
-				assert(decoded);
-				assert(obj.encode() == decoded->encode());
-			}
-			{
-				StringWriter sw;
-				tree->binaryEncode(sw);
-
-				MemoryRefReader r(sw.data);
-				auto decoded = json::binaryDecode(r);
-				assert(decoded);
-				assert(obj.encode() == decoded->encode());
-			}
-			{
-				StringWriter sw;
-				tree->binaryEncodeV2(sw);
-
-				MemoryRefReader r(sw.data);
-				auto decoded = json::binaryDecodeV2(r);
 				assert(decoded);
 				assert(obj.encode() == decoded->encode());
 			}

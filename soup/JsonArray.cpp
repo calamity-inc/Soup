@@ -89,64 +89,6 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool JsonArray::binaryEncode(Writer& w) const
-	{
-		{
-			uint8_t b = JSON_ARRAY;
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		for (const auto& child : children)
-		{
-			SOUP_IF_UNLIKELY (!child->binaryEncode(w))
-			{
-				return false;
-			}
-		}
-
-		{
-			uint8_t b = 0b111;
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool JsonArray::binaryEncodeV2(Writer& w) const
-	{
-		{
-			uint8_t b = (4 << 2);
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		for (const auto& child : children)
-		{
-			SOUP_IF_UNLIKELY (!child->binaryEncodeV2(w))
-			{
-				return false;
-			}
-		}
-
-		{
-			uint8_t b = 0xfc;
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	JsonNode& JsonArray::at(size_t i) const
 	{
 		return *children.at(i);

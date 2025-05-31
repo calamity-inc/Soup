@@ -34,10 +34,6 @@ NAMESPACE_SOUP
 		// Encodes a MessagePack (https://msgpack.org/) binary stream.
 		virtual bool msgpackEncode(Writer& w) const = 0;
 
-		// These binary formats are specific to Soup. You should prefer MessagePack.
-		virtual bool binaryEncode(Writer& w) const = 0;
-		virtual bool binaryEncodeV2(Writer& w) const = 0;
-
 		[[nodiscard]] UniquePtr<JsonNode> clone() const SOUP_EXCAL;
 
 		// Type casts; will throw if node is of different type.

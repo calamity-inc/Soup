@@ -32,10 +32,6 @@ NAMESPACE_SOUP
 		// If the data represented is not valid JSON (i.e. using extension types), the returned UniquePtr will be default-constructed.
 		[[nodiscard]] static UniquePtr<JsonNode> msgpackDecode(Reader& r);
 
-		// See JsonNode::binaryEncode.
-		[[nodiscard]] static UniquePtr<JsonNode> binaryDecode(Reader& r);
-		[[nodiscard]] static UniquePtr<JsonNode> binaryDecodeV2(Reader& r);
-
 		// internal
 		static void handleLeadingSpace(const char*& c, size_t& s);
 		static void handleComment(const char*& c, size_t& s);

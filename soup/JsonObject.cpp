@@ -96,68 +96,6 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool JsonObject::binaryEncode(Writer& w) const
-	{
-		{
-			uint8_t b = JSON_OBJECT;
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		for (const auto& child : children)
-		{
-			SOUP_IF_UNLIKELY (!child.first->binaryEncode(w)
-				|| !child.second->binaryEncode(w)
-				)
-			{
-				return false;
-			}
-		}
-
-		{
-			uint8_t b = 0b111;
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool JsonObject::binaryEncodeV2(Writer& w) const
-	{
-		{
-			uint8_t b = (5 << 2);
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		for (const auto& child : children)
-		{
-			SOUP_IF_UNLIKELY (!child.first->binaryEncodeV2(w)
-				|| !child.second->binaryEncodeV2(w)
-				)
-			{
-				return false;
-			}
-		}
-
-		{
-			uint8_t b = 0xfc;
-			SOUP_IF_UNLIKELY (!w.u8(b))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	JsonNode* JsonObject::find(std::string k) const noexcept
 	{
 		return find(JsonString(std::move(k)));

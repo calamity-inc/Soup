@@ -19,16 +19,4 @@ NAMESPACE_SOUP
 		uint8_t b = 0xc0;
 		return w.u8(b);
 	}
-
-	bool JsonNull::binaryEncode(Writer& w) const
-	{
-		uint8_t b = JSON_NULL;
-		return w.u8(b);
-	}
-
-	bool JsonNull::binaryEncodeV2(Writer& w) const
-	{
-		uint8_t b = (2 << 2);
-		return w.u8(b);
-	}
 }

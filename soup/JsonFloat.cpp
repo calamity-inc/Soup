@@ -30,24 +30,4 @@ NAMESPACE_SOUP
 			&& w.f64(const_cast<JsonFloat*>(this)->value)
 			;
 	}
-
-	bool JsonFloat::binaryEncode(Writer& w) const
-	{
-		uint8_t b = JSON_FLOAT;
-		uint64_t val;
-		*reinterpret_cast<double*>(&val) = value;
-		return w.u8(b)
-			&& w.u64_le(val)
-			;
-	}
-
-	bool JsonFloat::binaryEncodeV2(Writer& w) const
-	{
-		uint8_t b = (3 << 2);
-		uint64_t val;
-		*reinterpret_cast<double*>(&val) = value;
-		return w.u8(b)
-			&& w.u64_le(val)
-			;
-	}
 }
