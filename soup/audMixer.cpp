@@ -40,13 +40,13 @@ NAMESPACE_SOUP
 		pb.user_data = this;
 	}
 
-	void audMixer::playSound(SharedPtr<audSound> sound)
+	void audMixer::playSound(SharedPtr<audSound> sound, double amplitude)
 	{
 		std::lock_guard lock(mtx);
 
-		for (const auto& ps : playing_sounds)
+		for (const auto& in : playing_sounds)
 		{
-			if (ps.get() == sound.get())
+			if (in.sound.get() == sound.get())
 			{
 				SOUP_THROW(Exception("Sound is already playing"));
 			}
@@ -54,7 +54,7 @@ NAMESPACE_SOUP
 
 		sound->prepare();
 
-		playing_sounds.emplace_back(std::move(sound));
+		playing_sounds.emplace_back(Input{ std::move(sound), amplitude });
 	}
 
 	double audMixer::getAmplitude(audPlayback& pb) noexcept
@@ -64,12 +64,12 @@ NAMESPACE_SOUP
 		double a = 0.0;
 		for (auto i = playing_sounds.begin(); i != playing_sounds.end(); )
 		{
-			SOUP_IF_UNLIKELY ((*i)->hasFinished())
+			SOUP_IF_UNLIKELY (i->sound->hasFinished())
 			{
 				i = playing_sounds.erase(i);
 				continue;
 			}
-			a += (*i)->getAmplitude();
+			a += i->sound->getAmplitude() * i->amplitude;
 			++i;
 		}
 
