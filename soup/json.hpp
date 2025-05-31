@@ -30,7 +30,8 @@ NAMESPACE_SOUP
 
 		// Decodes a MessagePack (https://msgpack.org/) binary stream.
 		// If the data represented is not valid JSON (i.e. using extension types), the returned UniquePtr will be default-constructed.
-		[[nodiscard]] static UniquePtr<JsonNode> msgpackDecode(Reader& r);
+		[[nodiscard]] static UniquePtr<JsonNode> msgpackDecode(Reader& r, int max_depth = 100);
+		static void* msgpackDecode(const JsonTreeWriter& tw, void* user_data, Reader& r, int max_depth);
 
 		// internal
 		static void handleLeadingSpace(const char*& c, size_t& s);
