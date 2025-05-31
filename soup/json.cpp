@@ -401,10 +401,7 @@ NAMESPACE_SOUP
 				if (bigger)
 				{
 					uint64_t extra;
-					SOUP_IF_UNLIKELY (!r.u64_dyn_v2(extra))
-					{
-						return {};
-					}
+					SOUP_RETHROW_FALSE(r.u64_dyn_v2(extra));
 					size |= (extra << 5);
 				}
 				std::string value;
@@ -424,10 +421,7 @@ NAMESPACE_SOUP
 				if (more)
 				{
 					uint64_t extra;
-					SOUP_IF_UNLIKELY (!r.u64_dyn_v2(extra))
-					{
-						return {};
-					}
+					SOUP_RETHROW_FALSE(r.u64_dyn_v2(extra));
 					u |= (extra << 5);
 				}
 
