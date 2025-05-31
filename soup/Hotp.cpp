@@ -31,7 +31,7 @@ NAMESPACE_SOUP
 	int Hotp::getValueRaw(uint64_t counter) const
 	{
 		StringWriter w;
-		w.u64be(counter);
+		w.u64_be(counter);
 
 		std::string mac = sha1::hmac(w.data, secret);
 

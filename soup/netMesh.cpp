@@ -76,7 +76,7 @@ NAMESPACE_SOUP
 					{
 						Peer& peer = s_my_config.peers.emplace_back();
 						peer.n.io(fr);
-						fr.u32le(peer.ip);
+						fr.u32_le(peer.ip);
 						peer.n_hash = hashN(peer.n);
 					}
 				}
@@ -117,7 +117,7 @@ NAMESPACE_SOUP
 		for (auto& peer : s_my_config.peers)
 		{
 			peer.n.io(fw);
-			fw.u32le(peer.ip);
+			fw.u32_le(peer.ip);
 		}
 	}
 

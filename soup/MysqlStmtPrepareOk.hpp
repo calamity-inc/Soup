@@ -13,11 +13,11 @@ NAMESPACE_SOUP
 
 		SOUP_PACKET_IO(s)
 		{
-			return s.u32le(stmt_id)
-				&& s.u16le(num_columns)
-				&& s.u16le(num_params)
+			return s.u32_le(stmt_id)
+				&& s.u16_le(num_columns)
+				&& s.u16_le(num_params)
 				&& s.skip(1)
-				&& s.u16le(num_warnings)
+				&& s.u16_le(num_warnings)
 				;
 		}
 	};

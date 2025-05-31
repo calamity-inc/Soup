@@ -107,7 +107,7 @@ NAMESPACE_SOUP
 		while (sr.hasMore())
 		{
 			uint32_t key;
-			sr.u32le(key);
+			sr.u32_le(key);
 			std::string value;
 			sr.str_nt(value);
 			dict.emplace(key, std::move(value));

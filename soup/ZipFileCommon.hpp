@@ -17,14 +17,14 @@ NAMESPACE_SOUP
 
 		SOUP_PACKET_IO(s)
 		{
-			return s.u16le(min_extract_version)
-				&& s.u16le(bitflag)
-				&& s.u16le(compression_method)
-				&& s.u16le(last_mod_time)
-				&& s.u16le(last_mod_date)
-				&& s.u32le(uncompressed_data_crc32)
-				&& s.u32le(compressed_size)
-				&& s.u32le(uncompressed_size)
+			return s.u16_le(min_extract_version)
+				&& s.u16_le(bitflag)
+				&& s.u16_le(compression_method)
+				&& s.u16_le(last_mod_time)
+				&& s.u16_le(last_mod_date)
+				&& s.u32_le(uncompressed_data_crc32)
+				&& s.u32_le(compressed_size)
+				&& s.u32_le(uncompressed_size)
 				;
 		}
 	};

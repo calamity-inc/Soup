@@ -18,13 +18,13 @@ NAMESPACE_SOUP
 
 		SOUP_PACKET_IO(s)
 		{
-			if (!s.u16le(this_disk_number)
-				|| !s.u16le(central_directory_disk)
-				|| !s.u16le(central_directories_on_this_disk)
-				|| !s.u16le(central_directories_in_total)
-				|| !s.u32le(central_directory_size)
-				|| !s.u32le(central_directory_offset)
-				|| !s.template str_lp<u16le_t>(comment)
+			if (!s.u16_le(this_disk_number)
+				|| !s.u16_le(central_directory_disk)
+				|| !s.u16_le(central_directories_on_this_disk)
+				|| !s.u16_le(central_directories_in_total)
+				|| !s.u32_le(central_directory_size)
+				|| !s.u32_le(central_directory_offset)
+				|| !s.template str_lp<u16_le_t>(comment)
 				)
 			{
 				return false;

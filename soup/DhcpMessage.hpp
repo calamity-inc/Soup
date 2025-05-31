@@ -49,17 +49,17 @@ NAMESPACE_SOUP
 				|| !s.u8(hw_type)
 				|| !s.u8(hw_addr_len)
 				|| !s.u8(hops)
-				|| !s.u32be(transaction_id)
-				|| !s.u16be(secs_elapsed)
-				|| !s.u16be(flags)
-				|| !s.u32be(client_addr)
-				|| !s.u32be(your_addr)
-				|| !s.u32be(server_addr)
-				|| !s.u32be(gateway_addr)
+				|| !s.u32_be(transaction_id)
+				|| !s.u16_be(secs_elapsed)
+				|| !s.u16_be(flags)
+				|| !s.u32_be(client_addr)
+				|| !s.u32_be(your_addr)
+				|| !s.u32_be(server_addr)
+				|| !s.u32_be(gateway_addr)
 				|| !mac_addr.io(s)
 				|| !s.skip(10) // MAC padding
 				|| !s.skip(192) // BOOTP legacy
-				|| !s.u32be(magic_cookie)
+				|| !s.u32_be(magic_cookie)
 				)
 			{
 				return false;

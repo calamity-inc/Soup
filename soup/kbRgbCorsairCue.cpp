@@ -37,7 +37,7 @@ NAMESPACE_SOUP
 	{
 		//std::cout << "[kbRgbCorsairCue] Send: " << data << "\n";
 		StringWriter sw;
-		sw.str_lp<u32be_t>(data);
+		sw.str_lp<u32_be_t>(data);
 		pipe.write(sw.data);
 	}
 

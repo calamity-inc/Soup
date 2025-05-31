@@ -18,8 +18,8 @@ NAMESPACE_SOUP
 			}
 			auto name_length = (u16)name.size();
 			auto extra_length = (u16)extra.size();
-			return s.u16le(name_length)
-				&& s.u16le(extra_length)
+			return s.u16_le(name_length)
+				&& s.u16_le(extra_length)
 				&& s.str(name_length, name)
 				&& s.str(extra_length, extra)
 				;

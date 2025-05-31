@@ -31,10 +31,10 @@ NAMESPACE_SOUP
 			}
 			uint8_t buf = 0x0c;
 			return s.u8(buf)
-				&& s.u16le(character_set)
-				&& s.u32le(column_length)
+				&& s.u16_le(character_set)
+				&& s.u32_le(column_length)
 				&& s.u8(type)
-				&& s.u16le(flags)
+				&& s.u16_le(flags)
 				&& s.u8(decimals)
 				;
 		}

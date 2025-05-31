@@ -253,7 +253,7 @@ NAMESPACE_SOUP
 			else if (type == JSON_FLOAT)
 			{
 				uint64_t val;
-				SOUP_IF_LIKELY (r.u64le(val))
+				SOUP_IF_LIKELY (r.u64_le(val))
 				{
 					return soup::make_unique<JsonFloat>(*reinterpret_cast<double*>(&val));
 				}
@@ -341,7 +341,7 @@ NAMESPACE_SOUP
 				case 3: // Float
 					{
 						uint64_t val;
-						SOUP_IF_LIKELY (r.u64le(val))
+						SOUP_IF_LIKELY (r.u64_le(val))
 						{
 							return soup::make_unique<JsonFloat>(*reinterpret_cast<double*>(&val));
 						}

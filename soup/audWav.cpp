@@ -51,7 +51,7 @@ NAMESPACE_SOUP
 	double audWav::getAmplitude()
 	{
 		int16_t sample;
-		r.i16le(sample);
+		r.i16_le(sample);
 		return (double)sample / AUD_MAX_SAMPLE;
 	}
 }

@@ -557,7 +557,7 @@ NAMESPACE_SOUP
 			uint16_t scancode;
 			uint8_t value;
 			while (r.hasMore() // Wooting's report can fit up to 16 keys
-				&& r.u16be(scancode)
+				&& r.u16_be(scancode)
 				&& scancode != 0
 				&& r.u8(value)
 				)
@@ -985,7 +985,7 @@ if (combined[i]) \
 			if (type == 0xA0)
 			{
 				r.skip(1); // unknown, seems to be 0x10 in most cases
-				uint16_t scancode; r.u16be(scancode);
+				uint16_t scancode; r.u16_be(scancode);
 				r.skip(2); // fvalue * 800 (u16_be)
 				r.skip(1); // unknown, seems to always be 0x00
 				uint8_t value; r.u8(value); // fvalue * 200
@@ -1114,7 +1114,7 @@ if (combined[i]) \
 
 					r.skip(3);
 					uint16_t travel;
-					r.u16be(travel);
+					r.u16_be(travel);
 				
 					const auto sk = madlions.layout[offset + i];
 					if (sk != KEY_NONE)
