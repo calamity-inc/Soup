@@ -14,6 +14,12 @@ NAMESPACE_SOUP
 		str.append("null");
 	}
 
+	bool JsonNull::msgpackEncode(Writer& w) const
+	{
+		uint8_t b = 0xc0;
+		return w.u8(b);
+	}
+
 	bool JsonNull::binaryEncode(Writer& w) const
 	{
 		uint8_t b = JSON_NULL;

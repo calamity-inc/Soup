@@ -11,6 +11,7 @@ NAMESPACE_SOUP
 		explicit JsonFloat(double value = 0.0) noexcept;
 
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
+		bool msgpackEncode(Writer& w) const final;
 		bool binaryEncode(Writer& w) const final;
 		bool binaryEncodeV2(Writer& w) const final;
 

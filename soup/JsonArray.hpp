@@ -39,6 +39,7 @@ NAMESPACE_SOUP
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 
+		bool msgpackEncode(Writer& w) const final;
 		bool binaryEncode(Writer& w) const final;
 		bool binaryEncodeV2(Writer& w) const final;
 

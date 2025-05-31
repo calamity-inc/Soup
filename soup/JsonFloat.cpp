@@ -15,6 +15,22 @@ NAMESPACE_SOUP
 		str.append(string::fdecimal(value));
 	}
 
+	bool JsonFloat::msgpackEncode(Writer& w) const
+	{
+		if (float fval = value; value == (double)fval) // Can be represented as f32 without precision loss?
+		{
+			uint8_t b = 0xca;
+			return w.u8(b)
+				&& w.f32(fval)
+				;
+		}
+
+		uint8_t b = 0xcb;
+		return w.u8(b)
+			&& w.f64(const_cast<JsonFloat*>(this)->value)
+			;
+	}
+
 	bool JsonFloat::binaryEncode(Writer& w) const
 	{
 		uint8_t b = JSON_FLOAT;

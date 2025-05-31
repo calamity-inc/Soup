@@ -31,7 +31,10 @@ NAMESPACE_SOUP
 		virtual void encodeAndAppendTo(std::string& str) const SOUP_EXCAL = 0;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 
-		// The binary formats are specific to Soup. (No real "binary JSON" standard exists afaict.)
+		// Encodes a MessagePack (https://msgpack.org/) binary stream.
+		virtual bool msgpackEncode(Writer& w) const = 0;
+
+		// These binary formats are specific to Soup. You should prefer MessagePack.
 		virtual bool binaryEncode(Writer& w) const = 0;
 		virtual bool binaryEncodeV2(Writer& w) const = 0;
 

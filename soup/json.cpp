@@ -232,6 +232,250 @@ NAMESPACE_SOUP
 		return nullptr;
 	}
 
+	UniquePtr<JsonNode> json::msgpackDecode(Reader& r)
+	{
+		uint8_t b;
+		SOUP_RETHROW_FALSE(r.u8(b));
+
+		// nil:
+		// - [x] 0xc0
+		// bool:
+		// - [x] 0xc2
+		// - [x] 0xc3
+		// int:
+		// - [x] 0XXXXXXX
+		// - [x] 111YYYYY
+		// - [x] 0xcc
+		// - [x] 0xcd
+		// - [x] 0xce
+		// - [x] 0xcf
+		// - [x] 0xd0
+		// - [x] 0xd1
+		// - [x] 0xd2
+		// - [x] 0xd3
+		// float:
+		// - [x] 0xca
+		// - [x] 0xcb
+		// str:
+		// - [x] 101XXXXX
+		// - [x] 0xd9
+		// - [x] 0xda
+		// - [x] 0xdb
+		// array:
+		// - [x] 1001XXXX
+		// - [x] 0xdc
+		// - [x] 0xdd
+		// map:
+		// - [x] 1000XXXX
+		// - [x] 0xde
+		// - [x] 0xdf
+
+		// Bit 7 not set -> unsigned int
+		if (!((b >> 7) & 1))
+		{
+			return soup::make_unique<JsonInt>(b);
+		}
+
+		if ((b >> 6) & 1) // Bit 6 set?
+		{
+			// Bit 5 set -> signed int
+			if ((b >> 5) & 1)
+			{
+				return soup::make_unique<JsonInt>(static_cast<int8_t>(b));
+			}
+
+			// Bit 5 not set -> type id
+			switch (b)
+			{
+			case 0xc0:
+				return soup::make_unique<JsonNull>();
+
+			case 0xc2:
+				return soup::make_unique<JsonBool>(false);
+
+			case 0xc3:
+				return soup::make_unique<JsonBool>(true);
+
+			case 0xca: {
+				float val;
+				SOUP_RETHROW_FALSE(r.f32(val));
+				return soup::make_unique<JsonFloat>(val);
+			}
+
+			case 0xcb: {
+				double val;
+				SOUP_RETHROW_FALSE(r.f64(val));
+				return soup::make_unique<JsonFloat>(val);
+			}
+
+			case 0xcc: {
+				uint8_t val;
+				SOUP_RETHROW_FALSE(r.u8(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xcd: {
+				uint16_t val;
+				SOUP_RETHROW_FALSE(r.u16_be(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xce: {
+				uint32_t val;
+				SOUP_RETHROW_FALSE(r.u32_be(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xcf: {
+				uint64_t val;
+				SOUP_RETHROW_FALSE(r.u64_be(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xd0: {
+				int8_t val;
+				SOUP_RETHROW_FALSE(r.i8(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xd1: {
+				int16_t val;
+				SOUP_RETHROW_FALSE(r.i16_be(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xd2: {
+				int32_t val;
+				SOUP_RETHROW_FALSE(r.i32_be(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xd3: {
+				int64_t val;
+				SOUP_RETHROW_FALSE(r.i64_be(val));
+				return soup::make_unique<JsonInt>(val);
+			}
+
+			case 0xd9: {
+				uint8_t len;
+				SOUP_RETHROW_FALSE(r.u8(len));
+				std::string data;
+				r.str(len, data);
+				return soup::make_unique<JsonString>(std::move(data));
+			}
+
+			case 0xda: {
+				uint16_t len;
+				SOUP_RETHROW_FALSE(r.u16_be(len));
+				std::string data;
+				r.str(len, data);
+				return soup::make_unique<JsonString>(std::move(data));
+			}
+
+			case 0xdb: {
+				uint32_t len;
+				SOUP_RETHROW_FALSE(r.u32_be(len));
+				std::string data;
+				r.str(len, data);
+				return soup::make_unique<JsonString>(std::move(data));
+			}
+
+			case 0xdc: {
+				uint16_t len;
+				SOUP_RETHROW_FALSE(r.u16_be(len));
+				auto arr = soup::make_unique<JsonArray>();
+				while (len--)
+				{
+					UniquePtr<JsonNode> node;
+					SOUP_RETHROW_FALSE(node = msgpackDecode(r));
+					arr->children.emplace_back(std::move(node));
+				}
+				return arr;
+			}
+
+			case 0xdd: {
+				uint32_t len;
+				SOUP_RETHROW_FALSE(r.u32_be(len));
+				auto arr = soup::make_unique<JsonArray>();
+				while (len--)
+				{
+					UniquePtr<JsonNode> node;
+					SOUP_RETHROW_FALSE(node = msgpackDecode(r));
+					arr->children.emplace_back(std::move(node));
+				}
+				return arr;
+			}
+
+			case 0xde: {
+				uint16_t len;
+				SOUP_RETHROW_FALSE(r.u16_be(len));
+				auto obj = soup::make_unique<JsonObject>();
+				while (len--)
+				{
+					UniquePtr<JsonNode> key, val;
+					SOUP_RETHROW_FALSE(key = msgpackDecode(r));
+					SOUP_RETHROW_FALSE(val = msgpackDecode(r));
+					obj->children.emplace_back(std::move(key), std::move(val));
+				}
+				return obj;
+			}
+
+			case 0xdf: {
+				uint32_t len;
+				SOUP_RETHROW_FALSE(r.u32_be(len));
+				auto obj = soup::make_unique<JsonObject>();
+				while (len--)
+				{
+					UniquePtr<JsonNode> key, val;
+					SOUP_RETHROW_FALSE(key = msgpackDecode(r));
+					SOUP_RETHROW_FALSE(val = msgpackDecode(r));
+					obj->children.emplace_back(std::move(key), std::move(val));
+				}
+				return obj;
+			}
+			}
+		}
+		else
+		{
+			// Bit 5 set -> str
+			if ((b >> 5) & 1)
+			{
+				uint8_t len = b & 0b11111;
+				std::string data;
+				r.str(len, data);
+				return soup::make_unique<JsonString>(std::move(data));
+			}
+
+			// Array or map
+			uint8_t len = b & 0b1111;
+			if ((b >> 4) & 1) // Bit 4 set -> array
+			{
+				auto arr = soup::make_unique<JsonArray>();
+				while (len--)
+				{
+					UniquePtr<JsonNode> node;
+					SOUP_RETHROW_FALSE(node = msgpackDecode(r));
+					arr->children.emplace_back(std::move(node));
+				}
+				return arr;
+			}
+			else // Bit 4 not set -> map
+			{
+				auto obj = soup::make_unique<JsonObject>();
+				while (len--)
+				{
+					UniquePtr<JsonNode> key, val;
+					SOUP_RETHROW_FALSE(key = msgpackDecode(r));
+					SOUP_RETHROW_FALSE(val = msgpackDecode(r));
+					obj->children.emplace_back(std::move(key), std::move(val));
+				}
+				return obj;
+			}
+		}
+
+		return {};
+	}
+
 	UniquePtr<JsonNode> json::binaryDecode(Reader& r)
 	{
 		uint8_t b;

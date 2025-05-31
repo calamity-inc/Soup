@@ -204,6 +204,49 @@ NAMESPACE_SOUP
 		str.push_back('"');
 	}
 
+	bool JsonString::msgpackEncode(Writer& w) const
+	{
+		if (value.size() <= 0b11111)
+		{
+			uint8_t b = (0b1010'0000) | value.size();
+			return w.u8(b)
+				&& w.str(value.size(), value.data())
+				;
+		}
+
+		if (value.size() <= 0xff)
+		{
+			uint8_t b = 0xd9;
+			auto len = (uint8_t)value.size();
+			return w.u8(b)
+				&& w.u8(len)
+				&& w.str(value.size(), value.data())
+				;
+		}
+
+		if (value.size() <= 0xffff)
+		{
+			uint8_t b = 0xda;
+			auto len = (uint16_t)value.size();
+			return w.u8(b)
+				&& w.u16_be(len)
+				&& w.str(value.size(), value.data())
+				;
+		}
+
+		if (value.size() <= 0xffff'ffff)
+		{
+			uint8_t b = 0xdb;
+			auto len = (uint32_t)value.size();
+			return w.u8(b)
+				&& w.u32_be(len)
+				&& w.str(value.size(), value.data())
+				;
+		}
+
+		SOUP_ASSERT_UNREACHABLE;
+	}
+
 	bool JsonString::binaryEncode(Writer& w) const
 	{
 		uint8_t b = JSON_STRING;

@@ -26,6 +26,12 @@ NAMESPACE_SOUP
 		}
 	}
 
+	bool JsonBool::msgpackEncode(Writer& w) const
+	{
+		uint8_t b = 0xc2 + value;
+		return w.u8(b);
+	}
+
 	bool JsonBool::binaryEncode(Writer& w) const
 	{
 		uint8_t b = JSON_BOOL;

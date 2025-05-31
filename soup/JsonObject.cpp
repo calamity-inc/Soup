@@ -61,6 +61,41 @@ NAMESPACE_SOUP
 		}
 	}
 
+	bool JsonObject::msgpackEncode(Writer& w) const
+	{
+		if (children.size() <= 0b1111)
+		{
+			uint8_t b = 0b1000'0000 | children.size();
+			SOUP_RETHROW_FALSE(w.u8(b));
+		}
+		else if (children.size() <= 0xffff)
+		{
+			uint8_t b = 0xde;
+			SOUP_RETHROW_FALSE(w.u8(b));
+			auto len = (uint16_t)children.size();
+			SOUP_RETHROW_FALSE(w.u16_be(len));
+		}
+		else if (children.size() <= 0xffff'ffff)
+		{
+			uint8_t b = 0xdf;
+			SOUP_RETHROW_FALSE(w.u8(b));
+			auto len = (uint32_t)children.size();
+			SOUP_RETHROW_FALSE(w.u32_be(len));
+		}
+		else
+		{
+			SOUP_ASSERT_UNREACHABLE;
+		}
+
+		for (const auto& child : children)
+		{
+			SOUP_RETHROW_FALSE(child.first->msgpackEncode(w));
+			SOUP_RETHROW_FALSE(child.second->msgpackEncode(w));
+		}
+
+		return true;
+	}
+
 	bool JsonObject::binaryEncode(Writer& w) const
 	{
 		{

@@ -634,6 +634,15 @@ static void unit_data()
 			// Binary formats
 			{
 				StringWriter sw;
+				tree->msgpackEncode(sw);
+
+				MemoryRefReader r(sw.data);
+				auto decoded = json::msgpackDecode(r);
+				assert(decoded);
+				assert(obj.encode() == decoded->encode());
+			}
+			{
+				StringWriter sw;
 				tree->binaryEncode(sw);
 
 				MemoryRefReader r(sw.data);
