@@ -40,8 +40,8 @@ NAMESPACE_SOUP
 
 	struct JsonTreeWriter
 	{
-		void* (*allocArray)(void* user_data);
-		void* (*allocObject)(void* user_data);
+		void* (*allocArray)(void* user_data, size_t reserve_size);
+		void* (*allocObject)(void* user_data, size_t reserve_size);
 		void* (*allocString)(void* user_data, std::string&& value);
 		void* (*allocUnescapedString)(void* user_data, const char* data, size_t size) = nullptr;
 		void* (*allocInt)(void* user_data, int64_t value);

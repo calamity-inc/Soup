@@ -21,6 +21,12 @@ NAMESPACE_SOUP
 		{
 		}
 
+		explicit JsonObject(size_t reserve_size) SOUP_EXCAL
+			: JsonObject()
+		{
+			children.reserve(reserve_size);
+		}
+
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 

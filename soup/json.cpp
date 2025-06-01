@@ -17,8 +17,8 @@ NAMESPACE_SOUP
 	{
 		DefaultJsonTreeWriter()
 		{
-			allocArray = [](void*) -> void* { return new JsonArray(); };
-			allocObject = [](void*) -> void* { return new JsonObject(); };
+			allocArray = [](void*, size_t reserve_size) -> void* { return new JsonArray(reserve_size); };
+			allocObject = [](void*, size_t reserve_size) -> void* { return new JsonObject(reserve_size); };
 			allocString = [](void*, std::string&& value) -> void* { return new JsonString(std::move(value)); };
 			allocInt = [](void*, int64_t value) -> void* { return new JsonInt(value); };
 			allocFloat = [](void*, double value) -> void* { return new JsonFloat(value); };
@@ -82,7 +82,7 @@ NAMESPACE_SOUP
 
 		case '[': {
 			++c; --s;
-			auto arr = tw.allocArray(user_data);
+			auto arr = tw.allocArray(user_data, 0);
 			while (true)
 			{
 				handleLeadingSpace(c, s);
@@ -114,7 +114,7 @@ NAMESPACE_SOUP
 
 		case '{': {
 			++c; --s;
-			auto obj = tw.allocObject(user_data);
+			auto obj = tw.allocObject(user_data, 0);
 			while (true)
 			{
 				handleLeadingSpace(c, s);
@@ -398,7 +398,7 @@ NAMESPACE_SOUP
 			case 0xdc: {
 				uint16_t len;
 				SOUP_RETHROW_FALSE(r.u16_be(len));
-				auto arr = tw.allocArray(user_data);
+				auto arr = tw.allocArray(user_data, len);
 				while (len--)
 				{
 					void* node = msgpackDecode(tw, user_data, r, max_depth);
@@ -419,7 +419,7 @@ NAMESPACE_SOUP
 			case 0xdd: {
 				uint32_t len;
 				SOUP_RETHROW_FALSE(r.u32_be(len));
-				auto arr = tw.allocArray(user_data);
+				auto arr = tw.allocArray(user_data, len);
 				while (len--)
 				{
 					void* node = msgpackDecode(tw, user_data, r, max_depth);
@@ -440,7 +440,7 @@ NAMESPACE_SOUP
 			case 0xde: {
 				uint16_t len;
 				SOUP_RETHROW_FALSE(r.u16_be(len));
-				auto obj = tw.allocObject(user_data);
+				auto obj = tw.allocObject(user_data, len);
 				while (len--)
 				{
 					void* key = msgpackDecode(tw, user_data, r, max_depth);
@@ -468,7 +468,7 @@ NAMESPACE_SOUP
 			case 0xdf: {
 				uint32_t len;
 				SOUP_RETHROW_FALSE(r.u32_be(len));
-				auto obj = tw.allocObject(user_data);
+				auto obj = tw.allocObject(user_data, len);
 				while (len--)
 				{
 					void* key = msgpackDecode(tw, user_data, r, max_depth);
@@ -509,7 +509,7 @@ NAMESPACE_SOUP
 			uint8_t len = b & 0b1111;
 			if ((b >> 4) & 1) // Bit 4 set -> array
 			{
-				auto arr = tw.allocArray(user_data);
+				auto arr = tw.allocArray(user_data, len);
 				while (len--)
 				{
 					void* node = msgpackDecode(tw, user_data, r, max_depth);
@@ -528,7 +528,7 @@ NAMESPACE_SOUP
 			}
 			else // Bit 4 not set -> map
 			{
-				auto obj = tw.allocObject(user_data);
+				auto obj = tw.allocObject(user_data, len);
 				while (len--)
 				{
 					void* key = msgpackDecode(tw, user_data, r, max_depth);

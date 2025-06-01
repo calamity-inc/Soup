@@ -39,6 +39,12 @@ NAMESPACE_SOUP
 		{
 		}
 
+		explicit JsonArray(size_t reserve_size) noexcept
+			: JsonArray()
+		{
+			children.reserve(reserve_size);
+		}
+
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;
 
