@@ -374,6 +374,14 @@ NAMESPACE_SOUP
 			case 0xd9: {
 				uint8_t len;
 				SOUP_RETHROW_FALSE(r.u8(len));
+				if (tw.allocUnescapedString)
+				{
+					if (auto data = r.getMemoryView(len))
+					{
+						r.skip(len);
+						return tw.allocUnescapedString(user_data, (const char*)data, len);
+					}
+				}
 				std::string data;
 				r.str(len, data);
 				return tw.allocString(user_data, std::move(data));
@@ -382,6 +390,14 @@ NAMESPACE_SOUP
 			case 0xda: {
 				uint16_t len;
 				SOUP_RETHROW_FALSE(r.u16_be(len));
+				if (tw.allocUnescapedString)
+				{
+					if (auto data = r.getMemoryView(len))
+					{
+						r.skip(len);
+						return tw.allocUnescapedString(user_data, (const char*)data, len);
+					}
+				}
 				std::string data;
 				r.str(len, data);
 				return tw.allocString(user_data, std::move(data));
@@ -390,6 +406,14 @@ NAMESPACE_SOUP
 			case 0xdb: {
 				uint32_t len;
 				SOUP_RETHROW_FALSE(r.u32_be(len));
+				if (tw.allocUnescapedString)
+				{
+					if (auto data = r.getMemoryView(len))
+					{
+						r.skip(len);
+						return tw.allocUnescapedString(user_data, (const char*)data, len);
+					}
+				}
 				std::string data;
 				r.str(len, data);
 				return tw.allocString(user_data, std::move(data));
@@ -500,6 +524,14 @@ NAMESPACE_SOUP
 			if ((b >> 5) & 1)
 			{
 				uint8_t len = b & 0b11111;
+				if (tw.allocUnescapedString)
+				{
+					if (auto data = r.getMemoryView(len))
+					{
+						r.skip(len);
+						return tw.allocUnescapedString(user_data, (const char*)data, len);
+					}
+				}
 				std::string data;
 				r.str(len, data);
 				return tw.allocString(user_data, std::move(data));
