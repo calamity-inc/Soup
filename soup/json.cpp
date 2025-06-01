@@ -452,7 +452,7 @@ NAMESPACE_SOUP
 					void* val = msgpackDecode(tw, user_data, r, max_depth);
 					SOUP_IF_UNLIKELY (!val)
 					{
-						tw.free(user_data, val);
+						tw.free(user_data, key);
 						tw.free(user_data, obj);
 						return nullptr;
 					}
@@ -480,7 +480,7 @@ NAMESPACE_SOUP
 					void* val = msgpackDecode(tw, user_data, r, max_depth);
 					SOUP_IF_UNLIKELY (!val)
 					{
-						tw.free(user_data, val);
+						tw.free(user_data, key);
 						tw.free(user_data, obj);
 						return nullptr;
 					}
@@ -540,7 +540,7 @@ NAMESPACE_SOUP
 					void* val = msgpackDecode(tw, user_data, r, max_depth);
 					SOUP_IF_UNLIKELY (!val)
 					{
-						tw.free(user_data, val);
+						tw.free(user_data, key);
 						tw.free(user_data, obj);
 						return nullptr;
 					}
