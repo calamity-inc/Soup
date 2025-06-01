@@ -381,7 +381,7 @@ NAMESPACE_SOUP
 					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
-				r.str(len, data);
+				SOUP_RETHROW_FALSE(r.str(len, data));
 				return tw.allocString(user_data, std::move(data));
 			}
 
@@ -394,7 +394,7 @@ NAMESPACE_SOUP
 					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
-				r.str(len, data);
+				SOUP_RETHROW_FALSE(r.str(len, data));
 				return tw.allocString(user_data, std::move(data));
 			}
 
@@ -407,7 +407,7 @@ NAMESPACE_SOUP
 					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
-				r.str(len, data);
+				SOUP_RETHROW_FALSE(r.str(len, data));
 				return tw.allocString(user_data, std::move(data));
 			}
 
@@ -522,7 +522,7 @@ NAMESPACE_SOUP
 					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
-				r.str(len, data);
+				SOUP_RETHROW_FALSE(r.str(len, data));
 				return tw.allocString(user_data, std::move(data));
 			}
 
