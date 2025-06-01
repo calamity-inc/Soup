@@ -34,7 +34,10 @@ NAMESPACE_SOUP
 	{
 		std::vector<UniquePtr<JsonNode>> children{};
 
-		explicit JsonArray() noexcept;
+		explicit JsonArray() noexcept
+			: JsonNode(JSON_ARRAY)
+		{
+		}
 
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;

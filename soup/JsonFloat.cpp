@@ -5,11 +5,6 @@
 
 NAMESPACE_SOUP
 {
-	JsonFloat::JsonFloat(double value) noexcept
-		: JsonNode(JSON_FLOAT), value(value)
-	{
-	}
-
 	void JsonFloat::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
 	{
 		str.append(string::fdecimal(value));

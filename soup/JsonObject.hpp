@@ -16,7 +16,10 @@ NAMESPACE_SOUP
 
 		Container children{};
 
-		explicit JsonObject() noexcept;
+		explicit JsonObject() noexcept
+			: JsonNode(JSON_OBJECT)
+		{
+		}
 
 		void encodeAndAppendTo(std::string& str) const SOUP_EXCAL final;
 		void encodePrettyAndAppendTo(std::string& str, unsigned depth = 0) const SOUP_EXCAL;

@@ -4,11 +4,6 @@
 
 NAMESPACE_SOUP
 {
-	JsonInt::JsonInt(int64_t value) noexcept
-		: JsonNode(JSON_INT), value(value)
-	{
-	}
-
 	bool JsonInt::operator==(const JsonNode& b) const noexcept
 	{
 		return JSON_INT == b.type

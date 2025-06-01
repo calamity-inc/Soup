@@ -13,11 +13,6 @@ NAMESPACE_SOUP
 {
 	using Container = JsonObject::Container;
 
-	JsonObject::JsonObject() noexcept
-		: JsonNode(JSON_OBJECT)
-	{
-	}
-
 	void JsonObject::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
 	{
 		str.push_back('{');

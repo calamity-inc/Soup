@@ -11,11 +11,6 @@ NAMESPACE_SOUP
 		return arr->at(i);
 	}
 
-	JsonArray::JsonArray() noexcept
-		: JsonNode(JSON_ARRAY)
-	{
-	}
-
 	void JsonArray::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
 	{
 		str.push_back('[');

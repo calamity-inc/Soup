@@ -6,26 +6,6 @@
 
 NAMESPACE_SOUP
 {
-	JsonString::JsonString() noexcept
-		: JsonNode(JSON_STRING)
-	{
-	}
-
-	JsonString::JsonString(const std::string& value) noexcept
-		: JsonNode(JSON_STRING), value(value)
-	{
-	}
-
-	JsonString::JsonString(std::string&& value) noexcept
-		: JsonNode(JSON_STRING), value(std::move(value))
-	{
-	}
-
-	JsonString::JsonString(const char* data, size_t size) noexcept
-		: JsonNode(JSON_STRING), value(data, size)
-	{
-	}
-
 	size_t JsonString::getEncodedSize(const char* data, size_t size) noexcept
 	{
 		std::string_view sw(data, size);
