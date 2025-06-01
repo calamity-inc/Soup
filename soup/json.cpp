@@ -20,6 +20,7 @@ NAMESPACE_SOUP
 			allocArray = [](void*, size_t reserve_size) -> void* { return new JsonArray(reserve_size); };
 			allocObject = [](void*, size_t reserve_size) -> void* { return new JsonObject(reserve_size); };
 			allocString = [](void*, std::string&& value) -> void* { return new JsonString(std::move(value)); };
+			allocUnescapedString = [](void*, const char* data, size_t size) -> void* { return new JsonString(data, size); };
 			allocInt = [](void*, int64_t value) -> void* { return new JsonInt(value); };
 			allocFloat = [](void*, double value) -> void* { return new JsonFloat(value); };
 			allocBool = [](void*, bool value) -> void* { return new JsonBool(value); };
@@ -59,7 +60,7 @@ NAMESPACE_SOUP
 		case '"': {
 			++c; --s;
 			const auto encoded_size = JsonString::getEncodedSize(c, s);
-			if (tw.allocUnescapedString && std::string_view(c, encoded_size).find('\\') == std::string::npos)
+			if (std::string_view(c, encoded_size).find('\\') == std::string::npos)
 			{
 				const auto str = tw.allocUnescapedString(user_data, c, encoded_size);
 				c += encoded_size;
@@ -374,13 +375,10 @@ NAMESPACE_SOUP
 			case 0xd9: {
 				uint8_t len;
 				SOUP_RETHROW_FALSE(r.u8(len));
-				if (tw.allocUnescapedString)
+				if (auto data = r.getMemoryView(len))
 				{
-					if (auto data = r.getMemoryView(len))
-					{
-						r.skip(len);
-						return tw.allocUnescapedString(user_data, (const char*)data, len);
-					}
+					r.skip(len);
+					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
 				r.str(len, data);
@@ -390,13 +388,10 @@ NAMESPACE_SOUP
 			case 0xda: {
 				uint16_t len;
 				SOUP_RETHROW_FALSE(r.u16_be(len));
-				if (tw.allocUnescapedString)
+				if (auto data = r.getMemoryView(len))
 				{
-					if (auto data = r.getMemoryView(len))
-					{
-						r.skip(len);
-						return tw.allocUnescapedString(user_data, (const char*)data, len);
-					}
+					r.skip(len);
+					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
 				r.str(len, data);
@@ -406,13 +401,10 @@ NAMESPACE_SOUP
 			case 0xdb: {
 				uint32_t len;
 				SOUP_RETHROW_FALSE(r.u32_be(len));
-				if (tw.allocUnescapedString)
+				if (auto data = r.getMemoryView(len))
 				{
-					if (auto data = r.getMemoryView(len))
-					{
-						r.skip(len);
-						return tw.allocUnescapedString(user_data, (const char*)data, len);
-					}
+					r.skip(len);
+					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
 				r.str(len, data);
@@ -524,13 +516,10 @@ NAMESPACE_SOUP
 			if ((b >> 5) & 1)
 			{
 				uint8_t len = b & 0b11111;
-				if (tw.allocUnescapedString)
+				if (auto data = r.getMemoryView(len))
 				{
-					if (auto data = r.getMemoryView(len))
-					{
-						r.skip(len);
-						return tw.allocUnescapedString(user_data, (const char*)data, len);
-					}
+					r.skip(len);
+					return tw.allocUnescapedString(user_data, (const char*)data, len);
 				}
 				std::string data;
 				r.str(len, data);
