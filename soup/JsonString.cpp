@@ -188,7 +188,7 @@ NAMESPACE_SOUP
 	{
 		if (value.size() <= 0b11111)
 		{
-			uint8_t b = (0b1010'0000) | value.size();
+			uint8_t b = 0b1010'0000 | (uint8_t)value.size();
 			return w.u8(b)
 				&& w.str(value.size(), value.data())
 				;

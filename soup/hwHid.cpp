@@ -715,7 +715,7 @@ NAMESPACE_SOUP
 	struct PreparsedData
 	{
 		PreparsedDataHeader header;
-		PreparsedDataItem items[];
+		PreparsedDataItem items[1];
 	};
 #pragma pack(pop)
 #endif

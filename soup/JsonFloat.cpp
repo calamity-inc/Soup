@@ -12,7 +12,7 @@ NAMESPACE_SOUP
 
 	bool JsonFloat::msgpackEncode(Writer& w) const
 	{
-		if (float fval = value; value == (double)fval) // Can be represented as f32 without precision loss?
+		if (auto fval = (float)value; value == (double)fval) // Can be represented as f32 without precision loss?
 		{
 			uint8_t b = 0xca;
 			return w.u8(b)
