@@ -9,7 +9,7 @@
 
 NAMESPACE_SOUP
 {
-	// The following types can be used with ioBase::t<>.
+	// The following types can be used with ioBase::ser<>.
 	// For u16 and up, they specify if they are serialised as big endian or little endian. The in-memory format is still expected to be native endian.
 	using u8_t = uint8_t;
 	SOUP_INT_STRUCT(u16_be_t, uint16_t);
