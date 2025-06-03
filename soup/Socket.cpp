@@ -107,31 +107,26 @@ NAMESPACE_SOUP
 		return fd != -1;
 	}
 
-	bool Socket::connect(const char* host, uint16_t port) noexcept
-	{
-		return connect(std::string(host), port);
-	}
-
-	bool Socket::connect(const std::string& host, uint16_t port) noexcept
+	bool Socket::connect(const std::string& host, uint16_t port, unsigned int timeout_ms) noexcept
 	{
 		if (IpAddr hostaddr; hostaddr.fromString(host))
 		{
-			return connect(hostaddr, port);
+			return connect(hostaddr, port, timeout_ms);
 		}
 		auto res = netConfig::get().getDnsResolver().lookupIPv4(host);
-		if (!res.empty() && connect(rand(res), port))
+		if (!res.empty() && connect(rand(res), port, timeout_ms))
 		{
 			return true;
 		}
 		res = netConfig::get().getDnsResolver().lookupIPv6(host);
-		if (!res.empty() && connect(rand(res), port))
+		if (!res.empty() && connect(rand(res), port, timeout_ms))
 		{
 			return true;
 		}
 		return false;
 	}
 
-	bool Socket::connect(const SocketAddr& addr) noexcept
+	bool Socket::connect(const SocketAddr& addr, unsigned int timeout_ms) noexcept
 	{
 		SOUP_RETHROW_FALSE(kickOffConnect(addr));
 		pollfd pfd;
@@ -139,9 +134,9 @@ NAMESPACE_SOUP
 		pfd.events = POLLOUT;
 		pfd.revents = 0;
 #if SOUP_WINDOWS
-		int res = ::WSAPoll(&pfd, 1, netConfig::get().connect_timeout_ms);
+		int res = ::WSAPoll(&pfd, 1, timeout_ms);
 #else
-		int res = ::poll(&pfd, 1, netConfig::get().connect_timeout_ms);
+		int res = ::poll(&pfd, 1, timeout_ms);
 #endif
 		SOUP_IF_UNLIKELY (res != 1)
 		{
@@ -149,11 +144,6 @@ NAMESPACE_SOUP
 			return false;
 		}
 		return true;
-	}
-
-	bool Socket::connect(const IpAddr& ip, uint16_t port) noexcept
-	{
-		return connect(SocketAddr(ip, native_u16_t(port)));
 	}
 
 	bool Socket::kickOffConnect(const SocketAddr& addr) noexcept
@@ -197,12 +187,8 @@ NAMESPACE_SOUP
 
 	bool Socket::isPortLocallyBound(uint16_t port)
 	{
-		auto og = netConfig::get().connect_timeout_ms;
-		netConfig::get().connect_timeout_ms = 20;
 		Socket sock;
-		const bool ret = sock.connect(SOUP_IPV4_NWE(127, 0, 0, 1), port);
-		netConfig::get().connect_timeout_ms = og;
-		return ret;
+		return sock.connect(SOUP_IPV4_NWE(127, 0, 0, 1), port, 20);
 	}
 
 	bool Socket::bind6(uint16_t port) noexcept
