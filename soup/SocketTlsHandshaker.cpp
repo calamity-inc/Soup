@@ -104,12 +104,12 @@ NAMESPACE_SOUP
 		memcpy(client_write.implicit_iv, key_block.data() + (mac_key_length * 2) + (enc_key_length * 2), fixed_iv_length);
 		memcpy(server_write.implicit_iv, key_block.data() + (mac_key_length * 2) + (enc_key_length * 2) + fixed_iv_length, fixed_iv_length);
 
-		client_write.cipher_key_len = enc_key_length;
-		server_write.cipher_key_len = enc_key_length;
-		client_write.mac_key_len = mac_key_length;
-		server_write.mac_key_len = mac_key_length;
-		client_write.implicit_iv_len = fixed_iv_length;
-		server_write.implicit_iv_len = fixed_iv_length;
+		client_write.cipher_key_len = static_cast<uint8_t>(enc_key_length);
+		server_write.cipher_key_len = static_cast<uint8_t>(enc_key_length);
+		client_write.mac_key_len = static_cast<uint8_t>(mac_key_length);
+		server_write.mac_key_len = static_cast<uint8_t>(mac_key_length);
+		client_write.implicit_iv_len = static_cast<uint8_t>(fixed_iv_length);
+		server_write.implicit_iv_len = static_cast<uint8_t>(fixed_iv_length);
 	}
 
 	std::string SocketTlsHandshaker::getClientFinishVerifyData() SOUP_EXCAL
