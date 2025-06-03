@@ -235,7 +235,12 @@ NAMESPACE_SOUP
 		sa.sin6_family = AF_INET6;
 		sa.sin6_port = port_ne;
 		memcpy(&sa.sin6_addr, &addr.data, sizeof(in6_addr));
-		return setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+		return
+#if SOUP_WINDOWS
+			(type != SOCK_STREAM || setOpt<int>(SOL_SOCKET, SO_LINGER, 0))
+#else
+			setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+#endif
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
 			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
@@ -258,7 +263,12 @@ NAMESPACE_SOUP
 		sa.sin_family = AF_INET;
 		sa.sin_port = port_ne;
 		sa.sin_addr.s_addr = addr.getV4();
-		return setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+		return
+#if SOUP_WINDOWS
+			(type != SOCK_STREAM || setOpt<int>(SOL_SOCKET, SO_LINGER, 0))
+#else
+			setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1)
+#endif
 			&& bind(fd, (sockaddr*)&sa, sizeof(sa)) != -1
 			&& (type != SOCK_STREAM || listen(fd, 100) != -1)
 			&& setNonBlocking()
