@@ -38,6 +38,4 @@ NAMESPACE_SOUP
 			return deallocate_impl(this, addr);
 		}
 	};
-
-	extern memAllocator g_default_allocator;
 }

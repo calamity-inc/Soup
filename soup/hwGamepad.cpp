@@ -221,7 +221,7 @@ NAMESPACE_SOUP
 			return status;
 		}
 
-		const Buffer& report_data = hid.receiveReport();
+		const Buffer<>& report_data = hid.receiveReport();
 
 		// Ensure 'report_data' is the latest the device has to offer.
 		// This works because the buffer ref returned is always the same.
@@ -629,7 +629,8 @@ NAMESPACE_SOUP
 
 		if (hid.vendor_id == 0x54c) // DS4
 		{
-			Buffer buf(11);
+			Buffer buf;
+			buf.reserve(11);
 			buf.push_back(0x07);
 			buf.push_back(0x00);
 			buf.push_back(0x00);
@@ -644,7 +645,8 @@ NAMESPACE_SOUP
 		}
 		else if (hid.vendor_id == 0x18d1 && hid.product_id == 0x9400) // Stadia Controller
 		{
-			Buffer buf(5);
+			Buffer buf;
+			buf.reserve(5);
 			buf.push_back(0x05);
 			buf.push_back(strong_rumble_intensity);
 			buf.push_back(strong_rumble_intensity);
@@ -654,7 +656,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void hwGamepad::sendReportDs4(Buffer&& buf) const
+	void hwGamepad::sendReportDs4(Buffer<>&& buf) const
 	{
 		if (!ds4.is_bluetooth)
 		{
@@ -682,7 +684,8 @@ NAMESPACE_SOUP
 
 	void hwGamepad::calibrateSwitchProController()
 	{
-		Buffer buf(0x40);
+		Buffer buf;
+		buf.reserve(0x40);
 		buf.push_back(0x01); // rumble + subcommand
 		buf.push_back(0x00);
 		buf.push_back(0x00);
@@ -702,7 +705,7 @@ NAMESPACE_SOUP
 		hid.sendReport(std::move(buf));
 		while (true)
 		{
-			const Buffer& report = hid.receiveReport();
+			const Buffer<>& report = hid.receiveReport();
 			if (report.at(0) == 0x21)
 			{
 				switch_pro.has_calibration_data = true;

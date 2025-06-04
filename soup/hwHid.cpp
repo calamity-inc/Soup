@@ -400,7 +400,7 @@ NAMESPACE_SOUP
 #endif
 
 	// URB_INTERRUPT in
-	const Buffer& hwHid::receiveReport() noexcept
+	const Buffer<>& hwHid::receiveReport() noexcept
 	{
 #if SOUP_WINDOWS
 		SOUP_UNUSED(receiveReportWithReportId());
@@ -428,7 +428,7 @@ NAMESPACE_SOUP
 		return read_buffer;
 	}
 
-	const Buffer& hwHid::receiveReport(uint8_t& out_report_id) noexcept
+	const Buffer<>& hwHid::receiveReport(uint8_t& out_report_id) noexcept
 	{
 		out_report_id = 0;
 #if SOUP_WINDOWS
@@ -450,7 +450,7 @@ NAMESPACE_SOUP
 	}
 
 	// URB_INTERRUPT in
-	const Buffer& hwHid::receiveReportWithReportId() noexcept
+	const Buffer<>& hwHid::receiveReportWithReportId() noexcept
 	{
 #if SOUP_WINDOWS
 		if (pending_read == 0)
@@ -479,7 +479,7 @@ NAMESPACE_SOUP
 	}
 
 	// URB_INTERRUPT in
-	const Buffer& hwHid::receiveReportWithoutReportId() noexcept
+	const Buffer<>& hwHid::receiveReportWithoutReportId() noexcept
 	{
 #if SOUP_WINDOWS
 		SOUP_UNUSED(receiveReportWithReportId());
@@ -522,7 +522,7 @@ NAMESPACE_SOUP
 	}
 
 	// SET_REPORT response
-	void hwHid::receiveFeatureReport(Buffer& buf) const
+	void hwHid::receiveFeatureReport(Buffer<>& buf) const
 	{
 #if SOUP_WINDOWS
 		if (buf.size() < feature_report_byte_length)
@@ -536,7 +536,7 @@ NAMESPACE_SOUP
 #endif
 	}
 
-	bool hwHid::sendReport(Buffer&& buf) const noexcept
+	bool hwHid::sendReport(Buffer<>&& buf) const noexcept
 	{
 #if SOUP_WINDOWS
 		// The output report has to be at least as long as output_report_byte_length.
@@ -571,7 +571,7 @@ NAMESPACE_SOUP
 	}
 
 	// SET_REPORT request - bmRequestType = 0x21, bRequest = SET_REPORT (0x09), wValue = 0x0300 (ReportId = 0, ReportType = Feature (3))
-	bool hwHid::sendFeatureReport(Buffer&& buf) const noexcept
+	bool hwHid::sendFeatureReport(Buffer<>&& buf) const noexcept
 	{
 #if SOUP_WINDOWS
 		// On Windows, the feature report has to be at least as long as feature_report_byte_length.

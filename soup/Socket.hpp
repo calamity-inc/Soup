@@ -187,7 +187,7 @@ NAMESPACE_SOUP
 
 		// Transport Layer
 
-		bool transport_send(const Buffer& buf) const noexcept;
+		bool transport_send(const Buffer<>& buf) const noexcept;
 		bool transport_send(const std::string& data) const noexcept;
 		bool transport_send(const void* data, int size) const noexcept;
 

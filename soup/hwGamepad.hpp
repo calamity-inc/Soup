@@ -95,7 +95,7 @@ NAMESPACE_SOUP
 		void update();
 	private:
 		void sendReport();
-		void sendReportDs4(Buffer&& buf) const;
+		void sendReportDs4(Buffer<>&& buf) const;
 
 		void calibrateSwitchProController();
 	};

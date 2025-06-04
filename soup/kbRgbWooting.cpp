@@ -166,7 +166,8 @@ NAMESPACE_SOUP
 	void kbRgbWooting::deinit()
 	{
 		{
-			Buffer buf(8);
+			Buffer buf;
+			buf.reserve(8);
 			buf.push_back(/* 0 */ 0); // HID report index
 			buf.push_back(/* 1 */ 0xD0); // Magic word
 			buf.push_back(/* 2 */ 0xDA); // Magic word
@@ -199,7 +200,8 @@ NAMESPACE_SOUP
 	void kbRgbWooting::setKeyImpl(uint8_t wk, Rgb colour)
 	{
 		{
-			Buffer buf(8);
+			Buffer buf;
+			buf.reserve(8);
 			buf.push_back(/* 0 */ 0); // HID report index
 			buf.push_back(/* 1 */ 0xD0); // Magic word
 			buf.push_back(/* 2 */ 0xDA); // Magic word
@@ -216,7 +218,8 @@ NAMESPACE_SOUP
 
 	void kbRgbWooting::setKeys(const Rgb(&colours)[NUM_KEYS])
 	{
-		Buffer buf(257);
+		Buffer buf;
+		buf.reserve(257);
 		buf.push_back(/* 0 */ 0); // HID report index
 		buf.push_back(/* 1 */ 0xD0); // Magic word
 		buf.push_back(/* 2 */ 0xDA); // Magic word
@@ -415,7 +418,8 @@ NAMESPACE_SOUP
 	float kbRgbWooting::getBrightness()
 	{
 		{
-			Buffer buf(8);
+			Buffer buf;
+			buf.reserve(8);
 			buf.push_back(/* 0 */ 0); // HID report index
 			buf.push_back(/* 1 */ 0xD0); // Magic word
 			buf.push_back(/* 2 */ 0xDA); // Magic word
@@ -426,7 +430,7 @@ NAMESPACE_SOUP
 			buf.push_back(/* 7 */ 0);
 			hid.sendFeatureReport(std::move(buf));
 		}
-		const Buffer& buf = hid.receiveReport();
+		const Buffer<>& buf = hid.receiveReport();
 		return ((float)(uint8_t)buf.at(8) / 255.0f * 100.0f);
 	}
 

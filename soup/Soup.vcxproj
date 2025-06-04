@@ -756,6 +756,7 @@
     <ClInclude Include="IrcServer.hpp" />
     <ClInclude Include="loc.hpp" />
     <ClInclude Include="md5.hpp" />
+    <ClInclude Include="memAllocating.hpp" />
     <ClInclude Include="ReplacementHook.hpp" />
     <ClInclude Include="HookBase.hpp" />
     <ClInclude Include="hwGamepad.hpp" />
@@ -1319,7 +1320,6 @@
     <ClCompile Include="lyoStylesheet.cpp" />
     <ClCompile Include="MaintainWebSocketConnectionTask.cpp" />
     <ClCompile Include="MathExpr.cpp" />
-    <ClCompile Include="memAllocator.cpp" />
     <ClCompile Include="memGuard.cpp" />
     <ClCompile Include="memObject.cpp" />
     <ClCompile Include="memVft.cpp" />

@@ -45,7 +45,7 @@ NAMESPACE_SOUP
 
 	private:
 		HandleRaii handle;
-		Buffer read_buffer;
+		Buffer<> read_buffer;
 
 	public:
 		[[nodiscard]] static std::vector<hwHid> getAll();
@@ -92,17 +92,17 @@ NAMESPACE_SOUP
 		[[nodiscard]] bool hasReportId(uint8_t report_id) const noexcept;
 
 		[[nodiscard]] bool hasReport() noexcept;
-		[[nodiscard]] const Buffer& receiveReport() noexcept; // blocking if !hasReport()
-		[[nodiscard]] const Buffer& receiveReport(uint8_t& out_report_id) noexcept; // blocking if !hasReport()
-		[[nodiscard]] const Buffer& receiveReportWithReportId() noexcept; // blocking if !hasReport()
-		[[nodiscard]] const Buffer& receiveReportWithoutReportId() noexcept; // blocking if !hasReport()
+		[[nodiscard]] const Buffer<>& receiveReport() noexcept; // blocking if !hasReport()
+		[[nodiscard]] const Buffer<>& receiveReport(uint8_t& out_report_id) noexcept; // blocking if !hasReport()
+		[[nodiscard]] const Buffer<>& receiveReportWithReportId() noexcept; // blocking if !hasReport()
+		[[nodiscard]] const Buffer<>& receiveReportWithoutReportId() noexcept; // blocking if !hasReport()
 		void discardStaleReports() noexcept;
 		void cancelReceiveReport() noexcept; // to be called from a different thread
-		void receiveFeatureReport(Buffer& buf) const;
+		void receiveFeatureReport(Buffer<>& buf) const;
 
-		bool sendReport(Buffer&& buf) const noexcept;
+		bool sendReport(Buffer<>&& buf) const noexcept;
 		bool sendReport(const void* data, size_t size) const noexcept;
-		bool sendFeatureReport(Buffer&& buf) const noexcept;
+		bool sendFeatureReport(Buffer<>&& buf) const noexcept;
 
 		void reset() noexcept
 		{

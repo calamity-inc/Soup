@@ -1668,6 +1668,9 @@
     <ClInclude Include="GarbageCollector.hpp">
       <Filter>mem</Filter>
     </ClInclude>
+    <ClInclude Include="memAllocating.hpp">
+      <Filter>mem\allocators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2446,9 +2449,6 @@
     </ClCompile>
     <ClCompile Include="alloc.cpp">
       <Filter>mem</Filter>
-    </ClCompile>
-    <ClCompile Include="memAllocator.cpp">
-      <Filter>mem\allocators</Filter>
     </ClCompile>
     <ClCompile Include="DetourHook.cpp">
       <Filter>util\hooks</Filter>

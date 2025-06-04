@@ -1277,7 +1277,8 @@ NAMESPACE_SOUP
 		record.content_type = content_type;
 		record.length = static_cast<uint16_t>(body.size());
 
-		Buffer header(5);
+		Buffer header;
+		header.reserve(5);
 		BufferRefWriter bw(header);
 		record.write(bw);
 
@@ -1602,7 +1603,7 @@ NAMESPACE_SOUP
 		return ::recv(fd, &buf, 1, MSG_PEEK) == 1;
 	}
 
-	bool Socket::transport_send(const Buffer& buf) const noexcept
+	bool Socket::transport_send(const Buffer<>& buf) const noexcept
 	{
 		return transport_send(buf.data(), static_cast<int>(buf.size()));
 	}

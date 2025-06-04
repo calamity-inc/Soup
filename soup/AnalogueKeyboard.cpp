@@ -196,9 +196,9 @@ NAMESPACE_SOUP
 		return {};
 	}
 
-	[[nodiscard]] static Buffer safeReceiveReport(hwHid& hid, uint8_t command_id, uint8_t value_id)
+	[[nodiscard]] static Buffer<> safeReceiveReport(hwHid& hid, uint8_t command_id, uint8_t value_id)
 	{
-		Buffer report = hid.receiveReport();
+		Buffer<> report = hid.receiveReport();
 		while (report.size() < 2 || report[0] != command_id || report[1] != value_id)
 		{
 			SOUP_IF_UNLIKELY (report.empty())
@@ -546,7 +546,7 @@ NAMESPACE_SOUP
 	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeysWooting()
 	{
 		std::vector<ActiveKey> keys{};
-		const Buffer& report = hid.receiveReport();
+		const Buffer<>& report = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report.empty())
 		{
 			disconnected = true;
@@ -614,7 +614,7 @@ NAMESPACE_SOUP
 	{
 		std::vector<ActiveKey> keys{};
 
-		const Buffer& report = hid.receiveReport();
+		const Buffer<>& report = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report.empty())
 		{
 			//std::cout << "empty report" << std::endl;
@@ -706,7 +706,8 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			Buffer combined((64 - 5) * 3);
+			Buffer combined;
+			buf.reserve((64 - 5) * 3);
 			combined.append(b0.data() + 5, b0.size() - 5);
 			combined.append(b1.data() + 5, b1.size() - 5);
 			combined.append(b2.data() + 5, b2.size() - 5);
@@ -871,7 +872,8 @@ if (combined[i]) \
 			}
 			else
 			{
-				Buffer combined((32 - 2) * 4);
+				Buffer combined;
+				combined.reserve((32 - 2) * 4);
 				combined.append(b0.data() + 2, b0.size() - 2);
 				combined.append(b1.data() + 2, b1.size() - 2);
 				combined.append(b2.data() + 2, b2.size() - 2);
@@ -973,7 +975,7 @@ if (combined[i]) \
 	{
 		std::vector<ActiveKey> keys{};
 
-		const Buffer& report = hid.receiveReport();
+		const Buffer<>& report = hid.receiveReport();
 		SOUP_IF_UNLIKELY (report.empty())
 		{
 			disconnected = true;
@@ -1095,7 +1097,7 @@ if (combined[i]) \
 			hid.discardStaleReports();
 			hid.sendReport(report, sizeof(report));
 			
-			const Buffer& resp =  hid.receiveReport();
+			const Buffer<>& resp =  hid.receiveReport();
 			SOUP_IF_UNLIKELY (resp.empty())
 			{
 				disconnected = true;
