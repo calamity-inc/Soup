@@ -23,7 +23,12 @@ NAMESPACE_SOUP
 		Range range;
 
 		Module() noexcept = default;
-		Module(UniquePtr<HandleBase>&& h, Range&& range);
+
+		Module(UniquePtr<HandleBase>&& h, Range&& range)
+			: h(std::move(h)), range(std::move(range))
+		{
+		}
+
 		Module(UniquePtr<HandleBase>&& h);
 		Module(HANDLE h);
 		Module(std::nullptr_t);

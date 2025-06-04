@@ -22,9 +22,15 @@ NAMESPACE_SOUP
 		{
 		}
 
-		[[nodiscard]] Pointer end() const noexcept;
+		[[nodiscard]] Pointer end() const noexcept
+		{
+			return base.add(size);
+		}
 
-		[[nodiscard]] bool contains(Pointer h) const noexcept;
+		[[nodiscard]] bool contains(Pointer h) const noexcept
+		{
+			return h.as<uintptr_t>() >= base.as<uintptr_t>() && h.as<uintptr_t>() <= end().as<uintptr_t>();
+		}
 
 		[[nodiscard]] static bool pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept;
 

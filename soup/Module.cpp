@@ -12,11 +12,6 @@
 
 NAMESPACE_SOUP
 {
-	Module::Module(UniquePtr<HandleBase>&& h, Range&& range)
-		: h(std::move(h)), range(std::move(range))
-	{
-	}
-
 	Module::Module(UniquePtr<HandleBase>&& h)
 		: h(std::move(h)), range(*this->h, 0)
 	{

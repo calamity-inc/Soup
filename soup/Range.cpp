@@ -17,16 +17,6 @@
 
 NAMESPACE_SOUP
 {
-	Pointer Range::end() const noexcept
-	{
-		return base.add(size);
-	}
-
-	bool Range::contains(Pointer h) const noexcept
-	{
-		return h.as<uintptr_t>() >= base.as<uintptr_t>() && h.as<uintptr_t>() <= end().as<uintptr_t>();
-	}
-
 	bool Range::pattern_matches(uint8_t* target, const std::optional<uint8_t>* sig, size_t length) noexcept
 	{
 #if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
