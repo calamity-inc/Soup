@@ -54,14 +54,14 @@ NAMESPACE_SOUP
 		SOUP_THROW(BadCall());
 	}
 
-	/* To allocate a callback, we basically need to assemble the following, replacing `1333333333333337ull` with `user_data` and linking in `func`:
+	/* To allocate a callback, we basically need to assemble the following, replacing `0xAAAABBBBCCCCDDDDull` with `user_data` and linking in `func`:
 
 		SOUP_EXPORT uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args);
 
 		SOUP_EXPORT __declspec(safebuffers) uintptr_t test(uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
 		{
 			const uintptr_t args[20] = { a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t };
-			return func(1333333333333337ull, args);
+			return func(0xAAAABBBBCCCCDDDDull, args);
 		}
 	*/
 
