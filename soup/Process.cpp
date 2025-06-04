@@ -1,6 +1,7 @@
 #include "Process.hpp"
 
 #if SOUP_WINDOWS
+	#undef UNICODE
 	#include <tlhelp32.h>
 
 	#include "HandleRaii.hpp"
