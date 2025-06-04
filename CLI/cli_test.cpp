@@ -70,6 +70,9 @@
 // net
 #include <Socket.hpp>
 
+// os
+#include <ffi.hpp>
+
 #include <StringMatch.hpp>
 #include <format.hpp>
 
@@ -1717,6 +1720,47 @@ static void test_SocketAddr_fromString()
 	}
 }
 
+static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t* args)
+{
+	assert(user_data == 0xCAFEBABE);
+	assert(args[0] == 0x00000000);
+	assert(args[1] == 0x11111111);
+	assert(args[2] == 0x22222222);
+	assert(args[3] == 0x33333333);
+	assert(args[4] == 0x44444444);
+	assert(args[5] == 0x55555555);
+	assert(args[6] == 0x66666666);
+	assert(args[7] == 0x77777777);
+	assert(args[8] == 0x88888888);
+	assert(args[9] == 0x99999999);
+	assert(args[10] == 0xAAAAAAAA);
+	assert(args[11] == 0xBBBBBBBB);
+	assert(args[12] == 0xCCCCCCCC);
+	assert(args[13] == 0xDDDDDDDD);
+	assert(args[14] == 0xEEEEEEEE);
+	assert(args[15] == 0xFFFFFFFF);
+	assert(args[16] == 0x11000000);
+	assert(args[17] == 0x00220000);
+	assert(args[18] == 0x00003300);
+	assert(args[19] == 0x00000044);
+	return 0xDEADBEAF;
+}
+
+static void test_ffi()
+{
+	if (ffi::callbackAvailable())
+	{
+		auto func = ffi::callbackAlloc(ffi_test_callback, 0xCAFEBABE);
+		assert(func != nullptr);
+		assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(0x00000000, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555, 0x66666666, 0x77777777, 0x88888888, 0x99999999, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC, 0xDDDDDDDD, 0xEEEEEEEE, 0xFFFFFFFF, 0x11000000, 0x00220000, 0x00003300, 0x00000044));
+	}
+	else
+	{
+		// Not supported on this platform.
+		assert(ffi::callbackAlloc(ffi_test_callback, 0xCAFEBABE) == nullptr);
+	}
+}
+
 static void unit_util_string()
 {
 	test("equalsIgnoreCase", []
@@ -1888,6 +1932,10 @@ void cli_test()
 			}
 			test("socket raii semantics", &test_socket_raii_semantics);
 			test("SocketAddr::fromString", &test_SocketAddr_fromString);
+		}
+		unit("os")
+		{
+			test("ffi", &test_ffi);
 		}
 		unit("util")
 		{
