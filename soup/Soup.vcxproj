@@ -1339,7 +1339,6 @@
     <ClCompile Include="netStatus.cpp" />
     <ClCompile Include="netStun.cpp" />
     <ClCompile Include="osInput.cpp" />
-    <ClCompile Include="osRegistry.cpp" />
     <ClCompile Include="parallel.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseEXE|Win32'">Create</PrecompiledHeader>
