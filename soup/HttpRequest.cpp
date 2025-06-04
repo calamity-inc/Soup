@@ -118,9 +118,14 @@ NAMESPACE_SOUP
 
 	Optional<HttpResponse> HttpRequest::execute(Scheduler* keep_alive_sched) const
 	{
+		return execute(keep_alive_sched, &Socket::certchain_validator_default);
+	}
+
+	Optional<HttpResponse> HttpRequest::execute(Scheduler* keep_alive_sched, certchain_validator_t certchain_validator) const
+	{
 		if (keep_alive_sched)
 		{
-			auto task = keep_alive_sched->add<HttpRequestTask>(HttpRequest(*this));
+			auto task = keep_alive_sched->add<HttpRequestTask>(HttpRequest(*this), certchain_validator);
 			do
 			{
 				os::sleep(1);
@@ -129,7 +134,7 @@ NAMESPACE_SOUP
 		}
 
 		HttpRequestExecuteData data{ this };
-		auto sock = make_shared<Socket>();
+		auto sock = soup::make_shared<Socket>();
 		const auto host = getHost();
 		if (sock->connect(host, port))
 		{
@@ -141,7 +146,7 @@ NAMESPACE_SOUP
 				{
 					auto& data = *cap.get<HttpRequestExecuteData*>();
 					execute_recvResponse(s, &data.resp);
-				}, &data, getDataToSend());
+				}, &data, getDataToSend(), certchain_validator);
 			}
 			else
 			{

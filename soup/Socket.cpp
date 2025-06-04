@@ -374,7 +374,6 @@ NAMESPACE_SOUP
 	{
 		Socket& s;
 		SocketTlsHandshaker* handshaker;
-		certchain_validator_t certchain_validator;
 	};
 
 	struct CaptureValidateSke
@@ -385,11 +384,12 @@ NAMESPACE_SOUP
 		bool sha256;
 	};
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data) SOUP_EXCAL
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data, certchain_validator_t certchain_validator) SOUP_EXCAL
 	{
-		auto handshaker = make_unique<SocketTlsHandshaker>(
+		auto handshaker = soup::make_unique<SocketTlsHandshaker>(
 			callback,
-			std::move(cap)
+			std::move(cap),
+			certchain_validator
 		);
 		handshaker->server_name = std::move(server_name);
 		handshaker->initial_application_data = std::move(initial_application_data);
@@ -528,7 +528,7 @@ NAMESPACE_SOUP
 							bool res;
 							SOUP_TRY
 							{
-								res = cap.certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name, cap.s.custom_data);
+								res = cap.handshaker->certchain_validator(cap.handshaker->certchain, cap.handshaker->server_name, cap.s.custom_data);
 							}
 							SOUP_CATCH (std::bad_alloc, _)
 							{
@@ -543,8 +543,7 @@ NAMESPACE_SOUP
 							}
 						}, CaptureValidateCertchain{
 							s,
-							handshaker.get(),
-							netConfig::get().certchain_validator
+							handshaker.get()
 						});
 					}
 					SOUP_CATCH_ANY
@@ -910,10 +909,10 @@ NAMESPACE_SOUP
 	{
 		auto handshaker = make_unique<SocketTlsHandshaker>(
 			callback,
-			std::move(cap)
+			std::move(cap),
+			std::move(certstore),
+			on_client_hello
 		);
-		handshaker->certstore = std::move(certstore);
-		handshaker->on_client_hello = on_client_hello;
 		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 		{
 			if (handshake_type != TlsHandshake::client_hello)

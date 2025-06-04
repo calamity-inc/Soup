@@ -2,6 +2,7 @@
 
 #include "base.hpp"
 #include "fwd.hpp"
+#include "type.hpp"
 
 #include "Callback.hpp"
 #include "HttpResponse.hpp"
@@ -35,6 +36,7 @@ NAMESPACE_SOUP
 
 #if !SOUP_WASM
 		[[nodiscard]] Optional<HttpResponse> execute(Scheduler* keep_alive_sched = nullptr) const; // blocking
+		[[nodiscard]] Optional<HttpResponse> execute(Scheduler* keep_alive_sched, certchain_validator_t certchain_validator) const; // blocking
 		void executeEventStream(void on_event(std::unordered_map<std::string, std::string>&&, const Capture&) SOUP_EXCAL, Capture&& cap = {}) const; // blocking
 		[[nodiscard]] std::string getDataToSend() const SOUP_EXCAL;
 		void send(Socket& s) const SOUP_EXCAL;

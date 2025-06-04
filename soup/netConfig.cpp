@@ -5,7 +5,6 @@
 #else
 #include "dnsSmartResolver.hpp"
 #endif
-#include "Socket.hpp"
 
 NAMESPACE_SOUP
 {
@@ -33,9 +32,6 @@ NAMESPACE_SOUP
 	}
 
 	netConfig::netConfig()
-#if !SOUP_WASM
-		: certchain_validator(&Socket::certchain_validator_default)
-#endif
 	{
 	}
 }

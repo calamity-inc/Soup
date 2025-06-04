@@ -26,7 +26,12 @@ NAMESPACE_SOUP
 
 #if !SOUP_WASM
 	HttpRequestTask::HttpRequestTask(HttpRequest&& _hr)
-		: hr(std::move(_hr))
+		: HttpRequestTask(std::move(_hr), &Socket::certchain_validator_default)
+	{
+	}
+
+	HttpRequestTask::HttpRequestTask(HttpRequest&& _hr, certchain_validator_t certchain_validator)
+		: hr(std::move(_hr)), certchain_validator(certchain_validator)
 	{
 	}
 
@@ -96,7 +101,7 @@ NAMESPACE_SOUP
 					sock->enableCryptoClient(hr.getHost(), [](Socket&, Capture&& cap) SOUP_EXCAL
 					{
 						cap.get<HttpRequestTask*>()->recvResponse();
-					}, this, hr.getDataToSend());
+					}, this, hr.getDataToSend(), certchain_validator);
 				}
 				else
 				{
