@@ -1723,8 +1723,16 @@ static void test_SocketAddr_fromString()
 static uintptr_t cb_user_data;
 static uintptr_t cb_args[20];
 
-static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t* args) noexcept
+static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t* args)
+#if !SOUP_WINDOWS
+	noexcept
+#endif
 {
+	if (args[0] == 0xFFFFFFFF)
+	{
+		throw 69;
+	}
+
 	cb_user_data = user_data;
 	memcpy(cb_args, args, sizeof(cb_args));
 	return 0xDEADBEAF;
@@ -1758,6 +1766,19 @@ static void test_ffi()
 		assert(cb_args[17] == 0x00220000);
 		assert(cb_args[18] == 0x00003300);
 		assert(cb_args[19] == 0x00000044);
+
+#if SOUP_WINDOWS
+		int caught_val = 0;
+		try
+		{
+			reinterpret_cast<uintptr_t(*)(uintptr_t)>(func)(0xFFFFFFFF);
+		}
+		catch (int& val)
+		{
+			caught_val = val;
+		}
+		assert(caught_val == 69);
+#endif
 	}
 	else
 	{
