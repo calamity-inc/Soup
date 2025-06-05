@@ -94,7 +94,7 @@ NAMESPACE_SOUP
 		return sizeof(callback_bytes) != 0;
 	}
 
-	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data)
+	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args) noexcept, uintptr_t user_data)
 	{
 		if constexpr (sizeof(callback_bytes) != 0)
 		{
