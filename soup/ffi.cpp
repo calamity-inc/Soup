@@ -54,20 +54,30 @@ NAMESPACE_SOUP
 		SOUP_THROW(BadCall());
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64
+#if SOUP_X86
 	struct FfiCallbackTls
 	{
 		uintptr_t a, b, c, d;
-#if !SOUP_WINDOWS
+#if SOUP_BITS == 32 || !SOUP_WINDOWS
 		uintptr_t e, f;
+#endif
+#if SOUP_BITS == 32
+		uintptr_t g, h, i, j, k, l, m, n, o, p, q, r, s, t;
 #endif
 	};
 
 	static thread_local FfiCallbackTls ffi_callback_tls;
 
-	static void callback_save_args(uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d
-#if !SOUP_WINDOWS
+	static void callback_save_args(
+#if SOUP_BITS == 32
+		void* _retaddr,
+#endif
+		uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d
+#if SOUP_BITS == 32 || !SOUP_WINDOWS
 		, uintptr_t e, uintptr_t f
+#endif
+#if SOUP_BITS == 32
+		, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t
 #endif
 	)
 	{
@@ -75,45 +85,58 @@ NAMESPACE_SOUP
 		ffi_callback_tls.b = b;
 		ffi_callback_tls.c = c;
 		ffi_callback_tls.d = d;
-#if !SOUP_WINDOWS
+#if SOUP_BITS == 32 || !SOUP_WINDOWS
 		ffi_callback_tls.e = e;
 		ffi_callback_tls.f = f;
 #endif
+#if SOUP_BITS == 32
+		ffi_callback_tls.g = g;
+		ffi_callback_tls.h = h;
+		ffi_callback_tls.i = i;
+		ffi_callback_tls.j = j;
+		ffi_callback_tls.k = k;
+		ffi_callback_tls.l = l;
+		ffi_callback_tls.m = m;
+		ffi_callback_tls.n = n;
+		ffi_callback_tls.o = o;
+		ffi_callback_tls.p = p;
+		ffi_callback_tls.q = q;
+		ffi_callback_tls.r = r;
+		ffi_callback_tls.s = s;
+		ffi_callback_tls.t = t;
+#endif
 	}
 
-	static uintptr_t callback_finish(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
+	static uintptr_t callback_finish(
+		uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data,
+		uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t
+		)
 	{
 		const uintptr_t args[20] = {
-			ffi_callback_tls.a,
-			ffi_callback_tls.b,
-			ffi_callback_tls.c,
-			ffi_callback_tls.d,
-#if SOUP_WINDOWS
-			e,
-			f,
+			ffi_callback_tls.a, ffi_callback_tls.b, ffi_callback_tls.c, ffi_callback_tls.d,
+#if SOUP_BITS == 32 || !SOUP_WINDOWS
+			ffi_callback_tls.e, ffi_callback_tls.f,
 #else
-			ffi_callback_tls.e,
-			ffi_callback_tls.f,
+			e, f,
 #endif
-			g,
-			h,
-			i,
-			j,
-			k,
-			l,
-			m,
-			n,
-			o,
-			p,
-			q,
-			r,
-			s,
-			t,
+#if SOUP_BITS == 32
+			ffi_callback_tls.g, ffi_callback_tls.h, ffi_callback_tls.i, ffi_callback_tls.j, ffi_callback_tls.k, ffi_callback_tls.l, ffi_callback_tls.m, ffi_callback_tls.n, ffi_callback_tls.o, ffi_callback_tls.p, ffi_callback_tls.q, ffi_callback_tls.r, ffi_callback_tls.s, ffi_callback_tls.t,
+#else
+			g, h, i, j, k, l, m, n, o, p, q, r, s, t,
+#endif
 		};
 		return func(user_data, args);
 	}
 
 	static const uint8_t callback_bytes[] = {
+#if SOUP_BITS == 32
+		/*  0 */ 0xB8, 0, 0, 0, 0,									// mov     eax, (4 bytes) ; callback_save_args
+		/*  5 */ 0xFF, 0xD0,										// call    eax
+		/*  7 */ 0xC7, 0x44, 0x24, 0x04, 0, 0, 0, 0,				// mov     DWORD PTR [esp+0x4], (4 bytes) ; func
+		/* 15 */ 0xC7, 0x44, 0x24, 0x08, 0, 0, 0, 0,				// mov     DWORD PTR [esp+0x8], (4 bytes) ; user_data
+		/* 23 */ 0xB8, 0, 0, 0, 0,									// mov     eax, (4 bytes) ; callback_finish
+		/* 28 */ 0xFF, 0xE0,										// jmp     eax
+#else
 		/*  0 */ 0x48, 0x81, 0xEC, 0xA8, 0x00, 0x00, 0x00,			// sub     rsp, 0xa8
 		/*  7 */ 0xFF, 0x15, (46 - 13), 0, 0, 0,					// call    QWORD PTR [rip+...] ; callback_save_args
 		/* 13 */ 0x48, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00,			// add     rsp, 0xa8
@@ -127,26 +150,39 @@ NAMESPACE_SOUP
 		/* 40 */ 0xFF, 0x25, 0x08, 0x00, 0x00, 0x00,				// jmp     QWORD PTR [rip+0x8] ; callback_finish
 		// 46: callback_save_args
 		// 54: callback_finish
+#endif
 	};
 #endif
 
 	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data)
 	{
-#if SOUP_X86 && SOUP_BITS == 64
-		void* block = memGuard::alloc(sizeof(callback_bytes) + 16, memGuard::ACC_RWX);
+#if SOUP_X86
+	#if SOUP_BITS == 32
+		void* block = memGuard::alloc(sizeof(callback_bytes), memGuard::ACC_RWX);
+	#else
+		void* block = memGuard::alloc(sizeof(callback_bytes) + sizeof(void*) * 2, memGuard::ACC_RWX);
+	#endif
 		memcpy(block, callback_bytes, sizeof(callback_bytes));
+	#if SOUP_BITS == 32
+		*(void**)((uint8_t*)block + 0 + 1) = (void*)&callback_save_args;
+		*(void**)((uint8_t*)block + 7 + 4) = (void*)func;
+		*(uintptr_t*)((uint8_t*)block + 15 + 4) = user_data;
+		*(void**)((uint8_t*)block + 23 + 1) = (void*)&callback_finish;
+	#else
 		*(void**)((uint8_t*)block + 20 + 2) = (void*)func;
 		*(uintptr_t*)((uint8_t*)block + 30 + 2) = user_data;
 		*(void**)((uint8_t*)block + sizeof(callback_bytes)) = (void*)&callback_save_args;
 		*(void**)((uint8_t*)block + sizeof(callback_bytes) + sizeof(void*)) = (void*)&callback_finish;
+	#endif
 		return block;
-#endif
+#else
 		return nullptr;
+#endif
 	}
 
 	void ffi::callbackFree(void* cb)
 	{
-#if SOUP_X86 && SOUP_BITS == 64
+#if SOUP_X86
 		return memGuard::free(cb, sizeof(callback_bytes));
 #endif
 	}

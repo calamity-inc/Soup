@@ -1725,6 +1725,11 @@ static uintptr_t cb_args[20];
 
 static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t* args)
 {
+	/*for (int i = 0; i != 20; ++i)
+	{
+		std::cout << i << ": " << std::hex << args[i] << std::dec << std::endl;
+	}*/
+
 	if (args[0] == 0xFFFFFFFF)
 	{
 		throw 69;
