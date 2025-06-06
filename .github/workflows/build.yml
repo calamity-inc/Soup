@@ -115,6 +115,34 @@ jobs:
             libsoup.a
             libsoupbindings.so
 
+  macos-14:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+
+      - name: Build Soup
+        run: php build_lib.php
+
+      - name: Build CLI
+        run: php build_cli.php
+
+      - name: Run ./soup test
+        run: ./CLI/soup test
+
+      - name: Run ./soup bench
+        run: ./CLI/soup bench
+
+      - name: Upload soup
+        uses: actions/upload-artifact@v4
+        with:
+          name: "MacOS (ARM64)"
+          path: |
+            CLI/soup
+            libsoup.a
+            libsoupbindings.so
+
   windows-latest:
     runs-on: windows-latest
     steps:
