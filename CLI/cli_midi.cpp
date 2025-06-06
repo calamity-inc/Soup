@@ -54,7 +54,7 @@ void cli_midi(int argc, const char** argv)
 
 		if (subcommand == "keyboard")
 		{
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && SOUP_DIGITALKEYBOARD_AVAILABLE
 			auto dev = audDevice::getDefault();
 			std::cout << "Playing on " << dev.getName() << std::endl;
 			auto pb = dev.open();

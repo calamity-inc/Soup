@@ -901,7 +901,7 @@ if (combined[i]) \
 		}
 		else if (keychron.state > 0)
 		{
-#if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
+#if SOUP_DIGITALKEYBOARD_AVAILABLE
 			static DigitalKeyboard dkbd;
 #if SOUP_WINDOWS
 			static bool dkbd_okay = false;
@@ -920,7 +920,7 @@ if (combined[i]) \
 					continue;
 				}
 				if (
-#if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
+#if SOUP_DIGITALKEYBOARD_AVAILABLE
 					dkbd.keys[sk] ||
 #endif
 					keychron.buffer[sk] || keychron.state == (i >> 2) + 1
@@ -938,7 +938,7 @@ if (combined[i]) \
 					}
 					keychron.buffer[sk] = report.at(keychron.am_version >= 4 ? 6 : 3);
 
-#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
+#if SOUP_DIGITALKEYBOARD_AVAILABLE && SOUP_WINDOWS
 					if (!dkbd_okay && keychron.buffer[sk] >= 235)
 					{
 						if (dkbd.keys[sk])
@@ -1044,7 +1044,7 @@ if (combined[i]) \
 		mtx.lock();
 #endif
 
-#if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
+#if SOUP_DIGITALKEYBOARD_AVAILABLE
 		static DigitalKeyboard dkbd;
 #if SOUP_WINDOWS
 		static bool dkbd_okay = false;
@@ -1067,7 +1067,7 @@ if (combined[i]) \
 				if (sk != KEY_NONE)
 				{
 					if (
-#if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
+#if SOUP_DIGITALKEYBOARD_AVAILABLE
 						dkbd.keys[sk] ||
 #endif
 						madlions.buffer[sk] || (offset >> 4) == madlions.state
@@ -1127,7 +1127,7 @@ if (combined[i]) \
 						{
 							keys.emplace_back(ActiveKey{ sk, fvalue });
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS && SOUP_DIGITALKEYBOARD_AVAILABLE
 							if (!dkbd_okay && travel == 350)
 							{
 								if (dkbd.keys[madlions.layout[offset + i]])

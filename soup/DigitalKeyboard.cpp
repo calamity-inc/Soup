@@ -1,6 +1,6 @@
 #include "DigitalKeyboard.hpp"
 
-#if (SOUP_WINDOWS || SOUP_LINUX) && !SOUP_CROSS_COMPILE
+#if SOUP_DIGITALKEYBOARD_AVAILABLE
 
 #if SOUP_WINDOWS
 	#pragma comment(lib, "dinput8.lib")
