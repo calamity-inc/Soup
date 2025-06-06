@@ -3,7 +3,7 @@
 
 #include "IpcSocket.hpp"
 
-#pragma comment(lib, "Advapi32.lib")
+#pragma comment(lib, "advapi32.lib")
 
 NAMESPACE_SOUP
 {

@@ -10,7 +10,7 @@
 #include <cfgmgr32.h>
 #include <hidsdi.h>
 
-#pragma comment(lib, "CfgMgr32.lib")
+#pragma comment(lib, "cfgmgr32.lib")
 #pragma comment(lib, "hid.lib")
 
 #include "unicode.hpp"

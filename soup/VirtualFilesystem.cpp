@@ -4,7 +4,7 @@
 
 #if SOUP_WINDOWS
 #include <Objbase.h> // CoCreateGuid
-#pragma comment(lib, "Ole32.lib") // CoCreateGuid
+#pragma comment(lib, "ole32.lib") // CoCreateGuid
 
 #include "Exception.hpp"
 #include "string.hpp"

@@ -10,7 +10,7 @@
 #include <mmdeviceapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
 
-#pragma comment(lib, "Ole32.lib") // CoInitialize, CoCreateInstance, PropVariantClear
+#pragma comment(lib, "ole32.lib") // CoInitialize, CoCreateInstance, PropVariantClear
 
 #include "unicode.hpp"
 #endif

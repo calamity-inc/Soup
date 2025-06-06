@@ -10,7 +10,7 @@
 #include "Exception.hpp"
 #include "unicode.hpp"
 
-#pragma comment(lib, "Advapi32")
+#pragma comment(lib, "advapi32.lib")
 
 NAMESPACE_SOUP
 {

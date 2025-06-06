@@ -3,7 +3,7 @@
 #if SOUP_WINDOWS
 #include <windows.h>
 #include <iphlpapi.h>
-#pragma comment(lib, "IPHLPAPI.lib")
+#pragma comment(lib, "iphlpapi.lib")
 
 #include "AllocRaii.hpp"
 #include "IpAddr.hpp"

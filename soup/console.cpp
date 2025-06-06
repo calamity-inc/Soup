@@ -8,7 +8,7 @@
 #include "unicode.hpp"
 
 #if SOUP_WINDOWS
-#pragma comment(lib, "User32.lib") // GetAsyncKeyState
+#pragma comment(lib, "user32.lib") // GetAsyncKeyState
 
 #include <conio.h>
 #else
