@@ -1720,6 +1720,7 @@ static void test_SocketAddr_fromString()
 	}
 }
 
+#if SOUP_FFI_CALLBACK_AVAILABLE
 static uintptr_t cb_user_data;
 static uintptr_t cb_args[20];
 
@@ -1742,50 +1743,43 @@ static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t* args)
 
 static void test_ffi()
 {
-	if (ffi::callbackAvailable())
-	{
-		auto func = ffi::callbackAlloc(ffi_test_callback, 0xCAFEBABE);
-		assert(func != nullptr);
-		assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(0x00000000, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555, 0x66666666, 0x77777777, 0x88888888, 0x99999999, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC, 0xDDDDDDDD, 0xEEEEEEEE, 0xFFFFFFFF, 0x11000000, 0x00220000, 0x00003300, 0x00000044));
-		assert(cb_user_data == 0xCAFEBABE);
-		assert(cb_args[0] == 0x00000000);
-		assert(cb_args[1] == 0x11111111);
-		assert(cb_args[2] == 0x22222222);
-		assert(cb_args[3] == 0x33333333);
-		assert(cb_args[4] == 0x44444444);
-		assert(cb_args[5] == 0x55555555);
-		assert(cb_args[6] == 0x66666666);
-		assert(cb_args[7] == 0x77777777);
-		assert(cb_args[8] == 0x88888888);
-		assert(cb_args[9] == 0x99999999);
-		assert(cb_args[10] == 0xAAAAAAAA);
-		assert(cb_args[11] == 0xBBBBBBBB);
-		assert(cb_args[12] == 0xCCCCCCCC);
-		assert(cb_args[13] == 0xDDDDDDDD);
-		assert(cb_args[14] == 0xEEEEEEEE);
-		assert(cb_args[15] == 0xFFFFFFFF);
-		assert(cb_args[16] == 0x11000000);
-		assert(cb_args[17] == 0x00220000);
-		assert(cb_args[18] == 0x00003300);
-		assert(cb_args[19] == 0x00000044);
+	auto func = ffi::callbackAlloc(ffi_test_callback, 0xCAFEBABE);
+	assert(func != nullptr);
+	assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(0x00000000, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555, 0x66666666, 0x77777777, 0x88888888, 0x99999999, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC, 0xDDDDDDDD, 0xEEEEEEEE, 0xFFFFFFFF, 0x11000000, 0x00220000, 0x00003300, 0x00000044));
+	assert(cb_user_data == 0xCAFEBABE);
+	assert(cb_args[0] == 0x00000000);
+	assert(cb_args[1] == 0x11111111);
+	assert(cb_args[2] == 0x22222222);
+	assert(cb_args[3] == 0x33333333);
+	assert(cb_args[4] == 0x44444444);
+	assert(cb_args[5] == 0x55555555);
+	assert(cb_args[6] == 0x66666666);
+	assert(cb_args[7] == 0x77777777);
+	assert(cb_args[8] == 0x88888888);
+	assert(cb_args[9] == 0x99999999);
+	assert(cb_args[10] == 0xAAAAAAAA);
+	assert(cb_args[11] == 0xBBBBBBBB);
+	assert(cb_args[12] == 0xCCCCCCCC);
+	assert(cb_args[13] == 0xDDDDDDDD);
+	assert(cb_args[14] == 0xEEEEEEEE);
+	assert(cb_args[15] == 0xFFFFFFFF);
+	assert(cb_args[16] == 0x11000000);
+	assert(cb_args[17] == 0x00220000);
+	assert(cb_args[18] == 0x00003300);
+	assert(cb_args[19] == 0x00000044);
 
-		int caught_val = 0;
-		try
-		{
-			reinterpret_cast<uintptr_t(*)(uintptr_t)>(func)(0xFFFFFFFF);
-		}
-		catch (int& val)
-		{
-			caught_val = val;
-		}
-		assert(caught_val == 69);
-	}
-	else
+	int caught_val = 0;
+	try
 	{
-		// Not supported on this platform.
-		assert(ffi::callbackAlloc(ffi_test_callback, 0xCAFEBABE) == nullptr);
+		reinterpret_cast<uintptr_t(*)(uintptr_t)>(func)(0xFFFFFFFF);
 	}
+	catch (int& val)
+	{
+		caught_val = val;
+	}
+	assert(caught_val == 69);
 }
+#endif
 
 static void unit_util_string()
 {
@@ -1961,7 +1955,9 @@ void cli_test()
 		}
 		unit("os")
 		{
+#if SOUP_FFI_CALLBACK_AVAILABLE
 			test("ffi", &test_ffi);
+#endif
 		}
 		unit("util")
 		{
