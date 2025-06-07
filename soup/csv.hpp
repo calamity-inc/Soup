@@ -9,6 +9,6 @@ NAMESPACE_SOUP
 {
 	struct csv
 	{
-		[[nodiscard]] static std::vector<std::string> parseLine(const std::string& line);
+		static void parseLine(std::vector<std::string>& res, const std::string& line);
 	};
 }

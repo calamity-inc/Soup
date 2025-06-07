@@ -4,10 +4,9 @@
 
 NAMESPACE_SOUP
 {
-	std::vector<std::string> csv::parseLine(const std::string& line)
+	void csv::parseLine(std::vector<std::string>& res, const std::string& line)
 	{
-		std::vector<std::string> res{};
-		res.reserve(10);
+		res.clear();
 		size_t i = 0;
 		while (i < line.length())
 		{
@@ -31,6 +30,5 @@ NAMESPACE_SOUP
 				i = sep + 1;
 			}
 		}
-		return res;
 	}
 }

@@ -206,9 +206,11 @@ NAMESPACE_SOUP
 			ipv4tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
 		ipv4tolocation.reserve(2'800'000);
+		std::vector<std::string> arr;
+		arr.reserve(6);
 		for (std::string line; ipv4tolocationcsv.getLine(line); )
 		{
-			auto arr = csv::parseLine(line);
+			csv::parseLine(arr, line);
 			SOUP_IF_UNLIKELY (arr.size() < 6)
 			{
 				continue;
@@ -234,9 +236,11 @@ NAMESPACE_SOUP
 			ipv6tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
 		}
 		ipv6tolocation.reserve(700'000);
+		std::vector<std::string> arr;
+		arr.reserve(6);
 		for (std::string line; ipv6tolocationcsv.getLine(line); )
 		{
-			auto arr = csv::parseLine(line);
+			csv::parseLine(arr, line);
 			SOUP_IF_UNLIKELY (arr.size() < 6)
 			{
 				continue;
