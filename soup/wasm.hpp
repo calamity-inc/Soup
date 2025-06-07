@@ -74,7 +74,7 @@ NAMESPACE_SOUP
 		template <typename T>
 		[[nodiscard]] T* getMemory(size_t ptr) noexcept
 		{
-			SOUP_IF_UNLIKELY (ptr + sizeof(T) >= memory_size)
+			SOUP_IF_UNLIKELY (ptr + sizeof(T) > memory_size)
 			{
 				return nullptr;
 			}
