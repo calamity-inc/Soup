@@ -23,7 +23,7 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			lookup = netConfig::get().getDnsResolver().makeLookupTask(prefer_ipv6 ? DNS_AAAA : DNS_A, host);
+			lookup = netConfig::get().getDnsResolver()->makeLookupTask(prefer_ipv6 ? DNS_AAAA : DNS_A, host);
 			current_lookup_is_ipv6 = prefer_ipv6;
 
 			// In case we get no A records, we need enough data to start AAAA query.
@@ -152,7 +152,7 @@ NAMESPACE_SOUP
 	void netConnectTask::doSecondLookup()
 	{
 		current_lookup_is_ipv6 = !current_lookup_is_ipv6;
-		lookup = netConfig::get().getDnsResolver().makeLookupTask(current_lookup_is_ipv6 ? DNS_AAAA : DNS_A, host);
+		lookup = netConfig::get().getDnsResolver()->makeLookupTask(current_lookup_is_ipv6 ? DNS_AAAA : DNS_A, host);
 		second_lookup = true;
 	}
 

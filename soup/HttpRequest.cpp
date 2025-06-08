@@ -2,6 +2,7 @@
 
 #include "HttpRequestTask.hpp"
 #include "joaat.hpp"
+#include "netConfig.hpp"
 #include "ObfusString.hpp"
 #include "Scheduler.hpp"
 #include "Socket.hpp"
@@ -122,10 +123,21 @@ NAMESPACE_SOUP
 
 	Optional<HttpResponse> HttpRequest::execute(certchain_validator_t certchain_validator) const
 	{
+		auto resolver = netConfig::get().getDnsResolver();
+		return execute(*resolver, certchain_validator);
+	}
+
+	Optional<HttpResponse> HttpRequest::execute(const dnsResolver& resolver) const
+	{
+		return execute(resolver, &Socket::certchain_validator_default);
+	}
+
+	Optional<HttpResponse> HttpRequest::execute(const dnsResolver& resolver, certchain_validator_t certchain_validator) const
+	{
 		HttpRequestExecuteData data{ this };
 		auto sock = soup::make_shared<Socket>();
 		const auto host = getHost();
-		if (sock->connect(host, port))
+		if (sock->connect(resolver, host, port))
 		{
 			Scheduler sched{};
 			sched.addSocket(sock);
@@ -157,10 +169,16 @@ NAMESPACE_SOUP
 
 	void HttpRequest::executeEventStream(void on_event(std::unordered_map<std::string, std::string>&&, const Capture&) SOUP_EXCAL, Capture&& cap) const
 	{
+		auto resolver = netConfig::get().getDnsResolver();
+		return executeEventStream(*resolver, on_event, std::move(cap));
+	}
+
+	void HttpRequest::executeEventStream(const dnsResolver& resolver, void on_event(std::unordered_map<std::string, std::string>&&, const Capture&) SOUP_EXCAL, Capture&& cap) const
+	{
 		HttpRequestExecuteEventStreamData data{ this, on_event, std::move(cap) };
 		auto sock = make_shared<Socket>();
 		const auto host = getHost();
-		if (sock->connect(host, port))
+		if (sock->connect(resolver, host, port))
 		{
 			Scheduler sched{};
 			sched.addSocket(sock);

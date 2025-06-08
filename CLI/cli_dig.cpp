@@ -16,7 +16,7 @@ void cli_dig(int argc, const char** argv)
 		return;
 	}
 
-	dnsResolver* r = &netConfig::get().getDnsResolver();
+	dnsResolver* r = netConfig::get().getDnsResolver().get();
 	UniquePtr<dnsResolver> rup;
 	dnsType t = DNS_A;
 

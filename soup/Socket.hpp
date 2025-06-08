@@ -79,6 +79,7 @@ NAMESPACE_SOUP
 		// Resolves the hostname and tries to connect per IPv4, falling back to IPv6 if that fails.
 		// 'timeout_ms' defines how long each connection attempt can maximally take and does not include DNS lookup time.
 		bool connect(const std::string& host, uint16_t port, unsigned int timeout_ms = 3000) noexcept; // blocking
+		bool connect(const dnsResolver& resolver, const std::string& host, uint16_t port, unsigned int timeout_ms = 3000) noexcept; // blocking
 
 		bool connect(const SocketAddr& addr, unsigned int timeout_ms = 3000) noexcept; // blocking
 		bool connect(const IpAddr& ip, uint16_t port, unsigned int timeout_ms = 3000) noexcept // blocking

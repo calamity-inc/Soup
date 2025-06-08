@@ -109,16 +109,22 @@ NAMESPACE_SOUP
 
 	bool Socket::connect(const std::string& host, uint16_t port, unsigned int timeout_ms) noexcept
 	{
+		auto resolver = netConfig::get().getDnsResolver();
+		return connect(*resolver, host, port, timeout_ms);
+	}
+
+	bool Socket::connect(const dnsResolver& resolver, const std::string& host, uint16_t port, unsigned int timeout_ms) noexcept
+	{
 		if (IpAddr hostaddr; hostaddr.fromString(host))
 		{
 			return connect(hostaddr, port, timeout_ms);
 		}
-		auto res = netConfig::get().getDnsResolver().lookupIPv4(host);
+		auto res = resolver.lookupIPv4(host);
 		if (!res.empty() && connect(rand(res), port, timeout_ms))
 		{
 			return true;
 		}
-		res = netConfig::get().getDnsResolver().lookupIPv6(host);
+		res = resolver.lookupIPv6(host);
 		if (!res.empty() && connect(rand(res), port, timeout_ms))
 		{
 			return true;

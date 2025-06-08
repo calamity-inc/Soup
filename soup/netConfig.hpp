@@ -14,7 +14,7 @@ NAMESPACE_SOUP
 
 		SharedPtr<dnsResolver> dns_resolver;
 
-		[[nodiscard]] dnsResolver& getDnsResolver() SOUP_EXCAL;
+		[[nodiscard]] SharedPtr<dnsResolver>& getDnsResolver() SOUP_EXCAL;
 
 		netConfig();
 	};
