@@ -56,7 +56,11 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 		return VirtualAlloc(nullptr, len, MEM_COMMIT | MEM_RESERVE, allowedAccessToProtect(allowed_access));
 #else
-		return mmap(nullptr, len, allowed_access, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		if (const auto block = mmap(nullptr, len, allowed_access, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0); block != MAP_FAILED)
+		{
+			return block;
+		}
+		return nullptr;
 #endif
 	}
 
