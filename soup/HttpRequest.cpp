@@ -3,7 +3,6 @@
 #include "HttpRequestTask.hpp"
 #include "joaat.hpp"
 #include "ObfusString.hpp"
-#include "os.hpp"
 #include "Scheduler.hpp"
 #include "Socket.hpp"
 #include "UniquePtr.hpp"
@@ -116,23 +115,13 @@ NAMESPACE_SOUP
 		Optional<HttpResponse> resp;
 	};
 
-	Optional<HttpResponse> HttpRequest::execute(Scheduler* keep_alive_sched) const
+	Optional<HttpResponse> HttpRequest::execute() const
 	{
-		return execute(keep_alive_sched, &Socket::certchain_validator_default);
+		return execute(&Socket::certchain_validator_default);
 	}
 
-	Optional<HttpResponse> HttpRequest::execute(Scheduler* keep_alive_sched, certchain_validator_t certchain_validator) const
+	Optional<HttpResponse> HttpRequest::execute(certchain_validator_t certchain_validator) const
 	{
-		if (keep_alive_sched)
-		{
-			auto task = keep_alive_sched->add<HttpRequestTask>(HttpRequest(*this), certchain_validator);
-			do
-			{
-				os::sleep(1);
-			} while (!task->isWorkDone());
-			SOUP_MOVE_RETURN(task->result);
-		}
-
 		HttpRequestExecuteData data{ this };
 		auto sock = soup::make_shared<Socket>();
 		const auto host = getHost();
