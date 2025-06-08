@@ -403,6 +403,10 @@ static void unit_data()
 		assert(utf32.size() == 2);
 		assert(utf32.at(0) == unicode::REPLACEMENT_CHAR);
 		assert(utf32.at(1) == 0x41);
+
+		std::string str = "\x19\x93\x0D";
+		unicode::utf8_sanitise(str);
+		assert(str == "\x19\xEF\xBF\xBD\x0D")
 	});
 
 	test("punycode", []
