@@ -201,6 +201,7 @@ SOUP_CEXPORT stdstring* Canvas_toNewPngString(const Canvas* x)
 	return heap.add(x->toPng());
 }
 
+#ifdef SOUP_ENABLE_CHATBOT
 // cbResult
 
 SOUP_CEXPORT const char* cbResult_getResponse(const cbResult* x)
@@ -224,6 +225,7 @@ SOUP_CEXPORT cbResult* Chatbot_process(const char* text)
 {
 	return heap.add(Chatbot::process(text));
 }
+#endif
 
 // CidrSubnetInterface
 

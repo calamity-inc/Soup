@@ -61,12 +61,14 @@ SOUP_CEXPORT unsigned int Canvas_getHeight(const Canvas* x);
 SOUP_CEXPORT void Canvas_resizeNearestNeighbour(Canvas* x, unsigned int desired_width, unsigned int desired_height);
 SOUP_CEXPORT const char* Canvas_toSvg(const Canvas* x, unsigned int scale);
 SOUP_CEXPORT stdstring* Canvas_toNewPngString(const Canvas* x);
+#ifdef SOUP_ENABLE_CHATBOT
 // cbResult
 SOUP_CEXPORT const char* cbResult_getResponse(const cbResult* x);
 SOUP_CEXPORT bool cbResult_isDelete(const cbResult* x);
 SOUP_CEXPORT int cbResult_getDeleteNum(const cbResult* x);
 // Chatbot
 SOUP_CEXPORT cbResult* Chatbot_process(const char* text);
+#endif
 // CidrSubnetInterface
 SOUP_CEXPORT CidrSubnetInterface* CidrSubnetInterface_new(const char* range);
 SOUP_CEXPORT bool CidrSubnetInterface_contains(CidrSubnetInterface* x, const char* ip_addr);

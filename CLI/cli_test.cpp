@@ -1489,6 +1489,7 @@ endif;)") == "");
 	});
 }
 
+#ifdef SOUP_ENABLE_CHATBOT
 static void test_chatbot_implementables()
 {
 	{
@@ -1509,6 +1510,7 @@ static void test_chatbot_results()
 	assert(Chatbot::process("6900 kg in tonnes").response.find("6.9") != std::string::npos);
 	assert(Chatbot::process("6900 KG in tonnes").response.find("6.9") != std::string::npos);
 }
+#endif
 
 static void unit_math_bigint()
 {
@@ -1928,6 +1930,7 @@ void cli_test()
 		{
 			unit_lang();
 		}
+#ifdef SOUP_ENABLE_CHATBOT
 		unit("ling")
 		{
 			unit("chatbot")
@@ -1936,6 +1939,7 @@ void cli_test()
 				test("results", &test_chatbot_results);
 			}
 		}
+#endif
 		unit("math")
 		{
 			unit("bigint")

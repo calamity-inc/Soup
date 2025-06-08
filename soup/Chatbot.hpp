@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef SOUP_ENABLE_CHATBOT
+
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -18,3 +20,5 @@ NAMESPACE_SOUP
 		[[nodiscard]] static std::string getResponse(const std::string& str);
 	};
 }
+
+#endif

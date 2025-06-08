@@ -1,3 +1,4 @@
+#ifdef SOUP_ENABLE_CHATBOT
 #include "Chatbot.hpp"
 
 #include "FileReader.hpp"
@@ -94,3 +95,5 @@ NAMESPACE_SOUP
 		return process(str).response;
 	}
 }
+
+#endif

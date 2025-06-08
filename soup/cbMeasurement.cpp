@@ -1,3 +1,4 @@
+#ifdef SOUP_ENABLE_CHATBOT
 #include "cbMeasurement.hpp"
 
 #include "joaat.hpp"
@@ -145,3 +146,5 @@ NAMESPACE_SOUP
 		return str;
 	}
 }
+
+#endif

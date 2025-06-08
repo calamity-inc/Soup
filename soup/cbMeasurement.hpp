@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef SOUP_ENABLE_CHATBOT
+
 #include <cstdint>
 #include <string>
 
@@ -61,3 +63,5 @@ NAMESPACE_SOUP
 		[[nodiscard]] std::string toString() const;
 	};
 }
+
+#endif

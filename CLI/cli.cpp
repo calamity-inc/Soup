@@ -53,6 +53,7 @@ int main(int argc, const char** argv)
 			return cli_cat2json(argc, argv);
 		}
 
+#ifdef SOUP_ENABLE_CHATBOT
 		if (subcommand == "chatbot")
 		{
 			while (true)
@@ -80,6 +81,7 @@ int main(int argc, const char** argv)
 			}
 			return 0;
 		}
+#endif
 
 		if (subcommand == "chatgpt")
 		{
@@ -577,7 +579,9 @@ int main(int argc, const char** argv)
 	string::listAppend(all_tools, "3d");
 	string::listAppend(all_tools, "bench");
 	string::listAppend(all_tools, "cat2json");
+#ifdef SOUP_ENABLE_CHATBOT
 	string::listAppend(all_tools, "chatbot");
+#endif
 	string::listAppend(all_tools, "chatgpt");
 #ifdef SOUP_ENABLE_CHESS
 	string::listAppend(all_tools, "chess");
