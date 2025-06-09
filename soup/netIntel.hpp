@@ -1,7 +1,7 @@
 #pragma once
 
-#include <filesystem>
-#include <unordered_map>
+#include <string>
+#include <vector>
 
 #include "AllocRaiiFileMapping.hpp"
 #include "CidrSubnetInterface.hpp"
@@ -11,8 +11,6 @@
 #include "netAs.hpp"
 #include "netIntelLocationData.hpp"
 #include "Optional.hpp"
-#include "RangeMap.hpp"
-#include "StringPool.hpp"
 #include "UniquePtr.hpp"
 
 NAMESPACE_SOUP
@@ -20,21 +18,20 @@ NAMESPACE_SOUP
 	class netIntel
 	{
 	public:
-		void init(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS & location data
+		void init(bool ipv4 = true, bool ipv6 = true) { return initEx(ipv4, ipv6, ipv4, ipv6); } // blocking; initialises AS & location data
+		void initEx(bool as_ipv4, bool as_ipv6, bool loc_ipv4, bool loc_ipv6); // blocking
 		void deinit() noexcept;
 
-		void asInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises AS data
+		void asInit(bool ipv4 = true, bool ipv6 = true) { return initEx(ipv4, ipv6, false, false); } // blocking; initialises AS data
 		[[nodiscard]] bool asIsInited() noexcept;
 		void asDeinit() noexcept;
 		
-		void locationInit(bool ipv4 = true, bool ipv6 = true); // blocking; initialises location data
+		void locationInit(bool ipv4 = true, bool ipv6 = true) { return initEx(false, false, ipv4, ipv6); }; // blocking; initialises location data
 		[[nodiscard]] bool locationIsInited() noexcept;
 		void locationDeinit() noexcept;
 
-	private:
+	protected:
 		void initExtraWasm(); // blocking
-		void initIpv4ToLocation(); // blocking
-		void initIpv6ToLocation(); // blocking
 
 	public:
 		// === Lookup functions ===
@@ -51,12 +48,9 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] std::vector<UniquePtr<CidrSubnetInterface>> getRangesByAsn(uint32_t asn) const;
 
-		[[nodiscard]] const netIntelLocationData* getLocationByIp(const IpAddr& addr) const;
-		[[nodiscard]] const netIntelLocationData* getLocationByIpv4(native_u32_t ip) const;
-		[[nodiscard]] const netIntelLocationData* getLocationByIpv6(const IpAddr& addr) const;
-
-	public:
-		void locationExport(const std::filesystem::path& dir);
+		[[nodiscard]] Optional<netIntelLocationData> getLocationByIp(const IpAddr& addr) const;
+		[[nodiscard]] Optional<netIntelLocationData> getLocationByIpv4(native_u32_t ip) const;
+		[[nodiscard]] Optional<netIntelLocationData> getLocationByIpv6(const IpAddr& addr) const;
 
 	protected:
 		struct AsPoolData
@@ -66,14 +60,23 @@ NAMESPACE_SOUP
 		};
 		static_assert(sizeof(MemoryMappedMap<uint32_t, AsPoolData>::Entry) == 12);
 
+		struct LocationData
+		{
+			char country_code[4];
+			uint32_t state;
+			uint32_t city;
+		};
+		static_assert(sizeof(MemoryMappedRangeMap<uint32_t, LocationData>::Entry) == 20);
+
 		MemoryMappedMap<uint32_t, AsPoolData> as_map;
 		AllocRaiiFileMapping<char> as_string_pool;
 		MemoryMappedRangeMap<uint32_t, uint32_t> ipv4_to_aso{};
 		MemoryMappedRangeMap<IpAddr, uint32_t> ipv6_to_aso{};
 	public:
 		std::string extra_wasm{};
-		StringPool location_pool{};
-		RangeMap<uint32_t, netIntelLocationData> ipv4tolocation{};
-		RangeMap<IpAddr, netIntelLocationData> ipv6tolocation{};
+	protected:
+		AllocRaiiFileMapping<char> location_string_pool;
+		MemoryMappedRangeMap<uint32_t, LocationData> ipv4_to_location{};
+		MemoryMappedRangeMap<IpAddr, LocationData> ipv6_to_location{};
 	};
 }

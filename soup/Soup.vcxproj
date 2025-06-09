@@ -1012,8 +1012,6 @@
     <ClInclude Include="netIce.hpp" />
     <ClInclude Include="netIntrospectTask.hpp" />
     <ClInclude Include="netStatus.hpp" />
-    <ClInclude Include="netIntelLocationData4OnDisk.hpp" />
-    <ClInclude Include="netIntelOnDisk.hpp" />
     <ClInclude Include="netMesh.hpp" />
     <ClInclude Include="netMeshMsgType.hpp" />
     <ClInclude Include="netMeshService.hpp" />
@@ -1091,7 +1089,6 @@
     <ClInclude Include="CustomEncoding.hpp" />
     <ClInclude Include="DetachedScheduler.hpp" />
     <ClInclude Include="Diff.hpp" />
-    <ClInclude Include="DiskDbReader.hpp" />
     <ClInclude Include="dnsLookupTask.hpp" />
     <ClInclude Include="dnsUdpResolver.hpp" />
     <ClInclude Include="dnsClass.hpp" />
@@ -1548,7 +1545,6 @@
     <ClCompile Include="netIce.cpp" />
     <ClCompile Include="netInfo.cpp" />
     <ClCompile Include="MacAddr.cpp" />
-    <ClCompile Include="netIntelOnDisk.cpp" />
     <ClCompile Include="netIntrospectTask.cpp" />
     <ClCompile Include="netMesh.cpp" />
     <ClCompile Include="netMeshService.cpp" />

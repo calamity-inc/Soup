@@ -12,11 +12,4 @@ NAMESPACE_SOUP
 		const char* state;
 		const char* city;
 	};
-
-	struct netIntelLocationDataSelfContained
-	{
-		ShortString<2> country_code;
-		std::string state;
-		std::string city;
-	};
 }

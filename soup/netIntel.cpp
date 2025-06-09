@@ -1,32 +1,18 @@
 #include "netIntel.hpp"
 
+#include <fstream>
+
 #include "bitutil.hpp"
 #include "CidrSubnet4Interface.hpp"
 #include "CidrSubnet6Interface.hpp"
-#include "csv.hpp"
 #include "deflate.hpp"
-#include "FileWriter.hpp"
 #include "Ipv6Maths.hpp"
-#include "netIntelLocationData4OnDisk.hpp"
 #include "string.hpp"
-#include "StringReader.hpp"
 #include "time.hpp"
 #include "WebResource.hpp"
 
 NAMESPACE_SOUP
 {
-	void netIntel::init(bool ipv4, bool ipv6)
-	{
-		asInit(ipv4, ipv6);
-		locationInit(ipv4, ipv6);
-	}
-
-	void netIntel::deinit() noexcept
-	{
-		asDeinit();
-		locationDeinit();
-	}
-
 	struct DynamicDataMeta
 	{
 		int64_t version;
@@ -35,9 +21,14 @@ NAMESPACE_SOUP
 		uint32_t as_string_pool_decompressed_size;
 		uint32_t ipv4_to_aso_decompressed_size;
 		uint32_t ipv6_to_aso_decompressed_size;
+		uint32_t location_string_pool_decompressed_size;
+		uint32_t ipv4_to_location_decompressed_size;
+		uint32_t ipv6_to_location_decompressed_size;
+		uint32_t padding;
+		char location_md5[16];
 	};
 
-	void netIntel::asInit(bool ipv4, bool ipv6)
+	void netIntel::initEx(bool as_ipv4, bool as_ipv6, bool loc_ipv4, bool loc_ipv6)
 	{
 		auto folder = filesystem::getProgramData();
 		folder /= "Calamity, Inc";
@@ -75,6 +66,12 @@ NAMESPACE_SOUP
 						std::filesystem::remove(folder / "as_string_pool.bin");
 						std::filesystem::remove(folder / "ipv4_to_aso.bin");
 						std::filesystem::remove(folder / "ipv6_to_aso.bin");
+						if (memcmp(meta.location_md5, remote_meta.location_md5, sizeof(meta.location_md5)) != 0)
+						{
+							std::filesystem::remove(folder / "location_string_pool.bin");
+							std::filesystem::remove(folder / "ipv4_to_location.bin");
+							std::filesystem::remove(folder / "ipv6_to_location.bin");
+						}
 						memcpy(&meta, &remote_meta, sizeof(DynamicDataMeta));
 						std::ofstream of(folder / "meta.bin", std::ofstream::binary);
 						of.write((const char*)&meta, sizeof(meta));
@@ -85,7 +82,7 @@ NAMESPACE_SOUP
 
 		if (meta.version)
 		{
-			if (!std::filesystem::exists(folder / "as_pool.bin"))
+			if ((as_ipv4 || as_ipv6) && !std::filesystem::exists(folder / "as_pool.bin"))
 			{
 				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/as_pool.bin.gz");
 				if (wr.download(), wr.hasData())
@@ -94,7 +91,7 @@ NAMESPACE_SOUP
 				}
 			}
 
-			if (!std::filesystem::exists(folder / "as_string_pool.bin"))
+			if ((as_ipv4 || as_ipv6) && !std::filesystem::exists(folder / "as_string_pool.bin"))
 			{
 				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/as_string_pool.bin.gz");
 				if (wr.download(), wr.hasData())
@@ -103,7 +100,7 @@ NAMESPACE_SOUP
 				}
 			}
 
-			if (ipv4 && !std::filesystem::exists(folder / "ipv4_to_aso.bin"))
+			if (as_ipv4 && !std::filesystem::exists(folder / "ipv4_to_aso.bin"))
 			{
 				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/ipv4_to_aso.bin.gz");
 				if (wr.download(), wr.hasData())
@@ -112,7 +109,7 @@ NAMESPACE_SOUP
 				}
 			}
 
-			if (ipv6 && !std::filesystem::exists(folder / "ipv6_to_aso.bin"))
+			if (as_ipv6 && !std::filesystem::exists(folder / "ipv6_to_aso.bin"))
 			{
 				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/ipv6_to_aso.bin.gz");
 				if (wr.download(), wr.hasData())
@@ -120,8 +117,36 @@ NAMESPACE_SOUP
 					string::toFile(folder / "ipv6_to_aso.bin", deflate::decompress(wr.data, meta.ipv6_to_aso_decompressed_size).decompressed);
 				}
 			}
+
+			if ((loc_ipv4 || loc_ipv6) && !std::filesystem::exists(folder / "location_string_pool.bin"))
+			{
+				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/location_string_pool.bin.gz");
+				if (wr.download(), wr.hasData())
+				{
+					string::toFile(folder / "location_string_pool.bin", deflate::decompress(wr.data, meta.location_string_pool_decompressed_size).decompressed);
+				}
+			}
+
+			if (loc_ipv4 && !std::filesystem::exists(folder / "ipv4_to_location.bin"))
+			{
+				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/ipv4_to_location.bin.gz");
+				if (wr.download(), wr.hasData())
+				{
+					string::toFile(folder / "ipv4_to_location.bin", deflate::decompress(wr.data, meta.ipv4_to_location_decompressed_size).decompressed);
+				}
+			}
+
+			if (loc_ipv6 && !std::filesystem::exists(folder / "ipv6_to_location.bin"))
+			{
+				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/ipv6_to_location.bin.gz");
+				if (wr.download(), wr.hasData())
+				{
+					string::toFile(folder / "ipv6_to_location.bin", deflate::decompress(wr.data, meta.ipv6_to_location_decompressed_size).decompressed);
+				}
+			}
 		}
 
+		if (as_ipv4 || as_ipv6)
 		{
 			size_t size;
 			if (const void* data = filesystem::createFileMapping(folder / "as_pool.bin", size))
@@ -130,6 +155,7 @@ NAMESPACE_SOUP
 			}
 		}
 
+		if (as_ipv4 || as_ipv6)
 		{
 			size_t size;
 			if (const void* data = filesystem::createFileMapping(folder / "as_string_pool.bin", size))
@@ -138,7 +164,7 @@ NAMESPACE_SOUP
 			}
 		}
 
-		if (ipv4)
+		if (as_ipv4)
 		{
 			size_t size;
 			if (const void* data = filesystem::createFileMapping(folder / "ipv4_to_aso.bin", size))
@@ -147,7 +173,7 @@ NAMESPACE_SOUP
 			}
 		}
 
-		if (ipv6)
+		if (as_ipv6)
 		{
 			size_t size;
 			if (const void* data = filesystem::createFileMapping(folder / "ipv6_to_aso.bin", size))
@@ -156,7 +182,43 @@ NAMESPACE_SOUP
 			}
 		}
 
-		initExtraWasm();
+		if (as_ipv4 || as_ipv6)
+		{
+			initExtraWasm();
+		}
+
+		if (loc_ipv4 || loc_ipv6)
+		{
+			size_t size;
+			if (const void* data = filesystem::createFileMapping(folder / "location_string_pool.bin", size))
+			{
+				location_string_pool.init(data, size);
+			}
+		}
+
+		if (loc_ipv4)
+		{
+			size_t size;
+			if (const void* data = filesystem::createFileMapping(folder / "ipv4_to_location.bin", size))
+			{
+				ipv4_to_location.init(data, size);
+			}
+		}
+
+		if (loc_ipv6)
+		{
+			size_t size;
+			if (const void* data = filesystem::createFileMapping(folder / "ipv6_to_location.bin", size))
+			{
+				ipv6_to_location.init(data, size);
+			}
+		}
+	}
+
+	void netIntel::deinit() noexcept
+	{
+		asDeinit();
+		locationDeinit();
 	}
 
 	bool netIntel::asIsInited() noexcept
@@ -172,28 +234,16 @@ NAMESPACE_SOUP
 		ipv6_to_aso.reset();
 	}
 
-	void netIntel::locationInit(bool ipv4, bool ipv6)
-	{
-		if (ipv4)
-		{
-			initIpv4ToLocation();
-		}
-		if (ipv6)
-		{
-			initIpv6ToLocation();
-		}
-	}
-
 	bool netIntel::locationIsInited() noexcept
 	{
-		return !location_pool.empty();
+		return location_string_pool.data != nullptr;
 	}
 
 	void netIntel::locationDeinit() noexcept
 	{
-		location_pool.clear();
-		ipv4tolocation.clear();
-		ipv6tolocation.clear();
+		location_string_pool.reset();
+		ipv4_to_location.reset();
+		ipv6_to_location.reset();
 	}
 
 	void netIntel::initExtraWasm()
@@ -201,65 +251,6 @@ NAMESPACE_SOUP
 		WebResource rsc("raw.githubusercontent.com", "/calamity-inc/soup-extra-data/senpai/build/release.wasm");
 		rsc.downloadWithCaching();
 		extra_wasm = std::move(rsc.data);
-	}
-
-	void netIntel::initIpv4ToLocation()
-	{
-		StringReader ipv4tolocationcsv;
-		{
-			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/geolite2-city/geolite2-city-ipv4-num.csv.gz");
-			rsc.downloadWithCaching();
-			ipv4tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
-		}
-		ipv4tolocation.reserve(2'800'000);
-		std::vector<std::string> arr;
-		arr.reserve(6);
-		for (std::string line; ipv4tolocationcsv.getLine(line); )
-		{
-			csv::parseLine(arr, line);
-			SOUP_IF_UNLIKELY (arr.size() < 6)
-			{
-				continue;
-			}
-			ipv4tolocation.emplace(
-				string::toIntOpt<uint32_t>(arr.at(0)).value(),
-				string::toIntOpt<uint32_t>(arr.at(1)).value(),
-				netIntelLocationData{
-					std::move(arr.at(2)),
-					location_pool.emplace(std::move(arr.at(3))),
-					location_pool.emplace(std::move(arr.at(5))),
-				}
-			);
-		}
-	}
-
-	void netIntel::initIpv6ToLocation()
-	{
-		StringReader ipv6tolocationcsv;
-		{
-			WebResource rsc("raw.githubusercontent.com", "/sapics/ip-location-db/master/geolite2-city/geolite2-city-ipv6.csv.gz");
-			rsc.downloadWithCaching();
-			ipv6tolocationcsv = deflate::decompress(std::move(rsc.data)).decompressed;
-		}
-		ipv6tolocation.reserve(700'000);
-		std::vector<std::string> arr;
-		arr.reserve(6);
-		for (std::string line; ipv6tolocationcsv.getLine(line); )
-		{
-			csv::parseLine(arr, line);
-			SOUP_IF_UNLIKELY (arr.size() < 6)
-			{
-				continue;
-			}
-			IpAddr begin, end;
-			SOUP_ASSERT(begin.fromString(arr.at(0)));
-			SOUP_ASSERT(end.fromString(arr.at(1)));
-			ipv6tolocation.emplace(begin, end, netIntelLocationData{
-				std::move(arr.at(2)),
-				location_pool.emplace(std::move(arr.at(3))),
-				location_pool.emplace(std::move(arr.at(5))),
-			});
-		}
 	}
 
 	Optional<netAs> netIntel::getAsByNumber(uint32_t number) const noexcept
@@ -394,7 +385,7 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	const netIntelLocationData* netIntel::getLocationByIp(const IpAddr& addr) const
+	Optional<netIntelLocationData> netIntel::getLocationByIp(const IpAddr& addr) const
 	{
 		return addr.isV4()
 			? getLocationByIpv4(addr.getV4NativeEndian())
@@ -402,45 +393,33 @@ NAMESPACE_SOUP
 			;
 	}
 	
-	const netIntelLocationData* netIntel::getLocationByIpv4(native_u32_t ip) const
+	Optional<netIntelLocationData> netIntel::getLocationByIpv4(native_u32_t ip) const
 	{
-		return ipv4tolocation.find(ip);
+		if (auto data = ipv4_to_location.find(ip))
+		{
+			netIntelLocationData res{ data->country_code };
+			if (data->state < location_string_pool.size && data->city < location_string_pool.size)
+			{
+				res.state = &location_string_pool.data[data->state];
+				res.city = &location_string_pool.data[data->city];
+			}
+			return res;
+		}
+		return {};
 	}
 
-	const netIntelLocationData* netIntel::getLocationByIpv6(const IpAddr& addr) const
+	Optional<netIntelLocationData> netIntel::getLocationByIpv6(const IpAddr& addr) const
 	{
-		return ipv6tolocation.find(addr);
-	}
-
-	void netIntel::locationExport(const std::filesystem::path& dir)
-	{
-		std::unordered_map<const char*, uint32_t> offsets{};
-		offsets.reserve(location_pool.pool.size());
+		if (auto data = ipv6_to_location.find(addr))
 		{
-			FileWriter fw(dir / "location_pool.bin");
-			fw.throwIfFailed();
-			for (const auto& loc : location_pool.pool)
+			netIntelLocationData res{ data->country_code };
+			if (data->state < location_string_pool.size && data->city < location_string_pool.size)
 			{
-				offsets.emplace(loc.c_str(), static_cast<uint32_t>(fw.s.tellp()));
-				fw.str_nt(loc);
+				res.state = &location_string_pool.data[data->state];
+				res.city = &location_string_pool.data[data->city];
 			}
+			return res;
 		}
-		
-		{
-			FileWriter fw(dir / "ipv4tolocation.bin");
-			fw.throwIfFailed();
-			for (const auto& e : ipv4tolocation.data)
-			{
-				netIntelLocationData4OnDisk data;
-				data.lower = e.lower;
-				data.upper = e.upper;
-
-				data.country_code = e.data.country_code.c_str();
-				data.state_offset = offsets.at(e.data.state);
-				data.city_offset = offsets.at(e.data.city);
-
-				data.write(fw);
-			}
-		}
+		return {};
 	}
 }
