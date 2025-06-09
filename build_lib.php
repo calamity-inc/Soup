@@ -43,7 +43,10 @@ if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 }
 passthru("$archiver rc $libname ".join(" ", $objects));
 
-echo "Linking shared lib...\n";
-passthru("$clanglink -o $dllname --shared bin/int/soup.o ".join(" ", $objects));
+if (file_exists("bin/int/soup.o"))
+{
+	echo "Linking shared lib...\n";
+	passthru("$clanglink -o $dllname --shared bin/int/soup.o ".join(" ", $objects));
+}
 
 chdir($cd);
