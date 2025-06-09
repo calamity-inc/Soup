@@ -10,7 +10,7 @@
 #include "netIntelLocationData4OnDisk.hpp"
 #include "string.hpp"
 #include "StringReader.hpp"
-#include "wasm.hpp"
+#include "time.hpp"
 #include "WebResource.hpp"
 
 NAMESPACE_SOUP
@@ -27,31 +27,149 @@ NAMESPACE_SOUP
 		locationDeinit();
 	}
 
+	struct DynamicDataMeta
+	{
+		int64_t version;
+		int64_t expiry;
+		uint32_t as_pool_decompressed_size;
+		uint32_t as_string_pool_decompressed_size;
+		uint32_t ipv4_to_aso_decompressed_size;
+		uint32_t ipv6_to_aso_decompressed_size;
+	};
+
 	void netIntel::asInit(bool ipv4, bool ipv6)
 	{
-		initAsList();
-		initExtraWasm();
+		auto folder = filesystem::getProgramData();
+		folder /= "Calamity, Inc";
+		folder /= "Soup";
+		folder /= "netIntel";
+		std::filesystem::create_directories(folder);
+
+		DynamicDataMeta meta;
+		meta.version = 0;
+		meta.expiry = 0;
+		{
+			size_t meta_size;
+			if (auto meta_data = filesystem::createFileMapping(folder / "meta.bin", meta_size))
+			{
+				if (meta_size >= sizeof(DynamicDataMeta))
+				{
+					memcpy(&meta, meta_data, sizeof(DynamicDataMeta));
+				}
+				filesystem::destroyFileMapping(meta_data, meta_size);
+			}
+		}
+
+		if (time::unixSeconds() > meta.expiry)
+		{
+			WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/meta.bin");
+			if (wr.download(), wr.hasData())
+			{
+				if (wr.data.size() >= sizeof(DynamicDataMeta))
+				{
+					DynamicDataMeta remote_meta;
+					memcpy(&remote_meta, wr.data.data(), sizeof(DynamicDataMeta));
+					if (remote_meta.version != meta.version)
+					{
+						std::filesystem::remove(folder / "as_pool.bin");
+						std::filesystem::remove(folder / "as_string_pool.bin");
+						std::filesystem::remove(folder / "ipv4_to_aso.bin");
+						std::filesystem::remove(folder / "ipv6_to_aso.bin");
+						memcpy(&meta, &remote_meta, sizeof(DynamicDataMeta));
+						std::ofstream of(folder / "meta.bin", std::ofstream::binary);
+						of.write((const char*)&meta, sizeof(meta));
+					}
+				}
+			}
+		}
+
+		if (meta.version)
+		{
+			if (!std::filesystem::exists(folder / "as_pool.bin"))
+			{
+				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/as_pool.bin.gz");
+				if (wr.download(), wr.hasData())
+				{
+					string::toFile(folder / "as_pool.bin", deflate::decompress(wr.data, meta.as_pool_decompressed_size).decompressed);
+				}
+			}
+
+			if (!std::filesystem::exists(folder / "as_string_pool.bin"))
+			{
+				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/as_string_pool.bin.gz");
+				if (wr.download(), wr.hasData())
+				{
+					string::toFile(folder / "as_string_pool.bin", deflate::decompress(wr.data, meta.as_string_pool_decompressed_size).decompressed);
+				}
+			}
+
+			if (ipv4 && !std::filesystem::exists(folder / "ipv4_to_aso.bin"))
+			{
+				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/ipv4_to_aso.bin.gz");
+				if (wr.download(), wr.hasData())
+				{
+					string::toFile(folder / "ipv4_to_aso.bin", deflate::decompress(wr.data, meta.ipv4_to_aso_decompressed_size).decompressed);
+				}
+			}
+
+			if (ipv6 && !std::filesystem::exists(folder / "ipv6_to_aso.bin"))
+			{
+				WebResource wr("raw.githubusercontent.com", "/calamity-inc/soup-dynamic-data/refs/heads/senpai/ipv6_to_aso.bin.gz");
+				if (wr.download(), wr.hasData())
+				{
+					string::toFile(folder / "ipv6_to_aso.bin", deflate::decompress(wr.data, meta.ipv6_to_aso_decompressed_size).decompressed);
+				}
+			}
+		}
+
+		{
+			size_t size;
+			if (const void* data = filesystem::createFileMapping(folder / "as_pool.bin", size))
+			{
+				as_map.init(data, size);
+			}
+		}
+
+		{
+			size_t size;
+			if (const void* data = filesystem::createFileMapping(folder / "as_string_pool.bin", size))
+			{
+				as_string_pool.init(data, size);
+			}
+		}
+
 		if (ipv4)
 		{
-			initIpv4ToAs();
+			size_t size;
+			if (const void* data = filesystem::createFileMapping(folder / "ipv4_to_aso.bin", size))
+			{
+				ipv4_to_aso.init(data, size);
+			}
 		}
+
 		if (ipv6)
 		{
-			initIpv6ToAs();
+			size_t size;
+			if (const void* data = filesystem::createFileMapping(folder / "ipv6_to_aso.bin", size))
+			{
+				ipv6_to_aso.init(data, size);
+			}
 		}
+
+		initExtraWasm();
 	}
 
 	bool netIntel::asIsInited() noexcept
 	{
-		return !as_pool.empty();
+		return as_map.begin != nullptr;
 	}
 
 	void netIntel::asDeinit() noexcept
 	{
-		as_pool.clear();
-		aslist.clear();
-		ipv4toas.clear();
-		ipv6toas.clear();
+		as_map.reset();
+		as_string_pool.reset();
+		ipv4_to_aso.reset();
+		ipv6_to_aso.reset();
 	}
 
 	void netIntel::locationInit(bool ipv4, bool ipv6)
@@ -78,123 +196,11 @@ NAMESPACE_SOUP
 		ipv6tolocation.clear();
 	}
 
-	void netIntel::initAsList()
-	{
-		StringReader aslistcsv;
-		{
-			WebResource rsc("raw.githubusercontent.com", "/ipverse/asn-info/master/as.csv");
-			rsc.downloadWithCaching();
-			aslistcsv = std::move(rsc.data);
-		}
-		std::string line;
-		aslistcsv.getLine(line); // skip field names
-		while (aslistcsv.getLine(line))
-		{
-			auto asn_sep = line.find(',');
-			SOUP_IF_UNLIKELY (asn_sep == std::string::npos)
-			{
-				continue;
-			}
-			netAs as;
-			as.number = string::toIntOpt<uint32_t>(line.substr(0, asn_sep)).value();
-			++asn_sep;
-			auto handle_sep = line.find(',', asn_sep);
-			as.handle = as_pool.emplace(line.substr(asn_sep, handle_sep - asn_sep));
-			as.name = as_pool.emplace(line.substr(handle_sep + 2, line.length() - handle_sep - 3));
-			aslist.emplace(as.number, soup::make_unique<netAs>(std::move(as)));
-		}
-	}
-
 	void netIntel::initExtraWasm()
 	{
 		WebResource rsc("raw.githubusercontent.com", "/calamity-inc/soup-extra-data/senpai/build/release.wasm");
 		rsc.downloadWithCaching();
 		extra_wasm = std::move(rsc.data);
-
-		// Apply AS name overwrites from https://github.com/calamity-inc/soup-extra-data/blob/senpai/index.blume
-		WasmScript ws;
-		SOUP_IF_LIKELY (ws.load(extra_wasm))
-		{
-			if (auto code = ws.getExportedFuntion("asn_name_overwrites"))
-			{
-				WasmVm vm(ws);
-				if (vm.run(*code))
-				{
-					while (!vm.stack.empty())
-					{
-						auto name = vm.stack.top(); vm.stack.pop();
-						auto asn = vm.stack.top(); vm.stack.pop();
-						if (auto e = aslist.find(asn.i32); e != aslist.end())
-						{
-							e->second->name = as_pool.emplace(ws.getMemory<const char>(name));
-						}
-					}
-				}
-			}
-		}
-	}
-
-	void netIntel::initIpv4ToAs()
-	{
-		StringReader ipv4toasntsv;
-		{
-			WebResource rsc("iptoasn.com", "/data/ip2asn-v4-u32.tsv.gz");
-			rsc.downloadWithCaching();
-			ipv4toasntsv = deflate::decompress(std::move(rsc.data)).decompressed;
-		}
-		for (std::string line; ipv4toasntsv.getLine(line); )
-		{
-			auto arr = string::explode(line, '\t');
-			SOUP_IF_UNLIKELY (arr.size() < 5)
-			{
-				continue;
-			}
-			uint32_t asn = string::toIntOpt<uint32_t>(arr.at(2)).value();
-			if (asn == 0)
-			{
-				continue;
-			}
-			auto begin = string::toIntOpt<uint32_t>(arr.at(0)).value();
-			auto end = string::toIntOpt<uint32_t>(arr.at(1)).value();
-			const netAs* as = getAsByNumber(asn);
-			if (as == nullptr)
-			{
-				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, as_pool.emplace(std::move(arr.at(4))))).first->second.get();
-			}
-			ipv4toas.emplace(begin, end, as);
-		}
-	}
-
-	void netIntel::initIpv6ToAs()
-	{
-		StringReader ipv6toasntsv;
-		{
-			WebResource rsc("iptoasn.com", "/data/ip2asn-v6.tsv.gz");
-			rsc.downloadWithCaching();
-			ipv6toasntsv = deflate::decompress(std::move(rsc.data)).decompressed;
-		}
-		for (std::string line; ipv6toasntsv.getLine(line); )
-		{
-			auto arr = string::explode(line, '\t');
-			SOUP_IF_UNLIKELY (arr.size() < 5)
-			{
-				continue;
-			}
-			uint32_t asn = string::toIntOpt<uint32_t>(arr.at(2)).value();
-			if (asn == 0)
-			{
-				continue;
-			}
-			IpAddr begin, end;
-			SOUP_ASSERT(begin.fromString(arr.at(0)));
-			SOUP_ASSERT(end.fromString(arr.at(1)));
-			const netAs* as = getAsByNumber(asn);
-			if (as == nullptr)
-			{
-				as = aslist.emplace(asn, soup::make_unique<netAs>(asn, as_pool.emplace(std::move(arr.at(4))))).first->second.get();
-			}
-			ipv6toas.emplace(std::move(begin), std::move(end), as);
-		}
 	}
 
 	void netIntel::initIpv4ToLocation()
@@ -256,16 +262,19 @@ NAMESPACE_SOUP
 		}
 	}
 
-	const netAs* netIntel::getAsByNumber(uint32_t number) const noexcept
+	Optional<netAs> netIntel::getAsByNumber(uint32_t number) const noexcept
 	{
-		if (auto e = aslist.find(number); e != aslist.end())
+		if (auto data = as_map.find(number))
 		{
-			return e->second.get();
+			if (data->handle < as_string_pool.size && data->name < as_string_pool.size)
+			{
+				return netAs{ number, &as_string_pool.data[data->handle], &as_string_pool.data[data->name] };
+			}
 		}
-		return nullptr;
+		return {};
 	}
 
-	const netAs* netIntel::getAsByIp(const IpAddr& addr) const
+	Optional<netAs> netIntel::getAsByIp(const IpAddr& addr) const
 	{
 		return addr.isV4()
 			? getAsByIpv4(addr.getV4NativeEndian())
@@ -273,35 +282,55 @@ NAMESPACE_SOUP
 			;
 	}
 
-	const netAs* netIntel::getAsByIpv4(native_u32_t ip) const
+	Optional<netAs> netIntel::getAsByIpv4(native_u32_t ip) const
 	{
-		if (auto e = ipv4toas.find(ip))
+		if (auto aso = ipv4_to_aso.find(ip))
 		{
-			return *e;
+			if (*aso < ((uintptr_t)as_map.end - (uintptr_t)as_map.begin))
+			{
+				auto entry = &as_map.begin[*aso / sizeof(decltype(as_map)::Entry)];
+				if (entry->value.handle < as_string_pool.size && entry->value.name < as_string_pool.size)
+				{
+					return netAs{ entry->key, &as_string_pool.data[entry->value.handle], &as_string_pool.data[entry->value.name] };
+				}
+			}
 		}
-		return nullptr;
+		return {};
 	}
 
-	const netAs* netIntel::getAsByIpv6(const IpAddr& addr) const
+	Optional<netAs> netIntel::getAsByIpv6(const IpAddr& addr) const
 	{
-		if (auto e = ipv6toas.find(addr))
+		if (auto aso = ipv6_to_aso.find(addr))
 		{
-			return *e;
+			if (*aso < ((uintptr_t)as_map.end - (uintptr_t)as_map.begin))
+			{
+				auto entry = &as_map.begin[*aso / sizeof(decltype(as_map)::Entry)];
+				if (entry->value.handle < as_string_pool.size && entry->value.name < as_string_pool.size)
+				{
+					return netAs{ entry->key, &as_string_pool.data[entry->value.handle], &as_string_pool.data[entry->value.name] };
+				}
+			}
 		}
-		return nullptr;
+		return {};
 	}
 
-	std::vector<UniquePtr<CidrSubnetInterface>> netIntel::getRangesByAs(const netAs* as) const
+	std::vector<UniquePtr<CidrSubnetInterface>> netIntel::getRangesByAsn(uint32_t asn) const
 	{
 		std::vector<UniquePtr<CidrSubnetInterface>> res;
 
-		for (const auto& e : ipv4toas.data)
+		uint32_t aso = -1;
+		if (auto data = as_map.find(asn))
 		{
-			if (e.data == as)
+			aso = (uint32_t)(((uintptr_t)data - 4) - (uintptr_t)as_map.begin);
+		}
+
+		for (auto i = ipv4_to_aso.begin; i != ipv4_to_aso.end; ++i)
+		{
+			if (i->data == aso)
 			{
 				UniquePtr<CidrSubnet4Interface> newElement = soup::make_unique<CidrSubnet4Interface>(
-					IpAddr((native_u32_t)e.lower),
-					static_cast<uint8_t>(31 - bitutil::getMostSignificantSetBit(/* e.upper - e.lower */ e.lower ^ e.upper))
+					IpAddr((native_u32_t)i->lower),
+					static_cast<uint8_t>(31 - bitutil::getMostSignificantSetBit(/* i->upper - i->lower */ i->lower ^ i->upper))
 				);
 
 				auto it = res.begin();
@@ -327,15 +356,15 @@ NAMESPACE_SOUP
 			}
 		}
 
-		for (const auto& e : ipv6toas.data)
+		for (auto i = ipv6_to_aso.begin; i != ipv6_to_aso.end; ++i)
 		{
-			if (e.data == as)
+			if (i->data == aso)
 			{
-				auto delta = Ipv6Maths::fromIpAddr(e.lower);
-				Ipv6Maths::xorEq(delta, Ipv6Maths::fromIpAddr(e.upper));
+				auto delta = Ipv6Maths::fromIpAddr(i->lower);
+				Ipv6Maths::xorEq(delta, Ipv6Maths::fromIpAddr(i->upper));
 
 				UniquePtr<CidrSubnet6Interface> newElement = soup::make_unique<CidrSubnet6Interface>(
-					e.lower,
+					i->lower,
 					(127 - Ipv6Maths::getMostSignificantSetBit(delta))
 				);
 

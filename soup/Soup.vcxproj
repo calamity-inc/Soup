@@ -875,6 +875,7 @@
     <ClInclude Include="aes_intrin.hpp" />
     <ClInclude Include="alloc.hpp" />
     <ClInclude Include="AllocRaii.hpp" />
+    <ClInclude Include="AllocRaiiFileMapping.hpp" />
     <ClInclude Include="AllocRaiiLocalBase.hpp" />
     <ClInclude Include="AllocRaiiRemote.hpp" />
     <ClInclude Include="AllocRaiiVirtual.hpp" />
@@ -970,6 +971,8 @@
     <ClInclude Include="loc.hpp" />
     <ClInclude Include="md5.hpp" />
     <ClInclude Include="memAllocating.hpp" />
+    <ClInclude Include="MemoryMappedMap.hpp" />
+    <ClInclude Include="MemoryMappedRangeMap.hpp" />
     <ClInclude Include="ReplacementHook.hpp" />
     <ClInclude Include="HookBase.hpp" />
     <ClInclude Include="hwGamepad.hpp" />

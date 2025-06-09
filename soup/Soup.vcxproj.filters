@@ -1671,6 +1671,15 @@
     <ClInclude Include="memAllocating.hpp">
       <Filter>mem\allocators</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryMappedMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryMappedRangeMap.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
+    <ClInclude Include="AllocRaiiFileMapping.hpp">
+      <Filter>mem\allocraii</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
