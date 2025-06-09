@@ -85,7 +85,7 @@ NAMESPACE_SOUP
 	static const char empty_file_data = 0;
 #endif
 
-	const void* filesystem::createFileMapping(const std::filesystem::path& path, size_t& out_len)
+	const void* filesystem::createFileMapping(const std::filesystem::path& path, size_t& out_len) noexcept
 	{
 		const void* addr = nullptr;
 #if SOUP_WINDOWS
@@ -128,7 +128,7 @@ NAMESPACE_SOUP
 		return addr;
 	}
 
-	void filesystem::destroyFileMapping(const void* addr, size_t len)
+	void filesystem::destroyFileMapping(const void* addr, size_t len) noexcept
 	{
 #if SOUP_WINDOWS
 		if (addr != &empty_file_data)
