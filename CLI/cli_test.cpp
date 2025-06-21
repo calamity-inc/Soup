@@ -1514,6 +1514,22 @@ static void test_chatbot_results()
 
 static void unit_math_bigint()
 {
+	test("mixed positive-negative operands", []
+	{
+		const auto one = Bigint::fromString("1", 1);
+		const auto minus_one = Bigint::fromString("-1", 2);
+		const auto minus_five = Bigint::fromString("-5", 2);
+
+		assert((minus_one + minus_five).toString() == "-6");
+		assert((minus_one - minus_five).toString() == "4");
+		assert((minus_five + minus_one).toString() == "-6");
+		assert((minus_five - minus_one).toString() == "-4");
+		assert((one + minus_five).toString() == "-4");
+		assert((one - minus_five).toString() == "6");
+		assert((minus_five + one).toString() == "-4");
+		assert((minus_five - one).toString() == "-6");
+	});
+
 	test("getTrailingZeroesBinary", []
 	{
 		assert("1"_b.getTrailingZeroesBinary() == 0);
