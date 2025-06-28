@@ -395,6 +395,12 @@ static void unit_data()
 
 		assert(bitutil::getLeastSignificantSetBit((uint32_t)0b1100) == 2);
 		assert(bitutil::getLeastSignificantSetBit((uint32_t)-1) == 0);
+
+#if SOUP_BITS >= 64
+		assert(bitutil::getLeastSignificantSetBit((uint64_t)0x1'0000'0000ull) == 32);
+		assert(bitutil::getNumTrailingZeros((uint64_t)0x1'0000'0000ull) == 32);
+		assert(bitutil::getNumSetBits((uint64_t)0x1'0000'0000ull) == 1);
+#endif
 	});
 
 	test("unicode", []

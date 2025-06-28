@@ -113,7 +113,7 @@ NAMESPACE_SOUP
 			_BitScanForward64(&ret, mask);
 			return ret;
 #else
-			return __builtin_ctz(mask);
+			return __builtin_ctzll(mask);
 #endif
 		}
 #endif
