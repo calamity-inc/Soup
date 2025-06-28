@@ -53,11 +53,10 @@ NAMESPACE_SOUP
 		SOUP_IF_LIKELY (data[sig.most_unique_byte_index].has_value())
 		{
 			const CpuInfo& cpuinfo = CpuInfo::get();
-			// My i9-13900K doesn't support AVX-512 and I don't feel comfortable putting code in here I can't test...
-			/*if (cpuinfo.supportsAVX512F())
+			if (cpuinfo.supportsAVX512F() && cpuinfo.supportsAVX512BW())
 			{
 				return scanWithMultipleResultsAvx512(sig, buf, buflen);
-			}*/
+			}
 			if (cpuinfo.supportsAVX2())
 			{
 				return scanWithMultipleResultsAvx2(sig, buf, buflen);
@@ -141,7 +140,9 @@ NAMESPACE_SOUP
 		return accum;
 	}
 
-#if false
+#if defined(__GNUC__) || defined(__clang__)
+	__attribute__((target("avx512f,avx512bw")))
+#endif
 	size_t Range::scanWithMultipleResultsAvx512(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept
 	{
 		const auto data = sig.bytes.data();
@@ -167,6 +168,5 @@ NAMESPACE_SOUP
 		}
 		return accum;
 	}
-#endif
 #endif
 }
