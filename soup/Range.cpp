@@ -44,10 +44,14 @@ NAMESPACE_SOUP
 	{
 		const auto data = sig.bytes.data();
 		const auto length = sig.bytes.size();
-		SOUP_IF_UNLIKELY (length == 0)
+		SOUP_IF_UNLIKELY (length > this->size)
 		{
-			buf[0] = base;
-			return 1;
+			if (length == 0)
+			{
+				buf[0] = base;
+				return 1;
+			}
+			return 0;
 		}
 #if SOUP_X86 && SOUP_BITS == 64
 		SOUP_IF_LIKELY (data[sig.most_unique_byte_index].has_value())
