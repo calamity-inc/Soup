@@ -2,10 +2,10 @@
 
 #if SOUP_WINDOWS
 
+#include "alloc.hpp"
 #include "Exception.hpp"
 #include "HandlePlain.hpp"
 #include "HandleRaii.hpp"
-#include "MemoryBuffer.hpp"
 #include "Pattern.hpp"
 #include "Pointer.hpp"
 #include "AllocRaiiRemote.hpp"
@@ -70,22 +70,16 @@ NAMESPACE_SOUP
 
 	Pointer Module::externalScan(const Range& range, const Pattern& sig) const
 	{
-		MemoryBuffer buf{};
-		Pointer p = range.base;
-		size_t end = p.as<uintptr_t>() + range.size - 1;
-		while (p.as<size_t>() < end)
+		Pointer res{};
+		const auto local_alloc = soup::malloc(range.size);
+		const auto read_size = externalRead(range.base, local_alloc, range.size);
+		Range local_range(local_alloc, read_size);
+		if (auto local_res = local_range.scan(sig))
 		{
-			if (buf.updateRegion(*this, p.as<void*>(), 0x10000))
-			{
-				Range local_range(buf.data, buf.size);
-				if (auto res = local_range.scan(sig))
-				{
-					return res.as<uintptr_t>() - reinterpret_cast<uintptr_t>(buf.data) + p.as<uintptr_t>();
-				}
-			}
-			p = p.add(0x10000 - (sig.bytes.size() - 1));
+			res = local_res.as<uintptr_t>() - reinterpret_cast<uintptr_t>(local_alloc) + range.base.as<uintptr_t>();
 		}
-		return nullptr;
+		soup::free(local_alloc);
+		return res;
 	}
 
 	UniquePtr<AllocRaiiRemote> Module::allocate(size_t size, DWORD type, DWORD protect) const

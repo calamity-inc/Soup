@@ -8,9 +8,6 @@
     <ClInclude Include="BytepatchExternal.hpp">
       <Filter>mem</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryBuffer.hpp">
-      <Filter>mem</Filter>
-    </ClInclude>
     <ClInclude Include="Pattern.hpp">
       <Filter>mem</Filter>
     </ClInclude>
@@ -1674,9 +1671,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
-      <Filter>mem</Filter>
-    </ClCompile>
-    <ClCompile Include="MemoryBuffer.cpp">
       <Filter>mem</Filter>
     </ClCompile>
     <ClCompile Include="Pattern.cpp">

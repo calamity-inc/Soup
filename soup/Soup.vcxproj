@@ -1332,7 +1332,6 @@
     <ClInclude Include="AssemblyBuilder.hpp" />
     <ClInclude Include="IpAddr.hpp" />
     <ClInclude Include="SocketAddr.hpp" />
-    <ClInclude Include="MemoryBuffer.hpp" />
     <ClInclude Include="Oid.hpp" />
     <ClInclude Include="Packet.hpp" />
     <ClInclude Include="CompiletimePatternBase.hpp" />
@@ -1658,7 +1657,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MazeGeneratorDepthFirst.cpp" />
-    <ClCompile Include="MemoryBuffer.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MimeMessage.cpp" />
     <ClCompile Include="Mixed.cpp" />
