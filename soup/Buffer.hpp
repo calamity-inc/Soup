@@ -34,6 +34,11 @@ NAMESPACE_SOUP
 
 		using memAllocating<AllocatorT>::memAllocating;
 
+		Buffer(const Buffer<AllocatorT>& b) SOUP_EXCAL
+		{
+			append(b);
+		}
+
 		template <typename OtherAllocatorT, SOUP_RESTRICT(std::is_same_v<AllocatorT, OtherAllocatorT> && std::is_void_v<AllocatorT>)>
 		Buffer(const Buffer<OtherAllocatorT>& b) SOUP_EXCAL
 		{
@@ -50,6 +55,14 @@ NAMESPACE_SOUP
 		Buffer(const std::string& b) SOUP_EXCAL
 		{
 			append(b);
+		}
+
+		Buffer(Buffer<AllocatorT>&& b) noexcept
+			: m_data(b.m_data), m_size(b.m_size), m_capacity(b.m_capacity)
+		{
+			b.m_data = nullptr;
+			b.m_size = 0;
+			b.m_capacity = 0;
 		}
 
 		template <typename OtherAllocatorT, SOUP_RESTRICT(std::is_same_v<AllocatorT, OtherAllocatorT> && std::is_void_v<AllocatorT>)>
@@ -78,11 +91,31 @@ NAMESPACE_SOUP
 			}
 		}
 
+		void operator=(const Buffer<AllocatorT>& b) SOUP_EXCAL
+		{
+			clear();
+			append(b);
+		}
+
 		template <typename OtherAllocatorT>
 		void operator=(const Buffer<OtherAllocatorT>& b) SOUP_EXCAL
 		{
 			clear();
 			append(b);
+		}
+
+		void operator=(Buffer<AllocatorT>&& b) noexcept
+		{
+			if (m_data != nullptr)
+			{
+				this->deallocate(m_data);
+			}
+			this->m_data = b.m_data;
+			this->m_size = b.m_size;
+			this->m_capacity = b.m_capacity;
+			b.m_data = nullptr;
+			b.m_size = 0;
+			b.m_capacity = 0;
 		}
 
 		template <typename OtherAllocatorT, SOUP_RESTRICT(std::is_same_v<AllocatorT, OtherAllocatorT> && std::is_void_v<AllocatorT>)>
