@@ -830,7 +830,7 @@ if (combined[i]) \
 			data[1] = 0xa9; // KC_HE
 			data[2] = 0x01; // AMC_GET_VERSION
 			hid.sendReport(data, sizeof(data));
-			const auto& report = safeReceiveReport(hid, data[1], data[2]);
+			const auto report = safeReceiveReport(hid, data[1], data[2]);
 			SOUP_IF_UNLIKELY (report.empty())
 			{
 				disconnected = true;
@@ -930,7 +930,7 @@ if (combined[i]) \
 					data[4] = layout_index_to_col(keychron.layout, i);
 					hid.discardStaleReports();
 					hid.sendReport(data, sizeof(data));
-					const auto& report = safeReceiveReport(hid, data[1], data[2]);
+					const auto report = safeReceiveReport(hid, data[1], data[2]);
 					SOUP_IF_UNLIKELY (report.empty())
 					{
 						disconnected = true;
