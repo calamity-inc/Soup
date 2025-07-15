@@ -72,7 +72,10 @@ NAMESPACE_SOUP
 
 		~Buffer() noexcept
 		{
-			reset();
+			if (m_data != nullptr)
+			{
+				this->deallocate(m_data);
+			}
 		}
 
 		template <typename OtherAllocatorT>
@@ -85,7 +88,10 @@ NAMESPACE_SOUP
 		template <typename OtherAllocatorT, SOUP_RESTRICT(std::is_same_v<AllocatorT, OtherAllocatorT> && std::is_void_v<AllocatorT>)>
 		void operator=(Buffer<OtherAllocatorT>&& b) noexcept
 		{
-			reset();
+			if (m_data != nullptr)
+			{
+				this->deallocate(m_data);
+			}
 			this->m_data = b.m_data;
 			this->m_size = b.m_size;
 			this->m_capacity = b.m_capacity;
@@ -265,16 +271,6 @@ NAMESPACE_SOUP
 			uint8_t* const d = m_data;
 			m_data = nullptr;
 			return d;
-		}
-
-	private:
-		void reset() noexcept
-		{
-			if (m_data != nullptr)
-			{
-				this->deallocate(m_data);
-				m_data = nullptr;
-			}
 		}
 	};
 }
