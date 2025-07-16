@@ -6,3 +6,5 @@ arg -O3
 if not windows
 	arg -fPIC
 endif
+
+arg -m32
