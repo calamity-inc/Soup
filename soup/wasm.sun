@@ -5,8 +5,6 @@ arg -O3
 
 compiler em++
 
-arg -fwasm-exceptions
-
 linker_arg -sWASM=1
 linker_arg -sMODULARIZE=1
 linker_arg -sEXPORT_NAME=libsoup
