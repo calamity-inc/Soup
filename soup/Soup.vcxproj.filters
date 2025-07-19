@@ -1668,6 +1668,9 @@
     <ClInclude Include="AllocRaiiFileMapping.hpp">
       <Filter>mem\allocraii</Filter>
     </ClInclude>
+    <ClInclude Include="lzf.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2491,6 +2494,9 @@
     </ClCompile>
     <ClCompile Include="GarbageCollector.cpp">
       <Filter>mem</Filter>
+    </ClCompile>
+    <ClCompile Include="lzf.cpp">
+      <Filter>data\enc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

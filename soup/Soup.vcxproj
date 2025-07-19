@@ -969,6 +969,7 @@
     <ClInclude Include="HidUsage.hpp" />
     <ClInclude Include="IrcServer.hpp" />
     <ClInclude Include="loc.hpp" />
+    <ClInclude Include="lzf.hpp" />
     <ClInclude Include="md5.hpp" />
     <ClInclude Include="memAllocating.hpp" />
     <ClInclude Include="MemoryMappedMap.hpp" />
@@ -1502,6 +1503,7 @@
     <ClCompile Include="HidReportDescriptor.cpp" />
     <ClCompile Include="IrcServer.cpp" />
     <ClCompile Include="loc.cpp" />
+    <ClCompile Include="lzf.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="ReplacementHook.cpp" />
     <ClCompile Include="HookBase.cpp" />
