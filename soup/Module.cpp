@@ -2,13 +2,11 @@
 
 #if SOUP_WINDOWS
 
-#include "alloc.hpp"
+#include "AllocRaiiRemote.hpp"
 #include "Exception.hpp"
 #include "HandlePlain.hpp"
 #include "HandleRaii.hpp"
-#include "Pattern.hpp"
 #include "Pointer.hpp"
-#include "AllocRaiiRemote.hpp"
 
 NAMESPACE_SOUP
 {
@@ -42,44 +40,6 @@ NAMESPACE_SOUP
 	Pointer Module::getExport(const char* name) const noexcept
 	{
 		return Pointer((void*)GetProcAddress(*h, name));
-	}
-
-	size_t Module::externalRead(Pointer p, void* out, size_t size) const noexcept
-	{
-		SIZE_T read = 0;
-		ReadProcessMemory(*h, p.as<void*>(), out, size, &read);
-		return read;
-	}
-
-	std::string Module::externalReadString(Pointer p) const
-	{
-		std::string str;
-		char c;
-		do
-		{
-			c = externalRead<char>(p);
-			p = p.add(1);
-		} while (c != '\0' && (str.push_back(c), true));
-		return str;
-	}
-
-	Pointer Module::externalScan(const Pattern& sig) const
-	{
-		return externalScan(range, sig);
-	}
-
-	Pointer Module::externalScan(const Range& range, const Pattern& sig) const
-	{
-		Pointer res{};
-		const auto local_alloc = soup::malloc(range.size);
-		const auto read_size = externalRead(range.base, local_alloc, range.size);
-		Range local_range(local_alloc, read_size);
-		if (auto local_res = local_range.scan(sig))
-		{
-			res = local_res.as<uintptr_t>() - reinterpret_cast<uintptr_t>(local_alloc) + range.base.as<uintptr_t>();
-		}
-		soup::free(local_alloc);
-		return res;
 	}
 
 	UniquePtr<AllocRaiiRemote> Module::allocate(size_t size, DWORD type, DWORD protect) const

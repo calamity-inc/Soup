@@ -1,11 +1,11 @@
 #include "Pointer.hpp"
 
-#include "Module.hpp"
+#include "ProcessHandle.hpp"
 
 NAMESPACE_SOUP
 {
 #if SOUP_WINDOWS
-	Pointer Pointer::externalRip(const Module& mod) const noexcept
+	Pointer Pointer::externalRip(const ProcessHandle& mod) const noexcept
 	{
 		return add(mod.externalRead<int32_t>(*this)).add(sizeof(int32_t));
 	}
