@@ -13,7 +13,7 @@ NAMESPACE_SOUP
 
 	IpAddr netInfo::getPublicAddressV4()
 	{
-		return getPublicAddressImpl("api.ipify.org");
+		return getPublicAddressImpl("whatismyip.akamai.com");
 	}
 
 	IpAddr netInfo::getPublicAddressV6()
