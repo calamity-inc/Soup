@@ -22,6 +22,6 @@ NAMESPACE_SOUP
 		[[nodiscard]] std::vector<ZipIndexedFile> getFileList() const;
 
 		[[nodiscard]] std::string getFileContents(const ZipIndexedFile& file) const;
-		[[nodiscard]] std::string getFileContents(uint32_t offset, uint32_t compressed_size = 0) const;
+		[[nodiscard]] std::string getFileContents(uint32_t offset, uint32_t compressed_size = 0, uint32_t uncompressed_size = 0) const;
 	};
 }

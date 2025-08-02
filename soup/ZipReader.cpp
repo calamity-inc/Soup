@@ -108,10 +108,10 @@ NAMESPACE_SOUP
 
 	std::string ZipReader::getFileContents(const ZipIndexedFile& file) const
 	{
-		return getFileContents(file.offset, file.compressed_size);
+		return getFileContents(file.offset, file.compressed_size, file.uncompressed_size);
 	}
 
-	std::string ZipReader::getFileContents(uint32_t offset, uint32_t compressed_size) const
+	std::string ZipReader::getFileContents(uint32_t offset, uint32_t compressed_size, uint32_t uncompressed_size) const
 	{
 		std::string ret{};
 
@@ -123,14 +123,18 @@ NAMESPACE_SOUP
 			ZipLocalFileHeader lfh;
 			if (lfh.read(is))
 			{
-				if (lfh.common.compression_method == 0)
+				if (lfh.common.compression_method == 0) // Store
 				{
-					// Store
 					is.str(lfh.common.compressed_size, ret);
 				}
-				else if (lfh.common.compression_method == 8)
+				else if (lfh.common.compression_method == 8) // Deflate
 				{
-					// Deflate
+					// Use uncompressed_size from central directory if we have it
+					if (uncompressed_size)
+					{
+						lfh.common.uncompressed_size = uncompressed_size;
+					}
+
 					if (lfh.common.compressed_size == 0
 						&& lfh.common.uncompressed_size != 0
 						)
