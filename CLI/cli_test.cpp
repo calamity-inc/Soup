@@ -526,6 +526,13 @@ static void unit_data()
 		assert(tree->children.at(0)->children.size() == 1);
 		assert(tree->children.at(0)->children.at(0)->name == "Nested");
 
+		sr = "key:with:colons: cursed, but better than a parse error.";
+		tree = cat::parse(sr);
+		assert(tree);
+		assert(tree->children.size() == 1);
+		assert(tree->children.at(0)->name == "key:with:colons");
+		assert(tree->children.at(0)->value == "cursed, but better than a parse error.");
+
 		// An issue that might occur is that an editor automatically indents a line that is otherwise empty. CaT should process this just like an empty line: ignore it.
 		sr = (
 			"List:\n"
