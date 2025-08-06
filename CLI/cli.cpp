@@ -18,6 +18,7 @@
 #include <hwGamepad.hpp>
 #include <hwHid.hpp>
 #include <netIntel.hpp>
+#include <netIntrospectTask.hpp>
 #include <os.hpp>
 #include <QrCode.hpp>
 #include <riff.hpp>
@@ -449,6 +450,14 @@ int main(int argc, const char** argv)
 			return 0;
 		}
 
+		if (subcommand == "netintrospect")
+		{
+			netIntrospectTask t;
+			t.run();
+			std::cout << t.getDiagnosticsString();
+			return 0;
+		}
+
 		if (subcommand == "qr")
 		{
 			if (argc != 3)
@@ -605,6 +614,7 @@ int main(int argc, const char** argv)
 	string::listAppend(all_tools, "midi");
 	string::listAppend(all_tools, "morse");
 	string::listAppend(all_tools, "mouse");
+	string::listAppend(all_tools, "netintrospect");
 	string::listAppend(all_tools, "qr");
 	string::listAppend(all_tools, "repl");
 	string::listAppend(all_tools, "script");
