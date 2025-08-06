@@ -65,6 +65,7 @@
 #include <EmailAddress.hpp>
 
 // net.web
+#include <MimeMessage.hpp>
 #include <Uri.hpp>
 
 // net
@@ -1580,6 +1581,18 @@ static void unit_net_email()
 	});
 }
 
+static void test_mime()
+{
+	{
+		MimeMessage mm("Transfer-Encoding: chunked\r\n\r\n");
+		assert(*mm.findHeader("Transfer-Encoding") == "chunked");
+	}
+	{
+		MimeMessage mm("Transfer-Encoding:  chunked\r\n\r\n");
+		assert(*mm.findHeader("Transfer-Encoding") == "chunked");
+	}
+}
+
 static void test_uri()
 {
 	std::string str;
@@ -1986,6 +1999,7 @@ void cli_test()
 			}
 			unit("web")
 			{
+				test("mime", &test_mime);
 				test("uri", &test_uri);
 			}
 			test("socket raii semantics", &test_socket_raii_semantics);
