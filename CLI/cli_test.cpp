@@ -250,6 +250,11 @@ static void unit_crypto()
 		auto enc = "3939991117139809241563517827579718715756222298160587806559781632547966505691296013680068230342942841852094486596819343548681582442588753971618922157744527"_b;
 		assert(kp.getPrivate().encryptUnpadded("Soup") == enc);
 		assert(kp.getPublic().decryptUnpadded(enc) == "Soup");
+
+		assert(string::bin2hex(soup::sha1::mgf1("\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13", 20, 32)) == "028553D821DB1E8D1BC66BA574C0E3103105293199F37263A574171D60788091");
+
+		enc = kp.getPublic().encryptOaep<soup::sha1>("Soup");
+		assert(kp.getPrivate().decryptOaep<soup::sha1>(enc) == "Soup");
 	});
 
 	unit("ecc")
