@@ -40,7 +40,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] std::string publicGetJwkThumbprint(const Bigint& e) const SOUP_EXCAL;
 
 		template <typename Hash>
-		std::string padOaep(const std::string& msg, const std::string& label = "") const SOUP_EXCAL // non-deterministic
+		std::string padOaep(const std::string& msg, const char* label_data = "", size_t label_size = 0) const SOUP_EXCAL // non-deterministic
 		{
 			const auto k = getMaxUnpaddedMessageBytes();
 			constexpr auto hLen = Hash::DIGEST_BYTES;
@@ -55,7 +55,7 @@ NAMESPACE_SOUP
 			uint8_t lHash[hLen];
 			{
 				typename Hash::State st;
-				st.append(label.data(), label.size());
+				st.append(label_data, label_size);
 				st.finalise();
 				st.getDigest(lHash);
 			}
@@ -101,7 +101,7 @@ NAMESPACE_SOUP
 		}
 
 		template <typename Hash>
-		static bool unpadOaep(std::string& str, const std::string& label = "") SOUP_EXCAL // deterministic
+		static bool unpadOaep(std::string& str, const char* label_data = "", size_t label_size = 0) SOUP_EXCAL // deterministic
 		{
 			constexpr auto hLen = Hash::DIGEST_BYTES;
 
@@ -134,7 +134,7 @@ NAMESPACE_SOUP
 			uint8_t lHash[hLen];
 			{
 				typename Hash::State st;
-				st.append(label.data(), label.size());
+				st.append(label_data, label_size);
 				st.finalise();
 				st.getDigest(lHash);
 			}
