@@ -35,13 +35,13 @@ If you want some ideas as to how start using Soup, check out [the docs](docs).
 If you're looking to use Soup from a language other than C++, have a look at [the bindings](https://github.com/calamity-inc/Soup/tree/senpai/bindings).
 
 ## Formatting
-
-To keep the code style consistent, run `clang-format` before committing changes.
-The following command formats all tracked C and C++ source files in-place:
+A `.clang-format` file captures the project's coding conventions.
+Run `clang-format` before committing changes. The following command formats all
+tracked C and C++ source files in-place using that configuration:
 
 ```bash
-clang-format -i $(git ls-files "*.h" "*.hpp" "*.hxx" "*.c" "*.cc" "*.cpp" "*.cxx")
+clang-format -style=file -i $(git ls-files "*.h" "*.hpp" "*.hxx" "*.c" "*.cc" "*.cpp" "*.cxx")
 ```
 
-Make sure `clang-format` version 17 or newer is installed so it matches the
-version used in continuous integration.
+Use `clang-format` version 17 to match the version used in continuous
+integration.
