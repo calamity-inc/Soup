@@ -79,7 +79,7 @@ NAMESPACE_SOUP
 		bool neg = (v < 0);
 		if (neg)
 		{
-			u = (v * -1) - 1;
+			u = ~v;
 		}
 		else
 		{

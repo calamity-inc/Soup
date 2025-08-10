@@ -75,7 +75,7 @@ NAMESPACE_SOUP
 		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
 		if (neg)
 		{
-			v = (u * -1) - 1;
+			v = ~u;
 		}
 		else
 		{
