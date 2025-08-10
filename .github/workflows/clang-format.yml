@@ -1,0 +1,19 @@
+name: Clang Format
+
+on:
+  pull_request:
+    branches: [ "senpai" ]
+  push:
+    branches: [ "senpai" ]
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DoozyX/clang-format-lint-action@v0.16
+        with:
+          source: "./"
+          extensions: "h,hpp,hxx,c,cc,cpp,cxx"
+          style: file
+          clangFormatVersion: 17
