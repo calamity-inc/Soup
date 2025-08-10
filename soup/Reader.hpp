@@ -36,16 +36,19 @@ NAMESPACE_SOUP
 		virtual const void* getMemoryView(size_t size) const noexcept { return nullptr; }
 
 		// An unsigned 64-bit integer encoded in 1..9 bytes. The most significant bit of bytes 1 to 8 is used to indicate if another byte follows.
-		// Lua implementation: https://gist.github.com/Sainan/02c3ac9cea5015341412c92feec95e56
+		// https://github.com/calamity-inc/u64_dyn
 		bool u64_dyn(uint64_t& v) noexcept;
 
 		// A signed 64-bit integer encoded in 1..9 bytes. (Specialisation of u64_dyn.)
+		// https://github.com/calamity-inc/u64_dyn
 		bool i64_dyn(int64_t& v) noexcept;
 
 		// An unsigned 64-bit integer encoded in 1..9 bytes. This is a slightly more efficient version of u64_dyn, e.g. 0x4000..0x407f are encoded in 2 bytes instead of 3.
+		// https://github.com/calamity-inc/u64_dyn
 		bool u64_dyn_v2(uint64_t& v) noexcept;
 
 		// A signed 64-bit integer encoded in 1..9 bytes. (Specialisation of u64_dyn_v2. This revision also simplifies how negative integers are handled.)
+		// https://github.com/calamity-inc/u64_dyn
 		bool i64_dyn_v2(int64_t& v) noexcept;
 
 		// An integer where every byte's most significant bit is used to indicate if another byte follows, most significant byte first.
