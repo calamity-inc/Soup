@@ -33,3 +33,15 @@ For WASM, it can be done via `php wasm.php` (in the root folder) or `sun wasm` (
 If you want some ideas as to how start using Soup, check out [the docs](docs).
 
 If you're looking to use Soup from a language other than C++, have a look at [the bindings](https://github.com/calamity-inc/Soup/tree/senpai/bindings).
+
+## Formatting
+
+To keep the code style consistent, run `clang-format` before committing changes.
+The following command formats all tracked C and C++ source files in-place:
+
+```bash
+clang-format -i $(git ls-files "*.h" "*.hpp" "*.hxx" "*.c" "*.cc" "*.cpp" "*.cxx")
+```
+
+Make sure `clang-format` version 17 or newer is installed so it matches the
+version used in continuous integration.
