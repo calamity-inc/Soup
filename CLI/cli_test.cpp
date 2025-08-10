@@ -1179,6 +1179,29 @@ static void unit_io()
 		assert(line == "World");
 		assert(!sr.getLine(line));
 	});
+	test("u64_dyn", []
+	{
+		struct { uint64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\x7F", 1 },
+			{ 0x80, "\x80\x00", 2 },
+			{ 1337, "\xB9\x09", 2 },
+			{ 42069, "\xD5\xC7\x01", 3 },
+			{ 0xffffffffffffffff, "\xFF\xFE\xFE\xFE\xFE\xFE\xFE\xFE\xFE", 9 },
+			{ 0x8000000000000000, "\x80\xFF\xFE\xFE\xFE\xFE\xFE\xFE\x7E", 9 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.u64_dyn_v2(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			uint64_t readback;
+			assert(sr.u64_dyn_v2(readback));
+			assert(readback == pair.v);
+		}
+	});
 }
 
 static void unit_lang()

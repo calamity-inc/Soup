@@ -52,25 +52,22 @@ NAMESPACE_SOUP
 
 	bool Reader::u64_dyn_v2(uint64_t& v) noexcept
 	{
-		uint8_t b;
-		SOUP_RETHROW_FALSE(u8(b));
-		v = (b & 0x7f);
-
-		uint8_t bits = 7;
-		bool has_next = (b >> 7);
-		while (has_next)
+		v = 0;
+		uint8_t b = 0;
+		uint8_t bits = 0;
+		for (uint8_t i = 0; i != 8; ++i)
 		{
 			SOUP_RETHROW_FALSE(u8(b));
-			has_next = false;
-			SOUP_IF_LIKELY (bits < 56)
+			v += (uint64_t)(b & 0x7f) << bits;
+			if (!(b >> 7))
 			{
-				has_next = (b >> 7);
-				b &= 0x7f;
+				return true;
 			}
-			v |= (((uint64_t)b + 1) << bits);
 			bits += 7;
+			v += (uint64_t)1 << bits;
 		}
-
+		SOUP_RETHROW_FALSE(u8(b));
+		v += (uint64_t)b << 56;
 		return true;
 	}
 
