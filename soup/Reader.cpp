@@ -5,24 +5,20 @@ NAMESPACE_SOUP
 	bool Reader::u64_dyn(uint64_t& v) noexcept
 	{
 		v = 0;
+		uint8_t b;
 		uint8_t bits = 0;
-		while (true)
+		for (uint8_t i = 0; i != 8; ++i)
 		{
-			uint8_t b;
 			SOUP_RETHROW_FALSE(u8(b));
-			bool has_next = false;
-			SOUP_IF_LIKELY (bits < 56)
+			v += (uint64_t)(b & 0x7f) << bits;
+			if (!(b >> 7))
 			{
-				has_next = (b >> 7);
-				b &= 0x7f;
-			}
-			v |= ((uint64_t)b << bits);
-			if (!has_next)
-			{
-				break;
+				return true;
 			}
 			bits += 7;
 		}
+		SOUP_RETHROW_FALSE(u8(b));
+		v += (uint64_t)b << 56;
 		return true;
 	}
 
@@ -53,7 +49,7 @@ NAMESPACE_SOUP
 	bool Reader::u64_dyn_v2(uint64_t& v) noexcept
 	{
 		v = 0;
-		uint8_t b = 0;
+		uint8_t b;
 		uint8_t bits = 0;
 		for (uint8_t i = 0; i != 8; ++i)
 		{
@@ -64,7 +60,7 @@ NAMESPACE_SOUP
 				return true;
 			}
 			bits += 7;
-			v += (uint64_t)1 << bits;
+			v += (uint64_t)1 << bits; // v2
 		}
 		SOUP_RETHROW_FALSE(u8(b));
 		v += (uint64_t)b << 56;

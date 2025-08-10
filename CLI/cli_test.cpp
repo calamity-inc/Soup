@@ -1184,6 +1184,52 @@ static void unit_io()
 		struct { uint64_t v; const char* d; size_t s; } pairs[] = {
 			{ 0, "\x00", 1 },
 			{ 0x7f, "\x7F", 1 },
+			{ 0x80, "\x80\x01", 2 },
+			{ 1337, "\xB9\x0A", 2 },
+			{ 42069, "\xD5\xC8\x02", 3 },
+			{ 0xffffffffffffffff, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9 },
+			{ 0x8000000000000000, "\x80\x80\x80\x80\x80\x80\x80\x80\x80", 9 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.u64_dyn(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			uint64_t readback = 0;
+			assert(sr.u64_dyn(readback));
+			assert(readback == pair.v);
+		}
+	});
+	test("i64_dyn", []
+	{
+		struct { int64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\xBF\x01", 2 },
+			{ 0x80, "\x80\x02", 2 },
+			{ 1337, "\xB9\x14", 2 },
+			{ 42069, "\x95\x91\x05", 3 },
+			{ -1, "\x41", 1 },
+			{ INT64_MIN, "\x40", 1 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.i64_dyn(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			int64_t readback = 0;
+			assert(sr.i64_dyn(readback));
+			assert(readback == pair.v);
+		}
+	});
+	test("u64_dyn_v2", []
+	{
+		struct { uint64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\x7F", 1 },
 			{ 0x80, "\x80\x00", 2 },
 			{ 1337, "\xB9\x09", 2 },
 			{ 42069, "\xD5\xC7\x01", 3 },
@@ -1199,6 +1245,29 @@ static void unit_io()
 			MemoryRefReader sr(sw.data);
 			uint64_t readback;
 			assert(sr.u64_dyn_v2(readback));
+			assert(readback == pair.v);
+		}
+	});
+	test("i64_dyn_v2", []
+	{
+		struct { int64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\xBF\x00", 2 },
+			{ 0x80, "\x80\x01", 2 },
+			{ 1337, "\xB9\x13", 2 },
+			{ 42069, "\x95\x90\x04", 3 },
+			{ -1, "\x40", 1 },
+			{ INT64_MIN, "\xFF\xFE\xFE\xFE\xFE\xFE\xFE\xFE\xFE", 9 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.i64_dyn_v2(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			int64_t readback = 0;
+			assert(sr.i64_dyn_v2(readback));
 			assert(readback == pair.v);
 		}
 	});
