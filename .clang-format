@@ -1,7 +1,7 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
 TabWidth: 4
-UseTab: ForIndentation
+UseTab: Always
 BreakBeforeBraces: Allman
 ColumnLimit: 0
 SortIncludes: CaseInsensitive
