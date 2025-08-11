@@ -35,7 +35,7 @@ NAMESPACE_SOUP
 		bool neg = (v < 0);
 		if (neg)
 		{
-			u = (v * -1) & ~((uint64_t)1 << 63);
+			u = (~v + 1) & ~((uint64_t)1 << 63);
 		}
 		else
 		{

@@ -27,21 +27,10 @@ NAMESPACE_SOUP
 		uint64_t u;
 		SOUP_RETHROW_FALSE(u64_dyn(u));
 		const bool neg = (u >> 6) & 1; // check bit 6
-		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
+		v = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
 		if (neg)
 		{
-			if (u == 0)
-			{
-				v = ((uint64_t)1 << 63);
-			}
-			else
-			{
-				v = u * -1;
-			}
-		}
-		else
-		{
-			v = u;
+			v = static_cast<int64_t>(~(v - 1) | (static_cast<uint64_t>(1) << 63));
 		}
 		return true;
 	}
