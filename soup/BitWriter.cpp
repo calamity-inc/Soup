@@ -170,6 +170,24 @@ NAMESPACE_SOUP
 			;
 	}
 
+	bool BitWriter::u32_elias(uint32_t val)
+	{
+		val += 1;
+		uint8_t bits = static_cast<uint8_t>(bitutil::getMostSignificantSetBit(val) + 1);
+		if (!t(bits - 1, 0))
+		{
+			return false;
+		}
+		for (int i = bits - 1; i >= 0; --i)
+		{
+			if (!b((val >> i) & 1))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool BitWriter::str_utf8_nt(const std::string& str)
 	{
 		return str_utf32_nt(unicode::utf8_to_utf32(str));

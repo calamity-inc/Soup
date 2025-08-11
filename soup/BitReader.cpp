@@ -207,6 +207,36 @@ NAMESPACE_SOUP
 		return false;
 	}
 
+	bool BitReader::u32_elias(uint32_t& val)
+	{
+		uint32_t zeros = 0;
+		bool bit;
+		while (true)
+		{
+			if (!b(bit))
+			{
+				return false;
+			}
+			if (bit)
+			{
+				break;
+			}
+			++zeros;
+		}
+
+		val = 1;
+		while (zeros--)
+		{
+			if (!b(bit))
+			{
+				return false;
+			}
+			val = (val << 1) | (bit ? 1u : 0u);
+		}
+		val -= 1;
+		return true;
+	}
+
 	bool BitReader::str_utf8_nt(std::string& str)
 	{
 		std::u32string tmp{};

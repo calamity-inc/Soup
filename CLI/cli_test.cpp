@@ -1168,6 +1168,22 @@ static void unit_io()
 		bw.finishByte();
 		assert(w.data == "\x5F\x01");
 	});
+	test("Elias gamma", []
+	{
+		StringWriter w;
+		BitWriter bw(&w);
+		bw.u32_elias(0);
+		bw.u32_elias(1);
+		bw.u32_elias(10);
+		bw.finishByte();
+
+		StringReader r(std::move(w.data));
+		BitReader br(&r);
+		uint32_t v = 0;
+		assert(br.u32_elias(v) && v == 0);
+		assert(br.u32_elias(v) && v == 1);
+		assert(br.u32_elias(v) && v == 10);
+	});
 	test("StringRefReader", []
 	{
 		std::string s = "Hello\nWorld";
