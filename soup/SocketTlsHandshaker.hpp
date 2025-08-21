@@ -24,8 +24,8 @@ NAMESPACE_SOUP
 
 		TlsCipherSuite_t cipher_suite = TLS_RSA_WITH_AES_128_CBC_SHA;
 		uint16_t ecdhe_curve = 0; // client
-		Promise<> promise{};
 		bool extended_master_secret = false;
+		Promise<> promise{};
 		std::string layer_bytes{};
 		std::string client_random{};
 		std::string server_random{};
