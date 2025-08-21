@@ -989,7 +989,7 @@ NAMESPACE_SOUP
 							TlsExtAlpn ext_alpn;
 							if (ext_alpn.fromBinary(ext.data))
 							{
-								alpn_selection = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->alpn_select_protocol(s, ext_alpn);
+								alpn_selection = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->alpn_select_protocol(s, ext_alpn, handshaker->cipher_suite);
 								SOUP_IF_UNLIKELY (alpn_selection.empty())
 								{
 									s.tls_close(TlsAlertDescription::no_application_protocol);
