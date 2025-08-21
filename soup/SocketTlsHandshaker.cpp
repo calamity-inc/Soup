@@ -15,8 +15,8 @@ NAMESPACE_SOUP
 		layer_bytes.reserve(2800); // When we receive "finished" from Cloudflare, this is 2689~2696 bytes.
 	}
 
-	SocketTlsHandshaker::SocketTlsHandshaker(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, SharedPtr<CertStore>&& certstore, tls_server_on_client_hello_t on_client_hello) noexcept
-		: callback(callback), callback_capture(std::move(callback_capture)), certstore(std::move(certstore)), on_client_hello(on_client_hello)
+	SocketTlsHandshaker::SocketTlsHandshaker(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, SharedPtr<CertStore>&& certstore, tls_server_on_client_hello_t on_client_hello, tls_server_alpn_select_protocol_t alpn_select_protocol) noexcept
+		: callback(callback), callback_capture(std::move(callback_capture)), certstore(std::move(certstore)), on_client_hello(on_client_hello), alpn_select_protocol(alpn_select_protocol)
 	{
 	}
 

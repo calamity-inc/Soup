@@ -33,6 +33,7 @@
 #include "TlsClientHelloExtServerName.hpp"
 #include "TlsContentType.hpp"
 #include "TlsEncryptedPreMasterSecret.hpp"
+#include "TlsExtAlpn.hpp"
 #include "TlsExtensionType.hpp"
 #include "TlsHandshake.hpp"
 #include "TlsRecord.hpp"
@@ -911,13 +912,14 @@ NAMESPACE_SOUP
 		Bigint data;
 	};
 
-	void Socket::enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_on_client_hello_t on_client_hello)
+	void Socket::enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_on_client_hello_t on_client_hello, tls_server_alpn_select_protocol_t alpn_select_protocol)
 	{
-		auto handshaker = make_unique<SocketTlsHandshaker>(
+		auto handshaker = soup::make_unique<SocketTlsHandshaker>(
 			callback,
 			std::move(cap),
 			std::move(certstore),
-			on_client_hello
+			on_client_hello,
+			alpn_select_protocol
 		);
 		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 		{
@@ -928,6 +930,7 @@ NAMESPACE_SOUP
 			}
 
 			const CertStore::Entry* rsa_data;
+			std::string alpn_selection;
 
 			{
 				TlsClientHello hello;
@@ -954,6 +957,22 @@ NAMESPACE_SOUP
 						if (ext_server_name.fromBinary(ext.data))
 						{
 							server_name = std::move(ext_server_name.host_name);
+						}
+					}
+					else if (ext.id == TlsExtensionType::application_layer_protocol_negotiation)
+					{
+						if (handshaker->alpn_select_protocol)
+						{
+							TlsExtAlpn ext_alpn;
+							if (ext_alpn.fromBinary(ext.data))
+							{
+								alpn_selection = handshaker->alpn_select_protocol(s, ext_alpn);
+								SOUP_IF_UNLIKELY (alpn_selection.empty())
+								{
+									s.tls_close(TlsAlertDescription::no_application_protocol);
+									return;
+								}
+							}
 						}
 					}
 					else if (ext.id == TlsExtensionType::extended_master_secret)
@@ -987,6 +1006,13 @@ NAMESPACE_SOUP
 				if (handshaker->extended_master_secret)
 				{
 					shello.extensions.add(TlsExtensionType::extended_master_secret, {});
+				}
+
+				if (!alpn_selection.empty())
+				{
+					TlsExtAlpn ext_alpn;
+					ext_alpn.protocol_names.emplace_back(std::move(alpn_selection));
+					shello.extensions.add(TlsExtensionType::application_layer_protocol_negotiation, ext_alpn);
 				}
 
 				if (!s.tls_sendHandshake(handshaker, TlsHandshake::server_hello, shello.toBinaryString()))

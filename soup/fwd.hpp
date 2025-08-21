@@ -160,6 +160,7 @@ NAMESPACE_SOUP
 	// net.tls
 	class SocketTlsHandshaker;
 	struct TlsClientHello;
+	struct TlsExtAlpn;
 
 	// net.web
 	class HttpRequest;

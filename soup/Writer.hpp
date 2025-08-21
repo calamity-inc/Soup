@@ -184,10 +184,7 @@ NAMESPACE_SOUP
 		// std::vector<uint8_t> with u8 size prefix.
 		bool vec_u8_u8(std::vector<uint8_t>& v) noexcept
 		{
-			SOUP_IF_UNLIKELY (v.size() > 0xFF)
-			{
-				return false;
-			}
+			SOUP_RETHROW_FALSE(v.size() <= 0xFF);
 			bool ret = true;
 			auto len = (uint8_t)v.size();
 			ret &= u8(len);
@@ -202,10 +199,7 @@ NAMESPACE_SOUP
 		bool vec_u16_bl_u16_be(std::vector<uint16_t>& v) noexcept
 		{
 			size_t bl = (v.size() * sizeof(uint16_t));
-			SOUP_IF_UNLIKELY (bl > 0xFFFF)
-			{
-				return false;
-			}
+			SOUP_RETHROW_FALSE(bl <= 0xFFFF);
 			bool ret = true;
 			auto bl_u16 = (uint16_t)bl;
 			ret &= ioBase::u16_be(bl_u16);
@@ -237,16 +231,32 @@ NAMESPACE_SOUP
 			{
 				bl += entry.size();
 			}
-			SOUP_IF_UNLIKELY (bl > 0xFFFFFF)
-			{
-				return false;
-			}
+			SOUP_RETHROW_FALSE(bl <= 0xFFFFFF);
 			bool ret = true;
 			auto bl_u32 = (uint32_t)bl;
 			ret &= ioBase::u24_be(bl_u32);
 			for (auto& entry : v)
 			{
 				ret &= str_lp<u24_be_t>(entry);
+			}
+			return ret;
+		}
+
+		// vector of str_lp<u8_t> with u16_be byte length prefix.
+		bool vec_str_lp_u8_bl_u16_be(std::vector<std::string>& v) SOUP_EXCAL
+		{
+			size_t bl = v.size();
+			for (const auto& entry : v)
+			{
+				bl += entry.size();
+			}
+			SOUP_RETHROW_FALSE(bl <= 0xFFFF);
+			bool ret = true;
+			auto bl_u16 = (uint16_t)bl;
+			ret &= ioBase::u16_be(bl_u16);
+			for (auto& entry : v)
+			{
+				ret &= str_lp<u8_t>(entry);
 			}
 			return ret;
 		}

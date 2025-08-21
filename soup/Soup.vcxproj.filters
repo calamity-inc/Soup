@@ -1671,6 +1671,9 @@
     <ClInclude Include="lzf.hpp">
       <Filter>data\enc</Filter>
     </ClInclude>
+    <ClInclude Include="TlsExtAlpn.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

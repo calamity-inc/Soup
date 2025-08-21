@@ -1075,6 +1075,7 @@
     <ClInclude Include="TarIndexedFile.hpp" />
     <ClInclude Include="TarReader.hpp" />
     <ClInclude Include="textmate_grammar.hpp" />
+    <ClInclude Include="TlsExtAlpn.hpp" />
     <ClInclude Include="TlsSignatureScheme.hpp" />
     <ClInclude Include="TransientToken.hpp" />
     <ClInclude Include="tunables.hpp" />

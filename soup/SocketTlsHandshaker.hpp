@@ -47,11 +47,15 @@ NAMESPACE_SOUP
 		union
 		{
 			certchain_validator_t certchain_validator; // client
-			tls_server_on_client_hello_t on_client_hello; // server
+			struct // server
+			{
+				tls_server_on_client_hello_t on_client_hello;
+				tls_server_alpn_select_protocol_t alpn_select_protocol;
+			};
 		};
 
 		explicit SocketTlsHandshaker(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, certchain_validator_t certchain_validator) noexcept; // client
-		explicit SocketTlsHandshaker(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, SharedPtr<CertStore>&& certstore, tls_server_on_client_hello_t on_client_hello) noexcept; // server
+		explicit SocketTlsHandshaker(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, SharedPtr<CertStore>&& certstore, tls_server_on_client_hello_t on_client_hello, tls_server_alpn_select_protocol_t alpn_select_protocol) noexcept; // server
 
 		[[nodiscard]] std::string pack(TlsHandshakeType_t handshake_type, const std::string& content) SOUP_EXCAL;
 
