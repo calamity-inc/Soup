@@ -72,6 +72,7 @@ NAMESPACE_SOUP
 		tls_server_on_client_hello_t on_client_hello;
 		tls_server_alpn_select_protocol_t alpn_select_protocol;
 
+		std::string ecdhe_private_key{};
 		const RsaPrivateKey* private_key{};
 
 		explicit SocketTlsHandshakerServer(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, SharedPtr<CertStore>&& certstore, tls_server_on_client_hello_t on_client_hello, tls_server_alpn_select_protocol_t alpn_select_protocol) noexcept;
