@@ -123,6 +123,8 @@ NAMESPACE_SOUP
 	protected:
 		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL;
 		void enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL;
+		void enableCryptoServerRecvClientKeyExchangeRsa(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL;
+		void enableCryptoServerRecvClientKeyExchangeEcdhe(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL;
 
 	public:
 		void enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_on_client_hello_t on_client_hello = nullptr, tls_server_alpn_select_protocol_t alpn_select_protocol = nullptr);
