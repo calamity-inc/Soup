@@ -380,26 +380,26 @@ NAMESPACE_SOUP
 	struct CaptureValidateCertchain
 	{
 		Socket& s;
-		SocketTlsHandshaker* handshaker;
+		SocketTlsHandshakerClient* handshaker;
 	};
 
 	struct CaptureValidateSke
 	{
 		Socket& s;
-		SocketTlsHandshaker* handshaker;
+		SocketTlsHandshakerClient* handshaker;
 		std::string signature;
 		bool sha256;
 	};
 
 	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data, certchain_validator_t certchain_validator) SOUP_EXCAL
 	{
-		auto handshaker = soup::make_unique<SocketTlsHandshaker>(
+		UniquePtr<SocketTlsHandshaker> handshaker = soup::make_unique<SocketTlsHandshakerClient>(
 			callback,
 			std::move(cap),
 			certchain_validator
 		);
-		handshaker->server_name = std::move(server_name);
-		handshaker->initial_application_data = std::move(initial_application_data);
+		static_cast<SocketTlsHandshakerClient*>(handshaker.get())->server_name = std::move(server_name);
+		static_cast<SocketTlsHandshakerClient*>(handshaker.get())->initial_application_data = std::move(initial_application_data);
 
 		TlsClientHello hello;
 		hello.random.time = static_cast<uint32_t>(time::unixSeconds());
@@ -435,10 +435,10 @@ NAMESPACE_SOUP
 		);
 		hello.compression_methods = { 0 };
 
-		if (!handshaker->server_name.empty())
+		if (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->server_name.empty())
 		{
 			TlsClientHelloExtServerName ext_server_name{};
-			ext_server_name.host_name = handshaker->server_name;
+			ext_server_name.host_name = static_cast<SocketTlsHandshakerClient*>(handshaker.get())->server_name;
 
 			hello.extensions.add(TlsExtensionType::server_name, ext_server_name);
 		}
@@ -519,12 +519,12 @@ NAMESPACE_SOUP
 						s.tls_close(TlsAlertDescription::decode_error);
 						return;
 					}
-					if (!handshaker->certchain.fromDer(cert.asn1_certs))
+					if (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.fromDer(cert.asn1_certs))
 					{
 						s.tls_close(TlsAlertDescription::bad_certificate);
 						return;
 					}
-					handshaker->certchain.cleanup();
+					static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.cleanup();
 
 					SOUP_TRY
 					{
@@ -550,7 +550,7 @@ NAMESPACE_SOUP
 							}
 						}, CaptureValidateCertchain{
 							s,
-							handshaker.get()
+							static_cast<SocketTlsHandshakerClient*>(handshaker.get())
 						});
 					}
 					SOUP_CATCH_ANY
@@ -600,7 +600,7 @@ NAMESPACE_SOUP
 									|| ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha256
 									)
 								{
-									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
+									SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isRsa())
 									{
 										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
@@ -608,7 +608,7 @@ NAMESPACE_SOUP
 								}
 								else if (ske.signature_scheme == TlsSignatureScheme::ecdsa_sha1)
 								{
-									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isEc())
+									SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isEc())
 									{
 										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
@@ -616,7 +616,9 @@ NAMESPACE_SOUP
 								}
 								else if (ske.signature_scheme == TlsSignatureScheme::ecdsa_secp256r1_sha256)
 								{
-									SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isEc() || handshaker->certchain.certs.at(0).curve != &EccCurve::secp256r1())
+									SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isEc()
+										|| static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).curve != &EccCurve::secp256r1()
+										)
 									{
 										s.tls_close(TlsAlertDescription::illegal_parameter);
 										return;
@@ -662,7 +664,7 @@ NAMESPACE_SOUP
 									return;
 								}
 								handshaker->ecdhe_curve = ske.params.named_curve;
-								handshaker->ecdhe_public_key = std::move(ske.params.point);
+								static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key = std::move(ske.params.point);
 
 #if SOUP_EXCEPTIONS
 								try
@@ -697,7 +699,7 @@ NAMESPACE_SOUP
 										}
 									}, CaptureValidateSke{
 										s,
-										handshaker.get(),
+										static_cast<SocketTlsHandshakerClient*>(handshaker.get()),
 										std::move(ske.signature),
 										ske.signature_scheme == TlsSignatureScheme::rsa_pkcs1_sha256 || ske.signature_scheme == TlsSignatureScheme::ecdsa_secp256r1_sha256
 									});
@@ -778,13 +780,13 @@ NAMESPACE_SOUP
 				}
 
 				TlsEncryptedPreMasterSecret epms{};
-				SOUP_IF_UNLIKELY (!handshaker->certchain.certs.at(0).isRsa())
+				SOUP_IF_UNLIKELY (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).isRsa())
 				{
 					// Server picked an RSA ciphersuite but did not provide an appropriate certificate
 					tls_close(TlsAlertDescription::illegal_parameter);
 					return;
 				}
-				epms.data = handshaker->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
+				epms.data = static_cast<SocketTlsHandshakerClient*>(handshaker.get())->certchain.certs.at(0).getRsaPublicKey().encryptPkcs1(pms).toBinary();
 				cke = epms.toBinaryString();
 
 				handshaker->pre_master_secret = std::move(pms);
@@ -795,7 +797,7 @@ NAMESPACE_SOUP
 				Curve25519::generatePrivate(my_priv);
 
 				uint8_t their_pub[Curve25519::KEY_SIZE];
-				memcpy(their_pub, handshaker->ecdhe_public_key.data(), sizeof(their_pub));
+				memcpy(their_pub, static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key.data(), sizeof(their_pub));
 
 				uint8_t shared_secret[Curve25519::SHARED_SIZE];
 				Curve25519::x25519(shared_secret, my_priv, their_pub);
@@ -825,8 +827,8 @@ NAMESPACE_SOUP
 				auto my_priv = curve->generatePrivate();
 
 				EccPoint their_pub{
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(1, csize)),
-					Bigint::fromBinary(handshaker->ecdhe_public_key.substr(1 + csize, csize))
+					Bigint::fromBinary(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key.substr(1, csize)),
+					Bigint::fromBinary(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->ecdhe_public_key.substr(1 + csize, csize))
 				};
 				SOUP_IF_UNLIKELY (!curve->validate(their_pub))
 				{
@@ -858,19 +860,19 @@ NAMESPACE_SOUP
 			&& tls_sendRecord(TlsContentType::change_cipher_spec, "\1")
 			)
 		{
-			handshaker->getKeys(tls_encrypter_send, handshaker->pending_recv_encrypter);
+			handshaker->getKeys(tls_encrypter_send, static_cast<SocketTlsHandshakerClient*>(handshaker.get())->pending_recv_encrypter);
 			if (tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getClientFinishVerifyData()))
 			{
-				if (!handshaker->initial_application_data.empty())
+				if (!static_cast<SocketTlsHandshakerClient*>(handshaker.get())->initial_application_data.empty())
 				{
-					tls_sendRecordEncrypted(TlsContentType::application_data, handshaker->initial_application_data);
+					tls_sendRecordEncrypted(TlsContentType::application_data, static_cast<SocketTlsHandshakerClient*>(handshaker.get())->initial_application_data);
 				}
 
 				tls_recvRecord(TlsContentType::change_cipher_spec, [](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 				{
 					UniquePtr<SocketTlsHandshaker> handshaker = std::move(cap.get<UniquePtr<SocketTlsHandshaker>>());
 
-					s.tls_encrypter_recv = std::move(handshaker->pending_recv_encrypter);
+					s.tls_encrypter_recv = std::move(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->pending_recv_encrypter);
 
 					handshaker->expected_finished_verify_data = handshaker->getServerFinishVerifyData();
 
@@ -908,13 +910,13 @@ NAMESPACE_SOUP
 
 	struct CaptureDecryptPreMasterSecret
 	{
-		SocketTlsHandshaker* handshaker;
+		SocketTlsHandshakerServer* handshaker;
 		Bigint data;
 	};
 
 	void Socket::enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_on_client_hello_t on_client_hello, tls_server_alpn_select_protocol_t alpn_select_protocol)
 	{
-		auto handshaker = soup::make_unique<SocketTlsHandshaker>(
+		UniquePtr<SocketTlsHandshaker> handshaker = soup::make_unique<SocketTlsHandshakerServer>(
 			callback,
 			std::move(cap),
 			std::move(certstore),
@@ -961,12 +963,12 @@ NAMESPACE_SOUP
 					}
 					else if (ext.id == TlsExtensionType::application_layer_protocol_negotiation)
 					{
-						if (handshaker->alpn_select_protocol)
+						if (static_cast<SocketTlsHandshakerServer*>(handshaker.get())->alpn_select_protocol)
 						{
 							TlsExtAlpn ext_alpn;
 							if (ext_alpn.fromBinary(ext.data))
 							{
-								alpn_selection = handshaker->alpn_select_protocol(s, ext_alpn);
+								alpn_selection = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->alpn_select_protocol(s, ext_alpn);
 								SOUP_IF_UNLIKELY (alpn_selection.empty())
 								{
 									s.tls_close(TlsAlertDescription::no_application_protocol);
@@ -980,7 +982,7 @@ NAMESPACE_SOUP
 						handshaker->extended_master_secret = true;
 					}
 				}
-				rsa_data = handshaker->certstore->findEntryForDomain(server_name);
+				rsa_data = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->certstore->findEntryForDomain(server_name);
 				if (!rsa_data)
 				{
 					s.tls_close(TlsAlertDescription::unrecognized_name);
@@ -989,9 +991,9 @@ NAMESPACE_SOUP
 
 				handshaker->client_random = hello.random.toBinaryString();
 
-				if (handshaker->on_client_hello)
+				if (static_cast<SocketTlsHandshakerServer*>(handshaker.get())->on_client_hello)
 				{
-					handshaker->on_client_hello(s, std::move(hello));
+					static_cast<SocketTlsHandshakerServer*>(handshaker.get())->on_client_hello(s, std::move(hello));
 				}
 			}
 
@@ -1039,7 +1041,7 @@ NAMESPACE_SOUP
 				return;
 			}
 
-			handshaker->private_key = &rsa_data->private_key;
+			static_cast<SocketTlsHandshakerServer*>(handshaker.get())->private_key = &rsa_data->private_key;
 
 			s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 			{
@@ -1061,7 +1063,7 @@ NAMESPACE_SOUP
 					auto& cap = _cap.get<CaptureDecryptPreMasterSecret>();
 					cap.handshaker->pre_master_secret = cap.handshaker->private_key->decryptPkcs1(cap.data);
 				}, CaptureDecryptPreMasterSecret{
-					handshaker.get(),
+					static_cast<SocketTlsHandshakerServer*>(handshaker.get()),
 					Bigint::fromBinary(data)
 				});
 
