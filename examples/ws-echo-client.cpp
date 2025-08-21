@@ -14,7 +14,7 @@ int main(int argc, const char** argv)
 	if (con->connect(std::string("ws.postman-echo.com"), 443))
 	{
 		std::cout << "TCP established.\n";
-		con->enableCryptoClient("ws.postman-echo.com", [](Socket& sock, Capture&&)
+		con->enableCryptoClient("ws.postman-echo.com", [](Socket& sock, Capture&&, std::string&&)
 		{
 			std::cout << "TLS established.\n";
 			auto& con = static_cast<WebSocketConnection&>(sock);

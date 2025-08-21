@@ -391,7 +391,7 @@ NAMESPACE_SOUP
 		bool sha256;
 	};
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data, certchain_validator_t certchain_validator) SOUP_EXCAL
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&, std::string&& alpn_protocol) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data, certchain_validator_t certchain_validator, std::vector<std::string>&& alpn_protocols) SOUP_EXCAL
 	{
 		UniquePtr<SocketTlsHandshaker> handshaker = soup::make_unique<SocketTlsHandshakerClient>(
 			callback,
@@ -487,6 +487,13 @@ NAMESPACE_SOUP
 			hello.extensions.add(TlsExtensionType::supported_versions, "\x02\x03\x03");
 		}
 
+		if (!alpn_protocols.empty())
+		{
+			TlsExtAlpn ext_alpn;
+			ext_alpn.protocol_names = std::move(alpn_protocols);
+			hello.extensions.add(TlsExtensionType::application_layer_protocol_negotiation, ext_alpn);
+		}
+
 		if (tls_sendHandshake(handshaker, TlsHandshake::client_hello, hello.toBinaryString()))
 		{
 			tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
@@ -504,7 +511,21 @@ NAMESPACE_SOUP
 				}
 				handshaker->cipher_suite = shello.cipher_suite;
 				handshaker->server_random = shello.random.toBinaryString();
-				handshaker->extended_master_secret = shello.extensions.contains(TlsExtensionType::extended_master_secret);
+				for (const auto& ext : shello.extensions.extensions)
+				{
+					if (ext.id == TlsExtensionType::application_layer_protocol_negotiation)
+					{
+						TlsExtAlpn ext_alpn;
+						if (ext_alpn.fromBinary(ext.data) && ext_alpn.protocol_names.size() == 1)
+						{
+							static_cast<SocketTlsHandshakerClient*>(handshaker.get())->alpn_protocol = ext_alpn.protocol_names[0];
+						}
+					}
+					else if (ext.id == TlsExtensionType::extended_master_secret)
+					{
+						handshaker->extended_master_secret = true;
+					}
+				}
 
 				s.tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
 				{
@@ -888,7 +909,7 @@ NAMESPACE_SOUP
 							s.tls_close(TlsAlertDescription::decrypt_error);
 							return;
 						}
-						handshaker->callback(s, std::move(handshaker->callback_capture));
+						static_cast<SocketTlsHandshakerClient*>(handshaker.get())->callback(s, std::move(handshaker->callback_capture), std::move(static_cast<SocketTlsHandshakerClient*>(handshaker.get())->alpn_protocol));
 					});
 				}, std::move(handshaker));
 			}
@@ -1104,7 +1125,7 @@ NAMESPACE_SOUP
 
 							if (s.tls_sendHandshake(handshaker, TlsHandshake::finished, handshaker->getServerFinishVerifyData()))
 							{
-								handshaker->callback(s, std::move(handshaker->callback_capture));
+								static_cast<SocketTlsHandshakerServer*>(handshaker.get())->callback(s, std::move(handshaker->callback_capture));
 							}
 						});
 					}, std::move(handshaker));

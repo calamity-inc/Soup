@@ -47,7 +47,7 @@ NAMESPACE_SOUP
 					upgrading_since = time::millis();
 					if (use_tls)
 					{
-						sock->enableCryptoClient(host, [](Socket& s, Capture&& cap) SOUP_EXCAL
+						sock->enableCryptoClient(host, [](Socket& s, Capture&& cap, std::string&&) SOUP_EXCAL
 						{
 							cap.get<EstablishWebSocketConnectionTask*>()->proceedToUpgrade();
 						}, this);

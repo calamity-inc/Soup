@@ -9,19 +9,19 @@
 
 NAMESPACE_SOUP
 {
-	SocketTlsHandshaker::SocketTlsHandshaker(void(*callback)(Socket&,Capture&&), Capture&& callback_capture)
-		: callback(callback), callback_capture(std::move(callback_capture))
+	SocketTlsHandshaker::SocketTlsHandshaker(Capture&& callback_capture)
+		: callback_capture(std::move(callback_capture))
 	{
 	}
 
-	SocketTlsHandshakerClient::SocketTlsHandshakerClient(void(*callback)(Socket&,Capture&&), Capture&& callback_capture, certchain_validator_t certchain_validator) noexcept
-		: SocketTlsHandshaker(callback, std::move(callback_capture)), certchain_validator(certchain_validator)
+	SocketTlsHandshakerClient::SocketTlsHandshakerClient(void(*callback)(Socket&, Capture&&, std::string&&), Capture&& callback_capture, certchain_validator_t certchain_validator) noexcept
+		: SocketTlsHandshaker(std::move(callback_capture)), callback(callback), certchain_validator(certchain_validator)
 	{
 		layer_bytes.reserve(2800); // When we receive "finished" from Cloudflare, this is 2689~2696 bytes.
 	}
 
 	SocketTlsHandshakerServer::SocketTlsHandshakerServer(void(*callback)(Socket&, Capture&&), Capture&& callback_capture, SharedPtr<CertStore>&& certstore, tls_server_on_client_hello_t on_client_hello, tls_server_alpn_select_protocol_t alpn_select_protocol) noexcept
-		: SocketTlsHandshaker(callback, std::move(callback_capture)), certstore(std::move(certstore)), on_client_hello(on_client_hello), alpn_select_protocol(alpn_select_protocol)
+		: SocketTlsHandshaker(std::move(callback_capture)), callback(callback), certstore(std::move(certstore)), on_client_hello(on_client_hello), alpn_select_protocol(alpn_select_protocol)
 	{
 	}
 
