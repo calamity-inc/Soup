@@ -9,6 +9,8 @@ NAMESPACE_SOUP
 	struct dnsOsResolver : public dnsResolver
 	{
 		[[nodiscard]] Optional<std::vector<UniquePtr<dnsRecord>>> lookup(dnsType qtype, const std::string& name) const final;
+
+		[[nodiscard]] static Optional<std::vector<UniquePtr<dnsRecord>>> staticLookup(dnsType qtype, const std::string& name);
 	};
 }
 

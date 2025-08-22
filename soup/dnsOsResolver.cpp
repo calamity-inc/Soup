@@ -16,6 +16,11 @@ NAMESPACE_SOUP
 {
 	Optional<std::vector<UniquePtr<dnsRecord>>> dnsOsResolver::lookup(dnsType qtype, const std::string& name) const
 	{
+		return staticLookup(qtype, name);
+	}
+
+	Optional<std::vector<UniquePtr<dnsRecord>>> dnsOsResolver::staticLookup(dnsType qtype, const std::string& name)
+	{
 #if SOUP_WINDOWS
 		PDNS_RECORD pDnsRecord;
 		if (DnsQuery_UTF8(name.c_str(), qtype, DNS_QUERY_STANDARD, 0, &pDnsRecord, 0) == ERROR_SUCCESS)
