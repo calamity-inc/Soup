@@ -39,7 +39,7 @@ void cli_dnsserver(int argc, const char** argv)
 		{
 			auto name = arr[0];
 			string::lower(name);
-			if (dnsType type; dnsTypeFromString(arr[1]).consume(type))
+			if (dnsType type = dnsTypeFromString(arr[1]))
 			{
 				if (auto factory = dnsRecord::getFactory(type))
 				{
@@ -119,7 +119,7 @@ void cli_dnsserver(int argc, const char** argv)
 				if (auto root = json::decode(data))
 				{
 					std::string name = root->asObj().at("name").asStr();
-					if (dnsType type; dnsTypeFromString(root->asObj().at("type").asStr()).consume(type))
+					if (dnsType type = dnsTypeFromString(root->asObj().at("type").asStr()))
 					{
 						std::string value = root->asObj().at("value").asStr();
 						if (auto factory = dnsRecord::getFactory((dnsType)type))
@@ -138,7 +138,7 @@ void cli_dnsserver(int argc, const char** argv)
 				if (auto root = json::decode(data))
 				{
 					std::string name = root->asObj().at("name").asStr();
-					if (dnsType type; dnsTypeFromString(root->asObj().at("type").asStr()).consume(type))
+					if (dnsType type = dnsTypeFromString(root->asObj().at("type").asStr()))
 					{
 						std::string value = root->asObj().at("value").asStr();
 						bool ok = false;

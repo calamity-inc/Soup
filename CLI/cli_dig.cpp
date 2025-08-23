@@ -42,7 +42,7 @@ void cli_dig(int argc, const char** argv)
 		}
 		else
 		{
-			if (!dnsTypeFromString(argv[i]).consume(t))
+			if (t = dnsTypeFromString(argv[i]), !t)
 			{
 				std::cout << "Unknown record type: " << argv[i] << "\n";
 			}

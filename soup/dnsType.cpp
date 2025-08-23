@@ -1,6 +1,6 @@
 #include "dnsType.hpp"
 
-#include "Exception.hpp"
+#include <cstring>
 
 NAMESPACE_SOUP
 {
@@ -21,17 +21,17 @@ NAMESPACE_SOUP
 		return std::to_string(type);
 	}
 
-	Optional<dnsType> dnsTypeFromString(const std::string& str)
+	dnsType dnsTypeFromString(const char* str)
 	{
-		if (str == "A") return DNS_A;
-		if (str == "AAAA") return DNS_AAAA;
-		if (str == "CNAME") return DNS_CNAME;
-		if (str == "PTR") return DNS_PTR;
-		if (str == "TXT") return DNS_TXT;
-		if (str == "MX") return DNS_MX;
-		if (str == "SRV") return DNS_SRV;
-		if (str == "NS") return DNS_NS;
+		if (strcmp(str, "A") == 0) return DNS_A;
+		if (strcmp(str, "AAAA") == 0) return DNS_AAAA;
+		if (strcmp(str, "CNAME") == 0) return DNS_CNAME;
+		if (strcmp(str, "PTR") == 0) return DNS_PTR;
+		if (strcmp(str, "TXT") == 0) return DNS_TXT;
+		if (strcmp(str, "MX") == 0) return DNS_MX;
+		if (strcmp(str, "SRV") == 0) return DNS_SRV;
+		if (strcmp(str, "NS") == 0) return DNS_NS;
 
-		return std::nullopt;
+		return DNS_NONE;
 	}
 }
