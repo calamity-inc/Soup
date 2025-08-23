@@ -1,6 +1,6 @@
 #include "dnsOsResolver.hpp"
 
-#if !SOUP_ANDROID
+#if !SOUP_ANDROID && !SOUP_WASM
 
 #if SOUP_WINDOWS
 #undef UNICODE
