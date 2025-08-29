@@ -14,14 +14,14 @@ else
 $clanglink = $clang;
 if (!defined("PHP_WINDOWS_VERSION_MAJOR"))
 {
-	if (PHP_OS_FAMILY == "Darwin")
-	{
-		$clanglink .= " -lc++";
-	}
-	else
-	{
-		$clanglink .= " -lstdc++";
-	}
+        if (PHP_OS_FAMILY == "Darwin")
+        {
+                $clanglink .= " -lc++ -framework IOKit -framework CoreFoundation";
+        }
+        else
+        {
+                $clanglink .= " -lstdc++";
+        }
 	$clanglink .= " -pthread -lm -ldl";
 	if (!getenv("ANDROID_ROOT"))
 	{
