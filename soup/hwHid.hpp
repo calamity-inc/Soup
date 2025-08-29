@@ -6,11 +6,18 @@
 #include <string>
 #if !SOUP_WINDOWS
 #include <unordered_set>
+#include <pthread.h>
 #endif
 #include <vector>
 
 #include "Buffer.hpp"
+#if SOUP_MACOS
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/hid/IOHIDManager.h>
+#endif
+#if !SOUP_MACOS
 #include "HandleRaii.hpp"
+#endif
 #include "HidReportDescriptor.hpp"
 
 NAMESPACE_SOUP
@@ -35,17 +42,21 @@ NAMESPACE_SOUP
 		DWORD bytes_read{};
 		OVERLAPPED read_overlapped{};
 #else
-		std::unordered_set<uint8_t> report_ids{};
-		std::string manufacturer_name;
-		std::string product_name;
-		std::string serial_number;
-		pthread_t read_thrd;
-		bool reading = false;
+                std::unordered_set<uint8_t> report_ids{};
+                std::string manufacturer_name;
+                std::string product_name;
+                std::string serial_number;
+                pthread_t read_thrd;
+                bool reading = false;
 #endif
 
-	private:
-		HandleRaii handle;
-		Buffer<> read_buffer;
+        private:
+#if SOUP_MACOS
+                void* device = nullptr; // IOHIDDeviceRef
+#else
+                HandleRaii handle;
+#endif
+                Buffer<> read_buffer;
 
 	public:
 		[[nodiscard]] static std::vector<hwHid> getAll();
@@ -83,10 +94,12 @@ NAMESPACE_SOUP
 		{
 #if SOUP_WINDOWS
 			return true;
+#elif SOUP_MACOS
+                        return device != nullptr;
 #else
-			return handle.isValid();
+                        return handle.isValid();
 #endif
-		}
+                }
 
 		[[nodiscard]] bool isBluetooth() const noexcept { return is_bluetooth; }
 		[[nodiscard]] bool hasReportId(uint8_t report_id) const noexcept;
@@ -101,14 +114,30 @@ NAMESPACE_SOUP
 		void receiveFeatureReport(Buffer<>& buf) const;
 
 		bool sendReport(Buffer<>&& buf) const noexcept;
-		bool sendReport(const void* data, size_t size) const noexcept;
-		bool sendFeatureReport(Buffer<>&& buf) const noexcept;
+                bool sendReport(const void* data, size_t size) const noexcept;
+                bool sendFeatureReport(Buffer<>&& buf) const noexcept;
 
-		void reset() noexcept
-		{
-			path.clear();
-			handle.~HandleRaii();
-		}
+                void reset() noexcept
+                {
+                        path.clear();
+#if SOUP_MACOS
+                        if (device)
+                        {
+                                IOHIDDeviceClose((IOHIDDeviceRef)device, kIOHIDOptionsTypeNone);
+                                CFRelease((IOHIDDeviceRef)device);
+                                device = nullptr;
+                        }
+#else
+                        handle.~HandleRaii();
+#endif
+                }
+
+#if SOUP_MACOS
+                ~hwHid()
+                {
+                        reset();
+                }
+#endif
 
 	private:
 #if SOUP_WINDOWS
