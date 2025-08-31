@@ -113,7 +113,7 @@ jobs:
           path: |
             CLI/soup
             libsoup.a
-            libsoupbindings.so
+            libsoupbindings.dylib
 
   macos-14:
     runs-on: macos-14
@@ -141,7 +141,7 @@ jobs:
           path: |
             CLI/soup
             libsoup.a
-            libsoupbindings.so
+            libsoupbindings.dylib
 
   windows-latest:
     runs-on: windows-latest

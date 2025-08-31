@@ -41,12 +41,23 @@ if (defined("PHP_WINDOWS_VERSION_MAJOR"))
 	$libname = "soup.lib";
 	$dllname = "soupbindings.dll";
 }
+else if (PHP_OS_FAMILY == "Darwin")
+{
+	$dllname = "libsoupbindings.dylib";
+}
 passthru("$archiver rc $libname ".join(" ", $objects));
 
 if (file_exists("bin/int/soup.o"))
 {
 	echo "Linking shared lib...\n";
-	passthru("$clanglink -o $dllname --shared bin/int/soup.o ".join(" ", $objects));
+	if (PHP_OS_FAMILY == "Darwin")
+	{
+		passthru("$clanglink -o $dllname -dynamiclib bin/int/soup.o ".join(" ", $objects));
+	}
+	else
+	{
+		passthru("$clanglink -o $dllname --shared bin/int/soup.o ".join(" ", $objects));
+	}
 }
 
 chdir($cd);
