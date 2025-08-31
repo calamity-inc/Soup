@@ -67,11 +67,13 @@ NAMESPACE_SOUP
 			args.emplace_back("-lgdi32");
 		}
 #else
-#if !SOUP_MACOS
+#if SOUP_MACOS
+		args.emplace_back("-lc++");
+#else
 		args.emplace_back("-fuse-ld=lld");
 		args.emplace_back("-Wl,--gc-sections,--icf=safe"); // dead code elimination
-#endif
 		args.emplace_back("-lstdc++");
+#endif
 		if (!isEmscripten())
 		{
 #if SOUP_LINUX
