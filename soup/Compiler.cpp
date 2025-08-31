@@ -162,13 +162,17 @@ NAMESPACE_SOUP
 		{
 			return ".js";
 		}
-#if SOUP_LINUX
+#if SOUP_MACOS
+		return ".dylib";
+#else
+	#if SOUP_LINUX
 		if (!isCrossCompiler())
 		{
 			return ".so";
 		}
-#endif
+	#endif
 		return ".dll";
+#endif
 	}
 
 	std::string Compiler::makeDynamicLibrary(const std::string& in, const std::string& out) const
@@ -178,7 +182,11 @@ NAMESPACE_SOUP
 		args.emplace_back("-fPIC");
 		args.emplace_back("-fvisibility=hidden");
 #endif
-		args.emplace_back("--shared");
+#if SOUP_MACOS
+		args.emplace_back("-dynamiclib");
+#else
+		args.emplace_back("-shared");
+#endif
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.emplace_back(in);
@@ -192,7 +200,11 @@ NAMESPACE_SOUP
 #if !SOUP_WINDOWS
 		// -fPIC and -fvisibility=hidden need to be set per object
 #endif
-		args.emplace_back("--shared");
+#if SOUP_MACOS
+		args.emplace_back("-dynamiclib");
+#else
+		args.emplace_back("-shared");
+#endif
 		args.emplace_back("-o");
 		args.emplace_back(out);
 		args.insert(args.end(), objects.begin(), objects.end());
