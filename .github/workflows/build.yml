@@ -14,11 +14,9 @@ jobs:
       - name: Build CLI
         run: php build_cli.php
 
-      - name: Run ./soup test
-        run: ./CLI/soup test
+      - run: ./CLI/soup test
 
-      - name: Run ./soup bench
-        run: ./CLI/soup bench
+      - run: ./CLI/soup bench
 
   ubuntu-22-04:
     runs-on: ubuntu-22.04
@@ -31,11 +29,9 @@ jobs:
       - name: Build CLI
         run: php build_cli.php
 
-      - name: Run ./soup test
-        run: ./CLI/soup test
+      - run: ./CLI/soup test
 
-      - name: Run ./soup bench
-        run: ./CLI/soup bench
+      - run: ./CLI/soup bench
 
   debian-10:
     runs-on: [debian-10]
@@ -48,11 +44,9 @@ jobs:
       - name: Build CLI
         run: php build_cli.php
 
-      - name: Run ./soup test
-        run: ./CLI/soup test
+      - run: ./CLI/soup test
 
-      - name: Run ./soup bench
-        run: ./CLI/soup bench
+      - run: ./CLI/soup bench
 
       - name: Ensure files exist
         uses: andstor/file-existence-action@v3
@@ -80,11 +74,9 @@ jobs:
       - name: Build CLI
         run: php build_cli.php
 
-      - name: Run ./soup test
-        run: ./CLI/soup test
+      - run: ./CLI/soup test
 
-      - name: Run ./soup bench
-        run: ./CLI/soup bench
+      - run: ./CLI/soup bench
 
       - name: Ensure files exist
         uses: andstor/file-existence-action@v3
@@ -112,11 +104,9 @@ jobs:
       - name: Build CLI
         run: php build_cli.php
 
-      - name: Run ./soup test
-        run: ./CLI/soup test
+      - run: ./CLI/soup test
 
-      - name: Run ./soup bench
-        run: ./CLI/soup bench
+      - run: ./CLI/soup bench
 
       - name: Ensure files exist
         uses: andstor/file-existence-action@v3
@@ -146,11 +136,9 @@ jobs:
       - name: Build CLI
         run: php build_cli.php
 
-      - name: Run ./soup test
-        run: ./CLI/soup test
+      - run: ./CLI/soup test
 
-      - name: Run ./soup bench
-        run: ./CLI/soup bench
+      - run: ./CLI/soup bench
 
       - name: Ensure files exist
         uses: andstor/file-existence-action@v3
@@ -181,11 +169,9 @@ jobs:
       - name: Build CLI
         run: php build_cli.php
 
-      - name: Run ./soup test
-        run: CLI/soup.exe test
+      - run: CLI/soup.exe test
 
-      - name: Run ./soup bench
-        run: CLI/soup.exe bench
+      - run: CLI/soup.exe bench
 
       - name: Ensure files exist
         uses: andstor/file-existence-action@v3
