@@ -211,9 +211,19 @@ NAMESPACE_SOUP
 		mutable bool running_message_loop = false;
 
 		X11Api()
+#if SOUP_MACOS
+			// Assumes the user installed XQuartz and updated their dyld search path:
+			// export DYLD_LIBRARY_PATH="/opt/X11/lib:$DYLD_LIBRARY_PATH"
+			: SharedLibrary("libX11.6.dylib")
+#else
 			: SharedLibrary("libX11.so.6")
+#endif
 		{
+#if SOUP_MACOS
+			SOUP_ASSERT(isLoaded(), "Failed to load libX11.6.dylib");
+#else
 			SOUP_ASSERT(isLoaded(), "Failed to load libX11.so.6");
+#endif
 
 			openDisplay = (XOpenDisplay_t)getAddressMandatory("XOpenDisplay");
 			//defaultRootWindow = (XDefaultRootWindow_t)getAddressMandatory("XDefaultRootWindow");
