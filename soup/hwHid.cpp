@@ -520,16 +520,7 @@ NAMESPACE_SOUP
 			}
 			HidD_FreePreparsedData(pp_data);
 		}
-#elif SOUP_LINUX
-		if (report_id == 0)
-		{
-			ret = report_ids.empty();
-		}
-		else
-		{
-			ret = report_ids.count(report_id) != 0;
-		}
-#elif SOUP_MACOS
+#else
 		if (report_id == 0)
 		{
 			ret = report_ids.empty();
@@ -625,14 +616,7 @@ NAMESPACE_SOUP
 			out_report_id = read_buffer.at(0);
 			read_buffer.erase(0, 1);
 		}
-#elif SOUP_LINUX
-		SOUP_UNUSED(receiveReport());
-		if (!report_ids.empty() && !read_buffer.empty())
-		{
-			out_report_id = read_buffer.at(0);
-			read_buffer.erase(0, 1);
-		}
-#elif SOUP_MACOS
+#else
 		SOUP_UNUSED(receiveReport());
 		if (!report_ids.empty() && !read_buffer.empty())
 		{
@@ -662,13 +646,7 @@ NAMESPACE_SOUP
 			pending_read = 0;
 		}
 		read_buffer.resize(bytes_read);
-#elif SOUP_LINUX
-		SOUP_UNUSED(receiveReport());
-		if (report_ids.empty())
-		{
-			read_buffer.insert_front(1, 0);
-		}
-#elif SOUP_MACOS
+#else
 		SOUP_UNUSED(receiveReport());
 		if (report_ids.empty())
 		{
@@ -687,15 +665,7 @@ NAMESPACE_SOUP
 		{
 			read_buffer.erase(0, 1);
 		}
-#elif SOUP_LINUX
-		SOUP_UNUSED(receiveReport());
-		if (input_report_byte_length != 0
-			&& !report_ids.empty()
-			)
-		{
-			read_buffer.erase(0, 1);
-		}
-#elif SOUP_MACOS
+#else
 		SOUP_UNUSED(receiveReport());
 		if (input_report_byte_length != 0
 			&& !report_ids.empty()
