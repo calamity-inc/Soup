@@ -53,6 +53,11 @@ using udev_device_get_parent_with_subsystem_devtype_t = udev_device*(*)(udev_dev
 using udev_device_get_sysattr_value_t = const char*(*)(udev_device*, const char*);
 
 #define udev_list_entry_foreach(list_entry, first_entry) for (list_entry = first_entry; list_entry; list_entry = udev_list_entry_get_next(list_entry))
+#elif SOUP_MACOS
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/hid/IOHIDManager.h>
+#include <IOKit/hid/IOHIDKeys.h>
+#include <IOKit/IOKitLib.h>
 #endif
 
 NAMESPACE_SOUP
@@ -290,6 +295,162 @@ NAMESPACE_SOUP
 			udev_enumerate_unref(enumerate);
 			udev_unref(udev);
 		}
+#elif SOUP_MACOS
+		IOHIDManagerRef manager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+		if (manager)
+		{
+			IOHIDManagerSetDeviceMatching(manager, NULL);
+			IOHIDManagerOpen(manager, kIOHIDOptionsTypeNone);
+			CFSetRef device_set = IOHIDManagerCopyDevices(manager);
+			if (device_set)
+			{
+				CFIndex num = CFSetGetCount(device_set);
+				std::vector<IOHIDDeviceRef> devices(num);
+				CFSetGetValues(device_set, (const void**)devices.data());
+				for (CFIndex i = 0; i < num; ++i)
+				{
+					IOHIDDeviceRef dev = devices[i];
+					hwHid hid{};
+
+					if (io_registry_entry_t entry = IOHIDDeviceGetService(dev))
+					{
+						io_string_t path;
+						if (IORegistryEntryGetPath(entry, kIOServicePlane, path) == KERN_SUCCESS)
+						{
+							hid.path = path;
+						}
+					}
+
+					int32_t vid = 0, pid = 0, usage_page = 0, usage = 0;
+					if (CFTypeRef ref = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDVendorIDKey)))
+					{
+						if (CFGetTypeID(ref) == CFNumberGetTypeID())
+						{
+							CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &vid);
+						}
+					}
+					if (CFTypeRef ref = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDProductIDKey)))
+					{
+						if (CFGetTypeID(ref) == CFNumberGetTypeID())
+						{
+							CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &pid);
+						}
+					}
+					if (CFTypeRef ref = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDPrimaryUsagePageKey)))
+					{
+						if (CFGetTypeID(ref) == CFNumberGetTypeID())
+						{
+							CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &usage_page);
+						}
+					}
+					if (CFTypeRef ref = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDPrimaryUsageKey)))
+					{
+						if (CFGetTypeID(ref) == CFNumberGetTypeID())
+						{
+							CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &usage);
+						}
+					}
+					hid.vendor_id = static_cast<uint16_t>(vid);
+					hid.product_id = static_cast<uint16_t>(pid);
+					hid.usage_page = static_cast<uint16_t>(usage_page);
+					hid.usage = static_cast<uint16_t>(usage);
+
+					int32_t in_sz = 0, out_sz = 0, feat_sz = 0;
+					if (CFTypeRef ref = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDMaxInputReportSizeKey)))
+					{
+						if (CFGetTypeID(ref) == CFNumberGetTypeID())
+						{
+							CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &in_sz);
+						}
+					}
+					if (CFTypeRef ref = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDMaxOutputReportSizeKey)))
+					{
+						if (CFGetTypeID(ref) == CFNumberGetTypeID())
+						{
+							CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &out_sz);
+						}
+					}
+					if (CFTypeRef ref = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDMaxFeatureReportSizeKey)))
+					{
+						if (CFGetTypeID(ref) == CFNumberGetTypeID())
+						{
+							CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &feat_sz);
+						}
+					}
+					hid.input_report_byte_length = static_cast<uint16_t>(in_sz);
+					hid.output_report_byte_length = static_cast<uint16_t>(out_sz);
+					hid.feature_report_byte_length = static_cast<uint16_t>(feat_sz);
+
+					if (CFTypeRef transport = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDTransportKey)))
+					{
+						if (CFGetTypeID(transport) == CFStringGetTypeID())
+						{
+							hid.is_bluetooth = (CFStringCompare((CFStringRef)transport, CFSTR("Bluetooth"), 0) == kCFCompareEqualTo);
+						}
+					}
+
+					if (CFTypeRef manu = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDManufacturerKey)))
+					{
+						if (CFGetTypeID(manu) == CFStringGetTypeID())
+						{
+							char buf[256];
+							if (CFStringGetCString((CFStringRef)manu, buf, sizeof(buf), kCFStringEncodingUTF8))
+							{
+								hid.manufacturer_name = buf;
+							}
+						}
+					}
+					if (CFTypeRef prod = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDProductKey)))
+					{
+						if (CFGetTypeID(prod) == CFStringGetTypeID())
+						{
+							char buf[256];
+							if (CFStringGetCString((CFStringRef)prod, buf, sizeof(buf), kCFStringEncodingUTF8))
+							{
+								hid.product_name = buf;
+							}
+						}
+					}
+					if (CFTypeRef serial = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDSerialNumberKey)))
+					{
+						if (CFGetTypeID(serial) == CFStringGetTypeID())
+						{
+							char buf[256];
+							if (CFStringGetCString((CFStringRef)serial, buf, sizeof(buf), kCFStringEncodingUTF8))
+							{
+								hid.serial_number = buf;
+							}
+						}
+					}
+
+					if (CFTypeRef desc = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDReportDescriptorKey)))
+					{
+						if (CFGetTypeID(desc) == CFDataGetTypeID())
+						{
+							const UInt8* data = CFDataGetBytePtr((CFDataRef)desc);
+							CFIndex len = CFDataGetLength((CFDataRef)desc);
+							auto rd = HidReportDescriptor::parse((const char*)data, len);
+							hid.report_ids = std::move(rd.report_ids);
+							if (!in_sz) hid.input_report_byte_length = rd.input_report_byte_length;
+							if (!out_sz) hid.output_report_byte_length = rd.output_report_byte_length;
+							if (!feat_sz) hid.feature_report_byte_length = rd.feature_report_byte_length;
+						}
+					}
+
+					if (IOHIDDeviceOpen(dev, kIOHIDOptionsTypeNone) == kIOReturnSuccess)
+					{
+						CFRetain(dev);
+						hid.device = dev;
+					}
+
+					hid.read_buffer.reserve(hid.input_report_byte_length < 1024 ? 1024 : hid.input_report_byte_length);
+					res.emplace_back(std::move(hid));
+				}
+				CFRelease(device_set);
+			}
+			IOHIDManagerClose(manager, kIOHIDOptionsTypeNone);
+			CFRelease(manager);
+		}
 #endif
 		return res;
 	}
@@ -359,7 +520,7 @@ NAMESPACE_SOUP
 			}
 			HidD_FreePreparsedData(pp_data);
 		}
-#elif SOUP_LINUX
+#else
 		if (report_id == 0)
 		{
 			ret = report_ids.empty();
@@ -389,6 +550,8 @@ NAMESPACE_SOUP
 		pfd.events = POLLIN;
 		pfd.revents = 0;
 		return poll(&pfd, 1, 0) != 0;
+#elif SOUP_MACOS
+		return device != nullptr;
 #else
 		return true;
 #endif
@@ -424,6 +587,21 @@ NAMESPACE_SOUP
 		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
 		reading = false;
 		read_buffer.resize(bytes_read < 0 ? 0 : bytes_read);
+#elif SOUP_MACOS
+		if (!device)
+		{
+			read_buffer.clear();
+			return read_buffer;
+		}
+		CFIndex len = input_report_byte_length;
+		if (len == 0)
+		{
+			len = 64;
+		}
+		read_buffer.resize(len);
+		IOHIDDeviceRef dev = (IOHIDDeviceRef)device;
+		IOReturn r = IOHIDDeviceGetReport(dev, kIOHIDReportTypeInput, 0, (uint8_t*)read_buffer.data(), &len);
+		read_buffer.resize(r == kIOReturnSuccess ? len : 0);
 #endif
 		return read_buffer;
 	}
@@ -438,9 +616,9 @@ NAMESPACE_SOUP
 			out_report_id = read_buffer.at(0);
 			read_buffer.erase(0, 1);
 		}
-#elif SOUP_LINUX
+#else
 		SOUP_UNUSED(receiveReport());
-		if (!report_ids.empty())
+		if (!report_ids.empty() && !read_buffer.empty())
 		{
 			out_report_id = read_buffer.at(0);
 			read_buffer.erase(0, 1);
@@ -468,7 +646,7 @@ NAMESPACE_SOUP
 			pending_read = 0;
 		}
 		read_buffer.resize(bytes_read);
-#elif SOUP_LINUX
+#else
 		SOUP_UNUSED(receiveReport());
 		if (report_ids.empty())
 		{
@@ -487,10 +665,11 @@ NAMESPACE_SOUP
 		{
 			read_buffer.erase(0, 1);
 		}
-#elif SOUP_LINUX
+#else
 		SOUP_UNUSED(receiveReport());
 		if (input_report_byte_length != 0
 			&& !report_ids.empty()
+			&& !read_buffer.empty()
 			)
 		{
 			read_buffer.erase(0, 1);
@@ -518,6 +697,8 @@ NAMESPACE_SOUP
 		{
 			pthread_kill(read_thrd, SIGUSR1);
 		}
+#elif SOUP_MACOS
+		// nothing
 #endif
 	}
 
@@ -533,6 +714,19 @@ NAMESPACE_SOUP
 		SOUP_ASSERT(HidD_GetFeature(handle, buf.data(), static_cast<ULONG>(buf.size())));
 #elif SOUP_LINUX
 		// TODO
+#elif SOUP_MACOS
+		if (!device)
+		{
+			buf.clear();
+			return;
+		}
+		if (buf.size() < feature_report_byte_length)
+		{
+			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
+		}
+		CFIndex len = buf.size();
+		IOHIDDeviceGetReport((IOHIDDeviceRef)device, kIOHIDReportTypeFeature, buf.empty()?0:static_cast<uint8_t>(buf.at(0)), (uint8_t*)buf.data(), &len);
+		buf.resize(len);
 #endif
 	}
 
@@ -565,6 +759,14 @@ NAMESPACE_SOUP
 		return result && bytesWritten == size;
 #elif SOUP_LINUX
 		return write(handle, data, size) == size;
+#elif SOUP_MACOS
+		if (!device)
+		{
+			return false;
+		}
+		const uint8_t* bytes = static_cast<const uint8_t*>(data);
+		uint8_t report_id = size > 0 ? bytes[0] : 0;
+		return IOHIDDeviceSetReport((IOHIDDeviceRef)device, kIOHIDReportTypeOutput, report_id, bytes, size) == kIOReturnSuccess;
 #else
 		return false;
 #endif
@@ -583,6 +785,12 @@ NAMESPACE_SOUP
 		return HidD_SetFeature(handle, buf.data(), static_cast<ULONG>(buf.size()));
 #elif SOUP_LINUX
 		return ioctl(handle, HIDIOCSFEATURE(buf.size()), buf.data()) == buf.size();
+#elif SOUP_MACOS
+		if (!device)
+		{
+			return false;
+		}
+		return IOHIDDeviceSetReport((IOHIDDeviceRef)device, kIOHIDReportTypeFeature, buf.empty()?0:static_cast<uint8_t>(buf.at(0)), (uint8_t*)buf.data(), buf.size()) == kIOReturnSuccess;
 #else
 		return false;
 #endif
@@ -806,6 +1014,21 @@ NAMESPACE_SOUP
 #elif SOUP_LINUX
 		const auto rawdesc = string::fromFile(this->path + "/device/report_descriptor");
 		return HidReportDescriptor::parse(rawdesc.data(), rawdesc.size());
+#elif SOUP_MACOS
+		if (!device)
+		{
+			return {};
+		}
+		if (CFTypeRef desc = IOHIDDeviceGetProperty((IOHIDDeviceRef)device, CFSTR(kIOHIDReportDescriptorKey)))
+		{
+			if (CFGetTypeID(desc) == CFDataGetTypeID())
+			{
+				const UInt8* data = CFDataGetBytePtr((CFDataRef)desc);
+				CFIndex len = CFDataGetLength((CFDataRef)desc);
+				return HidReportDescriptor::parse((const char*)data, len);
+			}
+		}
+		return {};
 #else
 		return {};
 #endif
