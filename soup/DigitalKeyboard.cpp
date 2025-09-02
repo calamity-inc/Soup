@@ -8,7 +8,6 @@
 #else
 	#include "HidReportDescriptor.hpp"
 	#include "HidScancode.hpp"
-	#include "string.hpp"
 #endif
 
 NAMESPACE_SOUP
@@ -180,10 +179,9 @@ NAMESPACE_SOUP
 
 		if (hid.isValid())
 		{
+			const auto desc = hid.getReportDescriptor();
 			while (hid.hasReport())
 			{
-				const auto rawdesc = string::fromFile(hid.path + "/device/report_descriptor");
-				const auto desc = HidReportDescriptor::parse(rawdesc.data(), rawdesc.size());
 				const auto& report = hid.receiveReportWithoutReportId();
 				const auto parsed_report = desc.parseInputReport(report.data(), report.size());
 				memset(keys, 0, sizeof(keys));
