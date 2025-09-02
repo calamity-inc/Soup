@@ -9,6 +9,7 @@
 #include <pthread.h>
 #endif
 #include <vector>
+#include <utility>
 
 #include "Buffer.hpp"
 #if SOUP_MACOS
@@ -23,14 +24,95 @@
 NAMESPACE_SOUP
 {
 	// A human interface device.
-	class hwHid
-	{
-	public:
-		std::string path;
-		uint16_t vendor_id;
-		uint16_t product_id;
-		uint16_t usage_page;
-		uint16_t usage;
+        class hwHid
+        {
+        public:
+                hwHid() = default;
+                hwHid(const hwHid&) = delete;
+                hwHid& operator=(const hwHid&) = delete;
+                hwHid(hwHid&& other) noexcept
+                        : path(std::move(other.path))
+                        , vendor_id(other.vendor_id)
+                        , product_id(other.product_id)
+                        , usage_page(other.usage_page)
+                        , usage(other.usage)
+                        , input_report_byte_length(other.input_report_byte_length)
+                        , output_report_byte_length(other.output_report_byte_length)
+                        , feature_report_byte_length(other.feature_report_byte_length)
+                        , is_bluetooth(other.is_bluetooth)
+#if SOUP_WINDOWS
+                        , pending_read(other.pending_read)
+                        , disconnected(other.disconnected)
+                        , bytes_read(other.bytes_read)
+                        , read_overlapped(other.read_overlapped)
+                        , handle(std::move(other.handle))
+#else
+                        , report_ids(std::move(other.report_ids))
+                        , manufacturer_name(std::move(other.manufacturer_name))
+                        , product_name(std::move(other.product_name))
+                        , serial_number(std::move(other.serial_number))
+                        , read_thrd(other.read_thrd)
+                        , reading(other.reading)
+#if SOUP_MACOS
+                        , device(other.device)
+#else
+                        , handle(std::move(other.handle))
+#endif
+#endif
+                        , read_buffer(std::move(other.read_buffer))
+                {
+#if SOUP_MACOS
+                        other.device = nullptr;
+#endif
+                }
+
+                hwHid& operator=(hwHid&& other) noexcept
+                {
+                        if (this != &other)
+                        {
+#if SOUP_MACOS
+                                if (device)
+                                {
+                                        IOHIDDeviceClose((IOHIDDeviceRef)device, kIOHIDOptionsTypeNone);
+                                        CFRelease((IOHIDDeviceRef)device);
+                                }
+                                device = other.device;
+                                other.device = nullptr;
+#else
+                                handle = std::move(other.handle);
+#endif
+                                path = std::move(other.path);
+                                vendor_id = other.vendor_id;
+                                product_id = other.product_id;
+                                usage_page = other.usage_page;
+                                usage = other.usage;
+                                input_report_byte_length = other.input_report_byte_length;
+                                output_report_byte_length = other.output_report_byte_length;
+                                feature_report_byte_length = other.feature_report_byte_length;
+                                is_bluetooth = other.is_bluetooth;
+#if SOUP_WINDOWS
+                                pending_read = other.pending_read;
+                                disconnected = other.disconnected;
+                                bytes_read = other.bytes_read;
+                                read_overlapped = other.read_overlapped;
+#else
+                                report_ids = std::move(other.report_ids);
+                                manufacturer_name = std::move(other.manufacturer_name);
+                                product_name = std::move(other.product_name);
+                                serial_number = std::move(other.serial_number);
+                                read_thrd = other.read_thrd;
+                                reading = other.reading;
+#endif
+                                read_buffer = std::move(other.read_buffer);
+                        }
+                        return *this;
+                }
+
+                std::string path;
+                uint16_t vendor_id;
+                uint16_t product_id;
+                uint16_t usage_page;
+                uint16_t usage;
 		uint16_t input_report_byte_length; // including report id
 		uint16_t output_report_byte_length; // including report id
 		uint16_t feature_report_byte_length; // including report id
@@ -128,7 +210,7 @@ NAMESPACE_SOUP
                                 device = nullptr;
                         }
 #else
-                        handle.~HandleRaii();
+                        handle = HandleRaii();
 #endif
                 }
 
