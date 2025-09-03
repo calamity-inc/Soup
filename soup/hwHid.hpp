@@ -188,6 +188,11 @@ NAMESPACE_SOUP
 #if SOUP_MACOS
 			if (device)
 			{
+				if (registered_callback)
+				{
+					IOHIDDeviceUnscheduleFromRunLoop((IOHIDDeviceRef)device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+					registered_callback = false;
+				}
 				IOHIDDeviceClose((IOHIDDeviceRef)device, kIOHIDOptionsTypeNone);
 				CFRelease((IOHIDDeviceRef)device);
 				device = nullptr;

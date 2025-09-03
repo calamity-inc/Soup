@@ -58,7 +58,6 @@ using udev_device_get_sysattr_value_t = const char*(*)(udev_device*, const char*
 #include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <IOKit/IOKitLib.h>
-#include "os.hpp"
 #endif
 
 NAMESPACE_SOUP
@@ -556,6 +555,7 @@ NAMESPACE_SOUP
 		{
 			kickOffRead();
 		}
+		CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true); // Pump the run loop once to allow the callback to fire
 		return got_a_report;
 #else
 		return false;
@@ -649,7 +649,7 @@ NAMESPACE_SOUP
 		}
 		while (!got_a_report)
 		{
-			os::sleep(1);
+			CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, true);
 		}
 		got_a_report = false;
 #endif
@@ -831,6 +831,7 @@ NAMESPACE_SOUP
 				static_cast<hwHid*>(context)->read_buffer.insert_front(1, reportID);
 				static_cast<hwHid*>(context)->got_a_report = true;
 			}, this);
+			IOHIDDeviceScheduleWithRunLoop((IOHIDDeviceRef)device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode); // Schedule with the current run loop so that callbacks are delivered
 		}
 	}
 #endif
