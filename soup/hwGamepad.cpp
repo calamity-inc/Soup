@@ -25,13 +25,13 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool isDs4StillAlive(hwHid& hid)
 	{
 		hid.discardStaleReports();
-		for (int i = 0; i != 5; ++i)
+		for (int i = 0; i != 20; ++i)
 		{
 			if (hid.hasReport())
 			{
 				return true;
 			}
-			os::sleep(1);
+			os::fastSleep(1);
 		}
 		return false;
 	}
