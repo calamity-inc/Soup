@@ -10,6 +10,7 @@
 #endif
 #include <vector>
 #include <utility>
+#include <atomic>
 
 #include "Buffer.hpp"
 #if SOUP_MACOS
@@ -46,12 +47,17 @@ NAMESPACE_SOUP
 					CFRelease((IOHIDDeviceRef)device);
 				}
 				device = other.device;
-				other.device = nullptr;
-				if (other.registered_callback)
-				{
-					uint8_t dummy;
-					IOHIDDeviceRegisterInputReportCallback((IOHIDDeviceRef)device, &dummy, 0, nullptr, nullptr);
-				}
+                                other.device = nullptr;
+                                if (other.registered_callback)
+                                {
+                                        uint8_t dummy;
+                                        IOHIDDeviceRegisterInputReportCallback((IOHIDDeviceRef)device, &dummy, 0, nullptr, nullptr);
+                                }
+                                run_loop = other.run_loop;
+                                read_thrd = other.read_thrd;
+                                got_a_report.store(other.got_a_report.load());
+                                other.run_loop = nullptr;
+                                other.read_thrd = {};
 #else
 				handle = std::move(other.handle);
 #endif
@@ -80,9 +86,9 @@ NAMESPACE_SOUP
 	#endif
 #endif
 				read_buffer = std::move(other.read_buffer);
-	#if SOUP_MACOS
-				got_a_report = other.got_a_report;
-	#endif
+#if SOUP_MACOS
+                                got_a_report.store(other.got_a_report.load());
+#endif
 			}
 			return *this;
 		}
@@ -104,24 +110,29 @@ NAMESPACE_SOUP
 		OVERLAPPED read_overlapped{};
 #else
 		std::unordered_set<uint8_t> report_ids{};
-		std::string manufacturer_name;
-		std::string product_name;
-		std::string serial_number;
-	#if !SOUP_MACOS
-		pthread_t read_thrd;
-		bool reading = false;
-	#endif
+                std::string manufacturer_name;
+                std::string product_name;
+                std::string serial_number;
+#if SOUP_MACOS
+                // Dedicated reader thread run loop
+                // Managed internally for macOS
+#else
+                pthread_t read_thrd;
+                bool reading = false;
+#endif
 #endif
 
 	private:
 #if SOUP_MACOS
-		void* device = nullptr; // IOHIDDeviceRef
-		bool registered_callback = false;
-		bool got_a_report = false;
+                void* device = nullptr; // IOHIDDeviceRef
+                bool registered_callback = false;
+                std::atomic_bool got_a_report{false};
+                CFRunLoopRef run_loop = nullptr;
+                pthread_t read_thrd{};
 #else
-		HandleRaii handle;
+                HandleRaii handle;
 #endif
-		Buffer<> read_buffer;
+                Buffer<> read_buffer;
 
 	public:
 		[[nodiscard]] static std::vector<hwHid> getAll();
@@ -186,21 +197,28 @@ NAMESPACE_SOUP
 		{
 			path.clear();
 #if SOUP_MACOS
-			if (device)
-			{
-				if (registered_callback)
-				{
-					IOHIDDeviceUnscheduleFromRunLoop((IOHIDDeviceRef)device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-					registered_callback = false;
-				}
-				IOHIDDeviceClose((IOHIDDeviceRef)device, kIOHIDOptionsTypeNone);
-				CFRelease((IOHIDDeviceRef)device);
-				device = nullptr;
-			}
+                        if (device)
+                        {
+                                if (registered_callback && run_loop)
+                                {
+                                        IOHIDDeviceUnscheduleFromRunLoop((IOHIDDeviceRef)device, run_loop, kCFRunLoopDefaultMode);
+                                        registered_callback = false;
+                                }
+                                IOHIDDeviceClose((IOHIDDeviceRef)device, kIOHIDOptionsTypeNone);
+                                CFRelease((IOHIDDeviceRef)device);
+                                device = nullptr;
+                        }
+                        if (run_loop)
+                        {
+                                CFRunLoopStop(run_loop);
+                                pthread_join(read_thrd, nullptr);
+                                run_loop = nullptr;
+                                read_thrd = {};
+                        }
 #else
-			handle = HandleRaii();
+                        handle = HandleRaii();
 #endif
-		}
+                }
 
 #if SOUP_MACOS
 		~hwHid()

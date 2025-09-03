@@ -58,6 +58,7 @@ using udev_device_get_sysattr_value_t = const char*(*)(udev_device*, const char*
 #include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <IOKit/IOKitLib.h>
+#include "os.hpp"
 #endif
 
 NAMESPACE_SOUP
@@ -643,18 +644,18 @@ NAMESPACE_SOUP
 			read_buffer.insert_front(1, 0);
 		}
 #elif SOUP_MACOS
-		if (!registered_callback)
-		{
-			kickOffRead();
-		}
-		while (!got_a_report)
-		{
-			CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, true);
-		}
-		got_a_report = false;
+                if (!registered_callback)
+                {
+                        kickOffRead();
+                }
+                while (!got_a_report.load(std::memory_order_acquire))
+                {
+                        os::sleep(1);
+                }
+                got_a_report.store(false, std::memory_order_release);
 #endif
-		return read_buffer;
-	}
+                return read_buffer;
+        }
 
 	// URB_INTERRUPT in
 	const Buffer<>& hwHid::receiveReportWithoutReportId() noexcept
@@ -820,20 +821,28 @@ NAMESPACE_SOUP
 		}
 	}
 #elif SOUP_MACOS
-	void hwHid::kickOffRead() noexcept
-	{
-		if (device)
-		{
-			registered_callback = true;
-			IOHIDDeviceRegisterInputReportCallback((IOHIDDeviceRef)device, read_buffer.data(), read_buffer.capacity(), [](void* context, IOReturn result, void* sender, IOHIDReportType type, uint32_t reportID, uint8_t* report, CFIndex reportLength)
-			{
-				static_cast<hwHid*>(context)->read_buffer.resize(reportLength);
-				static_cast<hwHid*>(context)->read_buffer.insert_front(1, reportID);
-				static_cast<hwHid*>(context)->got_a_report = true;
-			}, this);
-			IOHIDDeviceScheduleWithRunLoop((IOHIDDeviceRef)device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode); // Schedule with the current run loop so that callbacks are delivered
-		}
-	}
+        void hwHid::kickOffRead() noexcept
+        {
+                if (device && !registered_callback)
+                {
+                        registered_callback = true;
+                        IOHIDDeviceRegisterInputReportCallback((IOHIDDeviceRef)device, read_buffer.data(), read_buffer.capacity(), [](void* context, IOReturn result, void* sender, IOHIDReportType type, uint32_t reportID, uint8_t* report, CFIndex reportLength)
+                        {
+                                auto* self = static_cast<hwHid*>(context);
+                                self->read_buffer.resize(reportLength);
+                                self->read_buffer.insert_front(1, reportID);
+                                self->got_a_report.store(true, std::memory_order_release);
+                        }, this);
+                        pthread_create(&read_thrd, nullptr, [](void* ctx) -> void*
+                        {
+                                auto* self = static_cast<hwHid*>(ctx);
+                                self->run_loop = CFRunLoopGetCurrent();
+                                IOHIDDeviceScheduleWithRunLoop((IOHIDDeviceRef)self->device, self->run_loop, kCFRunLoopDefaultMode);
+                                CFRunLoopRun();
+                                return nullptr;
+                        }, this);
+                }
+        }
 #endif
 
 #if SOUP_WINDOWS
