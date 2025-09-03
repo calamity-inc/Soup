@@ -31,39 +31,8 @@ NAMESPACE_SOUP
 		hwHid(const hwHid&) = delete;
 		hwHid& operator=(const hwHid&) = delete;
 		hwHid(hwHid&& other) noexcept
-			: path(std::move(other.path))
-			, vendor_id(other.vendor_id)
-			, product_id(other.product_id)
-			, usage_page(other.usage_page)
-			, usage(other.usage)
-			, input_report_byte_length(other.input_report_byte_length)
-			, output_report_byte_length(other.output_report_byte_length)
-			, feature_report_byte_length(other.feature_report_byte_length)
-			, is_bluetooth(other.is_bluetooth)
-#if SOUP_WINDOWS
-			, pending_read(other.pending_read)
-			, disconnected(other.disconnected)
-			, bytes_read(other.bytes_read)
-			, read_overlapped(other.read_overlapped)
-			, handle(std::move(other.handle))
-#else
-			, report_ids(std::move(other.report_ids))
-			, manufacturer_name(std::move(other.manufacturer_name))
-			, product_name(std::move(other.product_name))
-			, serial_number(std::move(other.serial_number))
-			, read_thrd(other.read_thrd)
-			, reading(other.reading)
-#if SOUP_MACOS
-			, device(other.device)
-#else
-			, handle(std::move(other.handle))
-#endif
-#endif
-			, read_buffer(std::move(other.read_buffer))
 		{
-#if SOUP_MACOS
-			other.device = nullptr;
-#endif
+			operator=(std::move(other));
 		}
 
 		hwHid& operator=(hwHid&& other) noexcept
@@ -78,6 +47,11 @@ NAMESPACE_SOUP
 				}
 				device = other.device;
 				other.device = nullptr;
+				if (other.registered_callback)
+				{
+					uint8_t dummy;
+					IOHIDDeviceRegisterInputReportCallback((IOHIDDeviceRef)device, &dummy, 0, nullptr, nullptr);
+				}
 #else
 				handle = std::move(other.handle);
 #endif
@@ -100,10 +74,15 @@ NAMESPACE_SOUP
 				manufacturer_name = std::move(other.manufacturer_name);
 				product_name = std::move(other.product_name);
 				serial_number = std::move(other.serial_number);
+	#if !SOUP_MACOS
 				read_thrd = other.read_thrd;
 				reading = other.reading;
+	#endif
 #endif
 				read_buffer = std::move(other.read_buffer);
+	#if SOUP_MACOS
+				got_a_report = other.got_a_report;
+	#endif
 			}
 			return *this;
 		}
@@ -128,13 +107,17 @@ NAMESPACE_SOUP
 		std::string manufacturer_name;
 		std::string product_name;
 		std::string serial_number;
+	#if !SOUP_MACOS
 		pthread_t read_thrd;
 		bool reading = false;
+	#endif
 #endif
 
 	private:
 #if SOUP_MACOS
 		void* device = nullptr; // IOHIDDeviceRef
+		bool registered_callback = false;
+		bool got_a_report = false;
 #else
 		HandleRaii handle;
 #endif
@@ -222,7 +205,7 @@ NAMESPACE_SOUP
 #endif
 
 	private:
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS || SOUP_MACOS
 		void kickOffRead() noexcept;
 #endif
 

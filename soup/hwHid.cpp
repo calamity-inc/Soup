@@ -58,6 +58,7 @@ using udev_device_get_sysattr_value_t = const char*(*)(udev_device*, const char*
 #include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <IOKit/IOKitLib.h>
+#include "os.hpp"
 #endif
 
 NAMESPACE_SOUP
@@ -551,9 +552,13 @@ NAMESPACE_SOUP
 		pfd.revents = 0;
 		return poll(&pfd, 1, 0) != 0;
 #elif SOUP_MACOS
-		return device != nullptr;
+		if (!registered_callback)
+		{
+			kickOffRead();
+		}
+		return got_a_report;
 #else
-		return true;
+		return false;
 #endif
 	}
 
@@ -565,15 +570,7 @@ NAMESPACE_SOUP
 	// URB_INTERRUPT in
 	const Buffer<>& hwHid::receiveReport() noexcept
 	{
-#if SOUP_WINDOWS
-		SOUP_UNUSED(receiveReportWithReportId());
-		if (!read_buffer.empty()
-			&& read_buffer.at(0) == 0 // When a device uses report ids, `read` on Linux does prepend them, so to ensure we have the same result on both platforms, we only remove it on Windows when report ids are not being used.
-			)
-		{
-			read_buffer.erase(0, 1);
-		}
-#elif SOUP_LINUX
+#if SOUP_LINUX
 		if (!setup_sig_handler)
 		{
 			signal::handle(SIGUSR1, [](int)
@@ -587,21 +584,14 @@ NAMESPACE_SOUP
 		int bytes_read = ::read(handle, read_buffer.data(), read_buffer.capacity());
 		reading = false;
 		read_buffer.resize(bytes_read < 0 ? 0 : bytes_read);
-#elif SOUP_MACOS
-		if (!device)
+#else
+		SOUP_UNUSED(receiveReportWithReportId());
+		if (!read_buffer.empty()
+			&& read_buffer.at(0) == 0 // When a device uses report ids, `read` on Linux does prepend them, so to ensure we have the same result on all platforms, we only remove it when report ids are not being used.
+			)
 		{
-			read_buffer.clear();
-			return read_buffer;
+			read_buffer.erase(0, 1);
 		}
-		CFIndex len = input_report_byte_length;
-		if (len == 0)
-		{
-			len = 64;
-		}
-		read_buffer.resize(len);
-		IOHIDDeviceRef dev = (IOHIDDeviceRef)device;
-		IOReturn r = IOHIDDeviceGetReport(dev, kIOHIDReportTypeInput, 0, (uint8_t*)read_buffer.data(), &len);
-		read_buffer.resize(r == kIOReturnSuccess ? len : 0);
 #endif
 		return read_buffer;
 	}
@@ -609,16 +599,16 @@ NAMESPACE_SOUP
 	const Buffer<>& hwHid::receiveReport(uint8_t& out_report_id) noexcept
 	{
 		out_report_id = 0;
-#if SOUP_WINDOWS
-		SOUP_UNUSED(receiveReportWithReportId());
-		if (!read_buffer.empty())
+#if SOUP_LINUX
+		SOUP_UNUSED(receiveReport());
+		if (!report_ids.empty() && !read_buffer.empty())
 		{
 			out_report_id = read_buffer.at(0);
 			read_buffer.erase(0, 1);
 		}
 #else
-		SOUP_UNUSED(receiveReport());
-		if (!report_ids.empty() && !read_buffer.empty())
+		SOUP_UNUSED(receiveReportWithReportId());
+		if (!read_buffer.empty())
 		{
 			out_report_id = read_buffer.at(0);
 			read_buffer.erase(0, 1);
@@ -646,12 +636,22 @@ NAMESPACE_SOUP
 			pending_read = 0;
 		}
 		read_buffer.resize(bytes_read);
-#else
+#elif SOUP_LINUX
 		SOUP_UNUSED(receiveReport());
 		if (report_ids.empty())
 		{
 			read_buffer.insert_front(1, 0);
 		}
+#elif SOUP_MACOS
+		if (!registered_callback)
+		{
+			kickOffRead();
+		}
+		while (!got_a_report)
+		{
+			os::sleep(1);
+		}
+		got_a_report = false;
 #endif
 		return read_buffer;
 	}
@@ -659,18 +659,18 @@ NAMESPACE_SOUP
 	// URB_INTERRUPT in
 	const Buffer<>& hwHid::receiveReportWithoutReportId() noexcept
 	{
-#if SOUP_WINDOWS
-		SOUP_UNUSED(receiveReportWithReportId());
-		if (!read_buffer.empty())
-		{
-			read_buffer.erase(0, 1);
-		}
-#else
+#if SOUP_LINUX
 		SOUP_UNUSED(receiveReport());
 		if (input_report_byte_length != 0
 			&& !report_ids.empty()
 			&& !read_buffer.empty()
 			)
+		{
+			read_buffer.erase(0, 1);
+		}
+#else
+		SOUP_UNUSED(receiveReportWithReportId());
+		if (!read_buffer.empty())
 		{
 			read_buffer.erase(0, 1);
 		}
@@ -697,8 +697,6 @@ NAMESPACE_SOUP
 		{
 			pthread_kill(read_thrd, SIGUSR1);
 		}
-#elif SOUP_MACOS
-		// nothing
 #endif
 	}
 
@@ -819,6 +817,20 @@ NAMESPACE_SOUP
 				// Device was likely disconnected (ERROR_DEVICE_NOT_CONNECTED), in which case subsequent calls to ReadFile will block.
 				disconnected = true;
 			}
+		}
+	}
+#elif SOUP_MACOS
+	void hwHid::kickOffRead() noexcept
+	{
+		if (device)
+		{
+			registered_callback = true;
+			IOHIDDeviceRegisterInputReportCallback((IOHIDDeviceRef)device, read_buffer.data(), read_buffer.capacity(), [](void* context, IOReturn result, void* sender, IOHIDReportType type, uint32_t reportID, uint8_t* report, CFIndex reportLength)
+			{
+				static_cast<hwHid*>(context)->read_buffer.resize(reportLength);
+				static_cast<hwHid*>(context)->read_buffer.insert_front(1, reportID);
+				static_cast<hwHid*>(context)->got_a_report = true;
+			}, this);
 		}
 	}
 #endif
