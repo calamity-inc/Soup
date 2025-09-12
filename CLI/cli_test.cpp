@@ -1751,6 +1751,31 @@ static void unit_math_bigint()
 		assert("2"_b.getTrailingZeroesBinary() == 1);
 		assert(Bigint::_2pow(100).getTrailingZeroesBinary() == 100);
 	});
+
+	test("gcd", []
+	{
+		const auto zero = "0"_b;
+		const auto five = "5"_b;
+		const auto fifteen = "15"_b;
+		const auto twenty = "20"_b;
+		const auto minus_fifteen = "-15"_b;
+		const auto minus_twenty = "-20"_b;
+
+		assert(fifteen.gcd(twenty) == five);
+		assert(twenty.gcd(fifteen) == five);
+
+		// Zero operand
+		assert(zero.gcd(fifteen) == fifteen);
+		assert(fifteen.gcd(zero) == fifteen);
+
+		// Negative operand
+		assert(minus_fifteen.gcd(twenty) == five);
+		assert(minus_twenty.gcd(fifteen) == five);
+		assert(fifteen.gcd(minus_twenty) == five);
+		assert(twenty.gcd(minus_fifteen) == five);
+		assert(minus_fifteen.gcd(minus_twenty) == five);
+		assert(minus_twenty.gcd(minus_fifteen) == five);
+	});
 }
 
 static void unit_math()
