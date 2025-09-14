@@ -189,7 +189,7 @@ NAMESPACE_SOUP
 #endif
 
 #if SOUP_FFI_CALLBACK_AVAILABLE
-	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data)
+	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data) noexcept
 	{
 #if SOUP_X86
 		void* block = memGuard::alloc(sizeof(callback_bytes), memGuard::ACC_RWX);
@@ -227,7 +227,7 @@ NAMESPACE_SOUP
 #endif
 	}
 
-	void ffi::callbackFree(void* cb)
+	void ffi::callbackFree(void* cb) noexcept
 	{
 		return memGuard::free(cb, sizeof(callback_bytes));
 	}
