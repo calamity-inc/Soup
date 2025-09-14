@@ -193,28 +193,34 @@ NAMESPACE_SOUP
 	{
 #if SOUP_X86
 		void* block = memGuard::alloc(sizeof(callback_bytes), memGuard::ACC_RWX);
-		memcpy(block, callback_bytes, sizeof(callback_bytes));
+		SOUP_IF_LIKELY (block)
+		{
+			memcpy(block, callback_bytes, sizeof(callback_bytes));
 	#if SOUP_BITS == 32
-		*(void**)((uint8_t*)block + 0 + 1) = (void*)&callback_save_args;
-		*(void**)((uint8_t*)block + 7 + 4) = (void*)func;
-		*(uintptr_t*)((uint8_t*)block + 15 + 4) = user_data;
-		*(void**)((uint8_t*)block + 23 + 1) = (void*)&callback_finish;
+			*(void**)((uint8_t*)block + 0 + 1) = (void*)&callback_save_args;
+			*(void**)((uint8_t*)block + 7 + 4) = (void*)func;
+			*(uintptr_t*)((uint8_t*)block + 15 + 4) = user_data;
+			*(void**)((uint8_t*)block + 23 + 1) = (void*)&callback_finish;
 	#else
-		*(void**)((uint8_t*)block + 20 + 2) = (void*)func;
-		*(uintptr_t*)((uint8_t*)block + 30 + 2) = user_data;
-		*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_args;
-		*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
+			*(void**)((uint8_t*)block + 20 + 2) = (void*)func;
+			*(uintptr_t*)((uint8_t*)block + 30 + 2) = user_data;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_args;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
 	#endif
+		}
 		memGuard::setAllowedAccess(block, sizeof(callback_bytes), memGuard::ACC_READ | memGuard::ACC_EXEC);
 		return block;
 #elif SOUP_ARM && SOUP_BITS == 64
 		void* block = memGuard::alloc(sizeof(callback_bytes), memGuard::ACC_RWX);
-		memcpy(block, callback_bytes, sizeof(callback_bytes));
-		*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 4) = (void*)&callback_save_args;
-		*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 3) = (void*)func;
-		*(uintptr_t*)((uint8_t*)block + sizeof(callback_bytes) - 8 * 2) = user_data;
-		*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 1) = (void*)&callback_finish;
-		memGuard::setAllowedAccess(block, sizeof(callback_bytes), memGuard::ACC_READ | memGuard::ACC_EXEC);
+		SOUP_IF_LIKELY (block)
+		{
+			memcpy(block, callback_bytes, sizeof(callback_bytes));
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 4) = (void*)&callback_save_args;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 3) = (void*)func;
+			*(uintptr_t*)((uint8_t*)block + sizeof(callback_bytes) - 8 * 2) = user_data;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 1) = (void*)&callback_finish;
+			memGuard::setAllowedAccess(block, sizeof(callback_bytes), memGuard::ACC_READ | memGuard::ACC_EXEC);
+		}
 		return block;
 #else
 		return nullptr;
