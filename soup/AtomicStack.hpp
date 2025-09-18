@@ -22,7 +22,7 @@ NAMESPACE_SOUP
 
 		std::atomic<Node*> head = nullptr;
 
-		void emplace_front(Data&& data)
+		void emplace_front(Data data)
 		{
 			Node* node = new Node(std::move(data));
 			node->next = head.load();
