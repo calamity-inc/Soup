@@ -458,7 +458,9 @@ NAMESPACE_SOUP
 	{
 		if (negative ^ b.negative)
 		{
-			return branchless::trinary(negative, -1, +1);
+			bool both_zero = isZero();
+			both_zero &= b.isZero();
+			return branchless::trinary(negative, -1, +1) * !both_zero;
 		}
 		int factor = branchless::trinary(negative & b.negative, -1, +1);
 		if (getNumChunks() != b.getNumChunks())

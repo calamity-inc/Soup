@@ -1725,8 +1725,9 @@ static void unit_math_bigint()
 {
 	test("mixed positive-negative operands", []
 	{
-		const auto zero = Bigint::fromString("1", 1);
+		const auto zero = Bigint::fromString("0", 1);
 		const auto one = Bigint::fromString("1", 1);
+		const auto minus_zero = Bigint::fromString("-0", 2);
 		const auto minus_one = Bigint::fromString("-1", 2);
 		const auto minus_five = Bigint::fromString("-5", 2);
 
@@ -1744,6 +1745,8 @@ static void unit_math_bigint()
 		assert(minus_one < one);
 		assert(minus_five < one);
 		assert(minus_five < minus_one);
+
+		assert(minus_zero == zero);
 	});
 
 	test("getTrailingZeroesBinary", []
