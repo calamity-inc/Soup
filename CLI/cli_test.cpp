@@ -1743,6 +1743,7 @@ static void unit_math_bigint()
 		assert(minus_five < zero);
 		assert(minus_one < one);
 		assert(minus_five < one);
+		assert(minus_five < minus_one);
 	});
 
 	test("getTrailingZeroesBinary", []

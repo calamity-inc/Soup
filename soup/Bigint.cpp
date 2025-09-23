@@ -460,9 +460,10 @@ NAMESPACE_SOUP
 		{
 			return branchless::trinary(negative, -1, +1);
 		}
+		int factor = branchless::trinary(negative & b.negative, -1, +1);
 		if (getNumChunks() != b.getNumChunks())
 		{
-			return branchless::trinary(getNumChunks() > b.getNumChunks(), +1, -1);
+			return branchless::trinary(getNumChunks() > b.getNumChunks(), +1, -1) * factor;
 		}
 		size_t i = chunks.size();
 		while (i != 0)
@@ -470,7 +471,7 @@ NAMESPACE_SOUP
 			--i;
 			if (getChunkInbounds(i) != b.getChunkInbounds(i))
 			{
-				return branchless::trinary(getChunkInbounds(i) > b.getChunkInbounds(i), +1, -1);
+				return branchless::trinary(getChunkInbounds(i) > b.getChunkInbounds(i), +1, -1) * factor;
 			}
 		}
 		return 0;
@@ -699,7 +700,7 @@ NAMESPACE_SOUP
 
 	void Bigint::subUnsigned(const Bigint& subtrahend) noexcept
 	{
-		const auto cmp_res = cmp(subtrahend);
+		const auto cmp_res = cmpUnsigned(subtrahend);
 		if (cmp_res == 0)
 		{
 			reset();
