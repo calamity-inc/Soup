@@ -4,7 +4,7 @@
 
 NAMESPACE_SOUP
 {
-	char32_t unicode::utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept
+	char32_t unicode::utf8_to_utf32_char(const char*& it, const char* end) noexcept
 	{
 		uint8_t ch = *it++;
 		if (!UTF8_HAS_CONTINUATION(ch))
@@ -48,6 +48,14 @@ NAMESPACE_SOUP
 		return uni;
 	}
 
+	char32_t unicode::utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept
+	{
+		const char* c_it = &*it;
+		const auto res = utf8_to_utf32_char(c_it, &*end);
+		it += (c_it - &*it);
+		return res;
+	}
+
 #if SOUP_CPP20
 	std::u32string unicode::utf8_to_utf32(const char8_t* utf8) noexcept
 	{
@@ -59,8 +67,8 @@ NAMESPACE_SOUP
 	{
 		std::u32string utf32{};
 		utf32.reserve(utf8_char_len(utf8));
-		auto it = utf8.cbegin();
-		const auto end = utf8.cend();
+		auto it = utf8.data();
+		const auto end = it + utf8.size();
 		while (it != end)
 		{
 			utf32.push_back(utf8_to_utf32_char(it, end));
