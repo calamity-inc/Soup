@@ -517,6 +517,10 @@ static void unit_data()
 		std::string str = "\x19\x93\x0D";
 		unicode::utf8_sanitise(str);
 		assert(str == "\x19\xEF\xBF\xBD\x0D")
+
+		str = "\x19\xED\xA0\x80\x0D"; // U+0019 .. U+D800 .. U+000D
+		unicode::utf8_sanitise(str);
+		assert(str == "\x19\xEF\xBF\xBD\x0D")
 	});
 
 	test("punycode", []

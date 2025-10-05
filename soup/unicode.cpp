@@ -204,7 +204,8 @@ NAMESPACE_SOUP
 		for (auto it = str.cbegin(); it != str.cend(); )
 		{
 			const auto char_begin = it;
-			SOUP_IF_UNLIKELY (utf8_to_utf32_char(it, str.cend()) == REPLACEMENT_CHAR)
+			const auto uni = utf8_to_utf32_char(it, str.cend());
+			SOUP_IF_UNLIKELY (uni == REPLACEMENT_CHAR || (uni >= 0xD800 && uni <= 0xDFFF) || uni > 0x10FFFF)
 			{
 				const auto off = char_begin - str.cbegin();
 				str.erase(char_begin, it);
