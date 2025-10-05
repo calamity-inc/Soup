@@ -13,7 +13,7 @@ NAMESPACE_SOUP
 		{
 			return ch;
 		}
-		SOUP_IF_UNLIKELY (UTF8_IS_CONTINUATION(ch))
+		SOUP_IF_UNLIKELY (UTF8_IS_CONTINUATION(ch) || ch < 0xC2)
 		{
 			return REPLACEMENT_CHAR;
 		}
@@ -41,12 +41,12 @@ NAMESPACE_SOUP
 			uni <<= 6;
 			uni |= (ch & 0b111111);
 		}
-		/*SOUP_IF_UNLIKELY ((uni >= 0xD800 && uni <= 0xDFFF)
+		SOUP_IF_UNLIKELY ((uni >= 0xD800 && uni <= 0xDFFF)
 			|| uni > 0x10FFFF
 			)
 		{
 			return REPLACEMENT_CHAR;
-		}*/
+		}
 		return uni;
 	}
 
@@ -215,7 +215,7 @@ NAMESPACE_SOUP
 		{
 			const auto char_begin = it;
 			const auto uni = utf8_to_utf32_char(it, str.cend());
-			SOUP_IF_UNLIKELY (uni == REPLACEMENT_CHAR || (uni >= 0xD800 && uni <= 0xDFFF) || uni > 0x10FFFF)
+			SOUP_IF_UNLIKELY (uni == REPLACEMENT_CHAR)
 			{
 				const auto off = char_begin - str.cbegin();
 				str.erase(char_begin, it);
@@ -238,10 +238,6 @@ NAMESPACE_SOUP
 				{
 					continue;
 				}
-				return false;
-			}
-			SOUP_IF_UNLIKELY ((uni >= 0xD800 && uni <= 0xDFFF) || uni > 0x10FFFF)
-			{
 				return false;
 			}
 		}

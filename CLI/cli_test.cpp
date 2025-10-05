@@ -527,6 +527,11 @@ static void unit_data()
 		unicode::utf8_sanitise(str);
 		assert(str == "\x19\xEF\xBF\xBD\x0D");
 		assert(unicode::utf8_validate(str) == true);
+
+		assert(unicode::utf8_validate("\xC0\xA1") == false);
+		assert(unicode::utf8_validate("\xC1\xA1") == false);
+		assert(unicode::utf8_validate("\xE0\x90") == false);
+		assert(unicode::utf8_validate("\xF0\x80") == false);
 	});
 
 	test("punycode", []
