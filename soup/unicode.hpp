@@ -138,5 +138,7 @@ NAMESPACE_SOUP
 		}
 
 		static void utf8_sanitise(std::string& str);
+		static bool utf8_validate(const char* it, const char* const end);
+		static bool utf8_validate(const std::string& str) { return utf8_validate(str.data(), str.data() + str.size()); }
 	};
 }

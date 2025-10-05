@@ -1,5 +1,7 @@
 #include "unicode.hpp"
 
+#include <cstring> // memcmp
+
 #include "bitutil.hpp"
 
 NAMESPACE_SOUP
@@ -221,5 +223,28 @@ NAMESPACE_SOUP
 				it = str.cbegin() + off + 3;
 			}
 		}
+	}
+
+	bool unicode::utf8_validate(const char* it, const char* const end)
+	{
+		while (it != end)
+		{
+			const auto char_begin = it;
+			const auto uni = utf8_to_utf32_char(it, end);
+			SOUP_IF_UNLIKELY (uni == REPLACEMENT_CHAR)
+			{
+				const auto char_len = (it - char_begin);
+				if (char_len == 3 && memcmp(char_begin, "\xEF\xBF\xBD", 3) == 0)
+				{
+					continue;
+				}
+				return false;
+			}
+			SOUP_IF_UNLIKELY ((uni >= 0xD800 && uni <= 0xDFFF) || uni > 0x10FFFF)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }

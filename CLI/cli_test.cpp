@@ -514,13 +514,19 @@ static void unit_data()
 		assert(utf32.at(0) == unicode::REPLACEMENT_CHAR);
 		assert(utf32.at(1) == 0x41);
 
+		assert(unicode::utf8_validate("ABC") == true);
+
 		std::string str = "\x19\x93\x0D";
+		assert(unicode::utf8_validate(str) == false);
 		unicode::utf8_sanitise(str);
 		assert(str == "\x19\xEF\xBF\xBD\x0D");
+		assert(unicode::utf8_validate(str) == true);
 
 		str = "\x19\xED\xA0\x80\x0D"; // U+0019 .. U+D800 .. U+000D
+		assert(unicode::utf8_validate(str) == false);
 		unicode::utf8_sanitise(str);
 		assert(str == "\x19\xEF\xBF\xBD\x0D");
+		assert(unicode::utf8_validate(str) == true);
 	});
 
 	test("punycode", []
