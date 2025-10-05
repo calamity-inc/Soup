@@ -45,7 +45,7 @@ NAMESPACE_SOUP
 		static void sendResponse(Socket& s, const char* status, const std::string& headers_and_body);
 
 		// WebSocket
-		static void wsSendText(Socket& s, const std::string& data);
+		static void wsSendText(Socket& s, const std::string& data); // note that web browsers will drop the connection if invalid UTF-8 is received
 		static void wsSendBin(Socket& s, const std::string& data);
 		static void wsSend(Socket& s, const std::string& data, bool is_text);
 		static void wsSend(Socket& s, uint8_t opcode, const std::string& payload);
