@@ -122,8 +122,8 @@ NAMESPACE_SOUP
 							if (char_handler)
 							{
 								utf8_buf.push_back((char)irInBuf[i].Event.KeyEvent.uChar.UnicodeChar);
-								auto it = utf8_buf.cbegin();
-								const auto end = utf8_buf.cend();
+								const char* it = utf8_buf.data();
+								const char* const end = it + utf8_buf.size();
 								char32_t uni = unicode::utf8_to_utf32_char(it, end);
 								if (uni != 0)
 								{
