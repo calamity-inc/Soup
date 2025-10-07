@@ -25,7 +25,7 @@ foreach(scandir(__DIR__."/soup") as $file)
 		run_command_async("$clang -c ".__DIR__."/soup/$file.cpp -o ".__DIR__."/bin/int/$file.o -DSOUP_STANDALONE");
 		if ($file != "soup")
 		{
-			array_push($objects, escapeshellarg("bin/int/$file.o"));
+			array_push($objects, "bin/int/$file.o");
 		}
 	}
 }
@@ -45,19 +45,29 @@ else if (PHP_OS_FAMILY == "Darwin")
 {
 	$dllname = "libsoupbindings.dylib";
 }
-passthru("$archiver rc $libname ".join(" ", $objects));
+passthru("$archiver rc $libname ".join(" ", array_map("escapeshellarg", $objects)));
 
 if (file_exists("bin/int/soup.o"))
 {
 	echo "Linking shared lib...\n";
 	if (PHP_OS_FAMILY == "Darwin")
 	{
-		passthru("$clanglink -o $dllname -dynamiclib bin/int/soup.o ".join(" ", $objects));
+		passthru("$clanglink -o $dllname -dynamiclib bin/int/soup.o ".join(" ", array_map("escapeshellarg", $objects)));
 	}
 	else
 	{
-		passthru("$clanglink -o $dllname --shared bin/int/soup.o ".join(" ", $objects));
+		passthru("$clanglink -o $dllname --shared bin/int/soup.o ".join(" ", array_map("escapeshellarg", $objects)));
 	}
+}
+
+// We don't reuse these objects if run again, so might as well clean up.
+foreach ($objects as $object)
+{
+	unlink($object);
+}
+if (file_exists("bin/int/soup.o"))
+{
+	unlink("bin/int/soup.o");
 }
 
 chdir($cd);
