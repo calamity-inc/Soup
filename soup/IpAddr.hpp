@@ -175,7 +175,7 @@ NAMESPACE_SOUP
 		}
 
 		// Checks for [::] and 0.0.0.0
-		[[nodiscard]] constexpr bool isZero() const noexcept
+		[[nodiscard]] bool isZero() const noexcept
 		{
 			if (isV4())
 			{
