@@ -228,6 +228,18 @@ NAMESPACE_SOUP
 			return toString6();
 		}
 
+		[[nodiscard]] std::string toStringForAddr() const noexcept
+		{
+			if (isV4())
+			{
+				return toString4();
+			}
+			std::string str(1, '[');
+			str.append(toString6());
+			str.push_back(']');
+			return str;
+		}
+
 		[[nodiscard]] std::string toString4() const noexcept
 		{
 			char buf[INET_ADDRSTRLEN] = { '\0' };
