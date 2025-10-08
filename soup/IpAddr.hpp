@@ -174,8 +174,13 @@ NAMESPACE_SOUP
 			memset(&data, 0, sizeof(data));
 		}
 
+		// Checks for [::] and 0.0.0.0
 		[[nodiscard]] constexpr bool isZero() const noexcept
 		{
+			if (isV4())
+			{
+				return getV4() == 0;
+			}
 			for (const auto& s : shorts)
 			{
 				if (s != 0)
