@@ -6,8 +6,10 @@
 
 #if SOUP_WASM
 #include "dnsHttpResolver.hpp"
-#else
+#elif SOUP_ANDROID
 #include "dnsSmartResolver.hpp"
+#else
+#include "dnsOsResolver.hpp"
 #endif
 
 NAMESPACE_SOUP
@@ -65,11 +67,19 @@ NAMESPACE_SOUP
 	{
 #if SOUP_WASM
 		return soup::make_shared<dnsHttpResolver>();
-#else
-		// Reasons for not defaulting to dnsOsResolver:
-		// - Android doesn't have libresolv
-		// - Many ISPs provide disingenuous DNS servers, even blocking sites like pastebin.com
+#elif SOUP_ANDROID
+		// Pros:
+		// - Doesn't rely on libresolv (which Android doesn't have)
+		// Cons:
+		// - Might not work for Chinese users (https://github.com/net4people/bbs/issues/295#issuecomment-2700908050)
 		return soup::make_shared<dnsSmartResolver>();
+#else
+		// Pros:
+		// - Fast responses (thanks to caching and using UDP in most cases)
+		// - Works as expected in Docker in regards to talking to other containers by name
+		// Cons:
+		// - Many ISPs provide disingenuous DNS servers, even blocking sites like pastebin.com
+		return soup::make_shared<dnsOsResolver>();
 #endif
 	}
 
