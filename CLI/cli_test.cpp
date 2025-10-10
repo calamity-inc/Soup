@@ -61,6 +61,9 @@
 #include <Bigint.hpp>
 #include <math.hpp>
 
+// net.dns.resolver
+#include <dnsResolver.hpp>
+
 // net.email
 #include <EmailAddress.hpp>
 
@@ -1973,6 +1976,15 @@ static void test_uri()
 	assert(uri.getRequestPath() == "/translate_a/t?client=dict-chrome-ex&sl=auto&tl=zh-CN&q=How+are+you%3F");
 }
 
+static void test_dns()
+{
+	auto dr = dnsResolver::makeDefault();
+	assert(dr);
+	auto res = dr->lookupIPv4("localhost");
+	assert(res.size() == 1);
+	assert(res[0].toString() == "127.0.0.1");
+}
+
 static void test_socket_raii_semantics()
 {
 	Socket s;
@@ -2243,6 +2255,7 @@ void cli_test()
 		}
 		unit("net")
 		{
+			test("dns", &test_dns);
 			unit("email")
 			{
 				unit_net_email();
