@@ -1795,6 +1795,11 @@ static void unit_math_bigint()
 		assert(minus_fifteen.gcd(minus_twenty) == five);
 		assert(minus_twenty.gcd(minus_fifteen) == five);
 	});
+
+	test("<<", []
+	{
+		assert(("2910383045673370361328125"_b << (size_t)33) == "25000000000000000000000000000000000"_b);
+	});
 }
 
 static void unit_math()
