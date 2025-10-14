@@ -1601,7 +1601,6 @@
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="gmText.cpp" />
     <ClCompile Include="hwHid.cpp" />
-    <ClCompile Include="tunables.cpp" />
     <ClCompile Include="Uuid.cpp" />
     <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="VirtualFilesystem.cpp" />

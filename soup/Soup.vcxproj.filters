@@ -2492,9 +2492,6 @@
     <ClCompile Include="spaceship.cpp">
       <Filter>util\polyfill</Filter>
     </ClCompile>
-    <ClCompile Include="tunables.cpp">
-      <Filter>util\config</Filter>
-    </ClCompile>
     <ClCompile Include="GarbageCollector.cpp">
       <Filter>mem</Filter>
     </ClCompile>
