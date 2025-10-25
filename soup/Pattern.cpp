@@ -10,7 +10,6 @@ NAMESPACE_SOUP
 	Pattern::Pattern(const CompiletimePatternWithOptBytesBase& sig)
 		: bytes(sig.getVec())
 	{
-		computeMostUniqueByteIndex();
 	}
 
 	Pattern::Pattern(const std::string& str)
@@ -87,8 +86,6 @@ NAMESPACE_SOUP
 				bytes.emplace_back(std::nullopt);
 			}
 		}
-
-		computeMostUniqueByteIndex();
 	}
 
 	Pattern::Pattern(const char* bin, const char* mask)
@@ -106,8 +103,28 @@ NAMESPACE_SOUP
 				bytes.emplace_back(reinterpret_cast<const uint8_t*>(bin)[i]);
 			}
 		}
+	}
 
-		computeMostUniqueByteIndex();
+	std::string Pattern::toString() const SOUP_EXCAL
+	{
+		std::string str;
+		for (const auto& b : bytes)
+		{
+			if (b.has_value())
+			{
+				str.append(string::lpad(string::hex(b.value()), 2, '0'));
+			}
+			else
+			{
+				str.push_back('?');
+			}
+			str.push_back(' ');
+		}
+		if (!str.empty())
+		{
+			str.pop_back();
+		}
+		return str;
 	}
 
 #if SOUP_X86 && SOUP_BITS == 64
@@ -133,9 +150,9 @@ NAMESPACE_SOUP
 	};
 #endif
 
-	void Pattern::computeMostUniqueByteIndex()
-	{
 #if SOUP_X86 && SOUP_BITS == 64
+	size_t Pattern::getMostUniqueByteIndex() const noexcept
+	{
 		size_t best_index = 0;
 		uint8_t best_score = 0xFF;
 		for (size_t i = 0; i != bytes.size(); ++i)
@@ -150,29 +167,7 @@ NAMESPACE_SOUP
 				}
 			}
 		}
-		most_unique_byte_index = best_index;
+		return best_index;
+	}
 #endif
-	}
-
-	std::string Pattern::toString() const SOUP_EXCAL
-	{
-		std::string str;
-		for (const auto& b : bytes)
-		{
-			if (b.has_value())
-			{
-				str.append(string::lpad(string::hex(b.value()), 2, '0'));
-			}
-			else
-			{
-				str.push_back('?');
-			}
-			str.push_back(' ');
-		}
-		if (!str.empty())
-		{
-			str.pop_back();
-		}
-		return str;
-	}
 }

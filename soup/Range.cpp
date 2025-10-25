@@ -54,20 +54,21 @@ NAMESPACE_SOUP
 			return 0;
 		}
 #if SOUP_X86 && SOUP_BITS == 64
-		SOUP_IF_LIKELY (data[sig.most_unique_byte_index].has_value())
+		const size_t most_unique_byte_index = sig.getMostUniqueByteIndex();
+		SOUP_IF_LIKELY (data[most_unique_byte_index].has_value())
 		{
 			const CpuInfo& cpuinfo = CpuInfo::get();
 			if (cpuinfo.supportsAVX512F() && cpuinfo.supportsAVX512BW())
 			{
-				return scanWithMultipleResultsAvx512(sig, buf, buflen);
+				return scanWithMultipleResultsAvx512(sig, buf, buflen, most_unique_byte_index);
 			}
 			if (cpuinfo.supportsAVX2())
 			{
-				return scanWithMultipleResultsAvx2(sig, buf, buflen);
+				return scanWithMultipleResultsAvx2(sig, buf, buflen, most_unique_byte_index);
 			}
 			if (cpuinfo.supportsSSE2())
 			{
-				return scanWithMultipleResultsSimd(sig, buf, buflen);
+				return scanWithMultipleResultsSimd(sig, buf, buflen, most_unique_byte_index);
 			}
 		}
 #endif
@@ -87,21 +88,21 @@ NAMESPACE_SOUP
 	}
 
 #if SOUP_X86 && SOUP_BITS == 64
-	size_t Range::scanWithMultipleResultsSimd(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept
+	size_t Range::scanWithMultipleResultsSimd(const Pattern& sig, Pointer buf[], size_t buflen, size_t most_unique_byte_index) const noexcept
 	{
 		const auto data = sig.bytes.data();
 		const auto length = sig.bytes.size();
-		const auto match = _mm_set1_epi8(*data[sig.most_unique_byte_index]);
+		const auto match = _mm_set1_epi8(*data[most_unique_byte_index]);
 		size_t accum = 0;
-		for (uintptr_t i = sig.most_unique_byte_index; i < (size - length - 15); i += 16)
+		for (uintptr_t i = most_unique_byte_index; i < (size - length - 15); i += 16)
 		{
 			uint32_t mask = _mm_movemask_epi8(_mm_cmpeq_epi8(match, _mm_loadu_si128(base.add(i).as<const __m128i*>())));
 			while (mask != 0)
 			{
 				const auto j = bitutil::getLeastSignificantSetBit(mask);
-				if (pattern_matches(base.add(i).add(j).sub(sig.most_unique_byte_index).as<uint8_t*>(), data, length))
+				if (pattern_matches(base.add(i).add(j).sub(most_unique_byte_index).as<uint8_t*>(), data, length))
 				{
-					buf[accum++] = base.add(i).add(j).sub(sig.most_unique_byte_index);
+					buf[accum++] = base.add(i).add(j).sub(most_unique_byte_index);
 					if (accum == buflen)
 					{
 						return buflen;
@@ -118,21 +119,21 @@ NAMESPACE_SOUP
 #if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("avx2")))
 #endif
-	size_t Range::scanWithMultipleResultsAvx2(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept
+	size_t Range::scanWithMultipleResultsAvx2(const Pattern& sig, Pointer buf[], size_t buflen, size_t most_unique_byte_index) const noexcept
 	{
 		const auto data = sig.bytes.data();
 		const auto length = sig.bytes.size();
-		const auto match = _mm256_set1_epi8(*data[sig.most_unique_byte_index]);
+		const auto match = _mm256_set1_epi8(*data[most_unique_byte_index]);
 		size_t accum = 0;
-		for (uintptr_t i = sig.most_unique_byte_index; i < (size - length - 31); i += 32)
+		for (uintptr_t i = most_unique_byte_index; i < (size - length - 31); i += 32)
 		{
 			uint32_t mask = _mm256_movemask_epi8(_mm256_cmpeq_epi8(match, _mm256_loadu_si256(base.add(i).as<const __m256i*>())));
 			while (mask != 0)
 			{
 				const auto j = bitutil::getLeastSignificantSetBit(mask);
-				if (pattern_matches(base.add(i).add(j).sub(sig.most_unique_byte_index).as<uint8_t*>(), data, length))
+				if (pattern_matches(base.add(i).add(j).sub(most_unique_byte_index).as<uint8_t*>(), data, length))
 				{
-					buf[accum++] = base.add(i).add(j).sub(sig.most_unique_byte_index);
+					buf[accum++] = base.add(i).add(j).sub(most_unique_byte_index);
 					if (accum == buflen)
 					{
 						return buflen;
@@ -147,21 +148,21 @@ NAMESPACE_SOUP
 #if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("avx512f,avx512bw")))
 #endif
-	size_t Range::scanWithMultipleResultsAvx512(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept
+	size_t Range::scanWithMultipleResultsAvx512(const Pattern& sig, Pointer buf[], size_t buflen, size_t most_unique_byte_index) const noexcept
 	{
 		const auto data = sig.bytes.data();
 		const auto length = sig.bytes.size();
-		const auto match = _mm512_set1_epi8(*data[sig.most_unique_byte_index]);
+		const auto match = _mm512_set1_epi8(*data[most_unique_byte_index]);
 		size_t accum = 0;
-		for (uintptr_t i = sig.most_unique_byte_index; i < (size - length - 63); i += 64)
+		for (uintptr_t i = most_unique_byte_index; i < (size - length - 63); i += 64)
 		{
 			uint64_t mask = _mm512_cmpeq_epi8_mask(match, _mm512_loadu_si512(base.add(i).as<const __m512i*>()));
 			while (mask != 0)
 			{
 				const auto j = bitutil::getLeastSignificantSetBit(mask);
-				if (pattern_matches(base.add(i).add(j).sub(sig.most_unique_byte_index).as<uint8_t*>(), data, length))
+				if (pattern_matches(base.add(i).add(j).sub(most_unique_byte_index).as<uint8_t*>(), data, length))
 				{
-					buf[accum++] = base.add(i).add(j).sub(sig.most_unique_byte_index);
+					buf[accum++] = base.add(i).add(j).sub(most_unique_byte_index);
 					if (accum == buflen)
 					{
 						return buflen;
