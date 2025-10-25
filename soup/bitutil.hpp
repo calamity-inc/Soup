@@ -120,30 +120,57 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static unsigned int getNumTrailingZeros(uint16_t mask) noexcept
 		{
+#if defined(_MSC_VER)
+			unsigned long ret;
+			if (_BitScanForward(&ret, static_cast<uint32_t>(mask)) == 0)
+			{
+				ret = sizeof(mask) * 8;
+			}
+			return ret;
+#else
 			if (mask != 0)
 			{
 				return getLeastSignificantSetBit(mask);
 			}
 			return sizeof(mask) * 8;
+#endif
 		}
 
 		[[nodiscard]] static unsigned int getNumTrailingZeros(uint32_t mask) noexcept
 		{
+#if defined(_MSC_VER)
+			unsigned long ret;
+			if (_BitScanForward(&ret, mask) == 0)
+			{
+				ret = sizeof(mask) * 8;
+			}
+			return ret;
+#else
 			if (mask != 0)
 			{
 				return getLeastSignificantSetBit(mask);
 			}
 			return sizeof(mask) * 8;
+#endif
 		}
 
 #if SOUP_BITS >= 64
 		[[nodiscard]] static unsigned int getNumTrailingZeros(uint64_t mask) noexcept
 		{
+	#if defined(_MSC_VER)
+				unsigned long ret;
+				if (_BitScanForward64(&ret, mask) == 0)
+				{
+					ret = sizeof(mask) * 8;
+				}
+				return ret;
+	#else
 			if (mask != 0)
 			{
 				return getLeastSignificantSetBit(mask);
 			}
 			return sizeof(mask) * 8;
+	#endif
 		}
 #endif
 
