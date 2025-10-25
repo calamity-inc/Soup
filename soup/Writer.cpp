@@ -6,9 +6,10 @@ NAMESPACE_SOUP
 	{
 		bool ret = true;
 		uint64_t in = v;
+		uint8_t cur;
 		for (uint8_t i = 0; i != 8; ++i)
 		{
-			uint8_t cur = (in & 0x7f);
+			cur = (in & 0x7f);
 			in >>= 7;
 			if (in != 0)
 			{
@@ -21,11 +22,8 @@ NAMESPACE_SOUP
 				return ret;
 			}
 		}
-		if (in != 0)
-		{
-			auto byte = (uint8_t)in;
-			ret &= u8(byte);
-		}
+		cur = (uint8_t)in;
+		ret &= u8(cur);
 		return ret;
 	}
 
@@ -65,11 +63,8 @@ NAMESPACE_SOUP
 				return ret;
 			}
 		}
-		if (cur >> 7) // Last byte indicated another one would follow?
-		{
-			cur = (uint8_t)in;
-			ret &= u8(cur);
-		}
+		cur = (uint8_t)in;
+		ret &= u8(cur);
 		return ret;
 	}
 
