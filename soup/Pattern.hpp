@@ -21,6 +21,8 @@ NAMESPACE_SOUP
 		Pattern(const char* str, size_t len);
 		Pattern(const char* bin, const char* mask);
 
+		[[nodiscard]] bool matches(uint8_t* target) const noexcept; // target must have a size of at least `bytes.size()`
+
 		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 
 #if SOUP_X86 && SOUP_BITS == 64

@@ -105,6 +105,29 @@ NAMESPACE_SOUP
 		}
 	}
 
+	bool Pattern::matches(uint8_t* target) const noexcept
+	{
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
+		__try
+		{
+#endif
+			for (size_t i = 0; i != bytes.size(); ++i)
+			{
+				if (bytes[i] && *bytes[i] != target[i])
+				{
+					return false;
+				}
+			}
+			return true;
+#if SOUP_WINDOWS && !SOUP_CROSS_COMPILE
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+		}
+		return false;
+#endif
+	}
+
 	std::string Pattern::toString() const SOUP_EXCAL
 	{
 		std::string str;
