@@ -25,16 +25,9 @@ NAMESPACE_SOUP
 				const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
 				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-				//const uint64_t mask = ((1ull << (8 * byte_length))) - 1;
-				const __m128i indices = _mm_setr_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-				__m128i limit = _mm_set1_epi8((char)byte_length);
-				__m128i cmp = _mm_subs_epu8(limit, indices);
-				__m128i mask = _mm_cmpeq_epi8(_mm_setzero_si128(), _mm_cmpeq_epi8(cmp, _mm_setzero_si128()));
-				// mask = _mm_cmpgt_epi8(limit, indices); if using SSE4.1
-				e = _mm_and_si128(e, mask);
-
-				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e), 0x7f7f'7f7f'7f7f'7f7full);
-				uint64_t hi = _mm_extract_epi64(e, 1);
+				const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
+				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+				uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
 				v = (hi << 56) | lo;
 
 				seek((getPosition() - 9) + byte_length);
@@ -87,16 +80,9 @@ NAMESPACE_SOUP
 				const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
 				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-				//const uint64_t mask = ((1ull << (8 * byte_length))) - 1;
-				const __m128i indices = _mm_setr_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-				__m128i limit = _mm_set1_epi8((char)byte_length);
-				__m128i cmp = _mm_subs_epu8(limit, indices);
-				__m128i mask = _mm_cmpeq_epi8(_mm_setzero_si128(), _mm_cmpeq_epi8(cmp, _mm_setzero_si128()));
-				// mask = _mm_cmpgt_epi8(limit, indices); if using SSE4.1
-				e = _mm_and_si128(e, mask);
-
-				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e), 0x7f7f'7f7f'7f7f'7f7full);
-				uint64_t hi = _mm_extract_epi64(e, 1);
+				const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
+				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+				uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
 				v = (hi << 56) | lo;
 
 				// v2
