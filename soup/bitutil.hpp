@@ -158,12 +158,12 @@ NAMESPACE_SOUP
 		[[nodiscard]] static unsigned int getNumTrailingZeros(uint64_t mask) noexcept
 		{
 	#if defined(_MSC_VER)
-				unsigned long ret;
-				if (_BitScanForward64(&ret, mask) == 0)
-				{
-					ret = sizeof(mask) * 8;
-				}
-				return ret;
+			unsigned long ret;
+			if (_BitScanForward64(&ret, mask) == 0)
+			{
+				ret = sizeof(mask) * 8;
+			}
+			return ret;
 	#else
 			if (mask != 0)
 			{
