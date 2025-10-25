@@ -88,7 +88,7 @@ NAMESPACE_SOUP
 				// v2
 				const auto addbits = (byte_length >= 2) * (byte_length - 1);
 				const auto addmask = ((1u << addbits) - 1u);
-				v += _pdep_u64(contbits & addmask, 0x0002040810204081ull) << 7;
+				v += _pdep_u64(addmask, 0x0002040810204081ull) << 7;
 
 				seek((getPosition() - 9) + byte_length);
 				return true;

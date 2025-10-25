@@ -66,8 +66,31 @@ NAMESPACE_SOUP
 		return u64_dyn(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
+#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
+	__attribute__((target("bmi2")))
+#endif
 	bool Writer::u64_dyn_v2(const uint64_t& v) noexcept
 	{
+#if SOUP_X86 && SOUP_BITS == 64
+		if (CpuInfo::get().supportsBMI2())
+		{
+			const auto byte_length = 1 + (v >= (1ull << 7)) + (v >= (1ull << 14)) + (v >= (1ull << 21)) + (v >= (1ull << 28)) + (v >= (1ull << 35)) + (v >= (1ull << 42)) + (v >= (1ull << 49)) + (v >= (1ull << 56));
+
+			const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
+			const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
+
+			// v2
+			const auto subbits = (byte_length >= 2) * (byte_length - 1);
+			const auto submask = ((1u << subbits) - 1u);
+			uint64_t w = v - (_pdep_u64(submask, 0x0002040810204081ull) << 7);
+
+			uint64_t e[2];
+			e[0] = _pdep_u64(w, 0x7f7f'7f7f'7f7f'7f7full) | contbits;
+			e[1] = w >> 56;
+
+			return raw(e, byte_length);
+		}
+#endif
 		bool ret = true;
 		uint64_t in = v;
 		uint8_t cur;
