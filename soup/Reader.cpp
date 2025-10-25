@@ -10,7 +10,7 @@
 
 NAMESPACE_SOUP
 {
-#if defined(__GNUC__) || defined(__clang__)
+#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
 	__attribute__((target("bmi2")))
 #endif
 	bool Reader::u64_dyn(uint64_t& v) noexcept
@@ -72,7 +72,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-#if defined(__GNUC__) || defined(__clang__)
+#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
 	__attribute__((target("bmi2")))
 #endif
 	bool Reader::u64_dyn_v2(uint64_t& v) noexcept
