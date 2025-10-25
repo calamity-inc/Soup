@@ -1,9 +1,33 @@
 #include "Writer.hpp"
 
+#if SOUP_X86 && SOUP_BITS == 64
+#include <immintrin.h> // _pdep_u64
+
+#include "CpuInfo.hpp"
+#endif
+
 NAMESPACE_SOUP
 {
+#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
+	__attribute__((target("bmi2")))
+#endif
 	bool Writer::u64_dyn(const uint64_t& v) noexcept
 	{
+#if SOUP_X86 && SOUP_BITS == 64
+		if (CpuInfo::get().supportsBMI2())
+		{
+			const auto byte_length = 1 + (v >= (1ull << 7)) + (v >= (1ull << 14)) + (v >= (1ull << 21)) + (v >= (1ull << 28)) + (v >= (1ull << 35)) + (v >= (1ull << 42)) + (v >= (1ull << 49)) + (v >= (1ull << 56));
+
+			const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
+			const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
+
+			uint64_t e[2];
+			e[0] = _pdep_u64(v, 0x7f7f'7f7f'7f7f'7f7full) | contbits;
+			e[1] = v >> 56;
+
+			return raw(e, byte_length);
+		}
+#endif
 		bool ret = true;
 		uint64_t in = v;
 		uint8_t cur;

@@ -1303,6 +1303,7 @@ static void unit_io()
 			{ 0x80, "\x80\x01", 2 },
 			{ 1337, "\xB9\x0A", 2 },
 			{ 42069, "\xD5\xC8\x02", 3 },
+			{ 0x123456789ABCDE, "\xDE\xF9\xEA\xC4\xE7\x8A\x8D\x09", 8 }, // Possible oopsie with vectorisation
 			{ 0xffffffffffffffff, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9 },
 			{ 0x8000000000000000, "\x80\x80\x80\x80\x80\x80\x80\x80\x80", 9 },
 		};
@@ -1364,7 +1365,7 @@ static void unit_io()
 			{ 0x80, "\x80\x00", 2 },
 			{ 1337, "\xB9\x09", 2 },
 			{ 42069, "\xD5\xC7\x01", 3 },
-			{ 0x123456789ABCDE, "\xDE\xF8\xE9\xC3\xE6\x89\x8C\x08", 8 },
+			{ 0x123456789ABCDE, "\xDE\xF8\xE9\xC3\xE6\x89\x8C\x08", 8 }, // Possible oopsie with vectorisation
 			{ 0x123456789ABCDEF, "\xEF\x9A\xAE\xCC\xF7\xAB\xD0\x90\x00", 9 },
 			{ 0xffffffffffffffff, "\xFF\xFE\xFE\xFE\xFE\xFE\xFE\xFE\xFE", 9 },
 			{ 0x8000000000000000, "\x80\xFF\xFE\xFE\xFE\xFE\xFE\xFE\x7E", 9 },
