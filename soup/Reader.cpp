@@ -22,7 +22,8 @@ NAMESPACE_SOUP
 			__m128i e;
 			if (raw(&e, 9))
 			{
-				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~(static_cast<uint32_t>(_mm_movemask_epi8(e)) & 0xff));
+				const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
+				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
 				//const uint64_t mask = ((1ull << (8 * byte_length))) - 1;
 				const __m128i indices = _mm_setr_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
@@ -30,12 +31,10 @@ NAMESPACE_SOUP
 				__m128i cmp = _mm_subs_epu8(limit, indices);
 				__m128i mask = _mm_cmpeq_epi8(_mm_setzero_si128(), _mm_cmpeq_epi8(cmp, _mm_setzero_si128()));
 				// mask = _mm_cmpgt_epi8(limit, indices); if using SSE4.1
-
 				e = _mm_and_si128(e, mask);
 
 				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e), 0x7f7f'7f7f'7f7f'7f7full);
 				uint64_t hi = _mm_extract_epi64(e, 1);
-
 				v = (hi << 56) | lo;
 
 				seek((getPosition() - 9) + byte_length);
@@ -73,9 +72,43 @@ NAMESPACE_SOUP
 		return true;
 	}
 
+#if defined(__GNUC__) || defined(__clang__)
+	__attribute__((target("bmi2")))
+#endif
 	bool Reader::u64_dyn_v2(uint64_t& v) noexcept
 	{
 		v = 0;
+#if SOUP_X86 && SOUP_BITS == 64
+		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
+		{
+			__m128i e;
+			if (raw(&e, 9))
+			{
+				const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
+				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+
+				//const uint64_t mask = ((1ull << (8 * byte_length))) - 1;
+				const __m128i indices = _mm_setr_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+				__m128i limit = _mm_set1_epi8((char)byte_length);
+				__m128i cmp = _mm_subs_epu8(limit, indices);
+				__m128i mask = _mm_cmpeq_epi8(_mm_setzero_si128(), _mm_cmpeq_epi8(cmp, _mm_setzero_si128()));
+				// mask = _mm_cmpgt_epi8(limit, indices); if using SSE4.1
+				e = _mm_and_si128(e, mask);
+
+				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e), 0x7f7f'7f7f'7f7f'7f7full);
+				uint64_t hi = _mm_extract_epi64(e, 1);
+				v = (hi << 56) | lo;
+
+				// v2
+				const auto addbits = (byte_length >= 2) * (byte_length - 1);
+				const auto addmask = ((1u << addbits) - 1u);
+				v += _pdep_u64(contbits & addmask, 0x0002040810204081ull) << 7;
+
+				seek((getPosition() - 9) + byte_length);
+				return true;
+			}
+		}
+#endif
 		uint8_t b;
 		uint8_t bits = 0;
 		for (uint8_t i = 0; i != 8; ++i)

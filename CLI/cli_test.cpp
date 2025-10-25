@@ -1364,6 +1364,7 @@ static void unit_io()
 			{ 0x80, "\x80\x00", 2 },
 			{ 1337, "\xB9\x09", 2 },
 			{ 42069, "\xD5\xC7\x01", 3 },
+			{ 0x123456789ABCDE, "\xDE\xF8\xE9\xC3\xE6\x89\x8C\x08", 8 },
 			{ 0x123456789ABCDEF, "\xEF\x9A\xAE\xCC\xF7\xAB\xD0\x90\x00", 9 },
 			{ 0xffffffffffffffff, "\xFF\xFE\xFE\xFE\xFE\xFE\xFE\xFE\xFE", 9 },
 			{ 0x8000000000000000, "\x80\xFF\xFE\xFE\xFE\xFE\xFE\xFE\x7E", 9 },
@@ -1378,6 +1379,21 @@ static void unit_io()
 			uint64_t readback;
 			assert(sr.u64_dyn_v2(readback));
 			assert(readback == pair.v);
+		}
+		// Ensure we hit the vectorised code for all test cases
+		{
+			StringWriter sw;
+			for (auto& pair : pairs)
+			{
+				sw.u64_dyn_v2(pair.v);
+			}
+			MemoryRefReader sr(sw.data);
+			uint64_t readback = 0;
+			for (auto& pair : pairs)
+			{
+				assert(sr.u64_dyn_v2(readback));
+				assert(readback == pair.v);
+			}
 		}
 	});
 	test("i64_dyn_v2", []
