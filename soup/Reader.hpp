@@ -6,6 +6,8 @@
 
 #include "fwd.hpp"
 
+#include "bitutil.hpp"
+
 NAMESPACE_SOUP
 {
 	class Reader : public ioBase<true>
@@ -90,6 +92,10 @@ NAMESPACE_SOUP
 			}
 			return false;
 		}
+#if SOUP_X86 && SOUP_BITS == 64
+		bool oml(uint32_t& v) noexcept;
+		bool oml(uint64_t& v) noexcept;
+#endif
 
 		// Signed LEB128.
 		template <typename Int>

@@ -15,7 +15,6 @@ NAMESPACE_SOUP
 #endif
 	bool Reader::u64_dyn(uint64_t& v) noexcept
 	{
-		v = 0;
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
@@ -35,6 +34,7 @@ NAMESPACE_SOUP
 			}
 		}
 #endif
+		v = 0;
 		uint8_t b;
 		uint8_t bits = 0;
 		for (uint8_t i = 0; i != 8; ++i)
@@ -70,7 +70,6 @@ NAMESPACE_SOUP
 #endif
 	bool Reader::u64_dyn_v2(uint64_t& v) noexcept
 	{
-		v = 0;
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
@@ -95,6 +94,7 @@ NAMESPACE_SOUP
 			}
 		}
 #endif
+		v = 0;
 		uint8_t b;
 		uint8_t bits = 0;
 		for (uint8_t i = 0; i != 8; ++i)
@@ -129,4 +129,55 @@ NAMESPACE_SOUP
 		}
 		return true;
 	}
+
+#if SOUP_X86 && SOUP_BITS == 64
+	#if defined(__GNUC__) || defined(__clang__)
+	__attribute__((target("bmi2")))
+	#endif
+	bool Reader::oml(uint32_t& v) noexcept
+	{
+		if (CpuInfo::get().supportsSSE() && CpuInfo::get().supportsBMI2())
+		{
+			__m64 e;
+			if (raw(&e, 5))
+			{
+				const uint32_t contbits = _mm_movemask_pi8(e) & 0xf;
+				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+
+				const uint64_t mask = (1ull << (8 * byte_length)) - 1;
+				v = _pext_u64(_mm_cvtm64_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+
+				seek((getPosition() - 5) + byte_length);
+				return true;
+			}
+		}
+		return oml<uint32_t>(v);
+	}
+
+	#if defined(__GNUC__) || defined(__clang__)
+	__attribute__((target("bmi2")))
+	#endif
+	bool Reader::oml(uint64_t& v) noexcept
+	{
+		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
+		{
+			__m128i e;
+			if (raw(&e, 10))
+			{
+				const uint32_t contbits = _mm_movemask_epi8(e) & 0x1ff;
+				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+
+				const uint64_t mask_lo = ((byte_length < sizeof(uint64_t)) * (1ull << (8 * byte_length))) - 1;
+				const uint64_t mask_hi = (byte_length > sizeof(uint64_t)) * ((1ull << (8 * (byte_length - sizeof(uint64_t)))) - 1);
+				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask_lo, 0x7f7f'7f7f'7f7f'7f7full);
+				uint64_t hi = _pext_u64(_mm_extract_epi64(e, 1) & mask_hi, 0x7f7f'7f7f'7f7f'7f7full);
+				v = (hi << 56) | lo;
+
+				seek((getPosition() - 10) + byte_length);
+				return true;
+			}
+		}
+		return oml<uint64_t>(v);
+	}
+#endif
 }
