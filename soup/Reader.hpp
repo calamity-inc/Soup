@@ -98,6 +98,7 @@ NAMESPACE_SOUP
 			while (u8(byte))
 			{
 				v |= (static_cast<Int>(byte & 0x7F) << shift);
+				shift += 7;
 				if (!(byte & 0x80))
 				{
 					if (shift < (sizeof(Int) * 8) && (byte & 0x40))
@@ -106,7 +107,6 @@ NAMESPACE_SOUP
 					}
 					return true;
 				}
-				shift += 7;
 			}
 			return false;
 		}

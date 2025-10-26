@@ -1420,6 +1420,33 @@ static void unit_io()
 			assert(readback == pair.v);
 		}
 	});
+	test("LEB128", []
+	{
+		{
+			StringWriter sw;
+			int64_t v = -123456;
+			sw.soml(v);
+			assert(string::bin2hex(sw.data) == "C0BB78");
+		}
+		{
+			StringWriter sw;
+			uint64_t v = -123456;
+			sw.soml(v);
+			assert(string::bin2hex(sw.data) == "C0BB78");
+		}
+		{
+			StringReader sr(string::hex2bin("C0BB78"));
+			int64_t v = 0;
+			sr.soml(v);
+			assert(v == -123456);
+		}
+		{
+			StringReader sr(string::hex2bin("C0BB78"));
+			uint64_t v = 0;
+			sr.soml(v);
+			assert(v == -123456);
+		}
+	});
 }
 
 static void unit_lang()

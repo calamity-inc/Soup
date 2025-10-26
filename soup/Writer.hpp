@@ -98,6 +98,10 @@ NAMESPACE_SOUP
 			{
 				uint8_t byte = (in & 0x7F);
 				in >>= 7;
+				if constexpr (!std::is_signed_v<Int>)
+				{
+					in |= (~static_cast<Int>(0) << ((sizeof(Int) * 8) - 7));
+				}
 				if ((byte & 0x40) ? (in == -1) : (in == 0))
 				{
 					ret &= u8(byte);
