@@ -10,9 +10,19 @@
 
 NAMESPACE_SOUP
 {
-#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
+#if SOUP_X86 && SOUP_BITS == 64
+	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
+	#endif
+	static void bmi2_u64_dyn_decode(__m128i e, uint64_t byte_length, uint64_t& v)
+	{
+		const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
+		uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+		uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
+		v = (hi << 56) | lo;
+	}
 #endif
+
 	bool Reader::u64_dyn(uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
@@ -23,13 +33,8 @@ NAMESPACE_SOUP
 			size_t read_bytes = 9;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
-			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
-
-			const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
-			uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
-			uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
-			v = (hi << 56) | lo;
+			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~static_cast<uint32_t>(_mm_movemask_epi8(e) & 0xff));
+			bmi2_u64_dyn_decode(e, byte_length, v);
 
 			seek(pos + byte_length);
 			return read_bytes >= byte_length;
@@ -66,9 +71,18 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
+#if SOUP_X86 && SOUP_BITS == 64
+	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
+	#endif
+	uint64_t bmi2_u64_dyn_v2_bias(uint64_t byte_length)
+	{
+		const auto biasbits = (byte_length >= 2) * (byte_length - 1);
+		const auto biasmask = ((1u << biasbits) - 1u);
+		return _pdep_u64(biasmask, 0x0002040810204081ull) << 7;
+	}
 #endif
+
 	bool Reader::u64_dyn_v2(uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
@@ -79,18 +93,9 @@ NAMESPACE_SOUP
 			size_t read_bytes = 9;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
-			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
-
-			const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
-			uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
-			uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
-			v = (hi << 56) | lo;
-
-			// v2
-			const auto addbits = (byte_length >= 2) * (byte_length - 1);
-			const auto addmask = ((1u << addbits) - 1u);
-			v += _pdep_u64(addmask, 0x0002040810204081ull) << 7;
+			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~static_cast<uint32_t>(_mm_movemask_epi8(e) & 0xff));
+			bmi2_u64_dyn_decode(e, byte_length, v);
+			v += bmi2_u64_dyn_v2_bias(byte_length);
 
 			seek(pos + byte_length);
 			return read_bytes >= byte_length;

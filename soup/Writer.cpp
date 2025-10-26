@@ -9,9 +9,19 @@
 
 NAMESPACE_SOUP
 {
-#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
+#if SOUP_X86 && SOUP_BITS == 64
+	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
+	#endif
+	static void bmi2_u64_dyn_encode(uint64_t v, uint64_t byte_length, uint64_t e[2])
+	{
+		const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
+		const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
+		e[0] = _pdep_u64(v, 0x7f7f'7f7f'7f7f'7f7full) | contbits;
+		e[1] = v >> 56;
+	}
 #endif
+
 	bool Writer::u64_dyn(const uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
@@ -37,12 +47,8 @@ NAMESPACE_SOUP
 				+ (v >= smallest_value_needing_9_bytes_to_encode)
 				;
 
-			const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
-			const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
-
 			uint64_t e[2];
-			e[0] = _pdep_u64(v, 0x7f7f'7f7f'7f7f'7f7full) | contbits;
-			e[1] = v >> 56;
+			bmi2_u64_dyn_encode(v, byte_length, e);
 
 			return raw(e, byte_length);
 		}
@@ -85,9 +91,10 @@ NAMESPACE_SOUP
 		return u64_dyn(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64 && (defined(__GNUC__) || defined(__clang__))
-	__attribute__((target("bmi2")))
+#if SOUP_X86 && SOUP_BITS == 64
+	uint64_t bmi2_u64_dyn_v2_bias(uint64_t byte_length);
 #endif
+
 	bool Writer::u64_dyn_v2(const uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
@@ -113,17 +120,8 @@ NAMESPACE_SOUP
 				+ (v >= smallest_value_needing_9_bytes_to_encode)
 				;
 
-			const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
-			const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
-
-			// v2
-			const auto subbits = (byte_length >= 2) * (byte_length - 1);
-			const auto submask = ((1u << subbits) - 1u);
-			uint64_t w = v - (_pdep_u64(submask, 0x0002040810204081ull) << 7);
-
 			uint64_t e[2];
-			e[0] = _pdep_u64(w, 0x7f7f'7f7f'7f7f'7f7full) | contbits;
-			e[1] = w >> 56;
+			bmi2_u64_dyn_encode(v - bmi2_u64_dyn_v2_bias(byte_length), byte_length, e);
 
 			return raw(e, byte_length);
 		}

@@ -81,6 +81,9 @@ NAMESPACE_SOUP
 
 		// An integer where every byte's most significant bit is used to indicate if another byte follows, least significant byte first. This is compatible with unsigned LEB128.
 		template <typename Int>
+#if SOUP_X86 && SOUP_BITS == 64
+		SOUP_NOINLINE // Must not be inlined into the "bmi2" target because Clang might elect to use 'shlx'
+#endif
 		bool oml(Int& v) noexcept
 		{
 			v = {};
