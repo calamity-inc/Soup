@@ -390,7 +390,7 @@ NAMESPACE_SOUP
 		ret.type = (first & 0b11111);
 		if (ret.type > 30)
 		{
-			r.om<uint32_t>(ret.type);
+			r.omb<uint32_t>(ret.type);
 		}
 		return ret;
 	}

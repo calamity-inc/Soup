@@ -54,7 +54,7 @@ NAMESPACE_SOUP
 				auto& r = track.sr;
 				SOUP_ASSERT(r.hasMore());
 
-				r.om<uint32_t>(track.ticks_to_wait);
+				r.omb<uint32_t>(track.ticks_to_wait);
 				if (ticks_to_wait > track.ticks_to_wait)
 				{
 					ticks_to_wait = track.ticks_to_wait;
@@ -83,7 +83,7 @@ NAMESPACE_SOUP
 					else
 					{
 						uint32_t len;
-						r.om<uint32_t>(len);
+						r.omb<uint32_t>(len);
 						r.skip(len);
 						//std::cout << "Ignoring meta event: " << (int)event_type << "\n";
 					}

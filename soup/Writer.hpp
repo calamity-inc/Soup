@@ -37,9 +37,12 @@ NAMESPACE_SOUP
 		// https://github.com/calamity-inc/u64_dyn
 		bool i64_dyn_v2(const int64_t& v) noexcept;
 
+		template <typename Int>
+		[[deprecated]] bool om(const Int& v) noexcept { return omb(v); }
+
 		// An integer where every byte's most significant bit is used to indicate if another byte follows, most significant byte first.
 		template <typename Int>
-		bool om(const Int& v) noexcept
+		bool omb(const Int& v) noexcept
 		{
 			bool ret = true;
 			auto chunks = 0;
