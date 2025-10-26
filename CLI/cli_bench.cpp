@@ -4,9 +4,11 @@
 
 #include <aes.hpp>
 #include <Benchmark.hpp>
+#include <MemoryRefReader.hpp>
 #include <rand.hpp>
+#include <StringWriter.hpp>
 
-void cli_bench()
+static void aes_bench()
 {
 	BENCHMARK("AES-ECB-128", {
 		uint8_t og_data[0x10'000];
@@ -83,4 +85,97 @@ void cli_bench()
 			SOUP_ASSERT(memcmp(data, og_data, sizeof(data)) == 0);
 		});
 	});
+}
+
+#define U64_DYN_BENCH(variant) \
+	BENCHMARK(#variant "  7-bit WO", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0x7f; \
+			sw.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant "  7-bit RW", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0x7f; \
+			sw.variant(x); \
+			sw.skip(9 - 1); \
+			soup::MemoryRefReader sr(sw.data); \
+			sr.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant "  8-bit WO", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0xff; \
+			sw.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant "  8-bit RW", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0xff; \
+			sw.variant(x); \
+			sw.skip(9 - 1); \
+			soup::MemoryRefReader sr(sw.data); \
+			sr.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant " 16-bit WO", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0xffff; \
+			sw.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant " 16-bit RW", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0xffff; \
+			sw.variant(x); \
+			sw.skip(9 - 3); \
+			soup::MemoryRefReader sr(sw.data); \
+			sr.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant " 32-bit WO", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0xffffffff; \
+			sw.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant " 32-bit RW", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = 0xffffffff; \
+			sw.variant(x); \
+			sw.skip(9 - 5); \
+			soup::MemoryRefReader sr(sw.data); \
+			sr.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant " 64-bit WO", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = -1; \
+			sw.variant(x); \
+		}); \
+	}); \
+	BENCHMARK(#variant " 64-bit RW", { \
+		BENCHMARK_LOOP({ \
+			soup::StringWriter sw; \
+			uint64_t x = -1; \
+			sw.variant(x); \
+			soup::MemoryRefReader sr(sw.data); \
+			sr.variant(x); \
+		}); \
+	});
+
+void cli_bench()
+{
+	aes_bench();
+	U64_DYN_BENCH(u64_dyn);
+	U64_DYN_BENCH(u64_dyn_v2);
 }
