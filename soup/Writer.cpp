@@ -155,14 +155,7 @@ NAMESPACE_SOUP
 	{
 		uint64_t u;
 		bool neg = (v < 0);
-		if (neg)
-		{
-			u = ~v;
-		}
-		else
-		{
-			u = v;
-		}
+		u = v ^ (0xffffffffffffffff * neg);
 		return u64_dyn_v2(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 

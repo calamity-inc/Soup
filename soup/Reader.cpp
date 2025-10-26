@@ -121,14 +121,7 @@ NAMESPACE_SOUP
 		SOUP_RETHROW_FALSE(u64_dyn_v2(u));
 		const bool neg = (u >> 6) & 1; // check bit 6
 		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
-		if (neg)
-		{
-			v = ~u;
-		}
-		else
-		{
-			v = u;
-		}
+		v = u ^ (0xffffffffffffffff * neg);
 		return true;
 	}
 
