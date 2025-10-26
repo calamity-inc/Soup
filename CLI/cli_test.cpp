@@ -1318,21 +1318,6 @@ static void unit_io()
 			assert(sr.u64_dyn(readback));
 			assert(readback == pair.v);
 		}
-		// Ensure we hit the vectorised code for all test cases
-		{
-			StringWriter sw;
-			for (auto& pair : pairs)
-			{
-				sw.u64_dyn(pair.v);
-			}
-			MemoryRefReader sr(sw.data);
-			uint64_t readback = 0;
-			for (auto& pair : pairs)
-			{
-				assert(sr.u64_dyn(readback));
-				assert(readback == pair.v);
-			}
-		}
 	});
 	test("i64_dyn", []
 	{
@@ -1381,21 +1366,6 @@ static void unit_io()
 			uint64_t readback;
 			assert(sr.u64_dyn_v2(readback));
 			assert(readback == pair.v);
-		}
-		// Ensure we hit the vectorised code for all test cases
-		{
-			StringWriter sw;
-			for (auto& pair : pairs)
-			{
-				sw.u64_dyn_v2(pair.v);
-			}
-			MemoryRefReader sr(sw.data);
-			uint64_t readback = 0;
-			for (auto& pair : pairs)
-			{
-				assert(sr.u64_dyn_v2(readback));
-				assert(readback == pair.v);
-			}
 		}
 	});
 	test("i64_dyn_v2", []

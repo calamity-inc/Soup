@@ -18,20 +18,21 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
+			const auto pos = getPosition();
+
 			__m128i e;
-			if (raw(&e, 9))
-			{
-				const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
-				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+			SOUP_RETHROW_FALSE(raw(&e, 9) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
 
-				const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
-				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
-				uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
-				v = (hi << 56) | lo;
+			const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
+			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-				seek((getPosition() - 9) + byte_length);
-				return true;
-			}
+			const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
+			uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+			uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
+			v = (hi << 56) | lo;
+
+			seek(pos + byte_length);
+			return true;
 		}
 #endif
 		v = 0;
@@ -73,25 +74,26 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
+			const auto pos = getPosition();
+
 			__m128i e;
-			if (raw(&e, 9))
-			{
-				const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
-				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+			SOUP_RETHROW_FALSE(raw(&e, 9) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
 
-				const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
-				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
-				uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
-				v = (hi << 56) | lo;
+			const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
+			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-				// v2
-				const auto addbits = (byte_length >= 2) * (byte_length - 1);
-				const auto addmask = ((1u << addbits) - 1u);
-				v += _pdep_u64(addmask, 0x0002040810204081ull) << 7;
+			const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
+			uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+			uint64_t hi = _mm_extract_epi64(e, 1) * (byte_length == 9);
+			v = (hi << 56) | lo;
 
-				seek((getPosition() - 9) + byte_length);
-				return true;
-			}
+			// v2
+			const auto addbits = (byte_length >= 2) * (byte_length - 1);
+			const auto addmask = ((1u << addbits) - 1u);
+			v += _pdep_u64(addmask, 0x0002040810204081ull) << 7;
+
+			seek(pos + byte_length);
+			return true;
 		}
 #endif
 		v = 0;
@@ -138,18 +140,19 @@ NAMESPACE_SOUP
 	{
 		if (CpuInfo::get().supportsSSE() && CpuInfo::get().supportsBMI2())
 		{
+			const auto pos = getPosition();
+
 			__m64 e;
-			if (raw(&e, 5))
-			{
-				const uint32_t contbits = _mm_movemask_pi8(e) & 0xf;
-				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+			SOUP_RETHROW_FALSE(raw(&e, 5) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
 
-				const uint64_t mask = (1ull << (8 * byte_length)) - 1;
-				v = _pext_u64(_mm_cvtm64_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+			const uint32_t contbits = _mm_movemask_pi8(e) & 0xf;
+			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-				seek((getPosition() - 5) + byte_length);
-				return true;
-			}
+			const uint64_t mask = (1ull << (8 * byte_length)) - 1;
+			v = _pext_u64(_mm_cvtm64_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+
+			seek(pos + byte_length);
+			return true;
 		}
 		return oml<uint32_t>(v);
 	}
@@ -161,21 +164,22 @@ NAMESPACE_SOUP
 	{
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
+			const auto pos = getPosition();
+
 			__m128i e;
-			if (raw(&e, 10))
-			{
-				const uint32_t contbits = _mm_movemask_epi8(e) & 0x1ff;
-				const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+			SOUP_RETHROW_FALSE(raw(&e, 10) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
 
-				const uint64_t mask_lo = ((byte_length < sizeof(uint64_t)) * (1ull << (8 * byte_length))) - 1;
-				const uint64_t mask_hi = (byte_length > sizeof(uint64_t)) * ((1ull << (8 * (byte_length - sizeof(uint64_t)))) - 1);
-				uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask_lo, 0x7f7f'7f7f'7f7f'7f7full);
-				uint64_t hi = _pext_u64(_mm_extract_epi64(e, 1) & mask_hi, 0x7f7f'7f7f'7f7f'7f7full);
-				v = (hi << 56) | lo;
+			const uint32_t contbits = _mm_movemask_epi8(e) & 0x1ff;
+			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-				seek((getPosition() - 10) + byte_length);
-				return true;
-			}
+			const uint64_t mask_lo = ((byte_length < sizeof(uint64_t)) * (1ull << (8 * byte_length))) - 1;
+			const uint64_t mask_hi = (byte_length > sizeof(uint64_t)) * ((1ull << (8 * (byte_length - sizeof(uint64_t)))) - 1);
+			uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask_lo, 0x7f7f'7f7f'7f7f'7f7full);
+			uint64_t hi = _pext_u64(_mm_extract_epi64(e, 1) & mask_hi, 0x7f7f'7f7f'7f7f'7f7full);
+			v = (hi << 56) | lo;
+
+			seek(pos + byte_length);
+			return true;
 		}
 		return oml<uint64_t>(v);
 	}

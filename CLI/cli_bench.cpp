@@ -100,7 +100,6 @@ static void aes_bench()
 			soup::StringWriter sw; \
 			uint64_t x = 0x7f; \
 			sw.variant(x); \
-			sw.skip(9 - 1); \
 			soup::MemoryRefReader sr(sw.data); \
 			sr.variant(x); \
 		}); \
@@ -117,7 +116,6 @@ static void aes_bench()
 			soup::StringWriter sw; \
 			uint64_t x = 0xff; \
 			sw.variant(x); \
-			sw.skip(9 - 1); \
 			soup::MemoryRefReader sr(sw.data); \
 			sr.variant(x); \
 		}); \
@@ -134,7 +132,6 @@ static void aes_bench()
 			soup::StringWriter sw; \
 			uint64_t x = 0xffff; \
 			sw.variant(x); \
-			sw.skip(9 - 3); \
 			soup::MemoryRefReader sr(sw.data); \
 			sr.variant(x); \
 		}); \
@@ -151,7 +148,6 @@ static void aes_bench()
 			soup::StringWriter sw; \
 			uint64_t x = 0xffffffff; \
 			sw.variant(x); \
-			sw.skip(9 - 5); \
 			soup::MemoryRefReader sr(sw.data); \
 			sr.variant(x); \
 		}); \
