@@ -1364,6 +1364,7 @@ static void unit_io()
 			{ 0x7f, "\x7F", 1 },
 			{ 0x80, "\x80\x00", 2 },
 			{ 1337, "\xB9\x09", 2 },
+			{ 16384, "\x80\x7F", 2 }, // Possible oopsie with vectorisation
 			{ 42069, "\xD5\xC7\x01", 3 },
 			{ 0x123456789ABCDE, "\xDE\xF8\xE9\xC3\xE6\x89\x8C\x08", 8 }, // Possible oopsie with vectorisation
 			{ 0x123456789ABCDEF, "\xEF\x9A\xAE\xCC\xF7\xAB\xD0\x90\x00", 9 },

@@ -16,7 +16,25 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsBMI2())
 		{
-			const auto byte_length = 1 + (v >= (1ull << 7)) + (v >= (1ull << 14)) + (v >= (1ull << 21)) + (v >= (1ull << 28)) + (v >= (1ull << 35)) + (v >= (1ull << 42)) + (v >= (1ull << 49)) + (v >= (1ull << 56));
+			static constexpr uint64_t smallest_value_needing_2_bytes_to_encode = 1ull << 7;
+			static constexpr uint64_t smallest_value_needing_3_bytes_to_encode = 1ull << 14;
+			static constexpr uint64_t smallest_value_needing_4_bytes_to_encode = 1ull << 21;
+			static constexpr uint64_t smallest_value_needing_5_bytes_to_encode = 1ull << 28;
+			static constexpr uint64_t smallest_value_needing_6_bytes_to_encode = 1ull << 35;
+			static constexpr uint64_t smallest_value_needing_7_bytes_to_encode = 1ull << 42;
+			static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = 1ull << 49;
+			static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = 1ull << 56;
+
+			const auto byte_length = 1
+				+ (v >= smallest_value_needing_2_bytes_to_encode)
+				+ (v >= smallest_value_needing_3_bytes_to_encode)
+				+ (v >= smallest_value_needing_4_bytes_to_encode)
+				+ (v >= smallest_value_needing_5_bytes_to_encode)
+				+ (v >= smallest_value_needing_6_bytes_to_encode)
+				+ (v >= smallest_value_needing_7_bytes_to_encode)
+				+ (v >= smallest_value_needing_8_bytes_to_encode)
+				+ (v >= smallest_value_needing_9_bytes_to_encode)
+				;
 
 			const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
 			const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
@@ -74,7 +92,25 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsBMI2())
 		{
-			const auto byte_length = 1 + (v >= (1ull << 7)) + (v >= (1ull << 14)) + (v >= (1ull << 21)) + (v >= (1ull << 28)) + (v >= (1ull << 35)) + (v >= (1ull << 42)) + (v >= (1ull << 49)) + (v >= (1ull << 56));
+			static constexpr uint64_t smallest_value_needing_2_bytes_to_encode = 1ull << 7;
+			static constexpr uint64_t smallest_value_needing_3_bytes_to_encode = (1ull << 14) + 1;
+			static constexpr uint64_t smallest_value_needing_4_bytes_to_encode = (1ull << 21) + 1;
+			static constexpr uint64_t smallest_value_needing_5_bytes_to_encode = (1ull << 28) + 1;
+			static constexpr uint64_t smallest_value_needing_6_bytes_to_encode = (1ull << 35) + 1;
+			static constexpr uint64_t smallest_value_needing_7_bytes_to_encode = (1ull << 42) + 1;
+			static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = (1ull << 49) + 1;
+			static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = (1ull << 56) + 1;
+
+			const auto byte_length = 1
+				+ (v >= smallest_value_needing_2_bytes_to_encode)
+				+ (v >= smallest_value_needing_3_bytes_to_encode)
+				+ (v >= smallest_value_needing_4_bytes_to_encode)
+				+ (v >= smallest_value_needing_5_bytes_to_encode)
+				+ (v >= smallest_value_needing_6_bytes_to_encode)
+				+ (v >= smallest_value_needing_7_bytes_to_encode)
+				+ (v >= smallest_value_needing_8_bytes_to_encode)
+				+ (v >= smallest_value_needing_9_bytes_to_encode)
+				;
 
 			const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
 			const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
