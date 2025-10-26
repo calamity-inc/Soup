@@ -5,6 +5,7 @@
 
 #include "CpuInfo.hpp"
 #endif
+#include "bitutil.hpp"
 
 NAMESPACE_SOUP
 {
@@ -157,6 +158,84 @@ NAMESPACE_SOUP
 		bool neg = (v < 0);
 		u = v ^ (0xffffffffffffffff * neg);
 		return u64_dyn_v2(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
+	}
+
+	bool Writer::u64_dyn_p(const uint64_t& v) noexcept
+	{
+		static constexpr uint64_t smallest_value_needing_2_bytes_to_encode = 1ull << 7;
+		static constexpr uint64_t smallest_value_needing_3_bytes_to_encode = 1ull << 14;
+		static constexpr uint64_t smallest_value_needing_4_bytes_to_encode = 1ull << 21;
+		static constexpr uint64_t smallest_value_needing_5_bytes_to_encode = 1ull << 28;
+		static constexpr uint64_t smallest_value_needing_6_bytes_to_encode = 1ull << 35;
+		static constexpr uint64_t smallest_value_needing_7_bytes_to_encode = 1ull << 42;
+		static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = 1ull << 49;
+		static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = 1ull << 56;
+
+		const auto byte_length = 1
+			+ (v >= smallest_value_needing_2_bytes_to_encode)
+			+ (v >= smallest_value_needing_3_bytes_to_encode)
+			+ (v >= smallest_value_needing_4_bytes_to_encode)
+			+ (v >= smallest_value_needing_5_bytes_to_encode)
+			+ (v >= smallest_value_needing_6_bytes_to_encode)
+			+ (v >= smallest_value_needing_7_bytes_to_encode)
+			+ (v >= smallest_value_needing_8_bytes_to_encode)
+			+ (v >= smallest_value_needing_9_bytes_to_encode)
+			;
+
+		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
+		const auto first_byte_prefix_bits = byte_length - 1;
+
+		uint64_t w = v;
+
+		uint8_t first_byte = (0xff << (8 - first_byte_prefix_bits)) | (w & ((1 << first_byte_value_bits) - 1));
+		bool res = u8(first_byte);
+		w >>= first_byte_value_bits;
+		res &= raw(&w, byte_length - 1);
+		return res;
+	}
+
+	bool Writer::u64_dyn_v2_p(const uint64_t& v) noexcept
+	{
+		static constexpr uint64_t smallest_value_needing_2_bytes_to_encode = 128ull;
+		static constexpr uint64_t smallest_value_needing_3_bytes_to_encode = 16512ull;
+		static constexpr uint64_t smallest_value_needing_4_bytes_to_encode = 2113664ull;
+		static constexpr uint64_t smallest_value_needing_5_bytes_to_encode = 270549120ull;
+		static constexpr uint64_t smallest_value_needing_6_bytes_to_encode = 34630287488ull;
+		static constexpr uint64_t smallest_value_needing_7_bytes_to_encode = 4432676798592ull;
+		static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = 567382630219904ull;
+		static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = 72624976668147840ull;
+
+		const auto byte_length = 1
+			+ (v >= smallest_value_needing_2_bytes_to_encode)
+			+ (v >= smallest_value_needing_3_bytes_to_encode)
+			+ (v >= smallest_value_needing_4_bytes_to_encode)
+			+ (v >= smallest_value_needing_5_bytes_to_encode)
+			+ (v >= smallest_value_needing_6_bytes_to_encode)
+			+ (v >= smallest_value_needing_7_bytes_to_encode)
+			+ (v >= smallest_value_needing_8_bytes_to_encode)
+			+ (v >= smallest_value_needing_9_bytes_to_encode)
+			;
+
+		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
+		const auto first_byte_prefix_bits = byte_length - 1;
+
+		const auto subbits = (byte_length >= 2) * (byte_length - 1);
+		const uint64_t submask = ((1u << subbits) - 1u);
+		uint64_t w = v - (bitutil::parallelDeposit(submask, 0x0002040810204081ull) << 7);
+
+		uint8_t first_byte = (0xff << (8 - first_byte_prefix_bits)) | (w & ((1 << first_byte_value_bits) - 1));
+		bool res = u8(first_byte);
+		w >>= first_byte_value_bits;
+		res &= raw(&w, byte_length - 1);
+		return res;
+	}
+
+	bool Writer::i64_dyn_v2_p(const uint64_t& v) noexcept
+	{
+		uint64_t u;
+		bool neg = (v < 0);
+		u = v ^ (0xffffffffffffffff * neg);
+		return u64_dyn_v2_p(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
 	bool Writer::mysql_lenenc(const uint64_t& v) noexcept

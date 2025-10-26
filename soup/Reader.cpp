@@ -125,6 +125,45 @@ NAMESPACE_SOUP
 		return true;
 	}
 
+	bool Reader::u64_dyn_p(uint64_t& v) noexcept
+	{
+		uint8_t first_byte;
+		SOUP_RETHROW_FALSE(u8(first_byte));
+		const auto byte_length = 1 + (bitutil::getNumTrailingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
+		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
+		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
+		v <<= first_byte_value_bits;
+		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
+
+		const auto addbits = (byte_length >= 2) * (byte_length - 1);
+		const uint64_t addmask = ((1u << addbits) - 1u);
+		v += bitutil::parallelDeposit(addmask, 0x0002040810204081ull) << 7;
+
+		return true;
+	}
+
+	bool Reader::u64_dyn_v2_p(uint64_t& v) noexcept
+	{
+		uint8_t first_byte;
+		SOUP_RETHROW_FALSE(u8(first_byte));
+		const auto byte_length = 1 + (bitutil::getNumTrailingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
+		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
+		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
+		v <<= first_byte_value_bits;
+		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
+		return true;
+	}
+
+	bool Reader::i64_dyn_v2_p(uint64_t& v) noexcept
+	{
+		uint64_t u;
+		SOUP_RETHROW_FALSE(u64_dyn_v2_p(u));
+		const bool neg = (u >> 6) & 1; // check bit 6
+		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
+		v = u ^ (0xffffffffffffffff * neg);
+		return true;
+	}
+
 #if SOUP_X86 && SOUP_BITS == 64
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))

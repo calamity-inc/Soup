@@ -246,6 +246,9 @@ NAMESPACE_SOUP
 			return b;
 		}
 
+		[[nodiscard]] static uint32_t parallelDeposit(uint32_t src, uint32_t mask);
+		[[nodiscard]] static uint64_t parallelDeposit(uint64_t src, uint64_t mask);
+
 		[[nodiscard]] static std::vector<bool> interleave(const std::vector<std::vector<bool>>& data); // assumes that all inner vectors have the same size
 	};
 }

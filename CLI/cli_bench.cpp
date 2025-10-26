@@ -173,5 +173,7 @@ void cli_bench()
 {
 	aes_bench();
 	U64_DYN_BENCH(u64_dyn);
+	U64_DYN_BENCH(u64_dyn_p);
 	U64_DYN_BENCH(u64_dyn_v2);
+	U64_DYN_BENCH(u64_dyn_v2_p);
 }
