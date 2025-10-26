@@ -19,9 +19,9 @@ NAMESPACE_SOUP
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-
 			__m128i e;
-			SOUP_RETHROW_FALSE(raw(&e, 9) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
+			size_t read_bytes = 9;
+			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
 			const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
 			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
@@ -32,7 +32,7 @@ NAMESPACE_SOUP
 			v = (hi << 56) | lo;
 
 			seek(pos + byte_length);
-			return true;
+			return read_bytes >= byte_length;
 		}
 #endif
 		v = 0;
@@ -75,9 +75,9 @@ NAMESPACE_SOUP
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-
 			__m128i e;
-			SOUP_RETHROW_FALSE(raw(&e, 9) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
+			size_t read_bytes = 9;
+			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
 			const uint32_t contbits = _mm_movemask_epi8(e) & 0xff;
 			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
@@ -93,7 +93,7 @@ NAMESPACE_SOUP
 			v += _pdep_u64(addmask, 0x0002040810204081ull) << 7;
 
 			seek(pos + byte_length);
-			return true;
+			return read_bytes >= byte_length;
 		}
 #endif
 		v = 0;
@@ -141,9 +141,9 @@ NAMESPACE_SOUP
 		if (CpuInfo::get().supportsSSE() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-
 			__m64 e;
-			SOUP_RETHROW_FALSE(raw(&e, 5) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
+			size_t read_bytes = 5;
+			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
 			const uint32_t contbits = _mm_movemask_pi8(e) & 0xf;
 			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
@@ -152,7 +152,7 @@ NAMESPACE_SOUP
 			v = _pext_u64(_mm_cvtm64_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
 
 			seek(pos + byte_length);
-			return true;
+			return read_bytes >= byte_length;
 		}
 		return oml<uint32_t>(v);
 	}
@@ -165,9 +165,9 @@ NAMESPACE_SOUP
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-
 			__m128i e;
-			SOUP_RETHROW_FALSE(raw(&e, 10) || raw(&e, (seekEnd(), ((getPosition() - pos) + (seek(pos), 0)))));
+			size_t read_bytes = 10;
+			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
 			const uint32_t contbits = _mm_movemask_epi8(e) & 0x1ff;
 			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
@@ -179,7 +179,7 @@ NAMESPACE_SOUP
 			v = (hi << 56) | lo;
 
 			seek(pos + byte_length);
-			return true;
+			return read_bytes >= byte_length;
 		}
 		return oml<uint64_t>(v);
 	}

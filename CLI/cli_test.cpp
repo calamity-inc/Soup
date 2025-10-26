@@ -1318,6 +1318,22 @@ static void unit_io()
 			assert(sr.u64_dyn(readback));
 			assert(readback == pair.v);
 		}
+		// Unfinished data
+		{
+			StringReader sr;
+			uint64_t x;
+			assert(!sr.u64_dyn(x));
+		}
+		{
+			StringReader sr(string::hex2bin("80"));
+			uint64_t x;
+			assert(!sr.u64_dyn(x));
+		}
+		{
+			StringReader sr(string::hex2bin("8080808080808080"));
+			uint64_t x;
+			assert(!sr.u64_dyn(x));
+		}
 	});
 	test("i64_dyn", []
 	{
@@ -1366,6 +1382,22 @@ static void unit_io()
 			uint64_t readback;
 			assert(sr.u64_dyn_v2(readback));
 			assert(readback == pair.v);
+		}
+		// Unfinished data
+		{
+			StringReader sr;
+			uint64_t x;
+			assert(!sr.u64_dyn_v2(x));
+		}
+		{
+			StringReader sr(string::hex2bin("80"));
+			uint64_t x;
+			assert(!sr.u64_dyn_v2(x));
+		}
+		{
+			StringReader sr(string::hex2bin("8080808080808080"));
+			uint64_t x;
+			assert(!sr.u64_dyn_v2(x));
 		}
 	});
 	test("i64_dyn_v2", []
@@ -1416,6 +1448,22 @@ static void unit_io()
 			uint64_t v = 0;
 			sr.soml(v);
 			assert(v == -123456);
+		}
+		// Unfinished data
+		{
+			StringReader sr;
+			uint64_t x;
+			assert(!sr.oml(x));
+		}
+		{
+			StringReader sr(string::hex2bin("80"));
+			uint64_t x;
+			assert(!sr.oml(x));
+		}
+		{
+			StringReader sr(string::hex2bin("8080808080808080"));
+			uint64_t x;
+			assert(!sr.oml(x));
 		}
 	});
 }
