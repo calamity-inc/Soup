@@ -92,14 +92,14 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsBMI2())
 		{
-			static constexpr uint64_t smallest_value_needing_2_bytes_to_encode = 1ull << 7;
-			static constexpr uint64_t smallest_value_needing_3_bytes_to_encode = (1ull << 14) + 1;
-			static constexpr uint64_t smallest_value_needing_4_bytes_to_encode = (1ull << 21) + 1;
-			static constexpr uint64_t smallest_value_needing_5_bytes_to_encode = (1ull << 28) + 1;
-			static constexpr uint64_t smallest_value_needing_6_bytes_to_encode = (1ull << 35) + 1;
-			static constexpr uint64_t smallest_value_needing_7_bytes_to_encode = (1ull << 42) + 1;
-			static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = (1ull << 49) + 1;
-			static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = (1ull << 56) + 1;
+			static constexpr uint64_t smallest_value_needing_2_bytes_to_encode = 128ull;
+			static constexpr uint64_t smallest_value_needing_3_bytes_to_encode = 16512ull;
+			static constexpr uint64_t smallest_value_needing_4_bytes_to_encode = 2113664ull;
+			static constexpr uint64_t smallest_value_needing_5_bytes_to_encode = 270549120ull;
+			static constexpr uint64_t smallest_value_needing_6_bytes_to_encode = 34630287488ull;
+			static constexpr uint64_t smallest_value_needing_7_bytes_to_encode = 4432676798592ull;
+			static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = 567382630219904ull;
+			static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = 72624976668147840ull;
 
 			const auto byte_length = 1
 				+ (v >= smallest_value_needing_2_bytes_to_encode)
