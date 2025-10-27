@@ -6,6 +6,7 @@
 #include "CpuInfo.hpp"
 #endif
 #include "bitutil.hpp"
+#include "Endian.hpp"
 
 NAMESPACE_SOUP
 {
@@ -188,6 +189,10 @@ NAMESPACE_SOUP
 		uint8_t first_byte = (0xff << (8 - first_byte_prefix_bits)) | (w & ((1 << first_byte_value_bits) - 1));
 		bool res = u8(first_byte);
 		w >>= first_byte_value_bits;
+		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+		{
+			w = Endianness::invert(w); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
+		}
 		res &= raw(&w, byte_length - 1);
 		return res;
 	}
@@ -224,6 +229,10 @@ NAMESPACE_SOUP
 		uint8_t first_byte = (0xff << (8 - first_byte_prefix_bits)) | (w & ((1 << first_byte_value_bits) - 1));
 		bool res = u8(first_byte);
 		w >>= first_byte_value_bits;
+		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+		{
+			w = Endianness::invert(w); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
+		}
 		res &= raw(&w, byte_length - 1);
 		return res;
 	}

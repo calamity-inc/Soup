@@ -7,6 +7,7 @@
 #include "bitutil.hpp"
 #include "CpuInfo.hpp"
 #endif
+#include "Endian.hpp"
 
 NAMESPACE_SOUP
 {
@@ -137,6 +138,10 @@ NAMESPACE_SOUP
 		const auto byte_length = 1 + (bitutil::getNumTrailingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
 		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
 		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
+		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+		{
+			v = Endianness::invert(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
+		}
 		v <<= first_byte_value_bits;
 		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
 
@@ -154,6 +159,10 @@ NAMESPACE_SOUP
 		const auto byte_length = 1 + (bitutil::getNumTrailingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
 		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
 		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
+		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+		{
+			v = Endianness::invert(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
+		}
 		v <<= first_byte_value_bits;
 		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
 		return true;
