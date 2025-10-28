@@ -182,16 +182,18 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static unsigned int getNumLeadingZeros(uint32_t mask) noexcept
 		{
+#if defined(_MSC_VER)
+			unsigned long ret;
+			if (_BitScanReverse(&ret, mask))
+			{
+				return 31 - ret;
+			}
+#else
 			if (mask != 0)
 			{
-#if defined(_MSC_VER) && !defined(__clang__)
-				unsigned long idx;
-				_BitScanReverse(&idx, mask);
-				return 31 - idx;
-#else
 				return __builtin_clz(mask);
-#endif
 			}
+#endif
 			return 32;
 		}
 
