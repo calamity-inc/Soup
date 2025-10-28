@@ -1423,6 +1423,45 @@ static void unit_io()
 			assert(readback == pair.v);
 		}
 	});
+	test("u64_dyn_p", []
+	{
+		struct { uint64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\x7F", 1 },
+			{ 0x80, "\x80\x02", 2 },
+			{ 1337, "\xB9\x14", 2 },
+			{ 42069, "\xD5\x22\x05", 3 },
+			{ 0xffffffffffffffff, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9 },
+			{ 0x8000000000000000, "\xFF\x00\x00\x00\x00\x00\x00\x00\x80", 9 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.u64_dyn_p(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			uint64_t readback = 0;
+			assert(sr.u64_dyn_p(readback));
+			assert(readback == pair.v);
+		}
+		// Unfinished data
+		{
+			StringReader sr;
+			uint64_t x;
+			assert(!sr.u64_dyn_p(x));
+		}
+		{
+			StringReader sr(string::hex2bin("80"));
+			uint64_t x;
+			assert(!sr.u64_dyn_p(x));
+		}
+		{
+			StringReader sr(string::hex2bin("FF00000000000000"));
+			uint64_t x;
+			assert(!sr.u64_dyn_p(x));
+		}
+	});
 	test("LEB128", []
 	{
 		{

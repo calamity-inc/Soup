@@ -135,7 +135,23 @@ NAMESPACE_SOUP
 	{
 		uint8_t first_byte;
 		SOUP_RETHROW_FALSE(u8(first_byte));
-		const auto byte_length = 1 + (bitutil::getNumTrailingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
+		const auto byte_length = 1 + (bitutil::getNumLeadingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
+		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
+		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
+		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+		{
+			v = Endianness::invert(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
+		}
+		v <<= first_byte_value_bits;
+		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
+		return true;
+	}
+
+	bool Reader::u64_dyn_bp(uint64_t& v) noexcept
+	{
+		uint8_t first_byte;
+		SOUP_RETHROW_FALSE(u8(first_byte));
+		const auto byte_length = 1 + (bitutil::getNumLeadingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
 		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
 		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
 		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
@@ -149,22 +165,6 @@ NAMESPACE_SOUP
 		const uint64_t addmask = ((1u << addbits) - 1u);
 		v += bitutil::parallelDeposit(addmask, 0x0002040810204081ull) << 7;
 
-		return true;
-	}
-
-	bool Reader::u64_dyn_bp(uint64_t& v) noexcept
-	{
-		uint8_t first_byte;
-		SOUP_RETHROW_FALSE(u8(first_byte));
-		const auto byte_length = 1 + (bitutil::getNumTrailingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
-		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
-		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
-		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
-		{
-			v = Endianness::invert(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
-		}
-		v <<= first_byte_value_bits;
-		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
 		return true;
 	}
 
