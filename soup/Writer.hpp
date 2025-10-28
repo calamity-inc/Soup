@@ -43,7 +43,7 @@ NAMESPACE_SOUP
 		bool i64_dyn_v2_p(const uint64_t& v) noexcept;
 
 		template <typename Int>
-		[[deprecated]] bool om(const Int& v) noexcept { return omb(v); }
+		[[deprecated("Renamed to omb")]] bool om(const Int& v) noexcept { return omb(v); }
 
 		// An integer where every byte's most significant bit is used to indicate if another byte follows, most significant byte first.
 		template <typename Int>
