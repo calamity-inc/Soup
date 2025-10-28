@@ -33,7 +33,7 @@ NAMESPACE_SOUP
 		{
 			if ((mask >> m) & 1)
 			{
-				dest |= src & (1 << k++);
+				dest |= ((src >> k++) & 1) << m;
 			}
 		}
 		return dest;
@@ -64,7 +64,7 @@ NAMESPACE_SOUP
 		{
 			if ((mask >> m) & 1)
 			{
-				dest |= src & (1 << k++);
+				dest |= ((src >> k++) & 1) << m;
 			}
 		}
 		return dest;
