@@ -80,7 +80,7 @@ NAMESPACE_SOUP
 	{
 		const auto biasbits = (byte_length >= 2) * (byte_length - 1);
 		const auto biasmask = ((1u << biasbits) - 1u);
-		return _pdep_u64(biasmask, 0x0002040810204081ull) << 7;
+		return _pdep_u64(biasmask, 0x102040810204080ull);
 	}
 #endif
 
@@ -171,7 +171,7 @@ NAMESPACE_SOUP
 
 		const auto biasbits = (byte_length >= 2) * (byte_length - 1);
 		const uint64_t biasmask = ((1u << biasbits) - 1u);
-		const auto bias = bitutil::parallelDeposit(biasmask, 0x0002040810204081ull) << 7;
+		const auto bias = bitutil::parallelDeposit(biasmask, 0x102040810204080ull);
 
 		bool valid = v <= 0xffffffffffffffff - bias;
 		v += bias;

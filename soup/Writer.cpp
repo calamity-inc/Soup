@@ -224,7 +224,7 @@ NAMESPACE_SOUP
 
 		const auto subbits = (byte_length >= 2) * (byte_length - 1);
 		const uint64_t submask = ((1u << subbits) - 1u);
-		uint64_t w = v - (bitutil::parallelDeposit(submask, 0x0002040810204081ull) << 7);
+		uint64_t w = v - bitutil::parallelDeposit(submask, 0x102040810204080ull);
 
 		uint8_t first_byte = (0xff << (8 - first_byte_prefix_bits)) | (w & ((1 << first_byte_value_bits) - 1));
 		bool res = u8(first_byte);
