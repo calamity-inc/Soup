@@ -76,7 +76,7 @@ NAMESPACE_SOUP
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
 	#endif
-	uint64_t bmi2_u64_dyn_v2_bias(uint64_t byte_length)
+	uint64_t bmi2_u64_dyn_bias(uint64_t byte_length)
 	{
 		const auto biasbits = (byte_length >= 2) * (byte_length - 1);
 		const auto biasmask = ((1u << biasbits) - 1u);
@@ -96,29 +96,37 @@ NAMESPACE_SOUP
 
 			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~static_cast<uint32_t>(_mm_movemask_epi8(e) & 0xff));
 			bmi2_u64_dyn_decode(e, byte_length, v);
-			v += bmi2_u64_dyn_v2_bias(byte_length);
+
+			const auto bias = bmi2_u64_dyn_bias(byte_length);
+			bool valid = v <= 0xffffffffffffffff - bias;
+			v += bias;
 
 			seek(pos + byte_length);
-			return read_bytes >= byte_length;
+			valid &= read_bytes >= byte_length;
+			return valid;
 		}
 #endif
 		v = 0;
 		uint8_t b;
 		uint8_t bits = 0;
+		uint64_t bias = 0;
 		for (uint8_t i = 0; i != 8; ++i)
 		{
 			SOUP_RETHROW_FALSE(u8(b));
 			v += (uint64_t)(b & 0x7f) << bits;
 			if (!(b >> 7))
 			{
-				return true;
+				goto _apply_bias;
 			}
 			bits += 7;
-			v += (uint64_t)1 << bits; // v2
+			bias += (uint64_t)1 << bits;
 		}
 		SOUP_RETHROW_FALSE(u8(b));
 		v += (uint64_t)b << 56;
-		return true;
+	_apply_bias:
+		bool valid = v <= 0xffffffffffffffff - bias;
+		v += bias;
+		return valid;
 	}
 
 	bool Reader::i64_dyn_b(int64_t& v) noexcept
@@ -161,11 +169,13 @@ NAMESPACE_SOUP
 		v <<= first_byte_value_bits;
 		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
 
-		const auto addbits = (byte_length >= 2) * (byte_length - 1);
-		const uint64_t addmask = ((1u << addbits) - 1u);
-		v += bitutil::parallelDeposit(addmask, 0x0002040810204081ull) << 7;
+		const auto biasbits = (byte_length >= 2) * (byte_length - 1);
+		const uint64_t biasmask = ((1u << biasbits) - 1u);
+		const auto bias = bitutil::parallelDeposit(biasmask, 0x0002040810204081ull) << 7;
 
-		return true;
+		bool valid = v <= 0xffffffffffffffff - bias;
+		v += bias;
+		return valid;
 	}
 
 	bool Reader::i64_dyn_bp(int64_t& v) noexcept

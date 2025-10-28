@@ -1399,6 +1399,12 @@ static void unit_io()
 			uint64_t x;
 			assert(!sr.u64_dyn_b(x));
 		}
+		// Invalid data
+		{
+			StringReader sr(string::hex2bin("FFFFFEFEFEFEFEFEFE"));
+			uint64_t x;
+			assert(!sr.u64_dyn_b(x));
+		}
 	});
 	test("i64_dyn_b", []
 	{
@@ -1460,6 +1466,34 @@ static void unit_io()
 			StringReader sr(string::hex2bin("FF00000000000000"));
 			uint64_t x;
 			assert(!sr.u64_dyn_p(x));
+		}
+	});
+	test("u64_dyn_bp", []
+	{
+		{
+			// ...
+		}
+		// Unfinished data
+		{
+			StringReader sr;
+			uint64_t x;
+			assert(!sr.u64_dyn_bp(x));
+		}
+		{
+			StringReader sr(string::hex2bin("80"));
+			uint64_t x;
+			assert(!sr.u64_dyn_bp(x));
+		}
+		{
+			StringReader sr(string::hex2bin("FF00000000000000"));
+			uint64_t x;
+			assert(!sr.u64_dyn_bp(x));
+		}
+		// Invalid data
+		{
+			StringReader sr(string::hex2bin("FFFFFEFEFEFEFEFEFE"));
+			uint64_t x;
+			assert(!sr.u64_dyn_bp(x));
 		}
 	});
 	test("LEB128", []

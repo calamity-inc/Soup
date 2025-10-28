@@ -93,7 +93,7 @@ NAMESPACE_SOUP
 	}
 
 #if SOUP_X86 && SOUP_BITS == 64
-	uint64_t bmi2_u64_dyn_v2_bias(uint64_t byte_length);
+	uint64_t bmi2_u64_dyn_bias(uint64_t byte_length);
 #endif
 
 	bool Writer::u64_dyn_b(const uint64_t& v) noexcept
@@ -122,7 +122,7 @@ NAMESPACE_SOUP
 				;
 
 			uint64_t e[2];
-			bmi2_u64_dyn_encode(v - bmi2_u64_dyn_v2_bias(byte_length), byte_length, e);
+			bmi2_u64_dyn_encode(v - bmi2_u64_dyn_bias(byte_length), byte_length, e);
 
 			return raw(e, byte_length);
 		}
@@ -138,7 +138,7 @@ NAMESPACE_SOUP
 			{
 				cur |= 0x80;
 				ret &= u8(cur);
-				in -= 1; // v2
+				in -= 1; // bias
 			}
 			else
 			{
