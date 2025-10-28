@@ -1335,7 +1335,7 @@ static void unit_io()
 			assert(!sr.u64_dyn(x));
 		}
 	});
-	test("i64_dyn", []
+	test("i64_dyn_a", []
 	{
 		struct { int64_t v; const char* d; size_t s; } pairs[] = {
 			{ 0, "\x00", 1 },
@@ -1349,16 +1349,16 @@ static void unit_io()
 		for (auto& pair : pairs)
 		{
 			StringWriter sw;
-			sw.i64_dyn(pair.v);
+			sw.i64_dyn_a(pair.v);
 			assert(sw.data.size() == pair.s);
 			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
 			MemoryRefReader sr(sw.data);
 			int64_t readback = 0;
-			assert(sr.i64_dyn(readback));
+			assert(sr.i64_dyn_a(readback));
 			assert(readback == pair.v);
 		}
 	});
-	test("u64_dyn_v2", []
+	test("u64_dyn_b", []
 	{
 		struct { uint64_t v; const char* d; size_t s; } pairs[] = {
 			{ 0, "\x00", 1 },
@@ -1375,32 +1375,32 @@ static void unit_io()
 		for (auto& pair : pairs)
 		{
 			StringWriter sw;
-			sw.u64_dyn_v2(pair.v);
+			sw.u64_dyn_b(pair.v);
 			assert(sw.data.size() == pair.s);
 			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
 			MemoryRefReader sr(sw.data);
 			uint64_t readback;
-			assert(sr.u64_dyn_v2(readback));
+			assert(sr.u64_dyn_b(readback));
 			assert(readback == pair.v);
 		}
 		// Unfinished data
 		{
 			StringReader sr;
 			uint64_t x;
-			assert(!sr.u64_dyn_v2(x));
+			assert(!sr.u64_dyn_b(x));
 		}
 		{
 			StringReader sr(string::hex2bin("80"));
 			uint64_t x;
-			assert(!sr.u64_dyn_v2(x));
+			assert(!sr.u64_dyn_b(x));
 		}
 		{
 			StringReader sr(string::hex2bin("8080808080808080"));
 			uint64_t x;
-			assert(!sr.u64_dyn_v2(x));
+			assert(!sr.u64_dyn_b(x));
 		}
 	});
-	test("i64_dyn_v2", []
+	test("i64_dyn_b", []
 	{
 		struct { int64_t v; const char* d; size_t s; } pairs[] = {
 			{ 0, "\x00", 1 },
@@ -1414,12 +1414,12 @@ static void unit_io()
 		for (auto& pair : pairs)
 		{
 			StringWriter sw;
-			sw.i64_dyn_v2(pair.v);
+			sw.i64_dyn_b(pair.v);
 			assert(sw.data.size() == pair.s);
 			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
 			MemoryRefReader sr(sw.data);
 			int64_t readback = 0;
-			assert(sr.i64_dyn_v2(readback));
+			assert(sr.i64_dyn_b(readback));
 			assert(readback == pair.v);
 		}
 	});

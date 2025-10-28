@@ -77,7 +77,7 @@ NAMESPACE_SOUP
 		return ret;
 	}
 
-	bool Writer::i64_dyn(const int64_t& v) noexcept
+	bool Writer::i64_dyn_a(const int64_t& v) noexcept
 	{
 		uint64_t u;
 		bool neg = (v < 0);
@@ -96,7 +96,7 @@ NAMESPACE_SOUP
 	uint64_t bmi2_u64_dyn_v2_bias(uint64_t byte_length);
 #endif
 
-	bool Writer::u64_dyn_v2(const uint64_t& v) noexcept
+	bool Writer::u64_dyn_b(const uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsBMI2())
@@ -151,12 +151,12 @@ NAMESPACE_SOUP
 		return ret;
 	}
 
-	bool Writer::i64_dyn_v2(const int64_t& v) noexcept
+	bool Writer::i64_dyn_b(const int64_t& v) noexcept
 	{
 		uint64_t u;
 		bool neg = (v < 0);
 		u = v ^ (0xffffffffffffffff * neg);
-		return u64_dyn_v2(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
+		return u64_dyn_b(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
 	bool Writer::u64_dyn_p(const uint64_t& v) noexcept
@@ -197,7 +197,7 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	bool Writer::u64_dyn_v2_p(const uint64_t& v) noexcept
+	bool Writer::u64_dyn_bp(const uint64_t& v) noexcept
 	{
 		static constexpr uint64_t smallest_value_needing_2_bytes_to_encode = 128ull;
 		static constexpr uint64_t smallest_value_needing_3_bytes_to_encode = 16512ull;
@@ -237,12 +237,12 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	bool Writer::i64_dyn_v2_p(const uint64_t& v) noexcept
+	bool Writer::i64_dyn_bp(const uint64_t& v) noexcept
 	{
 		uint64_t u;
 		bool neg = (v < 0);
 		u = v ^ (0xffffffffffffffff * neg);
-		return u64_dyn_v2_p(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
+		return u64_dyn_bp(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
 	bool Writer::mysql_lenenc(const uint64_t& v) noexcept

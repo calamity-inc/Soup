@@ -59,7 +59,7 @@ NAMESPACE_SOUP
 				std::cout << "OP_PUSH_INT" << std::endl;
 #endif
 				int64_t val;
-				r.i64_dyn(val);
+				r.i64_dyn_a(val);
 				push(soup::make_shared<Mixed>(val));
 			}
 			else if (op == OP_PUSH_UINT)
@@ -179,7 +179,7 @@ NAMESPACE_SOUP
 			case OP_PUSH_INT:
 			{
 				int64_t val;
-				r.i64_dyn(val);
+				r.i64_dyn_a(val);
 				b.setCto12();
 				b.setD((uint64_t)val);
 				b.setA((uint64_t)&asmvm_pushInt);

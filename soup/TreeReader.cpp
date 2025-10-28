@@ -130,13 +130,13 @@ NAMESPACE_SOUP
 			const void* const child = getChild(root, i);
 			auto name = getName(child);
 			SOUP_ASSERT(!name.empty());
-			w.str_lp_u64_dyn_v2(name);
-			w.str_lp_u64_dyn_v2(getValue(child));
+			w.str_lp_u64_dyn_b(name);
+			w.str_lp_u64_dyn_b(getValue(child));
 			if (canHaveChildren(child))
 			{
 				toBinary(w, child);
 			}
 		}
-		w.str_lp_u64_dyn_v2({});
+		w.str_lp_u64_dyn_b({});
 	}
 }

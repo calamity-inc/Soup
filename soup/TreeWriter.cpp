@@ -30,14 +30,14 @@ NAMESPACE_SOUP
 		while (true)
 		{
 			std::string name;
-			if (!r.str_lp_u64_dyn_v2(name)
+			if (!r.str_lp_u64_dyn_b(name)
 				|| name.empty()
 				)
 			{
 				break;
 			}
 			std::string value;
-			if (!r.str_lp_u64_dyn_v2(value))
+			if (!r.str_lp_u64_dyn_b(value))
 			{
 				break;
 			}

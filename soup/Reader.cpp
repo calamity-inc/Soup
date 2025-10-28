@@ -59,7 +59,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Reader::i64_dyn(int64_t& v) noexcept
+	bool Reader::i64_dyn_a(int64_t& v) noexcept
 	{
 		uint64_t u;
 		SOUP_RETHROW_FALSE(u64_dyn(u));
@@ -84,7 +84,7 @@ NAMESPACE_SOUP
 	}
 #endif
 
-	bool Reader::u64_dyn_v2(uint64_t& v) noexcept
+	bool Reader::u64_dyn_b(uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
@@ -121,10 +121,10 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Reader::i64_dyn_v2(int64_t& v) noexcept
+	bool Reader::i64_dyn_b(int64_t& v) noexcept
 	{
 		uint64_t u;
-		SOUP_RETHROW_FALSE(u64_dyn_v2(u));
+		SOUP_RETHROW_FALSE(u64_dyn_b(u));
 		const bool neg = (u >> 6) & 1; // check bit 6
 		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
 		v = u ^ (0xffffffffffffffff * neg);
@@ -152,7 +152,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Reader::u64_dyn_v2_p(uint64_t& v) noexcept
+	bool Reader::u64_dyn_bp(uint64_t& v) noexcept
 	{
 		uint8_t first_byte;
 		SOUP_RETHROW_FALSE(u8(first_byte));
@@ -168,10 +168,10 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Reader::i64_dyn_v2_p(uint64_t& v) noexcept
+	bool Reader::i64_dyn_bp(uint64_t& v) noexcept
 	{
 		uint64_t u;
-		SOUP_RETHROW_FALSE(u64_dyn_v2_p(u));
+		SOUP_RETHROW_FALSE(u64_dyn_bp(u));
 		const bool neg = (u >> 6) & 1; // check bit 6
 		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
 		v = u ^ (0xffffffffffffffff * neg);
