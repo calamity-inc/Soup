@@ -59,7 +59,7 @@ NAMESPACE_SOUP
 		// Prefixed variants are the same as above but the continuation bits are all in the first byte, which is a lot faster to read without even needing special CPU instructions.
 		bool u64_dyn_p(uint64_t& v) noexcept;
 		bool u64_dyn_bp(uint64_t& v) noexcept;
-		bool i64_dyn_bp(uint64_t& v) noexcept;
+		bool i64_dyn_bp(int64_t& v) noexcept;
 
 		template <typename Int>
 		[[deprecated("Renamed to omb")]] bool om(Int& v) noexcept { return omb(v); }

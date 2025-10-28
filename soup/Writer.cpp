@@ -237,7 +237,7 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	bool Writer::i64_dyn_bp(const uint64_t& v) noexcept
+	bool Writer::i64_dyn_bp(const int64_t& v) noexcept
 	{
 		uint64_t u;
 		bool neg = (v < 0);

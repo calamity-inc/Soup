@@ -168,7 +168,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Reader::i64_dyn_bp(uint64_t& v) noexcept
+	bool Reader::i64_dyn_bp(int64_t& v) noexcept
 	{
 		uint64_t u;
 		SOUP_RETHROW_FALSE(u64_dyn_bp(u));
