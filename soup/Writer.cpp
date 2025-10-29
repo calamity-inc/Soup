@@ -77,21 +77,6 @@ NAMESPACE_SOUP
 		return ret;
 	}
 
-	bool Writer::i64_dyn_a(const int64_t& v) noexcept
-	{
-		uint64_t u;
-		bool neg = (v < 0);
-		if (neg)
-		{
-			u = (~v + 1) & ~((uint64_t)1 << 63);
-		}
-		else
-		{
-			u = v;
-		}
-		return u64_dyn(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
-	}
-
 #if SOUP_X86 && SOUP_BITS == 64
 	uint64_t bmi2_u64_dyn_bias(size_t byte_length);
 #endif
@@ -149,14 +134,6 @@ NAMESPACE_SOUP
 		cur = (uint8_t)in;
 		ret &= u8(cur);
 		return ret;
-	}
-
-	bool Writer::i64_dyn_b(const int64_t& v) noexcept
-	{
-		uint64_t u;
-		bool neg = (v < 0);
-		u = v ^ (0xffffffffffffffff * neg);
-		return u64_dyn_b(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
 	bool Writer::u64_dyn_p(const uint64_t& v) noexcept
@@ -235,6 +212,29 @@ NAMESPACE_SOUP
 		}
 		res &= raw(&w, byte_length - 1);
 		return res;
+	}
+
+	bool Writer::i64_dyn_a(const int64_t& v) noexcept
+	{
+		uint64_t u;
+		bool neg = (v < 0);
+		if (neg)
+		{
+			u = (~v + 1) & ~((uint64_t)1 << 63);
+		}
+		else
+		{
+			u = v;
+		}
+		return u64_dyn(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
+	}
+
+	bool Writer::i64_dyn_b(const int64_t& v) noexcept
+	{
+		uint64_t u;
+		bool neg = (v < 0);
+		u = v ^ (0xffffffffffffffff * neg);
+		return u64_dyn_b(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
 	bool Writer::i64_dyn_bp(const int64_t& v) noexcept

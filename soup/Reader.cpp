@@ -59,19 +59,6 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Reader::i64_dyn_a(int64_t& v) noexcept
-	{
-		uint64_t u;
-		SOUP_RETHROW_FALSE(u64_dyn(u));
-		const bool neg = (u >> 6) & 1; // check bit 6
-		v = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
-		if (neg)
-		{
-			v = static_cast<int64_t>(~(v - 1) | (static_cast<uint64_t>(1) << 63));
-		}
-		return true;
-	}
-
 #if SOUP_X86 && SOUP_BITS == 64
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
@@ -129,22 +116,13 @@ NAMESPACE_SOUP
 		return valid;
 	}
 
-	bool Reader::i64_dyn_b(int64_t& v) noexcept
-	{
-		uint64_t u;
-		SOUP_RETHROW_FALSE(u64_dyn_b(u));
-		const bool neg = (u >> 6) & 1; // check bit 6
-		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
-		v = u ^ (0xffffffffffffffff * neg);
-		return true;
-	}
-
 	bool Reader::u64_dyn_p(uint64_t& v) noexcept
 	{
 		uint8_t first_byte;
 		SOUP_RETHROW_FALSE(u8(first_byte));
 		const auto byte_length = 1 + (bitutil::getNumLeadingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
 		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
+		v = 0;
 		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
 		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
 		{
@@ -161,6 +139,7 @@ NAMESPACE_SOUP
 		SOUP_RETHROW_FALSE(u8(first_byte));
 		const auto byte_length = 1 + (bitutil::getNumLeadingZeros(static_cast<uint32_t>((uint8_t)~first_byte)) - 24);
 		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
+		v = 0;
 		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
 		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
 		{
@@ -176,6 +155,29 @@ NAMESPACE_SOUP
 		bool valid = v <= 0xffffffffffffffff - bias;
 		v += bias;
 		return valid;
+	}
+
+	bool Reader::i64_dyn_a(int64_t& v) noexcept
+	{
+		uint64_t u;
+		SOUP_RETHROW_FALSE(u64_dyn(u));
+		const bool neg = (u >> 6) & 1; // check bit 6
+		v = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
+		if (neg)
+		{
+			v = static_cast<int64_t>(~(v - 1) | (static_cast<uint64_t>(1) << 63));
+		}
+		return true;
+	}
+
+	bool Reader::i64_dyn_b(int64_t& v) noexcept
+	{
+		uint64_t u;
+		SOUP_RETHROW_FALSE(u64_dyn_b(u));
+		const bool neg = (u >> 6) & 1; // check bit 6
+		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
+		v = u ^ (0xffffffffffffffff * neg);
+		return true;
 	}
 
 	bool Reader::i64_dyn_bp(int64_t& v) noexcept

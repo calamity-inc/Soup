@@ -1319,44 +1319,13 @@ static void unit_io()
 			assert(readback == pair.v);
 		}
 		// Unfinished data
-		{
-			StringReader sr;
-			uint64_t x;
-			assert(!sr.u64_dyn(x));
-		}
-		{
-			StringReader sr(string::hex2bin("80"));
-			uint64_t x;
-			assert(!sr.u64_dyn(x));
-		}
-		{
-			StringReader sr(string::hex2bin("8080808080808080"));
-			uint64_t x;
-			assert(!sr.u64_dyn(x));
-		}
-	});
-	test("i64_dyn_a", []
-	{
-		struct { int64_t v; const char* d; size_t s; } pairs[] = {
-			{ 0, "\x00", 1 },
-			{ 0x7f, "\xBF\x01", 2 },
-			{ 0x80, "\x80\x02", 2 },
-			{ 1337, "\xB9\x14", 2 },
-			{ 42069, "\x95\x91\x05", 3 },
-			{ -1, "\x41", 1 },
-			{ INT64_MIN, "\x40", 1 },
-		};
-		for (auto& pair : pairs)
-		{
-			StringWriter sw;
-			sw.i64_dyn_a(pair.v);
-			assert(sw.data.size() == pair.s);
-			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
-			MemoryRefReader sr(sw.data);
-			int64_t readback = 0;
-			assert(sr.i64_dyn_a(readback));
-			assert(readback == pair.v);
-		}
+		uint64_t x;
+		StringReader sr;
+		assert(!sr.u64_dyn_b(x));
+		sr = string::hex2bin("80");
+		assert(!sr.u64_dyn_b(x));
+		sr = string::hex2bin("8080808080808080");
+		assert(!sr.u64_dyn_b(x));
 	});
 	test("u64_dyn_b", []
 	{
@@ -1384,50 +1353,16 @@ static void unit_io()
 			assert(readback == pair.v);
 		}
 		// Unfinished data
-		{
-			StringReader sr;
-			uint64_t x;
-			assert(!sr.u64_dyn_b(x));
-		}
-		{
-			StringReader sr(string::hex2bin("80"));
-			uint64_t x;
-			assert(!sr.u64_dyn_b(x));
-		}
-		{
-			StringReader sr(string::hex2bin("8080808080808080"));
-			uint64_t x;
-			assert(!sr.u64_dyn_b(x));
-		}
+		uint64_t x;
+		StringReader sr;
+		assert(!sr.u64_dyn_b(x));
+		sr = string::hex2bin("80");
+		assert(!sr.u64_dyn_b(x));
+		sr = string::hex2bin("8080808080808080");
+		assert(!sr.u64_dyn_b(x));
 		// Invalid data
-		{
-			StringReader sr(string::hex2bin("FFFFFEFEFEFEFEFEFE"));
-			uint64_t x;
-			assert(!sr.u64_dyn_b(x));
-		}
-	});
-	test("i64_dyn_b", []
-	{
-		struct { int64_t v; const char* d; size_t s; } pairs[] = {
-			{ 0, "\x00", 1 },
-			{ 0x7f, "\xBF\x00", 2 },
-			{ 0x80, "\x80\x01", 2 },
-			{ 1337, "\xB9\x13", 2 },
-			{ 42069, "\x95\x90\x04", 3 },
-			{ -1, "\x40", 1 },
-			{ INT64_MIN, "\xFF\xFE\xFE\xFE\xFE\xFE\xFE\xFE\xFE", 9 },
-		};
-		for (auto& pair : pairs)
-		{
-			StringWriter sw;
-			sw.i64_dyn_b(pair.v);
-			assert(sw.data.size() == pair.s);
-			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
-			MemoryRefReader sr(sw.data);
-			int64_t readback = 0;
-			assert(sr.i64_dyn_b(readback));
-			assert(readback == pair.v);
-		}
+		sr = string::hex2bin("FFFFFEFEFEFEFEFEFE");
+		assert(!sr.u64_dyn_b(x));
 	});
 	test("u64_dyn_p", []
 	{
@@ -1452,49 +1387,138 @@ static void unit_io()
 			assert(readback == pair.v);
 		}
 		// Unfinished data
-		{
-			StringReader sr;
-			uint64_t x;
-			assert(!sr.u64_dyn_p(x));
-		}
-		{
-			StringReader sr(string::hex2bin("80"));
-			uint64_t x;
-			assert(!sr.u64_dyn_p(x));
-		}
-		{
-			StringReader sr(string::hex2bin("FF00000000000000"));
-			uint64_t x;
-			assert(!sr.u64_dyn_p(x));
-		}
+		uint64_t x;
+		StringReader sr;
+		assert(!sr.u64_dyn_p(x));
+		sr = string::hex2bin("80");
+		assert(!sr.u64_dyn_p(x));
+		sr = string::hex2bin("FF00000000000000");
+		assert(!sr.u64_dyn_p(x));
 	});
 	test("u64_dyn_bp", []
 	{
+		struct { uint64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\x7F", 1 },
+			{ 0x80, "\x80\x00", 2 },
+			{ 1337, "\xB9\x12", 2 },
+			{ 42069, "\xD5\x1E\x03", 3 },
+			{ 0xffffffffffffffff, "\xFF\x7F\xBF\xDF\xEF\xF7\xFB\xFD\xFE", 9 },
+			{ 0x8000000000000000, "\xFF\x80\xBF\xDF\xEF\xF7\xFB\xFD\x7E", 9 },
+		};
+		for (auto& pair : pairs)
 		{
-			// ...
+			StringWriter sw;
+			sw.u64_dyn_bp(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			uint64_t readback = 0;
+			assert(sr.u64_dyn_bp(readback));
+			assert(readback == pair.v);
 		}
 		// Unfinished data
-		{
-			StringReader sr;
-			uint64_t x;
-			assert(!sr.u64_dyn_bp(x));
-		}
-		{
-			StringReader sr(string::hex2bin("80"));
-			uint64_t x;
-			assert(!sr.u64_dyn_bp(x));
-		}
-		{
-			StringReader sr(string::hex2bin("FF00000000000000"));
-			uint64_t x;
-			assert(!sr.u64_dyn_bp(x));
-		}
+		uint64_t x;
+		StringReader sr;
+		assert(!sr.u64_dyn_bp(x));
+		sr = string::hex2bin("80");
+		assert(!sr.u64_dyn_bp(x));
+		sr = string::hex2bin("FF00000000000000");
+		assert(!sr.u64_dyn_bp(x));
 		// Invalid data
+		sr = string::hex2bin("FFFFFEFEFEFEFEFEFE");
+		assert(!sr.u64_dyn_bp(x));
+	});
+	test("i64_dyn_a", []
+	{
+		struct { int64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\xBF\x01", 2 },
+			{ 0x80, "\x80\x02", 2 },
+			{ 1337, "\xB9\x14", 2 },
+			{ 42069, "\x95\x91\x05", 3 },
+			{ -1, "\x41", 1 },
+			{ INT64_MIN, "\x40", 1 },
+		};
+		for (auto& pair : pairs)
 		{
-			StringReader sr(string::hex2bin("FFFFFEFEFEFEFEFEFE"));
-			uint64_t x;
-			assert(!sr.u64_dyn_bp(x));
+			StringWriter sw;
+			sw.i64_dyn_a(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			int64_t readback = 0;
+			assert(sr.i64_dyn_a(readback));
+			assert(readback == pair.v);
 		}
+	});
+	test("i64_dyn_b", []
+	{
+		struct { int64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\xBF\x00", 2 },
+			{ 0x80, "\x80\x01", 2 },
+			{ 1337, "\xB9\x13", 2 },
+			{ 42069, "\x95\x90\x04", 3 },
+			{ -1, "\x40", 1 },
+			{ INT64_MIN, "\xFF\xFE\xFE\xFE\xFE\xFE\xFE\xFE\xFE", 9 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.i64_dyn_b(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			int64_t readback = 0;
+			assert(sr.i64_dyn_b(readback));
+			assert(readback == pair.v);
+		}
+		// Unfinished data
+		int64_t x;
+		StringReader sr;
+		assert(!sr.i64_dyn_b(x));
+		sr = string::hex2bin("80");
+		assert(!sr.i64_dyn_b(x));
+		sr = string::hex2bin("8080808080808080");
+		assert(!sr.i64_dyn_b(x));
+		// Invalid data
+		sr = string::hex2bin("FFFFFEFEFEFEFEFEFE");
+		assert(!sr.i64_dyn_b(x));
+	});
+	test("i64_dyn_bp", []
+	{
+		struct { int64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\xBF\x00", 2 },
+			{ 0x80, "\x80\x02", 2 },
+			{ 1337, "\xB9\x26", 2 },
+			{ 42069, "\xD5\x40\x08", 3 },
+			{ -1, "\x40", 1 },
+			{ INT64_MIN, "\xFF\x7F\xBF\xDF\xEF\xF7\xFB\xFD\xFE", 9 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.i64_dyn_bp(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			int64_t readback = 0;
+			assert(sr.i64_dyn_bp(readback));
+			assert(readback == pair.v);
+		}
+		// Unfinished data
+		int64_t x;
+		StringReader sr;
+		assert(!sr.i64_dyn_bp(x));
+		sr = string::hex2bin("80");
+		assert(!sr.i64_dyn_bp(x));
+		sr = string::hex2bin("FF00000000000000");
+		assert(!sr.i64_dyn_bp(x));
+		// Invalid data
+		sr = string::hex2bin("FFFFFEFEFEFEFEFEFE");
+		assert(!sr.i64_dyn_bp(x));
 	});
 	test("LEB128", []
 	{
