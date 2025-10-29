@@ -228,7 +228,6 @@ NAMESPACE_SOUP
 #endif
 		}
 
-#if SOUP_BITS >= 64
 		[[nodiscard]] static auto getNumSetBits(uint64_t i) noexcept
 		{
 #if defined(_MSC_VER) && !defined(__clang__)
@@ -237,7 +236,6 @@ NAMESPACE_SOUP
 			return __builtin_popcountll(i);
 #endif
 		}
-#endif
 
 		// https://stackoverflow.com/a/2602885
 		[[nodiscard]] static uint8_t reverse(uint8_t b) noexcept
