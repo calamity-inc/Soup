@@ -14,7 +14,7 @@ NAMESPACE_SOUP
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
 	#endif
-	static void bmi2_u64_dyn_encode(uint64_t v, uint64_t byte_length, uint64_t e[2])
+	static void bmi2_u64_dyn_encode(uint64_t v, size_t byte_length, uint64_t e[2])
 	{
 		const uint64_t mask = ((byte_length < 9) * (1ull << (8 * (byte_length - 1)))) - 1;
 		const uint64_t contbits = 0x8080'8080'8080'8080ull & mask;
@@ -37,7 +37,7 @@ NAMESPACE_SOUP
 			static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = 1ull << 49;
 			static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = 1ull << 56;
 
-			const auto byte_length = 1
+			const size_t byte_length = 1
 				+ (v >= smallest_value_needing_2_bytes_to_encode)
 				+ (v >= smallest_value_needing_3_bytes_to_encode)
 				+ (v >= smallest_value_needing_4_bytes_to_encode)
@@ -93,7 +93,7 @@ NAMESPACE_SOUP
 	}
 
 #if SOUP_X86 && SOUP_BITS == 64
-	uint64_t bmi2_u64_dyn_bias(uint64_t byte_length);
+	uint64_t bmi2_u64_dyn_bias(size_t byte_length);
 #endif
 
 	bool Writer::u64_dyn_b(const uint64_t& v) noexcept
@@ -110,7 +110,7 @@ NAMESPACE_SOUP
 			static constexpr uint64_t smallest_value_needing_8_bytes_to_encode = 567382630219904ull;
 			static constexpr uint64_t smallest_value_needing_9_bytes_to_encode = 72624976668147840ull;
 
-			const auto byte_length = 1
+			const size_t byte_length = 1
 				+ (v >= smallest_value_needing_2_bytes_to_encode)
 				+ (v >= smallest_value_needing_3_bytes_to_encode)
 				+ (v >= smallest_value_needing_4_bytes_to_encode)

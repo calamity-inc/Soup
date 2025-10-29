@@ -15,7 +15,7 @@ NAMESPACE_SOUP
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
 	#endif
-	static void bmi2_u64_dyn_decode(__m128i e, uint64_t byte_length, uint64_t& v)
+	static void bmi2_u64_dyn_decode(__m128i e, size_t byte_length, uint64_t& v)
 	{
 		const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
 		uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
@@ -76,7 +76,7 @@ NAMESPACE_SOUP
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
 	#endif
-	uint64_t bmi2_u64_dyn_bias(uint64_t byte_length)
+	uint64_t bmi2_u64_dyn_bias(size_t byte_length)
 	{
 		const auto biasbits = (byte_length >= 2) * (byte_length - 1);
 		const auto biasmask = ((1u << biasbits) - 1u);
@@ -94,10 +94,10 @@ NAMESPACE_SOUP
 			size_t read_bytes = 9;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~static_cast<uint32_t>(_mm_movemask_epi8(e) & 0xff));
+			const size_t byte_length = 1 + bitutil::getNumTrailingZeros(~static_cast<uint32_t>(_mm_movemask_epi8(e) & 0xff));
 			bmi2_u64_dyn_decode(e, byte_length, v);
 
-			const auto bias = bmi2_u64_dyn_bias(byte_length);
+			const uint64_t bias = bmi2_u64_dyn_bias(byte_length);
 			bool valid = v <= 0xffffffffffffffff - bias;
 			v += bias;
 
