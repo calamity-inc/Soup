@@ -133,9 +133,9 @@ NAMESPACE_SOUP
 		SharedPtr(const SharedPtr<T2>& b) noexcept
 			: data(reinterpret_cast<Data*>(b.data.load()))
 		{
-			if (data != nullptr)
+			if (Data* d = data.load(); d != nullptr)
 			{
-				data.load()->incref();
+				d->incref();
 			}
 		}
 
@@ -252,6 +252,21 @@ NAMESPACE_SOUP
 				::operator delete(reinterpret_cast<void*>(data));
 			}
 			return inst;
+		}
+
+		[[nodiscard]] void* toDumb() const noexcept
+		{
+			Data* d = data.load();
+			if (d != nullptr)
+			{
+				d->incref();
+			}
+			return reinterpret_cast<void*>(d);
+		}
+
+		[[nodiscard]] static SharedPtr<T> fromDumb(void* ptr) noexcept
+		{
+			return SharedPtr<T>(reinterpret_cast<Data*>(ptr));
 		}
 	};
 
