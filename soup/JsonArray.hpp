@@ -61,5 +61,7 @@ NAMESPACE_SOUP
 		{
 			return children.size();
 		}
+
+		[[nodiscard]] JsonNode* query(const char* q) noexcept;
 	};
 }

@@ -773,6 +773,9 @@ static void unit_data()
 			assert(obj.at("phoneNumbers").asArr().at(0).asObj().at("type").asStr() == "home");
 			assert(obj.at("spouse").isNull());
 
+			// Query
+			assert(obj.query("phoneNumbers.0.number")->asStr().value == "212 555-1234");
+
 			// MessagePack encoding & decoding
 			{
 				StringWriter sw;
