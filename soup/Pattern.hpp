@@ -28,5 +28,10 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 64
 		[[nodiscard]] size_t getMostUniqueByteIndex() const noexcept;
 #endif
+
+		[[nodiscard]] bool hasWildcards() const noexcept;
+
+		bool io(Writer& w) noexcept;
+		bool io(Reader& r) SOUP_EXCAL;
 	};
 }

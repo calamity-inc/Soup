@@ -1,9 +1,11 @@
 #include "Pattern.hpp"
 
-#include "Module.hpp"
 #include "CompiletimePatternWithOptBytesBase.hpp"
+#include "Module.hpp"
 #include "Pointer.hpp"
+#include "Reader.hpp"
 #include "string.hpp"
+#include "Writer.hpp"
 
 NAMESPACE_SOUP
 {
@@ -193,4 +195,81 @@ NAMESPACE_SOUP
 		return best_index;
 	}
 #endif
+
+	bool Pattern::hasWildcards() const noexcept
+	{
+		for (const auto& o : bytes)
+		{
+			if (!o.has_value())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Pattern::io(Writer& w) noexcept
+	{
+		{
+			uint64_t size = bytes.size();
+			SOUP_RETHROW_FALSE(w.u64_dyn_bp(size));
+		}
+
+		uint8_t none_value = 0;
+		if (hasWildcards())
+		{
+		_retry:
+			for (const auto& o : bytes)
+			{
+				if (o.has_value() && static_cast<int64_t>(*o) == none_value)
+				{
+					SOUP_RETHROW_FALSE(none_value != 0xff); // Possible future expansion, but right now none_value must fit in a byte and must not be used in the pattern.
+					++none_value;
+					goto _retry;
+				}
+			}
+			SOUP_RETHROW_FALSE(w.i64_dyn_bp(static_cast<int64_t>(static_cast<uint64_t>(none_value))));
+		}
+		else
+		{
+			SOUP_RETHROW_FALSE(w.i64_dyn_bp(-1));
+		}
+
+		for (const auto& o : bytes)
+		{
+			uint8_t v = o.value_or(none_value);
+			SOUP_RETHROW_FALSE(w.u8(v));
+		}
+
+		return true;
+	}
+
+	bool Pattern::io(Reader& r) SOUP_EXCAL
+	{
+		bytes.clear();
+
+		uint64_t size;
+		SOUP_RETHROW_FALSE(r.u64_dyn_bp(size));
+		bytes.reserve(size);
+
+		int64_t none_value;
+		SOUP_RETHROW_FALSE(r.i64_dyn_bp(none_value));
+		SOUP_RETHROW_FALSE(none_value >= -1 && none_value <= 0xff);
+
+		while (size--)
+		{
+			uint8_t v;
+			r.u8(v);
+			if (static_cast<int64_t>(v) != none_value)
+			{
+				bytes.emplace_back(v);
+			}
+			else
+			{
+				bytes.emplace_back(std::nullopt);
+			}
+		}
+
+		return true;
+	}
 }
