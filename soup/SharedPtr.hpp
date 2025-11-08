@@ -148,8 +148,8 @@ NAMESPACE_SOUP
 
 		void operator=(const SharedPtr<T>& b) noexcept
 		{
-			Data* const prev_data = this->data;
-			Data* const new_data = b.data;
+			Data* const prev_data = this->data.load();
+			Data* const new_data = b.data.load();
 			this->data = new_data;
 			if (new_data != nullptr)
 			{
@@ -166,7 +166,7 @@ NAMESPACE_SOUP
 
 		void operator=(SharedPtr<T>&& b) noexcept
 		{
-			Data* const prev_data = this->data;
+			Data* const prev_data = this->data.load();
 			this->data = b.data.load();
 			b.data = nullptr;
 			if (prev_data != nullptr)
@@ -188,7 +188,7 @@ NAMESPACE_SOUP
 
 		void reset() noexcept
 		{
-			Data* const data = this->data;
+			Data* const data = this->data.load();
 			if (data != nullptr)
 			{
 				this->data = nullptr;
@@ -208,7 +208,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] T* get() const noexcept
 		{
-			Data* const data = this->data;
+			Data* const data = this->data.load();
 			if (data)
 			{
 				return data->inst;
@@ -233,7 +233,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] T* release()
 		{
-			Data* const data = this->data;
+			Data* const data = this->data.load();
 			this->data = nullptr;
 			if (data->refcount.load() != 1)
 			{
