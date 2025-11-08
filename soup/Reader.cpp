@@ -180,6 +180,16 @@ NAMESPACE_SOUP
 		return true;
 	}
 
+	bool Reader::i64_dyn_p(int64_t& v) noexcept
+	{
+		uint64_t u;
+		SOUP_RETHROW_FALSE(u64_dyn_p(u));
+		const bool neg = (u >> 6) & 1; // check bit 6
+		u = ((u >> 1) & ~0x3f) | (u & 0x3f); // remove bit 6
+		v = u ^ (0xffffffffffffffff * neg);
+		return true;
+	}
+
 	bool Reader::i64_dyn_bp(int64_t& v) noexcept
 	{
 		uint64_t u;

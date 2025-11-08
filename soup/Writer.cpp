@@ -237,6 +237,14 @@ NAMESPACE_SOUP
 		return u64_dyn_b(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
 	}
 
+	bool Writer::i64_dyn_p(const int64_t& v) noexcept
+	{
+		uint64_t u;
+		bool neg = (v < 0);
+		u = v ^ (0xffffffffffffffff * neg);
+		return u64_dyn_p(((uint64_t)neg << 6) | ((u & ~0x3f) << 1) | (u & 0x3f));
+	}
+
 	bool Writer::i64_dyn_bp(const int64_t& v) noexcept
 	{
 		uint64_t u;

@@ -28,6 +28,7 @@ NAMESPACE_SOUP
 		bool u64_dyn_bp(const uint64_t& v) noexcept;
 		bool i64_dyn_a(const int64_t& v) noexcept;
 		bool i64_dyn_b(const int64_t& v) noexcept;
+		bool i64_dyn_p(const int64_t& v) noexcept;
 		bool i64_dyn_bp(const int64_t& v) noexcept;
 		[[deprecated("Renamed to i64_dyn_a")]] bool i64_dyn(const int64_t& v) noexcept { return i64_dyn_a(v); }
 		[[deprecated("Renamed to u64_dyn_b")]] bool u64_dyn_v2(const uint64_t& v) noexcept { return u64_dyn_b(v); }
