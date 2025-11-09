@@ -19,13 +19,8 @@ NAMESPACE_SOUP
 {
 	size_t Range::scanWithMultipleResults(const Pattern& sig, Pointer buf[], size_t buflen) const noexcept
 	{
-		SOUP_IF_UNLIKELY (sig.bytes.size() > this->size)
+		SOUP_IF_UNLIKELY (sig.bytes.empty() || this->size < sig.bytes.size())
 		{
-			if (sig.bytes.empty())
-			{
-				buf[0] = base;
-				return 1;
-			}
 			return 0;
 		}
 #if SOUP_X86 && SOUP_BITS == 64
