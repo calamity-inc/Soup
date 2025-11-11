@@ -87,14 +87,14 @@ jobs:
       - name: Upload soup
         uses: actions/upload-artifact@v4
         with:
-          name: "Debian 12 (ARM64)"
+          name: "Debian 12 and above (ARM64)"
           path: |
             CLI/soup
             libsoup.a
             libsoupbindings.so
 
-  macos-13:
-    runs-on: macos-13
+  macos-15-intel:
+    runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v4
 
