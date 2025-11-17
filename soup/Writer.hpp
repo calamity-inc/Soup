@@ -4,6 +4,8 @@
 
 #include "fwd.hpp"
 
+#include <cstring> // strlen
+
 NAMESPACE_SOUP
 {
 	class Writer : public ioBase<false>
@@ -116,12 +118,15 @@ NAMESPACE_SOUP
 		bool mysql_lenenc(const uint64_t& v) noexcept;
 
 		// Null-terminated string.
+		bool str_nt(const char* v)
+		{
+			return raw(const_cast<char*>(v), strlen(v) + 1);
+		}
+
+		// Null-terminated string.
 		bool str_nt(const std::string& v) noexcept
 		{
-			bool ret = raw(const_cast<char*>(v.data()), v.size());
-			uint8_t term = 0;
-			ret &= u8(term);
-			return ret;
+			return raw(const_cast<char*>(v.c_str()), v.size() + 1);
 		}
 
 		// Length-prefixed string.
