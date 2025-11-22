@@ -1103,6 +1103,13 @@ spanning over multiple lines */
 
 		assert(Regex(R"((\d+) cars)").substituteAll("10 cars", "$1 cats") == "10 cats");
 		assert(Regex(R"((\d+) cars)").substituteAll("I have 10 cars.", "$1 cats") == "I have 10 cats.");
+
+		{
+			Regex r(".");
+			std::string str = "abc";
+			r.replaceAll(str, "x"); // This shouldn't infinitely loop.
+			assert(str == "xxx");
+		}
 	});
 
 	test("MessageStream", []
