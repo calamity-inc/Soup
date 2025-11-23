@@ -286,6 +286,25 @@ NAMESPACE_SOUP
 	using socklen_t = int;
 #endif
 
+	SocketAddr Socket::getBoundAddress() const noexcept
+	{
+		SocketAddr addr;
+		sockaddr_in6 sa{};
+		socklen_t addrlen = sizeof(sa);
+		::getsockname(fd, (sockaddr*)&sa, &addrlen);
+		if (sa.sin6_family == AF_INET6)
+		{
+			memcpy(&addr.ip.data, &sa.sin6_addr, sizeof(in6_addr));
+			addr.port = sa.sin6_port;
+		}
+		else if (sa.sin6_family == AF_INET)
+		{
+			addr.ip = network_u32_t(reinterpret_cast<sockaddr_in*>(&sa)->sin_addr.s_addr);
+			addr.port = reinterpret_cast<sockaddr_in*>(&sa)->sin_port;
+		}
+		return addr;
+	}
+
 	Socket Socket::accept6() noexcept
 	{
 		Socket res{};

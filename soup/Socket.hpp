@@ -102,6 +102,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static bool isPortLocallyBound(uint16_t port);
 
+		// Binding with port = 0 will obtain an ephemeral port; getBoundAddress() will tell you what that port is.
 		bool bind6(uint16_t port) noexcept;
 		bool bind4(uint16_t port) noexcept;
 		bool udpBind6(uint16_t port) noexcept;
@@ -109,6 +110,8 @@ NAMESPACE_SOUP
 		bool udpBind(const IpAddr& addr, uint16_t port) noexcept;
 		bool bind6(int type, uint16_t port, const IpAddr& addr = {}) noexcept;
 		bool bind4(int type, uint16_t port, const IpAddr& addr = {}) noexcept;
+
+		[[nodiscard]] SocketAddr getBoundAddress() const noexcept;
 
 		[[nodiscard]] Socket accept6() noexcept;
 		[[nodiscard]] Socket accept4() noexcept;
