@@ -102,7 +102,7 @@ NAMESPACE_SOUP
 		n_bits = 0;
 	}
 
-	std::string md5::hash(const void* data, size_t len)
+	std::string md5::hash(const void* data, size_t len) SOUP_EXCAL
 	{
 		State state;
 		state.append(data, len);

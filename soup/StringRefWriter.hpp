@@ -9,7 +9,7 @@ NAMESPACE_SOUP
 	public:
 		std::string& str;
 
-		StringRefWriter(std::string& str)
+		StringRefWriter(std::string& str) noexcept
 			: Writer(), str(str)
 		{
 		}

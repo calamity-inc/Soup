@@ -410,7 +410,7 @@ NAMESPACE_SOUP
 		bool sha256;
 	};
 
-	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&, std::string&& alpn_protocol) SOUP_EXCAL, Capture&& cap, std::string&& initial_application_data, certchain_validator_t certchain_validator, std::vector<std::string>&& alpn_protocols) SOUP_EXCAL
+	void Socket::enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&, std::string&& alpn_protocol), Capture&& cap, std::string&& initial_application_data, certchain_validator_t certchain_validator, std::vector<std::string>&& alpn_protocols)
 	{
 		UniquePtr<SocketTlsHandshaker> handshaker = soup::make_unique<SocketTlsHandshakerClient>(
 			callback,
@@ -771,9 +771,9 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void Socket::enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL
+	void Socket::enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker)
 	{
-		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data) SOUP_EXCAL
+		tls_recvHandshake(std::move(handshaker), [](Socket& s, UniquePtr<SocketTlsHandshaker>&& handshaker, TlsHandshakeType_t handshake_type, std::string&& data)
 		{
 			if (handshake_type == TlsHandshake::server_hello_done)
 			{
@@ -803,7 +803,7 @@ NAMESPACE_SOUP
 		});
 	}
 
-	void Socket::enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker) SOUP_EXCAL
+	void Socket::enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker)
 	{
 		std::string cke{};
 		SOUP_TRY

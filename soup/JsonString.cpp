@@ -24,7 +24,7 @@ NAMESPACE_SOUP
 		return 0;
 	}
 
-	void JsonString::decodeValue(std::string& value, const char*& c, size_t& s)
+	void JsonString::decodeValue(std::string& value, const char*& c, size_t& s) SOUP_EXCAL
 	{
 		for (bool escaped = false; s != 0; ++c, --s)
 		{
@@ -119,7 +119,7 @@ NAMESPACE_SOUP
 			;
 	}
 
-	void JsonString::encodeAndAppendTo(std::string& str) const
+	void JsonString::encodeAndAppendTo(std::string& str) const SOUP_EXCAL
 	{
 		encodeValue(str, this->value.data(), this->value.size());
 	}

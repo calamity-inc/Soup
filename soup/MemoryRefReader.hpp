@@ -15,13 +15,13 @@ NAMESPACE_SOUP
 		size_t size;
 		size_t offset = 0;
 
-		MemoryRefReader(const void* _data, size_t size)
+		MemoryRefReader(const void* _data, size_t size) noexcept
 			: Reader(), data(reinterpret_cast<const uint8_t*>(_data)), size(size)
 		{
 		}
 
 		template <typename T, SOUP_RESTRICT(!std::is_pointer_v<T>)>
-		MemoryRefReader(const T& t)
+		MemoryRefReader(const T& t) noexcept
 			: MemoryRefReader(t.data(), t.size())
 		{
 		}
