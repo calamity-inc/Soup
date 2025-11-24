@@ -399,7 +399,10 @@ NAMESPACE_SOUP
 	Window& Window::redraw() noexcept
 	{
 #if SOUP_WINDOWS
-		InvalidateRect(h, NULL, FALSE);
+		if (h != NULL)
+		{
+			InvalidateRect(h, NULL, FALSE);
+		}
 #else
 		Window::Config& wc = getConfig();
 		if (wc.draw_func)
