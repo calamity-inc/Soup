@@ -1,4 +1,5 @@
 #include "DetourHookBase.hpp"
+#if SOUP_X86
 
 #include "alloc.hpp"
 #include "Exception.hpp"
@@ -59,3 +60,5 @@ NAMESPACE_SOUP
 		}
 	}
 }
+
+#endif

@@ -2,6 +2,8 @@
 
 #include "DetourHookBase.hpp"
 
+#if SOUP_X86 && SOUP_BITS == 64
+
 NAMESPACE_SOUP
 {
 	// Uses r10 to store the jump target
@@ -15,3 +17,5 @@ NAMESPACE_SOUP
 		void disable();
 	};
 }
+
+#endif

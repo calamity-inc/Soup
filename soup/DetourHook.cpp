@@ -1,4 +1,5 @@
 #include "DetourHook.hpp"
+#if SOUP_X86 && SOUP_BITS == 64
 
 #include <cstring> // memcpy
 
@@ -18,3 +19,5 @@ NAMESPACE_SOUP
 		memcpy(getEffectiveTarget(), original, sizeof(longjump_trampoline_r10));
 	}
 }
+
+#endif

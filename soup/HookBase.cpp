@@ -1,4 +1,5 @@
-#include "ReplacementHook.hpp"
+#include "HookBase.hpp"
+#if SOUP_X86
 
 #include <climits> // INT_MIN, INT_MAX
 #include <cstring> // memcpy
@@ -18,19 +19,30 @@ NAMESPACE_SOUP
 		0xE8, 0x00, 0x00, 0x00, 0x00, // call (4 bytes)
 	};
 
+#if SOUP_BITS == 64
 	const uint8_t HookBase::longjump_trampoline_r10[] = {
 		0x49, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // movabs r10, (8 bytes)
-		0x41, 0xff, 0xe2, // jmp r10
+		0x41, 0xFF, 0xE2, // jmp r10
 	};
 
 	const uint8_t HookBase::longjump_trampoline_noreg[] = {
-		0xff, 0x25, 0x00, 0x00, 0x00, 0x00, // jmp qword ptr [rip]
+		0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, // jmp qword ptr [rip]
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // (8 bytes)
 	};
+#else
+	const uint8_t HookBase::longjump_trampoline_noreg[] = {
+		0x68, 0x00, 0x00, 0x00, 0x00, // push (4 bytes)
+		0xC3 // ret
+	};
+#endif
 
 	Pattern HookBase::getCodeCavePattern()
 	{
-		SIG_INST("CC CC CC CC CC CC CC CC CC CC CC CC CC");
+#if SOUP_BITS == 64
+		SIG_INST("CC CC CC CC CC CC CC CC CC CC CC CC CC"); static_assert(13 == sizeof(longjump_trampoline_r10));
+#else
+		SIG_INST("CC CC CC CC CC CC"); static_assert(6 == sizeof(longjump_trampoline_noreg));
+#endif
 		return sig_inst;
 	}
 
@@ -69,6 +81,7 @@ NAMESPACE_SOUP
 		memcpy(addr, trampoline, sizeof(trampoline));
 	}
 
+#if SOUP_BITS == 64
 	void HookBase::writeLongjumpTrampolineR10(void* addr, void* target) noexcept
 	{
 		uint8_t trampoline[sizeof(longjump_trampoline_r10)];
@@ -76,12 +89,19 @@ NAMESPACE_SOUP
 		*reinterpret_cast<void**>(trampoline + 2) = target;
 		memcpy(addr, trampoline, sizeof(trampoline));
 	}
+#endif
 
 	void HookBase::writeLongjumpTrampolineNoreg(void* addr, void* target) noexcept
 	{
 		uint8_t trampoline[sizeof(longjump_trampoline_noreg)];
 		memcpy(trampoline, longjump_trampoline_noreg, sizeof(trampoline));
+#if SOUP_BITS == 64
 		*reinterpret_cast<void**>(trampoline + 6) = target;
+#else
+		*reinterpret_cast<void**>(trampoline + 1) = target;
+#endif
 		memcpy(addr, trampoline, sizeof(trampoline));
 	}
 }
+
+#endif

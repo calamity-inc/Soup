@@ -1,4 +1,5 @@
 #include "DetourHookNoreg.hpp"
+#if SOUP_X86
 
 #include <cstring> // memcpy
 
@@ -18,3 +19,5 @@ NAMESPACE_SOUP
 		memcpy(getEffectiveTarget(), original, sizeof(longjump_trampoline_noreg));
 	}
 }
+
+#endif

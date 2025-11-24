@@ -1,10 +1,9 @@
 #pragma once
 
 #include "HookBase.hpp"
+#if SOUP_X86
 
 #include <cstddef> // size_t
-
-#include "base.hpp"
 
 NAMESPACE_SOUP
 {
@@ -16,3 +15,5 @@ NAMESPACE_SOUP
 		void destroyOriginal() noexcept;
 	};
 }
+
+#endif

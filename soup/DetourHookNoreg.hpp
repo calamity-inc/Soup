@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DetourHookBase.hpp"
+#if SOUP_X86
 
 NAMESPACE_SOUP
 {
@@ -14,3 +15,5 @@ NAMESPACE_SOUP
 		void disable();
 	};
 }
+
+#endif
