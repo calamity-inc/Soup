@@ -66,6 +66,7 @@ NAMESPACE_SOUP
 			args.emplace_back("-luser32");
 			args.emplace_back("-lgdi32");
 		}
+		args.emplace_back("-fuse-ld=lld");
 #else
 #if SOUP_MACOS
 		args.emplace_back("-lc++");
