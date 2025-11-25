@@ -1674,6 +1674,9 @@
     <ClInclude Include="TlsExtAlpn.hpp">
       <Filter>net\tls</Filter>
     </ClInclude>
+    <ClInclude Include="Rc4State.hpp">
+      <Filter>crypto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2497,6 +2500,9 @@
     </ClCompile>
     <ClCompile Include="lzf.cpp">
       <Filter>data\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="Rc4State.cpp">
+      <Filter>crypto</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

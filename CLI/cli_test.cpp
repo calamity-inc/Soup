@@ -4,6 +4,7 @@
 
 // crypto
 #include <aes.hpp>
+#include <Rc4State.hpp>
 #include <SegWitAddress.hpp>
 #include <Hotp.hpp>
 #include <rsa.hpp>
@@ -221,6 +222,23 @@ static void unit_crypto()
 			}
 		});
 	}
+
+	test("rc4", []
+	{
+		{
+			Rc4State st(std::string("Key"));
+			std::string str = "Plaintext";
+			st.transform((uint8_t*)str.data(), str.size());
+			assert(string::bin2hex(str) == "BBF316E8D940AF0AD3");
+		}
+
+		{
+			Rc4State st(std::string("Secret"));
+			std::string str = "Attack at dawn";
+			st.transform((uint8_t*)str.data(), str.size());
+			assert(string::bin2hex(str) == "45A01F645FC35B383552544B9BF5");
+		}
+	});
 
 	test("SegWitAddress", []
 	{
