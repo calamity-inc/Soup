@@ -1,13 +1,13 @@
 #pragma once
 
-#include "base.hpp"
+#include "CryptoHashAlgo.hpp"
 
 #include <cstdint>
 #include <string>
 
 NAMESPACE_SOUP
 {
-	struct md5
+	struct md5 : public CryptoHashAlgo<md5>
 	{
 		static constexpr auto DIGEST_BYTES = 16u;
 		static constexpr auto BLOCK_BYTES = 64u;

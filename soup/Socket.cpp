@@ -22,6 +22,7 @@
 #include "netConfig.hpp"
 #include "ObfusString.hpp"
 #include "rand.hpp"
+#include "Rc4State.hpp"
 #include "sha1.hpp"
 #include "sha256.hpp"
 #include "SocketTlsHandshaker.hpp"
@@ -939,6 +940,7 @@ NAMESPACE_SOUP
 	{
 		switch (cs)
 		{
+		case TLS_RSA_WITH_RC4_128_MD5:
 		case TLS_RSA_WITH_AES_128_CBC_SHA:
 		case TLS_RSA_WITH_AES_256_CBC_SHA:
 		case TLS_RSA_WITH_AES_128_CBC_SHA256:
@@ -1731,49 +1733,60 @@ NAMESPACE_SOUP
 				auto& cap = _cap.get<CaptureSocketTlsRecvRecord2>();
 				if (s.tls_encrypter_recv.isActive())
 				{
-					constexpr auto cipher_bytes = 16;
+					constexpr auto cipher_bytes = 16; // AES = 16, RC4 = 1
+					constexpr auto record_iv_length = 16; // AES = 16, RC4 = 0
+					const auto mac_length = s.tls_encrypter_recv.mac_key_len;
 
 					if (!s.tls_encrypter_recv.isAead())
 					{
-						constexpr auto record_iv_length = 16;
-						const auto mac_length = s.tls_encrypter_recv.mac_key_len;
+						uint8_t pad_len = 0;
+						bool pad_mismatch = false;
 
-						if ((data.size() % cipher_bytes) != 0
-							|| data.size() < (cipher_bytes + mac_length)
-							)
+						SOUP_IF_UNLIKELY (s.tls_encrypter_recv.isRc4())
 						{
-							s.tls_close(TlsAlertDescription::bad_record_mac);
-							return;
+							if (!s.tls_encrypter_recv.state)
+							{
+								s.tls_encrypter_recv.state = new Rc4State(s.tls_encrypter_recv.cipher_key, s.tls_encrypter_recv.cipher_key_len);
+							}
+							reinterpret_cast<Rc4State*>(s.tls_encrypter_recv.state)->transform(reinterpret_cast<uint8_t*>(data.data()), data.size());
 						}
+						else // AES-CBC
+						{
+							if ((data.size() % cipher_bytes) != 0
+								|| data.size() < (cipher_bytes + mac_length)
+								)
+							{
+								s.tls_close(TlsAlertDescription::bad_record_mac);
+								return;
+							}
 
-						auto iv = data.substr(0, record_iv_length);
-						data.erase(0, record_iv_length);
-						aes::cbcDecrypt(
-							reinterpret_cast<uint8_t*>(data.data()), data.size(),
-							s.tls_encrypter_recv.cipher_key, s.tls_encrypter_recv.cipher_key_len,
-							reinterpret_cast<const uint8_t*>(iv.data())
-						);
+							auto iv = data.substr(0, record_iv_length);
+							data.erase(0, record_iv_length);
+							aes::cbcDecrypt(
+								reinterpret_cast<uint8_t*>(data.data()), data.size(),
+								s.tls_encrypter_recv.cipher_key, s.tls_encrypter_recv.cipher_key_len,
+								reinterpret_cast<const uint8_t*>(iv.data())
+							);
+
+							pad_len = data.back();
+							for (auto it = (data.end() - (pad_len + 1)); it != (data.end() - 1); ++it)
+							{
+								if (*it != pad_len)
+								{
+									pad_mismatch = true;
+								}
+							}
+							if (data.size() >= pad_len)
+							{
+								data.erase(data.size() - (pad_len + 1));
+							}
+						}
 
 						std::string mac{};
-
-						bool pad_mismatch = false;
-						uint8_t pad_len = data.back();
-						for (auto it = (data.end() - (pad_len + 1)); it != (data.end() - 1); ++it)
+						if (data.size() > mac_length)
 						{
-							if (*it != pad_len)
-							{
-								pad_mismatch = true;
-							}
-						}
-						if (data.size() >= pad_len)
-						{
-							data.erase(data.size() - (pad_len + 1));
-
-							if (data.size() > mac_length)
-							{
-								mac = data.substr(data.size() - mac_length);
-								data.erase(data.size() - mac_length);
-							}
+							mac = data.substr(data.size() - mac_length);
+							data.erase(data.size() - mac_length);
 						}
 
 						if (s.tls_encrypter_recv.calculateMac(cap.content_type, data) != mac
@@ -1784,7 +1797,7 @@ NAMESPACE_SOUP
 							return;
 						}
 					}
-					else
+					else // AES-GCM
 					{
 						constexpr auto implicit_iv_len = 4;
 						constexpr auto explicit_iv_len = 8;
