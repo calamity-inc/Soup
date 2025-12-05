@@ -1,11 +1,13 @@
 #include "Reader.hpp"
 
 #if SOUP_X86 && SOUP_BITS == 64
-#include <emmintrin.h> // _mm_movemask_epi8
-#include <immintrin.h> // _pext_u64
+	#include <mmintrin.h> // _mm_cvtm64_si64
+	#include <emmintrin.h> // _mm_movemask_epi8
+	#include <immintrin.h> // _pext_u64
+	#include <xmmintrin.h> // _mm_movemask_pi8
 
-#include "bitutil.hpp"
-#include "CpuInfo.hpp"
+	#include "bitutil.hpp"
+	#include "CpuInfo.hpp"
 #endif
 #include "Endian.hpp"
 
@@ -206,6 +208,7 @@ NAMESPACE_SOUP
 	#endif
 	bool Reader::oml(uint32_t& v) noexcept
 	{
+	#if (!defined(_MSC_VER) || SOUP_BITS == 32) // MSVC only defines _mm_movemask_pi8 & _mm_cvtm64_si64 in 32-bit builds
 		if (CpuInfo::get().supportsSSE() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
@@ -222,6 +225,7 @@ NAMESPACE_SOUP
 			seek(pos + byte_length);
 			return read_bytes >= byte_length;
 		}
+	#endif
 		return oml<uint32_t>(v);
 	}
 

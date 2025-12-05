@@ -228,14 +228,16 @@ NAMESPACE_SOUP
 #endif
 		}
 
+#if !(defined(_MSC_VER) && SOUP_BITS < 64) // __popcnt64 is not available in 32-bit MSVC
 		[[nodiscard]] static auto getNumSetBits(uint64_t i) noexcept
 		{
-#if defined(_MSC_VER) && !defined(__clang__)
+	#if defined(_MSC_VER) && !defined(__clang__)
 			return __popcnt64(i);
-#else
+	#else
 			return __builtin_popcountll(i);
-#endif
+	#endif
 		}
+#endif
 
 		// https://stackoverflow.com/a/2602885
 		[[nodiscard]] static uint8_t reverse(uint8_t b) noexcept
