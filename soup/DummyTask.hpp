@@ -10,5 +10,10 @@ NAMESPACE_SOUP
 		void onTick() final
 		{
 		}
+
+		int getSchedulingDisposition() const noexcept final
+		{
+			return LOW_FREQUENCY;
+		}
 	};
 }
