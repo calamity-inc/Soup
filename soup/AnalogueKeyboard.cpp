@@ -264,15 +264,15 @@ NAMESPACE_SOUP
 	};
 	static_assert(sizeof(layout_lemokey_p1_he_ansi) == 2 + 6 * 15);
 
-	        static const uint8_t layout_lemokey_p1_he_iso[] = { 6, 15,
-                KEY_ESCAPE,    KEY_F1,    	    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_DEL,        KEY_NONE /* mute */,
-                KEY_BACKQUOTE, KEY_1,     	    KEY_2,    KEY_3,    KEY_4,    KEY_5,    KEY_6,     KEY_7,    KEY_8,    KEY_9,     KEY_0,         KEY_MINUS,        KEY_EQUALS,        KEY_BACKSPACE,  KEY_HOME,
-                KEY_TAB,       KEY_Q,     	    KEY_W,    KEY_E,    KEY_R,    KEY_T,    KEY_Y,     KEY_U,    KEY_I,    KEY_O,     KEY_P,         KEY_BRACKET_LEFT, KEY_BRACKET_RIGHT, KEY_ENTER,      KEY_PAGE_UP,
-                KEY_CAPS_LOCK, KEY_A,     	    KEY_S,    KEY_D,    KEY_F,    KEY_G,    KEY_H,     KEY_J,    KEY_K,    KEY_L,     KEY_SEMICOLON, KEY_QUOTE,        KEY_BACKSLASH,     KEY_PAGE_DOWN,  KEY_NONE,
-                KEY_LSHIFT,    KEY_INTL_BACKSLASH,  KEY_Z,    KEY_X,    KEY_C,    KEY_V,    KEY_B,     KEY_N,    KEY_M,    KEY_COMMA, KEY_PERIOD,    KEY_NONE,         KEY_SLASH,         KEY_RSHIFT,     KEY_ARROW_UP,
-                KEY_LCTRL,     KEY_LMETA, 	    KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RMETA, KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN, KEY_ARROW_RIGHT,
-        };
-        static_assert(sizeof(layout_lemokey_p1_he_iso) == 2 + 6 * 15);
+	static const uint8_t layout_lemokey_p1_he_iso[] = { 6, 15,
+		KEY_ESCAPE,    KEY_F1,    	    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_DEL,        KEY_NONE /* mute */,
+		KEY_BACKQUOTE, KEY_1,     	    KEY_2,    KEY_3,    KEY_4,    KEY_5,    KEY_6,     KEY_7,    KEY_8,    KEY_9,     KEY_0,         KEY_MINUS,        KEY_EQUALS,        KEY_BACKSPACE,  KEY_HOME,
+		KEY_TAB,       KEY_Q,     	    KEY_W,    KEY_E,    KEY_R,    KEY_T,    KEY_Y,     KEY_U,    KEY_I,    KEY_O,     KEY_P,         KEY_BRACKET_LEFT, KEY_BRACKET_RIGHT, KEY_ENTER,      KEY_PAGE_UP,
+		KEY_CAPS_LOCK, KEY_A,     	    KEY_S,    KEY_D,    KEY_F,    KEY_G,    KEY_H,     KEY_J,    KEY_K,    KEY_L,     KEY_SEMICOLON, KEY_QUOTE,        KEY_BACKSLASH,     KEY_PAGE_DOWN,  KEY_NONE,
+		KEY_LSHIFT,    KEY_INTL_BACKSLASH,  KEY_Z,    KEY_X,    KEY_C,    KEY_V,    KEY_B,     KEY_N,    KEY_M,    KEY_COMMA, KEY_PERIOD,    KEY_NONE,         KEY_SLASH,         KEY_RSHIFT,     KEY_ARROW_UP,
+		KEY_LCTRL,     KEY_LMETA, 	    KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RMETA, KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN, KEY_ARROW_RIGHT,
+	};
+	static_assert(sizeof(layout_lemokey_p1_he_iso) == 2 + 6 * 15);
 
 	[[nodiscard]] static SOUP_PURE uint8_t layout_get_rows(const uint8_t* layout) noexcept { return layout[0]; }
 	[[nodiscard]] static SOUP_PURE uint8_t layout_get_cols(const uint8_t* layout) noexcept { return layout[1]; }
