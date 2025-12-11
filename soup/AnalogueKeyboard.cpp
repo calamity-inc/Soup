@@ -160,7 +160,11 @@ NAMESPACE_SOUP
 			{
 				if (hid.product_id == 0x0610) // ANSI
 				{
-					return "Lemokey P1 HE"; // Thanks to Azarattum for providing the layout
+					return "Lemokey P1 HE ANSI"; // Thanks to Azarattum for providing the layout
+				}
+				if (hid.product_id == 0x0611) // ISO
+				{
+					return "Lemokey P1 HE ISO";
 				}
 			}
 		}
@@ -250,7 +254,7 @@ NAMESPACE_SOUP
 	};
 	static_assert(sizeof(layout_keychron_k2_he) == 2 + 6 * 16);
 
-	static const uint8_t layout_lemokey_p1_he[] = { 6, 15,
+	static const uint8_t layout_lemokey_p1_he_ansi[] = { 6, 15,
 		KEY_ESCAPE,    KEY_F1,    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_DEL,        KEY_NONE /* mute */,
 		KEY_BACKQUOTE, KEY_1,     KEY_2,    KEY_3,    KEY_4,    KEY_5,    KEY_6,     KEY_7,    KEY_8,    KEY_9,     KEY_0,         KEY_MINUS,        KEY_EQUALS,        KEY_BACKSPACE,  KEY_HOME,
 		KEY_TAB,       KEY_Q,     KEY_W,    KEY_E,    KEY_R,    KEY_T,    KEY_Y,     KEY_U,    KEY_I,    KEY_O,     KEY_P,         KEY_BRACKET_LEFT, KEY_BRACKET_RIGHT, KEY_BACKSLASH,  KEY_PAGE_UP,
@@ -258,7 +262,17 @@ NAMESPACE_SOUP
 		KEY_LSHIFT,    KEY_NONE,  KEY_Z,    KEY_X,    KEY_C,    KEY_V,    KEY_B,     KEY_N,    KEY_M,    KEY_COMMA, KEY_PERIOD,    KEY_NONE,         KEY_SLASH,         KEY_RSHIFT,     KEY_ARROW_UP,
 		KEY_LCTRL,     KEY_LMETA, KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RMETA, KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN, KEY_ARROW_RIGHT,
 	};
-	static_assert(sizeof(layout_lemokey_p1_he) == 2 + 6 * 15);
+	static_assert(sizeof(layout_lemokey_p1_he_ansi) == 2 + 6 * 15);
+
+	        static const uint8_t layout_lemokey_p1_he_iso[] = { 6, 15,
+                KEY_ESCAPE,    KEY_F1,    	    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_DEL,        KEY_NONE /* mute */,
+                KEY_BACKQUOTE, KEY_1,     	    KEY_2,    KEY_3,    KEY_4,    KEY_5,    KEY_6,     KEY_7,    KEY_8,    KEY_9,     KEY_0,         KEY_MINUS,        KEY_EQUALS,        KEY_BACKSPACE,  KEY_HOME,
+                KEY_TAB,       KEY_Q,     	    KEY_W,    KEY_E,    KEY_R,    KEY_T,    KEY_Y,     KEY_U,    KEY_I,    KEY_O,     KEY_P,         KEY_BRACKET_LEFT, KEY_BRACKET_RIGHT, KEY_ENTER,      KEY_PAGE_UP,
+                KEY_CAPS_LOCK, KEY_A,     	    KEY_S,    KEY_D,    KEY_F,    KEY_G,    KEY_H,     KEY_J,    KEY_K,    KEY_L,     KEY_SEMICOLON, KEY_QUOTE,        KEY_BACKSLASH,     KEY_PAGE_DOWN,  KEY_NONE,
+                KEY_LSHIFT,    KEY_INTL_BACKSLASH,  KEY_Z,    KEY_X,    KEY_C,    KEY_V,    KEY_B,     KEY_N,    KEY_M,    KEY_COMMA, KEY_PERIOD,    KEY_NONE,         KEY_SLASH,         KEY_RSHIFT,     KEY_ARROW_UP,
+                KEY_LCTRL,     KEY_LMETA, 	    KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RMETA, KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN, KEY_ARROW_RIGHT,
+        };
+        static_assert(sizeof(layout_lemokey_p1_he_iso) == 2 + 6 * 15);
 
 	[[nodiscard]] static SOUP_PURE uint8_t layout_get_rows(const uint8_t* layout) noexcept { return layout[0]; }
 	[[nodiscard]] static SOUP_PURE uint8_t layout_get_cols(const uint8_t* layout) noexcept { return layout[1]; }
@@ -360,9 +374,13 @@ NAMESPACE_SOUP
 						{
 							kbd.keychron.layout = layout_keychron_k2_he;
 						}
-						else //if (kbd.hid.product_id == 0x0610)
+						else if (kbd.hid.product_id == 0x0610) // ANSI
 						{
-							kbd.keychron.layout = layout_lemokey_p1_he;
+							kbd.keychron.layout = layout_lemokey_p1_he_ansi;
+						}
+						else if (kbd.hid.product_id == 0x0611) // ISO
+						{
+							kbd.keychron.layout = layout_lemokey_p1_he_iso;
 						}
 					}
 					else if (kbd.hid.vendor_id == 0x373b) // Madlions
