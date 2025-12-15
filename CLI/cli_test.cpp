@@ -958,6 +958,7 @@ spanning over multiple lines */
 		assert(Regex("[a-z]+").matchesFully("abc") == true);
 		assert(Regex("[a-z]+").matchesFully("abcdef") == true);
 		assert(Regex("[^def]+").match("abcdef").toString() == R"(0="abc")");
+		assert(Regex("[+-]+").matchesFully("+-") == true);
 
 		assert(Regex("A?BC").matches("BC") == true);
 		assert(Regex("A?BC").matches("ABC") == true);
