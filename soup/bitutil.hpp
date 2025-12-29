@@ -76,47 +76,21 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint16_t mask) noexcept
 		{
-			SOUP_DEBUG_ASSERT(mask != 0); // UB!
-
-			// These intrinsic functions just use the bsf instruction.
-#if defined(_MSC_VER) && !defined(__clang__)
-			unsigned long ret;
-			_BitScanForward(&ret, static_cast<uint32_t>(mask));
-			return ret;
-#else
-			return __builtin_ctz(mask);
-#endif
+			SOUP_DEBUG_ASSERT(mask != 0);
+			return getNumTrailingZeros(mask);
 		}
 
 		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint32_t mask) noexcept
 		{
-			SOUP_DEBUG_ASSERT(mask != 0); // UB!
-
-			// These intrinsic functions just use the bsf instruction.
-#if defined(_MSC_VER) && !defined(__clang__)
-			unsigned long ret;
-			_BitScanForward(&ret, mask);
-			return ret;
-#else
-			return __builtin_ctz(mask);
-#endif
+			SOUP_DEBUG_ASSERT(mask != 0);
+			return getNumTrailingZeros(mask);
 		}
 
-#if SOUP_BITS >= 64
 		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint64_t mask) noexcept
 		{
-			SOUP_DEBUG_ASSERT(mask != 0); // UB!
-
-			// These intrinsic functions just use the bsf instruction.
-#if defined(_MSC_VER) && !defined(__clang__)
-			unsigned long ret;
-			_BitScanForward64(&ret, mask);
-			return ret;
-#else
-			return __builtin_ctzll(mask);
-#endif
+			SOUP_DEBUG_ASSERT(mask != 0);
+			return getNumTrailingZeros(mask);
 		}
-#endif
 
 		[[nodiscard]] static unsigned int getNumTrailingZeros(uint16_t mask) noexcept
 		{
@@ -130,7 +104,7 @@ NAMESPACE_SOUP
 #else
 			if (mask != 0)
 			{
-				return getLeastSignificantSetBit(mask);
+				return __builtin_ctz(mask);
 			}
 			return sizeof(mask) * 8;
 #endif
@@ -148,31 +122,39 @@ NAMESPACE_SOUP
 #else
 			if (mask != 0)
 			{
-				return getLeastSignificantSetBit(mask);
+				return __builtin_ctz(mask);
 			}
 			return sizeof(mask) * 8;
 #endif
 		}
 
-#if SOUP_BITS >= 64
 		[[nodiscard]] static unsigned int getNumTrailingZeros(uint64_t mask) noexcept
 		{
-	#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (!defined(__clang__) || SOUP_BITS >= 64)
+	#if SOUP_BITS < 64
+			auto hi = static_cast<uint32_t>(mask >> 32);
+			auto lo = static_cast<uint32_t>(mask);
+			if (lo)
+			{
+				return getNumTrailingZeros(lo);
+			}
+			return 32 + getNumTrailingZeros(hi);
+	#else
 			unsigned long ret;
 			if (_BitScanForward64(&ret, mask) == 0)
 			{
 				ret = sizeof(mask) * 8;
 			}
 			return ret;
-	#else
+	#endif
+#else
 			if (mask != 0)
 			{
-				return getLeastSignificantSetBit(mask);
+				return __builtin_ctzll(mask);
 			}
 			return sizeof(mask) * 8;
-	#endif
-		}
 #endif
+		}
 
 		template <typename T>
 		static constexpr void unsetLeastSignificantSetBit(T& val)
