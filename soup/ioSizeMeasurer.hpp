@@ -7,7 +7,7 @@ NAMESPACE_SOUP
 	class ioSizeMeasurer final : public Writer
 	{
 	public:
-		size_t size = 0;
+		std::streamsize size = 0;
 
 		ioSizeMeasurer()
 			: Writer()
@@ -22,7 +22,7 @@ NAMESPACE_SOUP
 			return true;
 		}
 
-		[[nodiscard]] size_t getPosition() final
+		[[nodiscard]] std::streamoff getPosition() final
 		{
 			return size;
 		}

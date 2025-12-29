@@ -553,7 +553,7 @@ NAMESPACE_SOUP
 				{
 					uint8_t result_type; r.u8(result_type);
 					bool has_result = (result_type != /* void */ 0x40);
-					ctrlflow.emplace(CtrlFlowEntry{ (size_t)-1, stack.size() + has_result });
+					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size() + has_result });
 #if DEBUG_VM
 					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << "\n";
 #endif

@@ -117,7 +117,7 @@ NAMESPACE_SOUP
 	private:
 		struct CtrlFlowEntry
 		{
-			size_t position;
+			std::streamoff position;
 			size_t stack_size;
 		};
 
