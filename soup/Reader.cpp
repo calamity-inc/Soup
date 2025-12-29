@@ -208,7 +208,7 @@ NAMESPACE_SOUP
 	#endif
 	bool Reader::oml(uint32_t& v) noexcept
 	{
-	#if (!defined(_MSC_VER) || SOUP_BITS == 32) // MSVC only defines _mm_movemask_pi8 & _mm_cvtm64_si64 in 32-bit builds
+	#if !defined(_MSC_VER) // MSVC only defines _mm_movemask_pi8 & _mm_cvtm64_si64 in 32-bit builds...
 		if (CpuInfo::get().supportsSSE() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
