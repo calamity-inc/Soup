@@ -21,3 +21,5 @@ jobs:
           tags: |
             ghcr.io/calamity-inc/soup:latest
             ghcr.io/calamity-inc/soup:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
