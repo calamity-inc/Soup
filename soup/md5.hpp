@@ -19,29 +19,15 @@ NAMESPACE_SOUP
 		{
 			uint8_t buffer[BLOCK_BYTES];
 			uint32_t state[4];
-			uint8_t buffer_counter;
-			uint64_t n_bits;
+			uint64_t n_bytes;
 
 			State();
 
-			void append(const void* data, size_t size) noexcept
-			{
-				for (size_t i = 0; i != size; ++i)
-				{
-					appendByte(reinterpret_cast<const uint8_t*>(data)[i]);
-				}
-			}
+			void append(const void* data, size_t size) noexcept;
 
 			void appendByte(uint8_t byte) noexcept
 			{
-				buffer[buffer_counter++] = byte;
-				n_bits += 8;
-
-				if (buffer_counter == BLOCK_BYTES)
-				{
-					buffer_counter = 0;
-					transform();
-				}
+				return append(&byte, 1);
 			}
 
 			void transform() noexcept;
