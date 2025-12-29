@@ -237,16 +237,20 @@ NAMESPACE_SOUP
 #endif
 		}
 
-#if !(defined(_MSC_VER) && SOUP_BITS < 64) // __popcnt64 is not available in 32-bit MSVC
-		[[nodiscard]] static auto getNumSetBits(uint64_t i) noexcept
+		[[nodiscard]] static auto getNumSetBits(uint64_t mask) noexcept
 		{
-	#if defined(_MSC_VER) && !defined(__clang__)
-			return __popcnt64(i);
+#if defined(_MSC_VER) && !defined(__clang__)
+	#if SOUP_BITS >= 64
+			return __popcnt64(mask);
 	#else
-			return __builtin_popcountll(i);
+			auto hi = static_cast<uint32_t>(mask >> 32);
+			auto lo = static_cast<uint32_t>(mask);
+			return getNumSetBits(hi) + getNumSetBits(lo);
 	#endif
-		}
+#else
+			return __builtin_popcountll(mask);
 #endif
+		}
 
 		// https://stackoverflow.com/a/2602885
 		[[nodiscard]] static uint8_t reverse(uint8_t b) noexcept

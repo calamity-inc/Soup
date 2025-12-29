@@ -526,9 +526,8 @@ static void unit_data()
 		assert(bitutil::getLeastSignificantSetBit((uint32_t)-1) == 0);
 		assert(bitutil::getLeastSignificantSetBit((uint64_t)0x1'0000'0000ull) == 32);
 
-#if SOUP_BITS >= 64 || !defined(_MSC_VER)
 		assert(bitutil::getNumSetBits((uint64_t)0x1'0000'0000ull) == 1);
-#endif
+		assert(bitutil::getNumSetBits((uint64_t)0x1'0000'0001ull) == 2);
 	});
 
 	test("unicode", []
