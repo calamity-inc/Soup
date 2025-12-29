@@ -197,6 +197,33 @@ NAMESPACE_SOUP
 			return 32;
 		}
 
+		[[nodiscard]] static unsigned int getNumLeadingZeros(uint64_t mask) noexcept
+		{
+#if defined(_MSC_VER) && (!defined(__clang__) || SOUP_BITS >= 64)
+	#if SOUP_BITS < 64
+			auto hi = static_cast<uint32_t>(mask >> 32);
+			auto lo = static_cast<uint32_t>(mask);
+			if (hi)
+			{
+				return getNumLeadingZeros(hi);
+			}
+			return 32 + getNumLeadingZeros(lo);
+	#else
+			unsigned long ret;
+			if (_BitScanReverse64(&ret, mask))
+			{
+				return 63 - ret;
+			}
+	#endif
+#else
+			if (mask != 0)
+			{
+				return __builtin_clzll(mask);
+			}
+#endif
+			return 64;
+		}
+
 		[[nodiscard]] static unsigned int getMostSignificantSetBit(uint32_t mask) noexcept
 		{
 			SOUP_DEBUG_ASSERT(mask != 0); // UB!
