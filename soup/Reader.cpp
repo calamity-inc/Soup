@@ -1,10 +1,8 @@
 #include "Reader.hpp"
 
 #if SOUP_X86 && SOUP_BITS == 64
-	#include <mmintrin.h> // _mm_cvtm64_si64
 	#include <emmintrin.h> // _mm_movemask_epi8
 	#include <immintrin.h> // _pext_u64
-	#include <xmmintrin.h> // _mm_movemask_pi8
 
 	#include "bitutil.hpp"
 	#include "CpuInfo.hpp"
@@ -209,24 +207,22 @@ NAMESPACE_SOUP
 	#endif
 	bool Reader::oml(uint32_t& v) noexcept
 	{
-	#if !defined(_MSC_VER) // MSVC only defines _mm_movemask_pi8 & _mm_cvtm64_si64 in 32-bit builds...
-		if (CpuInfo::get().supportsSSE() && CpuInfo::get().supportsBMI2())
+		if (CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-			__m64 e;
+			uint64_t e;
 			size_t read_bytes = 5;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const uint32_t contbits = _mm_movemask_pi8(e) & 0xf;
+			const uint32_t contbits = _pext_u32(static_cast<uint32_t>(e), 0x8080'8080ull);
 			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
 			const uint64_t mask = (1ull << (8 * byte_length)) - 1;
-			v = _pext_u64(_mm_cvtm64_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
+			v = static_cast<uint32_t>(_pext_u64(e & mask, 0x7f'7f7f'7f7full));
 
 			seek(pos + byte_length);
 			return read_bytes >= byte_length;
 		}
-	#endif
 		return oml<uint32_t>(v);
 	}
 
