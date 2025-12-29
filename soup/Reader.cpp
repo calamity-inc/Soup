@@ -15,9 +15,10 @@ NAMESPACE_SOUP
 {
 #if SOUP_X86 && SOUP_BITS == 64
 	#if defined(__GNUC__) || defined(__clang__)
-	__attribute__((target("bmi2")))
+	__attribute__((target("sse4.1,bmi2")))
 	#endif
-	static void bmi2_u64_dyn_decode(__m128i e, size_t byte_length, uint64_t& v)
+	// _mm_extract_epi64 requires SSE4.1 & _pext_u64 requires BMI2.
+	static void u64_dyn_decode_intrin(__m128i e, size_t byte_length, uint64_t& v)
 	{
 		const uint64_t mask = ((byte_length < 8) * (1ull << (8 * byte_length))) - 1;
 		uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask, 0x7f7f'7f7f'7f7f'7f7full);
@@ -29,7 +30,7 @@ NAMESPACE_SOUP
 	bool Reader::u64_dyn(uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
-		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
+		if (CpuInfo::get().supportsSSE4_1() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
 			__m128i e;
@@ -37,7 +38,7 @@ NAMESPACE_SOUP
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
 			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~static_cast<uint32_t>(_mm_movemask_epi8(e) & 0xff));
-			bmi2_u64_dyn_decode(e, byte_length, v);
+			u64_dyn_decode_intrin(e, byte_length, v);
 
 			seek(pos + byte_length);
 			return read_bytes >= byte_length;
@@ -76,7 +77,7 @@ NAMESPACE_SOUP
 	bool Reader::u64_dyn_b(uint64_t& v) noexcept
 	{
 #if SOUP_X86 && SOUP_BITS == 64
-		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
+		if (CpuInfo::get().supportsSSE4_1() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
 			__m128i e;
@@ -84,7 +85,7 @@ NAMESPACE_SOUP
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
 			const size_t byte_length = 1 + bitutil::getNumTrailingZeros(~static_cast<uint32_t>(_mm_movemask_epi8(e) & 0xff));
-			bmi2_u64_dyn_decode(e, byte_length, v);
+			u64_dyn_decode_intrin(e, byte_length, v);
 
 			const uint64_t bias = bmi2_u64_dyn_bias(byte_length);
 			bool valid = v <= 0xffffffffffffffff - bias;
@@ -230,11 +231,13 @@ NAMESPACE_SOUP
 	}
 
 	#if defined(__GNUC__) || defined(__clang__)
-	__attribute__((target("bmi2")))
+	__attribute__((target("sse4.1,bmi2")))
 	#endif
 	bool Reader::oml(uint64_t& v) noexcept
 	{
-		if (CpuInfo::get().supportsSSE2() && CpuInfo::get().supportsBMI2())
+		if (CpuInfo::get().supportsSSE4_1() // _mm_extract_epi64
+			&& CpuInfo::get().supportsBMI2() // _pext_u64
+			)
 		{
 			const auto pos = getPosition();
 			__m128i e;
