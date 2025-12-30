@@ -36,7 +36,7 @@ NAMESPACE_SOUP
 
 		if (left && ilen >= fill)
 		{
-			memcpy((void*)(buffer + left), (void*)input, fill);
+			memcpy((void*)(buffer + left), input, fill);
 			transform();
 			input = (uint8_t*)input + fill;
 			ilen -= fill;
@@ -45,14 +45,15 @@ NAMESPACE_SOUP
 
 		while (ilen >= 64)
 		{
-			append(input, 64);
+			memcpy(buffer, input, 64);
+			transform();
 			input = (uint8_t*)input + 64;
 			ilen -= 64;
 		}
 
 		if (ilen > 0)
 		{
-			memcpy((void*)(buffer + left), (void*)input, ilen);
+			memcpy((void*)(buffer + left), input, ilen);
 		}
 	}
 
