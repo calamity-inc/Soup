@@ -21,39 +21,38 @@ NAMESPACE_SOUP
 		n_bytes = 0;
 	}
 
-	void md5::State::append(const void* input, size_t ilen) noexcept
+	void md5::State::append(const void* data, size_t size) noexcept
 	{
-		int fill;
-		unsigned long left;
-
-		if (ilen <= 0)
-			return;
-
-		left = n_bytes & 0x3F;
-		fill = 64 - left;
-
-		n_bytes += ilen;
-
-		if (left && ilen >= fill)
+		if (!size)
 		{
-			memcpy((void*)(buffer + left), input, fill);
+			return;
+		}
+
+		auto left = n_bytes % BLOCK_BYTES;
+		auto fill = BLOCK_BYTES - left;
+
+		n_bytes += size;
+
+		if (left && size >= fill)
+		{
+			memcpy(buffer + left, data, fill);
 			transform();
-			input = (uint8_t*)input + fill;
-			ilen -= fill;
+			data = (uint8_t*)data + fill;
+			size -= fill;
 			left = 0;
 		}
 
-		while (ilen >= 64)
+		while (size >= BLOCK_BYTES)
 		{
-			memcpy(buffer, input, 64);
+			memcpy(buffer, data, BLOCK_BYTES);
 			transform();
-			input = (uint8_t*)input + 64;
-			ilen -= 64;
+			data = (uint8_t*)data + BLOCK_BYTES;
+			size -= BLOCK_BYTES;
 		}
 
-		if (ilen > 0)
+		if (size)
 		{
-			memcpy((void*)(buffer + left), input, ilen);
+			memcpy(buffer + left, data, size);
 		}
 	}
 
