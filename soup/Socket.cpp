@@ -1475,8 +1475,6 @@ NAMESPACE_SOUP
 		holdup_type = SOCKET;
 		holdup_callback.set([](Worker& w, Capture&& _cap) SOUP_EXCAL
 		{
-			w.holdup_type = Worker::NONE;
-
 			auto& cap = _cap.get<CaptureSocketUdpRecv>();
 
 			std::string data(0x1000, '\0');
@@ -1502,6 +1500,7 @@ NAMESPACE_SOUP
 				sender.port = network_u16_t(reinterpret_cast<sockaddr_in*>(&sa)->sin_port);
 			}
 
+			w.holdup_type = Worker::NONE;
 			cap.callback(static_cast<Socket&>(w), std::move(sender), std::move(data), std::move(cap.cap));
 		}, CaptureSocketUdpRecv{ callback, std::move(cap) });
 	}
