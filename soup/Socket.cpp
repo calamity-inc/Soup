@@ -1482,7 +1482,7 @@ NAMESPACE_SOUP
 			sockaddr_in6 sa;
 			socklen_t sal = sizeof(sa);
 			int res = ::recvfrom(static_cast<Socket&>(w).fd, data.data(), 0x1000, 0, (sockaddr*)&sa, &sal);
-			SOUP_IF_UNLIKELY (res < 0)
+			SOUP_IF_UNLIKELY (res < 0 || res > data.size())
 			{
 				return;
 			}
