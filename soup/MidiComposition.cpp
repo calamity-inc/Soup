@@ -18,7 +18,7 @@ NAMESPACE_SOUP
 	{
 		uint32_t chunk_name;
 		r.u32_be(chunk_name);
-		SOUP_ASSERT(chunk_name == 'MThd', "Bad MIDI data");
+		SOUP_ASSERT(chunk_name == 0x4D546864u, "Bad MIDI data"); // 'MThd' in big-endian
 		uint32_t length;
 		r.u32_be(length);
 		SOUP_ASSERT(length >= 6, "Bad MIDI data");
@@ -33,7 +33,7 @@ NAMESPACE_SOUP
 		while (r.hasMore())
 		{
 			r.u32_be(chunk_name);
-			SOUP_ASSERT(chunk_name == 'MTrk', "Bad MIDI data");
+			SOUP_ASSERT(chunk_name == 0x4D54726Bu, "Bad MIDI data"); // 'MTrk' in big-endian
 			MidiTrack& track = tracks.emplace_back();
 			r.str_lp<u32_be_t>(track.sr.data);
 		}

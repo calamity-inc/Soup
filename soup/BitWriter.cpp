@@ -200,8 +200,24 @@ NAMESPACE_SOUP
 		}
 		else
 		{
+			// Inline u32_dyn logic to avoid calling deprecated function
+			uint32_t len = static_cast<uint32_t>(str.length());
+			uint8_t bytes_needed = 3;
+			if (len <= 0xFF)
+			{
+				bytes_needed = 0;
+			}
+			else if (len <= 0xFFFF)
+			{
+				bytes_needed = 1;
+			}
+			else if (len <= 0xFFFFFF)
+			{
+				bytes_needed = 2;
+			}
 			if (!t(lpbits, lpmask)
-				|| !u32_dyn(static_cast<uint32_t>(str.length()))
+				|| !u8(2, bytes_needed)
+				|| !t((bytes_needed + 1) * 8, len)
 				)
 			{
 				return false;

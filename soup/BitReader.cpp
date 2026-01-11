@@ -277,7 +277,10 @@ NAMESPACE_SOUP
 		}
 		if (len == lpmask)
 		{
-			if (!u32_dyn(len))
+			// Inline u32_dyn logic to avoid calling deprecated function
+			uint8_t bytes_needed;
+			len = 0;
+			if (!u8(2, bytes_needed) || !t((bytes_needed + 1) * 8, len))
 			{
 				return false;
 			}

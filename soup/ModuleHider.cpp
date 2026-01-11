@@ -82,8 +82,15 @@ NAMESPACE_SOUP
 		const auto Ldr = reinterpret_cast<PebLdrData*>(os::getCurrentPeb()->Ldr);
 		if (Ldr->Length == 88)
 		{
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+#endif
 			hideInLinkedList(base_addr, InLoadOrderModuleList_links, InLoadOrderModuleList_pNext, &Ldr->InLoadOrderModuleList.Flink, offsetof(LdrDataTableEntry, InLoadOrderLinks));
 			hideInLinkedList(base_addr, InMemoryOrderModuleList_links, InMemoryOrderModuleList_pNext, &Ldr->InMemoryOrderModuleList.Flink, offsetof(LdrDataTableEntry, InMemoryOrderLinks));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 			//hideInLinkedList(base_addr, InInitializationOrderModuleList_links, InInitializationOrderModuleList_pNext, &Ldr->InInitializationOrderModuleList.Flink, offsetof(LdrDataTableEntry, InInitializationOrderLinks));
 		}
 	}
