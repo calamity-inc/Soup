@@ -23,8 +23,8 @@
 #include <sha256.hpp>
 #include <sha384.hpp>
 #include <sha512.hpp>
-#include <whirlpool.hpp>
 #include <unicode.hpp>
+#include <whirlpool.hpp>
 
 #include <json.hpp>
 #include <JsonArray.hpp>
