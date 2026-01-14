@@ -1677,6 +1677,9 @@
     <ClInclude Include="Rc4State.hpp">
       <Filter>crypto</Filter>
     </ClInclude>
+    <ClInclude Include="whirlpool.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2503,6 +2506,9 @@
     </ClCompile>
     <ClCompile Include="Rc4State.cpp">
       <Filter>crypto</Filter>
+    </ClCompile>
+    <ClCompile Include="whirlpool.cpp">
+      <Filter>data\hash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
