@@ -1213,6 +1213,7 @@
     <ClInclude Include="gmText.hpp" />
     <ClInclude Include="version_compare.hpp" />
     <ClInclude Include="WavFmtChunk.hpp" />
+    <ClInclude Include="whirlpool.hpp" />
     <ClInclude Include="wooting_enums.hpp" />
     <ClInclude Include="X11Api.hpp" />
     <ClInclude Include="X509Certchain.hpp" />
@@ -1610,6 +1611,7 @@
     <ClCompile Include="wasm.cpp" />
     <ClCompile Include="WebSocket.cpp" />
     <ClCompile Include="WebSocketConnection.cpp" />
+    <ClCompile Include="whirlpool.cpp" />
     <ClCompile Include="Writer.cpp" />
     <ClCompile Include="X509Certchain.cpp" />
     <ClCompile Include="Chessboard.cpp" />
