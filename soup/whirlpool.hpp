@@ -22,7 +22,10 @@ NAMESPACE_SOUP
 
 			State() noexcept;
 
-			void appendByte(uint8_t byte) noexcept { append(&byte, 1); }
+			void appendByte(uint8_t byte) noexcept
+			{
+				append(&byte, 1);
+			}
 
 			void append(const uint8_t *data, size_t size)
 			{
