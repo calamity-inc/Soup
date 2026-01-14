@@ -27,7 +27,7 @@ NAMESPACE_SOUP
 				append(&byte, 1);
 			}
 
-			void append(const uint8_t *data, size_t size)
+			void append(const void* data, size_t size)
 			{
 				unsigned index = (unsigned)this->n_bytes & 63;
 				unsigned left;
@@ -42,15 +42,15 @@ NAMESPACE_SOUP
 						return;
 
 					processBlock((uint64_t *)this->buffer);
-					data += left;
+					data = (uint8_t*)data + left;
 					size -= left;
 				}
 				while (size >= BLOCK_BYTES)
 				{
-					uint64_t *aligned_message_block;
+					uint64_t* aligned_message_block;
 					if (((uintptr_t)(data) & 7) == 0)
 					{
-						aligned_message_block = (uint64_t *)data;
+						aligned_message_block = (uint64_t*)data;
 					}
 					else
 					{
@@ -59,7 +59,7 @@ NAMESPACE_SOUP
 					}
 
 					processBlock(aligned_message_block);
-					data += BLOCK_BYTES;
+					data = (uint8_t*)data + BLOCK_BYTES;
 					size -= BLOCK_BYTES;
 				}
 				if (size)
