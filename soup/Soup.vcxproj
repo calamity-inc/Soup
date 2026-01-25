@@ -1070,6 +1070,7 @@
     <ClInclude Include="sha384.hpp" />
     <ClInclude Include="sha512.hpp" />
     <ClInclude Include="Spinlock.hpp" />
+    <ClInclude Include="TlsSsl2CompatibleClientHello.hpp" />
     <ClInclude Include="StringParser.hpp" />
     <ClInclude Include="StringPool.hpp" />
     <ClInclude Include="Sudoku.hpp" />

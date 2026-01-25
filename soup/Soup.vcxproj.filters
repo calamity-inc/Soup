@@ -1680,6 +1680,9 @@
     <ClInclude Include="whirlpool.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="TlsSsl2CompatibleClientHello.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
