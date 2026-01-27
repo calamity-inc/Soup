@@ -169,6 +169,11 @@ NAMESPACE_SOUP
 		{
 			if (!static_cast<Socket&>(w).unrecv_buf.empty())
 			{
+				pollfds.emplace_back(pollfd{
+					(Socket::fd_t)-1,
+					0
+				});
+
 				fireHoldupCallback(w);
 			}
 			else
