@@ -1613,19 +1613,28 @@ NAMESPACE_SOUP
 
 	bool Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const void* data, size_t size) SOUP_EXCAL
 	{
-		auto body = tls_encrypter_send.encrypt(content_type, data, size);
+		size_t chunk_size;
+		do
+		{
+			chunk_size = size > 16384 ? 16384 : size;
+			auto body = tls_encrypter_send.encrypt(content_type, data, chunk_size);
 
-		TlsRecord record{};
-		record.content_type = content_type;
-		record.length = static_cast<uint16_t>(body.size());
+			TlsRecord record{};
+			record.content_type = content_type;
+			record.length = static_cast<uint16_t>(body.size());
 
-		Buffer header;
-		header.reserve(5);
-		BufferRefWriter bw(header);
-		record.write(bw);
+			Buffer header;
+			header.reserve(5);
+			BufferRefWriter bw(header);
+			record.write(bw);
 
-		body.prepend(header.data(), header.size());
-		return transport_send(body);
+			body.prepend(header.data(), header.size());
+			SOUP_RETHROW_FALSE(transport_send(body));
+
+			data = (const uint8_t*)data + chunk_size;
+			size -= chunk_size;
+		} while (size != 0);
+		return true;
 	}
 
 	struct CaptureSocketTlsRecvHandshake
