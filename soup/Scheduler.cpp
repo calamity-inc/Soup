@@ -167,10 +167,17 @@ NAMESPACE_SOUP
 #if !SOUP_WASM
 		if (w.holdup_type == Worker::SOCKET)
 		{
-			pollfds.emplace_back(pollfd{
-				static_cast<Socket&>(w).fd,
-				POLLIN
-			});
+			if (!static_cast<Socket&>(w).unrecv_buf.empty())
+			{
+				fireHoldupCallback(w);
+			}
+			else
+			{
+				pollfds.emplace_back(pollfd{
+					static_cast<Socket&>(w).fd,
+					POLLIN
+				});
+			}
 		}
 		else
 #endif
