@@ -45,6 +45,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 	<p>Soup is a C++ framework that does absolutely everything, with no external dependenices.</p>
 	<p>The website you are currently viewing is directly delivered to you via a relatively simple server, using Soup's powerful abstractions.</p>
 	<ul>
+		<li><a href="/echo">Echo</a></li>
 		<li><a href="/tlsid">TLS fingerprint</a></li>
 	</ul>
 	<hr>
@@ -52,6 +53,10 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 </body>
 </html>
 )EOC");
+	}
+	else if (req.path == "/echo")
+	{
+		soup::ServerWebService::sendText(s, req.toString());
 	}
 	else if (req.path == "/tlsid")
 	{
