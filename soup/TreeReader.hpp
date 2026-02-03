@@ -24,7 +24,6 @@ NAMESPACE_SOUP
 		void toMap(std::unordered_map<std::string, std::string>& map, const void* root, bool disallow_empty_value, const std::string& prefix) const;
 
 	public:
-		[[deprecated]] void toBinary(BitWriter& w, const void* root) const;
 		void toBinary(Writer& w, const void* root) const;
 	};
 }

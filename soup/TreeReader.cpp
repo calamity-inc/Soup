@@ -102,25 +102,6 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void TreeReader::toBinary(BitWriter& w, const void* root) const
-	{
-		SOUP_ASSERT(canHaveChildren(root));
-		const size_t num_children = getNumChildren(root);
-		for (size_t i = 0; i != num_children; ++i)
-		{
-			const void* const child = getChild(root, i);
-			auto name = getName(child);
-			SOUP_ASSERT(!name.empty());
-			w.str_utf8_nt(name);
-			w.str_utf8_nt(getValue(child));
-			if (canHaveChildren(child))
-			{
-				toBinary(w, child);
-			}
-		}
-		w.str_utf8_nt({});
-	}
-
 	void TreeReader::toBinary(Writer& w, const void* root) const
 	{
 		SOUP_ASSERT(canHaveChildren(root));

@@ -10,7 +10,6 @@ NAMESPACE_SOUP
 	{
 		virtual void* createChild(void* parent, std::string&& name, std::string&& value) const = 0;
 
-		[[deprecated]] void fromBinary(BitReader& r, void* root) const;
 		void fromBinary(Reader& r, void* root) const;
 	};
 }
