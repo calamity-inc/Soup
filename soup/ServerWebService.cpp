@@ -15,6 +15,7 @@ NAMESPACE_SOUP
 	struct WebServerClientData
 	{
 		bool keep_alive = false;
+		std::string recv_buffer;
 	};
 
 	struct WebServerWsClientData
@@ -199,33 +200,85 @@ NAMESPACE_SOUP
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap)
 		{
-			HttpRequest req{};
-			auto method_end = data.find(' ');
+			auto& cd = s.custom_data.getStructFromMap(WebServerClientData);
+			ServerWebService& srv = *cap.get<ServerWebService*>();
+			
+			cd.recv_buffer.append(data);
+
+			const auto getContentLength = [](const std::string& headers) -> size_t
+			{
+				std::string lower_headers = headers;
+				for (auto& c : lower_headers)
+				{
+					if (c >= 'A' && c <= 'Z') c += 32;
+				}
+				
+				auto pos = lower_headers.find("content-length:");
+				if (pos == std::string::npos) return 0;
+				
+				pos += 15;
+				while (pos < lower_headers.size() && lower_headers[pos] == ' ') ++pos;
+				
+				auto end = lower_headers.find("\r\n", pos);
+				if (end == std::string::npos) end = lower_headers.size();
+				
+				try { return std::stoull(headers.substr(pos, end - pos)); }
+				catch (...) { return 0; }
+			};
+
+			const auto headers_end = cd.recv_buffer.find("\r\n\r\n");
+			if (headers_end == std::string::npos)
+			{
+				srv.httpRecv(s);
+				return;
+			}
+
+			const auto method_end = cd.recv_buffer.find(' ');
 			if (method_end == std::string::npos)
 			{
 			_bad_request:
+				cd.recv_buffer.clear();
 				s.send("HTTP/1.0 400 Bad Request\r\n\r\n");
 				s.close();
 				return;
 			}
-			req.method = data.substr(0, method_end);
-			method_end += 1;
-			auto path_end = data.find(' ', method_end);
+			
+			const auto path_start = method_end + 1;
+			const auto path_end = cd.recv_buffer.find(' ', path_start);
 			if (path_end == std::string::npos)
 			{
 				goto _bad_request;
 			}
-			req.path = data.substr(method_end, path_end - method_end);
-			path_end += 1;
-			auto message_start = data.find("\r\n", path_end);
-			if (message_start == std::string::npos)
+			
+			const auto first_line_end = cd.recv_buffer.find("\r\n", path_end);
+			if (first_line_end == std::string::npos)
 			{
 				goto _bad_request;
 			}
-			message_start += 2;
-			req.loadMessage(data.substr(message_start));
+			const auto message_start = first_line_end + 2;
 
-			ServerWebService& srv = *cap.get<ServerWebService*>();
+			// Check Content-Length to determine expected body size
+			const size_t body_start = headers_end + 4;
+			const std::string headers_section = cd.recv_buffer.substr(message_start, headers_end - message_start);
+			const size_t content_length = getContentLength(headers_section);
+
+			// Check if we have received the full body
+			const size_t current_body_size = cd.recv_buffer.size() - body_start;
+			if (current_body_size < content_length)
+			{
+				srv.httpRecv(s);
+				return;
+			}
+
+			// Full request received - build the HttpRequest
+			HttpRequest req{};
+			req.method = cd.recv_buffer.substr(0, method_end);
+			req.path = cd.recv_buffer.substr(path_start, path_end - path_start);
+			req.loadMessage(cd.recv_buffer.substr(message_start));
+
+			// Clear buffer for potential keep-alive request
+			cd.recv_buffer.clear();
+			cd.recv_buffer.shrink_to_fit();
 
 			if (auto upgrade_value = req.findHeader("Upgrade"))
 			{
