@@ -5,6 +5,7 @@
 #include "HttpRequest.hpp"
 #include "MimeType.hpp"
 #include "Socket.hpp"
+#include "string.hpp"
 #include "StringWriter.hpp"
 #include "WebSocket.hpp"
 #include "WebSocketFrameType.hpp"
@@ -14,6 +15,7 @@ NAMESPACE_SOUP
 {
 	struct WebServerClientData
 	{
+		HttpRequest buffer{};
 		bool keep_alive = false;
 	};
 
@@ -199,33 +201,48 @@ NAMESPACE_SOUP
 	{
 		s.recv([](Socket& s, std::string&& data, Capture&& cap)
 		{
-			HttpRequest req{};
-			auto method_end = data.find(' ');
-			if (method_end == std::string::npos)
+			auto& cd = s.custom_data.getStructFromMap(WebServerClientData);
+			auto& req = cd.buffer;
+
+			if (req.method.empty())
 			{
-			_bad_request:
-				s.send("HTTP/1.0 400 Bad Request\r\n\r\n");
-				s.close();
-				return;
+				auto method_end = data.find(' ');
+				if (method_end == std::string::npos)
+				{
+				_bad_request:
+					s.send("HTTP/1.0 400 Bad Request\r\n\r\n");
+					s.close();
+					return;
+				}
+				req.method = data.substr(0, method_end);
+				method_end += 1;
+				auto path_end = data.find(' ', method_end);
+				if (path_end == std::string::npos)
+				{
+					goto _bad_request;
+				}
+				req.path = data.substr(method_end, path_end - method_end);
+				path_end += 1;
+				auto message_start = data.find("\r\n", path_end);
+				if (message_start == std::string::npos)
+				{
+					goto _bad_request;
+				}
+				message_start += 2;
+				req.loadMessage(data.substr(message_start));
 			}
-			req.method = data.substr(0, method_end);
-			method_end += 1;
-			auto path_end = data.find(' ', method_end);
-			if (path_end == std::string::npos)
+			else
 			{
-				goto _bad_request;
+				req.body.append(data);
 			}
-			req.path = data.substr(method_end, path_end - method_end);
-			path_end += 1;
-			auto message_start = data.find("\r\n", path_end);
-			if (message_start == std::string::npos)
-			{
-				goto _bad_request;
-			}
-			message_start += 2;
-			req.loadMessage(data.substr(message_start));
 
 			ServerWebService& srv = *cap.get<ServerWebService*>();
+
+			const auto content_length = string::toInt<size_t>(req.findHeader("Content-Length").value_or(std::string{}), 0);
+			SOUP_IF_UNLIKELY (req.body.size() < content_length)
+			{
+				return srv.httpRecv(s);
+			}
 
 			if (auto upgrade_value = req.findHeader("Upgrade"))
 			{
@@ -265,13 +282,14 @@ NAMESPACE_SOUP
 				{
 					if (*connection_entry == "keep-alive")
 					{
-						s.custom_data.getStructFromMap(WebServerClientData).keep_alive = true;
+						cd.keep_alive = true;
 					}
 				}
 
 				srv.handle_request(s, std::move(req), srv);
+				req.clear();
 
-				if (s.custom_data.getStructFromMap(WebServerClientData).keep_alive)
+				if (cd.keep_alive)
 				{
 					srv.httpRecv(s);
 				}
