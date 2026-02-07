@@ -13,7 +13,7 @@ NAMESPACE_SOUP
 {
 	class WasmVm;
 
-	using wasm_ffi_func_t = void(*)(WasmVm&);
+	using wasm_ffi_func_t = void(*)(WasmVm&, uint32_t func_index);
 
 	union WasmValue
 	{
@@ -55,6 +55,7 @@ NAMESPACE_SOUP
 			std::string module_name;
 			std::string function_name;
 			wasm_ffi_func_t ptr;
+			uint32_t type_index;
 		};
 
 		uint8_t* memory = nullptr;

@@ -1790,8 +1790,13 @@ endif;)") == "");
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAn9/AX9gAX8BfwINAQVpbmRleANhZGQAAAMCAQEFAwEAAAcTAgZhZGRUd28AAQZtZW1vcnkCAAoKAQgAIABBAhAACwA6BG5hbWUBGgIACWluZGV4L2FkZAEMaW5kZXgvYWRkVHdvAggCAAABAQABMAQHAgABMAEBMQYEAQABMA==")));
 			auto fi = scr.getImportedFunction("index", "add");
 			assert(fi);
-			fi->ptr = [](WasmVm& vm)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
+				auto& func = vm.script.function_imports[func_index];
+				auto& type = vm.script.types[func.type_index];
+				assert(type.parameters.size() == 2);
+				assert(type.results.size() == 1);
+
 				auto b = vm.stack.top(); vm.stack.pop();
 				auto a = vm.stack.top(); vm.stack.pop();
 				vm.stack.push(a.i32 + b.i32);

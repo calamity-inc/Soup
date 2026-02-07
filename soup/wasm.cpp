@@ -139,13 +139,13 @@ NAMESPACE_SOUP
 						size_t field_name_len; r.oml(field_name_len);
 						std::string field_name; r.str(field_name_len, field_name);
 #if DEBUG_LOAD
-						std::cout << "-" << module_name << ":" << field_name << "\n";
+						std::cout << "- " << module_name << ":" << field_name << "\n";
 #endif
 						uint8_t kind; r.u8(kind);
 						if (kind == 0) // function
 						{
-							size_t type_index; r.oml(type_index);
-							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr });
+							uint32_t type_index; r.oml(type_index);
+							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, type_index });
 						}
 					}
 				}
@@ -433,7 +433,7 @@ NAMESPACE_SOUP
 
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "args_sizes_get"))
 		{
-			fi->ptr = [](WasmVm& vm)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
 				auto plen = vm.stack.top(); vm.stack.pop();
 				auto pargc = vm.stack.top(); vm.stack.pop();
@@ -444,7 +444,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "args_get"))
 		{
-			fi->ptr = [](WasmVm& vm)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
 				auto pstr = vm.stack.top(); vm.stack.pop();
 				auto pargv = vm.stack.top(); vm.stack.pop();
@@ -455,7 +455,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "proc_exit"))
 		{
-			fi->ptr = [](WasmVm& vm)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
 				auto code = vm.stack.top(); vm.stack.pop();
 				exit(code.i32);
@@ -464,7 +464,7 @@ NAMESPACE_SOUP
 
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_prestat_get"))
 		{
-			fi->ptr = [](WasmVm& vm)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
 				auto prestat = vm.stack.top(); vm.stack.pop();
 				auto fd = vm.stack.top(); vm.stack.pop();
@@ -476,7 +476,7 @@ NAMESPACE_SOUP
 
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_write"))
 		{
-			fi->ptr = [](WasmVm& vm)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
 				auto out_nwritten = vm.stack.top(); vm.stack.pop();
 				auto iovs_len = vm.stack.top(); vm.stack.pop();
@@ -499,7 +499,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_filestat_get"))
 		{
-			fi->ptr = [](WasmVm& vm)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
 				auto out = vm.stack.top(); vm.stack.pop();
 				auto fd = vm.stack.top(); vm.stack.pop();
@@ -701,16 +701,16 @@ NAMESPACE_SOUP
 					if (function_index < script.function_imports.size())
 					{
 #if DEBUG_VM
-						std::cout << "Calling into " << script.function_imports.at(function_index).module_name << ":" << script.function_imports.at(function_index).function_name << "\n";
+						std::cout << "Calling into " << script.function_imports[function_index].module_name << ":" << script.function_imports[function_index].function_name << "\n";
 #endif
-						SOUP_IF_UNLIKELY (script.function_imports.at(function_index).ptr == nullptr)
+						SOUP_IF_UNLIKELY (script.function_imports[function_index].ptr == nullptr)
 						{
 #if DEBUG_VM
 							std::cout << "call: function is not imported\n";
 #endif
 							return false;
 						}
-						script.function_imports.at(function_index).ptr(*this);
+						script.function_imports[function_index].ptr(*this, function_index);
 						break;
 					}
 					function_index -= static_cast<uint32_t>(script.function_imports.size());
@@ -721,7 +721,7 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					uint32_t type_index = script.functions.at(function_index);
+					uint32_t type_index = script.functions[function_index];
 					SOUP_IF_UNLIKELY (!doCall(type_index, function_index))
 					{
 						return false;
