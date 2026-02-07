@@ -892,6 +892,7 @@
     <ClInclude Include="base40.hpp" />
     <ClInclude Include="BCanvas.hpp" />
     <ClInclude Include="Benchmark.hpp" />
+    <ClInclude Include="bit.hpp" />
     <ClInclude Include="BitString.hpp" />
     <ClInclude Include="BitWriter.hpp" />
     <ClInclude Include="Buffer.hpp" />

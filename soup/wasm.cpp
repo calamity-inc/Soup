@@ -1,12 +1,10 @@
 #include "wasm.hpp"
 
-#if SOUP_CPP20
-#include <bit> // rotl, rotr
-#endif
 #include <cmath> // ceil, trunc, isnan, ...
 #include <cstring> // memset
 
 #include "alloc.hpp"
+#include "bit.hpp" // rotl, rotr
 #include "bitutil.hpp"
 #include "MemoryRefReader.hpp"
 #include "Reader.hpp"
@@ -1669,12 +1667,11 @@ NAMESPACE_SOUP
 				}
 				break;
 
-#if SOUP_CPP20
 			case 0x77: // i32.rotl
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					stack.push(std::rotl<uint32_t>(a.i32, b.i32));
+					stack.push(soup::rotl<uint32_t>(a.i32, b.i32));
 				}
 				break;
 
@@ -1682,10 +1679,9 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					stack.push(std::rotr<uint32_t>(a.i32, b.i32));
+					stack.push(soup::rotr<uint32_t>(a.i32, b.i32));
 				}
 				break;
-#endif
 
 			case 0x79: // i64.clz
 				stack.top().i64 = bitutil::getNumLeadingZeros(static_cast<uint64_t>(stack.top().i64));
@@ -1811,12 +1807,11 @@ NAMESPACE_SOUP
 				}
 				break;
 
-#if SOUP_CPP20
 			case 0x89: // i64.rotl
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					stack.push(std::rotl<uint64_t>(a.i64, static_cast<int>(b.i64)));
+					stack.push(soup::rotl<uint64_t>(a.i64, static_cast<int>(b.i64)));
 				}
 				break;
 
@@ -1824,10 +1819,9 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					stack.push(std::rotr<uint64_t>(a.i64, static_cast<int>(b.i64)));
+					stack.push(soup::rotr<uint64_t>(a.i64, static_cast<int>(b.i64)));
 				}
 				break;
-#endif
 
 			case 0x8b: // f32.abs
 				stack.top().f32 = std::abs(stack.top().f32);
@@ -2315,10 +2309,8 @@ NAMESPACE_SOUP
 			case 0x74: // i32.shl
 			case 0x75: // i32.shr_s ("arithmetic right shift")
 			case 0x76: // i32.shr_u ("logical right shift")
-#if SOUP_CPP20
 			case 0x77: // i32.rotl
 			case 0x78: // i32.rotr
-#endif
 			case 0x79: // i64.clz
 			case 0x7a: // i64.ctz
 			case 0x7b: // i64.popcnt
@@ -2335,10 +2327,8 @@ NAMESPACE_SOUP
 			case 0x86: // i64.shl
 			case 0x87: // i64.shr_s ("arithmetic right shift")
 			case 0x88: // i64.shr_u ("logical right shift")
-#if SOUP_CPP20
 			case 0x89: // i64.rotl
 			case 0x8a: // i64.rotr
-#endif
 			case 0x8b: // f32.abs
 			case 0x8c: // f32.neg
 			case 0x8d: // f32.ceil
