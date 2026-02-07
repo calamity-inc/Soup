@@ -34,12 +34,20 @@ NAMESPACE_SOUP
 		WasmValue(T ptr) : i32(static_cast<int32_t>(ptr)) {}
 	};
 
+	enum WasmType : uint8_t
+	{
+		WASM_I32 = 0x7F,
+		WASM_I64 = 0x7E,
+		WASM_F32 = 0x7D,
+		WASM_F64 = 0x7C,
+	};
+
 	struct WasmScript
 	{
 		struct FunctionType
 		{
-			uint32_t num_parameters;
-			uint32_t num_results;
+			std::vector<WasmType> parameters;
+			std::vector<WasmType> results;
 		};
 
 		struct FunctionImport
@@ -67,7 +75,7 @@ NAMESPACE_SOUP
 		bool load(Reader& r);
 
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
-		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name) const noexcept;
+		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const FunctionType** optOutType = nullptr) const noexcept;
 
 		[[nodiscard]] size_t allocateMemory(size_t len) noexcept;
 

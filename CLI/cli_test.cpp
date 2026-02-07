@@ -1726,7 +1726,9 @@ endif;)") == "");
 		{
 			WasmScript ws;
 			assert(ws.load(base64::decode("AGFzbQEAAAABBwFgAn9/AX8DAgEABwoBBmFkZFR3bwAACgkBBwAgACABagsACgRuYW1lAgMBAAA=")));
-			auto code = ws.getExportedFuntion("addTwo");
+			const WasmScript::FunctionType* type = nullptr;
+			auto code = ws.getExportedFuntion("addTwo", &type);
+
 			assert(code);
 			WasmVm vm(ws);
 			vm.locals.emplace_back(1);
@@ -1735,6 +1737,13 @@ endif;)") == "");
 			assert(!vm.stack.empty());
 			assert(vm.stack.top().i32 == 3);
 			assert(vm.stack.pop(), vm.stack.empty());
+
+			assert(type);
+			assert(type->parameters.size() == 2);
+			assert(type->parameters[0] == WASM_I32);
+			assert(type->parameters[1] == WASM_I32);
+			assert(type->results.size() == 1);
+			assert(type->results[0] == WASM_I32);
 		});
 		test("Memory", []
 		{

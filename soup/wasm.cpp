@@ -90,15 +90,34 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 								std::cout << "- function with ";
 #endif
-								uint32_t num_parameters; r.oml(num_parameters); r.skip(num_parameters);
+								uint32_t size;
+								r.oml(size);
 #if DEBUG_LOAD
-								std::cout << num_parameters << " parameter(s) and ";
+								std::cout << size << " parameter(s) and ";
 #endif
-								uint32_t num_results; r.oml(num_results); r.skip(num_results);
+								std::vector<WasmType> parameters;
+								parameters.reserve(size);
+								for (uint32_t i = 0; i != size; ++i)
+								{
+									uint8_t type;
+									r.u8(type);
+									parameters.emplace_back(static_cast<WasmType>(type));
+								}
+
+								r.oml(size);
 #if DEBUG_LOAD
-								std::cout << num_results << " return value(s)\n";
+								std::cout << size << " return value(s)\n";
 #endif
-								types.emplace_back(FunctionType{ num_parameters, num_results });
+								std::vector<WasmType> results;
+								results.reserve(size);
+								for (uint32_t i = 0; i != size; ++i)
+								{
+									uint8_t type;
+									r.u8(type);
+									results.emplace_back(static_cast<WasmType>(type));
+								}
+
+								types.emplace_back(FunctionType{ std::move(parameters), std::move(results) });
 							}
 							break;
 						}
@@ -359,14 +378,18 @@ NAMESPACE_SOUP
 		return nullptr;
 	}
 
-	const std::string* WasmScript::getExportedFuntion(const std::string& name) const noexcept
+	const std::string* WasmScript::getExportedFuntion(const std::string& name, const FunctionType** optOutType) const noexcept
 	{
 		if (auto e = export_map.find(name); e != export_map.end())
 		{
 			const size_t i = (e->second - function_imports.size());
-			if (i < code.size())
+			if (i < code.size() && i < types.size())
 			{
-				return &code.at(i);
+				if (optOutType)
+				{
+					*optOutType = &types[i];
+				}
+				return &code[i];
 			}
 		}
 		return nullptr;
@@ -2103,7 +2126,7 @@ NAMESPACE_SOUP
 		}
 		const auto& type = script.types.at(type_index);
 		WasmVm callvm(script);
-		for (uint32_t i = 0; i != type.num_parameters; ++i)
+		for (uint32_t i = 0; i != type.parameters.size(); ++i)
 		{
 			//std::cout << "arg: " << script.getMemory<const char>(stack.top()) << "\n";
 			callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
@@ -2119,9 +2142,9 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 		std::cout << "call: leave " << function_index << "\n";
 #endif
-		if (type.num_results < 2)
+		if (type.results.size() < 2)
 		{
-			for (uint32_t i = 0; i != type.num_results; ++i)
+			for (uint32_t i = 0; i != type.results.size(); ++i)
 			{
 				SOUP_IF_UNLIKELY (callvm.stack.empty())
 				{
@@ -2144,8 +2167,8 @@ NAMESPACE_SOUP
 		else
 		{
 			std::vector<WasmValue> results{};
-			results.reserve(type.num_results);
-			for (uint32_t i = 0; i != type.num_results; ++i)
+			results.reserve(type.results.size());
+			for (uint32_t i = 0; i != type.results.size(); ++i)
 			{
 				SOUP_IF_UNLIKELY (callvm.stack.empty())
 				{
