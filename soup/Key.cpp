@@ -181,6 +181,22 @@ NAMESPACE_SOUP
 			{
 				return static_cast<int>(c + ('A' - 'a'));
 			}
+			if (c == '+')
+			{
+				return VK_OEM_PLUS;
+			}
+			if (c == ',')
+			{
+				return VK_OEM_COMMA;
+			}
+			if (c == '-')
+			{
+				return VK_OEM_MINUS;
+			}
+			if (c == '.')
+			{
+				return VK_OEM_PERIOD;
+			}
 		}
 		else if (size == 2)
 		{
