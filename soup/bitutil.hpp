@@ -74,19 +74,8 @@ NAMESPACE_SOUP
 #endif
 		}
 
-		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint16_t mask) noexcept
-		{
-			SOUP_DEBUG_ASSERT(mask != 0);
-			return getNumTrailingZeros(mask);
-		}
-
-		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint32_t mask) noexcept
-		{
-			SOUP_DEBUG_ASSERT(mask != 0);
-			return getNumTrailingZeros(mask);
-		}
-
-		[[nodiscard]] static unsigned long getLeastSignificantSetBit(uint64_t mask) noexcept
+		template <typename T>
+		[[nodiscard]] static unsigned int getLeastSignificantSetBit(T mask) noexcept
 		{
 			SOUP_DEBUG_ASSERT(mask != 0);
 			return getNumTrailingZeros(mask);
