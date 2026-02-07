@@ -1,5 +1,9 @@
 #include "wasm.hpp"
 
+#if SOUP_CPP20
+#include <bit> // rotl, rotr
+#endif
+#include <cmath> // ceil, trunc, isnan, ...
 #include <cstring> // memset
 
 #include "alloc.hpp"
@@ -1541,11 +1545,16 @@ NAMESPACE_SOUP
 				}
 				break;
 
+			case 0x67: // i32.clz
+				stack.top().i32 = bitutil::getNumLeadingZeros(static_cast<uint32_t>(stack.top().i32));
+				break;
+
+			case 0x68: // i32.ctz
+				stack.top().i32 = bitutil::getNumTrailingZeros(static_cast<uint32_t>(stack.top().i32));
+				break;
+
 			case 0x69: // i32.popcnt
-				{
-					auto value = stack.top(); stack.pop();
-					stack.push(bitutil::getNumSetBits(static_cast<uint32_t>(value.i32)));
-				}
+				stack.top().i32 = bitutil::getNumSetBits(static_cast<uint32_t>(stack.top().i32));
 				break;
 
 			case 0x6a: // i32.add
@@ -1660,6 +1669,36 @@ NAMESPACE_SOUP
 				}
 				break;
 
+#if SOUP_CPP20
+			case 0x77: // i32.rotl
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(std::rotl<uint32_t>(a.i32, b.i32));
+				}
+				break;
+
+			case 0x78: // i32.rotr
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(std::rotr<uint32_t>(a.i32, b.i32));
+				}
+				break;
+#endif
+
+			case 0x79: // i64.clz
+				stack.top().i64 = bitutil::getNumLeadingZeros(static_cast<uint64_t>(stack.top().i64));
+				break;
+
+			case 0x7a: // i64.ctz
+				stack.top().i64 = bitutil::getNumTrailingZeros(static_cast<uint64_t>(stack.top().i64));
+				break;
+
+			case 0x7b: // i64.popcnt
+				stack.top().i64 = bitutil::getNumSetBits(static_cast<uint64_t>(stack.top().i64));
+				break;
+
 			case 0x7c: // i64.add
 				{
 					auto b = stack.top(); stack.pop();
@@ -1772,6 +1811,52 @@ NAMESPACE_SOUP
 				}
 				break;
 
+#if SOUP_CPP20
+			case 0x89: // i64.rotl
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(std::rotl<uint64_t>(a.i64, static_cast<int>(b.i64)));
+				}
+				break;
+
+			case 0x8a: // i64.rotr
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(std::rotr<uint64_t>(a.i64, static_cast<int>(b.i64)));
+				}
+				break;
+#endif
+
+			case 0x8b: // f32.abs
+				stack.top().f32 = std::abs(stack.top().f32);
+				break;
+
+			case 0x8c: // f32.neg
+				stack.top().f32 = stack.top().f32 * -1.0f;
+				break;
+
+			case 0x8d: // f32.ceil
+				stack.top().f32 = std::ceil(stack.top().f32);
+				break;
+
+			case 0x8e: // f32.floor
+				stack.top().f32 = std::floor(stack.top().f32);
+				break;
+
+			case 0x8f: // f32.trunc
+				stack.top().f32 = std::trunc(stack.top().f32);
+				break;
+
+			case 0x90: // f32.nearest
+				stack.top().f32 = std::round(stack.top().f32);
+				break;
+
+			case 0x91: // f32.sqrt
+				stack.top().f32 = std::sqrt(stack.top().f32);
+				break;
+
 			case 0x92: // f32.add
 				{
 					auto b = stack.top(); stack.pop();
@@ -1796,12 +1881,86 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 0x95: // f32.mul
+			case 0x95: // f32.div
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
 					stack.push(a.f32 / b.f32);
 				}
+				break;
+
+			case 0x96: // f32.min
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					if (std::isnan(a.f32))
+					{
+						stack.push(a.f32);
+					}
+					else if (std::isnan(b.f32))
+					{
+						stack.push(b.f32);
+					}
+					else
+					{
+						stack.push(std::min(a.f32, b.f32));
+					}
+				}
+				break;
+
+			case 0x97: // f32.max
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					if (std::isnan(a.f32))
+					{
+						stack.push(a.f32);
+					}
+					else if (std::isnan(b.f32))
+					{
+						stack.push(b.f32);
+					}
+					else
+					{
+						stack.push(std::max(a.f32, b.f32));
+					}
+				}
+				break;
+
+			case 0x98: // f32.copysign
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(std::copysign(a.f32, b.f32));
+				}
+				break;
+
+			case 0x99: // f64.abs
+				stack.top().f64 = std::abs(stack.top().f64);
+				break;
+
+			case 0x9a: // f64.neg
+				stack.top().f64 = stack.top().f64 * -1.0;
+				break;
+
+			case 0x9b: // f64.ceil
+				stack.top().f64 = std::ceil(stack.top().f64);
+				break;
+
+			case 0x9c: // f64.floor
+				stack.top().f64 = std::floor(stack.top().f64);
+				break;
+
+			case 0x9d: // f64.trunc
+				stack.top().f64 = std::trunc(stack.top().f64);
+				break;
+
+			case 0x9e: // f64.nearest
+				stack.top().f64 = std::round(stack.top().f64);
+				break;
+
+			case 0x9f: // f64.sqrt
+				stack.top().f64 = std::sqrt(stack.top().f64);
 				break;
 
 			case 0xa0: // f64.add
@@ -1828,7 +1987,7 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 0xa3: // f64.mul
+			case 0xa3: // f64.div
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
@@ -1836,11 +1995,70 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 0xa7: // i32.wrap_i64
+			case 0xa4: // f64.min
 				{
-					auto value = stack.top(); stack.pop();
-					stack.push(static_cast<int32_t>(value.i64));
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					if (std::isnan(a.f64))
+					{
+						stack.push(a.f64);
+					}
+					else if (std::isnan(b.f64))
+					{
+						stack.push(b.f64);
+					}
+					else
+					{
+						stack.push(std::min(a.f64, b.f64));
+					}
 				}
+				break;
+
+			case 0xa5: // f64.max
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					if (std::isnan(a.f64))
+					{
+						stack.push(a.f64);
+					}
+					else if (std::isnan(b.f64))
+					{
+						stack.push(b.f64);
+					}
+					else
+					{
+						stack.push(std::max(a.f64, b.f64));
+					}
+				}
+				break;
+
+			case 0xa6: // f64.copysign
+				{
+					auto b = stack.top(); stack.pop();
+					auto a = stack.top(); stack.pop();
+					stack.push(std::copysign(a.f64, b.f64));
+				}
+				break;
+
+			case 0xa7: // i32.wrap_i64
+				stack.top().i32 = static_cast<int32_t>(stack.top().i64);
+				break;
+
+			case 0xa8: // i32.trunc_f32_s
+				stack.top().i32 = static_cast<int32_t>(stack.top().f32);
+				break;
+
+			case 0xa9: // i32.trunc_f32_u
+				stack.top().i32 = static_cast<uint32_t>(stack.top().f32);
+				break;
+
+			case 0xaa: // i32.trunc_f64_s
+				stack.top().i32 = static_cast<int32_t>(stack.top().f64);
+				break;
+
+			case 0xab: // i32.trunc_f64_u
+				stack.top().i32 = static_cast<uint32_t>(stack.top().f64);
 				break;
 
 			case 0xac: // i64.extend_i32_s
@@ -1855,6 +2073,69 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					stack.push(static_cast<int64_t>(static_cast<uint64_t>(static_cast<uint32_t>(value.i32))));
 				}
+				break;
+
+			case 0xae: // i64.trunc_f32_s
+				stack.top().i64 = static_cast<int64_t>(stack.top().f32);
+				break;
+
+			case 0xaf: // i64.trunc_f32_u
+				stack.top().i64 = static_cast<uint64_t>(stack.top().f32);
+				break;
+
+			case 0xb0: // i64.trunc_f64_s
+				stack.top().i64 = static_cast<int64_t>(stack.top().f64);
+				break;
+
+			case 0xb1: // i64.trunc_f64_u
+				stack.top().i64 = static_cast<uint64_t>(stack.top().f64);
+				break;
+
+			case 0xb2: // f32.convert_i32_s
+				stack.top().f32 = static_cast<float>(stack.top().i32);
+				break;
+
+			case 0xb3: // f32.convert_i32_u
+				stack.top().f32 = static_cast<float>(static_cast<uint32_t>(stack.top().i32));
+				break;
+
+			case 0xb4: // f32.convert_i64_s
+				stack.top().f32 = static_cast<float>(stack.top().i64);
+				break;
+
+			case 0xb5: // f32.convert_i64_u
+				stack.top().f32 = static_cast<float>(static_cast<uint64_t>(stack.top().i64));
+				break;
+
+			case 0xb6: // f32.demote_f64
+				stack.top().f32 = static_cast<float>(stack.top().f64);
+				break;
+
+			case 0xb7: // f64.convert_i32_s
+				stack.top().f64 = static_cast<double>(stack.top().i32);
+				break;
+
+			case 0xb8: // f64.convert_i32_u
+				stack.top().f64 = static_cast<double>(static_cast<uint32_t>(stack.top().i32));
+				break;
+
+			case 0xb9: // f64.convert_i64_s
+				stack.top().f64 = static_cast<double>(stack.top().i64);
+				break;
+
+			case 0xba: // f64.convert_i64_u
+				stack.top().f64 = static_cast<double>(static_cast<uint64_t>(stack.top().i64));
+				break;
+
+			case 0xbb: // f64.promote_f32
+				stack.top().f64 = static_cast<double>(stack.top().f32);
+				break;
+
+			case 0xbc: // i32.reinterpret_f32
+			case 0xbd: // i64.reinterpret_f64
+			case 0xbe: // f32.reinterpret_i32
+			case 0xbf: // f64.reinterpret_i64
+				// Nothing to do.
 				break;
 			}
 		}
@@ -2018,6 +2299,8 @@ NAMESPACE_SOUP
 			case 0x64: // f64.gt
 			case 0x65: // f64.le
 			case 0x66: // f64.ge
+			case 0x67: // i32.clz
+			case 0x68: // i32.ctz
 			case 0x69: // i32.popcnt
 			case 0x6a: // i32.add
 			case 0x6b: // i32.sub
@@ -2032,6 +2315,13 @@ NAMESPACE_SOUP
 			case 0x74: // i32.shl
 			case 0x75: // i32.shr_s ("arithmetic right shift")
 			case 0x76: // i32.shr_u ("logical right shift")
+#if SOUP_CPP20
+			case 0x77: // i32.rotl
+			case 0x78: // i32.rotr
+#endif
+			case 0x79: // i64.clz
+			case 0x7a: // i64.ctz
+			case 0x7b: // i64.popcnt
 			case 0x7c: // i64.add
 			case 0x7d: // i64.sub
 			case 0x7e: // i64.mul
@@ -2045,17 +2335,63 @@ NAMESPACE_SOUP
 			case 0x86: // i64.shl
 			case 0x87: // i64.shr_s ("arithmetic right shift")
 			case 0x88: // i64.shr_u ("logical right shift")
+#if SOUP_CPP20
+			case 0x89: // i64.rotl
+			case 0x8a: // i64.rotr
+#endif
+			case 0x8b: // f32.abs
+			case 0x8c: // f32.neg
+			case 0x8d: // f32.ceil
+			case 0x8e: // f32.floor
+			case 0x8f: // f32.trunc
+			case 0x90: // f32.nearest
+			case 0x91: // f32.sqrt
 			case 0x92: // f32.add
 			case 0x93: // f32.sub
 			case 0x94: // f32.mul
-			case 0x95: // f32.mul
+			case 0x95: // f32.div
+			case 0x96: // f32.min
+			case 0x97: // f32.max
+			case 0x98: // f32.copysign
+			case 0x99: // f64.abs
+			case 0x9a: // f64.neg
+			case 0x9b: // f64.ceil
+			case 0x9c: // f64.floor
+			case 0x9d: // f64.trunc
+			case 0x9e: // f64.nearest
+			case 0x9f: // f64.sqrt
 			case 0xa0: // f64.add
 			case 0xa1: // f64.sub
 			case 0xa2: // f64.mul
-			case 0xa3: // f64.mul
+			case 0xa3: // f64.div
+			case 0xa4: // f64.min
+			case 0xa5: // f64.max
+			case 0xa6: // f64.copysign
 			case 0xa7: // i32.wrap_i64
+			case 0xa8: // i32.trunc_f32_s
+			case 0xa9: // i32.trunc_f32_u
+			case 0xaa: // i32.trunc_f64_s
+			case 0xab: // i32.trunc_f64_u
 			case 0xac: // i64.extend_i32_s
 			case 0xad: // i64.extend_i32_u
+			case 0xae: // i64.trunc_f32_s
+			case 0xaf: // i64.trunc_f32_u
+			case 0xb0: // i64.trunc_f64_s
+			case 0xb1: // i64.trunc_f64_u
+			case 0xb2: // f32.convert_i32_s
+			case 0xb3: // f32.convert_i32_u
+			case 0xb4: // f32.convert_i64_s
+			case 0xb5: // f32.convert_i64_u
+			case 0xb6: // f32.demote_f64
+			case 0xb7: // f64.convert_i32_s
+			case 0xb8: // f64.convert_i32_u
+			case 0xb9: // f64.convert_i64_s
+			case 0xba: // f64.convert_i64_u
+			case 0xbb: // f64.promote_f32
+			case 0xbc: // i32.reinterpret_f32
+			case 0xbd: // i64.reinterpret_f64
+			case 0xbe: // f32.reinterpret_i32
+			case 0xbf: // f64.reinterpret_i64
 				break;
 
 			default:
