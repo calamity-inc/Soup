@@ -58,4 +58,18 @@ NAMESPACE_SOUP
 		}
 #endif
 	}
+
+	template <typename T>
+	[[nodiscard]] constexpr int popcount(const T val)
+	{
+#if SOUP_CPP20
+		return std::popcount<T>(val);
+#else
+		if constexpr (sizeof(T) <= 4)
+		{
+			return __builtin_popcount(val);
+		}
+		return __builtin_popcountll(val);
+#endif
+	}
 }

@@ -4,11 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "base.hpp"
-
-#if SOUP_CPP20
-#include <bit>
-#endif
+#include "bit.hpp" // popcount
 
 NAMESPACE_SOUP
 {
@@ -223,39 +219,10 @@ NAMESPACE_SOUP
 #endif
 		}
 
-		[[nodiscard]] static auto getNumSetBits(uint16_t i) noexcept
+		template <typename T>
+		[[nodiscard]] static auto getNumSetBits(const T val) noexcept
 		{
-#if defined(_MSC_VER) && !defined(__clang__)
-			return std::popcount(i); // MSVC on ARM doesn't have __popcnt, but does support C++20.
-#elif defined(_MSC_VER)
-			return __popcnt16(i);
-#else
-			return __builtin_popcount(i);
-#endif
-		}
-
-		[[nodiscard]] static auto getNumSetBits(uint32_t i) noexcept
-		{
-#if defined(_MSC_VER) && !defined(__clang__)
-			return std::popcount(i);
-#else
-			return __builtin_popcount(i);
-#endif
-		}
-
-		[[nodiscard]] static auto getNumSetBits(uint64_t mask) noexcept
-		{
-#if defined(_MSC_VER) && !defined(__clang__)
-	#if SOUP_BITS >= 64
-			return std::popcount(mask);
-	#else
-			auto hi = static_cast<uint32_t>(mask >> 32);
-			auto lo = static_cast<uint32_t>(mask);
-			return getNumSetBits(hi) + getNumSetBits(lo);
-	#endif
-#else
-			return __builtin_popcountll(mask);
-#endif
+			return soup::popcount<T>(val);
 		}
 
 		// https://stackoverflow.com/a/2602885
