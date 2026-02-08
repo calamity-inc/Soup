@@ -1591,9 +1591,9 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					SOUP_IF_UNLIKELY (b.i32 == 0)
+					SOUP_IF_UNLIKELY (b.i32 == 0 || (a.i32 == INT32_MIN && b.i32 == -1))
 					{
-						return 0;
+						return false;
 					}
 					stack.push(a.i32 / b.i32);
 				}
@@ -1605,7 +1605,7 @@ NAMESPACE_SOUP
 					auto a = stack.top(); stack.pop();
 					SOUP_IF_UNLIKELY (b.i32 == 0)
 					{
-						return 0;
+						return false;
 					}
 					stack.push(static_cast<uint32_t>(a.i32) / static_cast<uint32_t>(b.i32));
 				}
@@ -1615,7 +1615,18 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					stack.push(a.i32 % b.i32);
+					SOUP_IF_UNLIKELY (b.i32 == 0)
+					{
+						return false;
+					}
+					if (a.i32 == INT32_MIN && b.i32 == -1)
+					{
+						stack.push(0);
+					}
+					else
+					{
+						stack.push(a.i32 % b.i32);
+					}
 				}
 				break;
 
@@ -1623,6 +1634,10 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
+					SOUP_IF_UNLIKELY (b.i32 == 0)
+					{
+						return false;
+					}
 					stack.push(static_cast<uint32_t>(a.i32) % static_cast<uint32_t>(b.i32));
 				}
 				break;
@@ -1731,9 +1746,9 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					SOUP_IF_UNLIKELY (b.i64 == 0)
+					SOUP_IF_UNLIKELY (b.i64 == 0 || (a.i64 == INT64_MIN && b.i64 == -1))
 					{
-						return 0;
+						return false;
 					}
 					stack.push(a.i64 / b.i64);
 				}
@@ -1745,7 +1760,7 @@ NAMESPACE_SOUP
 					auto a = stack.top(); stack.pop();
 					SOUP_IF_UNLIKELY (b.i64 == 0)
 					{
-						return 0;
+						return false;
 					}
 					stack.push(static_cast<uint64_t>(a.i64) / static_cast<uint64_t>(b.i64));
 				}
@@ -1755,7 +1770,18 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					stack.push(a.i64 % b.i64);
+					SOUP_IF_UNLIKELY (b.i32 == 0)
+					{
+						return false;
+					}
+					if (a.i64 == INT64_MIN && b.i64 == -1)
+					{
+						stack.push(0);
+					}
+					else
+					{
+						stack.push(a.i64 % b.i64);
+					}
 				}
 				break;
 
@@ -1763,6 +1789,10 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
+					SOUP_IF_UNLIKELY (b.i32 == 0)
+					{
+						return false;
+					}
 					stack.push(static_cast<uint64_t>(a.i64) % static_cast<uint64_t>(b.i64));
 				}
 				break;
