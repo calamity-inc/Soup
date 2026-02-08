@@ -20,10 +20,9 @@
 // Good resources:
 // - https://webassembly.github.io/wabt/demo/wat2wasm/
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
-// - https://github.com/WebAssembly/spec/tree/main/test/core
+// - https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1ab1b003d21617/test/core
 //   - Use wast2json from wabt then run `soup wast [file]`
-//   - The following tests pass: address, i32, i64, if, f32, f64, labels
-//     - Other tests may or may not pass; I simply haven't tried them yet.
+//   - The following tests pass: address, br, i32, i64, if, f32, f64, labels, loop
 
 NAMESPACE_SOUP
 {
@@ -2639,15 +2638,15 @@ NAMESPACE_SOUP
 			{
 				results.emplace_back(stack.top()); stack.pop();
 			}
+			while (stack.size() > ctrlflow.top().stack_size)
+			{
+				stack.pop();
+			}
 		}
 		else
 		{
 			// branch backwards
 			r.seek(ctrlflow.top().position);
-		}
-		while (stack.size() > ctrlflow.top().stack_size)
-		{
-			stack.pop();
 		}
 #if DEBUG_VM
 		std::cout << "position after branch: " << r.getPosition() << "\n";
