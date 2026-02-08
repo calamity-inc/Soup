@@ -508,6 +508,11 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "wasm")
 		{
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup wasm [file]" << std::endl;
+				return 0;
+			}
 			FileReader fr(argv[2]);
 			WasmScript scr;
 			if (!scr.load(fr))
