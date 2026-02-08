@@ -612,14 +612,14 @@ NAMESPACE_SOUP
 					//std::cout << "if: condition is " << (value.i32 ? "true" : "false") << "\n";
 					if (value.i32)
 					{
-						ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
+						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size() + has_result });
 					}
 					else
 					{
 						if (skipOverBranch(r))
 						{
 							// we're in the 'else' branch
-							ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
+							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size() + has_result });
 						}
 						else
 						{
@@ -2483,17 +2483,18 @@ NAMESPACE_SOUP
 
 			case 0xfc:
 				r.u8(op);
-#if DEBUG_VM
 				switch (op)
 				{
 				case 0x0a: // memory.copy
+					r.skip(2);
 					break;
 
 				default:
+#if DEBUG_VM
 					std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFC00 | op)) << ", might cause problems\n";
+#endif
 					break;
 				}
-#endif
 				break;
 			}
 		}
@@ -2531,7 +2532,11 @@ NAMESPACE_SOUP
 		if (ctrlflow.top().position == -1)
 		{
 			// branch forwards
-			skipOverBranch(r, depth);
+			if (skipOverBranch(r, depth))
+			{
+				// also skip over 'else' branch
+				skipOverBranch(r, depth);
+			}
 		}
 		else
 		{
