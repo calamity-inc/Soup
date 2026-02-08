@@ -385,11 +385,16 @@ NAMESPACE_SOUP
 		if (auto e = export_map.find(name); e != export_map.end())
 		{
 			const size_t i = (e->second - function_imports.size());
-			if (i < code.size() && i < types.size())
+			if (i < code.size() && i < functions.size())
 			{
 				if (optOutType)
 				{
-					*optOutType = &types[i];
+					const auto type_index = functions[i];
+					SOUP_IF_UNLIKELY (type_index >= types.size())
+					{
+						return nullptr;
+					}
+					*optOutType = &types[type_index];
 				}
 				return &code[i];
 			}
