@@ -1227,16 +1227,7 @@ NAMESPACE_SOUP
 			case 0x40: // memory.grow
 				{
 					r.skip(1); // reserved
-					size_t delta;
-					if (script.memory64)
-					{
-						delta = static_cast<uint64_t>(stack.top().i64);
-					}
-					else
-					{
-						delta = static_cast<uint32_t>(stack.top().i32);
-					}
-					stack.pop();
+					auto delta = popIPTR();
 					delta *= 0x10'000;
 					auto nmem = (uint8_t*)::realloc(script.memory, script.memory_size + delta);
 					if (nmem == nullptr)
@@ -2201,9 +2192,9 @@ NAMESPACE_SOUP
 				case 0x0a: // memory.copy
 					{
 						r.skip(2); // reserved
-						auto size = stack.top().i32; stack.pop();
-						auto src = stack.top().i32; stack.pop();
-						auto dst = stack.top().i32; stack.pop();
+						auto size = popIPTR();
+						auto src = popIPTR();
+						auto dst = popIPTR();
 						SOUP_IF_UNLIKELY (src + size > script.memory_size || dst + size > script.memory_size)
 						{
 #if DEBUG_VM
@@ -2662,5 +2653,20 @@ NAMESPACE_SOUP
 		{
 			stack.push(static_cast<uint32_t>(ptr));
 		}
+	}
+
+	size_t WasmVm::popIPTR()
+	{
+		size_t ptr;
+		if (script.memory64)
+		{
+			ptr = static_cast<uint64_t>(stack.top().i64);
+		}
+		else
+		{
+			ptr = static_cast<uint32_t>(stack.top().i32);
+		}
+		stack.pop();
+		return ptr;
 	}
 }

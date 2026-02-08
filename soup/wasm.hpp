@@ -136,5 +136,6 @@ NAMESPACE_SOUP
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index) SOUP_EXCAL;
 		void pushIPTR(size_t ptr) SOUP_EXCAL;
+		[[nodiscard]] size_t popIPTR();
 	};
 }
