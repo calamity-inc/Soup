@@ -2137,10 +2137,32 @@ NAMESPACE_SOUP
 
 			case 0xfc:
 				r.u8(op);
+				switch (op)
+				{
+				case 0x0a: // memory.copy
+					{
+						r.skip(2); // reserved
+						auto size = stack.top().i32; stack.pop();
+						auto src = stack.top().i32; stack.pop();
+						auto dst = stack.top().i32; stack.pop();
+						SOUP_IF_UNLIKELY (src + size > script.memory_size || dst + size > script.memory_size)
+						{
 #if DEBUG_VM
-				std::cout << "Unsupported opcode: " << string::hex(0xFC00 | op) << "\n";
+							std::cout << "out-of-bounds memory.copy\n";
 #endif
-				return false;
+							return false;
+						}
+						memcpy(&script.memory[dst], &script.memory[src], size);
+					}
+					break;
+
+				default:
+#if DEBUG_VM
+					std::cout << "Unsupported opcode: " << string::hex(0xFC00 | op) << "\n";
+#endif
+					return false;
+				}
+				break;
 			}
 		}
 		return true;
@@ -2402,7 +2424,15 @@ NAMESPACE_SOUP
 			case 0xfc:
 				r.u8(op);
 #if DEBUG_VM
-				std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFC00 | op)) << ", might cause problems\n";
+				switch (op)
+				{
+				case 0x0a: // memory.copy
+					break;
+
+				default:
+					std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFC00 | op)) << ", might cause problems\n";
+					break;
+				}
 #endif
 				break;
 			}
