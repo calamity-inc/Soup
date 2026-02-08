@@ -1852,7 +1852,7 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x90: // f32.nearest
-				stack.top().f32 = std::round(stack.top().f32);
+				stack.top().f32 = std::nearbyint(stack.top().f32);
 				break;
 
 			case 0x91: // f32.sqrt
@@ -1895,17 +1895,17 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					if (std::isnan(a.f32))
+					if (std::isnan(a.f32) || std::isnan(b.f32))
+					{
+						stack.push(0.0f / 0.0f);
+					}
+					else if (a.f32 < b.f32 || (std::signbit(a.f32) && !std::signbit(b.f32)))
 					{
 						stack.push(a.f32);
 					}
-					else if (std::isnan(b.f32))
-					{
-						stack.push(b.f32);
-					}
 					else
 					{
-						stack.push(std::min(a.f32, b.f32));
+						stack.push(b.f32);
 					}
 				}
 				break;
@@ -1914,17 +1914,17 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					if (std::isnan(a.f32))
+					if (std::isnan(a.f32) || std::isnan(b.f32))
 					{
-						stack.push(a.f32);
+						stack.push(0.0f / 0.0f);
 					}
-					else if (std::isnan(b.f32))
+					else if (a.f32 < b.f32 || (std::signbit(a.f32) && !std::signbit(b.f32)))
 					{
 						stack.push(b.f32);
 					}
 					else
 					{
-						stack.push(std::max(a.f32, b.f32));
+						stack.push(a.f32);
 					}
 				}
 				break;
@@ -1958,7 +1958,7 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x9e: // f64.nearest
-				stack.top().f64 = std::round(stack.top().f64);
+				stack.top().f64 = std::nearbyint(stack.top().f64);
 				break;
 
 			case 0x9f: // f64.sqrt
@@ -2001,17 +2001,17 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					if (std::isnan(a.f64))
+					if (std::isnan(a.f64) || std::isnan(b.f64))
+					{
+						stack.push(0.0 / 0.0);
+					}
+					else if (a.f64 < b.f64 || (std::signbit(a.f64) && !std::signbit(b.f64)))
 					{
 						stack.push(a.f64);
 					}
-					else if (std::isnan(b.f64))
-					{
-						stack.push(b.f64);
-					}
 					else
 					{
-						stack.push(std::min(a.f64, b.f64));
+						stack.push(b.f64);
 					}
 				}
 				break;
@@ -2020,17 +2020,17 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.top(); stack.pop();
 					auto a = stack.top(); stack.pop();
-					if (std::isnan(a.f64))
+					if (std::isnan(a.f64) || std::isnan(b.f64))
 					{
-						stack.push(a.f64);
+						stack.push(0.0 / 0.0);
 					}
-					else if (std::isnan(b.f64))
+					else if (a.f64 < b.f64 || (std::signbit(a.f64) && !std::signbit(b.f64)))
 					{
 						stack.push(b.f64);
 					}
 					else
 					{
-						stack.push(std::max(a.f64, b.f64));
+						stack.push(a.f64);
 					}
 				}
 				break;
