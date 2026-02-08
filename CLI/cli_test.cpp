@@ -2396,6 +2396,8 @@ static void unit_util_string()
 		assert(string::hexToInt<int>(L"1337.", 0) == 0x1337);
 		assert(string::hexToInt<int>(L"1337", 0, string::TI_FULL) == 0x1337);
 		assert(string::hexToInt<int>(L"1337.", 0, string::TI_FULL) == 0);
+
+		assert(string::toInt<uint64_t>("18446744073709551598", 0, string::TI_FULL) == 18446744073709551598ull);
 	});
 	test("truncateWithEllipsis", []
 	{

@@ -580,7 +580,7 @@ int main(int argc, const char** argv)
 							WasmVm vm(scr);
 							for (const auto& arg : action.at("args").asArr())
 							{
-								vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr()).value());
+								vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr(), string::TI_FULL).value());
 							}
 							if (!vm.run(*code))
 							{
@@ -623,19 +623,19 @@ int main(int argc, const char** argv)
 								else
 								{
 									if (type == "i32" || type == "f32"
-										? string::toIntOpt<uint32_t>(value).value() != vm.stack.top().i32
-										: string::toIntOpt<uint64_t>(value).value() != vm.stack.top().i64
+										? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != vm.stack.top().i32
+										: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != vm.stack.top().i64
 										)
 									{
 										std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
 										if (type == "i32" || type == "f32")
 										{
-											std::cout << "- Expected: " << string::toIntOpt<uint32_t>(value).value() << std::endl;
+											std::cout << "- Expected: " << string::toIntOpt<uint32_t>(value, string::TI_FULL).value() << std::endl;
 											std::cout << "- Actual: " << (uint32_t)vm.stack.top().i32 << std::endl;
 										}
 										else
 										{
-											std::cout << "- Expected: " << string::toIntOpt<uint64_t>(value).value() << std::endl;
+											std::cout << "- Expected: " << string::toIntOpt<uint64_t>(value, string::TI_FULL).value() << std::endl;
 											std::cout << "- Actual: " << (uint64_t)vm.stack.top().i64 << std::endl;
 										}
 										goto _wast_next_cmd;
