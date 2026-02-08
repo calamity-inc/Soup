@@ -1686,6 +1686,9 @@
     <ClInclude Include="bit.hpp">
       <Filter>util\polyfill</Filter>
     </ClInclude>
+    <ClInclude Include="Stack.hpp">
+      <Filter>data\container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
