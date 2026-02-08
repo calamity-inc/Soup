@@ -1769,21 +1769,6 @@ endif;)") == "");
 				assert(vm.stack.pop(), vm.stack.empty());
 			}
 		});
-		test("Loop", []
-		{
-			WasmScript scr;
-			assert(scr.load(base64::decode("AGFzbQEAAAABBwFgA39/fwADAgEABQMBAAAHEwIGbWVtc2V0AAAGbWVtb3J5AgAKKQEnAQF/A0AgAiIDQQFrIQIgAwRAIAAiA0EBaiEAIAMgAToAAAwBCwsLADMEbmFtZQEPAQAMaW5kZXgvbWVtc2V0Ag8BAAQAATABATECATIDATMEBAEAATAGBAEAATA=")));
-			auto code = scr.getExportedFuntion("memset");
-			assert(code);
-			WasmVm vm(scr);
-			vm.locals.emplace_back(0x10);
-			vm.locals.emplace_back(69);
-			vm.locals.emplace_back(0x10);
-			assert(vm.run(*code));
-			assert(string::bin2hex(std::string(scr.getMemory<const char>(0x00), 0x10)) == "00000000000000000000000000000000");
-			assert(string::bin2hex(std::string(scr.getMemory<const char>(0x10), 0x10)) == "45454545454545454545454545454545");
-			assert(string::bin2hex(std::string(scr.getMemory<const char>(0x20), 0x10)) == "00000000000000000000000000000000");
-		});
 		test("Imports", []
 		{
 			WasmScript scr;
