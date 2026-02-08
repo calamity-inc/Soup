@@ -559,6 +559,7 @@ int main(int argc, const char** argv)
 						if (type == "module")
 						{
 							FileReader fr(cmd.at("filename").asStr());
+							scr = WasmScript();
 							if (!scr.load(fr))
 							{
 								std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << std::endl;
