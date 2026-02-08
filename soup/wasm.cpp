@@ -552,13 +552,13 @@ NAMESPACE_SOUP
 
 	// WasmVm
 
-	bool WasmVm::run(const std::string& data) SOUP_EXCAL
+	bool WasmVm::run(const std::string& data)
 	{
 		MemoryRefReader r(data);
 		return run(r);
 	}
 
-	bool WasmVm::run(Reader& r) SOUP_EXCAL
+	bool WasmVm::run(Reader& r)
 	{
 		size_t local_decl_count;
 		r.oml(local_decl_count);
@@ -2739,7 +2739,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmVm::doCall(uint32_t type_index, uint32_t function_index) SOUP_EXCAL
+	bool WasmVm::doCall(uint32_t type_index, uint32_t function_index)
 	{
 		SOUP_IF_UNLIKELY (type_index >= script.types.size())
 		{
