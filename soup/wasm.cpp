@@ -2134,6 +2134,13 @@ NAMESPACE_SOUP
 			case 0xbf: // f64.reinterpret_i64
 				// Nothing to do.
 				break;
+
+			case 0xfc:
+				r.u8(op);
+#if DEBUG_VM
+				std::cout << "Unsupported opcode: " << string::hex(0xFC00 | op) << "\n";
+#endif
+				return false;
 			}
 		}
 		return true;
@@ -2391,6 +2398,13 @@ NAMESPACE_SOUP
 				std::cout << "skipOverBranch: unknown instruction " << string::hex(op) << ", might cause problems\n";
 				break;
 #endif
+
+			case 0xfc:
+				r.u8(op);
+#if DEBUG_VM
+				std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFC00 | op)) << ", might cause problems\n";
+#endif
+				break;
 			}
 		}
 #if DEBUG_VM
