@@ -2170,6 +2170,26 @@ NAMESPACE_SOUP
 				// Nothing to do.
 				break;
 
+			case 0xc0: // i32.extend8_s
+				stack.top().i32 = static_cast<int32_t>(static_cast<int8_t>(stack.top().i32));
+				break;
+
+			case 0xc1: // i32.extend16_s
+				stack.top().i32 = static_cast<int32_t>(static_cast<int16_t>(stack.top().i32));
+				break;
+
+			case 0xc2: // i64.extend8_s
+				stack.top().i64 = static_cast<int64_t>(static_cast<int8_t>(stack.top().i64));
+				break;
+
+			case 0xc3: // i64.extend16_s
+				stack.top().i64 = static_cast<int64_t>(static_cast<int16_t>(stack.top().i64));
+				break;
+
+			case 0xc4: // i64.extend32_s
+				stack.top().i64 = static_cast<int64_t>(static_cast<int32_t>(stack.top().i64));
+				break;
+
 			case 0xfc:
 				r.u8(op);
 				switch (op)
@@ -2449,6 +2469,11 @@ NAMESPACE_SOUP
 			case 0xbd: // i64.reinterpret_f64
 			case 0xbe: // f32.reinterpret_i32
 			case 0xbf: // f64.reinterpret_i64
+			case 0xc0: // i32.extend8_s
+			case 0xc1: // i32.extend16_s
+			case 0xc2: // i64.extend8_s
+			case 0xc3: // i64.extend16_s
+			case 0xc4: // i64.extend32_s
 				break;
 
 			default:
