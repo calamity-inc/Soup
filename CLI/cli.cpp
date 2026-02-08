@@ -17,6 +17,7 @@
 #include <HttpRequest.hpp>
 #include <hwGamepad.hpp>
 #include <hwHid.hpp>
+#include <json.hpp>
 #include <netIntel.hpp>
 #include <netIntrospectTask.hpp>
 #include <os.hpp>
@@ -533,6 +534,154 @@ int main(int argc, const char** argv)
 				std::cout << "A runtime error occurred.\n";
 				return 3;
 			}
+			return 0;
+		}
+
+		if (subcommand == "wast")
+		{
+			if (argc != 3)
+			{
+				std::cout << "Syntax: soup wast [file]" << std::endl;
+				return 0;
+			}
+			/*std::cout << "Attach debugger now." << std::endl;
+			Sleep(5000);
+			std::cout << "Starting." << std::endl;*/
+			if (auto jr = json::decode(string::fromFile(argv[2])))
+			{
+				WasmScript scr;
+				try
+				{
+					for (const auto& cmd_entry : jr->asObj().at("commands").asArr())
+					{
+						const auto& cmd = cmd_entry.asObj();
+						const auto& type = cmd.at("type").asStr();
+						if (type == "module")
+						{
+							FileReader fr(cmd.at("filename").asStr());
+							if (!scr.load(fr))
+							{
+								std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << std::endl;
+								return 1;
+							}
+						}
+						else if (type == "assert_return")
+						{
+							//std::cout << "assert_return at line " << cmd.at("line").asInt().value << std::endl;
+							const auto& action = cmd.at("action").asObj();
+							auto code = scr.getExportedFuntion(action.at("field").asStr());
+							if (!code)
+							{
+								std::cout << "Could not find export: " << action.at("field").reinterpretAsStr().value << std::endl;
+								goto _wast_next_cmd;
+							}
+							//std::cout << "code = " << string::bin2hex(*code) << std::endl;
+							WasmVm vm(scr);
+							for (const auto& arg : action.at("args").asArr())
+							{
+								vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr()).value());
+							}
+							if (!vm.run(*code))
+							{
+								std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
+								goto _wast_next_cmd;
+							}
+							for (const auto& expected_entry : cmd.at("expected").asArr())
+							{
+								if (vm.stack.empty())
+								{
+									std::cout << "Stack too empty for test at line " << cmd.at("line").asInt().value << std::endl;
+									goto _wast_next_cmd;
+								}
+								const auto& expected = expected_entry.asObj();
+								const auto& type = expected.at("type").asStr();
+								const auto& value = expected.at("value").asStr();
+								if (value == "nan:arithmetic" || value == "nan:canonical")
+								{
+									if (type == "f32"
+										? !std::isnan(vm.stack.top().f32)
+										: !std::isnan(vm.stack.top().f64)
+										)
+									{
+										std::cout << "Return value was not NaN for test at line " << cmd.at("line").asInt().value << std::endl;
+										goto _wast_next_cmd;
+									}
+								}
+								/*else if (value == "nan:canonical")
+								{
+									if (type == "f32"
+										? vm.stack.top().i32 != 0x400000
+										: vm.stack.top().i64 != 0x8000000000000ll
+										)
+									{
+										std::cout << "Return value was not nan:canonical for test at line " << cmd.at("line").asInt().value << std::endl;
+										goto _wast_next_cmd;
+									}
+								}*/
+								else
+								{
+									if (type == "i32" || type == "f32"
+										? string::toIntOpt<uint32_t>(value).value() != vm.stack.top().i32
+										: string::toIntOpt<uint64_t>(value).value() != vm.stack.top().i64
+										)
+									{
+										std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
+										if (type == "i32" || type == "f32")
+										{
+											std::cout << "- Expected: " << string::toIntOpt<uint32_t>(value).value() << std::endl;
+											std::cout << "- Actual: " << (uint32_t)vm.stack.top().i32 << std::endl;
+										}
+										else
+										{
+											std::cout << "- Expected: " << string::toIntOpt<uint64_t>(value).value() << std::endl;
+											std::cout << "- Actual: " << (uint64_t)vm.stack.top().i64 << std::endl;
+										}
+										goto _wast_next_cmd;
+									}
+								}
+								vm.stack.pop();
+							}
+							if (!vm.stack.empty())
+							{
+								std::cout << "Stack too full for test at line " << cmd.at("line").asInt().value << std::endl;
+								goto _wast_next_cmd;
+							}
+						}
+						else if (type == "assert_trap")
+						{
+							const auto& action = cmd.at("action").asObj();
+							auto code = scr.getExportedFuntion(action.at("field").asStr());
+							if (!code)
+							{
+								std::cout << "Could not find export: " << action.at("field").reinterpretAsStr().value << std::endl;
+								goto _wast_next_cmd;
+							}
+							WasmVm vm(scr);
+							for (const auto& arg : action.at("args").asArr())
+							{
+								vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr()).value());
+							}
+							if (vm.run(*code))
+							{
+								std::cout << "Execution did not trap for test at line " << cmd.at("line").asInt().value << std::endl;
+								goto _wast_next_cmd;
+							}
+						}
+					_wast_next_cmd:;
+					}
+				}
+				catch (const std::exception& e)
+				{
+					std::cout << e.what() << std::endl;
+					return 1;
+				}
+			}
+			else
+			{
+				std::cout << "Input file is not valid JSON (use wast2json if need be)" << std::endl;
+				return 1;
+			}
+			std::cout << "Done." << std::endl;
 			return 0;
 		}
 

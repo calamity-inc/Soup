@@ -20,6 +20,10 @@
 // Good resources:
 // - https://webassembly.github.io/wabt/demo/wat2wasm/
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
+// - https://github.com/WebAssembly/spec/tree/main/test/core
+//   - Use wast2json from wabt then run `soup wast [file]`
+//   - The following tests pass: i32, f32, labels
+//     - Other tests may or may not pass; I simply haven't tried them yet.
 
 NAMESPACE_SOUP
 {
