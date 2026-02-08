@@ -22,7 +22,7 @@
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
 // - https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1ab1b003d21617/test/core
 //   - Use wast2json from wabt then run `soup wast [file]`
-//   - The following tests pass: address, br, i32, i64, if, f32, f64, labels, loop
+//   - The following tests pass: address, br, i32, i64, if, f32, f64, labels, loop, memory
 
 NAMESPACE_SOUP
 {
@@ -193,10 +193,14 @@ NAMESPACE_SOUP
 					}
 					if (pages == 0)
 					{
-						++pages;
+						memory = (uint8_t*)soup::malloc(1);
+						memory_size = 1;
 					}
-					memory = (uint8_t*)soup::malloc(pages * 0x10'000);
-					memory_size = pages * 0x10'000;
+					else
+					{
+						memory = (uint8_t*)soup::malloc(pages * 0x10'000);
+						memory_size = pages * 0x10'000;
+					}
 					memset(memory, 0, memory_size);
 #if DEBUG_LOAD
 					std::cout << "Memory consists of " << pages << " pages, totalling " << memory_size << " bytes\n";
