@@ -4,11 +4,10 @@
 #include "fwd.hpp"
 #include "type_traits.hpp"
 
+#include <stack>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include "Stack.hpp"
 
 NAMESPACE_SOUP
 {
@@ -113,7 +112,7 @@ NAMESPACE_SOUP
 	class WasmVm
 	{
 	public:
-		Stack<WasmValue> stack;
+		std::stack<WasmValue> stack;
 		std::vector<WasmValue> locals;
 		WasmScript& script;
 
