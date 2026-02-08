@@ -22,7 +22,7 @@
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
 // - https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1ab1b003d21617/test/core
 //   - Use wast2json from wabt then run `soup wast [file]`
-//   - The following tests pass: address, br, i32, i64, if, f32, f64, labels, loop, memory
+//   - The following tests pass: address, br, i32, i64, if, f32, f64, labels, loop, memory, memory_grow
 
 NAMESPACE_SOUP
 {
@@ -185,7 +185,7 @@ NAMESPACE_SOUP
 					size_t pages; r.oml(pages);
 					if (flags & 1)
 					{
-						size_t max_pages; r.oml(max_pages);
+						r.oml(memory_page_limit);
 					}
 					if (flags & 4)
 					{
@@ -1307,9 +1307,11 @@ NAMESPACE_SOUP
 			case 0x40: // memory.grow
 				{
 					r.skip(1); // reserved
-					auto delta = popIPTR();
-					delta *= 0x10'000;
-					auto nmem = (uint8_t*)::realloc(script.memory, script.memory_size + delta);
+					auto delta = popIPTR() * 0x10'000;
+					auto nmem = (((script.memory_size + delta) / 0x10'000) <= script.memory_page_limit)
+						? (uint8_t*)::realloc(script.memory, script.memory_size + delta)
+						: nullptr
+						;
 					if (nmem == nullptr)
 					{
 						pushIPTR(-1);

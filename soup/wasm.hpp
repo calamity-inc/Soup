@@ -69,6 +69,7 @@ NAMESPACE_SOUP
 		std::unordered_map<std::string, uint32_t> export_map{};
 		std::vector<std::string> code{};
 		std::vector<uint32_t> elements{};
+		uint32_t memory_page_limit = 0x10'000;
 		bool memory64 = false;
 
 		~WasmScript() noexcept;
