@@ -1254,6 +1254,36 @@ NAMESPACE_SOUP
 				}
 				break;
 
+			case 0x3c: // i64.store8
+				{
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					auto offset = script.readUPTR(r);
+					*script.getMemory<int8_t>(base, offset) = static_cast<int8_t>(value.i64);
+				}
+				break;
+
+			case 0x3d: // i64.store16
+				{
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					auto offset = script.readUPTR(r);
+					*script.getMemory<int16_t>(base, offset) = static_cast<int16_t>(value.i64);
+				}
+				break;
+
+			case 0x3e: // i64.store32
+				{
+					auto value = stack.top(); stack.pop();
+					auto base = stack.top(); stack.pop();
+					r.skip(1); // memflags
+					auto offset = script.readUPTR(r);
+					*script.getMemory<int32_t>(base, offset) = static_cast<int32_t>(value.i64);
+				}
+				break;
+
 			case 0x3f: // memory.size
 				{
 					r.skip(1); // reserved
@@ -2356,6 +2386,9 @@ NAMESPACE_SOUP
 			case 0x39: // f64.store
 			case 0x3a: // i32.store8
 			case 0x3b: // i32.store16
+			case 0x3c: // i64.store8
+			case 0x3d: // i64.store16
+			case 0x3e: // i64.store32
 				{
 					r.skip(1); // memflags
 					SOUP_UNUSED(script.readUPTR(r));
