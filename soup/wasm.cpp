@@ -497,13 +497,23 @@ NAMESPACE_SOUP
 				auto iovs = vm.stack.top(); vm.stack.pop();
 				auto file_descriptor = vm.stack.top(); vm.stack.pop();
 				auto nwritten = 0;
-				if (file_descriptor.i32 == 1) // stdout
+				//std::cout << "fd_write on fd " << file_descriptor.i32 << "\n";
+				FILE* stream = nullptr;
+				if (file_descriptor.i32 == 1)
+				{
+					stream = stdout;
+				}
+				else if (file_descriptor.i32 == 2)
+				{
+					stream = stderr;
+				}
+				if (stream)
 				{
 					while (iovs_len.i32--)
 					{
 						int32_t iov_base = *vm.script.getMemory<int32_t>(iovs.i32); iovs.i32 += 4;
 						int32_t iov_len = *vm.script.getMemory<int32_t>(iovs.i32); iovs.i32 += 4;
-						fwrite(vm.script.getMemory<char>(iov_base), 1, iov_len, stdout);
+						fwrite(vm.script.getMemory<char>(iov_base), 1, iov_len, stream);
 						nwritten += iov_len;
 					}
 				}
