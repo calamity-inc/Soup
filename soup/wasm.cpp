@@ -1999,7 +1999,7 @@ NAMESPACE_SOUP
 					auto a = stack.top(); stack.pop();
 					if (std::isnan(a.f32) || std::isnan(b.f32))
 					{
-						stack.push(0.0f / 0.0f);
+						stack.push(std::numeric_limits<float>::quiet_NaN());
 					}
 					else if (a.f32 < b.f32 || (std::signbit(a.f32) && !std::signbit(b.f32)))
 					{
@@ -2018,7 +2018,7 @@ NAMESPACE_SOUP
 					auto a = stack.top(); stack.pop();
 					if (std::isnan(a.f32) || std::isnan(b.f32))
 					{
-						stack.push(0.0f / 0.0f);
+						stack.push(std::numeric_limits<float>::quiet_NaN());
 					}
 					else if (a.f32 < b.f32 || (std::signbit(a.f32) && !std::signbit(b.f32)))
 					{
@@ -2105,7 +2105,7 @@ NAMESPACE_SOUP
 					auto a = stack.top(); stack.pop();
 					if (std::isnan(a.f64) || std::isnan(b.f64))
 					{
-						stack.push(0.0 / 0.0);
+						stack.push(std::numeric_limits<double>::quiet_NaN());
 					}
 					else if (a.f64 < b.f64 || (std::signbit(a.f64) && !std::signbit(b.f64)))
 					{
@@ -2124,7 +2124,7 @@ NAMESPACE_SOUP
 					auto a = stack.top(); stack.pop();
 					if (std::isnan(a.f64) || std::isnan(b.f64))
 					{
-						stack.push(0.0 / 0.0);
+						stack.push(std::numeric_limits<double>::quiet_NaN());
 					}
 					else if (a.f64 < b.f64 || (std::signbit(a.f64) && !std::signbit(b.f64)))
 					{
