@@ -562,112 +562,109 @@ int main(int argc, const char** argv)
 							scr = WasmScript();
 							if (!scr.load(fr))
 							{
-								std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << std::endl;
+								std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 								return 1;
 							}
 						}
-						else if (type == "assert_return")
+						else
 						{
-							//std::cout << "assert_return at line " << cmd.at("line").asInt().value << std::endl;
-							const auto& action = cmd.at("action").asObj();
-							auto code = scr.getExportedFuntion(action.at("field").asStr());
-							if (!code)
-							{
-								std::cout << "Could not find export: " << action.at("field").reinterpretAsStr().value << std::endl;
-								goto _wast_next_cmd;
-							}
-							//std::cout << "code = " << string::bin2hex(*code) << std::endl;
 							WasmVm vm(scr);
-							for (const auto& arg : action.at("args").asArr())
+							if (cmd.contains("action"))
 							{
-								vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr(), string::TI_FULL).value());
-							}
-							if (!vm.run(*code))
-							{
-								std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
-								goto _wast_next_cmd;
-							}
-							const auto& expected_arr = cmd.at("expected").asArr();
-							for (auto i = expected_arr.children.rbegin(); i != expected_arr.children.rend(); ++i)
-							{
-								if (vm.stack.empty())
+								const auto& action = cmd.at("action").asObj();
+								auto code = scr.getExportedFuntion(action.at("field").asStr());
+								if (!code)
 								{
-									std::cout << "Stack too empty for test at line " << cmd.at("line").asInt().value << std::endl;
+									std::cout << "Could not find export: " << action.at("field").reinterpretAsStr().value << std::endl;
 									goto _wast_next_cmd;
 								}
-								const auto& expected = (*i)->asObj();
-								const auto& type = expected.at("type").asStr();
-								const auto& value = expected.at("value").asStr();
-								if (value == "nan:arithmetic" || value == "nan:canonical")
+								//std::cout << "running code from line " << cmd.at("line").asInt().value << std::endl;
+								//std::cout << "code = " << string::bin2hex(*code) << std::endl;
+								for (const auto& arg : action.at("args").asArr())
 								{
-									if (type == "f32"
-										? !std::isnan(vm.stack.top().f32)
-										: !std::isnan(vm.stack.top().f64)
-										)
+									vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr(), string::TI_FULL).value());
+								}
+								if (!vm.run(*code))
+								{
+									if (type != "assert_trap")
 									{
-										std::cout << "Return value was not NaN for test at line " << cmd.at("line").asInt().value << std::endl;
+										std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
 										goto _wast_next_cmd;
 									}
 								}
-								/*else if (value == "nan:canonical")
-								{
-									if (type == "f32"
-										? vm.stack.top().i32 != 0x400000
-										: vm.stack.top().i64 != 0x8000000000000ll
-										)
-									{
-										std::cout << "Return value was not nan:canonical for test at line " << cmd.at("line").asInt().value << std::endl;
-										goto _wast_next_cmd;
-									}
-								}*/
 								else
 								{
-									if (type == "i32" || type == "f32"
-										? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != vm.stack.top().i32
-										: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != vm.stack.top().i64
-										)
+									if (type == "assert_trap")
 									{
-										std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
-										if (type == "i32" || type == "f32")
-										{
-											std::cout << "- Expected: " << string::toIntOpt<uint32_t>(value, string::TI_FULL).value() << std::endl;
-											std::cout << "- Actual: " << (uint32_t)vm.stack.top().i32 << std::endl;
-										}
-										else
-										{
-											std::cout << "- Expected: " << string::toIntOpt<uint64_t>(value, string::TI_FULL).value() << std::endl;
-											std::cout << "- Actual: " << (uint64_t)vm.stack.top().i64 << std::endl;
-										}
+										std::cout << "Execution did not trap for test at line " << cmd.at("line").asInt().value << std::endl;
 										goto _wast_next_cmd;
 									}
 								}
-								vm.stack.pop();
 							}
-							// When code uses 'return', there may be superfluous values on the stack. This doesn't affect VM semantics, tho.
-							/*if (!vm.stack.empty())
+							if (type == "assert_return")
 							{
-								std::cout << "Stack too full for test at line " << cmd.at("line").asInt().value << std::endl;
-								goto _wast_next_cmd;
-							}*/
-						}
-						else if (type == "assert_trap")
-						{
-							const auto& action = cmd.at("action").asObj();
-							auto code = scr.getExportedFuntion(action.at("field").asStr());
-							if (!code)
-							{
-								std::cout << "Could not find export: " << action.at("field").reinterpretAsStr().value << std::endl;
-								goto _wast_next_cmd;
-							}
-							WasmVm vm(scr);
-							for (const auto& arg : action.at("args").asArr())
-							{
-								vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr()).value());
-							}
-							if (vm.run(*code))
-							{
-								std::cout << "Execution did not trap for test at line " << cmd.at("line").asInt().value << std::endl;
-								goto _wast_next_cmd;
+								const auto& expected_arr = cmd.at("expected").asArr();
+								for (auto i = expected_arr.children.rbegin(); i != expected_arr.children.rend(); ++i)
+								{
+									if (vm.stack.empty())
+									{
+										std::cout << "Stack too empty for test at line " << cmd.at("line").asInt().value << std::endl;
+										goto _wast_next_cmd;
+									}
+									const auto& expected = (*i)->asObj();
+									const auto& type = expected.at("type").asStr();
+									const auto& value = expected.at("value").asStr();
+									if (value == "nan:arithmetic" || value == "nan:canonical")
+									{
+										if (type == "f32"
+											? !std::isnan(vm.stack.top().f32)
+											: !std::isnan(vm.stack.top().f64)
+											)
+										{
+											std::cout << "Return value was not NaN for test at line " << cmd.at("line").asInt().value << std::endl;
+											goto _wast_next_cmd;
+										}
+									}
+									/*else if (value == "nan:canonical")
+									{
+										if (type == "f32"
+											? vm.stack.top().i32 != 0x400000
+											: vm.stack.top().i64 != 0x8000000000000ll
+											)
+										{
+											std::cout << "Return value was not nan:canonical for test at line " << cmd.at("line").asInt().value << std::endl;
+											goto _wast_next_cmd;
+										}
+									}*/
+									else
+									{
+										if (type == "i32" || type == "f32"
+											? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != vm.stack.top().i32
+											: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != vm.stack.top().i64
+											)
+										{
+											std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
+											if (type == "i32" || type == "f32")
+											{
+												std::cout << "- Expected: " << string::toIntOpt<uint32_t>(value, string::TI_FULL).value() << std::endl;
+												std::cout << "- Actual: " << (uint32_t)vm.stack.top().i32 << std::endl;
+											}
+											else
+											{
+												std::cout << "- Expected: " << string::toIntOpt<uint64_t>(value, string::TI_FULL).value() << std::endl;
+												std::cout << "- Actual: " << (uint64_t)vm.stack.top().i64 << std::endl;
+											}
+											goto _wast_next_cmd;
+										}
+									}
+									vm.stack.pop();
+								}
+								// When code uses 'return', there may be superfluous values on the stack. This doesn't affect VM semantics, tho.
+								/*if (!vm.stack.empty())
+								{
+									std::cout << "Stack too full for test at line " << cmd.at("line").asInt().value << std::endl;
+									goto _wast_next_cmd;
+								}*/
 							}
 						}
 					_wast_next_cmd:;
