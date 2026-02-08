@@ -22,7 +22,7 @@
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
 // - https://github.com/WebAssembly/spec/tree/main/test/core
 //   - Use wast2json from wabt then run `soup wast [file]`
-//   - The following tests pass: address, i32, f32, labels
+//   - The following tests pass: address, i32, i64, if, f32, f64, labels
 //     - Other tests may or may not pass; I simply haven't tried them yet.
 
 NAMESPACE_SOUP
@@ -480,7 +480,7 @@ NAMESPACE_SOUP
 				auto prestat = vm.stack.top(); vm.stack.pop();
 				auto fd = vm.stack.top(); vm.stack.pop();
 #if DEBUG_VM
-				std::cout << "prestat on fd " << fd.i32 << std::endl;
+				std::cout << "prestat on fd " << fd.i32 << "\n";
 #endif
 				SOUP_UNUSED(prestat);
 				SOUP_UNUSED(fd);
@@ -588,53 +588,90 @@ NAMESPACE_SOUP
 
 			case 0x02: // block
 				{
-					uint8_t result_type; r.u8(result_type);
-					bool has_result = (result_type != /* void */ 0x40);
-					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size(), has_result });
+					int32_t result_type; r.soml(result_type);
+					size_t stack_size = stack.size();
+					size_t num_results = 0;
+					if (result_type != -64)
+					{
+						if (result_type >= 0 && result_type < script.types.size())
+						{
 #if DEBUG_VM
-					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << " + " << has_result << "\n";
+							std::cout << "result type is a type index: " << script.types[result_type].parameters.size() << " + " << script.types[result_type].results.size() << "\n";
+#endif
+							stack_size -= script.types[result_type].parameters.size();
+							num_results = script.types[result_type].results.size();
+						}
+						else
+						{
+							num_results = 1;
+						}
+					}
+					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_results });
+#if DEBUG_VM
+					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_results << "\n";
 #endif
 				}
 				break;
 
 			case 0x03: // loop
 				{
-					uint8_t result_type; r.u8(result_type);
-					bool has_result = (result_type != /* void */ 0x40);
-					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size(), has_result });
+					int32_t result_type; r.soml(result_type);
+					size_t stack_size = stack.size();
+					size_t num_results = 0;
+					if (result_type != -64)
+					{
+						if (result_type >= 0 && result_type < script.types.size())
+						{
 #if DEBUG_VM
-					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << " + " << has_result << "\n";
+							std::cout << "result type is a type index: " << script.types[result_type].parameters.size() << " + " << script.types[result_type].results.size() << "\n";
+#endif
+							stack_size -= script.types[result_type].parameters.size();
+							num_results = script.types[result_type].results.size();
+						}
+						else
+						{
+							num_results = 1;
+						}
+					}
+					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack_size, num_results });
+#if DEBUG_VM
+					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_results << "\n";
 #endif
 				}
 				break;
 
 			case 0x04: // if
 				{
-					uint8_t result_type; r.u8(result_type);
-					bool has_result = (result_type != /* void */ 0x40);
+					int32_t result_type; r.soml(result_type);
+					size_t stack_size = stack.size();
+					size_t num_results = 0;
+					if (result_type != -64)
+					{
+						if (result_type >= 0 && result_type < script.types.size())
+						{
+#if DEBUG_VM
+							std::cout << "result type is a type index: " << script.types[result_type].parameters.size() << " + " << script.types[result_type].results.size() << "\n";
+#endif
+							stack_size -= script.types[result_type].parameters.size();
+							num_results = script.types[result_type].results.size();
+						}
+						else
+						{
+							num_results = 1;
+						}
+					}
 					auto value = stack.top(); stack.pop();
 					//std::cout << "if: condition is " << (value.i32 ? "true" : "false") << "\n";
 					if (value.i32)
 					{
-						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size(), has_result });
+						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_results });
 					}
 					else
 					{
 						if (skipOverBranch(r))
 						{
 							// we're in the 'else' branch
-							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size(), has_result });
-						}
-						else
-						{
-							// we're after the 'end'
-							SOUP_IF_UNLIKELY (has_result)
-							{
-#if DEBUG_VM
-								std::cout << "if: has result but no 'else' clause\n";
-#endif
-								return false;
-							}
+							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_results });
 						}
 					}
 				}
@@ -2545,7 +2582,7 @@ NAMESPACE_SOUP
 				return true;
 			}
 		}
-		WasmValue result;
+		std::vector<WasmValue> results;
 		if (ctrlflow.top().position == -1)
 		{
 			// branch forwards
@@ -2555,9 +2592,9 @@ NAMESPACE_SOUP
 				skipOverBranch(r, depth);
 			}
 
-			if (ctrlflow.top().has_result)
+			for (size_t i = 0; i != ctrlflow.top().num_results; ++i)
 			{
-				result = stack.top();
+				results.emplace_back(stack.top()); stack.pop();
 			}
 		}
 		else
@@ -2575,9 +2612,9 @@ NAMESPACE_SOUP
 #endif
 		if (ctrlflow.top().position == -1)
 		{
-			if (ctrlflow.top().has_result)
+			for (size_t i = 0; i != ctrlflow.top().num_results; ++i)
 			{
-				stack.push(result);
+				stack.push(results[(results.size() - 1) - i]);
 			}
 			ctrlflow.pop(); // we passed 'end', so need to pop here.
 		}

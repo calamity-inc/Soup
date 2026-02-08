@@ -129,7 +129,7 @@ NAMESPACE_SOUP
 		{
 			std::streamoff position;
 			size_t stack_size;
-			bool has_result;
+			size_t num_results;
 		};
 
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;

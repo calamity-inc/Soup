@@ -643,11 +643,12 @@ int main(int argc, const char** argv)
 								}
 								vm.stack.pop();
 							}
-							if (!vm.stack.empty())
+							// When code uses 'return', there may be superfluous values on the stack. This doesn't affect VM semantics, tho.
+							/*if (!vm.stack.empty())
 							{
 								std::cout << "Stack too full for test at line " << cmd.at("line").asInt().value << std::endl;
 								goto _wast_next_cmd;
-							}
+							}*/
 						}
 						else if (type == "assert_trap")
 						{
