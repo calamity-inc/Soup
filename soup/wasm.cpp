@@ -470,9 +470,12 @@ NAMESPACE_SOUP
 			{
 				auto prestat = vm.stack.top(); vm.stack.pop();
 				auto fd = vm.stack.top(); vm.stack.pop();
+#if DEBUG_VM
+				std::cout << "prestat on fd " << fd.i32 << std::endl;
+#endif
 				SOUP_UNUSED(prestat);
 				SOUP_UNUSED(fd);
-				vm.stack.push(-1);
+				vm.stack.push(8); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L157
 			};
 		}
 
