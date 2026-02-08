@@ -586,9 +586,9 @@ NAMESPACE_SOUP
 				{
 					uint8_t result_type; r.u8(result_type);
 					bool has_result = (result_type != /* void */ 0x40);
-					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size() + has_result });
+					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size(), has_result });
 #if DEBUG_VM
-					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << "\n";
+					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << " + " << has_result << "\n";
 #endif
 				}
 				break;
@@ -597,9 +597,9 @@ NAMESPACE_SOUP
 				{
 					uint8_t result_type; r.u8(result_type);
 					bool has_result = (result_type != /* void */ 0x40);
-					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size() + has_result });
+					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size(), has_result });
 #if DEBUG_VM
-					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << "\n";
+					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << " + " << has_result << "\n";
 #endif
 				}
 				break;
@@ -612,14 +612,14 @@ NAMESPACE_SOUP
 					//std::cout << "if: condition is " << (value.i32 ? "true" : "false") << "\n";
 					if (value.i32)
 					{
-						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size() + has_result });
+						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size(), has_result });
 					}
 					else
 					{
 						if (skipOverBranch(r))
 						{
 							// we're in the 'else' branch
-							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size() + has_result });
+							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack.size(), has_result });
 						}
 						else
 						{
@@ -2529,6 +2529,7 @@ NAMESPACE_SOUP
 				return true;
 			}
 		}
+		WasmValue result;
 		if (ctrlflow.top().position == -1)
 		{
 			// branch forwards
@@ -2537,18 +2538,32 @@ NAMESPACE_SOUP
 				// also skip over 'else' branch
 				skipOverBranch(r, depth);
 			}
+
+			if (ctrlflow.top().has_result)
+			{
+				result = stack.top();
+			}
 		}
 		else
 		{
 			// branch backwards
 			r.seek(ctrlflow.top().position);
 		}
-#if DEBUG_VM
-		std::cout << "position after branch: " << r.getPosition() << "\n";
-#endif
 		while (stack.size() > ctrlflow.top().stack_size)
 		{
 			stack.pop();
+		}
+#if DEBUG_VM
+		std::cout << "position after branch: " << r.getPosition() << "\n";
+		std::cout << "stack size after branch: " << stack.size() << "\n";
+#endif
+		if (ctrlflow.top().position == -1)
+		{
+			if (ctrlflow.top().has_result)
+			{
+				stack.push(result);
+			}
+			ctrlflow.pop(); // we passed 'end', so need to pop here.
 		}
 		return true;
 	}
