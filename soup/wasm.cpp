@@ -2206,6 +2206,23 @@ NAMESPACE_SOUP
 					}
 					break;
 
+				case 0x0b: // memory.fill
+					{
+						r.skip(1); // reserved
+						auto size = popIPTR();
+						auto value = stack.top().i32; stack.pop();
+						auto base = popIPTR();
+						SOUP_IF_UNLIKELY (base + size > script.memory_size)
+						{
+#if DEBUG_VM
+							std::cout << "out-of-bounds memory.fill\n";
+#endif
+							return false;
+						}
+						memset(&script.memory[base], value, size);
+					}
+					break;
+
 				default:
 #if DEBUG_VM
 					std::cout << "Unsupported opcode: " << string::hex(0xFC00 | op) << "\n";
@@ -2482,6 +2499,10 @@ NAMESPACE_SOUP
 				{
 				case 0x0a: // memory.copy
 					r.skip(2);
+					break;
+
+				case 0x0b: // memory.fill
+					r.skip(1);
 					break;
 
 				default:
