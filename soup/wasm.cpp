@@ -1233,7 +1233,17 @@ NAMESPACE_SOUP
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<float>(base, offset) = value.f32;
+					if (auto ptr = script.getMemory<float>(base, offset))
+					{
+						*ptr = value.f32;
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -1243,7 +1253,17 @@ NAMESPACE_SOUP
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<double>(base, offset) = value.f64;
+					if (auto ptr = script.getMemory<double>(base, offset))
+					{
+						*ptr = value.f64;
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -1253,7 +1273,17 @@ NAMESPACE_SOUP
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<int8_t>(base, offset) = static_cast<int8_t>(value.i32);
+					if (auto ptr = script.getMemory<int8_t>(base, offset))
+					{
+						*ptr = static_cast<int8_t>(value.i32);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -1263,7 +1293,17 @@ NAMESPACE_SOUP
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<int16_t>(base, offset) = static_cast<int16_t>(value.i32);
+					if (auto ptr = script.getMemory<int16_t>(base, offset))
+					{
+						*ptr = static_cast<int16_t>(value.i32);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -1273,7 +1313,17 @@ NAMESPACE_SOUP
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<int8_t>(base, offset) = static_cast<int8_t>(value.i64);
+					if (auto ptr = script.getMemory<int8_t>(base, offset))
+					{
+						*ptr = static_cast<int8_t>(value.i64);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -1283,7 +1333,17 @@ NAMESPACE_SOUP
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<int16_t>(base, offset) = static_cast<int16_t>(value.i64);
+					if (auto ptr = script.getMemory<int16_t>(base, offset))
+					{
+						*ptr = static_cast<int16_t>(value.i64);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
@@ -1293,7 +1353,17 @@ NAMESPACE_SOUP
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
 					auto offset = script.readUPTR(r);
-					*script.getMemory<int32_t>(base, offset) = static_cast<int32_t>(value.i64);
+					if (auto ptr = script.getMemory<int32_t>(base, offset))
+					{
+						*ptr = static_cast<int32_t>(value.i64);
+					}
+					else
+					{
+#if DEBUG_VM
+						std::cout << "memory access out of bounds\n";
+#endif
+						return false;
+					}
 				}
 				break;
 
