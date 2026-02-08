@@ -587,14 +587,15 @@ int main(int argc, const char** argv)
 								std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
 								goto _wast_next_cmd;
 							}
-							for (const auto& expected_entry : cmd.at("expected").asArr())
+							const auto& expected_arr = cmd.at("expected").asArr();
+							for (auto i = expected_arr.children.rbegin(); i != expected_arr.children.rend(); ++i)
 							{
 								if (vm.stack.empty())
 								{
 									std::cout << "Stack too empty for test at line " << cmd.at("line").asInt().value << std::endl;
 									goto _wast_next_cmd;
 								}
-								const auto& expected = expected_entry.asObj();
+								const auto& expected = (*i)->asObj();
 								const auto& type = expected.at("type").asStr();
 								const auto& value = expected.at("value").asStr();
 								if (value == "nan:arithmetic" || value == "nan:canonical")
