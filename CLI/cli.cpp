@@ -510,7 +510,7 @@ int entry(std::vector<std::string>&& args, bool)
 
 		if (subcommand == "wasm")
 		{
-			if (args.size() != 3)
+			if (args.size() < 3)
 			{
 				std::cout << "Syntax: soup wasm [file]" << std::endl;
 				return 0;
@@ -528,7 +528,8 @@ int entry(std::vector<std::string>&& args, bool)
 				std::cout << "WASM file has loaded but \"_start\" function not found in exports.\n";
 				return 2;
 			}
-			scr.linkWasiPreview1();
+			std::vector<std::string> wasi_args(args.begin() + 2, args.end());
+			scr.linkWasiPreview1(std::move(wasi_args));
 			WasmVm vm(scr);
 			if (!vm.run(*code))
 			{

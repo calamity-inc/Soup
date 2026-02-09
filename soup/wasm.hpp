@@ -9,6 +9,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "StructMap.hpp"
+
 NAMESPACE_SOUP
 {
 	class WasmVm;
@@ -60,6 +62,9 @@ NAMESPACE_SOUP
 
 		uint8_t* memory = nullptr;
 		size_t memory_size = 0;
+		uint32_t memory_page_limit = 0x10'000;
+		bool memory64 = false;
+		// <3 bytes for alignment>
 		size_t last_alloc = -1;
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<FunctionType> types{};
@@ -68,9 +73,13 @@ NAMESPACE_SOUP
 		std::unordered_map<std::string, uint32_t> export_map{};
 		std::vector<std::string> code{};
 		std::vector<uint32_t> elements{};
-		uint32_t memory_page_limit = 0x10'000;
-		bool memory64 = false;
+		StructMap custom_data;
 
+		WasmScript() = default;
+		WasmScript(WasmScript&&) noexcept = default;
+		WasmScript(const WasmScript&) = delete;
+		WasmScript& operator = (WasmScript&&) noexcept = default;
+		WasmScript& operator = (const WasmScript&) = delete;
 		~WasmScript() noexcept;
 
 		bool load(const std::string& data);
@@ -104,7 +113,7 @@ NAMESPACE_SOUP
 		bool setMemory(size_t ptr, const void* src, size_t len) noexcept;
 		bool setMemory(WasmValue ptr, const void* src, size_t len) noexcept;
 
-		void linkWasiPreview1() noexcept;
+		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
 
 		[[nodiscard]] size_t readUPTR(Reader& r) const noexcept;
 	};

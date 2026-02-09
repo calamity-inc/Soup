@@ -440,8 +440,18 @@ NAMESPACE_SOUP
 
 #define WASI_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient stack space in WASI function call"); }
 
-	void WasmScript::linkWasiPreview1() noexcept
+	struct WasiData
 	{
+		std::vector<std::string> args;
+	};
+
+	void WasmScript::linkWasiPreview1(std::vector<std::string> args) noexcept
+	{
+		{
+			WasiData& wd = custom_data.getStructFromMap(WasiData);
+			wd.args = std::move(args);
+		}
+
 		// Resources:
 		// - Barebones "Hello World": https://github.com/bytecodealliance/wasmtime/blob/main/docs/WASI-tutorial.md#web-assembly-text-example
 		// - How the XCC compiler uses WASI:
@@ -455,8 +465,19 @@ NAMESPACE_SOUP
 				WASI_CHECK_STACK(2);
 				auto plen = vm.stack.top(); vm.stack.pop();
 				auto pargc = vm.stack.top(); vm.stack.pop();
-				*vm.script.getMemory<int32_t>(plen.i32) = sizeof("program");
-				*vm.script.getMemory<int32_t>(pargc.i32) = 0;
+				WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
+				if (auto pLen = vm.script.getMemory<int32_t>(plen.i32))
+				{
+					*pLen = 0;
+					for (const auto& arg : wd.args)
+					{
+						*pLen += arg.size() + 1;
+					}
+				}
+				if (auto pArgc = vm.script.getMemory<int32_t>(pargc.i32))
+				{
+					*pArgc = wd.args.size();
+				}
 				vm.stack.push(0);
 			};
 		}
@@ -467,8 +488,17 @@ NAMESPACE_SOUP
 				WASI_CHECK_STACK(2);
 				auto pstr = vm.stack.top(); vm.stack.pop();
 				auto pargv = vm.stack.top(); vm.stack.pop();
-				vm.script.setMemory(pstr.i32, "program", sizeof("program"));
-				*vm.script.getMemory<int32_t>(pargv.i32) = pstr.i32;
+				WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
+				std::string argstr;
+				for (uint32_t i = 0; i != wd.args.size(); ++i)
+				{
+					if (auto pArg = vm.script.getMemory<int32_t>(pargv.i32 + i * 4))
+					{
+						*pArg = pstr.i32 + argstr.size();
+					}
+					argstr.append(wd.args[i].data(), wd.args[i].size() + 1);
+				}
+				vm.script.setMemory(pstr.i32, argstr.data(), argstr.size());
 				vm.stack.push(0);
 			};
 		}
