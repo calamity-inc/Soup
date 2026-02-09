@@ -147,7 +147,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 	}
 }
 
-int cli_websrv(const char* dir)
+int cli_websrv(const std::string& dir)
 {
 	base_dir = dir;
 	base_dir.push_back('/');

@@ -22,7 +22,7 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] std::vector<UniquePtr<ConuiBase>>::iterator tabsBegin();
 		[[nodiscard]] std::vector<UniquePtr<ConuiBase>>::iterator tabsEnd();
-		EditorTab& addTab(std::string&& name, std::u32string&& text);
+		EditorTab& addTab(std::string name, std::u32string&& text);
 
 		[[nodiscard]] EditorText& getTextChild() const noexcept;
 	};

@@ -171,7 +171,7 @@ NAMESPACE_SOUP
 		return children.end();
 	}
 
-	EditorTab& Editor::addTab(std::string&& name, std::u32string&& text)
+	EditorTab& Editor::addTab(std::string name, std::u32string&& text)
 	{
 		unsigned int x = 0;
 		for (auto i = tabsBegin(); i != tabsEnd(); ++i)

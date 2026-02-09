@@ -29,7 +29,7 @@ static void add_record(UniquePtr<dnsRecord>&& rec)
 	}
 }
 
-void cli_dnsserver(int argc, const char** argv)
+void cli_dnsserver(size_t argc, std::string* argv)
 {
 	FileReader fr(argv[0]);
 	for (std::string line; fr.getLine(line); )

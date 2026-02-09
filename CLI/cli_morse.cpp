@@ -1,6 +1,5 @@
 #include "cli.hpp"
 
-#include <cstring>
 #include <iostream>
 
 #include <audDevice.hpp>
@@ -66,7 +65,7 @@ void cli_morse_key(bool silent)
 #endif
 }
 
-void cli_morse_encode(const char* arg, bool silent)
+void cli_morse_encode(const std::string& arg, bool silent)
 {
 	auto pattern = morse::encode(arg);
 	std::cout << pattern << "\n";
@@ -92,7 +91,7 @@ void cli_morse_encode(const char* arg, bool silent)
 #endif
 }
 
-void cli_morse(int argc, const char** argv)
+void cli_morse(size_t argc, std::string* argv)
 {
 	if (argc > 0)
 	{
@@ -101,13 +100,13 @@ void cli_morse(int argc, const char** argv)
 
 		if (subcommand == "key")
 		{
-			cli_morse_key(argc > 1 && strcmp(argv[1], "--silent") == 0);
+			cli_morse_key(argc > 1 && argv[1] == "--silent");
 			return;
 		}
 
 		if (subcommand == "encode" && argc > 1)
 		{
-			cli_morse_encode(argv[1], (argc > 2 && strcmp(argv[2], "--silent") == 0));
+			cli_morse_encode(argv[1], (argc > 2 && argv[2] == "--silent"));
 			return;
 		}
 	}

@@ -1,23 +1,25 @@
 #pragma once
 
+#include <string>
+
 void cli_3d();
 void cli_bench();
-int cli_cat2json(int argc, const char** argv);
-void cli_chatgpt(int argc, const char** argv);
+int cli_cat2json(size_t argc, std::string* argv);
+void cli_chatgpt(size_t argc, std::string* argv);
 void cli_datareflection();
-void cli_dig(int argc, const char** argv);
-void cli_dnsserver(int argc, const char** argv);
+void cli_dig(size_t argc, std::string* argv);
+void cli_dnsserver(size_t argc, std::string* argv);
 void cli_dvd();
-void cli_html(const char* file);
+void cli_html(const std::string& file);
 int cli_ircserver();
-int cli_json2bin(int argc, const char** argv);
+int cli_json2bin(size_t argc, std::string* argv);
 void cli_keyboard();
 void cli_maze();
-int cli_mesh(int argc, const char** argv);
-void cli_midi(int argc, const char** argv);
-void cli_morse(int argc, const char** argv);
+int cli_mesh(size_t argc, std::string* argv);
+void cli_midi(size_t argc, std::string* argv);
+void cli_morse(size_t argc, std::string* argv);
 void cli_mouse();
 void cli_repl();
 void cli_snake();
 void cli_test();
-int cli_websrv(const char* dir);
+int cli_websrv(const std::string& dir);

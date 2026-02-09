@@ -13,7 +13,7 @@
 
 using namespace soup;
 
-int cli_mesh(int argc, const char** argv)
+int cli_mesh(size_t argc, std::string* argv)
 {
 	if (argc > 0)
 	{

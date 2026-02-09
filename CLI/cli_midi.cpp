@@ -44,7 +44,7 @@ static void maintainNote(audMixer& mix, SharedPtr<audNoteEnvelope>(&sounds)[AUDN
 }
 #endif
 
-void cli_midi(int argc, const char** argv)
+void cli_midi(size_t argc, std::string* argv)
 {
 #if SOUP_WINDOWS || SOUP_LINUX
 	if (argc > 0)

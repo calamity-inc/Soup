@@ -10,7 +10,7 @@
 
 using namespace soup;
 
-int cli_cat2json(int argc, const char** argv)
+int cli_cat2json(size_t argc, std::string* argv)
 {
 	if (argc > 2)
 	{
@@ -44,7 +44,7 @@ int cli_cat2json(int argc, const char** argv)
 	return 1;
 }
 
-int cli_json2bin(int argc, const char** argv)
+int cli_json2bin(size_t argc, std::string* argv)
 {
 	if (argc > 2)
 	{

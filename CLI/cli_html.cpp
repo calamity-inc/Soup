@@ -6,7 +6,7 @@
 
 using namespace soup;
 
-void cli_html(const char* file)
+void cli_html(const std::string& file)
 {
 	auto doc = lyoDocument::fromMarkup(string::fromFile(file));
 	auto w = doc->createWindow("SoupHTML - Blink and you'll miss it!");

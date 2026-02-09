@@ -21,10 +21,10 @@ static void addMsgToState(JsonObject& state, std::string role, std::string conte
 	state.at("messages").asArr().children.emplace_back(std::move(msg));
 }
 
-void cli_chatgpt(int argc, const char** argv)
+void cli_chatgpt(size_t argc, std::string* argv)
 {
-	const char* token = argv[0];
-	const char* model = argc > 1 ? argv[1] : "gpt-3.5-turbo";
+	std::string& token = argv[0];
+	std::string model = argc > 1 ? argv[1] : "gpt-3.5-turbo";
 
 	HttpRequest hr("api.openai.com", "/v1/chat/completions");
 	hr.addHeader(std::string("Authorization: Bearer ") + token);

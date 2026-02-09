@@ -8,7 +8,7 @@
 
 using namespace soup;
 
-void cli_dig(int argc, const char** argv)
+void cli_dig(size_t argc, std::string* argv)
 {
 	if (argc == 0)
 	{
@@ -24,7 +24,7 @@ void cli_dig(int argc, const char** argv)
 	{
 		if (argv[i][0] == '@')
 		{
-			std::string server = (argv[i] + 1);
+			std::string server = argv[i].substr(1);
 			if (server.substr(0, 4) == "doh:")
 			{
 				rup = soup::make_unique<dnsHttpResolver>();

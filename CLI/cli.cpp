@@ -18,6 +18,7 @@
 #include <hwGamepad.hpp>
 #include <hwHid.hpp>
 #include <json.hpp>
+#include <main.hpp>
 #include <netIntel.hpp>
 #include <netIntrospectTask.hpp>
 #include <os.hpp>
@@ -31,11 +32,11 @@
 
 using namespace soup;
 
-int main(int argc, const char** argv)
+int entry(std::vector<std::string>&& args, bool)
 {
-	if (argc > 1)
+	if (args.size() > 1)
 	{
-		std::string subcommand = argv[1];
+		std::string subcommand = args[1];
 		string::lower(subcommand);
 
 		if (subcommand == "3d")
@@ -52,7 +53,7 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "cat2json")
 		{
-			return cli_cat2json(argc, argv);
+			return cli_cat2json(args.size(), args.data());
 		}
 
 #ifdef SOUP_ENABLE_CHATBOT
@@ -87,9 +88,9 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "chatgpt")
 		{
-			if (argc > 2)
+			if (args.size() > 2)
 			{
-				cli_chatgpt(argc - 2, &argv[2]);
+				cli_chatgpt(args.size() - 2, &args[2]);
 			}
 			else
 			{
@@ -102,9 +103,9 @@ int main(int argc, const char** argv)
 		if (subcommand == "chess")
 		{
 			ChessCli cc{};
-			if (argc > 2)
+			if (args.size() > 2)
 			{
-				cc.board.loadFen(argv[2]);
+				cc.board.loadFen(args[2]);
 			}
 			cc.run();
 			return 0;
@@ -132,15 +133,15 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "dig")
 		{
-			cli_dig(argc - 2, &argv[2]);
+			cli_dig(args.size() - 2, &args[2]);
 			return 0;
 		}
 
 		if (subcommand == "dnsserver")
 		{
-			if (argc > 2)
+			if (args.size() > 2)
 			{
-				cli_dnsserver(argc - 2, &argv[2]);
+				cli_dnsserver(args.size() - 2, &args[2]);
 			}
 			else
 			{
@@ -157,15 +158,15 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "edit")
 		{
-			if (argc <= 2)
+			if (args.size() <= 2)
 			{
 				std::cout << "Syntax: soup edit [files...]" << std::endl;
 				return 0;
 			}
 			Editor edit{};
-			for (int i = 2; i != argc; ++i)
+			for (int i = 2; i != args.size(); ++i)
 			{
-				auto& tab = edit.addTab(argv[i], unicode::utf8_to_utf32(string::fromFile(argv[i])));
+				auto& tab = edit.addTab(args[i], unicode::utf8_to_utf32(string::fromFile(args[i])));
 				if (i == 2)
 				{
 					tab.setActive(edit);
@@ -287,8 +288,8 @@ int main(int argc, const char** argv)
 		if (subcommand == "geoip")
 		{
 			IpAddr addr;
-			if (argc != 3
-				|| !addr.fromString(argv[2])
+			if (args.size() != 3
+				|| !addr.fromString(args[2])
 				)
 			{
 				std::cout << "Syntax: soup geoip [ip]" << std::endl;
@@ -375,23 +376,23 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "html")
 		{
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup html [file]" << std::endl;
 				return 0;
 			}
-			cli_html(argv[2]);
+			cli_html(args[2]);
 			return 0;
 		}
 
 		if (subcommand == "http")
 		{
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup http [uri]" << std::endl;
 				return 0;
 			}
-			auto hr = HttpRequest(Uri(argv[2]));
+			auto hr = HttpRequest(Uri(args[2]));
 			auto res = hr.execute();
 			if (res.has_value())
 			{
@@ -413,7 +414,7 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "json2bin")
 		{
-			return cli_json2bin(argc, argv);
+			return cli_json2bin(args.size(), args.data());
 		}
 
 		if (subcommand == "keyboard")
@@ -430,18 +431,18 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "mesh")
 		{
-			return cli_mesh(argc - 2, &argv[2]);
+			return cli_mesh(args.size() - 2, &args[2]);
 		}
 
 		if (subcommand == "midi")
 		{
-			cli_midi(argc - 2, &argv[2]);
+			cli_midi(args.size() - 2, &args[2]);
 			return 0;
 		}
 
 		if (subcommand == "morse")
 		{
-			cli_morse(argc - 2, &argv[2]);
+			cli_morse(args.size() - 2, &args[2]);
 			return 0;
 		}
 
@@ -461,12 +462,12 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "qr")
 		{
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup qr [contents]" << std::endl;
 				return 0;
 			}
-			auto qrcode = QrCode::encodeText(argv[2]);
+			auto qrcode = QrCode::encodeText(args[2]);
 			console.init(false);
 			console << qrcode.toCanvas(4, true).toStringDownsampledDoublewidth(true, true);
 			console.resetColour();
@@ -481,12 +482,12 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "script")
 		{
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup script [.cpp file]" << std::endl;
 				return 0;
 			}
-			auto res = CompiledExecutable::fromCpp(argv[2]);
+			auto res = CompiledExecutable::fromCpp(args[2]);
 			std::cout << res.compiler_output;
 			if (res.exe_file.exists())
 			{
@@ -509,12 +510,12 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "wasm")
 		{
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup wasm [file]" << std::endl;
 				return 0;
 			}
-			FileReader fr(argv[2]);
+			FileReader fr(args[2]);
 			WasmScript scr;
 			if (!scr.load(fr))
 			{
@@ -539,7 +540,7 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "wast")
 		{
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup wast [file]" << std::endl;
 				return 0;
@@ -547,7 +548,7 @@ int main(int argc, const char** argv)
 			/*std::cout << "Attach debugger now." << std::endl;
 			Sleep(5000);
 			std::cout << "Starting." << std::endl;*/
-			if (auto jr = json::decode(string::fromFile(argv[2])))
+			if (auto jr = json::decode(string::fromFile(args[2])))
 			{
 				WasmScript scr;
 				try
@@ -688,12 +689,12 @@ int main(int argc, const char** argv)
 		if (subcommand == "wav")
 		{
 #if SOUP_WINDOWS || SOUP_LINUX
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup wav [file]" << std::endl;
 				return 0;
 			}
-			static FileReader fr(argv[2]);
+			static FileReader fr(args[2]);
 			RiffReader rr(fr);
 			if (rr.seekChunk("fmt ").isValid())
 			{
@@ -729,12 +730,12 @@ int main(int argc, const char** argv)
 
 		if (subcommand == "websrv")
 		{
-			if (argc != 3)
+			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup websrv [dir]" << std::endl;
 				return 0;
 			}
-			return cli_websrv(argv[2]);
+			return cli_websrv(args[2]);
 		}
 	}
 
@@ -785,3 +786,5 @@ Available tools: )EOC" << all_tools << R"EOC(
 Legend: [Required] <Optional>)EOC" << std::endl;
 	return 0;
 }
+
+SOUP_MAIN_CLI(entry);
