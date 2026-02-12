@@ -136,9 +136,9 @@ NAMESPACE_SOUP
 	private:
 		struct CtrlFlowEntry
 		{
-			std::streamoff position;
+			std::streamoff position; // -1 for forward jumps
 			size_t stack_size;
-			size_t num_results;
+			uint32_t num_values; // Number of values to keep on the stack top after branching. num_results for forward jumps; num_params for backward jumps.
 		};
 
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;

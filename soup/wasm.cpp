@@ -598,7 +598,7 @@ NAMESPACE_SOUP
 	}
 
 #if DEBUG_VM
-#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { std::cout << "Insufficient stack space\n"; return false; }
+#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { /*__debugbreak();*/ std::cout << "Insufficient stack space\n"; return false; }
 #else
 #define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { return false; }
 #endif
@@ -648,7 +648,7 @@ NAMESPACE_SOUP
 				{
 					int32_t result_type; r.soml(result_type);
 					size_t stack_size = stack.size();
-					size_t num_results = 0;
+					uint32_t num_values = 0;
 					if (result_type != -64)
 					{
 						if (result_type >= 0 && result_type < script.types.size())
@@ -657,16 +657,16 @@ NAMESPACE_SOUP
 							std::cout << "result type is a type index: " << script.types[result_type].parameters.size() << " + " << script.types[result_type].results.size() << "\n";
 #endif
 							stack_size -= script.types[result_type].parameters.size();
-							num_results = script.types[result_type].results.size();
+							num_values = script.types[result_type].results.size();
 						}
 						else
 						{
-							num_results = 1;
+							num_values = 1;
 						}
 					}
-					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_results });
+					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
 #if DEBUG_VM
-					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_results << "\n";
+					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_values << "\n";
 #endif
 				}
 				break;
@@ -675,7 +675,7 @@ NAMESPACE_SOUP
 				{
 					int32_t result_type; r.soml(result_type);
 					size_t stack_size = stack.size();
-					size_t num_results = 0;
+					uint32_t num_values = 0;
 					if (result_type != -64)
 					{
 						if (result_type >= 0 && result_type < script.types.size())
@@ -683,17 +683,13 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "result type is a type index: " << script.types[result_type].parameters.size() << " + " << script.types[result_type].results.size() << "\n";
 #endif
-							stack_size -= script.types[result_type].parameters.size();
-							num_results = script.types[result_type].results.size();
-						}
-						else
-						{
-							num_results = 1;
+							num_values = script.types[result_type].parameters.size();
+							stack_size -= num_values;
 						}
 					}
-					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack_size, num_results });
+					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack_size, num_values });
 #if DEBUG_VM
-					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_results << "\n";
+					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_values << "\n";
 #endif
 				}
 				break;
@@ -702,7 +698,7 @@ NAMESPACE_SOUP
 				{
 					int32_t result_type; r.soml(result_type);
 					size_t stack_size = stack.size();
-					size_t num_results = 0;
+					uint32_t num_values = 0;
 					if (result_type != -64)
 					{
 						if (result_type >= 0 && result_type < script.types.size())
@@ -711,11 +707,11 @@ NAMESPACE_SOUP
 							std::cout << "result type is a type index: " << script.types[result_type].parameters.size() << " + " << script.types[result_type].results.size() << "\n";
 #endif
 							stack_size -= script.types[result_type].parameters.size();
-							num_results = script.types[result_type].results.size();
+							num_values = script.types[result_type].results.size();
 						}
 						else
 						{
-							num_results = 1;
+							num_values = 1;
 						}
 					}
 					WASM_CHECK_STACK(1);
@@ -723,14 +719,14 @@ NAMESPACE_SOUP
 					//std::cout << "if: condition is " << (value.i32 ? "true" : "false") << "\n";
 					if (value.i32)
 					{
-						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_results });
+						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
 					}
 					else
 					{
 						if (skipOverBranch(r))
 						{
 							// we're in the 'else' branch
-							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_results });
+							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
 						}
 					}
 				}
@@ -2878,6 +2874,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 		std::cout << "branch with depth " << depth << " at position " << r.getPosition() << "\n";
 #endif
+
 		SOUP_IF_UNLIKELY (ctrlflow.empty())
 		{
 #if DEBUG_VM
@@ -2898,7 +2895,7 @@ NAMESPACE_SOUP
 				return true;
 			}
 		}
-		std::vector<WasmValue> results;
+
 		if (ctrlflow.top().position == -1)
 		{
 			// branch forwards
@@ -2906,15 +2903,6 @@ NAMESPACE_SOUP
 			{
 				// also skip over 'else' branch
 				skipOverBranch(r, depth);
-			}
-
-			for (size_t i = 0; i != ctrlflow.top().num_results; ++i)
-			{
-				results.emplace_back(stack.top()); stack.pop();
-			}
-			while (stack.size() > ctrlflow.top().stack_size)
-			{
-				stack.pop();
 			}
 		}
 		else
@@ -2924,16 +2912,31 @@ NAMESPACE_SOUP
 		}
 #if DEBUG_VM
 		std::cout << "position after branch: " << r.getPosition() << "\n";
+#endif
+
+		std::vector<WasmValue> results;
+		for (size_t i = 0; i != ctrlflow.top().num_values; ++i)
+		{
+			results.emplace_back(stack.top()); stack.pop();
+		}
+		while (stack.size() > ctrlflow.top().stack_size)
+		{
+			stack.pop();
+		}
+		for (size_t i = 0; i != ctrlflow.top().num_values; ++i)
+		{
+			stack.push(results[(results.size() - 1) - i]);
+		}
+
+#if DEBUG_VM
 		std::cout << "stack size after branch: " << stack.size() << "\n";
 #endif
+
 		if (ctrlflow.top().position == -1)
 		{
-			for (size_t i = 0; i != ctrlflow.top().num_results; ++i)
-			{
-				stack.push(results[(results.size() - 1) - i]);
-			}
 			ctrlflow.pop(); // we passed 'end', so need to pop here.
 		}
+
 		return true;
 	}
 

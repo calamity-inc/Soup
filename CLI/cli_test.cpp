@@ -1863,6 +1863,30 @@ endif;)") == "");
 			assert(vm.stack.top().i32 == 42);
 			assert(vm.stack.pop(), vm.stack.empty());
 		});
+		test("Backward Branching", []
+		{
+			// (module
+			//   (func (export "test") (param) (result i32)
+			//     (local $i i32)
+			//     i32.const 1
+			//     (loop $loop (param) (result)
+			//       (local.set $i (i32.add (local.get $i) (i32.const 1)))
+			//       i32.const 2
+			//       (br_if $loop (i32.lt_s (local.get $i) (i32.const 10)))
+			//       drop
+			//       )
+			//     )
+			//   )
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABBQFgAAF/AwIBAAcIAQR0ZXN0AAAKHAEaAQF/QQEDQCAAQQFqIQBBAiAAQQpIDQAaCwsADQRuYW1lAgYBAAEAAWk=")));
+			auto code = scr.getExportedFuntion("test");
+			assert(code);
+			WasmVm vm(scr);
+			assert(vm.run(*code));
+			assert(!vm.stack.empty());
+			assert(vm.stack.top().i32 == 1);
+			assert(vm.stack.pop(), vm.stack.empty());
+		});
 		test("Floats", []
 		{
 			WasmScript scr;
