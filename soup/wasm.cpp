@@ -2978,13 +2978,6 @@ NAMESPACE_SOUP
 				//std::cout << "return value: " << callvm.stack.top() << "\n";
 				stack.emplace(callvm.stack.top()); callvm.stack.pop();
 			}
-			SOUP_IF_UNLIKELY (!callvm.stack.empty())
-			{
-#if DEBUG_VM
-				std::cout << "call: too many values on the stack after return\n";
-#endif
-				return false;
-			}
 		}
 		else
 		{
@@ -3001,13 +2994,6 @@ NAMESPACE_SOUP
 				}
 				//std::cout << "return value: " << callvm.stack.top() << "\n";
 				results.emplace_back(callvm.stack.top()); callvm.stack.pop();
-			}
-			SOUP_IF_UNLIKELY (!callvm.stack.empty())
-			{
-#if DEBUG_VM
-				std::cout << "call: too many values on the stack after return\n";
-#endif
-				return false;
 			}
 			for (auto i = results.rbegin(); i != results.rend(); ++i)
 			{
