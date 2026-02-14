@@ -2751,11 +2751,23 @@ NAMESPACE_SOUP
 				break;
 
 			case 0xbc: // i32.reinterpret_f32
+				WASM_CHECK_STACK(1);
+				stack.top().type = WASM_I32;
+				break;
+
 			case 0xbd: // i64.reinterpret_f64
+				WASM_CHECK_STACK(1);
+				stack.top().type = WASM_I64;
+				break;
+
 			case 0xbe: // f32.reinterpret_i32
+				WASM_CHECK_STACK(1);
+				stack.top().type = WASM_F32;
+				break;
+
 			case 0xbf: // f64.reinterpret_i64
 				WASM_CHECK_STACK(1);
-				// Nothing to do.
+				stack.top().type = WASM_F64;
 				break;
 
 			case 0xc0: // i32.extend8_s
