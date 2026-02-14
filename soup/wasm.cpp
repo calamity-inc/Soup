@@ -21,9 +21,102 @@
 // Good resources:
 // - https://webassembly.github.io/wabt/demo/wat2wasm/
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
-// - https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1ab1b003d21617/test/core
-//   - Use wast2json from wabt then run `soup wast [file]`
-//   - The following tests pass: address, br, i32, i64, if, f32, f64, labels, loop, memory, memory_copy, memory_grow
+
+/*
+Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1ab1b003d21617/test/core)
+> Use wast2json from wabt then run `soup wast [file]`
+> Results:
+- address: pass
+- align: FAIL (doesn't fail on some malformed modules)
+- binary: FAIL (doesn't fail on some malformed modules)
+- binary-leb128: FAIL
+- block: pass
+- br: pass
+- br_if: pass
+- br_table: pass
+- bulk: FAIL
+- call: pass
+- call_indirect: FAIL
+- comments: pass
+- const: pass
+- conversions: FAIL (missing support for saturating float-to-int conversions)
+- custom: FAIL (due to missing support for multiple memories?)
+- data: FAIL
+- elem: FAIL
+- endianness:  pass
+- exports: FAIL
+- f32: pass
+- f32_bitwise: pass
+- f32_cmp: pass
+- f64: pass
+- f64_bitwise: pass
+- f64_cmp: pass
+- fac: pass
+- float_exprs: pass
+- float_literals: pass
+- float_memory: pass
+- float_misc: pass
+- forward: pass
+- func: pass
+- func_ptrs: FAIL
+- global: FAIL
+- i32: pass
+- i64: pass
+- if: pass
+- imports: FAIL (missing "spectest" import)
+- inline-module: pass
+- int_exprs: pass
+- int_literals: pass
+- labels: pass
+- left-to-right: pass
+- linking: FAIL
+- load: pass
+- local_get: pass
+- local_set: pass
+- local_tee: pass
+- loop: pass
+- memory: pass
+- memory_copy: pass
+- memory_fill: pass
+- memory_grow: pass
+- memory_init: FAIL (missing support for passive data segments)
+- memory_redundancy: pass
+- memory_size: pass
+- memory_trap: pass
+- names: FAIL (missing "spectest" import)
+- nop: pass
+- obsolete-keywords: pass
+- ref_func: FAIL
+- ref_is_null: FAIL
+- ref_null: FAIL
+- return: pass
+- select: FAIL (due to missing support for "funcref" and "externref", afaict)
+- skip-stack-guard-page: pass
+- stack: pass
+- start: FAIL (due to "start" functions not being supported)
+- store: pass
+- switch: pass
+- table: FAIL (missing "spectest" import)
+- table-sub: pass
+- table_copy: FAIL
+- table_fill: FAIL
+- table_get: FAIL
+- table_grow: FAIL
+- table_init: FAIL
+- table_set: FAIL
+- table_size: FAIL
+- token: FAIL (due to missing support for passive data segments, lol)
+- traps: pass
+- type: pass
+- unreachable: FAIL (due to global of type f32)
+- unreached-invalid: pass
+- unreached-valid: pass
+- unwind: pass
+- utf8-custom-section-id: FAIL
+- utf8-import-field: pass (probably not for the right reason, but lol)
+- utf8-import-module: pass (probably not for the right reason, but lol)
+- utf8-invalid-encoding: pass (probably not for the right reason, but lol)
+*/
 
 NAMESPACE_SOUP
 {
@@ -66,7 +159,7 @@ NAMESPACE_SOUP
 			{
 			default:
 #if DEBUG_LOAD
-				std::cout << "Ignoring section of type " << (int)section_type << "\n";
+				std::cout << "Ignoring section of type " << (int)section_type << " (size: " << section_size << ")\n";
 #endif
 				SOUP_IF_UNLIKELY (section_size == 0)
 				{
@@ -180,6 +273,9 @@ NAMESPACE_SOUP
 					size_t num_memories; r.oml(num_memories);
 					SOUP_IF_UNLIKELY (memory != nullptr || num_memories != 1)
 					{
+#if DEBUG_LOAD
+						std::cout << "Unexpected memory when there's already a memory\n";
+#endif
 						return false;
 					}
 					uint8_t flags; r.u8(flags);
@@ -213,11 +309,17 @@ NAMESPACE_SOUP
 				{
 					size_t num_globals;
 					r.oml(num_globals);
+#if DEBUG_LOAD
+					std::cout << num_globals << " global(s)\n";
+#endif
 					while (num_globals--)
 					{
 						uint8_t type; r.u8(type);
 						SOUP_IF_UNLIKELY (type != 0x7f) // i32
 						{
+#if DEBUG_LOAD
+							std::cout << "unexpected global type: " << string::hex(type) << "\n";
+#endif
 							return false;
 						}
 						r.skip(1); // mutability
@@ -285,6 +387,9 @@ NAMESPACE_SOUP
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
 						{
+#if DEBUG_LOAD
+							std::cout << "unexpected op for element initialisation: " << string::hex(op) << "\n";
+#endif
 							return false;
 						}
 						int32_t base; r.soml(base);
@@ -343,11 +448,22 @@ NAMESPACE_SOUP
 #endif
 					while (num_segments--)
 					{
-						r.skip(1); // flags
+						uint8_t flags;
+						r.u8(flags);
+						SOUP_IF_UNLIKELY (flags != 0)
+						{
+#if DEBUG_LOAD
+							std::cout << "unexpected data segment flags: " << string::hex(flags) << "\n";
+#endif
+							return false;
+						}
 						uint8_t op;
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
 						{
+#if DEBUG_LOAD
+							std::cout << "unexpected op for data initialisation: " << string::hex(op) << "\n";
+#endif
 							return false;
 						}
 						uint32_t base; r.oml(base);

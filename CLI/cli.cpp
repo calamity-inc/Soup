@@ -568,6 +568,15 @@ int entry(std::vector<std::string>&& args, bool)
 								return 1;
 							}
 						}
+						else if (type == "assert_malformed")
+						{
+							FileReader fr(cmd.at("filename").asStr());
+							if (WasmScript().load(fr))
+							{
+								std::cout << "Did not fail to load malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+								goto _wast_next_cmd;
+							}
+						}
 						else
 						{
 							WasmVm vm(scr);
@@ -577,7 +586,7 @@ int entry(std::vector<std::string>&& args, bool)
 								auto code = scr.getExportedFuntion(action.at("field").asStr());
 								if (!code)
 								{
-									std::cout << "Could not find export: " << action.at("field").reinterpretAsStr().value << std::endl;
+									std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value  << " for test at line " << cmd.at("line").asInt().value << std::endl;
 									goto _wast_next_cmd;
 								}
 								//std::cout << "running code from line " << cmd.at("line").asInt().value << std::endl;
@@ -588,7 +597,7 @@ int entry(std::vector<std::string>&& args, bool)
 								}
 								if (!vm.run(*code))
 								{
-									if (type != "assert_trap")
+									if (type != "assert_trap" && type != "assert_exhaustion")
 									{
 										std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
 										goto _wast_next_cmd;
@@ -596,9 +605,9 @@ int entry(std::vector<std::string>&& args, bool)
 								}
 								else
 								{
-									if (type == "assert_trap")
+									if (type == "assert_trap" || type == "assert_exhaustion")
 									{
-										std::cout << "Execution did not trap for test at line " << cmd.at("line").asInt().value << std::endl;
+										std::cout << "Execution did not fail for test at line " << cmd.at("line").asInt().value << std::endl;
 										goto _wast_next_cmd;
 									}
 								}
