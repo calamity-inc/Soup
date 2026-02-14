@@ -130,13 +130,13 @@ NAMESPACE_SOUP
 		}
 	}
 
-	bool WasmScript::load(const std::string& data)
+	bool WasmScript::load(const std::string& data) SOUP_EXCAL
 	{
 		MemoryRefReader r(data);
 		return load(r);
 	}
 
-	bool WasmScript::load(Reader& r)
+	bool WasmScript::load(Reader& r) SOUP_EXCAL
 	{
 		uint32_t u;
 		r.u32_le(u);

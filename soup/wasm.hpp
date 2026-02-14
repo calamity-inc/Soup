@@ -86,8 +86,8 @@ NAMESPACE_SOUP
 		WasmScript& operator = (const WasmScript&) = delete;
 		~WasmScript() noexcept;
 
-		bool load(const std::string& data);
-		bool load(Reader& r);
+		bool load(const std::string& data) SOUP_EXCAL;
+		bool load(Reader& r) SOUP_EXCAL;
 
 		// Runs the start function of the script, if defined. Throws if imported functions throw.
 		bool instantiate();
