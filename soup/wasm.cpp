@@ -2398,21 +2398,49 @@ NAMESPACE_SOUP
 
 			case 0xa8: // i32.trunc_f32_s
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i32 = static_cast<int32_t>(stack.top().f32);
 				break;
 
 			case 0xa9: // i32.trunc_f32_u
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i32 = static_cast<uint32_t>(stack.top().f32);
 				break;
 
 			case 0xaa: // i32.trunc_f64_s
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i32 = static_cast<int32_t>(stack.top().f64);
 				break;
 
 			case 0xab: // i32.trunc_f64_u
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i32 = static_cast<uint32_t>(stack.top().f64);
 				break;
 
@@ -2428,21 +2456,49 @@ NAMESPACE_SOUP
 
 			case 0xae: // i64.trunc_f32_s
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i64 = static_cast<int64_t>(stack.top().f32);
 				break;
 
 			case 0xaf: // i64.trunc_f32_u
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i64 = static_cast<uint64_t>(stack.top().f32);
 				break;
 
 			case 0xb0: // i64.trunc_f64_s
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i64 = static_cast<int64_t>(stack.top().f64);
 				break;
 
 			case 0xb1: // i64.trunc_f64_u
 				WASM_CHECK_STACK(1);
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				{
+#if DEBUG_VM
+					std::cout << "attempt to int-ify a NaN\n";
+#endif
+					return false;
+				}
 				stack.top().i64 = static_cast<uint64_t>(stack.top().f64);
 				break;
 
