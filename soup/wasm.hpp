@@ -19,10 +19,13 @@ NAMESPACE_SOUP
 
 	enum WasmType : uint8_t
 	{
-		WASM_I32 = 0x7F,
-		WASM_I64 = 0x7E,
-		WASM_F32 = 0x7D,
-		WASM_F64 = 0x7C,
+		WASM_I32 = 0x7F, // -1
+		WASM_I64 = 0x7E, // -2
+		WASM_F32 = 0x7D, // -3
+		WASM_F64 = 0x7C, // -4
+		WASM_V128 = 0x7B, // -5 (from the simd extension, which is currently not supported by Soup)
+		WASM_FUNCREF = 0x70,
+		WASM_EXTERNREF = 0x6F,
 	};
 
 	struct WasmValue
@@ -36,6 +39,7 @@ NAMESPACE_SOUP
 		};
 		WasmType type;
 
+		WasmValue() = default;
 		WasmValue(WasmType type) : i64(0), type(type) {}
 		WasmValue(int32_t i32) : i32(i32), type(WASM_I32) {}
 		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
@@ -43,6 +47,7 @@ NAMESPACE_SOUP
 		WasmValue(uint64_t u64) : WasmValue(static_cast<int64_t>(u64)) {}
 		WasmValue(float f32) : f32(f32), type(WASM_F32) {}
 		WasmValue(double f64) : f64(f64), type(WASM_F64) {}
+		WasmValue(void* ptr) : i64(reinterpret_cast<uintptr_t>(ptr)), type(WASM_EXTERNREF) {}
 
 		template <typename T, SOUP_RESTRICT(std::is_same_v<T, size_t>)>
 		WasmValue(T ptr) : i32(static_cast<int32_t>(ptr)) {}
@@ -73,7 +78,7 @@ NAMESPACE_SOUP
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<FunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
-		std::vector<int32_t> globals{};
+		std::vector<WasmValue> globals{};
 		std::unordered_map<std::string, uint32_t> export_map{};
 		std::vector<std::string> code{};
 		std::vector<uint32_t> elements{};
@@ -92,6 +97,7 @@ NAMESPACE_SOUP
 
 		bool load(const std::string& data) SOUP_EXCAL;
 		bool load(Reader& r) SOUP_EXCAL;
+		static bool readConstant(Reader& r, WasmValue& out) noexcept;
 
 		// Runs the start function of the script, if defined. Throws if imported functions throw.
 		bool instantiate();

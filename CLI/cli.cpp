@@ -621,7 +621,11 @@ int entry(std::vector<std::string>&& args, bool)
 								//std::cout << "code = " << string::bin2hex(*code) << std::endl;
 								for (const auto& arg : action.at("args").asArr())
 								{
-									vm.locals.emplace_back(string::toIntOpt<uint64_t>(arg.asObj().at("value").asStr(), string::TI_FULL).value());
+									const auto& value = arg.asObj().at("value").asStr();
+									vm.locals.emplace_back(value == "null"
+										? static_cast<int64_t>(0)
+										: string::toIntOpt<uint64_t>(value, string::TI_FULL).value()
+									);
 								}
 								if (!vm.run(*code))
 								{
@@ -677,13 +681,20 @@ int entry(std::vector<std::string>&& args, bool)
 									}*/
 									else
 									{
-										SOUP_IF_UNLIKELY (type == "i32" || type == "f32"
-											? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != vm.stack.top().i32
-											: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != vm.stack.top().i64
+										SOUP_IF_UNLIKELY (value == "null"
+											? vm.stack.top().i64 != 0
+											: type == "i32" || type == "f32"
+												? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != vm.stack.top().i32
+												: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != vm.stack.top().i64
 											)
 										{
 											std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
-											if (type == "i32" || type == "f32")
+											if (value == "null")
+											{
+												std::cout << "- Expected: 0 (null)" << std::endl;
+												std::cout << "- Actual: " << (uint64_t)vm.stack.top().i64 << std::endl;
+											}
+											else if (type == "i32" || type == "f32")
 											{
 												std::cout << "- Expected: " << string::toIntOpt<uint32_t>(value, string::TI_FULL).value() << std::endl;
 												std::cout << "- Actual: " << (uint32_t)vm.stack.top().i32 << std::endl;

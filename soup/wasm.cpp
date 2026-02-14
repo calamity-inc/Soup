@@ -63,7 +63,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - i32: pass
 - i64: pass
 - if: pass
-- imports: FAIL (missing "spectest" import)
+- imports: FAIL
 - inline-module: pass
 - int_exprs: pass
 - int_literals: pass
@@ -83,12 +83,12 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - memory_redundancy: pass
 - memory_size: pass
 - memory_trap: pass
-- names: FAIL (missing "spectest" import)
+- names: FAIL
 - nop: pass
 - obsolete-keywords: pass
-- ref_func: FAIL
-- ref_is_null: FAIL
-- ref_null: FAIL
+- ref_func: FAIL (due to missing support for tables)
+- ref_is_null: FAIL (due to missing support for tables)
+- ref_null: pass
 - return: pass
 - select: FAIL (due to missing support for "funcref" and "externref", afaict)
 - skip-stack-guard-page: pass
@@ -96,7 +96,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - start: pass
 - store: pass
 - switch: pass
-- table: FAIL (missing "spectest" import)
+- table: FAIL
 - table-sub: pass
 - table_copy: FAIL
 - table_fill: FAIL
@@ -108,7 +108,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - token: FAIL (due to missing support for passive data segments, lol)
 - traps: pass
 - type: pass
-- unreachable: FAIL (due to global of type f32)
+- unreachable: pass
 - unreached-invalid: pass
 - unreached-valid: pass
 - unwind: pass
@@ -134,6 +134,54 @@ NAMESPACE_SOUP
 	{
 		MemoryRefReader r(data);
 		return load(r);
+	}
+
+	bool WasmScript::readConstant(Reader& r, WasmValue& out) noexcept
+	{
+		uint8_t op;
+		r.u8(op);
+		switch (op)
+		{
+		case 0x41: // i32.const
+			r.soml(out.i32);
+			out.type = WASM_I32;
+			break;
+
+		case 0x42: // i64.const
+			r.soml(out.i32);
+			out.type = WASM_I64;
+			break;
+
+		case 0x43: // f32.const
+			r.f32(out.f32);
+			out.type = WASM_F32;
+			break;
+
+		case 0x44: // f64.const
+			r.f64(out.f64);
+			out.type = WASM_F64;
+			break;
+
+		case 0xd0: // ref.null
+			out.i64 = 0;
+			r.u8(reinterpret_cast<uint8_t&>(out.type)); static_assert(sizeof(WasmType) == sizeof(uint8_t));
+			break;
+
+		default:
+#if DEBUG_LOAD
+			std::cout << "unexpected op for constant/initialisation: " << string::hex(op) << "\n";
+#endif
+			return false;
+		}
+		r.u8(op);
+		SOUP_IF_UNLIKELY (op != 0x0b) // end
+		{
+#if DEBUG_LOAD
+			std::cout << "missing end for constant/initialisation\n";
+#endif
+			return false;
+		}
+		return true;
 	}
 
 	bool WasmScript::load(Reader& r) SOUP_EXCAL
@@ -317,24 +365,14 @@ NAMESPACE_SOUP
 					while (num_globals--)
 					{
 						uint8_t type; r.u8(type);
-						SOUP_IF_UNLIKELY (type != 0x7f) // i32
+						r.skip(1); // mutability
+						WasmValue& value = globals.emplace_back();
+						SOUP_RETHROW_FALSE(readConstant(r, value));
+						SOUP_IF_UNLIKELY (value.type != type)
 						{
 #if DEBUG_LOAD
-							std::cout << "unexpected global type: " << string::hex(type) << "\n";
+							std::cout << "constant's type differs from global's type\n";
 #endif
-							return false;
-						}
-						r.skip(1); // mutability
-						uint8_t op;
-						r.u8(op);
-						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
-						{
-							return false;
-						}
-						int32_t value; r.soml(value);
-						r.u8(op);
-						SOUP_IF_UNLIKELY (op != 0x0b) // end
-						{
 							return false;
 						}
 						globals.emplace_back(value);
@@ -819,7 +857,7 @@ NAMESPACE_SOUP
 			r.u8(type);
 			while (type_count--)
 			{
-				locals.emplace_back(type);
+				locals.emplace_back(static_cast<WasmType>(type));
 			}
 		}
 
@@ -2795,6 +2833,28 @@ NAMESPACE_SOUP
 				stack.top().i64 = static_cast<int64_t>(static_cast<int32_t>(stack.top().i64));
 				break;
 
+			case 0xd0: // ref.null
+				{
+					uint8_t type;
+					r.u8(type);
+					stack.push(static_cast<WasmType>(type));
+				}
+				break;
+
+			case 0xd1: // ref.is_null
+				WASM_CHECK_STACK(1);
+				stack.push(static_cast<int32_t>(stack.top().i64 == 0));
+				break;
+
+			case 0xd2: // ref.func
+				{
+					uint32_t idx;
+					r.oml(idx);
+					stack.push(WASM_FUNCREF);
+					stack.top().i64 = idx;
+				}
+				break;
+
 			case 0xfc:
 				r.u8(op);
 				switch (op)
@@ -3127,6 +3187,17 @@ NAMESPACE_SOUP
 				r.skip(8);
 				break;
 
+			case 0xd0: // ref.null
+				r.skip(1);
+				break;
+
+			case 0xd2: // ref.func
+				{
+					uint32_t idx;
+					r.oml(idx);
+				}
+				break;
+
 #if DEBUG_VM
 			case 0x00: // unreachable
 			case 0x01: // nop
@@ -3261,6 +3332,7 @@ NAMESPACE_SOUP
 			case 0xc2: // i64.extend8_s
 			case 0xc3: // i64.extend16_s
 			case 0xc4: // i64.extend32_s
+			case 0xd1: // ref.is_null
 				break;
 
 			default:
