@@ -39,7 +39,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - call_indirect: FAIL
 - comments: pass
 - const: pass
-- conversions: FAIL (missing support for saturating float-to-int conversions)
+- conversions: pass
 - custom: FAIL (due to missing support for multiple memories?)
 - data: FAIL
 - elem: FAIL
@@ -718,6 +718,23 @@ NAMESPACE_SOUP
 #else
 #define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { return false; }
 #endif
+
+	static constexpr float F32_I32_MIN = -2147483600.0f;
+	static constexpr float F32_I32_MAX = 2147483500.0f;
+	static constexpr float F32_U32_MIN = -0.99999994f;
+	static constexpr float F32_U32_MAX = 4294967000.0f;
+	static constexpr double F64_I32_MIN = -2147483648.9;
+	static constexpr double F64_I32_MAX = 2147483647.9;
+	static constexpr double F64_U32_MIN = -0.9999999999999999;
+	static constexpr double F64_U32_MAX = 4294967295.9;
+	static constexpr float F32_I64_MIN = -9223372000000000000.0f;
+	static constexpr float F32_I64_MAX = 9223371500000000000.0f;
+	static constexpr float F32_U64_MIN = -0.99999994f;
+	static constexpr float F32_U64_MAX = 18446743000000000000.0f;
+	static constexpr double F64_I64_MIN = -9223372036854776000.0;
+	static constexpr double F64_I64_MAX = 9223372036854775000.0;
+	static constexpr double F64_U64_MIN = -0.9999999999999999;
+	static constexpr double F64_U64_MAX = 18446744073709550000.0;
 
 	bool WasmVm::run(Reader& r, unsigned depth)
 	{
@@ -2511,10 +2528,10 @@ NAMESPACE_SOUP
 
 			case 0xa8: // i32.trunc_f32_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32) || stack.top().f32 < F32_I32_MIN || stack.top().f32 > F32_I32_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "float cannot be represented as int\n";
 #endif
 					return false;
 				}
@@ -2523,10 +2540,10 @@ NAMESPACE_SOUP
 
 			case 0xa9: // i32.trunc_f32_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32) || stack.top().f32 < F32_U32_MIN || stack.top().f32 > F32_U32_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "float cannot be represented as int\n";
 #endif
 					return false;
 				}
@@ -2535,10 +2552,10 @@ NAMESPACE_SOUP
 
 			case 0xaa: // i32.trunc_f64_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64) || stack.top().f64 < F64_I32_MIN || stack.top().f64 > F64_I32_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "float cannot be represented as int\n";
 #endif
 					return false;
 				}
@@ -2547,10 +2564,10 @@ NAMESPACE_SOUP
 
 			case 0xab: // i32.trunc_f64_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64) || stack.top().f64 < F64_U32_MIN || stack.top().f64 > F64_U32_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "invalid value for i32.trunc_f64_u\n";
 #endif
 					return false;
 				}
@@ -2569,10 +2586,10 @@ NAMESPACE_SOUP
 
 			case 0xae: // i64.trunc_f32_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32) || stack.top().f32 < F32_I64_MIN || stack.top().f32 > F32_I64_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "float cannot be represented as int\n";
 #endif
 					return false;
 				}
@@ -2581,10 +2598,10 @@ NAMESPACE_SOUP
 
 			case 0xaf: // i64.trunc_f32_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f32) || stack.top().f32 < F32_U64_MIN || stack.top().f32 > F32_U64_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "float cannot be represented as int\n";
 #endif
 					return false;
 				}
@@ -2593,10 +2610,10 @@ NAMESPACE_SOUP
 
 			case 0xb0: // i64.trunc_f64_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64) || stack.top().f64 < F64_I64_MIN || stack.top().f64 > F64_I64_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "float cannot be represented as int\n";
 #endif
 					return false;
 				}
@@ -2605,10 +2622,10 @@ NAMESPACE_SOUP
 
 			case 0xb1: // i64.trunc_f64_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64))
+				SOUP_IF_UNLIKELY (std::isnan(stack.top().f64) || stack.top().f64 < F64_U64_MIN || stack.top().f64 > F64_U64_MAX)
 				{
 #if DEBUG_VM
-					std::cout << "attempt to int-ify a NaN\n";
+					std::cout << "float cannot be represented as int\n";
 #endif
 					return false;
 				}
@@ -2702,6 +2719,166 @@ NAMESPACE_SOUP
 				r.u8(op);
 				switch (op)
 				{
+				case 0x00: // i32.trunc_sat_f32_s
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f32))
+					{
+						stack.top().i32 = 0;
+					}
+					else if (stack.top().f32 < F32_I32_MIN)
+					{
+						stack.top().i32 = INT32_MIN;
+					}
+					else if (stack.top().f32 > F32_I32_MAX)
+					{
+						stack.top().i32 = INT32_MAX;
+					}
+					else
+					{
+						stack.top().i32 = static_cast<int32_t>(stack.top().f32);
+					}
+					break;
+
+				case 0x01: // i32.trunc_sat_f32_u
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f32))
+					{
+						stack.top().i32 = 0;
+					}
+					else if (stack.top().f32 < F32_U32_MIN)
+					{
+						stack.top().i32 = 0;
+					}
+					else if (stack.top().f32 > F32_U32_MAX)
+					{
+						stack.top().i32 = UINT32_MAX;
+					}
+					else
+					{
+						stack.top().i32 = static_cast<uint32_t>(stack.top().f32);
+					}
+					break;
+
+				case 0x02: // i32.trunc_sat_f64_s
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f64))
+					{
+						stack.top().i32 = 0;
+					}
+					else if (stack.top().f64 < F64_I32_MIN)
+					{
+						stack.top().i32 = INT32_MIN;
+					}
+					else if (stack.top().f64 > F64_I32_MAX)
+					{
+						stack.top().i32 = INT32_MAX;
+					}
+					else
+					{
+						stack.top().i32 = static_cast<int32_t>(stack.top().f64);
+					}
+					break;
+
+				case 0x03: // i32.trunc_sat_f64_u
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f64))
+					{
+						stack.top().i32 = 0;
+					}
+					else if (stack.top().f64 < F64_U32_MIN)
+					{
+						stack.top().i32 = 0;
+					}
+					else if (stack.top().f64 > F64_U32_MAX)
+					{
+						stack.top().i32 = UINT32_MAX;
+					}
+					else
+					{
+						stack.top().i32 = static_cast<uint32_t>(stack.top().f64);
+					}
+					break;
+
+				case 0x04: // i64.trunc_sat_f32_s
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f32))
+					{
+						stack.top().i64 = 0;
+					}
+					else if (stack.top().f32 < F32_I64_MIN)
+					{
+						stack.top().i64 = INT64_MIN;
+					}
+					else if (stack.top().f32 > F32_I64_MAX)
+					{
+						stack.top().i64 = INT64_MAX;
+					}
+					else
+					{
+						stack.top().i64 = static_cast<int64_t>(stack.top().f32);
+					}
+					break;
+
+				case 0x05: // i64.trunc_sat_f32_u
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f32))
+					{
+						stack.top().i64 = 0;
+					}
+					else if (stack.top().f32 < F32_U64_MIN)
+					{
+						stack.top().i64 = 0;
+					}
+					else if (stack.top().f32 > F32_U64_MAX)
+					{
+						stack.top().i64 = UINT64_MAX;
+					}
+					else
+					{
+						stack.top().i64 = static_cast<uint64_t>(stack.top().f32);
+					}
+					break;
+
+				case 0x06: // i64.trunc_sat_f64_s
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f64))
+					{
+						stack.top().i64 = 0;
+					}
+					else if (stack.top().f64 < F64_I64_MIN)
+					{
+						stack.top().i64 = INT64_MIN;
+					}
+					else if (stack.top().f64 > F64_I64_MAX)
+					{
+						stack.top().i64 = INT64_MAX;
+					}
+					else
+					{
+						stack.top().i64 = static_cast<int64_t>(stack.top().f64);
+					}
+					break;
+
+				case 0x07: // i64.trunc_sat_f64_u
+					WASM_CHECK_STACK(1);
+					if (std::isnan(stack.top().f64))
+					{
+						stack.top().i64 = 0;
+					}
+					else if (stack.top().f64 < F64_U64_MIN)
+					{
+						stack.top().i64 = 0;
+					}
+					else if (stack.top().f64 > F64_U64_MAX)
+					{
+						stack.top().i64 = UINT64_MAX;
+					}
+					else
+					{
+						stack.top().i64 = static_cast<uint64_t>(stack.top().f64);
+					}
+					break;
+
 				case 0x0a: // memory.copy
 					{
 						r.skip(2); // reserved
@@ -3023,11 +3200,21 @@ NAMESPACE_SOUP
 					r.skip(1);
 					break;
 
-				default:
 #if DEBUG_VM
-					std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFC00 | op)) << ", might cause problems\n";
-#endif
+				case 0x00: // i32.trunc_sat_f32_s
+				case 0x01: // i32.trunc_sat_f32_u
+				case 0x02: // i32.trunc_sat_f64_s
+				case 0x03: // i32.trunc_sat_f64_u
+				case 0x04: // i64.trunc_sat_f32_s
+				case 0x05: // i64.trunc_sat_f32_u
+				case 0x06: // i64.trunc_sat_f64_s
+				case 0x07: // i64.trunc_sat_f64_u
 					break;
+
+				default:
+					std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFC00 | op)) << ", might cause problems\n";
+					break;
+#endif
 				}
 				break;
 			}
