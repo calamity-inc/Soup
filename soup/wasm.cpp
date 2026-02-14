@@ -863,13 +863,13 @@ NAMESPACE_SOUP
 						return false;
 					}
 					function_index -= static_cast<uint32_t>(script.function_imports.size());
-					SOUP_IF_UNLIKELY (type_index != script.functions.at(function_index))
+					/*SOUP_IF_UNLIKELY (type_index != script.functions.at(function_index))
 					{
 #if DEBUG_VM
 						std::cout << "call: function type mismatch\n";
 #endif
 						return false;
-					}
+					}*/
 					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
 				break;
