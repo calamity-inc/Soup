@@ -120,6 +120,31 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 
 NAMESPACE_SOUP
 {
+	WasmType wasm_type_from_string(const std::string& str) noexcept
+	{
+		if (str == "i32") { return WASM_I32; }
+		if (str == "i64") { return WASM_I64; }
+		if (str == "f32") { return WASM_F32; }
+		if (str == "f64") { return WASM_F64; }
+		if (str == "funcref") { return WASM_FUNCREF; }
+		if (str == "externref") { return WASM_EXTERNREF; }
+		return static_cast<WasmType>(0);
+	}
+
+	std::string wasm_type_to_string(WasmType type) SOUP_EXCAL
+	{
+		switch (type)
+		{
+		case WASM_I32: return "i32";
+		case WASM_I64: return "i64";
+		case WASM_F32: return "f32";
+		case WASM_F64: return "f64";
+		case WASM_FUNCREF: return "funcref";
+		case WASM_EXTERNREF: return "externref";
+		}
+		return std::to_string(type);
+	}
+
 	// WasmScript
 
 	WasmScript::~WasmScript() noexcept
@@ -2293,7 +2318,7 @@ NAMESPACE_SOUP
 					}
 					if (a.i64 == INT64_MIN && b.i64 == -1)
 					{
-						stack.push(0);
+						stack.push(static_cast<int64_t>(0));
 					}
 					else
 					{
@@ -2943,7 +2968,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					if (std::isnan(stack.top().f32))
 					{
-						stack.top() = 0;
+						stack.top() = static_cast<int64_t>(0);
 					}
 					else if (stack.top().f32 < F32_I64_MIN)
 					{
@@ -2963,11 +2988,11 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					if (std::isnan(stack.top().f32))
 					{
-						stack.top() = 0;
+						stack.top() = static_cast<int64_t>(0);
 					}
 					else if (stack.top().f32 < F32_U64_MIN)
 					{
-						stack.top() = 0;
+						stack.top() = static_cast<int64_t>(0);
 					}
 					else if (stack.top().f32 > F32_U64_MAX)
 					{
@@ -2983,7 +3008,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					if (std::isnan(stack.top().f64))
 					{
-						stack.top() = 0;
+						stack.top() = static_cast<int64_t>(0);
 					}
 					else if (stack.top().f64 < F64_I64_MIN)
 					{
@@ -3003,11 +3028,11 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					if (std::isnan(stack.top().f64))
 					{
-						stack.top() = 0;
+						stack.top() = static_cast<int64_t>(0);
 					}
 					else if (stack.top().f64 < F64_U64_MIN)
 					{
-						stack.top() = 0;
+						stack.top() = static_cast<int64_t>(0);
 					}
 					else if (stack.top().f64 > F64_U64_MAX)
 					{

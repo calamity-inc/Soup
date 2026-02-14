@@ -23,10 +23,13 @@ NAMESPACE_SOUP
 		WASM_I64 = 0x7E, // -2
 		WASM_F32 = 0x7D, // -3
 		WASM_F64 = 0x7C, // -4
-		WASM_V128 = 0x7B, // -5 (from the simd extension, which is currently not supported by Soup)
+		//WASM_V128 = 0x7B, // -5 (from the simd extension, which is currently not supported by Soup)
 		WASM_FUNCREF = 0x70,
 		WASM_EXTERNREF = 0x6F,
 	};
+
+	[[nodiscard]] WasmType wasm_type_from_string(const std::string& str) noexcept;
+	[[nodiscard]] std::string wasm_type_to_string(WasmType type) SOUP_EXCAL;
 
 	struct WasmValue
 	{
