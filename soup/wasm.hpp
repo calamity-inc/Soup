@@ -17,31 +17,35 @@ NAMESPACE_SOUP
 
 	using wasm_ffi_func_t = void(*)(WasmVm&, uint32_t func_index);
 
-	union WasmValue
-	{
-		int32_t i32;
-		int64_t i64;
-		float f32;
-		double f64;
-
-		WasmValue() : i64(0) {}
-		WasmValue(int32_t i32) : i32(i32) {}
-		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
-		WasmValue(int64_t i64) : i64(i64) {}
-		WasmValue(uint64_t u64) : WasmValue(static_cast<int64_t>(u64)) {}
-		WasmValue(float f32) : f32(f32) {}
-		WasmValue(double f64) : f64(f64) {}
-
-		template <typename T, SOUP_RESTRICT(std::is_same_v<T, size_t>)>
-		WasmValue(T ptr) : i32(static_cast<int32_t>(ptr)) {}
-	};
-
 	enum WasmType : uint8_t
 	{
 		WASM_I32 = 0x7F,
 		WASM_I64 = 0x7E,
 		WASM_F32 = 0x7D,
 		WASM_F64 = 0x7C,
+	};
+
+	struct WasmValue
+	{
+		union
+		{
+			int32_t i32;
+			int64_t i64;
+			float f32;
+			double f64;
+		};
+		WasmType type;
+
+		WasmValue(WasmType type) : i64(0), type(type) {}
+		WasmValue(int32_t i32) : i32(i32), type(WASM_I32) {}
+		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
+		WasmValue(int64_t i64) : i64(i64), type(WASM_I64) {}
+		WasmValue(uint64_t u64) : WasmValue(static_cast<int64_t>(u64)) {}
+		WasmValue(float f32) : f32(f32), type(WASM_F32) {}
+		WasmValue(double f64) : f64(f64), type(WASM_F64) {}
+
+		template <typename T, SOUP_RESTRICT(std::is_same_v<T, size_t>)>
+		WasmValue(T ptr) : i32(static_cast<int32_t>(ptr)) {}
 	};
 
 	struct WasmScript
