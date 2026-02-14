@@ -591,10 +591,10 @@ NAMESPACE_SOUP
 
 	// WasmVm
 
-	bool WasmVm::run(const std::string& data)
+	bool WasmVm::run(const std::string& data, unsigned depth)
 	{
 		MemoryRefReader r(data);
-		return run(r);
+		return run(r, depth);
 	}
 
 #if DEBUG_VM
@@ -603,7 +603,7 @@ NAMESPACE_SOUP
 #define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { return false; }
 #endif
 
-	bool WasmVm::run(Reader& r)
+	bool WasmVm::run(Reader& r, unsigned depth)
 	{
 		size_t local_decl_count;
 		r.oml(local_decl_count);
@@ -830,10 +830,7 @@ NAMESPACE_SOUP
 						return false;
 					}
 					uint32_t type_index = script.functions[function_index];
-					SOUP_IF_UNLIKELY (!doCall(type_index, function_index))
-					{
-						return false;
-					}
+					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
 				break;
 
@@ -873,7 +870,7 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					SOUP_RETHROW_FALSE(doCall(type_index, function_index));
+					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
 				break;
 
@@ -2996,8 +2993,17 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmVm::doCall(uint32_t type_index, uint32_t function_index)
+	bool WasmVm::doCall(uint32_t type_index, uint32_t function_index, unsigned depth)
 	{
+		SOUP_IF_UNLIKELY (depth >= 200)
+		{
+#if DEBUG_VM
+			std::cout << "call: c stack overflow\n";
+#endif
+			return false;
+		}
+		++depth;
+
 		SOUP_IF_UNLIKELY (type_index >= script.types.size())
 		{
 #if DEBUG_VM
@@ -3016,7 +3022,7 @@ NAMESPACE_SOUP
 		std::cout << "call: enter " << function_index << "\n";
 		//std::cout << string::bin2hex(script.code.at(function_index)) << "\n";
 #endif
-		SOUP_IF_UNLIKELY (!callvm.run(script.code.at(function_index)))
+		SOUP_IF_UNLIKELY (!callvm.run(script.code.at(function_index), depth))
 		{
 			return false;
 		}

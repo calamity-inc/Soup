@@ -130,8 +130,8 @@ NAMESPACE_SOUP
 		{
 		}
 
-		bool run(const std::string& data);
-		bool run(Reader& r);
+		bool run(const std::string& data, unsigned depth = 0);
+		bool run(Reader& r, unsigned depth = 0);
 
 	private:
 		struct CtrlFlowEntry
@@ -143,7 +143,7 @@ NAMESPACE_SOUP
 
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
-		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index);
+		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth);
 		void pushIPTR(size_t ptr) SOUP_EXCAL;
 		[[nodiscard]] size_t popIPTR();
 	};
