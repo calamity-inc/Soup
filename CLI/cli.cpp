@@ -522,6 +522,11 @@ int entry(std::vector<std::string>&& args, bool)
 				std::cout << "Failed to load\n";
 				return 1;
 			}
+			if (!scr.instantiate())
+			{
+				std::cout << "Failed to instantiate\n";
+				return 1;
+			}
 			auto code = scr.getExportedFuntion("_start");
 			if (!code)
 			{
@@ -562,18 +567,41 @@ int entry(std::vector<std::string>&& args, bool)
 						{
 							FileReader fr(cmd.at("filename").asStr());
 							scr = WasmScript();
-							if (!scr.load(fr))
+							SOUP_IF_UNLIKELY (!scr.load(fr))
 							{
 								std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+								return 1;
+							}
+							scr.linkSpectestShim();
+							SOUP_IF_UNLIKELY (!scr.instantiate())
+							{
+								std::cout << "Failed to instantiate module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 								return 1;
 							}
 						}
 						else if (type == "assert_malformed")
 						{
 							FileReader fr(cmd.at("filename").asStr());
-							if (WasmScript().load(fr))
+							scr = WasmScript();
+							SOUP_IF_UNLIKELY (scr.load(fr))
 							{
 								std::cout << "Did not fail to load malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+								goto _wast_next_cmd;
+							}
+						}
+						else if (type == "assert_uninstantiable")
+						{
+							FileReader fr(cmd.at("filename").asStr());
+							scr = WasmScript();
+							SOUP_IF_UNLIKELY (!scr.load(fr))
+							{
+								std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+								return 1;
+							}
+							scr.linkSpectestShim();
+							SOUP_IF_UNLIKELY (scr.instantiate())
+							{
+								std::cout << "Did not fail to instantiate malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 								goto _wast_next_cmd;
 							}
 						}
@@ -584,7 +612,7 @@ int entry(std::vector<std::string>&& args, bool)
 							{
 								const auto& action = cmd.at("action").asObj();
 								auto code = scr.getExportedFuntion(action.at("field").asStr());
-								if (!code)
+								SOUP_IF_UNLIKELY (!code)
 								{
 									std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value  << " for test at line " << cmd.at("line").asInt().value << std::endl;
 									goto _wast_next_cmd;
@@ -597,7 +625,7 @@ int entry(std::vector<std::string>&& args, bool)
 								}
 								if (!vm.run(*code))
 								{
-									if (type != "assert_trap" && type != "assert_exhaustion")
+									SOUP_IF_UNLIKELY (type != "assert_trap" && type != "assert_exhaustion")
 									{
 										std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
 										goto _wast_next_cmd;
@@ -605,7 +633,7 @@ int entry(std::vector<std::string>&& args, bool)
 								}
 								else
 								{
-									if (type == "assert_trap" || type == "assert_exhaustion")
+									SOUP_IF_UNLIKELY (type == "assert_trap" || type == "assert_exhaustion")
 									{
 										std::cout << "Execution did not fail for test at line " << cmd.at("line").asInt().value << std::endl;
 										goto _wast_next_cmd;
@@ -617,7 +645,7 @@ int entry(std::vector<std::string>&& args, bool)
 								const auto& expected_arr = cmd.at("expected").asArr();
 								for (auto i = expected_arr.children.rbegin(); i != expected_arr.children.rend(); ++i)
 								{
-									if (vm.stack.empty())
+									SOUP_IF_UNLIKELY (vm.stack.empty())
 									{
 										std::cout << "Stack too empty for test at line " << cmd.at("line").asInt().value << std::endl;
 										goto _wast_next_cmd;
@@ -627,7 +655,7 @@ int entry(std::vector<std::string>&& args, bool)
 									const auto& value = expected.at("value").asStr();
 									if (value == "nan:arithmetic" || value == "nan:canonical")
 									{
-										if (type == "f32"
+										SOUP_IF_UNLIKELY (type == "f32"
 											? !std::isnan(vm.stack.top().f32)
 											: !std::isnan(vm.stack.top().f64)
 											)
@@ -649,7 +677,7 @@ int entry(std::vector<std::string>&& args, bool)
 									}*/
 									else
 									{
-										if (type == "i32" || type == "f32"
+										SOUP_IF_UNLIKELY (type == "i32" || type == "f32"
 											? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != vm.stack.top().i32
 											: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != vm.stack.top().i64
 											)
@@ -671,7 +699,7 @@ int entry(std::vector<std::string>&& args, bool)
 									vm.stack.pop();
 								}
 								// When code uses 'return', there may be superfluous values on the stack. This doesn't affect VM semantics, tho.
-								/*if (!vm.stack.empty())
+								/*SOUP_IF_UNLIKELY (!vm.stack.empty())
 								{
 									std::cout << "Stack too full for test at line " << cmd.at("line").asInt().value << std::endl;
 									goto _wast_next_cmd;

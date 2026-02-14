@@ -93,7 +93,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - select: FAIL (due to missing support for "funcref" and "externref", afaict)
 - skip-stack-guard-page: pass
 - stack: pass
-- start: FAIL (due to "start" functions not being supported)
+- start: pass
 - store: pass
 - switch: pass
 - table: FAIL (missing "spectest" import)
@@ -282,11 +282,13 @@ NAMESPACE_SOUP
 					size_t pages; r.oml(pages);
 					if (flags & 1)
 					{
+						uint32_t memory_page_limit;
 						r.oml(memory_page_limit);
+						this->memory_page_limit = memory_page_limit;
 					}
 					if (flags & 4)
 					{
-						memory64 = true;
+						this->memory64 = true;
 					}
 					if (pages == 0)
 					{
@@ -368,10 +370,18 @@ NAMESPACE_SOUP
 				break;
 
 			case 8: // Start
+				SOUP_IF_UNLIKELY (start_func_idx != -1)
+				{
 #if DEBUG_LOAD
-				std::cout << "module has a start function\n";
+					std::cout << "Too many start sections\n";
 #endif
-				return false;
+					return false;
+				}
+				r.oml(start_func_idx);
+#if DEBUG_LOAD
+				std::cout << "start_func_idx: " << start_func_idx << "\n";
+#endif
+				break;
 
 			case 9: // Elem
 				{
@@ -485,6 +495,48 @@ NAMESPACE_SOUP
 			if (section_size == 0)
 			{
 				r.oml(section_size);
+			}
+		}
+		return true;
+	}
+
+	bool WasmScript::instantiate()
+	{
+		if (start_func_idx != -1)
+		{
+			WasmVm vm(*this);
+			auto function_index = start_func_idx;
+			if (function_index < this->function_imports.size())
+			{
+#if DEBUG_LOAD
+				std::cout << "instantiate: calling into " << this->function_imports[function_index].module_name << ":" << this->function_imports[function_index].function_name << "\n";
+#endif
+				SOUP_IF_UNLIKELY (this->function_imports[function_index].ptr == nullptr)
+				{
+#if DEBUG_LOAD
+					std::cout << "instantiate: function is not imported\n";
+#endif
+					return false;
+				}
+				this->function_imports[function_index].ptr(vm, function_index);
+			}
+			else
+			{
+				function_index -= static_cast<uint32_t>(this->function_imports.size());
+				SOUP_IF_UNLIKELY (function_index >= this->functions.size() || function_index >= this->code.size())
+				{
+#if DEBUG_LOAD
+					std::cout << "instantiate: function is out-of-bounds\n";
+#endif
+					return false;
+				}
+				SOUP_IF_UNLIKELY (!vm.run(this->code[function_index]))
+				{
+#if DEBUG_LOAD
+					std::cout << "instantiate: execution failed\n";
+#endif
+					return false;
+				}
 			}
 		}
 		return true;
@@ -688,6 +740,25 @@ NAMESPACE_SOUP
 				SOUP_UNUSED(out);
 				SOUP_UNUSED(fd);
 				vm.stack.push(fd.i32 < 3 ? 0 : -1);
+			};
+		}
+	}
+
+	void WasmScript::linkSpectestShim() noexcept
+	{
+		if (auto fi = getImportedFunction("spectest", "print_i32"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				WASI_CHECK_STACK(1);
+				vm.stack.pop();
+			};
+		}
+		if (auto fi = getImportedFunction("spectest", "print"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				// This function is apparently overloaded, so in theory it might have to pop a variable number of arguments.
 			};
 		}
 	}

@@ -62,10 +62,10 @@ NAMESPACE_SOUP
 
 		uint8_t* memory = nullptr;
 		size_t memory_size = 0;
-		uint32_t memory_page_limit = 0x10'000;
-		bool memory64 = false;
-		// <3 bytes for alignment>
 		size_t last_alloc = -1;
+		uint32_t memory_page_limit : 31;
+		uint32_t memory64 : 1;
+		uint32_t start_func_idx = -1;
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<FunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
@@ -75,7 +75,11 @@ NAMESPACE_SOUP
 		std::vector<uint32_t> elements{};
 		StructMap custom_data;
 
-		WasmScript() = default;
+		WasmScript() noexcept
+			: memory_page_limit(0x10'000), memory64(0)
+		{
+		}
+
 		WasmScript(WasmScript&&) noexcept = default;
 		WasmScript(const WasmScript&) = delete;
 		WasmScript& operator = (WasmScript&&) noexcept = default;
@@ -84,6 +88,9 @@ NAMESPACE_SOUP
 
 		bool load(const std::string& data);
 		bool load(Reader& r);
+
+		// Runs the start function of the script, if defined. Throws if imported functions throw.
+		bool instantiate();
 
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const FunctionType** optOutType = nullptr) const noexcept;
@@ -114,6 +121,7 @@ NAMESPACE_SOUP
 		bool setMemory(WasmValue ptr, const void* src, size_t len) noexcept;
 
 		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
+		void linkSpectestShim() noexcept;
 
 		[[nodiscard]] size_t readUPTR(Reader& r) const noexcept;
 	};
@@ -130,6 +138,7 @@ NAMESPACE_SOUP
 		{
 		}
 
+		// Throws if imported functions throw.
 		bool run(const std::string& data, unsigned depth = 0);
 		bool run(Reader& r, unsigned depth = 0);
 
