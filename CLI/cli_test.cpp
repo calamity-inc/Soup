@@ -1800,7 +1800,8 @@ endif;)") == "");
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAX8Bf2ACf38BfwMDAgEABQMBAAEHDAEIaXNfbWFnaWMAAQo9AjIBAn8DQCAAIgNBAWohACABIgJBAWohASADLQAAIgMgAi0AAEcEQEEADwsgAw0AC0EBCwgAIABBARAACwsLAQBBAQsFZGVlegAANARuYW1lARoCAAZzdHJjbXABD2lzX2hvc3Rpbmdfc2x1ZwIRAgAEAAEwAQExAgEyAwEzAQA=")));
-			auto scrap = scr.allocateMemory(sizeof("deez"));
+			WasmScrapAllocator sa(scr);
+			auto scrap = sa.allocate(sizeof("deez"));
 			assert(scr.setMemory(scrap, "deez", sizeof("deez")));
 			auto code = scr.getExportedFuntion("is_magic");
 			assert(code);

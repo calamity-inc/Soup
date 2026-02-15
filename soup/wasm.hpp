@@ -74,7 +74,6 @@ NAMESPACE_SOUP
 
 		uint8_t* memory = nullptr;
 		size_t memory_size = 0;
-		size_t last_alloc = -1;
 		uint32_t memory_page_limit : 31;
 		uint32_t memory64 : 1;
 		uint32_t start_func_idx = -1;
@@ -107,8 +106,6 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const FunctionType** optOutType = nullptr) const noexcept;
-
-		[[nodiscard]] size_t allocateMemory(size_t len) noexcept;
 
 		template <typename T>
 		[[nodiscard]] T* getMemory(size_t ptr) noexcept
@@ -146,7 +143,7 @@ NAMESPACE_SOUP
 		std::vector<WasmValue> locals;
 		WasmScript& script;
 
-		WasmVm(WasmScript& script)
+		WasmVm(WasmScript& script) noexcept
 			: script(script)
 		{
 		}
@@ -168,5 +165,26 @@ NAMESPACE_SOUP
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth);
 		void pushIPTR(size_t ptr) SOUP_EXCAL;
 		[[nodiscard]] size_t popIPTR();
+	};
+
+	struct WasmScrapAllocator
+	{
+		WasmScript& script;
+		size_t last_alloc = -1;
+
+		WasmScrapAllocator(WasmScript& script) noexcept
+			: script(script)
+		{
+		}
+
+		[[nodiscard]] size_t allocate(size_t len) noexcept
+		{
+			if (last_alloc >= script.memory_size)
+			{
+				last_alloc = script.memory_size - 1;
+			}
+			last_alloc -= len;
+			return last_alloc;
+		}
 	};
 }

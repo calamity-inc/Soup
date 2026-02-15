@@ -31,7 +31,8 @@ NAMESPACE_SOUP
 				slug.append(this->name);
 				string::lower(slug);
 
-				auto scrap = ws.allocateMemory(slug.size() + 1);
+				WasmScrapAllocator sa(ws);
+				auto scrap = sa.allocate(slug.size() + 1);
 				if (ws.setMemory(scrap, slug.c_str(), slug.size() + 1))
 				{
 					WasmVm vm(ws);

@@ -641,16 +641,6 @@ NAMESPACE_SOUP
 		return nullptr;
 	}
 
-	size_t WasmScript::allocateMemory(size_t len) noexcept
-	{
-		if (last_alloc >= memory_size)
-		{
-			last_alloc = memory_size - 1;
-		}
-		last_alloc -= len;
-		return last_alloc;
-	}
-
 	bool WasmScript::setMemory(size_t ptr, const void* src, size_t len) noexcept
 	{
 		SOUP_IF_UNLIKELY (ptr + len >= memory_size)
