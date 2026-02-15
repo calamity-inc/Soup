@@ -92,7 +92,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - ref_is_null: FAIL (due to missing support for tables)
 - ref_null: pass
 - return: pass
-- select: FAIL (due to missing support for "funcref" and "externref", afaict)
+- select: pass
 - skip-stack-guard-page: pass
 - stack: pass
 - start: pass
@@ -499,7 +499,21 @@ NAMESPACE_SOUP
 #endif
 					while (num_segments--)
 					{
-						r.skip(1); // segment flags
+						uint8_t flags;
+						r.u8(flags);
+						uint32_t tblidx = 0;
+						if (flags & 2)
+						{
+							r.oml(tblidx);
+						}
+#if DEBUG_LOAD
+						std::cout << "- elements for table " << tblidx << "\n";
+#endif
+						while (tblidx >= table_elements.size())
+						{
+							table_elements.emplace_back();
+						}
+						std::vector<uint32_t>& elements = table_elements[tblidx];
 						uint8_t op;
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
@@ -518,6 +532,10 @@ NAMESPACE_SOUP
 						SOUP_IF_UNLIKELY (op != 0x0b) // end
 						{
 							return false;
+						}
+						if (flags & 2)
+						{
+							r.skip(1); // reserved
 						}
 						size_t num_elements;
 						r.oml(num_elements);
@@ -686,7 +704,7 @@ NAMESPACE_SOUP
 		return nullptr;
 	}
 
-#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient stack space in function call"); }
+#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
 
 	// https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L106
 	enum WasiErrno : int32_t
@@ -1173,7 +1191,7 @@ NAMESPACE_SOUP
 	}
 
 #if DEBUG_VM
-#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { /*__debugbreak();*/ std::cout << "Insufficient stack space\n"; return false; }
+#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { /*__debugbreak();*/ std::cout << "Insufficient values on stack\n"; return false; }
 #else
 #define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { return false; }
 #endif
@@ -1427,23 +1445,24 @@ NAMESPACE_SOUP
 				{
 					uint32_t type_index; r.oml(type_index);
 					uint32_t table_index; r.oml(table_index);
-					SOUP_IF_UNLIKELY (table_index != 0)
+					SOUP_IF_UNLIKELY (table_index > script.table_elements.size())
 					{
 #if DEBUG_VM
 						std::cout << "call: table is out-of-bounds\n";
 #endif
 						return false;
 					}
+					const std::vector<uint32_t>& elements = script.table_elements[table_index];
 					WASM_CHECK_STACK(1);
 					auto element_index = static_cast<uint32_t>(stack.top().i32); stack.pop();
-					SOUP_IF_UNLIKELY (element_index >= script.elements.size())
+					SOUP_IF_UNLIKELY (element_index >= elements.size())
 					{
 #if DEBUG_VM
 						std::cout << "call: element is out-of-bounds\n";
 #endif
 						return false;
 					}
-					uint32_t function_index = script.elements.at(element_index);
+					uint32_t function_index = elements[element_index];
 					SOUP_IF_UNLIKELY (function_index < script.function_imports.size())
 					{
 #if DEBUG_VM
@@ -1467,6 +1486,9 @@ NAMESPACE_SOUP
 				stack.pop();
 				break;
 
+			case 0x1c: // select t
+				r.skip(2);
+				[[fallthrough]];
 			case 0x1b: // select
 				{
 					WASM_CHECK_STACK(3);
@@ -3480,6 +3502,10 @@ NAMESPACE_SOUP
 					uint32_t type_index; r.oml(type_index);
 					uint32_t table_index; r.oml(table_index);
 				}
+				break;
+
+			case 0x1c: // select t
+				r.skip(2);
 				break;
 
 			case 0x28: // i32.load
