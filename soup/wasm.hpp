@@ -99,6 +99,7 @@ NAMESPACE_SOUP
 			bool write(size_t addr, const void* src, size_t size) noexcept;
 			bool write(const WasmValue& addr, const void* src, size_t size) noexcept;
 
+			[[nodiscard]] size_t decodeIPTR(const WasmValue& addr) noexcept;
 			void encodeIPTR(WasmValue& out, size_t addr) noexcept;
 		};
 

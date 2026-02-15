@@ -193,10 +193,12 @@ NAMESPACE_SOUP
 
 	bool WasmScript::Memory::write(const WasmValue& addr, const void* src, size_t size) noexcept
 	{
-		return memory64
-			? write(static_cast<uint64_t>(addr.i64), src, size)
-			: write(static_cast<uint32_t>(addr.i32), src, size)
-			;
+		return write(decodeIPTR(addr), src, size);
+	}
+
+	size_t WasmScript::Memory::decodeIPTR(const WasmValue& addr) noexcept
+	{
+		return memory64 ? static_cast<uint64_t>(addr.i64) : static_cast<uint32_t>(addr.i32);
 	}
 
 	void WasmScript::Memory::encodeIPTR(WasmValue& out, size_t addr) noexcept
@@ -231,7 +233,7 @@ NAMESPACE_SOUP
 			break;
 
 		case 0x42: // i64.const
-			r.soml(out.i32);
+			r.soml(out.i64);
 			out.type = WASM_I64;
 			break;
 
@@ -604,25 +606,22 @@ NAMESPACE_SOUP
 #endif
 							return false;
 						}
-						uint8_t op;
-						r.u8(op);
-						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
+						WasmValue base;
+						SOUP_RETHROW_FALSE(readConstant(r, base));
+						SOUP_IF_UNLIKELY (base.type != (memory.memory64 ? WASM_I64 : WASM_I32))
 						{
 #if DEBUG_LOAD
-							std::cout << "unexpected op for data initialisation: " << string::hex(op) << "\n";
+							std::cout << "unexpected type for data initialisation: " << string::hex(static_cast<uint8_t>(base.type)) << "\n";
 #endif
 							return false;
 						}
-						uint32_t base; r.oml(base);
-						r.u8(op);
-						SOUP_IF_UNLIKELY (op != 0x0b) // end
-						{
-							return false;
-						}
 						size_t size; r.oml(size);
-						auto ptr = memory.getView(base, size);
+						auto ptr = memory.getView(memory.decodeIPTR(base), size);
 						SOUP_IF_UNLIKELY (!ptr)
 						{
+#if DEBUG_LOAD
+							std::cout << "data segment exceeds memory range: " << memory.decodeIPTR(base) << " + " << size << " > " << memory.size << "\n";
+#endif
 							return false;
 						}
 						r.raw(ptr, size);
@@ -3914,15 +3913,7 @@ NAMESPACE_SOUP
 
 	size_t WasmVm::popIPTR() noexcept
 	{
-		size_t ptr;
-		if (script.memory.memory64)
-		{
-			ptr = static_cast<uint64_t>(stack.top().i64);
-		}
-		else
-		{
-			ptr = static_cast<uint32_t>(stack.top().i32);
-		}
+		const auto ptr = script.memory.decodeIPTR(stack.top());
 		stack.pop();
 		return ptr;
 	}
