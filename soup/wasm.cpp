@@ -98,7 +98,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - start: pass
 - store: pass
 - switch: pass
-- table: FAIL
+- table: FAIL (due to missing support for table imports)
 - table-sub: pass
 - table_copy: FAIL
 - table_fill: FAIL
@@ -350,6 +350,9 @@ NAMESPACE_SOUP
 						switch (type_type)
 						{
 						default:
+#if DEBUG_LOAD
+							std::cout << "unknown type: " << string::hex(type_type) << "\n";
+#endif
 							return false;
 
 						case 0x60: // func
@@ -414,6 +417,23 @@ NAMESPACE_SOUP
 							uint32_t type_index; r.oml(type_index);
 							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, type_index });
 						}
+						/*else if (kind == 1) // table
+						{
+							uint8_t type; r.u8(type);
+							uint8_t flags; r.u8(flags);
+							size_t size; r.oml(size);
+							if (flags & 1)
+							{
+								r.oml(size);
+							}
+						}*/
+						else
+						{
+#if DEBUG_LOAD
+							std::cout << "unknown import kind: " << string::hex(kind) << "\n";
+#endif
+							return false;
+						}
 					}
 				}
 				break;
@@ -425,6 +445,7 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_functions << " function(s)\n";
 #endif
+					functions.reserve(num_functions);
 					while (num_functions--)
 					{
 						uint32_t type_index;
@@ -434,7 +455,41 @@ NAMESPACE_SOUP
 				}
 				break;
 
-				// 4 - Table
+			case 4: // Table
+				{
+					size_t num_tables; r.oml(num_tables);
+#if DEBUG_LOAD
+					std::cout << num_tables << " table(s)\n";
+#endif
+					table_elements.reserve(num_tables);
+					while (num_tables--)
+					{
+						uint8_t type;
+						r.u8(type);
+						SOUP_IF_UNLIKELY (type != WASM_FUNCREF)
+						{
+#if DEBUG_LOAD
+							std::cout << "Unexpected table element type: " << string::hex(type) << "\n";
+#endif
+							return false;
+						}
+						uint8_t flags;
+						r.u8(flags);
+						size_t initial;
+						r.oml(initial);
+						if (flags & 1)
+						{
+							size_t maximum;
+							r.oml(maximum);
+						}
+						auto& tbl = table_elements.emplace_back();
+						while (initial != tbl.size())
+						{
+							tbl.emplace_back();
+						}
+					}
+				}
+				break;
 
 			case 5: // Memory
 				{
@@ -482,6 +537,7 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_globals << " global(s)\n";
 #endif
+					globals.reserve(num_globals);
 					while (num_globals--)
 					{
 						uint8_t type; r.u8(type);
@@ -560,9 +616,12 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 						std::cout << "- elements for table " << tblidx << "\n";
 #endif
-						while (tblidx >= table_elements.size())
+						SOUP_IF_UNLIKELY (tblidx >= table_elements.size())
 						{
-							table_elements.emplace_back();
+#if DEBUG_LOAD
+							std::cout << "no such table\n";
+#endif
+							return false;
 						}
 						std::vector<uint32_t>& elements = table_elements[tblidx];
 						uint8_t op;
@@ -574,14 +633,13 @@ NAMESPACE_SOUP
 #endif
 							return false;
 						}
-						int32_t base; r.soml(base);
-						while (base > elements.size())
-						{
-							elements.emplace_back(-1);
-						}
+						uint32_t index; r.oml(index);
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x0b) // end
 						{
+#if DEBUG_LOAD
+							std::cout << "missing end in element initialisation\n";
+#endif
 							return false;
 						}
 						if (flags & 2)
@@ -590,11 +648,18 @@ NAMESPACE_SOUP
 						}
 						size_t num_elements;
 						r.oml(num_elements);
+						SOUP_IF_UNLIKELY (index + num_elements > elements.size())
+						{
+#if DEBUG_LOAD
+							std::cout << "elem: " << index << " + " << num_elements << " > " << elements.size() << "\n";
+#endif
+							return false;
+						}
 						while (num_elements--)
 						{
 							uint32_t function_index;
 							r.oml(function_index);
-							elements.emplace_back(function_index);
+							elements[index++] = function_index;
 						}
 					}
 				}
@@ -669,6 +734,9 @@ NAMESPACE_SOUP
 			if (section_size == 0)
 			{
 				r.oml(section_size);
+#if DEBUG_LOAD
+				std::cout << "FIXUP section_size=" << section_size << "\n";
+#endif
 			}
 		}
 		return true;
@@ -1493,7 +1561,7 @@ NAMESPACE_SOUP
 				{
 					uint32_t type_index; r.oml(type_index);
 					uint32_t table_index; r.oml(table_index);
-					SOUP_IF_UNLIKELY (table_index > script.table_elements.size())
+					SOUP_IF_UNLIKELY (table_index >= script.table_elements.size())
 					{
 #if DEBUG_VM
 						std::cout << "call: table is out-of-bounds\n";
@@ -1622,6 +1690,62 @@ NAMESPACE_SOUP
 					}
 					WASM_CHECK_STACK(1);
 					script.globals.at(global_index) = stack.top().i32; stack.pop();
+				}
+				break;
+
+			case 0x25: // table.get
+				{
+					size_t table_index;
+					r.oml(table_index);
+					SOUP_IF_UNLIKELY (table_index >= script.table_elements.size())
+					{
+#if DEBUG_VM
+						std::cout << "table.get: table index " << table_index << " >= " << script.table_elements.size() << "\n";
+#endif
+						return false;
+					}
+					WASM_CHECK_STACK(1);
+					auto elem_index = stack.top().i32; stack.pop();
+					SOUP_IF_UNLIKELY (elem_index >= script.table_elements[table_index].size())
+					{
+#if DEBUG_VM
+						std::cout << "table.get: element index " << elem_index << " >= " << script.table_elements[table_index].size() << "\n";
+#endif
+						return false;
+					}
+					stack.emplace(WASM_FUNCREF).i32 = script.table_elements[table_index][elem_index];
+				}
+				break;
+
+			case 0x26: // table.set
+				{
+					size_t table_index;
+					r.oml(table_index);
+					SOUP_IF_UNLIKELY (table_index >= script.table_elements.size())
+					{
+#if DEBUG_VM
+						std::cout << "table.set: table index " << table_index << " >= " << script.table_elements.size() << "\n";
+#endif
+						return false;
+					}
+					WASM_CHECK_STACK(2);
+					auto value = stack.top(); stack.pop();
+					auto elem_index = stack.top().i32; stack.pop();
+					SOUP_IF_UNLIKELY (elem_index >= script.table_elements[table_index].size())
+					{
+#if DEBUG_VM
+						std::cout << "table.set: element index " << elem_index << " >= " << script.table_elements[table_index].size() << "\n";
+#endif
+						return false;
+					}
+					SOUP_IF_UNLIKELY (value.type != WASM_FUNCREF)
+					{
+#if DEBUG_VM
+						std::cout << "attempt to assign non-funcref value to table element\n";
+#endif
+						return false;
+					}
+					script.table_elements[table_index][elem_index] = value.i32;
 				}
 				break;
 
@@ -3257,7 +3381,7 @@ NAMESPACE_SOUP
 					uint32_t idx;
 					r.oml(idx);
 					stack.push(WASM_FUNCREF);
-					stack.top().i64 = idx;
+					stack.top().i32 = idx;
 				}
 				break;
 
@@ -3511,6 +3635,8 @@ NAMESPACE_SOUP
 			case 0x22: // local.tee
 			case 0x23: // global.get
 			case 0x24: // global.set
+			case 0x25: // table.get
+			case 0x26: // table.set
 				{
 					size_t imm;
 					r.oml(imm);

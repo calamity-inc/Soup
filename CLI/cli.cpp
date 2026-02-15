@@ -686,7 +686,7 @@ int entry(std::vector<std::string>&& args, bool)
 										SOUP_IF_UNLIKELY (type != stack_top_type
 											|| (value == "null"
 												? vm.stack.top().i64 != 0
-												: type == "i32" || type == "f32"
+												: type == "i32" || type == "f32" || type == "funcref" // 32-bit type?
 													? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != vm.stack.top().i32
 													: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != vm.stack.top().i64
 												)
