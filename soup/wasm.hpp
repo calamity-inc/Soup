@@ -51,9 +51,6 @@ NAMESPACE_SOUP
 		WasmValue(float f32) : f32(f32), type(WASM_F32) {}
 		WasmValue(double f64) : f64(f64), type(WASM_F64) {}
 		WasmValue(void* ptr) : i64(reinterpret_cast<uintptr_t>(ptr)), type(WASM_EXTERNREF) {}
-
-		template <typename T, SOUP_RESTRICT(std::is_same_v<T, size_t>)>
-		WasmValue(T ptr) : i32(static_cast<int32_t>(ptr)) {}
 	};
 
 	struct WasmScript
@@ -101,6 +98,8 @@ NAMESPACE_SOUP
 
 			bool write(size_t addr, const void* src, size_t size) noexcept;
 			bool write(const WasmValue& addr, const void* src, size_t size) noexcept;
+
+			void encodeIPTR(WasmValue& out, size_t addr) noexcept;
 		};
 
 		struct FunctionType
@@ -175,8 +174,7 @@ NAMESPACE_SOUP
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth);
-		void pushIPTR(size_t ptr) SOUP_EXCAL;
-		[[nodiscard]] size_t popIPTR();
+		[[nodiscard]] size_t popIPTR() noexcept;
 		[[nodiscard]] static size_t readUPTR(Reader& r) noexcept;
 	};
 

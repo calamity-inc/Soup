@@ -193,10 +193,22 @@ NAMESPACE_SOUP
 
 	bool WasmScript::Memory::write(const WasmValue& addr, const void* src, size_t size) noexcept
 	{
-		return addr.type == WASM_I64
+		return memory64
 			? write(static_cast<uint64_t>(addr.i64), src, size)
 			: write(static_cast<uint32_t>(addr.i32), src, size)
 			;
+	}
+
+	void WasmScript::Memory::encodeIPTR(WasmValue& out, size_t addr) noexcept
+	{
+		if (memory64)
+		{
+			out = static_cast<uint64_t>(addr);
+		}
+		else
+		{
+			out = static_cast<uint32_t>(addr);
+		}
 	}
 	
 	// WasmScript
@@ -2050,7 +2062,7 @@ NAMESPACE_SOUP
 			case 0x3f: // memory.size
 				{
 					r.skip(1); // reserved
-					pushIPTR(script.memory.size / 0x10'000);
+					script.memory.encodeIPTR(stack.emplace(), script.memory.size / 0x10'000);
 				}
 				break;
 
@@ -2065,12 +2077,12 @@ NAMESPACE_SOUP
 						;
 					if (nmem == nullptr)
 					{
-						pushIPTR(-1);
+						script.memory.encodeIPTR(stack.emplace(), -1);
 					}
 					else
 					{
 						memset(&nmem[script.memory.size], 0, delta);
-						pushIPTR(script.memory.size / 0x10'000);
+						script.memory.encodeIPTR(stack.emplace(), script.memory.size / 0x10'000);
 						script.memory.data = nmem;
 						script.memory.size += delta;
 					}
@@ -3900,19 +3912,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	void WasmVm::pushIPTR(size_t ptr) SOUP_EXCAL
-	{
-		if (script.memory.memory64)
-		{
-			stack.push(static_cast<uint64_t>(ptr));
-		}
-		else
-		{
-			stack.push(static_cast<uint32_t>(ptr));
-		}
-	}
-
-	size_t WasmVm::popIPTR()
+	size_t WasmVm::popIPTR() noexcept
 	{
 		size_t ptr;
 		if (script.memory.memory64)
