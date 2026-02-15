@@ -33,7 +33,7 @@ NAMESPACE_SOUP
 
 				WasmScrapAllocator sa(ws);
 				auto scrap = sa.allocate(slug.size() + 1);
-				if (ws.setMemory(scrap, slug.c_str(), slug.size() + 1))
+				if (ws.memory.write(scrap, slug.c_str(), slug.size() + 1))
 				{
 					WasmVm vm(ws);
 					vm.locals.emplace_back(scrap);

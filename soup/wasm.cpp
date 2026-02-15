@@ -147,15 +147,59 @@ NAMESPACE_SOUP
 		return std::to_string(type);
 	}
 
-	// WasmScript
+	// WasmScript::Memory
 
-	WasmScript::~WasmScript() noexcept
+	WasmScript::Memory::~Memory() noexcept
 	{
-		if (memory != nullptr)
+		if (data != nullptr)
 		{
-			soup::free(memory);
+			soup::free(data);
 		}
 	}
+
+	std::string WasmScript::Memory::readString(size_t addr, size_t size) SOUP_EXCAL
+	{
+		SOUP_IF_LIKELY (auto ptr = getView(addr, size))
+		{
+			return std::string((const char*)ptr, size);
+		}
+		return std::string();
+	}
+
+	std::string WasmScript::Memory::readNullTerminatedString(size_t addr) SOUP_EXCAL
+	{
+		std::string str;
+		for (; addr < this->size; ++addr)
+		{
+			const auto c = static_cast<char>(this->data[addr]);
+			SOUP_IF_UNLIKELY(!c)
+			{
+				break;
+			}
+			str.push_back(c);
+		}
+		return str;
+	}
+
+	bool WasmScript::Memory::write(size_t addr, const void* src, size_t size) noexcept
+	{
+		SOUP_IF_LIKELY (auto ptr = getView(addr, size))
+		{
+			memcpy(ptr, src, size);
+			return true;
+		}
+		return false;
+	}
+
+	bool WasmScript::Memory::write(const WasmValue& addr, const void* src, size_t size) noexcept
+	{
+		return addr.type == WASM_I64
+			? write(static_cast<uint64_t>(addr.i64), src, size)
+			: write(static_cast<uint32_t>(addr.i32), src, size)
+			;
+	}
+	
+	// WasmScript
 
 	bool WasmScript::load(const std::string& data) SOUP_EXCAL
 	{
@@ -346,10 +390,10 @@ NAMESPACE_SOUP
 			case 5: // Memory
 				{
 					size_t num_memories; r.oml(num_memories);
-					SOUP_IF_UNLIKELY (memory != nullptr || num_memories != 1)
+					SOUP_IF_UNLIKELY (memory.data != nullptr || num_memories != 1)
 					{
 #if DEBUG_LOAD
-						std::cout << "Unexpected memory when there's already a memory\n";
+						std::cout << "Too many memories\n";
 #endif
 						return false;
 					}
@@ -357,27 +401,25 @@ NAMESPACE_SOUP
 					size_t pages; r.oml(pages);
 					if (flags & 1)
 					{
-						uint32_t memory_page_limit;
-						r.oml(memory_page_limit);
-						this->memory_page_limit = memory_page_limit;
+						r.oml(memory.page_limit);
 					}
 					if (flags & 4)
 					{
-						this->memory64 = true;
+						memory.memory64 = true;
 					}
 					if (pages == 0)
 					{
-						memory = (uint8_t*)soup::malloc(1);
-						memory_size = 1;
+						memory.data = (uint8_t*)soup::malloc(1);
+						memory.size = 1;
 					}
 					else
 					{
-						memory = (uint8_t*)soup::malloc(pages * 0x10'000);
-						memory_size = pages * 0x10'000;
+						memory.data = (uint8_t*)soup::malloc(pages * 0x10'000);
+						memory.size = pages * 0x10'000;
 					}
-					memset(memory, 0, memory_size);
+					memset(memory.data, 0, memory.size);
 #if DEBUG_LOAD
-					std::cout << "Memory consists of " << pages << " pages, totalling " << memory_size << " bytes\n";
+					std::cout << "Memory consists of " << pages << " pages, totalling " << memory.size << " bytes\n";
 #endif
 				}
 				break;
@@ -548,11 +590,12 @@ NAMESPACE_SOUP
 							return false;
 						}
 						size_t size; r.oml(size);
-						SOUP_IF_UNLIKELY (base + size > memory_size)
+						auto ptr = memory.getView(base, size);
+						SOUP_IF_UNLIKELY (!ptr)
 						{
 							return false;
 						}
-						r.raw(&memory[base], size);
+						r.raw(ptr, size);
 					}
 				}
 				break;
@@ -643,48 +686,6 @@ NAMESPACE_SOUP
 		return nullptr;
 	}
 
-	std::string WasmScript::getMemoryStr(size_t addr, size_t size) SOUP_EXCAL
-	{
-		SOUP_IF_LIKELY (auto ptr = getMemoryPtr(addr, size))
-		{
-			return std::string((const char*)ptr, size);
-		}
-		return std::string();
-	}
-
-	std::string WasmScript::getMemoryStrNt(size_t addr) SOUP_EXCAL
-	{
-		std::string str;
-		for (; addr < memory_size; ++addr)
-		{
-			const auto c = static_cast<char>(memory[addr]);
-			SOUP_IF_UNLIKELY (!c)
-			{
-				break;
-			}
-			str.push_back(c);
-		}
-		return str;
-	}
-
-	bool WasmScript::setMemory(size_t ptr, const void* src, size_t len) noexcept
-	{
-		SOUP_IF_UNLIKELY (ptr + len >= memory_size)
-		{
-			return false;
-		}
-		memcpy(&memory[ptr], src, len);
-		return true;
-	}
-
-	bool WasmScript::setMemory(const WasmValue& ptr, const void* src, size_t len) noexcept
-	{
-		return memory64
-			? setMemory(static_cast<uint64_t>(ptr.i64), src, len)
-			: setMemory(static_cast<uint32_t>(ptr.i32), src, len)
-			;
-	}
-
 #define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient stack space in function call"); }
 
 	// https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L106
@@ -734,7 +735,7 @@ NAMESPACE_SOUP
 				auto plen = vm.stack.top().i32; vm.stack.pop();
 				auto pargc = vm.stack.top().i32; vm.stack.pop();
 				WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
-				if (auto pLen = vm.script.getMemory<int32_t>(plen))
+				if (auto pLen = vm.script.memory.getPointer<int32_t>(plen))
 				{
 					*pLen = 0;
 					for (const auto& arg : wd.args)
@@ -742,7 +743,7 @@ NAMESPACE_SOUP
 						*pLen += arg.size() + 1;
 					}
 				}
-				if (auto pArgc = vm.script.getMemory<int32_t>(pargc))
+				if (auto pArgc = vm.script.memory.getPointer<int32_t>(pargc))
 				{
 					*pArgc = wd.args.size();
 				}
@@ -760,13 +761,13 @@ NAMESPACE_SOUP
 				std::string argstr;
 				for (uint32_t i = 0; i != wd.args.size(); ++i)
 				{
-					if (auto pArg = vm.script.getMemory<int32_t>(pargv + i * 4))
+					if (auto pArg = vm.script.memory.getPointer<int32_t>(pargv + i * 4))
 					{
 						*pArg = pstr + argstr.size();
 					}
 					argstr.append(wd.args[i].data(), wd.args[i].size() + 1);
 				}
-				vm.script.setMemory(pstr, argstr.data(), argstr.size());
+				vm.script.memory.write(pstr, argstr.data(), argstr.size());
 				vm.stack.push(WASI_ERRNO_SUCCESS);
 			};
 		}
@@ -777,11 +778,11 @@ NAMESPACE_SOUP
 				API_CHECK_STACK(2);
 				auto out_environ_buf_size = vm.stack.top().i32; vm.stack.pop();
 				auto out_environ_count = vm.stack.top().i32; vm.stack.pop();
-				if (auto ptr = vm.script.getMemory<int32_t>(out_environ_count))
+				if (auto ptr = vm.script.memory.getPointer<int32_t>(out_environ_count))
 				{
 					*ptr = 0;
 				}
-				if (auto ptr = vm.script.getMemory<int32_t>(out_environ_buf_size))
+				if (auto ptr = vm.script.memory.getPointer<int32_t>(out_environ_buf_size))
 				{
 					*ptr = 0;
 				}
@@ -809,11 +810,11 @@ NAMESPACE_SOUP
 #endif
 				if (fd == 3)
 				{
-					if (auto pTag = vm.script.getMemory<uint32_t>(prestat + 0))
+					if (auto pTag = vm.script.memory.getPointer<uint32_t>(prestat + 0))
 					{
 						*pTag = 0; // __WASI_PREOPENTYPE_DIR
 					}
-					if (auto pDirNameLen = vm.script.getMemory<uint32_t>(prestat + 4))
+					if (auto pDirNameLen = vm.script.memory.getPointer<uint32_t>(prestat + 4))
 					{
 						*pDirNameLen = 1;
 					}
@@ -837,7 +838,7 @@ NAMESPACE_SOUP
 				{
 					if (path_len >= 1)
 					{
-						vm.script.setMemory(path, ".", 1);
+						vm.script.memory.write(path, ".", 1);
 						vm.stack.push(WASI_ERRNO_SUCCESS);
 					}
 					else
@@ -874,19 +875,19 @@ NAMESPACE_SOUP
 #endif
 				if (fd == 3)
 				{
-					if (auto pFiletype = vm.script.getMemory<uint8_t>(out + 0))
+					if (auto pFiletype = vm.script.memory.getPointer<uint8_t>(out + 0))
 					{
 						*pFiletype = 3; // directory, as per https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L785
 					}
-					if (auto pFlags = vm.script.getMemory<uint16_t>(out + 2))
+					if (auto pFlags = vm.script.memory.getPointer<uint16_t>(out + 2))
 					{
 						*pFlags = 0;
 					}
-					if (auto pRightsBase = vm.script.getMemory<uint64_t>(out + 8))
+					if (auto pRightsBase = vm.script.memory.getPointer<uint64_t>(out + 8))
 					{
 						*pRightsBase = -1;
 					}
-					if (auto pRightsInheriting = vm.script.getMemory<uint64_t>(out + 16))
+					if (auto pRightsInheriting = vm.script.memory.getPointer<uint64_t>(out + 16))
 					{
 						*pRightsInheriting = -1;
 					}
@@ -910,16 +911,16 @@ NAMESPACE_SOUP
 				auto fd = vm.stack.top().i32; vm.stack.pop();
 				if (fd == 3)
 				{
-					auto path_str = vm.script.getMemoryStr(path, path_len);
+					auto path_str = vm.script.memory.readString(path, path_len);
 #if DEBUG_API
 					std::cout << "path_filestat_get: " << path_str << " (relative to .)\n";
 #endif
 					SOUP_UNUSED(flags);
-					if (auto pFiletype = vm.script.getMemory<uint8_t>(buf + 16))
+					if (auto pFiletype = vm.script.memory.getPointer<uint8_t>(buf + 16))
 					{
 						*pFiletype = 4; // regular file, as per https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L785
 					}
-					if (auto pSize = vm.script.getMemory<uint64_t>(buf + 32))
+					if (auto pSize = vm.script.memory.getPointer<uint64_t>(buf + 32))
 					{
 						*pSize = std::filesystem::file_size(path_str);
 #if DEBUG_API
@@ -950,7 +951,7 @@ NAMESPACE_SOUP
 				auto fd = vm.stack.top().i32; vm.stack.pop();
 				if (fd == 3)
 				{
-					auto path_str = vm.script.getMemoryStr(path, path_len);
+					auto path_str = vm.script.memory.readString(path, path_len);
 #if DEBUG_API
 					std::cout << "path_open: " << path_str << " (relative to .)\n";
 #endif
@@ -962,7 +963,7 @@ NAMESPACE_SOUP
 					if (auto f = fopen(path_str.c_str(), "rb"))
 					{
 						WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
-						if (auto pOutFd = vm.script.getMemory<uint32_t>(out_fd))
+						if (auto pOutFd = vm.script.memory.getPointer<uint32_t>(out_fd))
 						{
 							*pOutFd = WASI_FD_FILES_BASE + wd.files.size();
 						}
@@ -997,7 +998,7 @@ NAMESPACE_SOUP
 				{
 					auto f = wd.files[fd - WASI_FD_FILES_BASE];
 					fseek(f, delta, whence == 0 ? SEEK_SET : (whence == 1 ? SEEK_CUR : SEEK_END));
-					if (auto pOutOff = vm.script.getMemory<uint64_t>(out_off))
+					if (auto pOutOff = vm.script.memory.getPointer<uint64_t>(out_off))
 					{
 						*pOutOff = ftell(f);
 #if DEBUG_API
@@ -1037,18 +1038,18 @@ NAMESPACE_SOUP
 					while (iovs_len--)
 					{
 						int32_t iov_base = 0;
-						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						if (auto ptr = vm.script.memory.getPointer<int32_t>(iovs))
 						{
 							iov_base = *ptr;
 						}
 						iovs += 4;
 						int32_t iov_len = 0;
-						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						if (auto ptr = vm.script.memory.getPointer<int32_t>(iovs))
 						{
 							iov_len = *ptr;
 						}
 						iovs += 4;
-						if (auto ptr = vm.script.getMemoryPtr(iov_base, iov_len))
+						if (auto ptr = vm.script.memory.getView(iov_base, iov_len))
 						{
 							const auto ret = fread(ptr, 1, iov_len, f);
 							if (ret >= 0)
@@ -1057,7 +1058,7 @@ NAMESPACE_SOUP
 							}
 						}
 					}
-					if (auto pOut = vm.script.getMemory<int32_t>(out_nread))
+					if (auto pOut = vm.script.memory.getPointer<int32_t>(out_nread))
 					{
 #if DEBUG_API
 						std::cout << "read " << nread << " bytes from fd " << fd << "\n";
@@ -1097,18 +1098,18 @@ NAMESPACE_SOUP
 					while (iovs_len--)
 					{
 						int32_t iov_base = 0;
-						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						if (auto ptr = vm.script.memory.getPointer<int32_t>(iovs))
 						{
 							iov_base = *ptr;
 						}
 						iovs += 4;
 						int32_t iov_len = 0;
-						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						if (auto ptr = vm.script.memory.getPointer<int32_t>(iovs))
 						{
 							iov_len = *ptr;
 						}
 						iovs += 4;
-						if (auto ptr = vm.script.getMemoryPtr(iov_base, iov_len))
+						if (auto ptr = vm.script.memory.getView(iov_base, iov_len))
 						{
 							const auto ret = fwrite(ptr, 1, iov_len, f);
 							if (ret >= 0)
@@ -1117,7 +1118,7 @@ NAMESPACE_SOUP
 							}
 						}
 					}
-					if (auto pOut = vm.script.getMemory<int32_t>(out_nwritten))
+					if (auto pOut = vm.script.memory.getPointer<int32_t>(out_nwritten))
 					{
 						*pOut = nwritten;
 					}
@@ -1161,19 +1162,6 @@ NAMESPACE_SOUP
 				// This function is apparently overloaded, so in theory it might have to pop a variable number of arguments.
 			};
 		}
-	}
-
-	size_t WasmScript::readUPTR(Reader& r) const noexcept
-	{
-		if (memory64)
-		{
-			uint64_t ptr;
-			r.oml(ptr);
-			return static_cast<size_t>(ptr);
-		}
-		uint32_t ptr;
-		r.oml(ptr);
-		return static_cast<size_t>(ptr);
 	}
 
 	// WasmVm
@@ -1572,8 +1560,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int32_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						stack.emplace(*ptr);
 					}
@@ -1592,8 +1580,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int64_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int64_t>(base, offset))
 					{
 						stack.emplace(*ptr);
 					}
@@ -1612,8 +1600,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<float>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<float>(base, offset))
 					{
 						stack.emplace(*ptr);
 					}
@@ -1632,8 +1620,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<double>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<double>(base, offset))
 					{
 						stack.emplace(*ptr);
 					}
@@ -1652,8 +1640,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int8_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						stack.emplace(static_cast<int32_t>(*ptr));
 					}
@@ -1672,8 +1660,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<uint8_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace(static_cast<uint32_t>(*ptr));
 					}
@@ -1692,8 +1680,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int16_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						stack.emplace(static_cast<uint32_t>(*ptr));
 					}
@@ -1712,8 +1700,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<uint16_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace(static_cast<uint32_t>(*ptr));
 					}
@@ -1732,8 +1720,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int8_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						stack.emplace(static_cast<int64_t>(*ptr));
 					}
@@ -1752,8 +1740,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<uint8_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace(static_cast<uint64_t>(*ptr));
 					}
@@ -1772,8 +1760,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int16_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						stack.emplace(static_cast<int64_t>(*ptr));
 					}
@@ -1792,8 +1780,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<uint16_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace(static_cast<uint64_t>(*ptr));
 					}
@@ -1812,8 +1800,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int32_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						stack.emplace(static_cast<int64_t>(*ptr));
 					}
@@ -1832,8 +1820,8 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<uint32_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<uint32_t>(base, offset))
 					{
 						stack.emplace(static_cast<uint64_t>(*ptr));
 					}
@@ -1854,8 +1842,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int32_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						*ptr = value.i32;
 					}
@@ -1875,8 +1863,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int64_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int64_t>(base, offset))
 					{
 						*ptr = value.i64;
 					}
@@ -1896,8 +1884,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<float>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<float>(base, offset))
 					{
 						*ptr = value.f32;
 					}
@@ -1917,8 +1905,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<double>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<double>(base, offset))
 					{
 						*ptr = value.f64;
 					}
@@ -1938,8 +1926,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int8_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i32);
 					}
@@ -1959,8 +1947,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int16_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i32);
 					}
@@ -1980,8 +1968,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int8_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i64);
 					}
@@ -2001,8 +1989,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int16_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i64);
 					}
@@ -2022,8 +2010,8 @@ NAMESPACE_SOUP
 					auto value = stack.top(); stack.pop();
 					auto base = stack.top(); stack.pop();
 					r.skip(1); // memflags
-					auto offset = script.readUPTR(r);
-					if (auto ptr = script.getMemory<int32_t>(base, offset))
+					auto offset = readUPTR(r);
+					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						*ptr = static_cast<int32_t>(value.i64);
 					}
@@ -2040,7 +2028,7 @@ NAMESPACE_SOUP
 			case 0x3f: // memory.size
 				{
 					r.skip(1); // reserved
-					pushIPTR(script.memory_size / 0x10'000);
+					pushIPTR(script.memory.size / 0x10'000);
 				}
 				break;
 
@@ -2049,8 +2037,8 @@ NAMESPACE_SOUP
 					r.skip(1); // reserved
 					WASM_CHECK_STACK(1);
 					auto delta = popIPTR() * 0x10'000;
-					auto nmem = (((script.memory_size + delta) / 0x10'000) <= script.memory_page_limit)
-						? (uint8_t*)::realloc(script.memory, script.memory_size + delta)
+					auto nmem = (((script.memory.size + delta) / 0x10'000) <= script.memory.page_limit)
+						? (uint8_t*)::realloc(script.memory.data, script.memory.size + delta)
 						: nullptr
 						;
 					if (nmem == nullptr)
@@ -2059,10 +2047,10 @@ NAMESPACE_SOUP
 					}
 					else
 					{
-						memset(&nmem[script.memory_size], 0, delta);
-						pushIPTR(script.memory_size / 0x10'000);
-						script.memory = nmem;
-						script.memory_size += delta;
+						memset(&nmem[script.memory.size], 0, delta);
+						pushIPTR(script.memory.size / 0x10'000);
+						script.memory.data = nmem;
+						script.memory.size += delta;
 					}
 				}
 				break;
@@ -3388,14 +3376,14 @@ NAMESPACE_SOUP
 						auto size = popIPTR();
 						auto src = popIPTR();
 						auto dst = popIPTR();
-						SOUP_IF_UNLIKELY (src + size > script.memory_size || dst + size > script.memory_size)
+						SOUP_IF_UNLIKELY (src + size > script.memory.size || dst + size > script.memory.size)
 						{
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.copy\n";
 #endif
 							return false;
 						}
-						memcpy(&script.memory[dst], &script.memory[src], size);
+						memcpy(&script.memory.data[dst], &script.memory.data[src], size);
 					}
 					break;
 
@@ -3405,15 +3393,16 @@ NAMESPACE_SOUP
 						WASM_CHECK_STACK(3);
 						auto size = popIPTR();
 						auto value = stack.top().i32; stack.pop();
-						auto base = popIPTR();
-						SOUP_IF_UNLIKELY (base + size > script.memory_size)
+						auto addr = popIPTR();
+						auto ptr = script.memory.getView(addr, size);
+						SOUP_IF_UNLIKELY (!ptr)
 						{
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.fill\n";
 #endif
 							return false;
 						}
-						memset(&script.memory[base], value, size);
+						memset(ptr, value, size);
 					}
 					break;
 
@@ -3518,7 +3507,7 @@ NAMESPACE_SOUP
 			case 0x3e: // i64.store32
 				{
 					r.skip(1); // memflags
-					SOUP_UNUSED(script.readUPTR(r));
+					SOUP_UNUSED(readUPTR(r));
 				}
 				break;
 
@@ -3832,7 +3821,7 @@ NAMESPACE_SOUP
 		WasmVm callvm(script);
 		for (uint32_t i = 0; i != type.parameters.size(); ++i)
 		{
-			//std::cout << "arg: " << script.getMemory<const char>(stack.top()) << "\n";
+			//std::cout << "arg: " << script.memory.getPointer<const char>(stack.top()) << "\n";
 			callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
 		}
 #if DEBUG_VM
@@ -3887,7 +3876,7 @@ NAMESPACE_SOUP
 
 	void WasmVm::pushIPTR(size_t ptr) SOUP_EXCAL
 	{
-		if (script.memory64)
+		if (script.memory.memory64)
 		{
 			stack.push(static_cast<uint64_t>(ptr));
 		}
@@ -3900,7 +3889,7 @@ NAMESPACE_SOUP
 	size_t WasmVm::popIPTR()
 	{
 		size_t ptr;
-		if (script.memory64)
+		if (script.memory.memory64)
 		{
 			ptr = static_cast<uint64_t>(stack.top().i64);
 		}
@@ -3909,6 +3898,13 @@ NAMESPACE_SOUP
 			ptr = static_cast<uint32_t>(stack.top().i32);
 		}
 		stack.pop();
+		return ptr;
+	}
+
+	size_t WasmVm::readUPTR(Reader& r) noexcept
+	{
+		size_t ptr;
+		r.oml(ptr);
 		return ptr;
 	}
 }

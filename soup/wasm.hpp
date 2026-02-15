@@ -58,6 +58,51 @@ NAMESPACE_SOUP
 
 	struct WasmScript
 	{
+		struct Memory
+		{
+			uint8_t* data = nullptr;
+			size_t size = 0;
+			uint32_t page_limit = 0x10'000;
+			bool memory64 = false;
+
+			~Memory() noexcept;
+
+			[[nodiscard]] void* getView(size_t addr, size_t size) noexcept
+			{
+				SOUP_IF_LIKELY (addr + size <= this->size)
+				{
+					return &this->data[addr];
+				}
+				return nullptr;
+			}
+
+			template <typename T>
+			[[nodiscard]] T* getPointer(size_t addr) noexcept
+			{
+				SOUP_IF_LIKELY (auto ptr = getView(addr, sizeof(T)))
+				{
+					return (T*)ptr;
+				}
+				return nullptr;
+			}
+
+			template <typename T>
+			[[nodiscard]] T* getPointer(const WasmValue& base, size_t offset = 0) noexcept
+			{
+				if (base.type == WASM_I64)
+				{
+					return getPointer<T>(static_cast<uint64_t>(base.i64) + offset);
+				}
+				return getPointer<T>(static_cast<uint32_t>(base.i32) + offset);
+			}
+
+			[[nodiscard]] std::string readString(size_t addr, size_t size) SOUP_EXCAL;
+			[[nodiscard]] std::string readNullTerminatedString(size_t addr) SOUP_EXCAL; // a safe alternative to getPointer<const char>(addr)
+
+			bool write(size_t addr, const void* src, size_t size) noexcept;
+			bool write(const WasmValue& addr, const void* src, size_t size) noexcept;
+		};
+
 		struct FunctionType
 		{
 			std::vector<WasmType> parameters;
@@ -72,11 +117,7 @@ NAMESPACE_SOUP
 			uint32_t type_index;
 		};
 
-		uint8_t* memory = nullptr;
-		size_t memory_size = 0;
-		uint32_t memory_page_limit : 31;
-		uint32_t memory64 : 1;
-		uint32_t start_func_idx = -1;
+		Memory memory;
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<FunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
@@ -85,17 +126,13 @@ NAMESPACE_SOUP
 		std::vector<std::string> code{};
 		std::vector<uint32_t> elements{};
 		StructMap custom_data;
+		uint32_t start_func_idx = -1;
 
-		WasmScript() noexcept
-			: memory_page_limit(0x10'000), memory64(0)
-		{
-		}
-
+		WasmScript() noexcept { /* default */ }
 		WasmScript(WasmScript&&) noexcept = default;
 		WasmScript(const WasmScript&) = delete;
 		WasmScript& operator = (WasmScript&&) noexcept = default;
 		WasmScript& operator = (const WasmScript&) = delete;
-		~WasmScript() noexcept;
 
 		bool load(const std::string& data) SOUP_EXCAL;
 		bool load(Reader& r) SOUP_EXCAL;
@@ -107,45 +144,8 @@ NAMESPACE_SOUP
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const FunctionType** optOutType = nullptr) const noexcept;
 
-		[[nodiscard]] void* getMemoryPtr(size_t addr, size_t size) noexcept
-		{
-			SOUP_IF_LIKELY (addr + size <= memory_size)
-			{
-				return &memory[addr];
-			}
-			return nullptr;
-		}
-
-		template <typename T>
-		[[nodiscard]] T* getMemory(size_t addr) noexcept
-		{
-			SOUP_IF_LIKELY (auto ptr = getMemoryPtr(addr, sizeof(T)))
-			{
-				return (T*)ptr;
-			}
-			return nullptr;
-		}
-
-		template <typename T>
-		[[nodiscard]] T* getMemory(const WasmValue& base, size_t offset = 0) noexcept
-		{
-			if (memory64)
-			{
-				return getMemory<T>(static_cast<uint64_t>(base.i64) + offset);
-			}
-			return getMemory<T>(static_cast<uint32_t>(base.i32) + offset);
-		}
-
-		[[nodiscard]] std::string getMemoryStr(size_t addr, size_t size) SOUP_EXCAL;
-		[[nodiscard]] std::string getMemoryStrNt(size_t addr) SOUP_EXCAL;
-
-		bool setMemory(size_t ptr, const void* src, size_t len) noexcept;
-		bool setMemory(const WasmValue& ptr, const void* src, size_t len) noexcept;
-
 		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
 		void linkSpectestShim() noexcept;
-
-		[[nodiscard]] size_t readUPTR(Reader& r) const noexcept;
 	};
 
 	class WasmVm
@@ -177,23 +177,29 @@ NAMESPACE_SOUP
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth);
 		void pushIPTR(size_t ptr) SOUP_EXCAL;
 		[[nodiscard]] size_t popIPTR();
+		[[nodiscard]] static size_t readUPTR(Reader& r) noexcept;
 	};
 
 	struct WasmScrapAllocator
 	{
-		WasmScript& script;
+		WasmScript::Memory& memory;
 		size_t last_alloc = -1;
 
+		WasmScrapAllocator(WasmScript::Memory& memory) noexcept
+			: memory(memory)
+		{
+		}
+
 		WasmScrapAllocator(WasmScript& script) noexcept
-			: script(script)
+			: WasmScrapAllocator(script.memory)
 		{
 		}
 
 		[[nodiscard]] size_t allocate(size_t len) noexcept
 		{
-			if (last_alloc >= script.memory_size)
+			if (last_alloc >= memory.size)
 			{
-				last_alloc = script.memory_size - 1;
+				last_alloc = memory.size - 1;
 			}
 			last_alloc -= len;
 			return last_alloc;
