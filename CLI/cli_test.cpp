@@ -1806,7 +1806,7 @@ endif;)") == "");
 			auto code = scr.getExportedFuntion("is_magic");
 			assert(code);
 			WasmVm vm(scr);
-			scr.memory.encodeIPTR(vm.locals.emplace_back(), scrap);
+			scr.memory.encodeUPTR(vm.locals.emplace_back(), scrap);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
 			assert(vm.stack.top().i32 == 1);

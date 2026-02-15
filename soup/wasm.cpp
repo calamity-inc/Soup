@@ -193,24 +193,59 @@ NAMESPACE_SOUP
 
 	bool WasmScript::Memory::write(const WasmValue& addr, const void* src, size_t size) noexcept
 	{
-		return write(decodeIPTR(addr), src, size);
+		return write(decodeUPTR(addr), src, size);
 	}
 
-	size_t WasmScript::Memory::decodeIPTR(const WasmValue& addr) noexcept
+	/*intptr_t WasmScript::Memory::decodeIPTR(const WasmValue& in) noexcept
 	{
-		return memory64 ? static_cast<uint64_t>(addr.i64) : static_cast<uint32_t>(addr.i32);
+		return memory64 ? in.i64 : in.i32;
+	}*/
+
+	size_t WasmScript::Memory::decodeUPTR(const WasmValue& in) noexcept
+	{
+		return memory64 ? static_cast<uint64_t>(in.i64) : static_cast<uint32_t>(in.i32);
 	}
 
-	void WasmScript::Memory::encodeIPTR(WasmValue& out, size_t addr) noexcept
+	/*void WasmScript::Memory::encodeIPTR(WasmValue& out, intptr_t in) noexcept
 	{
 		if (memory64)
 		{
-			out = static_cast<uint64_t>(addr);
+			out = static_cast<int64_t>(in);
 		}
 		else
 		{
-			out = static_cast<uint32_t>(addr);
+			out = static_cast<int32_t>(in);
 		}
+	}*/
+
+	void WasmScript::Memory::encodeUPTR(WasmValue& out, size_t in) noexcept
+	{
+		if (memory64)
+		{
+			out = static_cast<uint64_t>(in);
+		}
+		else
+		{
+			out = static_cast<uint32_t>(in);
+		}
+	}
+
+	size_t WasmScript::Memory::grow(size_t delta_pages) noexcept
+	{
+		const auto delta_bytes = delta_pages * 0x10'000;
+		auto nmem = (((this->size + delta_bytes) / 0x10'000) <= this->page_limit)
+			? (uint8_t*)::realloc(this->data, this->size + delta_bytes)
+			: nullptr
+			;
+		size_t old_size_pages = -1;
+		if (nmem != nullptr)
+		{
+			memset(&nmem[this->size], 0, delta_bytes);
+			old_size_pages = this->size / 0x10'000;
+			this->data = nmem;
+			this->size += delta_bytes;
+		}
+		return old_size_pages;
 	}
 	
 	// WasmScript
@@ -415,7 +450,9 @@ NAMESPACE_SOUP
 					size_t pages; r.oml(pages);
 					if (flags & 1)
 					{
-						r.oml(memory.page_limit);
+						uint64_t page_limit;
+						r.oml(page_limit);
+						memory.page_limit = page_limit;
 					}
 					if (flags & 4)
 					{
@@ -616,11 +653,11 @@ NAMESPACE_SOUP
 							return false;
 						}
 						size_t size; r.oml(size);
-						auto ptr = memory.getView(memory.decodeIPTR(base), size);
+						auto ptr = memory.getView(memory.decodeUPTR(base), size);
 						SOUP_IF_UNLIKELY (!ptr)
 						{
 #if DEBUG_LOAD
-							std::cout << "data segment exceeds memory range: " << memory.decodeIPTR(base) << " + " << size << " > " << memory.size << "\n";
+							std::cout << "data segment exceeds memory range: " << memory.decodeUPTR(base) << " + " << size << " > " << memory.size << "\n";
 #endif
 							return false;
 						}
@@ -2061,7 +2098,7 @@ NAMESPACE_SOUP
 			case 0x3f: // memory.size
 				{
 					r.skip(1); // reserved
-					script.memory.encodeIPTR(stack.emplace(), script.memory.size / 0x10'000);
+					script.memory.encodeUPTR(stack.emplace(), script.memory.size / 0x10'000);
 				}
 				break;
 
@@ -2069,22 +2106,8 @@ NAMESPACE_SOUP
 				{
 					r.skip(1); // reserved
 					WASM_CHECK_STACK(1);
-					auto delta = popIPTR() * 0x10'000;
-					auto nmem = (((script.memory.size + delta) / 0x10'000) <= script.memory.page_limit)
-						? (uint8_t*)::realloc(script.memory.data, script.memory.size + delta)
-						: nullptr
-						;
-					if (nmem == nullptr)
-					{
-						script.memory.encodeIPTR(stack.emplace(), -1);
-					}
-					else
-					{
-						memset(&nmem[script.memory.size], 0, delta);
-						script.memory.encodeIPTR(stack.emplace(), script.memory.size / 0x10'000);
-						script.memory.data = nmem;
-						script.memory.size += delta;
-					}
+					const auto old_size_pages = script.memory.grow(popUPTR());
+					script.memory.encodeUPTR(stack.emplace(), old_size_pages);
 				}
 				break;
 
@@ -3406,9 +3429,9 @@ NAMESPACE_SOUP
 					{
 						r.skip(2); // reserved
 						WASM_CHECK_STACK(3);
-						auto size = popIPTR();
-						auto src = popIPTR();
-						auto dst = popIPTR();
+						auto size = popUPTR();
+						auto src = popUPTR();
+						auto dst = popUPTR();
 						SOUP_IF_UNLIKELY (src + size > script.memory.size || dst + size > script.memory.size)
 						{
 #if DEBUG_VM
@@ -3424,9 +3447,9 @@ NAMESPACE_SOUP
 					{
 						r.skip(1); // reserved
 						WASM_CHECK_STACK(3);
-						auto size = popIPTR();
+						auto size = popUPTR();
 						auto value = stack.top().i32; stack.pop();
-						auto addr = popIPTR();
+						auto addr = popUPTR();
 						auto ptr = script.memory.getView(addr, size);
 						SOUP_IF_UNLIKELY (!ptr)
 						{
@@ -3911,9 +3934,16 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	size_t WasmVm::popIPTR() noexcept
+	/*intptr_t WasmVm::popIPTR() noexcept
 	{
 		const auto ptr = script.memory.decodeIPTR(stack.top());
+		stack.pop();
+		return ptr;
+	}*/
+
+	size_t WasmVm::popUPTR() noexcept
+	{
+		const auto ptr = script.memory.decodeUPTR(stack.top());
 		stack.pop();
 		return ptr;
 	}

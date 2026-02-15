@@ -57,10 +57,15 @@ NAMESPACE_SOUP
 	{
 		struct Memory
 		{
-			uint8_t* data = nullptr;
-			size_t size = 0;
-			uint32_t page_limit = 0x10'000;
-			bool memory64 = false;
+			uint8_t* data;
+			size_t size;
+			uint64_t page_limit : 48;
+			uint64_t memory64 : 1;
+
+			Memory() noexcept
+				: data(nullptr), size(0), page_limit(0x10'000), memory64(0)
+			{
+			}
 
 			~Memory() noexcept;
 
@@ -99,8 +104,12 @@ NAMESPACE_SOUP
 			bool write(size_t addr, const void* src, size_t size) noexcept;
 			bool write(const WasmValue& addr, const void* src, size_t size) noexcept;
 
-			[[nodiscard]] size_t decodeIPTR(const WasmValue& addr) noexcept;
-			void encodeIPTR(WasmValue& out, size_t addr) noexcept;
+			//[[nodiscard]] intptr_t decodeIPTR(const WasmValue& in) noexcept;
+			[[nodiscard]] size_t decodeUPTR(const WasmValue& in) noexcept;
+			//void encodeIPTR(WasmValue& out, intptr_t in) noexcept;
+			void encodeUPTR(WasmValue& out, size_t in) noexcept;
+
+			size_t grow(size_t delta_pages) noexcept;
 		};
 
 		struct FunctionType
@@ -175,7 +184,8 @@ NAMESPACE_SOUP
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth);
-		[[nodiscard]] size_t popIPTR() noexcept;
+		//[[nodiscard]] intptr_t popIPTR() noexcept;
+		[[nodiscard]] size_t popUPTR() noexcept;
 		[[nodiscard]] static size_t readUPTR(Reader& r) noexcept;
 	};
 

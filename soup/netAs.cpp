@@ -36,7 +36,7 @@ NAMESPACE_SOUP
 				if (ws.memory.write(scrap, slug.c_str(), slug.size() + 1))
 				{
 					WasmVm vm(ws);
-					ws.memory.encodeIPTR(vm.locals.emplace_back(), scrap);
+					ws.memory.encodeUPTR(vm.locals.emplace_back(), scrap);
 					if (vm.run(*code)
 						&& vm.stack.top().i32
 						)
