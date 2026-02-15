@@ -661,7 +661,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmScript::setMemory(WasmValue ptr, const void* src, size_t len) noexcept
+	bool WasmScript::setMemory(const WasmValue& ptr, const void* src, size_t len) noexcept
 	{
 		return memory64
 			? setMemory(static_cast<uint64_t>(ptr.i64), src, len)

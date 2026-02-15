@@ -121,7 +121,7 @@ NAMESPACE_SOUP
 		}
 
 		template <typename T>
-		[[nodiscard]] T* getMemory(WasmValue base, size_t offset = 0) noexcept
+		[[nodiscard]] T* getMemory(const WasmValue& base, size_t offset = 0) noexcept
 		{
 			if (memory64)
 			{
@@ -131,7 +131,7 @@ NAMESPACE_SOUP
 		}
 
 		bool setMemory(size_t ptr, const void* src, size_t len) noexcept;
-		bool setMemory(WasmValue ptr, const void* src, size_t len) noexcept;
+		bool setMemory(const WasmValue& ptr, const void* src, size_t len) noexcept;
 
 		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
 		void linkSpectestShim() noexcept;
