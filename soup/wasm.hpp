@@ -107,14 +107,23 @@ NAMESPACE_SOUP
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const FunctionType** optOutType = nullptr) const noexcept;
 
-		template <typename T>
-		[[nodiscard]] T* getMemory(size_t ptr) noexcept
+		[[nodiscard]] void* getMemoryPtr(size_t addr, size_t size) noexcept
 		{
-			SOUP_IF_UNLIKELY (ptr + sizeof(T) > memory_size)
+			SOUP_IF_LIKELY (addr + size <= memory_size)
 			{
-				return nullptr;
+				return &memory[addr];
 			}
-			return (T*)&memory[ptr];
+			return nullptr;
+		}
+
+		template <typename T>
+		[[nodiscard]] T* getMemory(size_t addr) noexcept
+		{
+			SOUP_IF_LIKELY (auto ptr = getMemoryPtr(addr, sizeof(T)))
+			{
+				return (T*)ptr;
+			}
+			return nullptr;
 		}
 
 		template <typename T>
@@ -126,6 +135,9 @@ NAMESPACE_SOUP
 			}
 			return getMemory<T>(static_cast<uint32_t>(base.i32) + offset);
 		}
+
+		[[nodiscard]] std::string getMemoryStr(size_t addr, size_t size) SOUP_EXCAL;
+		[[nodiscard]] std::string getMemoryStrNt(size_t addr) SOUP_EXCAL;
 
 		bool setMemory(size_t ptr, const void* src, size_t len) noexcept;
 		bool setMemory(const WasmValue& ptr, const void* src, size_t len) noexcept;

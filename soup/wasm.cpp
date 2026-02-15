@@ -2,6 +2,7 @@
 
 #include <cmath> // ceil, trunc, isnan, ...
 #include <cstring> // memset
+#include <filesystem>
 
 #include "alloc.hpp"
 #include "bit.hpp" // rotl, rotr
@@ -12,8 +13,9 @@
 
 #define DEBUG_LOAD false
 #define DEBUG_VM false
+#define DEBUG_API false
 
-#if DEBUG_LOAD || DEBUG_VM
+#if DEBUG_LOAD || DEBUG_VM || DEBUG_API
 #include <iostream>
 #include "string.hpp"
 #endif
@@ -571,7 +573,7 @@ NAMESPACE_SOUP
 			auto function_index = start_func_idx;
 			if (function_index < this->function_imports.size())
 			{
-#if DEBUG_LOAD
+#if DEBUG_API
 				std::cout << "instantiate: calling into " << this->function_imports[function_index].module_name << ":" << this->function_imports[function_index].function_name << "\n";
 #endif
 				SOUP_IF_UNLIKELY (this->function_imports[function_index].ptr == nullptr)
@@ -641,6 +643,30 @@ NAMESPACE_SOUP
 		return nullptr;
 	}
 
+	std::string WasmScript::getMemoryStr(size_t addr, size_t size) SOUP_EXCAL
+	{
+		SOUP_IF_LIKELY (auto ptr = getMemoryPtr(addr, size))
+		{
+			return std::string((const char*)ptr, size);
+		}
+		return std::string();
+	}
+
+	std::string WasmScript::getMemoryStrNt(size_t addr) SOUP_EXCAL
+	{
+		std::string str;
+		for (; addr < memory_size; ++addr)
+		{
+			const auto c = static_cast<char>(memory[addr]);
+			SOUP_IF_UNLIKELY (!c)
+			{
+				break;
+			}
+			str.push_back(c);
+		}
+		return str;
+	}
+
 	bool WasmScript::setMemory(size_t ptr, const void* src, size_t len) noexcept
 	{
 		SOUP_IF_UNLIKELY (ptr + len >= memory_size)
@@ -659,11 +685,32 @@ NAMESPACE_SOUP
 			;
 	}
 
-#define WASI_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient stack space in WASI function call"); }
+#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient stack space in function call"); }
+
+	// https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L106
+	enum WasiErrno : int32_t
+	{
+		WASI_ERRNO_SUCCESS = 0,
+		WASI_ERRNO_BADF = 8,
+		WASI_ERRNO_NAMETOOLONG = 37,
+		WASI_ERRNO_NOENT = 44,
+	};
+
+	// The first 'fd' value that refers to an index in WasiData::files.
+	static constexpr uint32_t WASI_FD_FILES_BASE = 10000;
 
 	struct WasiData
 	{
 		std::vector<std::string> args;
+		std::vector<FILE*> files;
+
+		~WasiData() noexcept
+		{
+			for (const auto& fd : files)
+			{
+				fclose(fd);
+			}
+		}
 	};
 
 	void WasmScript::linkWasiPreview1(std::vector<std::string> args) noexcept
@@ -683,11 +730,11 @@ NAMESPACE_SOUP
 		{
 			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
-				WASI_CHECK_STACK(2);
-				auto plen = vm.stack.top(); vm.stack.pop();
-				auto pargc = vm.stack.top(); vm.stack.pop();
+				API_CHECK_STACK(2);
+				auto plen = vm.stack.top().i32; vm.stack.pop();
+				auto pargc = vm.stack.top().i32; vm.stack.pop();
 				WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
-				if (auto pLen = vm.script.getMemory<int32_t>(plen.i32))
+				if (auto pLen = vm.script.getMemory<int32_t>(plen))
 				{
 					*pLen = 0;
 					for (const auto& arg : wd.args)
@@ -695,104 +742,404 @@ NAMESPACE_SOUP
 						*pLen += arg.size() + 1;
 					}
 				}
-				if (auto pArgc = vm.script.getMemory<int32_t>(pargc.i32))
+				if (auto pArgc = vm.script.getMemory<int32_t>(pargc))
 				{
 					*pArgc = wd.args.size();
 				}
-				vm.stack.push(0);
+				vm.stack.push(WASI_ERRNO_SUCCESS);
 			};
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "args_get"))
 		{
 			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
-				WASI_CHECK_STACK(2);
-				auto pstr = vm.stack.top(); vm.stack.pop();
-				auto pargv = vm.stack.top(); vm.stack.pop();
+				API_CHECK_STACK(2);
+				auto pstr = vm.stack.top().i32; vm.stack.pop();
+				auto pargv = vm.stack.top().i32; vm.stack.pop();
 				WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
 				std::string argstr;
 				for (uint32_t i = 0; i != wd.args.size(); ++i)
 				{
-					if (auto pArg = vm.script.getMemory<int32_t>(pargv.i32 + i * 4))
+					if (auto pArg = vm.script.getMemory<int32_t>(pargv + i * 4))
 					{
-						*pArg = pstr.i32 + argstr.size();
+						*pArg = pstr + argstr.size();
 					}
 					argstr.append(wd.args[i].data(), wd.args[i].size() + 1);
 				}
-				vm.script.setMemory(pstr.i32, argstr.data(), argstr.size());
-				vm.stack.push(0);
+				vm.script.setMemory(pstr, argstr.data(), argstr.size());
+				vm.stack.push(WASI_ERRNO_SUCCESS);
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "environ_sizes_get"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(2);
+				auto out_environ_buf_size = vm.stack.top().i32; vm.stack.pop();
+				auto out_environ_count = vm.stack.top().i32; vm.stack.pop();
+				if (auto ptr = vm.script.getMemory<int32_t>(out_environ_count))
+				{
+					*ptr = 0;
+				}
+				if (auto ptr = vm.script.getMemory<int32_t>(out_environ_buf_size))
+				{
+					*ptr = 0;
+				}
+				vm.stack.push(WASI_ERRNO_SUCCESS);
 			};
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "proc_exit"))
 		{
 			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
-				WASI_CHECK_STACK(1);
-				auto code = vm.stack.top(); vm.stack.pop();
-				exit(code.i32);
+				API_CHECK_STACK(1);
+				auto code = vm.stack.top().i32; vm.stack.pop();
+				exit(code);
 			};
 		}
-
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_prestat_get"))
 		{
 			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
-				WASI_CHECK_STACK(2);
-				auto prestat = vm.stack.top(); vm.stack.pop();
-				auto fd = vm.stack.top(); vm.stack.pop();
-#if DEBUG_VM
-				std::cout << "prestat on fd " << fd.i32 << "\n";
+				API_CHECK_STACK(2);
+				auto prestat = vm.stack.top().i32; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+#if DEBUG_API
+				std::cout << "prestat on fd " << fd << "\n";
 #endif
-				SOUP_UNUSED(prestat);
-				SOUP_UNUSED(fd);
-				vm.stack.push(8); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L157
+				if (fd == 3)
+				{
+					if (auto pTag = vm.script.getMemory<uint32_t>(prestat + 0))
+					{
+						*pTag = 0; // __WASI_PREOPENTYPE_DIR
+					}
+					if (auto pDirNameLen = vm.script.getMemory<uint32_t>(prestat + 4))
+					{
+						*pDirNameLen = 1;
+					}
+					vm.stack.push(WASI_ERRNO_SUCCESS);
+				}
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
 			};
 		}
-
-		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_write"))
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_prestat_dir_name"))
 		{
 			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
-				WASI_CHECK_STACK(4);
-				auto out_nwritten = vm.stack.top(); vm.stack.pop();
-				auto iovs_len = vm.stack.top(); vm.stack.pop();
-				auto iovs = vm.stack.top(); vm.stack.pop();
-				auto file_descriptor = vm.stack.top(); vm.stack.pop();
-				auto nwritten = 0;
-				//std::cout << "fd_write on fd " << file_descriptor.i32 << "\n";
-				FILE* stream = nullptr;
-				if (file_descriptor.i32 == 1)
+				API_CHECK_STACK(3);
+				auto path_len = vm.stack.top().i32; vm.stack.pop();
+				auto path = vm.stack.top().i32; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+				if (fd == 3)
 				{
-					stream = stdout;
-				}
-				else if (file_descriptor.i32 == 2)
-				{
-					stream = stderr;
-				}
-				if (stream)
-				{
-					while (iovs_len.i32--)
+					if (path_len >= 1)
 					{
-						int32_t iov_base = *vm.script.getMemory<int32_t>(iovs.i32); iovs.i32 += 4;
-						int32_t iov_len = *vm.script.getMemory<int32_t>(iovs.i32); iovs.i32 += 4;
-						fwrite(vm.script.getMemory<char>(iov_base), 1, iov_len, stream);
-						nwritten += iov_len;
+						vm.script.setMemory(path, ".", 1);
+						vm.stack.push(WASI_ERRNO_SUCCESS);
+					}
+					else
+					{
+						vm.stack.push(WASI_ERRNO_NAMETOOLONG);
 					}
 				}
-				*vm.script.getMemory<int32_t>(out_nwritten.i32) = nwritten;
-				vm.stack.push(nwritten);
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
 			};
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_filestat_get"))
 		{
 			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
-				WASI_CHECK_STACK(2);
-				auto out = vm.stack.top(); vm.stack.pop();
-				auto fd = vm.stack.top(); vm.stack.pop();
+				API_CHECK_STACK(2);
+				auto out = vm.stack.top().i32; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
 				SOUP_UNUSED(out);
+				vm.stack.push(fd < 3 ? WASI_ERRNO_SUCCESS : WASI_ERRNO_BADF);
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_fdstat_get"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(2);
+				auto out = vm.stack.top().i32; vm.stack.pop(); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L945
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+#if DEBUG_API
+				std::cout << "fdstat on fd " << fd << "\n";
+#endif
+				if (fd == 3)
+				{
+					if (auto pFiletype = vm.script.getMemory<uint8_t>(out + 0))
+					{
+						*pFiletype = 3; // directory, as per https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L785
+					}
+					if (auto pFlags = vm.script.getMemory<uint16_t>(out + 2))
+					{
+						*pFlags = 0;
+					}
+					if (auto pRightsBase = vm.script.getMemory<uint64_t>(out + 8))
+					{
+						*pRightsBase = -1;
+					}
+					if (auto pRightsInheriting = vm.script.getMemory<uint64_t>(out + 16))
+					{
+						*pRightsInheriting = -1;
+					}
+					vm.stack.push(WASI_ERRNO_SUCCESS);
+				}
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "path_filestat_get"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(5);
+				auto buf = vm.stack.top().i32; vm.stack.pop(); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L1064
+				auto path_len = vm.stack.top().i32; vm.stack.pop();
+				auto path = vm.stack.top().i32; vm.stack.pop();
+				auto flags = vm.stack.top().i32; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+				if (fd == 3)
+				{
+					auto path_str = vm.script.getMemoryStr(path, path_len);
+#if DEBUG_API
+					std::cout << "path_filestat_get: " << path_str << " (relative to .)\n";
+#endif
+					SOUP_UNUSED(flags);
+					if (auto pFiletype = vm.script.getMemory<uint8_t>(buf + 16))
+					{
+						*pFiletype = 4; // regular file, as per https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L785
+					}
+					if (auto pSize = vm.script.getMemory<uint64_t>(buf + 32))
+					{
+						*pSize = std::filesystem::file_size(path_str);
+#if DEBUG_API
+						std::cout << "path_filestat_get: size=" << *pSize << "\n";
+#endif
+					}
+					vm.stack.push(WASI_ERRNO_SUCCESS);
+				}
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "path_open"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(8);
+				auto out_fd = vm.stack.top().i32; vm.stack.pop();
+				auto fdflags = vm.stack.top().i32; vm.stack.pop();
+				auto fs_rights_inheriting = vm.stack.top().i32; vm.stack.pop();
+				auto fs_rights_base = vm.stack.top().i32; vm.stack.pop();
+				auto oflags = vm.stack.top().i32; vm.stack.pop();
+				auto path_len = vm.stack.top().i32; vm.stack.pop();
+				auto path = vm.stack.top().i32; vm.stack.pop();
+				auto dirflags = vm.stack.top().i32; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+				if (fd == 3)
+				{
+					auto path_str = vm.script.getMemoryStr(path, path_len);
+#if DEBUG_API
+					std::cout << "path_open: " << path_str << " (relative to .)\n";
+#endif
+					SOUP_UNUSED(dirflags);
+					SOUP_UNUSED(oflags);
+					SOUP_UNUSED(fs_rights_base);
+					SOUP_UNUSED(fs_rights_inheriting);
+					SOUP_UNUSED(fdflags);
+					if (auto f = fopen(path_str.c_str(), "rb"))
+					{
+						WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
+						if (auto pOutFd = vm.script.getMemory<uint32_t>(out_fd))
+						{
+							*pOutFd = WASI_FD_FILES_BASE + wd.files.size();
+						}
+						wd.files.emplace_back(f);
+						vm.stack.push(WASI_ERRNO_SUCCESS);
+					}
+					else
+					{
+						vm.stack.push(WASI_ERRNO_NOENT);
+					}
+				}
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_seek"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(4);
+				auto out_off = vm.stack.top().i32; vm.stack.pop();
+				auto whence = vm.stack.top().i32; vm.stack.pop();
+				auto delta = vm.stack.top().i64; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+#if DEBUG_API
+				std::cout << "fd_seek: fd=" << fd << ", delta=" << delta << ", whence=" << whence << "\n";
+#endif
+				WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
+				if (fd >= WASI_FD_FILES_BASE && fd - WASI_FD_FILES_BASE < wd.files.size())
+				{
+					auto f = wd.files[fd - WASI_FD_FILES_BASE];
+					fseek(f, delta, whence == 0 ? SEEK_SET : (whence == 1 ? SEEK_CUR : SEEK_END));
+					if (auto pOutOff = vm.script.getMemory<uint64_t>(out_off))
+					{
+						*pOutOff = ftell(f);
+#if DEBUG_API
+						std::cout << "fd_seek: offset is now " << *pOutOff << "\n";
+#endif
+					}
+					vm.stack.push(WASI_ERRNO_SUCCESS);
+				}
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_read"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(4);
+				auto out_nread = vm.stack.top().i32; vm.stack.pop();
+				auto iovs_len = vm.stack.top().i32; vm.stack.pop();
+				auto iovs = vm.stack.top().i32; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+				WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
+				FILE* f = nullptr;
+				if (fd == 0)
+				{
+					f = stdin;
+				}
+				else if (fd >= WASI_FD_FILES_BASE && fd - WASI_FD_FILES_BASE < wd.files.size())
+				{
+					f = wd.files[fd - WASI_FD_FILES_BASE];
+				}
+				if (f)
+				{
+					int32_t nread = 0;
+					while (iovs_len--)
+					{
+						int32_t iov_base = 0;
+						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						{
+							iov_base = *ptr;
+						}
+						iovs += 4;
+						int32_t iov_len = 0;
+						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						{
+							iov_len = *ptr;
+						}
+						iovs += 4;
+						if (auto ptr = vm.script.getMemoryPtr(iov_base, iov_len))
+						{
+							const auto ret = fread(ptr, 1, iov_len, f);
+							if (ret >= 0)
+							{
+								nread += ret;
+							}
+						}
+					}
+					if (auto pOut = vm.script.getMemory<int32_t>(out_nread))
+					{
+#if DEBUG_API
+						std::cout << "read " << nread << " bytes from fd " << fd << "\n";
+#endif
+						*pOut = nread;
+					}
+					vm.stack.push(WASI_ERRNO_SUCCESS);
+				}
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_write"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(4);
+				auto out_nwritten = vm.stack.top().i32; vm.stack.pop();
+				auto iovs_len = vm.stack.top().i32; vm.stack.pop();
+				auto iovs = vm.stack.top().i32; vm.stack.pop();
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+				//std::cout << "fd_write on fd " << fd << "\n";
+				FILE* f = nullptr;
+				if (fd == 1)
+				{
+					f = stdout;
+				}
+				else if (fd == 2)
+				{
+					f = stderr;
+				}
+				if (f)
+				{
+					int32_t nwritten = 0;
+					while (iovs_len--)
+					{
+						int32_t iov_base = 0;
+						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						{
+							iov_base = *ptr;
+						}
+						iovs += 4;
+						int32_t iov_len = 0;
+						if (auto ptr = vm.script.getMemory<int32_t>(iovs))
+						{
+							iov_len = *ptr;
+						}
+						iovs += 4;
+						if (auto ptr = vm.script.getMemoryPtr(iov_base, iov_len))
+						{
+							const auto ret = fwrite(ptr, 1, iov_len, f);
+							if (ret >= 0)
+							{
+								nwritten += ret;
+							}
+						}
+					}
+					if (auto pOut = vm.script.getMemory<int32_t>(out_nwritten))
+					{
+						*pOut = nwritten;
+					}
+					vm.stack.push(WASI_ERRNO_SUCCESS);
+				}
+				else
+				{
+					vm.stack.push(WASI_ERRNO_BADF);
+				}
+			};
+		}
+		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_close"))
+		{
+			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			{
+				API_CHECK_STACK(1);
+				auto fd = vm.stack.top().i32; vm.stack.pop();
+#if DEBUG_API
+				std::cout << "close fd " << fd << "\n";
+#endif
 				SOUP_UNUSED(fd);
-				vm.stack.push(fd.i32 < 3 ? 0 : -1);
+				vm.stack.push(WASI_ERRNO_SUCCESS);
 			};
 		}
 	}
@@ -803,7 +1150,7 @@ NAMESPACE_SOUP
 		{
 			fi->ptr = [](WasmVm& vm, uint32_t func_index)
 			{
-				WASI_CHECK_STACK(1);
+				API_CHECK_STACK(1);
 				vm.stack.pop();
 			};
 		}
@@ -1062,7 +1409,7 @@ NAMESPACE_SOUP
 					r.oml(function_index);
 					if (function_index < script.function_imports.size())
 					{
-#if DEBUG_VM
+#if DEBUG_API
 						std::cout << "Calling into " << script.function_imports[function_index].module_name << ":" << script.function_imports[function_index].function_name << "\n";
 #endif
 						SOUP_IF_UNLIKELY (script.function_imports[function_index].ptr == nullptr)
