@@ -88,8 +88,8 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - names: FAIL
 - nop: pass
 - obsolete-keywords: pass
-- ref_func: FAIL (due to missing support for tables)
-- ref_is_null: FAIL (due to missing support for tables)
+- ref_func: FAIL
+- ref_is_null: FAIL (due to missing support for tables of externref)
 - ref_null: pass
 - return: pass
 - select: pass
@@ -285,6 +285,11 @@ NAMESPACE_SOUP
 		case 0xd0: // ref.null
 			out.i64 = 0;
 			r.u8(reinterpret_cast<uint8_t&>(out.type)); static_assert(sizeof(WasmType) == sizeof(uint8_t));
+			break;
+
+		case 0xd2: // ref.func
+			r.oml(out.i32);
+			out.type = WASM_FUNCREF;
 			break;
 
 		default:
