@@ -1131,7 +1131,7 @@ NAMESPACE_SOUP
 				if (fd >= WASI_FD_FILES_BASE && fd - WASI_FD_FILES_BASE < wd.files.size())
 				{
 					auto f = wd.files[fd - WASI_FD_FILES_BASE];
-					fseek(f, delta, whence == 0 ? SEEK_SET : (whence == 1 ? SEEK_CUR : SEEK_END));
+					fseek(f, delta, whence == 0 ? SEEK_SET : (whence == 1 ? SEEK_CUR : (whence == 2 ? SEEK_END : (SOUP_UNREACHABLE,SEEK_END))));
 					if (auto pOutOff = vm.script.memory.getPointer<uint64_t>(out_off))
 					{
 						*pOutOff = ftell(f);
