@@ -622,11 +622,19 @@ int entry(std::vector<std::string>&& args, bool)
 								for (const auto& arg : action.at("args").asArr())
 								{
 									const std::string& value = arg.asObj().at("value").asStr();
-									vm.locals.emplace_back(value == "null"
-										? static_cast<int64_t>(0)
-										: string::toIntOpt<uint64_t>(value, string::TI_FULL).value()
-									);
-									vm.locals.back().type = wasm_type_from_string(arg.asObj().at("type").asStr());
+									const auto type = wasm_type_from_string(arg.asObj().at("type").asStr());
+									if (value == "null")
+									{
+										vm.locals.emplace_back(static_cast<int64_t>(0)).type = type;
+									}
+									else
+									{
+										vm.locals.emplace_back(string::toIntOpt<uint64_t>(value, string::TI_FULL).value()).type = type;
+										if (type == WASM_FUNCREF)
+										{
+											vm.locals.back().i64 |= 0x1'0000'0000;
+										}
+									}
 								}
 								if (!vm.run(*code))
 								{
@@ -696,16 +704,17 @@ int entry(std::vector<std::string>&& args, bool)
 											if (value == "null")
 											{
 												std::cout << "- Expected: <" << type << "> 0 (null)" << std::endl;
-												std::cout << "- Actual: <" << stack_top_type << "> " << (uint64_t)vm.stack.top().i64 << std::endl;
-											}
-											else if (type == "i32" || type == "f32")
-											{
-												std::cout << "- Expected: <" << type << "> " << string::toIntOpt<uint32_t>(value, string::TI_FULL).value() << std::endl;
-												std::cout << "- Actual: <" << stack_top_type << "> " << (uint32_t)vm.stack.top().i32 << std::endl;
 											}
 											else
 											{
 												std::cout << "- Expected: <" << type << "> " << string::toIntOpt<uint64_t>(value, string::TI_FULL).value() << std::endl;
+											}
+											if (type == "i32" || type == "f32" || type == "funcref") // 32-bit type?
+											{
+												std::cout << "- Actual: <" << stack_top_type << "> " << (uint32_t)vm.stack.top().i32 << std::endl;
+											}
+											else
+											{
 												std::cout << "- Actual: <" << stack_top_type << "> " << (uint64_t)vm.stack.top().i64 << std::endl;
 											}
 											goto _wast_next_cmd;

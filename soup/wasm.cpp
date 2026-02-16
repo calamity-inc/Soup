@@ -289,6 +289,7 @@ NAMESPACE_SOUP
 
 		case 0xd2: // ref.func
 			r.oml(out.i32);
+			out.i64 |= 0x1'0000'0000;
 			out.type = WASM_FUNCREF;
 			break;
 
@@ -628,7 +629,7 @@ NAMESPACE_SOUP
 #endif
 							return false;
 						}
-						std::vector<uint32_t>& elements = table_elements[tblidx];
+						std::vector<uint64_t>& elements = table_elements[tblidx];
 						uint8_t op;
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
@@ -664,7 +665,7 @@ NAMESPACE_SOUP
 						{
 							uint32_t function_index;
 							r.oml(function_index);
-							elements[index++] = function_index;
+							elements[index++] = 0x1'0000'0000 | function_index;
 						}
 					}
 				}
@@ -1573,7 +1574,7 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					const std::vector<uint32_t>& elements = script.table_elements[table_index];
+					const std::vector<uint64_t>& elements = script.table_elements[table_index];
 					WASM_CHECK_STACK(1);
 					auto element_index = static_cast<uint32_t>(stack.top().i32); stack.pop();
 					SOUP_IF_UNLIKELY (element_index >= elements.size())
@@ -1583,7 +1584,14 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					uint32_t function_index = elements[element_index];
+					SOUP_IF_UNLIKELY (elements[element_index] == 0)
+					{
+#if DEBUG_VM
+						std::cout << "indirect call to null\n";
+#endif
+						return false;
+					}
+					uint32_t function_index = elements[element_index] & 0xffff'ffff;
 					SOUP_IF_UNLIKELY (function_index < script.function_imports.size())
 					{
 #if DEBUG_VM
@@ -1718,7 +1726,7 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					stack.emplace(WASM_FUNCREF).i32 = script.table_elements[table_index][elem_index];
+					stack.emplace(WASM_FUNCREF).i64 = script.table_elements[table_index][elem_index];
 				}
 				break;
 
@@ -1750,7 +1758,7 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					script.table_elements[table_index][elem_index] = value.i32;
+					script.table_elements[table_index][elem_index] = value.i64;
 				}
 				break;
 
@@ -3386,7 +3394,7 @@ NAMESPACE_SOUP
 					uint32_t idx;
 					r.oml(idx);
 					stack.push(WASM_FUNCREF);
-					stack.top().i32 = idx;
+					stack.top().i64 = 0x1'0000'0000 | idx;
 				}
 				break;
 

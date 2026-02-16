@@ -133,7 +133,7 @@ NAMESPACE_SOUP
 		std::vector<WasmValue> globals{};
 		std::unordered_map<std::string, uint32_t> export_map{};
 		std::vector<std::string> code{};
-		std::vector<std::vector<uint32_t>> table_elements{};
+		std::vector<std::vector<uint64_t>> table_elements{};
 		StructMap custom_data;
 		uint32_t start_func_idx = -1;
 

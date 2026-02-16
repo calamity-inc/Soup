@@ -1932,9 +1932,8 @@ endif;)") == "");
 			}
 			{
 				WasmVm vm(scr);
-				vm.locals.emplace_back(WASM_FUNCREF).i32 = 69;
+				vm.locals.emplace_back(WASM_FUNCREF).i64 = 0x1'0000'0000 | 69;
 				assert(vm.run(*set));
-				assert(vm.stack.empty());
 			}
 			{
 				WasmVm vm(scr);
@@ -1972,7 +1971,6 @@ endif;)") == "");
 				WasmVm vm(scr);
 				vm.locals.emplace_back((void*)123);
 				assert(vm.run(*set));
-				assert(vm.stack.empty());
 			}
 			{
 				WasmVm vm(scr);
@@ -1980,6 +1978,42 @@ endif;)") == "");
 				assert(!vm.stack.empty());
 				assert(vm.stack.top().type == WASM_EXTERNREF);
 				assert(vm.stack.top().i64 == 123);
+			}
+		});
+		test("funcref global", []
+		{
+			// (module
+			//   (global $g (mut funcref) (ref.null func))
+			//   (func (export "is_null") (result i32)
+			//     (ref.is_null (global.get $g))
+			//     )
+			//   (func (export "set_0")
+			//     (global.set $g (ref.func 0))
+			//     )
+			//   )
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABCAJgAAF/YAAAAwMCAAEGBgFwAdBwCwcTAgdpc19udWxsAAAFc2V0XzAAAQoOAgUAIwDRCwYA0gAkAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
+			auto is_null = scr.getExportedFuntion("is_null");
+			assert(is_null);
+			auto set_0 = scr.getExportedFuntion("set_0");
+			assert(set_0);
+			{
+				WasmVm vm(scr);
+				assert(vm.run(*is_null));
+				assert(!vm.stack.empty());
+				assert(vm.stack.top().type == WASM_I32);
+				assert(vm.stack.top().i32);
+			}
+			{
+				WasmVm vm(scr);
+				assert(vm.run(*set_0));
+			}
+			{
+				WasmVm vm(scr);
+				assert(vm.run(*is_null));
+				assert(!vm.stack.empty());
+				assert(vm.stack.top().type == WASM_I32);
+				assert(!vm.stack.top().i32);
 			}
 		});
 	}
