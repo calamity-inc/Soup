@@ -1076,8 +1076,8 @@ NAMESPACE_SOUP
 				API_CHECK_STACK(8);
 				auto out_fd = vm.stack.top().i32; vm.stack.pop();
 				auto fdflags = vm.stack.top().i32; vm.stack.pop();
-				auto fs_rights_inheriting = vm.stack.top().i32; vm.stack.pop();
-				auto fs_rights_base = vm.stack.top().i32; vm.stack.pop();
+				auto fs_rights_inheriting = vm.stack.top().i64; vm.stack.pop();
+				auto fs_rights_base = vm.stack.top().i64; vm.stack.pop();
 				auto oflags = vm.stack.top().i32; vm.stack.pop();
 				auto path_len = vm.stack.top().i32; vm.stack.pop();
 				auto path = vm.stack.top().i32; vm.stack.pop();
