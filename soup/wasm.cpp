@@ -1673,7 +1673,7 @@ NAMESPACE_SOUP
 #endif
 						return false;
 					}
-					stack.push(script.globals.at(global_index));
+					stack.push(script.globals[global_index]);
 				}
 				break;
 
@@ -1689,7 +1689,7 @@ NAMESPACE_SOUP
 						return false;
 					}
 					WASM_CHECK_STACK(1);
-					script.globals.at(global_index) = stack.top().i32; stack.pop();
+					script.globals.at(global_index) = stack.top(); stack.pop();
 				}
 				break;
 

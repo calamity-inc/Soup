@@ -1944,6 +1944,44 @@ endif;)") == "");
 				assert(vm.stack.top().i32 == 69);
 			}
 		});
+		test("externref global", []
+		{
+			// (module
+			//   (global $g (mut externref) (ref.null extern))
+			//   (func (export "set") (param externref)
+			//     (global.set $g (local.get 0))
+			//   )
+			//   (func (export "get") (result externref)
+			//     (global.get $g)
+			//   )
+			// )
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAABCQJgAW8AYAABbwMDAgABBgYBbwHQbwsHDQIDc2V0AAADZ2V0AAEKDQIGACAAJAALBAAjAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
+			auto get = scr.getExportedFuntion("get");
+			assert(get);
+			auto set = scr.getExportedFuntion("set");
+			assert(set);
+			{
+				WasmVm vm(scr);
+				assert(vm.run(*get));
+				assert(!vm.stack.empty());
+				assert(vm.stack.top().type == WASM_EXTERNREF);
+				assert(vm.stack.top().i64 == 0);
+			}
+			{
+				WasmVm vm(scr);
+				vm.locals.emplace_back((void*)123);
+				assert(vm.run(*set));
+				assert(vm.stack.empty());
+			}
+			{
+				WasmVm vm(scr);
+				assert(vm.run(*get));
+				assert(!vm.stack.empty());
+				assert(vm.stack.top().type == WASM_EXTERNREF);
+				assert(vm.stack.top().i64 == 123);
+			}
+		});
 	}
 
 	test("reflection", []
