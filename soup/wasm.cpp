@@ -89,7 +89,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - nop: pass
 - obsolete-keywords: pass
 - ref_func: FAIL
-- ref_is_null: FAIL (due to missing support for tables of externref)
+- ref_is_null: WARN (Soup considers an externref with value 0 to be null)
 - ref_null: pass
 - return: pass
 - select: pass
@@ -467,18 +467,11 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_tables << " table(s)\n";
 #endif
-					table_elements.reserve(num_tables);
+					tables.reserve(num_tables);
 					while (num_tables--)
 					{
 						uint8_t type;
 						r.u8(type);
-						SOUP_IF_UNLIKELY (type != WASM_FUNCREF)
-						{
-#if DEBUG_LOAD
-							std::cout << "Unexpected table element type: " << string::hex(type) << "\n";
-#endif
-							return false;
-						}
 						uint8_t flags;
 						r.u8(flags);
 						size_t initial;
@@ -488,10 +481,10 @@ NAMESPACE_SOUP
 							size_t maximum;
 							r.oml(maximum);
 						}
-						auto& tbl = table_elements.emplace_back();
-						while (initial != tbl.size())
+						auto& tbl = tables.emplace_back(static_cast<WasmType>(type));
+						while (initial != tbl.values.size())
 						{
-							tbl.emplace_back();
+							tbl.values.emplace_back();
 						}
 					}
 				}
@@ -622,14 +615,14 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 						std::cout << "- elements for table " << tblidx << "\n";
 #endif
-						SOUP_IF_UNLIKELY (tblidx >= table_elements.size())
+						SOUP_IF_UNLIKELY (tblidx >= tables.size())
 						{
 #if DEBUG_LOAD
 							std::cout << "no such table\n";
 #endif
 							return false;
 						}
-						std::vector<uint64_t>& elements = table_elements[tblidx];
+						auto& table = tables[tblidx];
 						uint8_t op;
 						r.u8(op);
 						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
@@ -654,10 +647,10 @@ NAMESPACE_SOUP
 						}
 						size_t num_elements;
 						r.oml(num_elements);
-						SOUP_IF_UNLIKELY (index + num_elements > elements.size())
+						SOUP_IF_UNLIKELY (index + num_elements > table.values.size())
 						{
 #if DEBUG_LOAD
-							std::cout << "elem: " << index << " + " << num_elements << " > " << elements.size() << "\n";
+							std::cout << "elem: " << index << " + " << num_elements << " > " << table.values.size() << "\n";
 #endif
 							return false;
 						}
@@ -665,7 +658,10 @@ NAMESPACE_SOUP
 						{
 							uint32_t function_index;
 							r.oml(function_index);
-							elements[index++] = 0x1'0000'0000 | function_index;
+							if (table.type == WASM_FUNCREF)
+							{
+								table.values[index++] = 0x1'0000'0000 | function_index;
+							}
 						}
 					}
 				}
@@ -1567,31 +1563,38 @@ NAMESPACE_SOUP
 				{
 					uint32_t type_index; r.oml(type_index);
 					uint32_t table_index; r.oml(table_index);
-					SOUP_IF_UNLIKELY (table_index >= script.table_elements.size())
+					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
 #if DEBUG_VM
 						std::cout << "call: table is out-of-bounds\n";
 #endif
 						return false;
 					}
-					const std::vector<uint64_t>& elements = script.table_elements[table_index];
+					const auto& table = script.tables[table_index];
+					SOUP_IF_UNLIKELY (table.type != WASM_FUNCREF)
+					{
+#if DEBUG_VM
+						std::cout << "call: indexing non-funcref table\n";
+#endif
+						return false;
+					}
 					WASM_CHECK_STACK(1);
 					auto element_index = static_cast<uint32_t>(stack.top().i32); stack.pop();
-					SOUP_IF_UNLIKELY (element_index >= elements.size())
+					SOUP_IF_UNLIKELY (element_index >= table.values.size())
 					{
 #if DEBUG_VM
 						std::cout << "call: element is out-of-bounds\n";
 #endif
 						return false;
 					}
-					SOUP_IF_UNLIKELY (elements[element_index] == 0)
+					SOUP_IF_UNLIKELY (table.values[element_index] == 0)
 					{
 #if DEBUG_VM
 						std::cout << "indirect call to null\n";
 #endif
 						return false;
 					}
-					uint32_t function_index = elements[element_index] & 0xffff'ffff;
+					uint32_t function_index = table.values[element_index] & 0xffff'ffff;
 					SOUP_IF_UNLIKELY (function_index < script.function_imports.size())
 					{
 #if DEBUG_VM
@@ -1710,23 +1713,24 @@ NAMESPACE_SOUP
 				{
 					size_t table_index;
 					r.oml(table_index);
-					SOUP_IF_UNLIKELY (table_index >= script.table_elements.size())
+					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
 #if DEBUG_VM
-						std::cout << "table.get: table index " << table_index << " >= " << script.table_elements.size() << "\n";
+						std::cout << "table.get: table index " << table_index << " >= " << script.tables.size() << "\n";
 #endif
 						return false;
 					}
 					WASM_CHECK_STACK(1);
 					auto elem_index = stack.top().i32; stack.pop();
-					SOUP_IF_UNLIKELY (elem_index >= script.table_elements[table_index].size())
+					const auto& table = script.tables[table_index];
+					SOUP_IF_UNLIKELY (elem_index >= table.values.size())
 					{
 #if DEBUG_VM
-						std::cout << "table.get: element index " << elem_index << " >= " << script.table_elements[table_index].size() << "\n";
+						std::cout << "table.get: element index " << elem_index << " >= " << table.values.size() << "\n";
 #endif
 						return false;
 					}
-					stack.emplace(WASM_FUNCREF).i64 = script.table_elements[table_index][elem_index];
+					stack.emplace(table.type).i64 = table.values[elem_index];
 				}
 				break;
 
@@ -1734,31 +1738,32 @@ NAMESPACE_SOUP
 				{
 					size_t table_index;
 					r.oml(table_index);
-					SOUP_IF_UNLIKELY (table_index >= script.table_elements.size())
+					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
 #if DEBUG_VM
-						std::cout << "table.set: table index " << table_index << " >= " << script.table_elements.size() << "\n";
+						std::cout << "table.set: table index " << table_index << " >= " << script.tables.size() << "\n";
 #endif
 						return false;
 					}
 					WASM_CHECK_STACK(2);
 					auto value = stack.top(); stack.pop();
 					auto elem_index = stack.top().i32; stack.pop();
-					SOUP_IF_UNLIKELY (elem_index >= script.table_elements[table_index].size())
+					auto& table = script.tables[table_index];
+					SOUP_IF_UNLIKELY (elem_index >= table.values.size())
 					{
 #if DEBUG_VM
-						std::cout << "table.set: element index " << elem_index << " >= " << script.table_elements[table_index].size() << "\n";
+						std::cout << "table.set: element index " << elem_index << " >= " << table.values.size() << "\n";
 #endif
 						return false;
 					}
-					SOUP_IF_UNLIKELY (value.type != WASM_FUNCREF)
+					SOUP_IF_UNLIKELY (value.type != table.type)
 					{
 #if DEBUG_VM
-						std::cout << "attempt to assign non-funcref value to table element\n";
+						std::cout << "table.set: value type doesn't match table's element type\n";
 #endif
 						return false;
 					}
-					script.table_elements[table_index][elem_index] = value.i64;
+					table.values[elem_index] = value.i64;
 				}
 				break;
 
