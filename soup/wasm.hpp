@@ -9,11 +9,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include "SharedPtr.hpp"
 #include "StructMap.hpp"
 
 NAMESPACE_SOUP
 {
-	class WasmVm;
+	struct WasmVm;
 
 	using wasm_ffi_func_t = void(*)(WasmVm&, uint32_t func_index);
 
@@ -122,8 +123,11 @@ NAMESPACE_SOUP
 		{
 			std::string module_name;
 			std::string function_name;
+
 			wasm_ffi_func_t ptr;
-			uint32_t type_index;
+			SharedPtr<WasmScript> source;
+			uint32_t type_index; // an index in WasmScript::types of the importing WasmScript
+			uint32_t func_index; // to be used with `source` for WASM imports
 		};
 
 		struct Table
@@ -158,19 +162,24 @@ NAMESPACE_SOUP
 		bool load(Reader& r) SOUP_EXCAL;
 		static bool readConstant(Reader& r, WasmValue& out) noexcept;
 
-		// Runs the start function of the script, if defined. Throws if imported functions throw.
+		// Runs the start function of the script, if defined. May throw if an imported C++ function throws.
 		bool instantiate();
 
 		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
+		void importFromModule(const std::string& module_name, const SharedPtr<WasmScript>& other);
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const FunctionType** optOutType = nullptr) const noexcept;
+		[[nodiscard]] uint32_t getExportedFuntion2(const std::string& name) const noexcept;
+		[[nodiscard]] uint32_t getTypeIndexForFunction(uint32_t func_index) const noexcept;
 
 		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
 		void linkSpectestShim() noexcept;
+
+		// May throw if an imported C++ function throws.
+		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::stack<WasmValue>* out = nullptr);
 	};
 
-	class WasmVm
+	struct WasmVm
 	{
-	public:
 		std::stack<WasmValue> stack;
 		std::vector<WasmValue> locals;
 		WasmScript& script;
@@ -180,11 +189,10 @@ NAMESPACE_SOUP
 		{
 		}
 
-		// Throws if imported functions throw.
+		// May throw if an imported C++ function throws.
 		bool run(const std::string& data, unsigned depth = 0);
 		bool run(Reader& r, unsigned depth = 0);
 
-	private:
 		struct CtrlFlowEntry
 		{
 			std::streamoff position; // -1 for forward jumps
@@ -194,7 +202,7 @@ NAMESPACE_SOUP
 
 		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
-		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth);
+		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth = 0);
 		//[[nodiscard]] intptr_t popIPTR() noexcept;
 		[[nodiscard]] size_t popUPTR() noexcept;
 		[[nodiscard]] static size_t readUPTR(Reader& r) noexcept;

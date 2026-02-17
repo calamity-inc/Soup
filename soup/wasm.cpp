@@ -71,7 +71,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - int_literals: pass
 - labels: pass
 - left-to-right: pass
-- linking: FAIL
+- linking: FAIL (imports are not type-checked; missing support for global imports)
 - load: pass
 - local_get: pass
 - local_set: pass
@@ -88,7 +88,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - names: FAIL
 - nop: pass
 - obsolete-keywords: pass
-- ref_func: FAIL (due to call_indirect not working for imported functions - also a general lack of linking support in the wast tool)
+- ref_func: pass
 - ref_is_null: WARN (Soup considers an externref with value 0 to be null)
 - ref_null: pass
 - return: pass
@@ -99,7 +99,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - store: pass
 - switch: pass
 - table: FAIL (due to missing support for table imports)
-- table-sub: pass
+- table-sub: pass (Soup doesn't do static validation)
 - table_copy: FAIL
 - table_fill: FAIL
 - table_get: FAIL
@@ -111,7 +111,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - traps: pass
 - type: pass
 - unreachable: pass
-- unreached-invalid: pass
+- unreached-invalid: pass (Soup doesn't do static validation)
 - unreached-valid: pass
 - unwind: pass
 - utf8-custom-section-id: FAIL
@@ -421,7 +421,7 @@ NAMESPACE_SOUP
 						if (kind == 0) // function
 						{
 							uint32_t type_index; r.oml(type_index);
-							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, type_index });
+							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, {}, type_index, (uint32_t)-1 });
 						}
 						/*else if (kind == 1) // table
 						{
@@ -763,40 +763,7 @@ NAMESPACE_SOUP
 	{
 		if (start_func_idx != -1)
 		{
-			WasmVm vm(*this);
-			auto function_index = start_func_idx;
-			if (function_index < this->function_imports.size())
-			{
-#if DEBUG_API
-				std::cout << "instantiate: calling into " << this->function_imports[function_index].module_name << ":" << this->function_imports[function_index].function_name << "\n";
-#endif
-				SOUP_IF_UNLIKELY (this->function_imports[function_index].ptr == nullptr)
-				{
-#if DEBUG_LOAD
-					std::cout << "instantiate: function is not imported\n";
-#endif
-					return false;
-				}
-				this->function_imports[function_index].ptr(vm, function_index);
-			}
-			else
-			{
-				function_index -= static_cast<uint32_t>(this->function_imports.size());
-				SOUP_IF_UNLIKELY (function_index >= this->functions.size() || function_index >= this->code.size())
-				{
-#if DEBUG_LOAD
-					std::cout << "instantiate: function is out-of-bounds\n";
-#endif
-					return false;
-				}
-				SOUP_IF_UNLIKELY (!vm.run(this->code[function_index]))
-				{
-#if DEBUG_LOAD
-					std::cout << "instantiate: execution failed\n";
-#endif
-					return false;
-				}
-			}
+			return this->call(start_func_idx);
 		}
 		return true;
 	}
@@ -813,6 +780,21 @@ NAMESPACE_SOUP
 			}
 		}
 		return nullptr;
+	}
+
+	void WasmScript::importFromModule(const std::string& module_name, const SharedPtr<WasmScript>& other)
+	{
+		for (auto& fi : function_imports)
+		{
+			if (fi.module_name == module_name)
+			{
+				if (auto e = other->export_map.find(fi.function_name); e != other->export_map.end())
+				{
+					fi.source = other;
+					fi.func_index = e->second;
+				}
+			}
+		}
 	}
 
 	const std::string* WasmScript::getExportedFuntion(const std::string& name, const FunctionType** optOutType) const noexcept
@@ -835,6 +817,29 @@ NAMESPACE_SOUP
 			}
 		}
 		return nullptr;
+	}
+
+	uint32_t WasmScript::getExportedFuntion2(const std::string& name) const noexcept
+	{
+		if (auto e = export_map.find(name); e != export_map.end())
+		{
+			return e->second;
+		}
+		return -1;
+	}
+
+	uint32_t WasmScript::getTypeIndexForFunction(uint32_t func_index) const noexcept
+	{
+		if (func_index < function_imports.size())
+		{
+			return function_imports[func_index].type_index;
+		}
+		func_index -= function_imports.size();
+		if (func_index < functions.size())
+		{
+			return functions[func_index];
+		}
+		return -1;
 	}
 
 #define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
@@ -1315,6 +1320,64 @@ NAMESPACE_SOUP
 		}
 	}
 
+	bool WasmScript::call(uint32_t func_index, std::vector<WasmValue>&& args, std::stack<WasmValue>* out)
+	{
+		WasmVm vm(*this);
+		if (func_index < function_imports.size())
+		{
+			const auto& imp = function_imports[func_index];
+#if DEBUG_LOAD || DEBUG_API
+			std::cout << "Calling into " << imp.module_name << ":" << imp.function_name << "\n";
+#endif
+			for (auto& arg : args)
+			{
+				vm.stack.emplace(std::move(arg));
+			}
+			if (imp.ptr)
+			{
+				imp.ptr(vm, func_index);
+			}
+			else
+			{
+				SOUP_IF_UNLIKELY (!imp.source)
+				{
+#if DEBUG_LOAD || DEBUG_API
+					std::cout << "call: unresolved function import\n";
+#endif
+					return false;
+				}
+				SOUP_IF_UNLIKELY (!vm.doCall(imp.source->getTypeIndexForFunction(imp.func_index), imp.func_index))
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			func_index -= function_imports.size();
+			SOUP_IF_UNLIKELY (func_index >= this->code.size())
+			{
+#if DEBUG_LOAD || DEBUG_API
+				std::cout << "call: function is out-of-bounds\n";
+#endif
+				return false;
+			}
+			vm.locals = std::move(args);
+			SOUP_IF_UNLIKELY (!vm.run(this->code[func_index]))
+			{
+#if DEBUG_LOAD || DEBUG_API
+				std::cout << "call: execution failed\n";
+#endif
+				return false;
+			}
+		}
+		if (out)
+		{
+			*out = std::move(vm.stack);
+		}
+		return true;
+	}
+
 	// WasmVm
 
 	bool WasmVm::run(const std::string& data, unsigned depth)
@@ -1546,30 +1609,7 @@ NAMESPACE_SOUP
 				{
 					uint32_t function_index;
 					r.oml(function_index);
-					if (function_index < script.function_imports.size())
-					{
-#if DEBUG_API
-						std::cout << "Calling into " << script.function_imports[function_index].module_name << ":" << script.function_imports[function_index].function_name << "\n";
-#endif
-						SOUP_IF_UNLIKELY (script.function_imports[function_index].ptr == nullptr)
-						{
-#if DEBUG_VM
-							std::cout << "call: function is not imported\n";
-#endif
-							return false;
-						}
-						script.function_imports[function_index].ptr(*this, function_index);
-						break;
-					}
-					function_index -= static_cast<uint32_t>(script.function_imports.size());
-					SOUP_IF_UNLIKELY (function_index >= script.functions.size() || function_index >= script.code.size())
-					{
-#if DEBUG_VM
-						std::cout << "call: function is out-of-bounds\n";
-#endif
-						return false;
-					}
-					uint32_t type_index = script.functions[function_index];
+					uint32_t type_index = script.getTypeIndexForFunction(function_index);
 					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
 				break;
@@ -1610,21 +1650,6 @@ NAMESPACE_SOUP
 						return false;
 					}
 					uint32_t function_index = table.values[element_index] & 0xffff'ffff;
-					SOUP_IF_UNLIKELY (function_index < script.function_imports.size())
-					{
-#if DEBUG_VM
-						std::cout << "indirect call to imported function\n";
-#endif
-						return false;
-					}
-					function_index -= static_cast<uint32_t>(script.function_imports.size());
-					/*SOUP_IF_UNLIKELY (type_index != script.functions.at(function_index))
-					{
-#if DEBUG_VM
-						std::cout << "call: function type mismatch\n";
-#endif
-						return false;
-					}*/
 					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
 				break;
@@ -4036,23 +4061,61 @@ NAMESPACE_SOUP
 #endif
 			return false;
 		}
-		const auto& type = script.types.at(type_index);
+		const auto& type = script.types[type_index];
+
+		if (function_index < script.function_imports.size())
+		{
+#if DEBUG_VM || DEBUG_API
+			std::cout << "Calling into " << script.function_imports[function_index].module_name << ":" << script.function_imports[function_index].function_name << "\n";
+#endif
+			const auto& imp = script.function_imports[function_index];
+			if (imp.ptr)
+			{
+				imp.ptr(*this, function_index);
+				return true;
+			}
+			SOUP_IF_UNLIKELY (!imp.source)
+			{
+#if DEBUG_VM
+				std::cout << "call: unresolved function import\n";
+#endif
+				return false;
+			}
+			WasmVm exvm(*imp.source);
+			exvm.stack = std::move(this->stack);
+			SOUP_RETHROW_FALSE(exvm.doCall(imp.source->getTypeIndexForFunction(imp.func_index), imp.func_index, depth));
+			this->stack = std::move(exvm.stack);
+			return true;
+		}
+		function_index -= script.function_imports.size();
+		SOUP_IF_UNLIKELY (function_index >= script.code.size())
+		{
+#if DEBUG_VM
+			std::cout << "call: function is out-of-bounds\n";
+#endif
+			return false;
+		}
+
 		WasmVm callvm(script);
 		for (uint32_t i = 0; i != type.parameters.size(); ++i)
 		{
+			SOUP_IF_UNLIKELY (stack.empty())
+			{
+#if DEBUG_VM
+				std::cout << "call: not enough values on the stack for parameters\n";
+#endif
+				return false;
+			}
 			//std::cout << "arg: " << script.memory.getPointer<const char>(stack.top()) << "\n";
 			callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
 		}
 #if DEBUG_VM
-		std::cout << "call: enter " << function_index << "\n";
-		//std::cout << string::bin2hex(script.code.at(function_index)) << "\n";
+		//std::cout << "call: enter " << function_index << "\n";
+		//std::cout << string::bin2hex(script.code[function_index]) << "\n";
 #endif
-		SOUP_IF_UNLIKELY (!callvm.run(script.code.at(function_index), depth))
-		{
-			return false;
-		}
+		SOUP_RETHROW_FALSE(callvm.run(script.code[function_index], depth));
 #if DEBUG_VM
-		std::cout << "call: leave " << function_index << "\n";
+		//std::cout << "call: leave " << function_index << "\n";
 #endif
 		if (type.results.size() < 2)
 		{
