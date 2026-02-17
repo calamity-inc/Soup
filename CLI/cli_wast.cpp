@@ -217,7 +217,14 @@ int cli_wast(const std::string& file)
 									std::cout << "- Actual: <" << wasm_type_to_string(stack.top().type) << "> " << (uint64_t)stack.top().i64;
 									if (stack.top().type == WASM_EXTERNREF)
 									{
-										std::cout << " (*-> " << *(uint64_t*)stack.top().i64 << ")";
+										if (stack.top().i64 == 0)
+										{
+											std::cout << " (null)";
+										}
+										else
+										{
+											std::cout << " (*-> " << *(uint64_t*)stack.top().i64 << ")";
+										}
 									}
 									std::cout << std::endl;
 									goto _wast_next_cmd;
