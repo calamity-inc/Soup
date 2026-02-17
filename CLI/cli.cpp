@@ -90,7 +90,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() <= 2)
 			{
-				std::cout << "Syntax: soup chatgpt [token] <model>" << std::endl;
+				std::cout << "Syntax: soup chatgpt <token> [model]" << std::endl;
 				return 1;
 			}
 			cli_chatgpt(args.size() - 2, &args[2]);
@@ -139,7 +139,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() <= 2)
 			{
-				std::cout << "Syntax: soup dnsserver [file] <bind-ip>" << std::endl;
+				std::cout << "Syntax: soup dnsserver <file> [bind-ip]" << std::endl;
 				return 1;
 			}
 			cli_dnsserver(args.size() - 2, &args[2]);
@@ -156,7 +156,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() <= 2)
 			{
-				std::cout << "Syntax: soup edit [files...]" << std::endl;
+				std::cout << "Syntax: soup edit <files...>" << std::endl;
 				return 1;
 			}
 			Editor edit{};
@@ -288,7 +288,7 @@ int entry(std::vector<std::string>&& args, bool)
 				|| !addr.fromString(args[2])
 				)
 			{
-				std::cout << "Syntax: soup geoip [ip]" << std::endl;
+				std::cout << "Syntax: soup geoip <ip>" << std::endl;
 				return 1;
 			}
 			netIntel intel;
@@ -374,7 +374,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() != 3)
 			{
-				std::cout << "Syntax: soup html [file]" << std::endl;
+				std::cout << "Syntax: soup html <file>" << std::endl;
 				return 1;
 			}
 			cli_html(args[2]);
@@ -385,7 +385,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() != 3)
 			{
-				std::cout << "Syntax: soup http [uri]" << std::endl;
+				std::cout << "Syntax: soup http <uri>" << std::endl;
 				return 1;
 			}
 			auto hr = HttpRequest(Uri(args[2]));
@@ -460,7 +460,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() != 3)
 			{
-				std::cout << "Syntax: soup qr [contents]" << std::endl;
+				std::cout << "Syntax: soup qr <contents>" << std::endl;
 				return 1;
 			}
 			auto qrcode = QrCode::encodeText(args[2]);
@@ -480,7 +480,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() != 3)
 			{
-				std::cout << "Syntax: soup script [.cpp file]" << std::endl;
+				std::cout << "Syntax: soup script <.cpp file>" << std::endl;
 				return 1;
 			}
 			auto res = CompiledExecutable::fromCpp(args[2]);
@@ -508,7 +508,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() < 3)
 			{
-				std::cout << "Syntax: soup wasm [file]" << std::endl;
+				std::cout << "Syntax: soup wasm <file>" << std::endl;
 				return 1;
 			}
 			FileReader fr(args[2]);
@@ -544,7 +544,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() != 3)
 			{
-				std::cout << "Syntax: soup wast [file]" << std::endl;
+				std::cout << "Syntax: soup wast <file>" << std::endl;
 				return 1;
 			}
 			/*std::cout << "Attach debugger now." << std::endl;
@@ -775,7 +775,7 @@ int entry(std::vector<std::string>&& args, bool)
 #if SOUP_WINDOWS || SOUP_LINUX
 			if (args.size() != 3)
 			{
-				std::cout << "Syntax: soup wav [file]" << std::endl;
+				std::cout << "Syntax: soup wav <file>" << std::endl;
 				return 1;
 			}
 			static FileReader fr(args[2]);
@@ -816,7 +816,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() != 3)
 			{
-				std::cout << "Syntax: soup websrv [dir]" << std::endl;
+				std::cout << "Syntax: soup websrv <dir>" << std::endl;
 				return 1;
 			}
 			return cli_websrv(args[2]);
@@ -863,11 +863,11 @@ int entry(std::vector<std::string>&& args, bool)
 	string::listAppend(all_tools, "wav");
 	string::listAppend(all_tools, "websrv");
 
-	std::cout << R"EOC(Syntax: soup [tool]
+	std::cout << R"EOC(Syntax: soup <tool>
 
 Available tools: )EOC" << all_tools << R"EOC(
 
-Legend: [Required] <Optional>)EOC" << std::endl;
+Legend: <Required> [Optional])EOC" << std::endl;
 	return 1;
 }
 
