@@ -27,11 +27,12 @@ NAMESPACE_SOUP
 
 	bool Reader::u64_dyn(uint64_t& v) noexcept
 	{
+		v = 0;
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsSSE4_1() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-			__m128i e;
+			__m128i e{};
 			size_t read_bytes = 9;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
@@ -42,7 +43,6 @@ NAMESPACE_SOUP
 			return read_bytes >= byte_length;
 		}
 #endif
-		v = 0;
 		uint8_t b;
 		uint8_t bits = 0;
 		for (uint8_t i = 0; i != 8; ++i)
@@ -74,11 +74,12 @@ NAMESPACE_SOUP
 
 	bool Reader::u64_dyn_b(uint64_t& v) noexcept
 	{
+		v = 0;
 #if SOUP_X86 && SOUP_BITS == 64
 		if (CpuInfo::get().supportsSSE4_1() && CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-			__m128i e;
+			__m128i e{};
 			size_t read_bytes = 9;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
@@ -94,7 +95,6 @@ NAMESPACE_SOUP
 			return valid;
 		}
 #endif
-		v = 0;
 		uint8_t b;
 		uint8_t bits = 0;
 		uint64_t bias = 0;
@@ -207,10 +207,11 @@ NAMESPACE_SOUP
 	#endif
 	bool Reader::oml(uint32_t& v) noexcept
 	{
+		v = 0;
 		if (CpuInfo::get().supportsBMI2())
 		{
 			const auto pos = getPosition();
-			uint64_t e;
+			uint64_t e = 0;
 			size_t read_bytes = 5;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
@@ -231,12 +232,13 @@ NAMESPACE_SOUP
 	#endif
 	bool Reader::oml(uint64_t& v) noexcept
 	{
+		v = 0;
 		if (CpuInfo::get().supportsSSE4_1() // _mm_extract_epi64
 			&& CpuInfo::get().supportsBMI2() // _pext_u64
 			)
 		{
 			const auto pos = getPosition();
-			__m128i e;
+			__m128i e{};
 			size_t read_bytes = 10;
 			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
