@@ -14,7 +14,7 @@
 
 NAMESPACE_SOUP
 {
-	struct WasmVm;
+	class WasmVm;
 
 	enum WasmType : uint8_t
 	{
@@ -177,8 +177,9 @@ NAMESPACE_SOUP
 		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::stack<WasmValue>* out = nullptr);
 	};
 
-	struct WasmVm
+	class WasmVm
 	{
+	public:
 		std::stack<WasmValue> stack;
 		std::vector<WasmValue> locals;
 		WasmScript& script;
@@ -192,6 +193,7 @@ NAMESPACE_SOUP
 		bool run(const std::string& data, unsigned depth = 0);
 		bool run(Reader& r, unsigned depth = 0);
 
+	protected:
 		struct CtrlFlowEntry
 		{
 			std::streamoff position; // -1 for forward jumps

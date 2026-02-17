@@ -1322,60 +1322,61 @@ NAMESPACE_SOUP
 
 	bool WasmScript::call(uint32_t func_index, std::vector<WasmValue>&& args, std::stack<WasmValue>* out)
 	{
-		WasmVm vm(*this);
-		if (func_index < function_imports.size())
+		WasmScript* script = this;
+	_call_other_script:
+		if (func_index < script->function_imports.size())
 		{
-			const auto& imp = function_imports[func_index];
+			const auto& imp = script->function_imports[func_index];
 #if DEBUG_LOAD || DEBUG_API
 			std::cout << "Calling into " << imp.module_name << ":" << imp.function_name << "\n";
 #endif
-			for (auto& arg : args)
-			{
-				vm.stack.emplace(std::move(arg));
-			}
 			if (imp.ptr)
 			{
-				SOUP_IF_UNLIKELY (imp.type_index >= types.size())
+				SOUP_IF_UNLIKELY (imp.type_index >= script->types.size())
 				{
 #if DEBUG_LOAD || DEBUG_API
 					std::cout << "call: type is out-of-bounds\n";
 #endif
 				}
-				imp.ptr(vm, func_index, types[imp.type_index]);
+				WasmVm vm(*this);
+				for (auto& arg : args)
+				{
+					vm.stack.emplace(std::move(arg));
+				}
+				imp.ptr(vm, func_index, script->types[imp.type_index]);
+				if (out)
+				{
+					*out = std::move(vm.stack);
+				}
+				return true;
 			}
-			else
+			SOUP_IF_UNLIKELY (!imp.source)
 			{
-				SOUP_IF_UNLIKELY (!imp.source)
-				{
 #if DEBUG_LOAD || DEBUG_API
-					std::cout << "call: unresolved function import\n";
+				std::cout << "call: unresolved function import\n";
 #endif
-					return false;
-				}
-				SOUP_IF_UNLIKELY (!vm.doCall(imp.source->getTypeIndexForFunction(imp.func_index), imp.func_index))
-				{
-					return false;
-				}
+				return false;
 			}
+			script = imp.source.get();
+			func_index = imp.func_index;
+			goto _call_other_script;
 		}
-		else
+		func_index -= script->function_imports.size();
+		SOUP_IF_UNLIKELY (func_index >= script->code.size())
 		{
-			func_index -= function_imports.size();
-			SOUP_IF_UNLIKELY (func_index >= this->code.size())
-			{
 #if DEBUG_LOAD || DEBUG_API
-				std::cout << "call: function is out-of-bounds\n";
+			std::cout << "call: function is out-of-bounds\n";
 #endif
-				return false;
-			}
-			vm.locals = std::move(args);
-			SOUP_IF_UNLIKELY (!vm.run(this->code[func_index]))
-			{
+			return false;
+		}
+		WasmVm vm(*script);
+		vm.locals = std::move(args);
+		SOUP_IF_UNLIKELY (!vm.run(script->code[func_index]))
+		{
 #if DEBUG_LOAD || DEBUG_API
-				std::cout << "call: execution failed\n";
+			std::cout << "call: execution failed\n";
 #endif
-				return false;
-			}
+			return false;
 		}
 		if (out)
 		{
@@ -4060,21 +4061,24 @@ NAMESPACE_SOUP
 		}
 		++depth;
 
-		SOUP_IF_UNLIKELY (type_index >= script.types.size())
+		WasmScript* script = &this->script;
+	_doCall_other_script:
+
+		SOUP_IF_UNLIKELY (type_index >= script->types.size())
 		{
 #if DEBUG_VM
 			std::cout << "call: type is out-of-bounds\n";
 #endif
 			return false;
 		}
-		const auto& type = script.types[type_index];
+		const auto& type = script->types[type_index];
 
-		if (function_index < script.function_imports.size())
+		if (function_index < script->function_imports.size())
 		{
+			const auto& imp = script->function_imports[function_index];
 #if DEBUG_VM || DEBUG_API
-			std::cout << "Calling into " << script.function_imports[function_index].module_name << ":" << script.function_imports[function_index].function_name << "\n";
+			std::cout << "Calling into " << imp.module_name << ":" << imp.function_name << "\n";
 #endif
-			const auto& imp = script.function_imports[function_index];
 			if (imp.ptr)
 			{
 				imp.ptr(*this, function_index, type);
@@ -4087,14 +4091,14 @@ NAMESPACE_SOUP
 #endif
 				return false;
 			}
-			WasmVm exvm(*imp.source);
-			exvm.stack = std::move(this->stack);
-			SOUP_RETHROW_FALSE(exvm.doCall(imp.source->getTypeIndexForFunction(imp.func_index), imp.func_index, depth));
-			this->stack = std::move(exvm.stack);
-			return true;
+
+			script = imp.source.get();
+			type_index = imp.source->getTypeIndexForFunction(imp.func_index);
+			function_index = imp.func_index;
+			goto _doCall_other_script;
 		}
-		function_index -= script.function_imports.size();
-		SOUP_IF_UNLIKELY (function_index >= script.code.size())
+		function_index -= script->function_imports.size();
+		SOUP_IF_UNLIKELY (function_index >= script->code.size())
 		{
 #if DEBUG_VM
 			std::cout << "call: function is out-of-bounds\n";
@@ -4102,7 +4106,7 @@ NAMESPACE_SOUP
 			return false;
 		}
 
-		WasmVm callvm(script);
+		WasmVm callvm(*script);
 		for (uint32_t i = 0; i != type.parameters.size(); ++i)
 		{
 			SOUP_IF_UNLIKELY (stack.empty())
@@ -4112,14 +4116,13 @@ NAMESPACE_SOUP
 #endif
 				return false;
 			}
-			//std::cout << "arg: " << script.memory.getPointer<const char>(stack.top()) << "\n";
 			callvm.locals.insert(callvm.locals.begin(), stack.top()); stack.pop();
 		}
 #if DEBUG_VM
 		//std::cout << "call: enter " << function_index << "\n";
-		//std::cout << string::bin2hex(script.code[function_index]) << "\n";
+		//std::cout << string::bin2hex(script->code[function_index]) << "\n";
 #endif
-		SOUP_RETHROW_FALSE(callvm.run(script.code[function_index], depth));
+		SOUP_RETHROW_FALSE(callvm.run(script->code[function_index], depth));
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
 #endif
