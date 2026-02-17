@@ -89,7 +89,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - nop: pass
 - obsolete-keywords: pass
 - ref_func: pass
-- ref_is_null: WARN (Soup considers an externref with value 0 to be null)
+- ref_is_null: pass
 - ref_null: pass
 - return: pass
 - select: pass
@@ -289,7 +289,7 @@ NAMESPACE_SOUP
 
 		case 0xd2: // ref.func
 			r.oml(out.i32);
-			out.i64 |= 0x1'0000'0000;
+			out.hi32 = 1;
 			out.type = WASM_FUNCREF;
 			break;
 

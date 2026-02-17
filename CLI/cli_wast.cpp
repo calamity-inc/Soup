@@ -9,6 +9,43 @@
 
 using namespace soup;
 
+static std::vector<UniquePtr<int64_t>> externrefs;
+
+static void instantiate_value(const JsonObject& desc, WasmValue& out)
+{
+	const std::string& value = desc.at("value").asStr();
+	out.type = wasm_type_from_string(desc.at("type").asStr());
+	if (value == "null")
+	{
+		out.i64 = 0;
+	}
+	else
+	{
+		out.i64 = string::toIntOpt<uint64_t>(value, string::TI_FULL).value();
+		if (out.type == WASM_FUNCREF)
+		{
+			out.i64 |= 0x1'0000'0000;
+		}
+		else if (out.type == WASM_EXTERNREF)
+		{
+			const int64_t* ptr = nullptr;
+			for (const auto& ref : externrefs)
+			{
+				if (*ref == out.i64)
+				{
+					ptr = ref.get();
+					break;
+				}
+			}
+			if (ptr == nullptr)
+			{
+				ptr = externrefs.emplace_back(soup::make_unique<int64_t>(out.i64)).get();
+			}
+			out.i64 = reinterpret_cast<uintptr_t>(ptr);
+		}
+	}
+}
+
 int cli_wast(const std::string& file)
 {
 	/*std::cout << "Attach debugger now." << std::endl;
@@ -103,20 +140,7 @@ int cli_wast(const std::string& file)
 						std::vector<WasmValue> args;
 						for (const auto& arg : action.at("args").asArr())
 						{
-							const std::string& value = arg.asObj().at("value").asStr();
-							const auto type = wasm_type_from_string(arg.asObj().at("type").asStr());
-							if (value == "null")
-							{
-								args.emplace_back(static_cast<int64_t>(0)).type = type;
-							}
-							else
-							{
-								args.emplace_back(string::toIntOpt<uint64_t>(value, string::TI_FULL).value()).type = type;
-								if (type == WASM_FUNCREF)
-								{
-									args.back().i64 |= 0x1'0000'0000;
-								}
-							}
+							instantiate_value(arg.asObj(), args.emplace_back());
 						}
 						if (!scr->call(func_idx, std::move(args), &stack))
 						{
@@ -172,15 +196,9 @@ int cli_wast(const std::string& file)
 							}*/
 							else
 							{
-								const auto stack_top_type = wasm_type_to_string(stack.top().type);
-								SOUP_IF_UNLIKELY (type != stack_top_type
-									|| (value == "null"
-										? stack.top().i64 != 0
-										: type == "i32" || type == "f32" || type == "funcref" // 32-bit type?
-										? string::toIntOpt<uint32_t>(value, string::TI_FULL).value() != stack.top().i32
-										: string::toIntOpt<uint64_t>(value, string::TI_FULL).value() != stack.top().i64
-										)
-									)
+								WasmValue expected_vw;
+								instantiate_value(expected, expected_vw);
+								SOUP_IF_UNLIKELY (stack.top() != expected_vw)
 								{
 									std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
 									if (value == "null")
@@ -189,16 +207,19 @@ int cli_wast(const std::string& file)
 									}
 									else
 									{
-										std::cout << "- Expected: <" << type << "> " << string::toIntOpt<uint64_t>(value, string::TI_FULL).value() << std::endl;
+										std::cout << "- Expected: <" << type << "> " << (uint64_t)expected_vw.i64;
+										if (expected_vw.type == WASM_EXTERNREF)
+										{
+											std::cout << " (*-> " << *(uint64_t*)expected_vw.i64 << ")";
+										}
+										std::cout << std::endl;
 									}
-									if (type == "i32" || type == "f32" || type == "funcref") // 32-bit type?
+									std::cout << "- Actual: <" << wasm_type_to_string(stack.top().type) << "> " << (uint64_t)stack.top().i64;
+									if (stack.top().type == WASM_EXTERNREF)
 									{
-										std::cout << "- Actual: <" << stack_top_type << "> " << (uint32_t)stack.top().i32 << std::endl;
+										std::cout << " (*-> " << *(uint64_t*)stack.top().i64 << ")";
 									}
-									else
-									{
-										std::cout << "- Actual: <" << stack_top_type << "> " << (uint64_t)stack.top().i64 << std::endl;
-									}
+									std::cout << std::endl;
 									goto _wast_next_cmd;
 								}
 							}
