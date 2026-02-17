@@ -66,6 +66,7 @@ int cli_wast(const std::string& file)
 				{
 					FileReader fr(cmd.at("filename").asStr());
 					scr = soup::make_shared<WasmScript>();
+					//std::cout << "Loading " << cmd.at("filename").asStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 					SOUP_IF_UNLIKELY (!scr->load(fr))
 					{
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;

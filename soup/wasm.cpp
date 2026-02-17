@@ -29,24 +29,24 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 > Use wast2json from wabt then run `soup wast [file]`
 > Results:
 - address: pass
-- align: FAIL (doesn't fail on some malformed modules)
-- binary: FAIL (doesn't fail on some malformed modules)
-- binary-leb128: FAIL
+- align: FAIL (Soup doesn't fail on some malformed modules)
+- binary: FAIL (Soup doesn't fail on some malformed modules)
+- binary-leb128: FAIL (soup::Reader::oml expects optimal encoding on x86_64)
 - block: pass
 - br: pass
 - br_if: pass
 - br_table: pass
-- bulk: FAIL
+- bulk: FAIL (missing support for passive data segments)
 - call: pass
-- call_indirect: FAIL
+- call_indirect: FAIL (Soup doesn't validate the call type is compatible with the function type)
 - comments: pass
 - const: pass
 - conversions: pass
-- custom: FAIL (due to missing support for multiple memories?)
-- data: FAIL
-- elem: FAIL
-- endianness:  pass
-- exports: FAIL
+- custom: FAIL (Soup doesn't fail on some malformed modules)
+- data: FAIL (missing support for memory imports)
+- elem: FAIL (missing support for table imports)
+- endianness: pass
+- exports: FAIL (missing support for exported globals)
 - f32: pass
 - f32_bitwise: pass
 - f32_cmp: pass
@@ -60,8 +60,8 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - float_misc: pass
 - forward: pass
 - func: pass
-- func_ptrs: FAIL
-- global: FAIL
+- func_ptrs: pass
+- global: FAIL (due to missing support for global imports)
 - i32: pass
 - i64: pass
 - if: pass
@@ -98,23 +98,23 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - start: pass
 - store: pass
 - switch: pass
-- table: FAIL (due to missing support for table imports)
+- table: FAIL (missing support for table imports)
 - table-sub: pass (Soup doesn't do static validation)
-- table_copy: FAIL
-- table_fill: FAIL
-- table_get: FAIL
-- table_grow: FAIL
-- table_init: FAIL
-- table_set: FAIL
-- table_size: FAIL
-- token: FAIL (due to missing support for passive data segments, lol)
+- table_copy: FAIL (missing support for table.copy instruction)
+- table_fill: FAIL (missing support for table.fill instruction)
+- table_get: pass
+- table_grow: FAIL (missing support for table.grow & table.size instructions)
+- table_init: FAIL (missing support for table.init instruction)
+- table_set: pass
+- table_size: FAIL (missing support for table.size & table.grow instructions)
+- token: pass
 - traps: pass
 - type: pass
 - unreachable: pass
 - unreached-invalid: pass (Soup doesn't do static validation)
 - unreached-valid: pass
 - unwind: pass
-- utf8-custom-section-id: FAIL
+- utf8-custom-section-id: FAIL (and who cares if custom section names are not valid UTF-8?)
 - utf8-import-field: pass (probably not for the right reason, but lol)
 - utf8-import-module: pass (probably not for the right reason, but lol)
 - utf8-invalid-encoding: pass (probably not for the right reason, but lol)
@@ -433,6 +433,8 @@ NAMESPACE_SOUP
 								r.oml(size);
 							}
 						}*/
+						// 2 - memory
+						// 3 - global
 						else
 						{
 #if DEBUG_LOAD
@@ -474,6 +476,7 @@ NAMESPACE_SOUP
 						r.u8(type);
 						uint8_t flags;
 						r.u8(flags);
+						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 						size_t initial;
 						r.oml(initial);
 						if (flags & 1)
@@ -493,39 +496,42 @@ NAMESPACE_SOUP
 			case 5: // Memory
 				{
 					size_t num_memories; r.oml(num_memories);
-					SOUP_IF_UNLIKELY (memory.data != nullptr || num_memories != 1)
+					if (num_memories != 0)
 					{
+						SOUP_IF_UNLIKELY (memory.data != nullptr || num_memories != 1)
+						{
 #if DEBUG_LOAD
-						std::cout << "Too many memories\n";
+							std::cout << "Too many memories\n";
 #endif
-						return false;
-					}
-					uint8_t flags; r.u8(flags);
-					size_t pages; r.oml(pages);
-					if (flags & 1)
-					{
-						uint64_t page_limit;
-						r.oml(page_limit);
-						memory.page_limit = page_limit;
-					}
-					if (flags & 4)
-					{
-						memory.memory64 = true;
-					}
-					if (pages == 0)
-					{
-						memory.data = (uint8_t*)soup::malloc(1);
-						memory.size = 1;
-					}
-					else
-					{
-						memory.data = (uint8_t*)soup::malloc(pages * 0x10'000);
-						memory.size = pages * 0x10'000;
-					}
-					memset(memory.data, 0, memory.size);
+							return false;
+						}
+						uint8_t flags; r.u8(flags);
+						size_t pages; r.oml(pages);
+						if (flags & 1)
+						{
+							uint64_t page_limit;
+							r.oml(page_limit);
+							memory.page_limit = page_limit;
+						}
+						if (flags & 4)
+						{
+							memory.memory64 = true;
+						}
+						if (pages == 0)
+						{
+							memory.data = (uint8_t*)soup::malloc(1);
+							memory.size = 1;
+						}
+						else
+						{
+							memory.data = (uint8_t*)soup::malloc(pages * 0x10'000);
+							memory.size = pages * 0x10'000;
+						}
+						memset(memory.data, 0, memory.size);
 #if DEBUG_LOAD
-					std::cout << "Memory consists of " << pages << " pages, totalling " << memory.size << " bytes\n";
+						std::cout << "Memory consists of " << pages << " pages, totalling " << memory.size << " bytes\n";
 #endif
+					}
 				}
 				break;
 
@@ -606,37 +612,46 @@ NAMESPACE_SOUP
 					{
 						uint8_t flags;
 						r.u8(flags);
-						uint32_t tblidx = 0;
-						if (flags & 2)
-						{
-							r.oml(tblidx);
-						}
+#if DEBUG_LOAD
+						std::cout << "elem flags: " << (int)flags << "\n";
+#endif
 						if (flags & 1)
 						{
 #if DEBUG_LOAD
 							std::cout << "skipping over passive/declarative elements\n";
 #endif
+
+							r.skip(1); // (flags & 0b100) ? reftype : elemkind
+
 							size_t num_elements;
 							r.oml(num_elements);
 							while (num_elements--)
 							{
-								uint32_t function_index;
-								r.oml(function_index);
+								if (flags & 0b100)
+								{
+									WasmValue scrap;
+									readConstant(r, scrap);
+								}
+								else
+								{
+									uint32_t function_index;
+									r.oml(function_index);
+								}
 							}
 						}
 						else
 						{
+							uint32_t tblidx = 0;
+							if (flags & 0b10)
+							{
+								r.oml(tblidx);
+							}
 #if DEBUG_LOAD
 							std::cout << "- elements for table " << tblidx << "\n";
 #endif
-							SOUP_IF_UNLIKELY (tblidx >= tables.size())
-							{
-#if DEBUG_LOAD
-								std::cout << "no such table\n";
-#endif
-								return false;
-							}
-							auto& table = tables[tblidx];
+							Table scrap(WASM_FUNCREF);
+							// an out-of-bounds table index is apparently valid...
+							auto& table = tblidx >= tables.size() ? scrap : tables[tblidx];
 							uint8_t op;
 							r.u8(op);
 							SOUP_IF_UNLIKELY (op != 0x41) // i32.const
@@ -670,11 +685,23 @@ NAMESPACE_SOUP
 							}
 							while (num_elements--)
 							{
-								uint32_t function_index;
-								r.oml(function_index);
-								if (table.type == WASM_FUNCREF)
+								if (flags & 0b100)
 								{
-									table.values[index++] = 0x1'0000'0000 | function_index;
+									WasmValue value;
+									readConstant(r, value);
+									if (table.type == WASM_FUNCREF && value.type == table.type)
+									{
+										table.values[index++] = value.i64;
+									}
+								}
+								else
+								{
+									uint32_t function_index;
+									r.oml(function_index);
+									if (table.type == WASM_FUNCREF)
+									{
+										table.values[index++] = 0x1'0000'0000 | function_index;
+									}
 								}
 							}
 						}
@@ -718,32 +745,33 @@ NAMESPACE_SOUP
 					{
 						uint8_t flags;
 						r.u8(flags);
-						SOUP_IF_UNLIKELY (flags != 0)
+						if (flags & 1)
 						{
-#if DEBUG_LOAD
-							std::cout << "unexpected data segment flags: " << string::hex(flags) << "\n";
-#endif
-							return false;
+							size_t size; r.oml(size);
+							r.skip(size);
 						}
-						WasmValue base;
-						SOUP_RETHROW_FALSE(readConstant(r, base));
-						SOUP_IF_UNLIKELY (base.type != (memory.memory64 ? WASM_I64 : WASM_I32))
+						else
 						{
+							WasmValue base;
+							SOUP_RETHROW_FALSE(readConstant(r, base));
+							SOUP_IF_UNLIKELY (base.type != (memory.memory64 ? WASM_I64 : WASM_I32))
+							{
 #if DEBUG_LOAD
-							std::cout << "unexpected type for data initialisation: " << string::hex(static_cast<uint8_t>(base.type)) << "\n";
+								std::cout << "unexpected type for data initialisation: " << string::hex(static_cast<uint8_t>(base.type)) << "\n";
 #endif
-							return false;
-						}
-						size_t size; r.oml(size);
-						auto ptr = memory.getView(memory.decodeUPTR(base), size);
-						SOUP_IF_UNLIKELY (!ptr)
-						{
+								return false;
+							}
+							size_t size; r.oml(size);
+							auto ptr = memory.getView(memory.decodeUPTR(base), size);
+							SOUP_IF_UNLIKELY (!ptr)
+							{
 #if DEBUG_LOAD
-							std::cout << "data segment exceeds memory range: " << memory.decodeUPTR(base) << " + " << size << " > " << memory.size << "\n";
+								std::cout << "data segment exceeds memory range: " << memory.decodeUPTR(base) << " + " << size << " > " << memory.size << "\n";
 #endif
-							return false;
+								return false;
+							}
+							r.raw(ptr, size);
 						}
-						r.raw(ptr, size);
 					}
 				}
 				break;
@@ -1657,6 +1685,7 @@ NAMESPACE_SOUP
 						return false;
 					}
 					uint32_t function_index = table.values[element_index] & 0xffff'ffff;
+					//SOUP_RETHROW_FALSE(function_index < script.functions.size() && script.functions[function_index] == type_index);
 					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
 				break;
