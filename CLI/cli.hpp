@@ -22,4 +22,5 @@ void cli_mouse();
 void cli_repl();
 void cli_snake();
 void cli_test();
+int cli_wast(const std::string& file);
 int cli_websrv(const std::string& dir);

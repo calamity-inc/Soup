@@ -22,6 +22,7 @@
     <ClCompile Include="cli_html.cpp" />
     <ClCompile Include="cli_bench.cpp" />
     <ClCompile Include="cli_convert.cpp" />
+    <ClCompile Include="cli_wast.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli.hpp" />
