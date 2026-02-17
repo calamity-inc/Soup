@@ -172,7 +172,7 @@ int cli_wast(const std::string& file)
 							const auto& expected = (*i)->asObj();
 							const std::string& type = expected.at("type").asStr();
 							const std::string& value = expected.at("value").asStr();
-							if (value == "nan:arithmetic" || value == "nan:canonical")
+							if (value == "nan:arithmetic")
 							{
 								SOUP_IF_UNLIKELY (type == "f32"
 									? !std::isnan(stack.top().f32)
@@ -183,17 +183,17 @@ int cli_wast(const std::string& file)
 									goto _wast_next_cmd;
 								}
 							}
-							/*else if (value == "nan:canonical")
+							else if (value == "nan:canonical")
 							{
 								if (type == "f32"
-									? stack.top().i32 != 0x400000
-									: stack.top().i64 != 0x8000000000000ll
+									? (stack.top().i32 != 0x7fc00000 && stack.top().i32 != 0xffc00000)
+									: (stack.top().i64 != 0x7ff8000000000000 && stack.top().i64 != 0xfff8000000000000)
 									)
 								{
 									std::cout << "Return value was not nan:canonical for test at line " << cmd.at("line").asInt().value << std::endl;
 									goto _wast_next_cmd;
 								}
-							}*/
+							}
 							else
 							{
 								WasmValue expected_vw;
