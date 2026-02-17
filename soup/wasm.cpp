@@ -88,7 +88,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - names: FAIL
 - nop: pass
 - obsolete-keywords: pass
-- ref_func: FAIL
+- ref_func: FAIL (due to call_indirect not working for imported functions - also a general lack of linking support in the wast tool)
 - ref_is_null: WARN (Soup considers an externref with value 0 to be null)
 - ref_null: pass
 - return: pass
@@ -612,55 +612,71 @@ NAMESPACE_SOUP
 						{
 							r.oml(tblidx);
 						}
-#if DEBUG_LOAD
-						std::cout << "- elements for table " << tblidx << "\n";
-#endif
-						SOUP_IF_UNLIKELY (tblidx >= tables.size())
+						if (flags & 1)
 						{
 #if DEBUG_LOAD
-							std::cout << "no such table\n";
+							std::cout << "skipping over passive/declarative elements\n";
 #endif
-							return false;
-						}
-						auto& table = tables[tblidx];
-						uint8_t op;
-						r.u8(op);
-						SOUP_IF_UNLIKELY (op != 0x41) // i32.const
-						{
-#if DEBUG_LOAD
-							std::cout << "unexpected op for element initialisation: " << string::hex(op) << "\n";
-#endif
-							return false;
-						}
-						uint32_t index; r.oml(index);
-						r.u8(op);
-						SOUP_IF_UNLIKELY (op != 0x0b) // end
-						{
-#if DEBUG_LOAD
-							std::cout << "missing end in element initialisation\n";
-#endif
-							return false;
-						}
-						if (flags & 2)
-						{
-							r.skip(1); // reserved
-						}
-						size_t num_elements;
-						r.oml(num_elements);
-						SOUP_IF_UNLIKELY (index + num_elements > table.values.size())
-						{
-#if DEBUG_LOAD
-							std::cout << "elem: " << index << " + " << num_elements << " > " << table.values.size() << "\n";
-#endif
-							return false;
-						}
-						while (num_elements--)
-						{
-							uint32_t function_index;
-							r.oml(function_index);
-							if (table.type == WASM_FUNCREF)
+							size_t num_elements;
+							r.oml(num_elements);
+							while (num_elements--)
 							{
-								table.values[index++] = 0x1'0000'0000 | function_index;
+								uint32_t function_index;
+								r.oml(function_index);
+							}
+						}
+						else
+						{
+#if DEBUG_LOAD
+							std::cout << "- elements for table " << tblidx << "\n";
+#endif
+							SOUP_IF_UNLIKELY (tblidx >= tables.size())
+							{
+#if DEBUG_LOAD
+								std::cout << "no such table\n";
+#endif
+								return false;
+							}
+							auto& table = tables[tblidx];
+							uint8_t op;
+							r.u8(op);
+							SOUP_IF_UNLIKELY (op != 0x41) // i32.const
+							{
+#if DEBUG_LOAD
+								std::cout << "unexpected op for element initialisation: " << string::hex(op) << "\n";
+#endif
+								return false;
+							}
+							uint32_t index; r.oml(index);
+							r.u8(op);
+							SOUP_IF_UNLIKELY (op != 0x0b) // end
+							{
+#if DEBUG_LOAD
+								std::cout << "missing end in element initialisation\n";
+#endif
+								return false;
+							}
+							if (flags & 2)
+							{
+								r.skip(1); // reserved
+							}
+							size_t num_elements;
+							r.oml(num_elements);
+							SOUP_IF_UNLIKELY (index + num_elements > table.values.size())
+							{
+#if DEBUG_LOAD
+								std::cout << "elem: " << index << " + " << num_elements << " > " << table.values.size() << "\n";
+#endif
+								return false;
+							}
+							while (num_elements--)
+							{
+								uint32_t function_index;
+								r.oml(function_index);
+								if (table.type == WASM_FUNCREF)
+								{
+									table.values[index++] = 0x1'0000'0000 | function_index;
+								}
 							}
 						}
 					}
