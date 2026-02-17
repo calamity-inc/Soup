@@ -550,7 +550,6 @@ NAMESPACE_SOUP
 #endif
 							return false;
 						}
-						globals.emplace_back(value);
 					}
 				}
 				break;
