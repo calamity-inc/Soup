@@ -119,5 +119,5 @@ int cli_mesh(size_t argc, std::string* argv)
 	}
 
 	std::cout << "Syntax: mesh [link|list]\n";
-	return 0;
+	return 1;
 }

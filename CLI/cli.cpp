@@ -88,14 +88,12 @@ int entry(std::vector<std::string>&& args, bool)
 
 		if (subcommand == "chatgpt")
 		{
-			if (args.size() > 2)
-			{
-				cli_chatgpt(args.size() - 2, &args[2]);
-			}
-			else
+			if (args.size() <= 2)
 			{
 				std::cout << "Syntax: soup chatgpt [token] <model>" << std::endl;
+				return 1;
 			}
+			cli_chatgpt(args.size() - 2, &args[2]);
 			return 0;
 		}
 
@@ -139,14 +137,12 @@ int entry(std::vector<std::string>&& args, bool)
 
 		if (subcommand == "dnsserver")
 		{
-			if (args.size() > 2)
-			{
-				cli_dnsserver(args.size() - 2, &args[2]);
-			}
-			else
+			if (args.size() <= 2)
 			{
 				std::cout << "Syntax: soup dnsserver [file] <bind-ip>" << std::endl;
+				return 1;
 			}
+			cli_dnsserver(args.size() - 2, &args[2]);
 			return 0;
 		}
 
@@ -161,7 +157,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() <= 2)
 			{
 				std::cout << "Syntax: soup edit [files...]" << std::endl;
-				return 0;
+				return 1;
 			}
 			Editor edit{};
 			for (int i = 2; i != args.size(); ++i)
@@ -293,7 +289,7 @@ int entry(std::vector<std::string>&& args, bool)
 				)
 			{
 				std::cout << "Syntax: soup geoip [ip]" << std::endl;
-				return 0;
+				return 1;
 			}
 			netIntel intel;
 			if (addr.isV4())
@@ -379,7 +375,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup html [file]" << std::endl;
-				return 0;
+				return 1;
 			}
 			cli_html(args[2]);
 			return 0;
@@ -390,7 +386,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup http [uri]" << std::endl;
-				return 0;
+				return 1;
 			}
 			auto hr = HttpRequest(Uri(args[2]));
 			auto res = hr.execute();
@@ -465,7 +461,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup qr [contents]" << std::endl;
-				return 0;
+				return 1;
 			}
 			auto qrcode = QrCode::encodeText(args[2]);
 			console.init(false);
@@ -485,7 +481,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup script [.cpp file]" << std::endl;
-				return 0;
+				return 1;
 			}
 			auto res = CompiledExecutable::fromCpp(args[2]);
 			std::cout << res.compiler_output;
@@ -513,25 +509,25 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() < 3)
 			{
 				std::cout << "Syntax: soup wasm [file]" << std::endl;
-				return 0;
+				return 1;
 			}
 			FileReader fr(args[2]);
 			WasmScript scr;
 			if (!scr.load(fr))
 			{
 				std::cout << "Failed to load\n";
-				return 1;
+				return 2;
 			}
 			if (!scr.instantiate())
 			{
 				std::cout << "Failed to instantiate\n";
-				return 1;
+				return 3;
 			}
 			auto code = scr.getExportedFuntion("_start");
 			if (!code)
 			{
 				std::cout << "WASM file has loaded but \"_start\" function not found in exports.\n";
-				return 2;
+				return 4;
 			}
 			std::vector<std::string> wasi_args(args.begin() + 2, args.end());
 			scr.linkWasiPreview1(std::move(wasi_args));
@@ -539,7 +535,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (!vm.run(*code))
 			{
 				std::cout << "A runtime error occurred.\n";
-				return 3;
+				return 5;
 			}
 			return 0;
 		}
@@ -549,7 +545,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup wast [file]" << std::endl;
-				return 0;
+				return 1;
 			}
 			/*std::cout << "Attach debugger now." << std::endl;
 			Sleep(5000);
@@ -780,7 +776,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup wav [file]" << std::endl;
-				return 0;
+				return 1;
 			}
 			static FileReader fr(args[2]);
 			RiffReader rr(fr);
@@ -821,7 +817,7 @@ int entry(std::vector<std::string>&& args, bool)
 			if (args.size() != 3)
 			{
 				std::cout << "Syntax: soup websrv [dir]" << std::endl;
-				return 0;
+				return 1;
 			}
 			return cli_websrv(args[2]);
 		}
@@ -872,7 +868,7 @@ int entry(std::vector<std::string>&& args, bool)
 Available tools: )EOC" << all_tools << R"EOC(
 
 Legend: [Required] <Optional>)EOC" << std::endl;
-	return 0;
+	return 1;
 }
 
 SOUP_MAIN_CLI(entry);
