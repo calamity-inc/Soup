@@ -393,7 +393,7 @@ NAMESPACE_SOUP
 									results.emplace_back(static_cast<WasmType>(type));
 								}
 
-								types.emplace_back(FunctionType{ std::move(parameters), std::move(results) });
+								types.emplace_back(WasmFunctionType{ std::move(parameters), std::move(results) });
 							}
 							break;
 						}
@@ -797,7 +797,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	const std::string* WasmScript::getExportedFuntion(const std::string& name, const FunctionType** optOutType) const noexcept
+	const std::string* WasmScript::getExportedFuntion(const std::string& name, const WasmFunctionType** optOutType) const noexcept
 	{
 		if (auto e = export_map.find(name); e != export_map.end())
 		{
@@ -885,7 +885,7 @@ NAMESPACE_SOUP
 
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "args_sizes_get"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(2);
 				auto plen = vm.stack.top().i32; vm.stack.pop();
@@ -908,7 +908,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "args_get"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(2);
 				auto pstr = vm.stack.top().i32; vm.stack.pop();
@@ -929,7 +929,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "environ_sizes_get"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(2);
 				auto out_environ_buf_size = vm.stack.top().i32; vm.stack.pop();
@@ -947,7 +947,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "proc_exit"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(1);
 				auto code = vm.stack.top().i32; vm.stack.pop();
@@ -956,7 +956,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_prestat_get"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(2);
 				auto prestat = vm.stack.top().i32; vm.stack.pop();
@@ -984,7 +984,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_prestat_dir_name"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(3);
 				auto path_len = vm.stack.top().i32; vm.stack.pop();
@@ -1010,7 +1010,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_filestat_get"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(2);
 				auto out = vm.stack.top().i32; vm.stack.pop();
@@ -1021,7 +1021,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_fdstat_get"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(2);
 				auto out = vm.stack.top().i32; vm.stack.pop(); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L945
@@ -1057,7 +1057,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "path_filestat_get"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(5);
 				auto buf = vm.stack.top().i32; vm.stack.pop(); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L1064
@@ -1093,7 +1093,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "path_open"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(8);
 				auto out_fd = vm.stack.top().i32; vm.stack.pop();
@@ -1139,7 +1139,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_seek"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(4);
 				auto out_off = vm.stack.top().i32; vm.stack.pop();
@@ -1171,7 +1171,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_read"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(4);
 				auto out_nread = vm.stack.top().i32; vm.stack.pop();
@@ -1231,7 +1231,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_write"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(4);
 				auto out_nwritten = vm.stack.top().i32; vm.stack.pop();
@@ -1288,7 +1288,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("wasi_snapshot_preview1", "fd_close"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(1);
 				auto fd = vm.stack.top().i32; vm.stack.pop();
@@ -1305,7 +1305,7 @@ NAMESPACE_SOUP
 	{
 		if (auto fi = getImportedFunction("spectest", "print_i32"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				API_CHECK_STACK(1);
 				vm.stack.pop();
@@ -1313,7 +1313,7 @@ NAMESPACE_SOUP
 		}
 		if (auto fi = getImportedFunction("spectest", "print"))
 		{
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
 			{
 				// This function is apparently overloaded, so in theory it might have to pop a variable number of arguments.
 			};
@@ -1335,7 +1335,13 @@ NAMESPACE_SOUP
 			}
 			if (imp.ptr)
 			{
-				imp.ptr(vm, func_index);
+				SOUP_IF_UNLIKELY (imp.type_index >= types.size())
+				{
+#if DEBUG_LOAD || DEBUG_API
+					std::cout << "call: type is out-of-bounds\n";
+#endif
+				}
+				imp.ptr(vm, func_index, types[imp.type_index]);
 			}
 			else
 			{
@@ -4071,7 +4077,7 @@ NAMESPACE_SOUP
 			const auto& imp = script.function_imports[function_index];
 			if (imp.ptr)
 			{
-				imp.ptr(*this, function_index);
+				imp.ptr(*this, function_index, type);
 				return true;
 			}
 			SOUP_IF_UNLIKELY (!imp.source)

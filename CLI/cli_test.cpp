@@ -1726,7 +1726,7 @@ endif;)") == "");
 		{
 			WasmScript ws;
 			assert(ws.load(base64::decode("AGFzbQEAAAABBwFgAn9/AX8DAgEABwoBBmFkZFR3bwAACgkBBwAgACABagsACgRuYW1lAgMBAAA=")));
-			const WasmScript::FunctionType* type = nullptr;
+			const WasmFunctionType* type = nullptr;
 			auto code = ws.getExportedFuntion("addTwo", &type);
 
 			assert(code);
@@ -1776,10 +1776,8 @@ endif;)") == "");
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAn9/AX9gAX8BfwINAQVpbmRleANhZGQAAAMCAQEFAwEAAAcTAgZhZGRUd28AAQZtZW1vcnkCAAoKAQgAIABBAhAACwA6BG5hbWUBGgIACWluZGV4L2FkZAEMaW5kZXgvYWRkVHdvAggCAAABAQABMAQHAgABMAEBMQYEAQABMA==")));
 			auto fi = scr.getImportedFunction("index", "add");
 			assert(fi);
-			fi->ptr = [](WasmVm& vm, uint32_t func_index)
+			fi->ptr = [](WasmVm& vm, uint32_t func_index, const WasmFunctionType& type)
 			{
-				auto& func = vm.script.function_imports[func_index];
-				auto& type = vm.script.types[func.type_index];
 				assert(type.parameters.size() == 2);
 				assert(type.results.size() == 1);
 
