@@ -202,59 +202,71 @@ NAMESPACE_SOUP
 	}
 
 #if SOUP_X86 && SOUP_BITS == 64
+	bool Reader::oml_ofb(uint32_t& v) noexcept
+	{
+		if (CpuInfo::get().supportsBMI2())
+		{
+			return oml_bmi2(v);
+		}
+		return oml<uint32_t>(v);
+	}
+
+	bool Reader::oml_ofb(uint64_t& v) noexcept
+	{
+		if (CpuInfo::get().supportsSSE4_1() // _mm_extract_epi64
+			&& CpuInfo::get().supportsBMI2() // _pext_u64
+			)
+		{
+			return oml_bmi2_sse41(v);
+		}
+		return oml<uint64_t>(v);
+	}
+
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("bmi2")))
 	#endif
-	bool Reader::oml(uint32_t& v) noexcept
+	bool Reader::oml_bmi2(uint32_t& v) noexcept
 	{
 		v = 0;
-		if (CpuInfo::get().supportsBMI2())
-		{
-			const auto pos = getPosition();
-			uint64_t e = 0;
-			size_t read_bytes = 5;
-			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const uint32_t contbits = _pext_u32(static_cast<uint32_t>(e), 0x8080'8080ull);
-			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+		const auto pos = getPosition();
+		uint64_t e = 0;
+		size_t read_bytes = 5;
+		SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const uint64_t mask = (1ull << (8 * byte_length)) - 1;
-			v = static_cast<uint32_t>(_pext_u64(e & mask, 0x7f'7f7f'7f7full));
+		const uint32_t contbits = _pext_u32(static_cast<uint32_t>(e), 0x8080'8080ull);
+		const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-			seek(pos + byte_length);
-			return read_bytes >= byte_length;
-		}
-		return oml<uint32_t>(v);
+		const uint64_t mask = (1ull << (8 * byte_length)) - 1;
+		v = static_cast<uint32_t>(_pext_u64(e & mask, 0x7f'7f7f'7f7full));
+
+		seek(pos + byte_length);
+		return read_bytes >= byte_length;
 	}
 
 	#if defined(__GNUC__) || defined(__clang__)
 	__attribute__((target("sse4.1,bmi2")))
 	#endif
-	bool Reader::oml(uint64_t& v) noexcept
+	bool Reader::oml_bmi2_sse41(uint64_t& v) noexcept
 	{
 		v = 0;
-		if (CpuInfo::get().supportsSSE4_1() // _mm_extract_epi64
-			&& CpuInfo::get().supportsBMI2() // _pext_u64
-			)
-		{
-			const auto pos = getPosition();
-			__m128i e{};
-			size_t read_bytes = 10;
-			SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const uint32_t contbits = _mm_movemask_epi8(e) & 0x1ff;
-			const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
+		const auto pos = getPosition();
+		__m128i e{};
+		size_t read_bytes = 10;
+		SOUP_RETHROW_FALSE(raw(&e, read_bytes) || (seekEnd(), (read_bytes = (getPosition() - pos)), seek(pos), raw(&e, read_bytes)));
 
-			const uint64_t mask_lo = ((byte_length < sizeof(uint64_t)) * (1ull << (8 * byte_length))) - 1;
-			const uint64_t mask_hi = (byte_length > sizeof(uint64_t)) * ((1ull << (8 * (byte_length - sizeof(uint64_t)))) - 1);
-			uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask_lo, 0x7f7f'7f7f'7f7f'7f7full);
-			uint64_t hi = _pext_u64(_mm_extract_epi64(e, 1) & mask_hi, 0x7f7f'7f7f'7f7f'7f7full);
-			v = (hi << 56) | lo;
+		const uint32_t contbits = _mm_movemask_epi8(e) & 0x1ff;
+		const auto byte_length = 1 + bitutil::getNumTrailingZeros(~contbits);
 
-			seek(pos + byte_length);
-			return read_bytes >= byte_length;
-		}
-		return oml<uint64_t>(v);
+		const uint64_t mask_lo = ((byte_length < sizeof(uint64_t)) * (1ull << (8 * byte_length))) - 1;
+		const uint64_t mask_hi = (byte_length > sizeof(uint64_t)) * ((1ull << (8 * (byte_length - sizeof(uint64_t)))) - 1);
+		uint64_t lo = _pext_u64(_mm_cvtsi128_si64(e) & mask_lo, 0x7f7f'7f7f'7f7f'7f7full);
+		uint64_t hi = _pext_u64(_mm_extract_epi64(e, 1) & mask_hi, 0x7f7f'7f7f'7f7f'7f7full);
+		v = (hi << 56) | lo;
+
+		seek(pos + byte_length);
+		return read_bytes >= byte_length;
 	}
 #endif
 }

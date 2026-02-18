@@ -31,7 +31,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - address: pass
 - align: FAIL (Soup doesn't fail on some malformed modules)
 - binary: FAIL (Soup doesn't fail on some malformed modules)
-- binary-leb128: FAIL (soup::Reader::oml expects optimal encoding on x86_64)
+- binary-leb128: FAIL (Soup uses u8 for some flags when really they should be read using oml)
 - block: pass
 - br: pass
 - br_if: pass
@@ -745,6 +745,10 @@ NAMESPACE_SOUP
 					{
 						uint8_t flags;
 						r.u8(flags);
+#if DEBUG_LOAD
+						std::cout << "data flags: " << (int)flags << "\n";
+#endif
+						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 						if (flags & 1)
 						{
 							size_t size; r.oml(size);
@@ -752,6 +756,11 @@ NAMESPACE_SOUP
 						}
 						else
 						{
+							/*if (flags & 0b10)
+							{
+								size_t memidx; r.oml(memidx);
+							}*/
+
 							WasmValue base;
 							SOUP_RETHROW_FALSE(readConstant(r, base));
 							SOUP_IF_UNLIKELY (base.type != (memory.memory64 ? WASM_I64 : WASM_I32))
