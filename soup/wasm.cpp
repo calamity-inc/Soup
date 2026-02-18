@@ -10,6 +10,9 @@
 #include "Exception.hpp"
 #include "MemoryRefReader.hpp"
 #include "Reader.hpp"
+#if SOUP_WASM_PEDANTIC
+#include "unicode.hpp"
+#endif
 
 #define DEBUG_LOAD false
 #define DEBUG_VM false
@@ -34,14 +37,14 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - address: pass
 - align: FAIL (Soup doesn't fail on some malformed modules)
 - binary: FAIL (Soup doesn't fail on some malformed modules)
-- binary-leb128: FAIL (Soup uses u8 for some flags when really they should be read using oml)
+- binary-leb128: FAIL (I genuinely have no clue what this test wants)
 - block: pass
 - br: pass
 - br_if: pass
 - br_table: pass
 - bulk: FAIL (missing support for passive data segments)
 - call: pass
-- call_indirect: FAIL (Soup doesn't validate the call type is compatible with the function type)
+- call_indirect: pass_pedantic
 - comments: pass
 - const: pass
 - conversions: pass
@@ -117,10 +120,10 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - unreached-invalid: pass (Soup doesn't do static validation)
 - unreached-valid: pass
 - unwind: pass
-- utf8-custom-section-id: FAIL (and who cares if custom section names are not valid UTF-8?)
-- utf8-import-field: pass (probably not for the right reason, but lol)
-- utf8-import-module: pass (probably not for the right reason, but lol)
-- utf8-invalid-encoding: pass (probably not for the right reason, but lol)
+- utf8-custom-section-id: pass_pedantic
+- utf8-import-field: pass (due to missing support for global imports)
+- utf8-import-module: pass (due to missing support for global imports)
+- utf8-invalid-encoding: pass (due to Soup not parsing .wat files)
 - memory64/address64: pass
 - memory64/align64: pass
 - memory64/binary_leb128_64: FAIL (Soup doesn't fail on some malformed modules)
@@ -173,6 +176,26 @@ NAMESPACE_SOUP
 		case WASM_EXTERNREF: return "externref";
 		}
 		return std::to_string(type);
+	}
+
+	// WasmFunctionType
+
+	std::string WasmFunctionType::toString() const SOUP_EXCAL
+	{
+		std::string str = "(param";
+		for (const auto& t : parameters)
+		{
+			str.push_back(' ');
+			str.append(wasm_type_to_string(t));
+		}
+		str.append(") (result");
+		for (const auto& t : results)
+		{
+			str.push_back(' ');
+			str.append(wasm_type_to_string(t));
+		}
+		str.push_back(')');
+		return str;
 	}
 
 	// WasmScript::Memory
@@ -367,6 +390,25 @@ NAMESPACE_SOUP
 				r.skip(section_size);
 				break;
 
+#if SOUP_WASM_PEDANTIC
+			case 0: // Custom
+				{
+					SOUP_RETHROW_FALSE(section_size != 0);
+					const auto section_end = r.getPosition() + section_size;
+					size_t name_len;
+					r.oml(name_len);
+					//std::cout << "custom section: name_len = " << name_len << "\n";
+					SOUP_RETHROW_FALSE(name_len <= 0x1000);
+					std::string name;
+					r.str(name_len, name);
+					auto name_utf32 = unicode::utf8_to_utf32(name);
+					SOUP_RETHROW_FALSE(name_utf32.find(unicode::REPLACEMENT_CHAR) == std::string::npos); // UTF-8 must be valid
+					SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == name); // UTF-8 must also be canonically represented (so, no overlong encodings)
+					r.seek(section_end);
+				}
+				break;
+#endif
+
 			case 1: // Type
 				{
 					size_t num_types;
@@ -556,6 +598,8 @@ NAMESPACE_SOUP
 #else
 						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 #endif
+						//std::cout << "pages = " << pages << "\n";
+						//std::cout << "page_limit = " << memory.page_limit << "\n";
 						if (pages == 0)
 						{
 							memory.data = (uint8_t*)soup::malloc(1);
@@ -563,6 +607,7 @@ NAMESPACE_SOUP
 						}
 						else
 						{
+							SOUP_RETHROW_FALSE(pages <= memory.page_limit);
 							memory.data = (uint8_t*)soup::malloc(pages * 0x10'000);
 							memory.size = pages * 0x10'000;
 						}
@@ -649,10 +694,10 @@ NAMESPACE_SOUP
 #endif
 					while (num_segments--)
 					{
-						uint8_t flags;
-						r.u8(flags);
+						uint32_t flags;
+						r.oml(flags);
 #if DEBUG_LOAD
-						std::cout << "elem flags: " << (int)flags << "\n";
+						std::cout << "elem flags: " << flags << "\n";
 #endif
 						if (flags & 1)
 						{
@@ -782,10 +827,10 @@ NAMESPACE_SOUP
 #endif
 					while (num_segments--)
 					{
-						uint8_t flags;
-						r.u8(flags);
+						uint32_t flags;
+						r.oml(flags);
 #if DEBUG_LOAD
-						std::cout << "data flags: " << (int)flags << "\n";
+						std::cout << "data flags: " << flags << "\n";
 #endif
 						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 						if (flags & 1)
@@ -1739,7 +1784,6 @@ NAMESPACE_SOUP
 						return false;
 					}
 					uint32_t function_index = table.values[element_index] & 0xffff'ffff;
-					//SOUP_RETHROW_FALSE(function_index < script.functions.size() && script.functions[function_index] == type_index);
 					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
 				break;
@@ -4301,6 +4345,34 @@ NAMESPACE_SOUP
 			return false;
 		}
 		const auto& type = script->types[type_index];
+
+#if SOUP_WASM_PEDANTIC
+		if (script == &this->script)
+		{
+			uint32_t func_type_index = script->getTypeIndexForFunction(function_index);
+			if (type_index != func_type_index)
+			{
+				SOUP_IF_UNLIKELY (func_type_index >= script->types.size())
+				{
+#if DEBUG_VM
+					std::cout << "call(pedantic): function type is out-of-bounds\n";
+#endif
+					return false;
+				}
+				const auto& func_type = script->types[func_type_index];
+#if DEBUG_VM
+				std::cout << "call: calling " << func_type.toString() << " with " << type.toString() << "\n";
+#endif
+				SOUP_IF_UNLIKELY (type != func_type)
+				{
+#if DEBUG_VM
+					std::cout << "call(pedantic): function type is incompatible with call type\n";
+#endif
+					return false;
+				}
+			}
+		}
+#endif
 
 		if (function_index < script->function_imports.size())
 		{

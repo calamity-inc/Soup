@@ -7,6 +7,11 @@
 #include <string.hpp>
 #include <wasm.hpp>
 
+#define WAIT_FOR_DEBUGGER false
+#if WAIT_FOR_DEBUGGER
+#include <os.hpp>
+#endif
+
 using namespace soup;
 
 static std::vector<UniquePtr<int64_t>> externrefs;
@@ -48,9 +53,11 @@ static void instantiate_value(const JsonObject& desc, WasmValue& out)
 
 int cli_wast(const std::string& file)
 {
-	/*std::cout << "Attach debugger now." << std::endl;
-	Sleep(5000);
-	std::cout << "Starting." << std::endl;*/
+#if WAIT_FOR_DEBUGGER
+	std::cout << "Attach debugger now." << std::endl;
+	os::sleep(5000);
+	std::cout << "Starting." << std::endl;
+#endif
 	if (auto jr = json::decode(string::fromFile(file)))
 	{
 		SharedPtr<WasmScript> scr = soup::make_shared<WasmScript>();

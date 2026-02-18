@@ -17,6 +17,11 @@
 #define SOUP_WASM_MEMORY64 SOUP_BITS >= 64
 #endif
 
+#ifndef SOUP_WASM_PEDANTIC
+// Set to true if you love wasting CPU time just so you can error in edge cases for spec conformity.
+#define SOUP_WASM_PEDANTIC false
+#endif
+
 NAMESPACE_SOUP
 {
 	class WasmVm;
@@ -38,6 +43,11 @@ NAMESPACE_SOUP
 	{
 		std::vector<WasmType> parameters;
 		std::vector<WasmType> results;
+
+		[[nodiscard]] bool operator==(const WasmFunctionType& b) const noexcept { return parameters == b.parameters && results == b.results; }
+		[[nodiscard]] bool operator!=(const WasmFunctionType& b) const noexcept { return !operator==(b); }
+
+		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 	};
 
 	using wasm_ffi_func_t = void(*)(WasmVm&, uint32_t func_index, const WasmFunctionType&);
