@@ -21,9 +21,11 @@
 #include "string.hpp"
 #endif
 
-// Good resources:
+// Useful resources:
 // - https://webassembly.github.io/wabt/demo/wat2wasm/
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
+// - https://pengowray.github.io/wasm-ops/
+// - https://webassembly.github.io/spec/versions/core/WebAssembly-2.0.pdf (not the latest version, but "WASM 2.0 minus SIMD plus Memory64" seems like a reasonable target for Soup right now)
 
 /*
 Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1ab1b003d21617/test/core)
@@ -62,7 +64,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - forward: pass
 - func: pass
 - func_ptrs: pass
-- global: FAIL (due to missing support for global imports)
+- global: FAIL (missing support for global imports)
 - i32: pass
 - i64: pass
 - if: pass
@@ -102,7 +104,7 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - table: FAIL (missing support for table imports)
 - table-sub: pass (Soup doesn't do static validation)
 - table_copy: FAIL (missing support for table.copy instruction)
-- table_fill: FAIL (missing support for table.fill instruction)
+- table_fill: pass
 - table_get: pass
 - table_grow: FAIL (missing support for table.grow & table.size instructions)
 - table_init: FAIL (missing support for table.init instruction)
@@ -3687,6 +3689,44 @@ NAMESPACE_SOUP
 					}
 					break;
 
+				case 0x11: // table.fill
+					{
+						size_t table_index;
+						r.oml(table_index);
+						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
+						{
+#if DEBUG_VM
+							std::cout << "table.fill: table index " << table_index << " >= " << script.tables.size() << "\n";
+#endif
+							return false;
+						}
+						auto& table = script.tables[table_index];
+						WASM_CHECK_STACK(3);
+						auto& size = stack[stack.size() - 1].i32;
+						auto& value = stack[stack.size() - 2];
+						auto& offset = stack[stack.size() - 3].i32;
+						SOUP_IF_UNLIKELY (value.type != table.type)
+						{
+#if DEBUG_VM
+							std::cout << "table.fill: attempt to assign " << wasm_type_to_string(value.type) << " to a table of " << wasm_type_to_string(table.type) << "\n";
+#endif
+							return false;
+						}
+						SOUP_IF_UNLIKELY (offset + size > table.values.size())
+						{
+#if DEBUG_VM
+							std::cout << "out-of-bounds table.fill\n";
+#endif
+							return false;
+						}
+						while (size--)
+						{
+							table.values[offset++] = value.i64;
+						}
+						stack.erase(stack.end() - 3, stack.end());
+					}
+					break;
+
 				default:
 #if DEBUG_VM
 					std::cout << "Unsupported opcode: " << string::hex(0xFC00 | op) << "\n";
@@ -4035,6 +4075,13 @@ NAMESPACE_SOUP
 
 				case 0x0b: // memory.fill
 					r.skip(1);
+					break;
+
+				case 0x11: // table.fill
+					{
+						size_t imm;
+						r.oml(imm);
+					}
 					break;
 
 #if DEBUG_VM
