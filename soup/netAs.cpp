@@ -17,7 +17,7 @@ NAMESPACE_SOUP
 				WasmVm vm(ws);
 				vm.locals.emplace_back(this->number);
 				if (vm.run(*code)
-					&& vm.stack.top().i32
+					&& vm.stack.back().i32
 					)
 				{
 					return true;
@@ -38,7 +38,7 @@ NAMESPACE_SOUP
 					WasmVm vm(ws);
 					ws.memory.encodeUPTR(vm.locals.emplace_back(), scrap);
 					if (vm.run(*code)
-						&& vm.stack.top().i32
+						&& vm.stack.back().i32
 						)
 					{
 						return true;

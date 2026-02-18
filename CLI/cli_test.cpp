@@ -1735,8 +1735,8 @@ endif;)") == "");
 			vm.locals.emplace_back(2);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top().i32 == 3);
-			assert(vm.stack.pop(), vm.stack.empty());
+			assert(vm.stack.back().i32 == 3);
+			assert(vm.stack.pop_back(), vm.stack.empty());
 
 			assert(type);
 			assert(type->parameters.size() == 2);
@@ -1755,8 +1755,8 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*code));
 				assert(!vm.stack.empty());
-				assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(scr.memory.getPointer<const UTF16_CHAR_TYPE>(vm.stack.top().i32)) == "lol");
-				assert(vm.stack.pop(), vm.stack.empty());
+				assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(scr.memory.getPointer<const UTF16_CHAR_TYPE>(vm.stack.back().i32)) == "lol");
+				assert(vm.stack.pop_back(), vm.stack.empty());
 			}
 			{
 				auto code = scr.getExportedFuntion("get_byte");
@@ -1765,9 +1765,9 @@ endif;)") == "");
 				vm.locals.emplace_back(1036);
 				assert(vm.run(*code));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top().type == WASM_I32);
-				assert(vm.stack.top().i32 == 0x1c);
-				assert(vm.stack.pop(), vm.stack.empty());
+				assert(vm.stack.back().type == WASM_I32);
+				assert(vm.stack.back().i32 == 0x1c);
+				assert(vm.stack.pop_back(), vm.stack.empty());
 			}
 		});
 		test("Imports", []
@@ -1781,9 +1781,9 @@ endif;)") == "");
 				assert(type.parameters.size() == 2);
 				assert(type.results.size() == 1);
 
-				auto b = vm.stack.top(); vm.stack.pop();
-				auto a = vm.stack.top(); vm.stack.pop();
-				vm.stack.push(a.i32 + b.i32);
+				auto b = vm.stack.back(); vm.stack.pop_back();
+				auto a = vm.stack.back(); vm.stack.pop_back();
+				vm.stack.emplace_back(a.i32 + b.i32);
 			};
 			auto code = scr.getExportedFuntion("addTwo");
 			assert(code);
@@ -1791,8 +1791,8 @@ endif;)") == "");
 			vm.locals.emplace_back(40);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top().i32 == 42);
-			assert(vm.stack.pop(), vm.stack.empty());			
+			assert(vm.stack.back().i32 == 42);
+			assert(vm.stack.pop_back(), vm.stack.empty());			
 		});
 		test("Call Non-Imported", []
 		{
@@ -1807,8 +1807,8 @@ endif;)") == "");
 			scr.memory.encodeUPTR(vm.locals.emplace_back(), scrap);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top().i32 == 1);
-			assert(vm.stack.pop(), vm.stack.empty());
+			assert(vm.stack.back().i32 == 1);
+			assert(vm.stack.pop_back(), vm.stack.empty());
 		});
 		test("Call Indirect", []
 		{
@@ -1836,9 +1836,9 @@ endif;)") == "");
 			WasmVm vm(scr);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top().type == WASM_I32);
-			assert(vm.stack.top().i32 == 42);
-			assert(vm.stack.pop(), vm.stack.empty());
+			assert(vm.stack.back().type == WASM_I32);
+			assert(vm.stack.back().i32 == 42);
+			assert(vm.stack.pop_back(), vm.stack.empty());
 		});
 		test("Forward Branching", []
 		{
@@ -1861,9 +1861,9 @@ endif;)") == "");
 			WasmVm vm(scr);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top().type == WASM_I32);
-			assert(vm.stack.top().i32 == 42);
-			assert(vm.stack.pop(), vm.stack.empty());
+			assert(vm.stack.back().type == WASM_I32);
+			assert(vm.stack.back().i32 == 42);
+			assert(vm.stack.pop_back(), vm.stack.empty());
 		});
 		test("Backward Branching", []
 		{
@@ -1886,9 +1886,9 @@ endif;)") == "");
 			WasmVm vm(scr);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top().type == WASM_I32);
-			assert(vm.stack.top().i32 == 1);
-			assert(vm.stack.pop(), vm.stack.empty());
+			assert(vm.stack.back().type == WASM_I32);
+			assert(vm.stack.back().i32 == 1);
+			assert(vm.stack.pop_back(), vm.stack.empty());
 		});
 		test("Floats", []
 		{
@@ -1900,9 +1900,9 @@ endif;)") == "");
 			vm.locals.emplace_back(5.0);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
-			assert(vm.stack.top().type == WASM_F64);
-			assert(vm.stack.top().f64 == 120.0);
-			assert(vm.stack.pop(), vm.stack.empty());
+			assert(vm.stack.back().type == WASM_F64);
+			assert(vm.stack.back().f64 == 120.0);
+			assert(vm.stack.pop_back(), vm.stack.empty());
 		});
 		test("table.get & table.set", []
 		{
@@ -1925,8 +1925,8 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*get));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top().type == WASM_FUNCREF);
-				assert(vm.stack.top().i32 == 0);
+				assert(vm.stack.back().type == WASM_FUNCREF);
+				assert(vm.stack.back().i32 == 0);
 			}
 			{
 				WasmVm vm(scr);
@@ -1937,8 +1937,8 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*get));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top().type == WASM_FUNCREF);
-				assert(vm.stack.top().i32 == 69);
+				assert(vm.stack.back().type == WASM_FUNCREF);
+				assert(vm.stack.back().i32 == 69);
 			}
 		});
 		test("externref global", []
@@ -1962,8 +1962,8 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*get));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top().type == WASM_EXTERNREF);
-				assert(vm.stack.top().i64 == 0);
+				assert(vm.stack.back().type == WASM_EXTERNREF);
+				assert(vm.stack.back().i64 == 0);
 			}
 			{
 				WasmVm vm(scr);
@@ -1974,8 +1974,8 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*get));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top().type == WASM_EXTERNREF);
-				assert(vm.stack.top().i64 == 123);
+				assert(vm.stack.back().type == WASM_EXTERNREF);
+				assert(vm.stack.back().i64 == 123);
 			}
 		});
 		test("funcref global", []
@@ -1999,8 +1999,8 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*is_null));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top().type == WASM_I32);
-				assert(vm.stack.top().i32);
+				assert(vm.stack.back().type == WASM_I32);
+				assert(vm.stack.back().i32);
 			}
 			{
 				WasmVm vm(scr);
@@ -2010,8 +2010,8 @@ endif;)") == "");
 				WasmVm vm(scr);
 				assert(vm.run(*is_null));
 				assert(!vm.stack.empty());
-				assert(vm.stack.top().type == WASM_I32);
-				assert(!vm.stack.top().i32);
+				assert(vm.stack.back().type == WASM_I32);
+				assert(!vm.stack.back().i32);
 			}
 		});
 	}

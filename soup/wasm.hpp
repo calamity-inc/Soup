@@ -184,13 +184,13 @@ NAMESPACE_SOUP
 		void linkSpectestShim() noexcept;
 
 		// May throw if an imported C++ function throws.
-		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::stack<WasmValue>* out = nullptr);
+		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::vector<WasmValue>* out = nullptr);
 	};
 
 	class WasmVm
 	{
 	public:
-		std::stack<WasmValue> stack;
+		std::vector<WasmValue> stack;
 		std::vector<WasmValue> locals;
 		WasmScript& script;
 

@@ -123,7 +123,7 @@ int cli_wast(const std::string& file)
 				}
 				else
 				{
-					std::stack<WasmValue> stack;
+					std::vector<WasmValue> stack;
 					if (cmd.contains("action"))
 					{
 						const auto& action = cmd.at("action").asObj();
@@ -176,8 +176,8 @@ int cli_wast(const std::string& file)
 							if (value == "nan:arithmetic")
 							{
 								SOUP_IF_UNLIKELY (type == "f32"
-									? !std::isnan(stack.top().f32)
-									: !std::isnan(stack.top().f64)
+									? !std::isnan(stack.back().f32)
+									: !std::isnan(stack.back().f64)
 								)
 								{
 									std::cout << "Return value was not NaN for test at line " << cmd.at("line").asInt().value << std::endl;
@@ -187,8 +187,8 @@ int cli_wast(const std::string& file)
 							else if (value == "nan:canonical")
 							{
 								if (type == "f32"
-									? (stack.top().i32 != 0x7fc00000 && stack.top().i32 != 0xffc00000)
-									: (stack.top().i64 != 0x7ff8000000000000 && stack.top().i64 != 0xfff8000000000000)
+									? (stack.back().i32 != 0x7fc00000 && stack.back().i32 != 0xffc00000)
+									: (stack.back().i64 != 0x7ff8000000000000 && stack.back().i64 != 0xfff8000000000000)
 									)
 								{
 									std::cout << "Return value was not nan:canonical for test at line " << cmd.at("line").asInt().value << std::endl;
@@ -199,7 +199,7 @@ int cli_wast(const std::string& file)
 							{
 								WasmValue expected_vw;
 								instantiate_value(expected, expected_vw);
-								SOUP_IF_UNLIKELY (stack.top() != expected_vw)
+								SOUP_IF_UNLIKELY (stack.back() != expected_vw)
 								{
 									std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
 									if (value == "null")
@@ -215,23 +215,23 @@ int cli_wast(const std::string& file)
 										}
 										std::cout << std::endl;
 									}
-									std::cout << "- Actual: <" << wasm_type_to_string(stack.top().type) << "> " << (uint64_t)stack.top().i64;
-									if (stack.top().type == WASM_EXTERNREF)
+									std::cout << "- Actual: <" << wasm_type_to_string(stack.back().type) << "> " << (uint64_t)stack.back().i64;
+									if (stack.back().type == WASM_EXTERNREF)
 									{
-										if (stack.top().i64 == 0)
+										if (stack.back().i64 == 0)
 										{
 											std::cout << " (null)";
 										}
 										else
 										{
-											std::cout << " (*-> " << *(uint64_t*)stack.top().i64 << ")";
+											std::cout << " (*-> " << *(uint64_t*)stack.back().i64 << ")";
 										}
 									}
 									std::cout << std::endl;
 									goto _wast_next_cmd;
 								}
 							}
-							stack.pop();
+							stack.pop_back();
 						}
 						// When code uses 'return', there may be superfluous values on the stack. This doesn't affect VM semantics, tho.
 						/*SOUP_IF_UNLIKELY (!stack.empty())
