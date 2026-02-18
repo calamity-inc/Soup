@@ -4050,18 +4050,9 @@ NAMESPACE_SOUP
 		std::cout << "position after branch: " << r.getPosition() << "\n";
 #endif
 
-		std::vector<WasmValue> results;
-		for (size_t i = 0; i != ctrlflow.top().num_values; ++i)
+		if (const auto result_stack_size = ctrlflow.top().stack_size + ctrlflow.top().num_values; stack.size() > result_stack_size)
 		{
-			results.emplace_back(stack.back()); stack.pop_back();
-		}
-		while (stack.size() > ctrlflow.top().stack_size)
-		{
-			stack.pop_back();
-		}
-		for (size_t i = 0; i != ctrlflow.top().num_values; ++i)
-		{
-			stack.emplace_back(results[(results.size() - 1) - i]);
+			stack.erase(stack.begin() + ctrlflow.top().stack_size, stack.end() - ctrlflow.top().num_values);
 		}
 
 #if DEBUG_VM
@@ -4152,42 +4143,14 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
 #endif
-		if (type.results.size() < 2)
+		SOUP_IF_UNLIKELY (callvm.stack.size() < type.results.size())
 		{
-			for (uint32_t i = 0; i != type.results.size(); ++i)
-			{
-				SOUP_IF_UNLIKELY (callvm.stack.empty())
-				{
 #if DEBUG_VM
-					std::cout << "call: not enough values on the stack after return\n";
+			std::cout << "call: not enough values on the stack after return\n";
 #endif
-					return false;
-				}
-				//std::cout << "return value: " << callvm.stack.back() << "\n";
-				stack.emplace_back(callvm.stack.back()); callvm.stack.pop_back();
-			}
+			return false;
 		}
-		else
-		{
-			std::vector<WasmValue> results{};
-			results.reserve(type.results.size());
-			for (uint32_t i = 0; i != type.results.size(); ++i)
-			{
-				SOUP_IF_UNLIKELY (callvm.stack.empty())
-				{
-#if DEBUG_VM
-					std::cout << "call: not enough values on the stack after return\n";
-#endif
-					return false;
-				}
-				//std::cout << "return value: " << callvm.stack.back() << "\n";
-				results.emplace_back(callvm.stack.back()); callvm.stack.pop_back();
-			}
-			for (auto i = results.rbegin(); i != results.rend(); ++i)
-			{
-				stack.emplace_back(std::move(*i));
-			}
-		}
+		this->stack.insert(this->stack.end(), callvm.stack.end() - type.results.size(), callvm.stack.end());
 		return true;
 	}
 
