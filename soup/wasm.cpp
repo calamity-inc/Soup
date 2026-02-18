@@ -42,7 +42,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - br: pass
 - br_if: pass
 - br_table: pass
-- bulk: FAIL (missing support for passive data segments)
+- bulk: FAIL (missing support for table.init)
 - call: pass
 - call_indirect: pass_pedantic
 - comments: pass
@@ -87,7 +87,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - memory_copy: pass
 - memory_fill: pass
 - memory_grow: pass
-- memory_init: FAIL (missing support for passive data segments)
+- memory_init: pass
 - memory_redundancy: pass
 - memory_size: pass
 - memory_trap: pass
@@ -137,7 +137,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - memory64/memory_copy64: pass
 - memory64/memory_fill64: pass
 - memory64/memory_grow64: pass
-- memory64/memory_init64: FAIL
+- memory64/memory_init64: pass
 - memory64/memory_redundancy64: pass
 - memory64/memory_trap64: pass
 - memory64/table64: FAIL
@@ -866,7 +866,7 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_segments << " data segment(s)\n";
 #endif
-					while (num_segments--)
+					for (uint32_t i = 0; i != num_segments; ++i)
 					{
 						uint32_t flags;
 						WASM_READ_OML(flags);
@@ -877,7 +877,9 @@ NAMESPACE_SOUP
 						{
 							size_t size;
 							WASM_READ_OML(size);
-							r.skip(size);
+							std::string data;
+							r.str(size, data);
+							passive_data_segments.emplace(i, std::move(data));
 						}
 						else
 						{
@@ -3816,6 +3818,49 @@ NAMESPACE_SOUP
 					}
 					break;
 
+				case 0x08: // memory.init
+					{
+						uint32_t segment_index;
+						WASM_READ_OML(segment_index);
+						r.skip(1); // memory index
+						WASM_CHECK_STACK(3);
+						auto size = stack.back().uptr(); stack.pop_back();
+						auto src_offset = stack.back().uptr(); stack.pop_back();
+						auto dst_offset = stack.back().uptr(); stack.pop_back();
+						auto e = script.passive_data_segments.find(segment_index);
+						SOUP_IF_UNLIKELY (e == script.passive_data_segments.end() && size != 0)
+						{
+#if DEBUG_VM
+							std::cout << "memory.init: invalid segment index\n";
+#endif
+							return false;
+						}
+						std::string scrap;
+						const auto& data = e == script.passive_data_segments.end() ? scrap : e->second;
+						auto dst_ptr = script.memory.getView(dst_offset, size);
+						SOUP_IF_UNLIKELY (!dst_ptr || !can_add_without_overflow(src_offset, size) || src_offset + size > data.size())
+						{
+#if DEBUG_VM
+							std::cout << "out-of-bounds memory.init\n";
+#endif
+							return false;
+						}
+						memcpy(dst_ptr, data.data() + src_offset, size);
+					}
+					break;
+
+				case 0x09: // data.drop
+					{
+						uint32_t segment_index;
+						WASM_READ_OML(segment_index);
+						if (auto e = script.passive_data_segments.find(segment_index); e != script.passive_data_segments.end())
+						{
+							e->second.clear();
+							e->second.shrink_to_fit();
+						}
+					}
+					break;
+
 				case 0x0a: // memory.copy
 					{
 						r.skip(2); // reserved
@@ -3823,14 +3868,16 @@ NAMESPACE_SOUP
 						auto size = stack.back().uptr(); stack.pop_back();
 						auto src = stack.back().uptr(); stack.pop_back();
 						auto dst = stack.back().uptr(); stack.pop_back();
-						SOUP_IF_UNLIKELY (size > script.memory.size || src + size > script.memory.size || dst + size > script.memory.size)
+						auto dst_ptr = script.memory.getView(dst, size);
+						auto src_ptr = script.memory.getView(src, size);
+						SOUP_IF_UNLIKELY (!dst_ptr || !src_ptr)
 						{
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.copy\n";
 #endif
 							return false;
 						}
-						memcpy(&script.memory.data[dst], &script.memory.data[src], size);
+						memcpy(dst_ptr, src_ptr, size);
 					}
 					break;
 
@@ -4306,21 +4353,30 @@ NAMESPACE_SOUP
 #endif
 				switch (op)
 				{
+				case 0x08: // memory.init
+					{
+						uint32_t imm;
+						WASM_READ_OML(imm);
+						r.skip(1);
+					}
+					break;
+
+				case 0x09: // data.drop
+				case 0x0f: // table.grow
+				case 0x10: // table.size
+				case 0x11: // table.fill
+					{
+						uint32_t imm;
+						WASM_READ_OML(imm);
+					}
+					break;
+
 				case 0x0a: // memory.copy
 					r.skip(2);
 					break;
 
 				case 0x0b: // memory.fill
 					r.skip(1);
-					break;
-
-				case 0x0f: // table.grow
-				case 0x10: // table.size
-				case 0x11: // table.fill
-					{
-						size_t imm;
-						WASM_READ_OML(imm);
-					}
 					break;
 
 #if DEBUG_VM

@@ -193,6 +193,7 @@ NAMESPACE_SOUP
 		std::vector<std::string> code{};
 		std::unordered_map<uint64_t, std::vector<uint32_t>> _internal_branch_hints{};
 		std::vector<Table> tables{};
+		std::unordered_map<uint32_t, std::string> passive_data_segments{};
 		StructMap custom_data;
 		uint32_t start_func_idx = -1;
 
