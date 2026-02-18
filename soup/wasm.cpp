@@ -71,7 +71,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - i32: pass
 - i64: pass
 - if: pass
-- imports: FAIL
+- imports: FAIL (when an import is duplicated, Soup only resolves the first instance)
 - inline-module: pass
 - int_exprs: pass
 - int_literals: pass
@@ -91,7 +91,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - memory_redundancy: pass
 - memory_size: pass
 - memory_trap: pass
-- names: FAIL
+- names: FAIL (when an import is duplicated, Soup only resolves the first instance)
 - nop: pass
 - obsolete-keywords: pass
 - ref_func: pass
@@ -128,26 +128,26 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - memory64/align64: pass
 - memory64/binary_leb128_64: pass_pedantic
 - memory64/bulk64: pass
-- memory64/call_indirect64: FAIL
+- memory64/call_indirect64: pass
 - memory64/endianness64: pass
 - memory64/float_memory64: pass
 - memory64/load64: pass
 - memory64/memory64: pass
-- memory64/memory64-imports: FAIL
+- memory64/memory64-imports: FAIL (missing support for memory & table imports & exports)
 - memory64/memory_copy64: pass
 - memory64/memory_fill64: pass
 - memory64/memory_grow64: pass
 - memory64/memory_init64: pass
 - memory64/memory_redundancy64: pass
 - memory64/memory_trap64: pass
-- memory64/table64: FAIL
-- memory64/table_copy64: FAIL (missing support for table.copy instruction)
+- memory64/table64: FAIL (missing support for table imports)
+- memory64/table_copy64: pass
 - memory64/table_copy_mixed: pass
 - memory64/table_fill64: pass
-- memory64/table_get64: FAIL
+- memory64/table_get64: pass
 - memory64/table_grow64: pass
-- memory64/table_init64: FAIL (missing support for table.init instruction)
-- memory64/table_set64: FAIL
+- memory64/table_init64: pass
+- memory64/table_set64: pass
 - memory64/table_size64: pass
 */
 
@@ -814,24 +814,25 @@ NAMESPACE_SOUP
 							Table scrap(WASM_FUNCREF);
 							// an out-of-bounds table index is apparently valid...
 							auto& table = tblidx >= tables.size() ? scrap : tables[tblidx];
-							uint8_t op;
-							r.u8(op);
-							SOUP_IF_UNLIKELY (op != 0x41) // i32.const
+							WasmValue base;
+							SOUP_RETHROW_FALSE(readConstant(r, base));
 							{
-#if DEBUG_LOAD
-								std::cout << "unexpected op for element initialisation: " << string::hex(op) << "\n";
+								WasmType index_type = WASM_I32;
+#if SOUP_WASM_MEMORY64
+								if (table.table64)
+								{
+									index_type = WASM_I64;
+								}
 #endif
-								return false;
-							}
-							uint32_t index; WASM_READ_OML(index);
-							r.u8(op);
-							SOUP_IF_UNLIKELY (op != 0x0b) // end
-							{
+								SOUP_IF_UNLIKELY (base.type != index_type)
+								{
 #if DEBUG_LOAD
-								std::cout << "missing end in element initialisation\n";
+									std::cout << "unexpected type for element initialisation: " << string::hex(static_cast<uint8_t>(base.type)) << "\n";
 #endif
-								return false;
+									return false;
+								}
 							}
+							auto index = base.uptr();
 							if (flags & 2)
 							{
 								r.skip(1); // reserved
