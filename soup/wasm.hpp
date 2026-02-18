@@ -12,6 +12,10 @@
 #include "SharedPtr.hpp"
 #include "StructMap.hpp"
 
+#ifndef SOUP_WASM_MEMORY64
+#define SOUP_WASM_MEMORY64 true
+#endif
+
 NAMESPACE_SOUP
 {
 	class WasmVm;
@@ -75,11 +79,18 @@ NAMESPACE_SOUP
 		{
 			uint8_t* data;
 			size_t size;
+#if SOUP_WASM_MEMORY64
 			uint64_t page_limit : 48;
 			uint64_t memory64 : 1;
+#else
+			uint32_t page_limit;
+#endif
 
 			Memory() noexcept
-				: data(nullptr), size(0), page_limit(0x10'000), memory64(0)
+				: data(nullptr), size(0), page_limit(0x10'000)
+#if SOUP_WASM_MEMORY64
+				, memory64(0)
+#endif
 			{
 			}
 

@@ -206,7 +206,13 @@ NAMESPACE_SOUP
 
 	size_t WasmScript::Memory::decodeUPTR(const WasmValue& in) noexcept
 	{
-		return memory64 ? static_cast<uint64_t>(in.i64) : static_cast<uint32_t>(in.i32);
+#if SOUP_WASM_MEMORY64
+		if (memory64)
+		{
+			return static_cast<uint64_t>(in.i64);
+		}
+#endif
+		return static_cast<uint32_t>(in.i32);
 	}
 
 	/*void WasmScript::Memory::encodeIPTR(WasmValue& out, intptr_t in) noexcept
@@ -223,11 +229,13 @@ NAMESPACE_SOUP
 
 	void WasmScript::Memory::encodeUPTR(WasmValue& out, size_t in) noexcept
 	{
+#if SOUP_WASM_MEMORY64
 		if (memory64)
 		{
 			out = static_cast<uint64_t>(in);
 		}
 		else
+#endif
 		{
 			out = static_cast<uint32_t>(in);
 		}
@@ -512,14 +520,22 @@ NAMESPACE_SOUP
 						size_t pages; r.oml(pages);
 						if (flags & 1)
 						{
+#if SOUP_WASM_MEMORY64
 							uint64_t page_limit;
 							r.oml(page_limit);
 							memory.page_limit = page_limit;
+#else
+							r.oml(memory.page_limit);
+#endif
 						}
+#if SOUP_WASM_MEMORY64
 						if (flags & 4)
 						{
 							memory.memory64 = true;
 						}
+#else
+						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+#endif
 						if (pages == 0)
 						{
 							memory.data = (uint8_t*)soup::malloc(1);
@@ -766,12 +782,21 @@ NAMESPACE_SOUP
 
 							WasmValue base;
 							SOUP_RETHROW_FALSE(readConstant(r, base));
-							SOUP_IF_UNLIKELY (base.type != (memory.memory64 ? WASM_I64 : WASM_I32))
 							{
-#if DEBUG_LOAD
-								std::cout << "unexpected type for data initialisation: " << string::hex(static_cast<uint8_t>(base.type)) << "\n";
+								WasmType addr_type = WASM_I32;
+#if SOUP_WASM_MEMORY64
+								if (memory.memory64)
+								{
+									addr_type = WASM_I64;
+								}
 #endif
-								return false;
+								SOUP_IF_UNLIKELY (base.type != addr_type)
+								{
+#if DEBUG_LOAD
+									std::cout << "unexpected type for data initialisation: " << string::hex(static_cast<uint8_t>(base.type)) << "\n";
+#endif
+									return false;
+								}
 							}
 							size_t size; r.oml(size);
 							auto ptr = memory.getView(memory.decodeUPTR(base), size);
