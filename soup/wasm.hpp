@@ -182,6 +182,7 @@ NAMESPACE_SOUP
 			}
 
 			size_t grow(size_t delta, int64_t value = 0) SOUP_EXCAL;
+			bool copy(const Table& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
 		};
 
 		Memory memory;
@@ -194,6 +195,7 @@ NAMESPACE_SOUP
 		std::unordered_map<uint64_t, std::vector<uint32_t>> _internal_branch_hints{};
 		std::vector<Table> tables{};
 		std::unordered_map<uint32_t, std::string> passive_data_segments{};
+		std::unordered_map<uint32_t, Table> passive_elem_segments{};
 		StructMap custom_data;
 		uint32_t start_func_idx = -1;
 

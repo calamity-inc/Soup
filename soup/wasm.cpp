@@ -42,7 +42,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - br: pass
 - br_if: pass
 - br_table: pass
-- bulk: FAIL (missing support for table.init)
+- bulk: pass
 - call: pass
 - call_indirect: pass_pedantic
 - comments: pass
@@ -106,11 +106,11 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - switch: pass
 - table: FAIL (missing support for table imports)
 - table-sub: pass (Soup doesn't do static validation)
-- table_copy: FAIL (missing support for table.copy instruction)
+- table_copy: pass
 - table_fill: pass
 - table_get: pass
 - table_grow: pass
-- table_init: FAIL (missing support for table.init instruction)
+- table_init: pass
 - table_set: pass
 - table_size: pass
 - token: pass
@@ -127,7 +127,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - memory64/address64: pass
 - memory64/align64: pass
 - memory64/binary_leb128_64: pass_pedantic
-- memory64/bulk64: FAIL
+- memory64/bulk64: pass
 - memory64/call_indirect64: FAIL
 - memory64/endianness64: pass
 - memory64/float_memory64: pass
@@ -294,6 +294,39 @@ NAMESPACE_SOUP
 			}
 		}
 		return old_size;
+	}
+
+	bool WasmScript::Table::copy(const Table& src, size_t dst_offset, size_t src_offset, size_t size) noexcept
+	{
+		SOUP_IF_UNLIKELY (this->type != src.type)
+		{
+#if DEBUG_VM
+			std::cout << "WasmScript::Table::copy: different element types\n";
+#endif
+			return false;
+		}
+		SOUP_IF_UNLIKELY (!can_add_without_overflow(dst_offset, size) || dst_offset + size > this->values.size() || !can_add_without_overflow(src_offset, size) || src_offset + size > src.values.size())
+		{
+#if DEBUG_VM
+			std::cout << "out-of-bounds WasmScript::Table::copy: dst_offset=" << dst_offset << ", dst_size=" << this->values.size() << ", src_offset=" << src_offset << ", src_size=" << src.values.size() << ", size=" << size << "\n";
+#endif
+			return false;
+		}
+		if (this == &src && dst_offset > src_offset)
+		{
+			while (size--)
+			{
+				this->values[dst_offset + size] = src.values[src_offset + size];
+			}
+		}
+		else
+		{
+			while (size--)
+			{
+				this->values[dst_offset++] = src.values[src_offset++];
+			}
+		}
+		return true;
 	}
 	
 	// WasmScript
@@ -727,7 +760,7 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_segments << " element segment(s)\n";
 #endif
-					while (num_segments--)
+					for (uint32_t i = 0; i != num_segments; ++i)
 					{
 						uint32_t flags;
 						WASM_READ_OML(flags);
@@ -736,25 +769,35 @@ NAMESPACE_SOUP
 #endif
 						if (flags & 1)
 						{
+							uint8_t type = WASM_FUNCREF;
+							if (flags & 0b100)
+							{
+								r.u8(type);
+							}
+							else
+							{
+								r.skip(1);
+							}
 #if DEBUG_LOAD
-							std::cout << "skipping over passive/declarative elements\n";
+							std::cout << "passive elem segment of type " << (int)type << "\n";
 #endif
-
-							r.skip(1); // (flags & 0b100) ? reftype : elemkind
-
+							Table& vtbl = passive_elem_segments.emplace(i, static_cast<WasmType>(type)).first->second;
 							uint32_t num_elements;
 							WASM_READ_OML(num_elements);
+							vtbl.values.reserve(num_elements);
 							while (num_elements--)
 							{
 								if (flags & 0b100)
 								{
-									WasmValue scrap;
-									readConstant(r, scrap);
+									WasmValue value;
+									readConstant(r, value);
+									vtbl.values.emplace_back(/*vtbl.type == WASM_FUNCREF &&*/ value.type == vtbl.type ? value.i64 : 0);
 								}
 								else
 								{
 									uint32_t function_index;
 									WASM_READ_OML(function_index);
+									vtbl.values.emplace_back(vtbl.type == WASM_FUNCREF ? 0x1'0000'0000 | function_index : 0);
 								}
 							}
 						}
@@ -808,7 +851,7 @@ NAMESPACE_SOUP
 								{
 									WasmValue value;
 									readConstant(r, value);
-									if (table.type == WASM_FUNCREF && value.type == table.type)
+									if (/*table.type == WASM_FUNCREF &&*/ value.type == table.type)
 									{
 										table.values[index++] = value.i64;
 									}
@@ -1884,7 +1927,7 @@ NAMESPACE_SOUP
 
 			case 0x20: // local.get
 				{
-					size_t local_index;
+					uint32_t local_index;
 					WASM_READ_OML(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
@@ -1899,7 +1942,7 @@ NAMESPACE_SOUP
 
 			case 0x21: // local.set
 				{
-					size_t local_index;
+					uint32_t local_index;
 					WASM_READ_OML(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
@@ -1915,7 +1958,7 @@ NAMESPACE_SOUP
 
 			case 0x22: // local.tee
 				{
-					size_t local_index;
+					uint32_t local_index;
 					WASM_READ_OML(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
@@ -1931,7 +1974,7 @@ NAMESPACE_SOUP
 
 			case 0x23: // global.get
 				{
-					size_t global_index;
+					uint32_t global_index;
 					WASM_READ_OML(global_index);
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
@@ -1946,7 +1989,7 @@ NAMESPACE_SOUP
 
 			case 0x24: // global.set
 				{
-					size_t global_index;
+					uint32_t global_index;
 					WASM_READ_OML(global_index);
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
@@ -1962,7 +2005,7 @@ NAMESPACE_SOUP
 
 			case 0x25: // table.get
 				{
-					size_t table_index;
+					uint32_t table_index;
 					WASM_READ_OML(table_index);
 					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
@@ -1987,7 +2030,7 @@ NAMESPACE_SOUP
 
 			case 0x26: // table.set
 				{
-					size_t table_index;
+					uint32_t table_index;
 					WASM_READ_OML(table_index);
 					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
@@ -3900,9 +3943,75 @@ NAMESPACE_SOUP
 					}
 					break;
 
+				case 0x0c: // table.init
+					{
+						uint32_t segment_index;
+						WASM_READ_OML(segment_index);
+						uint32_t table_index;
+						WASM_READ_OML(table_index);
+						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
+						{
+#if DEBUG_VM
+							std::cout << "table.init: table index " << table_index << " >= " << script.tables.size() << "\n";
+#endif
+							return false;
+						}
+						auto& table = script.tables[table_index];
+						WASM_CHECK_STACK(3);
+						auto size = stack.back().uptr(); stack.pop_back();
+						auto src_offset = stack.back().uptr(); stack.pop_back();
+						auto dst_offset = stack.back().uptr(); stack.pop_back();
+						auto e = script.passive_elem_segments.find(segment_index);
+						SOUP_IF_UNLIKELY (e == script.passive_elem_segments.end() && size != 0)
+						{
+#if DEBUG_VM
+							std::cout << "table.init: invalid segment index\n";
+#endif
+							return false;
+						}
+						WasmScript::Table scrap(table.type);
+						SOUP_RETHROW_FALSE(table.copy(e == script.passive_elem_segments.end() ? scrap : e->second, dst_offset, src_offset, size));
+					}
+					break;
+
+				case 0x0d: // elem.drop
+					{
+						uint32_t segment_index;
+						WASM_READ_OML(segment_index);
+						if (auto e = script.passive_elem_segments.find(segment_index); e != script.passive_elem_segments.end())
+						{
+							e->second.values.clear();
+							e->second.values.shrink_to_fit();
+						}
+					}
+					break;
+
+				case 0x0e: // table.copy
+					{
+						uint32_t dst_table_index;
+						WASM_READ_OML(dst_table_index);
+						uint32_t src_table_index;
+						WASM_READ_OML(src_table_index);
+						SOUP_IF_UNLIKELY (dst_table_index >= script.tables.size() || src_table_index >= script.tables.size())
+						{
+#if DEBUG_VM
+							std::cout << "table.copy: out-of bounds table index\n";
+#endif
+							return false;
+						}
+						auto& dst_table = script.tables[dst_table_index];
+						const auto& src_table = script.tables[src_table_index];
+						WASM_CHECK_STACK(3);
+						auto size = stack.back().uptr(); stack.pop_back();
+						auto src_offset = stack.back().uptr(); stack.pop_back();
+						auto dst_offset = stack.back().uptr(); stack.pop_back();
+						SOUP_RETHROW_FALSE(dst_table.copy(src_table, dst_offset, src_offset, size));
+					}
+					break;
+
 				case 0x0f: // table.grow
 					{
-						size_t table_index;
+						uint32_t table_index;
 						WASM_READ_OML(table_index);
 						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 						{
@@ -3938,7 +4047,7 @@ NAMESPACE_SOUP
 
 				case 0x10: // table.size
 					{
-						size_t table_index;
+						uint32_t table_index;
 						WASM_READ_OML(table_index);
 						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 						{
@@ -3963,7 +4072,7 @@ NAMESPACE_SOUP
 
 				case 0x11: // table.fill
 					{
-						size_t table_index;
+						uint32_t table_index;
 						WASM_READ_OML(table_index);
 						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 						{
@@ -4097,8 +4206,9 @@ NAMESPACE_SOUP
 			case 0x24: // global.set
 			case 0x25: // table.get
 			case 0x26: // table.set
+			case 0xd2: // ref.func
 				{
-					size_t imm;
+					uint32_t imm;
 					WASM_READ_OML(imm);
 				}
 				break;
@@ -4190,13 +4300,6 @@ NAMESPACE_SOUP
 
 			case 0xd0: // ref.null
 				r.skip(1);
-				break;
-
-			case 0xd2: // ref.func
-				{
-					uint32_t idx;
-					WASM_READ_OML(idx);
-				}
 				break;
 
 #if DEBUG_VM
@@ -4362,6 +4465,7 @@ NAMESPACE_SOUP
 					break;
 
 				case 0x09: // data.drop
+				case 0x0d: // elem.drop
 				case 0x0f: // table.grow
 				case 0x10: // table.size
 				case 0x11: // table.fill
@@ -4377,6 +4481,15 @@ NAMESPACE_SOUP
 
 				case 0x0b: // memory.fill
 					r.skip(1);
+					break;
+
+				case 0x0c: // table.init
+					{
+						uint32_t segment_index;
+						WASM_READ_OML(segment_index);
+						uint32_t table_index;
+						WASM_READ_OML(table_index);
+					}
 					break;
 
 #if DEBUG_VM
