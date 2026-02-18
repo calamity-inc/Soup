@@ -9,11 +9,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include "math.hpp"
 #include "SharedPtr.hpp"
 #include "StructMap.hpp"
 
 #ifndef SOUP_WASM_MEMORY64
-#define SOUP_WASM_MEMORY64 true
+#define SOUP_WASM_MEMORY64 SOUP_BITS >= 64
 #endif
 
 NAMESPACE_SOUP
@@ -59,18 +60,27 @@ NAMESPACE_SOUP
 		};
 		WasmType type;
 
-		WasmValue() = default;
-		WasmValue(WasmType type) : i64(0), type(type) {}
-		WasmValue(int32_t i32) : i32(i32), hi32(0), type(WASM_I32) {}
-		WasmValue(uint32_t u32) : WasmValue(static_cast<int32_t>(u32)) {}
-		WasmValue(int64_t i64) : i64(i64), type(WASM_I64) {}
-		WasmValue(uint64_t u64) : WasmValue(static_cast<int64_t>(u64)) {}
-		WasmValue(float f32) : f32(f32), hi32(0), type(WASM_F32) {}
-		WasmValue(double f64) : f64(f64), type(WASM_F64) {}
-		WasmValue(void* ptr) : i64(reinterpret_cast<uintptr_t>(ptr)), type(WASM_EXTERNREF) {}
+		constexpr WasmValue() noexcept : i64(0), type(static_cast<WasmType>(0)) {}
+		constexpr WasmValue(WasmType type) noexcept : i64(0), type(type) {}
+		constexpr WasmValue(int32_t i32) noexcept : i32(i32), hi32(0), type(WASM_I32) {}
+		constexpr WasmValue(uint32_t u32) noexcept : WasmValue(static_cast<int32_t>(u32)) {}
+		constexpr WasmValue(int64_t i64) noexcept : i64(i64), type(WASM_I64) {}
+		constexpr WasmValue(uint64_t u64) noexcept : WasmValue(static_cast<int64_t>(u64)) {}
+		constexpr WasmValue(float f32) noexcept : f32(f32), hi32(0), type(WASM_F32) {}
+		constexpr WasmValue(double f64) noexcept : f64(f64), type(WASM_F64) {}
+		WasmValue(void* ptr) noexcept : i64(reinterpret_cast<uintptr_t>(ptr)), type(WASM_EXTERNREF) {}
 
 		[[nodiscard]] bool operator==(const WasmValue& b) const noexcept { return i64 == b.i64 && type == b.type; }
 		[[nodiscard]] bool operator!=(const WasmValue& b) const noexcept { return !operator==(b); }
+
+		[[nodiscard]] size_t uptr() const noexcept
+		{
+#if SOUP_WASM_MEMORY64
+			return i64; // i32 values are guaranteed to have 0 in hi32.
+#else
+			return i32;
+#endif
+		}
 	};
 
 	struct WasmScript
@@ -98,7 +108,7 @@ NAMESPACE_SOUP
 
 			[[nodiscard]] void* getView(size_t addr, size_t size) noexcept
 			{
-				SOUP_IF_LIKELY (addr + size <= this->size)
+				SOUP_IF_LIKELY (can_add_without_overflow(addr, size) && addr + size <= this->size)
 				{
 					return &this->data[addr];
 				}
@@ -118,11 +128,7 @@ NAMESPACE_SOUP
 			template <typename T>
 			[[nodiscard]] T* getPointer(const WasmValue& base, size_t offset = 0) noexcept
 			{
-				if (base.type == WASM_I64)
-				{
-					return getPointer<T>(static_cast<uint64_t>(base.i64) + offset);
-				}
-				return getPointer<T>(static_cast<uint32_t>(base.i32) + offset);
+				return getPointer<T>(base.uptr() + offset);
 			}
 
 			[[nodiscard]] std::string readString(size_t addr, size_t size) SOUP_EXCAL;
@@ -131,9 +137,6 @@ NAMESPACE_SOUP
 			bool write(size_t addr, const void* src, size_t size) noexcept;
 			bool write(const WasmValue& addr, const void* src, size_t size) noexcept;
 
-			//[[nodiscard]] intptr_t decodeIPTR(const WasmValue& in) noexcept;
-			[[nodiscard]] size_t decodeUPTR(const WasmValue& in) noexcept;
-			//void encodeIPTR(WasmValue& out, intptr_t in) noexcept;
 			void encodeUPTR(WasmValue& out, size_t in) noexcept;
 
 			size_t grow(size_t delta_pages) noexcept;
@@ -153,15 +156,22 @@ NAMESPACE_SOUP
 		struct Table
 		{
 			const WasmType type;
+#if SOUP_WASM_MEMORY64
+			bool table64 = false;
+#else
 			uint32_t limit;
+#endif
 			std::vector<uint64_t> values;
+#if SOUP_WASM_MEMORY64
+			uint64_t limit;
+#endif
 
 			Table(WasmType type) noexcept
 				: type(type), limit(0x10'000)
 			{
 			}
 
-			uint32_t grow(uint32_t delta, int64_t value = 0) SOUP_EXCAL;
+			size_t grow(size_t delta, int64_t value = 0) SOUP_EXCAL;
 		};
 
 		Memory memory;
@@ -229,9 +239,6 @@ NAMESPACE_SOUP
 		bool skipOverBranch(Reader& r, uint32_t depth, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth = 0);
-		//[[nodiscard]] intptr_t popIPTR() noexcept;
-		[[nodiscard]] size_t popUPTR() noexcept;
-		[[nodiscard]] static size_t readUPTR(Reader& r) noexcept;
 	};
 
 	struct WasmScrapAllocator

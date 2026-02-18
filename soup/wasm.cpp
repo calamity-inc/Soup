@@ -28,8 +28,8 @@
 // - https://webassembly.github.io/spec/versions/core/WebAssembly-2.0.pdf (not the latest version, but "WASM 2.0 minus SIMD plus Memory64" seems like a reasonable target for Soup right now)
 
 /*
-Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1ab1b003d21617/test/core)
-> Use wast2json from wabt then run `soup wast [file]`
+Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
+> Use wast2json from wabt then run `soup wast [jsonfile]`
 > Results:
 - address: pass
 - align: FAIL (Soup doesn't fail on some malformed modules)
@@ -121,6 +121,31 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - utf8-import-field: pass (probably not for the right reason, but lol)
 - utf8-import-module: pass (probably not for the right reason, but lol)
 - utf8-invalid-encoding: pass (probably not for the right reason, but lol)
+- memory64/address64: pass
+- memory64/align64: pass
+- memory64/binary_leb128_64: FAIL (Soup doesn't fail on some malformed modules)
+- memory64/bulk64: FAIL
+- memory64/call_indirect64: FAIL
+- memory64/endianness64: pass
+- memory64/float_memory64: pass
+- memory64/load64: pass
+- memory64/memory64: pass
+- memory64/memory64-imports: FAIL
+- memory64/memory_copy64: pass
+- memory64/memory_fill64: pass
+- memory64/memory_grow64: pass
+- memory64/memory_init64: FAIL
+- memory64/memory_redundancy64: pass
+- memory64/memory_trap64: pass
+- memory64/table64: FAIL
+- memory64/table_copy64: FAIL (missing support for table.copy instruction)
+- memory64/table_copy_mixed: pass
+- memory64/table_fill64: pass
+- memory64/table_get64: FAIL
+- memory64/table_grow64: pass
+- memory64/table_init64: FAIL (missing support for table.init instruction)
+- memory64/table_set64: FAIL
+- memory64/table_size64: pass
 */
 
 NAMESPACE_SOUP
@@ -196,36 +221,8 @@ NAMESPACE_SOUP
 
 	bool WasmScript::Memory::write(const WasmValue& addr, const void* src, size_t size) noexcept
 	{
-		return write(decodeUPTR(addr), src, size);
+		return write(addr.uptr(), src, size);
 	}
-
-	/*intptr_t WasmScript::Memory::decodeIPTR(const WasmValue& in) noexcept
-	{
-		return memory64 ? in.i64 : in.i32;
-	}*/
-
-	size_t WasmScript::Memory::decodeUPTR(const WasmValue& in) noexcept
-	{
-#if SOUP_WASM_MEMORY64
-		if (memory64)
-		{
-			return static_cast<uint64_t>(in.i64);
-		}
-#endif
-		return static_cast<uint32_t>(in.i32);
-	}
-
-	/*void WasmScript::Memory::encodeIPTR(WasmValue& out, intptr_t in) noexcept
-	{
-		if (memory64)
-		{
-			out = static_cast<int64_t>(in);
-		}
-		else
-		{
-			out = static_cast<int32_t>(in);
-		}
-	}*/
 
 	void WasmScript::Memory::encodeUPTR(WasmValue& out, size_t in) noexcept
 	{
@@ -261,10 +258,10 @@ NAMESPACE_SOUP
 
 	// WasmScript::Table
 
-	uint32_t WasmScript::Table::grow(uint32_t delta, int64_t value) SOUP_EXCAL
+	size_t WasmScript::Table::grow(size_t delta, int64_t value) SOUP_EXCAL
 	{
-		uint32_t old_size = -1;
-		if (values.size() + delta <= limit)
+		size_t old_size = -1;
+		if (can_add_without_overflow(values.size(), delta) && values.size() + delta <= limit)
 		{
 			old_size = values.size();
 			values.reserve(old_size + delta);
@@ -502,12 +499,19 @@ NAMESPACE_SOUP
 					{
 						uint8_t type;
 						r.u8(type);
+						auto& tbl = tables.emplace_back(static_cast<WasmType>(type));
 						uint8_t flags;
 						r.u8(flags);
+#if SOUP_WASM_MEMORY64
+						if (flags & 4)
+						{
+							tbl.table64 = true;
+						}
+#else
 						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+#endif
 						size_t initial;
 						r.oml(initial);
-						auto& tbl = tables.emplace_back(static_cast<WasmType>(type));
 						if (flags & 1)
 						{
 							r.oml(tbl.limit);
@@ -815,7 +819,7 @@ NAMESPACE_SOUP
 								}
 							}
 							size_t size; r.oml(size);
-							auto ptr = memory.getView(memory.decodeUPTR(base), size);
+							auto ptr = memory.getView(base.uptr(), size);
 							SOUP_IF_UNLIKELY (!ptr)
 							{
 #if DEBUG_LOAD
@@ -1847,7 +1851,7 @@ NAMESPACE_SOUP
 						return false;
 					}
 					WASM_CHECK_STACK(1);
-					auto elem_index = stack.back().i32; stack.pop_back();
+					auto elem_index = stack.back().uptr(); stack.pop_back();
 					const auto& table = script.tables[table_index];
 					SOUP_IF_UNLIKELY (elem_index >= table.values.size())
 					{
@@ -1873,7 +1877,7 @@ NAMESPACE_SOUP
 					}
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
-					auto elem_index = stack.back().i32; stack.pop_back();
+					auto elem_index = stack.back().uptr(); stack.pop_back();
 					auto& table = script.tables[table_index];
 					SOUP_IF_UNLIKELY (elem_index >= table.values.size())
 					{
@@ -1898,7 +1902,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -1918,7 +1922,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int64_t>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -1938,7 +1942,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<float>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -1958,7 +1962,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<double>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -1978,7 +1982,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int32_t>(*ptr));
@@ -1998,7 +2002,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
@@ -2018,7 +2022,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
@@ -2038,7 +2042,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
@@ -2058,7 +2062,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
@@ -2078,7 +2082,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
@@ -2098,7 +2102,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
@@ -2118,7 +2122,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
@@ -2138,7 +2142,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
@@ -2158,7 +2162,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<uint32_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
@@ -2180,7 +2184,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						*ptr = value.i32;
@@ -2201,7 +2205,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int64_t>(base, offset))
 					{
 						*ptr = value.i64;
@@ -2222,7 +2226,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<float>(base, offset))
 					{
 						*ptr = value.f32;
@@ -2243,7 +2247,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<double>(base, offset))
 					{
 						*ptr = value.f64;
@@ -2264,7 +2268,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i32);
@@ -2285,7 +2289,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i32);
@@ -2306,7 +2310,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i64);
@@ -2327,7 +2331,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i64);
@@ -2348,7 +2352,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					auto offset = readUPTR(r);
+					size_t offset; r.oml(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						*ptr = static_cast<int32_t>(value.i64);
@@ -2374,8 +2378,8 @@ NAMESPACE_SOUP
 				{
 					r.skip(1); // reserved
 					WASM_CHECK_STACK(1);
-					const auto old_size_pages = script.memory.grow(popUPTR());
-					script.memory.encodeUPTR(stack.emplace_back(), old_size_pages);
+					const auto old_size_pages = script.memory.grow(stack.back().uptr());
+					script.memory.encodeUPTR(stack.back(), old_size_pages);
 				}
 				break;
 
@@ -3697,10 +3701,10 @@ NAMESPACE_SOUP
 					{
 						r.skip(2); // reserved
 						WASM_CHECK_STACK(3);
-						auto size = popUPTR();
-						auto src = popUPTR();
-						auto dst = popUPTR();
-						SOUP_IF_UNLIKELY (src + size > script.memory.size || dst + size > script.memory.size)
+						auto size = stack.back().uptr(); stack.pop_back();
+						auto src = stack.back().uptr(); stack.pop_back();
+						auto dst = stack.back().uptr(); stack.pop_back();
+						SOUP_IF_UNLIKELY (size > script.memory.size || src + size > script.memory.size || dst + size > script.memory.size)
 						{
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.copy\n";
@@ -3715,9 +3719,9 @@ NAMESPACE_SOUP
 					{
 						r.skip(1); // reserved
 						WASM_CHECK_STACK(3);
-						auto size = popUPTR();
+						auto size = stack.back().uptr(); stack.pop_back();
 						auto value = stack.back().i32; stack.pop_back();
-						auto addr = popUPTR();
+						auto addr = stack.back().uptr(); stack.pop_back();
 						auto ptr = script.memory.getView(addr, size);
 						SOUP_IF_UNLIKELY (!ptr)
 						{
@@ -3744,7 +3748,7 @@ NAMESPACE_SOUP
 						auto& table = script.tables[table_index];
 						WASM_CHECK_STACK(2);
 						auto delta = stack.back().i32; stack.pop_back();
-						auto value = stack.back(); stack.pop_back();
+						auto& value = stack.back();
 						SOUP_IF_UNLIKELY (value.type != table.type)
 						{
 #if DEBUG_VM
@@ -3752,7 +3756,17 @@ NAMESPACE_SOUP
 #endif
 							return false;
 						}
-						stack.emplace_back(table.grow(delta, value.i64));
+						const auto old_size = table.grow(delta, value.i64);
+#if SOUP_WASM_MEMORY64
+						if (table.table64)
+						{
+							stack.back() = static_cast<uint64_t>(old_size);
+						}
+						else
+#endif
+						{
+							stack.back() = static_cast<uint32_t>(old_size);
+						}
 				}
 					break;
 
@@ -3767,7 +3781,17 @@ NAMESPACE_SOUP
 #endif
 							return false;
 						}
-						stack.emplace_back(static_cast<uint32_t>(script.tables[table_index].values.size()));
+						const auto& table = script.tables[table_index];
+#if SOUP_WASM_MEMORY64
+						if (table.table64)
+						{
+							stack.emplace_back(static_cast<uint64_t>(table.values.size()));
+						}
+						else
+#endif
+						{
+							stack.emplace_back(static_cast<uint32_t>(table.values.size()));
+						}
 					}
 					break;
 
@@ -3963,7 +3987,7 @@ NAMESPACE_SOUP
 			case 0x3e: // i64.store32
 				{
 					r.skip(1); // memflags
-					SOUP_UNUSED(readUPTR(r));
+					size_t offset; r.oml(offset);
 				}
 				break;
 
@@ -4339,26 +4363,5 @@ NAMESPACE_SOUP
 			stack.erase(stack.begin() + pre_call_stack_size, stack.end() - type.results.size());
 		}
 		return true;
-	}
-
-	/*intptr_t WasmVm::popIPTR() noexcept
-	{
-		const auto ptr = script.memory.decodeIPTR(stack.back());
-		stack.pop_back();
-		return ptr;
-	}*/
-
-	size_t WasmVm::popUPTR() noexcept
-	{
-		const auto ptr = script.memory.decodeUPTR(stack.back());
-		stack.pop_back();
-		return ptr;
-	}
-
-	size_t WasmVm::readUPTR(Reader& r) noexcept
-	{
-		size_t ptr;
-		r.oml(ptr);
-		return ptr;
 	}
 }
