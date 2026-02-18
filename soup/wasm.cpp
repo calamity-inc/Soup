@@ -4139,18 +4139,17 @@ NAMESPACE_SOUP
 		//std::cout << "call: enter " << function_index << "\n";
 		//std::cout << string::bin2hex(script->code[function_index]) << "\n";
 #endif
+		const auto pre_call_stack_size = stack.size();
+		callvm.stack = std::move(stack);
 		SOUP_RETHROW_FALSE(callvm.run(script->code[function_index], depth));
+		stack = std::move(callvm.stack);
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
 #endif
-		SOUP_IF_UNLIKELY (callvm.stack.size() < type.results.size())
+		if (const auto result_stack_size = pre_call_stack_size + type.results.size(); stack.size() > result_stack_size)
 		{
-#if DEBUG_VM
-			std::cout << "call: not enough values on the stack after return\n";
-#endif
-			return false;
+			stack.erase(stack.begin() + pre_call_stack_size, stack.end() - type.results.size());
 		}
-		this->stack.insert(this->stack.end(), callvm.stack.end() - type.results.size(), callvm.stack.end());
 		return true;
 	}
 
