@@ -37,7 +37,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - address: pass
 - align: FAIL (Soup doesn't fail on some malformed modules)
 - binary: FAIL (Soup doesn't fail on some malformed modules)
-- binary-leb128: FAIL (I genuinely have no clue what this test wants)
+- binary-leb128: pass_pedantic
 - block: pass
 - br: pass
 - br_if: pass
@@ -126,7 +126,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - utf8-invalid-encoding: pass (due to Soup not parsing .wat files)
 - memory64/address64: pass
 - memory64/align64: pass
-- memory64/binary_leb128_64: FAIL (Soup doesn't fail on some malformed modules)
+- memory64/binary_leb128_64: pass_pedantic
 - memory64/bulk64: FAIL
 - memory64/call_indirect64: FAIL
 - memory64/endianness64: pass
@@ -298,6 +298,14 @@ NAMESPACE_SOUP
 	
 	// WasmScript
 
+#if SOUP_WASM_PEDANTIC
+#define WASM_READ_OML(v) SOUP_RETHROW_FALSE(r.oml<decltype(v), true, true>(v));
+#define WASM_READ_SOML(v) SOUP_RETHROW_FALSE(r.soml<decltype(v), true, true>(v));
+#else
+#define WASM_READ_OML(v) r.oml(v);
+#define WASM_READ_SOML(v) r.soml(v);
+#endif
+
 	bool WasmScript::load(const std::string& data) SOUP_EXCAL
 	{
 		MemoryRefReader r(data);
@@ -311,12 +319,12 @@ NAMESPACE_SOUP
 		switch (op)
 		{
 		case 0x41: // i32.const
-			r.soml(out.i32);
+			WASM_READ_SOML(out.i32);
 			out.type = WASM_I32;
 			break;
 
 		case 0x42: // i64.const
-			r.soml(out.i64);
+			WASM_READ_SOML(out.i64);
 			out.type = WASM_I64;
 			break;
 
@@ -336,7 +344,7 @@ NAMESPACE_SOUP
 			break;
 
 		case 0xd2: // ref.func
-			r.oml(out.i32);
+			WASM_READ_OML(out.i32);
 			out.hi32 = 1;
 			out.type = WASM_FUNCREF;
 			break;
@@ -375,8 +383,8 @@ NAMESPACE_SOUP
 		{
 			uint8_t section_type;
 			r.u8(section_type);
-			size_t section_size;
-			r.oml(section_size);
+			uint32_t section_size;
+			WASM_READ_OML(section_size);
 			switch (section_type)
 			{
 			default:
@@ -395,8 +403,8 @@ NAMESPACE_SOUP
 				{
 					SOUP_RETHROW_FALSE(section_size != 0);
 					const auto section_end = r.getPosition() + section_size;
-					size_t name_len;
-					r.oml(name_len);
+					uint32_t name_len;
+					WASM_READ_OML(name_len);
 					//std::cout << "custom section: name_len = " << name_len << "\n";
 					SOUP_RETHROW_FALSE(name_len <= 0x1000);
 					std::string name;
@@ -411,8 +419,8 @@ NAMESPACE_SOUP
 
 			case 1: // Type
 				{
-					size_t num_types;
-					r.oml(num_types);
+					uint32_t num_types;
+					WASM_READ_OML(num_types);
 #if DEBUG_LOAD
 					std::cout << num_types << " type(s)\n";
 #endif
@@ -434,7 +442,7 @@ NAMESPACE_SOUP
 								std::cout << "- function with ";
 #endif
 								uint32_t size;
-								r.oml(size);
+								WASM_READ_OML(size);
 #if DEBUG_LOAD
 								std::cout << size << " parameter(s) and ";
 #endif
@@ -447,7 +455,7 @@ NAMESPACE_SOUP
 									parameters.emplace_back(static_cast<WasmType>(type));
 								}
 
-								r.oml(size);
+								WASM_READ_OML(size);
 #if DEBUG_LOAD
 								std::cout << size << " return value(s)\n";
 #endif
@@ -470,16 +478,16 @@ NAMESPACE_SOUP
 
 			case 2: // Import
 				{
-					size_t num_imports;
-					r.oml(num_imports);
+					uint32_t num_imports;
+					WASM_READ_OML(num_imports);
 #if DEBUG_LOAD
 					std::cout << num_imports << " import(s)\n";
 #endif
 					while (num_imports--)
 					{
-						size_t module_name_len; r.oml(module_name_len);
+						uint32_t module_name_len; WASM_READ_OML(module_name_len);
 						std::string module_name; r.str(module_name_len, module_name);
-						size_t field_name_len; r.oml(field_name_len);
+						uint32_t field_name_len; WASM_READ_OML(field_name_len);
 						std::string field_name; r.str(field_name_len, field_name);
 #if DEBUG_LOAD
 						std::cout << "- " << module_name << ":" << field_name << "\n";
@@ -487,17 +495,17 @@ NAMESPACE_SOUP
 						uint8_t kind; r.u8(kind);
 						if (kind == 0) // function
 						{
-							uint32_t type_index; r.oml(type_index);
+							uint32_t type_index; WASM_READ_OML(type_index);
 							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, {}, type_index, (uint32_t)-1 });
 						}
 						/*else if (kind == 1) // table
 						{
 							uint8_t type; r.u8(type);
 							uint8_t flags; r.u8(flags);
-							size_t size; r.oml(size);
+							size_t size; WASM_READ_OML(size);
 							if (flags & 1)
 							{
-								r.oml(size);
+								WASM_READ_OML(size);
 							}
 						}*/
 						// 2 - memory
@@ -515,8 +523,8 @@ NAMESPACE_SOUP
 
 			case 3: // Function
 				{
-					size_t num_functions;
-					r.oml(num_functions);
+					uint32_t num_functions;
+					WASM_READ_OML(num_functions);
 #if DEBUG_LOAD
 					std::cout << num_functions << " function(s)\n";
 #endif
@@ -524,7 +532,7 @@ NAMESPACE_SOUP
 					while (num_functions--)
 					{
 						uint32_t type_index;
-						r.oml(type_index);
+						WASM_READ_OML(type_index);
 						functions.emplace_back(type_index);
 					}
 				}
@@ -532,7 +540,7 @@ NAMESPACE_SOUP
 
 			case 4: // Table
 				{
-					size_t num_tables; r.oml(num_tables);
+					uint32_t num_tables; WASM_READ_OML(num_tables);
 #if DEBUG_LOAD
 					std::cout << num_tables << " table(s)\n";
 #endif
@@ -553,10 +561,10 @@ NAMESPACE_SOUP
 						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 #endif
 						size_t initial;
-						r.oml(initial);
+						WASM_READ_OML(initial);
 						if (flags & 1)
 						{
-							r.oml(tbl.limit);
+							WASM_READ_OML(tbl.limit);
 						}
 						while (initial != tbl.values.size())
 						{
@@ -568,7 +576,7 @@ NAMESPACE_SOUP
 
 			case 5: // Memory
 				{
-					size_t num_memories; r.oml(num_memories);
+					uint32_t num_memories; WASM_READ_OML(num_memories);
 					if (num_memories != 0)
 					{
 						SOUP_IF_UNLIKELY (memory.data != nullptr || num_memories != 1)
@@ -579,15 +587,42 @@ NAMESPACE_SOUP
 							return false;
 						}
 						uint8_t flags; r.u8(flags);
-						size_t pages; r.oml(pages);
+						size_t pages;
+#if !SOUP_WASM_PEDANTIC
+						WASM_READ_OML(pages);
+#else
+	#if SOUP_WASM_MEMORY64
+						if (flags & 4)
+						{
+							uint64_t pages_u64;
+							WASM_READ_OML(pages_u64);
+							pages = pages_u64;
+						}
+	#endif
+						else
+						{
+							uint32_t pages_u32;
+							WASM_READ_OML(pages_u32);
+							pages = pages_u32;
+						}
+#endif					
 						if (flags & 1)
 						{
 #if SOUP_WASM_MEMORY64
-							uint64_t page_limit;
-							r.oml(page_limit);
-							memory.page_limit = page_limit;
+							if (flags & 4)
+							{
+								uint64_t page_limit;
+								WASM_READ_OML(page_limit);
+								memory.page_limit = page_limit;
+							}
+							else
+							{
+								uint32_t page_limit;
+								WASM_READ_OML(page_limit);
+								memory.page_limit = page_limit;
+							}
 #else
-							r.oml(memory.page_limit);
+							WASM_READ_OML(memory.page_limit);
 #endif
 						}
 #if SOUP_WASM_MEMORY64
@@ -621,8 +656,8 @@ NAMESPACE_SOUP
 
 			case 6: // Global
 				{
-					size_t num_globals;
-					r.oml(num_globals);
+					uint32_t num_globals;
+					WASM_READ_OML(num_globals);
 #if DEBUG_LOAD
 					std::cout << num_globals << " global(s)\n";
 #endif
@@ -646,22 +681,22 @@ NAMESPACE_SOUP
 
 			case 7: // Export
 				{
-					size_t num_exports;
-					r.oml(num_exports);
+					uint32_t num_exports;
+					WASM_READ_OML(num_exports);
 #if DEBUG_LOAD
 					std::cout << num_exports << " export(s)\n";
 #endif
 					while (num_exports--)
 					{
-						size_t name_len;
-						r.oml(name_len);
+						uint32_t name_len;
+						WASM_READ_OML(name_len);
 						std::string name;
 						r.str(name_len, name);
 #if DEBUG_LOAD
 						std::cout << "- " << name << "\n";
 #endif
 						uint8_t kind; r.u8(kind);
-						uint32_t index; r.oml(index);
+						uint32_t index; WASM_READ_OML(index);
 						if (kind == 0) // function 
 						{
 							export_map.emplace(std::move(name), index);
@@ -679,7 +714,7 @@ NAMESPACE_SOUP
 #endif
 					return false;
 				}
-				r.oml(start_func_idx);
+				WASM_READ_OML(start_func_idx);
 #if DEBUG_LOAD
 				std::cout << "start_func_idx: " << start_func_idx << "\n";
 #endif
@@ -687,15 +722,15 @@ NAMESPACE_SOUP
 
 			case 9: // Elem
 				{
-					size_t num_segments;
-					r.oml(num_segments);
+					uint32_t num_segments;
+					WASM_READ_OML(num_segments);
 #if DEBUG_LOAD
 					std::cout << num_segments << " element segment(s)\n";
 #endif
 					while (num_segments--)
 					{
 						uint32_t flags;
-						r.oml(flags);
+						WASM_READ_OML(flags);
 #if DEBUG_LOAD
 						std::cout << "elem flags: " << flags << "\n";
 #endif
@@ -707,8 +742,8 @@ NAMESPACE_SOUP
 
 							r.skip(1); // (flags & 0b100) ? reftype : elemkind
 
-							size_t num_elements;
-							r.oml(num_elements);
+							uint32_t num_elements;
+							WASM_READ_OML(num_elements);
 							while (num_elements--)
 							{
 								if (flags & 0b100)
@@ -719,7 +754,7 @@ NAMESPACE_SOUP
 								else
 								{
 									uint32_t function_index;
-									r.oml(function_index);
+									WASM_READ_OML(function_index);
 								}
 							}
 						}
@@ -728,7 +763,7 @@ NAMESPACE_SOUP
 							uint32_t tblidx = 0;
 							if (flags & 0b10)
 							{
-								r.oml(tblidx);
+								WASM_READ_OML(tblidx);
 							}
 #if DEBUG_LOAD
 							std::cout << "- elements for table " << tblidx << "\n";
@@ -745,7 +780,7 @@ NAMESPACE_SOUP
 #endif
 								return false;
 							}
-							uint32_t index; r.oml(index);
+							uint32_t index; WASM_READ_OML(index);
 							r.u8(op);
 							SOUP_IF_UNLIKELY (op != 0x0b) // end
 							{
@@ -758,8 +793,8 @@ NAMESPACE_SOUP
 							{
 								r.skip(1); // reserved
 							}
-							size_t num_elements;
-							r.oml(num_elements);
+							uint32_t num_elements;
+							WASM_READ_OML(num_elements);
 							SOUP_IF_UNLIKELY (index + num_elements > table.values.size())
 							{
 #if DEBUG_LOAD
@@ -781,7 +816,7 @@ NAMESPACE_SOUP
 								else
 								{
 									uint32_t function_index;
-									r.oml(function_index);
+									WASM_READ_OML(function_index);
 									if (table.type == WASM_FUNCREF)
 									{
 										table.values[index++] = 0x1'0000'0000 | function_index;
@@ -795,15 +830,15 @@ NAMESPACE_SOUP
 
 			case 10: // Code
 				{
-					size_t num_functions;
-					r.oml(num_functions);
+					uint32_t num_functions;
+					WASM_READ_OML(num_functions);
 #if DEBUG_LOAD
 					std::cout << num_functions << " function(s)\n";
 #endif
 					while (num_functions--)
 					{
-						size_t body_size;
-						r.oml(body_size);
+						uint32_t body_size;
+						WASM_READ_OML(body_size);
 						SOUP_IF_UNLIKELY (body_size == 0)
 						{
 							return false;
@@ -813,6 +848,12 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 						std::cout << "- " << string::bin2hex(body) << "\n";
 #endif
+#if SOUP_WASM_PEDANTIC
+						{
+							MemoryRefReader body_reader(body);
+							SOUP_RETHROW_FALSE(validateFunctionBody(body_reader));
+						}
+#endif
 						code.emplace_back(std::move(body));
 					}
 				}
@@ -820,30 +861,30 @@ NAMESPACE_SOUP
 
 			case 11: // Data
 				{
-					size_t num_segments;
-					r.oml(num_segments);
+					uint32_t num_segments;
+					WASM_READ_OML(num_segments);
 #if DEBUG_LOAD
 					std::cout << num_segments << " data segment(s)\n";
 #endif
 					while (num_segments--)
 					{
 						uint32_t flags;
-						r.oml(flags);
+						WASM_READ_OML(flags);
 #if DEBUG_LOAD
 						std::cout << "data flags: " << flags << "\n";
 #endif
-						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 						if (flags & 1)
 						{
-							size_t size; r.oml(size);
+							size_t size;
+							WASM_READ_OML(size);
 							r.skip(size);
 						}
 						else
 						{
-							/*if (flags & 0b10)
+							if (flags & 0b10)
 							{
-								size_t memidx; r.oml(memidx);
-							}*/
+								size_t memidx; WASM_READ_OML(memidx);
+							}
 
 							WasmValue base;
 							SOUP_RETHROW_FALSE(readConstant(r, base));
@@ -863,12 +904,12 @@ NAMESPACE_SOUP
 									return false;
 								}
 							}
-							size_t size; r.oml(size);
+							size_t size; WASM_READ_OML(size);
 							auto ptr = memory.getView(base.uptr(), size);
 							SOUP_IF_UNLIKELY (!ptr)
 							{
 #if DEBUG_LOAD
-								std::cout << "data segment exceeds memory range: " << memory.decodeUPTR(base) << " + " << size << " > " << memory.size << "\n";
+								std::cout << "data segment exceeds memory range: " << base.uptr() << " + " << size << " > " << memory.size << "\n";
 #endif
 								return false;
 							}
@@ -880,12 +921,46 @@ NAMESPACE_SOUP
 			}
 			if (section_size == 0)
 			{
-				r.oml(section_size);
+				WASM_READ_OML(section_size);
 #if DEBUG_LOAD
 				std::cout << "FIXUP section_size=" << section_size << "\n";
 #endif
 			}
 		}
+		return true;
+	}
+
+	bool WasmScript::validateFunctionBody(Reader& r) noexcept
+	{
+		size_t local_decl_count;
+		WASM_READ_OML(local_decl_count);
+		while (local_decl_count--)
+		{
+			size_t type_count;
+			WASM_READ_OML(type_count);
+			r.skip(1); // type
+		}
+
+		WasmVm::skipOverBranch(r, 0x8000'0000, *this, -1);
+		const auto pos_after_branching = r.getPosition();
+		r.seekEnd();
+		SOUP_IF_UNLIKELY (r.getPosition() != pos_after_branching)
+		{
+#if DEBUG_LOAD
+			std::cout << "load(pedantic): skipOverBranch bailed early\n";
+#endif
+			return false;
+		}
+
+		r.seek(r.getPosition() - 1);
+		SOUP_IF_UNLIKELY (uint8_t byte; !r.u8(byte) || byte != 0x0b)
+		{
+#if DEBUG_LOAD
+			std::cout << "load(pedantic): function body does not end on 'end' opcode\n";
+#endif
+			return false;
+		}
+
 		return true;
 	}
 
@@ -1546,11 +1621,11 @@ NAMESPACE_SOUP
 	bool WasmVm::run(Reader& r, unsigned depth, uint32_t func_index)
 	{
 		size_t local_decl_count;
-		r.oml(local_decl_count);
+		WASM_READ_OML(local_decl_count);
 		while (local_decl_count--)
 		{
 			size_t type_count;
-			r.oml(type_count);
+			WASM_READ_OML(type_count);
 			uint8_t type;
 			r.u8(type);
 			while (type_count--)
@@ -1583,7 +1658,7 @@ NAMESPACE_SOUP
 
 			case 0x02: // block
 				{
-					int32_t result_type; r.soml(result_type);
+					int32_t result_type; WASM_READ_SOML(result_type);
 					size_t stack_size = stack.size();
 					uint32_t num_values = 0;
 					if (result_type != -64)
@@ -1610,7 +1685,7 @@ NAMESPACE_SOUP
 
 			case 0x03: // loop
 				{
-					int32_t result_type; r.soml(result_type);
+					int32_t result_type; WASM_READ_SOML(result_type);
 					size_t stack_size = stack.size();
 					uint32_t num_values = 0;
 					if (result_type != -64)
@@ -1633,7 +1708,7 @@ NAMESPACE_SOUP
 
 			case 0x04: // if
 				{
-					int32_t result_type; r.soml(result_type);
+					int32_t result_type; WASM_READ_SOML(result_type);
 					size_t stack_size = stack.size();
 					uint32_t num_values = 0;
 					if (result_type != -64)
@@ -1660,7 +1735,7 @@ NAMESPACE_SOUP
 					}
 					else
 					{
-						if (skipOverBranch(r, 0, func_index))
+						if (skipOverBranch(r, 0, script, func_index))
 						{
 							// we're in the 'else' branch
 							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
@@ -1671,7 +1746,7 @@ NAMESPACE_SOUP
 
 			case 0x05: // else
 				//std::cout << "else: skipping over this branch\n";
-				skipOverBranch(r, 0, func_index);
+				skipOverBranch(r, 0, script, func_index);
 				[[fallthrough]];
 			case 0x0b: // end
 				if (ctrlflow.empty())
@@ -1685,7 +1760,7 @@ NAMESPACE_SOUP
 			case 0x0c: // br
 				{
 					uint32_t depth;
-					r.oml(depth);
+					WASM_READ_OML(depth);
 					SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 					{
 						return false;
@@ -1696,7 +1771,7 @@ NAMESPACE_SOUP
 			case 0x0d: // br_if
 				{
 					uint32_t depth;
-					r.oml(depth);
+					WASM_READ_OML(depth);
 					WASM_CHECK_STACK(1);
 					auto value = stack.back(); stack.pop_back();
 					if (value.i32)
@@ -1713,16 +1788,16 @@ NAMESPACE_SOUP
 				{
 					std::vector<uint32_t> table;
 					uint32_t num_branches;
-					r.oml(num_branches);
+					WASM_READ_OML(num_branches);
 					table.reserve(num_branches);
 					while (num_branches--)
 					{
 						uint32_t depth;
-						r.oml(depth);
+						WASM_READ_OML(depth);
 						table.emplace_back(depth);
 					}
 					uint32_t depth;
-					r.oml(depth);
+					WASM_READ_OML(depth);
 					WASM_CHECK_STACK(1);
 					auto index = static_cast<uint32_t>(stack.back().i32); stack.pop_back();
 					if (index < table.size())
@@ -1742,7 +1817,7 @@ NAMESPACE_SOUP
 			case 0x10: // call
 				{
 					uint32_t function_index;
-					r.oml(function_index);
+					WASM_READ_OML(function_index);
 					uint32_t type_index = script.getTypeIndexForFunction(function_index);
 					SOUP_RETHROW_FALSE(doCall(type_index, function_index, depth));
 				}
@@ -1750,8 +1825,8 @@ NAMESPACE_SOUP
 
 			case 0x11: // call_indirect
 				{
-					uint32_t type_index; r.oml(type_index);
-					uint32_t table_index; r.oml(table_index);
+					uint32_t type_index; WASM_READ_OML(type_index);
+					uint32_t table_index; WASM_READ_OML(table_index);
 					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
 #if DEBUG_VM
@@ -1808,7 +1883,7 @@ NAMESPACE_SOUP
 			case 0x20: // local.get
 				{
 					size_t local_index;
-					r.oml(local_index);
+					WASM_READ_OML(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
 #if DEBUG_VM
@@ -1823,7 +1898,7 @@ NAMESPACE_SOUP
 			case 0x21: // local.set
 				{
 					size_t local_index;
-					r.oml(local_index);
+					WASM_READ_OML(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
 #if DEBUG_VM
@@ -1839,7 +1914,7 @@ NAMESPACE_SOUP
 			case 0x22: // local.tee
 				{
 					size_t local_index;
-					r.oml(local_index);
+					WASM_READ_OML(local_index);
 					SOUP_IF_UNLIKELY (local_index >= locals.size())
 					{
 #if DEBUG_VM
@@ -1855,7 +1930,7 @@ NAMESPACE_SOUP
 			case 0x23: // global.get
 				{
 					size_t global_index;
-					r.oml(global_index);
+					WASM_READ_OML(global_index);
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
 #if DEBUG_VM
@@ -1870,7 +1945,7 @@ NAMESPACE_SOUP
 			case 0x24: // global.set
 				{
 					size_t global_index;
-					r.oml(global_index);
+					WASM_READ_OML(global_index);
 					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
 					{
 #if DEBUG_VM
@@ -1886,7 +1961,7 @@ NAMESPACE_SOUP
 			case 0x25: // table.get
 				{
 					size_t table_index;
-					r.oml(table_index);
+					WASM_READ_OML(table_index);
 					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
 #if DEBUG_VM
@@ -1911,7 +1986,7 @@ NAMESPACE_SOUP
 			case 0x26: // table.set
 				{
 					size_t table_index;
-					r.oml(table_index);
+					WASM_READ_OML(table_index);
 					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
 #if DEBUG_VM
@@ -1946,7 +2021,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -1966,7 +2041,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int64_t>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -1986,7 +2061,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<float>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -2006,7 +2081,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<double>(base, offset))
 					{
 						stack.emplace_back(*ptr);
@@ -2026,7 +2101,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int32_t>(*ptr));
@@ -2046,7 +2121,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
@@ -2066,7 +2141,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
@@ -2086,7 +2161,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
@@ -2106,7 +2181,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
@@ -2126,7 +2201,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
@@ -2146,7 +2221,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
@@ -2166,7 +2241,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
@@ -2186,7 +2261,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
@@ -2206,7 +2281,7 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<uint32_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
@@ -2228,7 +2303,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						*ptr = value.i32;
@@ -2249,7 +2324,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int64_t>(base, offset))
 					{
 						*ptr = value.i64;
@@ -2270,7 +2345,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<float>(base, offset))
 					{
 						*ptr = value.f32;
@@ -2291,7 +2366,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<double>(base, offset))
 					{
 						*ptr = value.f64;
@@ -2312,7 +2387,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i32);
@@ -2333,7 +2408,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i32);
@@ -2354,7 +2429,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i64);
@@ -2375,7 +2450,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i64);
@@ -2396,7 +2471,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+					size_t offset; WASM_READ_OML(offset);
 					if (auto ptr = script.memory.getPointer<int32_t>(base, offset))
 					{
 						*ptr = static_cast<int32_t>(value.i64);
@@ -2430,7 +2505,7 @@ NAMESPACE_SOUP
 			case 0x41: // i32.const
 				{
 					int32_t value;
-					r.soml(value);
+					WASM_READ_SOML(value);
 					stack.emplace_back(value);
 				}
 				break;
@@ -2438,7 +2513,7 @@ NAMESPACE_SOUP
 			case 0x42: // i64.const
 				{
 					int64_t value;
-					r.soml(value);
+					WASM_READ_SOML(value);
 					stack.emplace_back(value);
 				}
 				break;
@@ -3571,7 +3646,7 @@ NAMESPACE_SOUP
 			case 0xd2: // ref.func
 				{
 					uint32_t idx;
-					r.oml(idx);
+					WASM_READ_OML(idx);
 					stack.emplace_back(WASM_FUNCREF);
 					stack.back().i64 = 0x1'0000'0000 | idx;
 				}
@@ -3781,7 +3856,7 @@ NAMESPACE_SOUP
 				case 0x0f: // table.grow
 					{
 						size_t table_index;
-						r.oml(table_index);
+						WASM_READ_OML(table_index);
 						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 						{
 #if DEBUG_VM
@@ -3817,7 +3892,7 @@ NAMESPACE_SOUP
 				case 0x10: // table.size
 					{
 						size_t table_index;
-						r.oml(table_index);
+						WASM_READ_OML(table_index);
 						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 						{
 #if DEBUG_VM
@@ -3842,7 +3917,7 @@ NAMESPACE_SOUP
 				case 0x11: // table.fill
 					{
 						size_t table_index;
-						r.oml(table_index);
+						WASM_READ_OML(table_index);
 						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 						{
 #if DEBUG_VM
@@ -3889,7 +3964,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmVm::skipOverBranch(Reader& r, uint32_t target_depth, uint32_t func_index) SOUP_EXCAL
+	bool WasmVm::skipOverBranch(Reader& r, uint32_t target_depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL
 	{
 		std::vector<uint32_t> scrap;
 		std::vector<uint32_t>* hints = &scrap;
@@ -3906,7 +3981,7 @@ NAMESPACE_SOUP
 					depth = target_depth;
 					r.seek(e->second[target_depth]);
 #if DEBUG_BRANCHING
-					std::cout << "skipOverBranching: straight hit: " << hint_key << " + depth " << depth << " -> " << e->second[target_depth] << "\n";
+					std::cout << "skipOverBranch: straight hit: " << hint_key << " + depth " << depth << " -> " << e->second[target_depth] << "\n";
 #endif
 				}
 				else
@@ -3914,7 +3989,7 @@ NAMESPACE_SOUP
 					depth = hints->size() - 1;
 					r.seek(hints->back());
 #if DEBUG_BRANCHING
-					std::cout << "skipOverBranching: partial hit: " << hint_key << " -> " << e->second[target_depth] << " (depth " << depth << "/" << target_depth << ")\n";
+					std::cout << "skipOverBranch: partial hit: " << hint_key << " -> " << e->second[target_depth] << " (depth " << depth << "/" << target_depth << ")\n";
 #endif
 				}
 			}
@@ -3941,7 +4016,7 @@ NAMESPACE_SOUP
 				{
 					hints->emplace_back(r.getPosition() - 1);
 #if DEBUG_BRANCHING
-					std::cout << "skipOverBranching: caching " << hint_key << " + depth " << depth << " -> " << hints->back() << "\n";
+					std::cout << "skipOverBranch: caching " << hint_key << " + depth " << depth << " -> " << hints->back() << "\n";
 #endif
 				}
 				if (depth == target_depth)
@@ -3955,7 +4030,7 @@ NAMESPACE_SOUP
 				{
 					hints->emplace_back(r.getPosition() - 1);
 #if DEBUG_BRANCHING
-					std::cout << "skipOverBranching: caching " << hint_key << " + depth " << depth << " -> " << hints->back() << "\n";
+					std::cout << "skipOverBranch: caching " << hint_key << " + depth " << depth << " -> " << hints->back() << "\n";
 #endif
 				}
 				if (depth == target_depth)
@@ -3977,28 +4052,28 @@ NAMESPACE_SOUP
 			case 0x26: // table.set
 				{
 					size_t imm;
-					r.oml(imm);
+					WASM_READ_OML(imm);
 				}
 				break;
 
 			case 0x0e: // br_table
 				{
 					uint32_t num_branches;
-					r.oml(num_branches);
+					WASM_READ_OML(num_branches);
 					while (num_branches--)
 					{
 						uint32_t depth;
-						r.oml(depth);
+						WASM_READ_OML(depth);
 					}
 					uint32_t default_depth;
-					r.oml(default_depth);
+					WASM_READ_OML(default_depth);
 				}
 				break;
 
 			case 0x11: // call_indirect
 				{
-					uint32_t type_index; r.oml(type_index);
-					uint32_t table_index; r.oml(table_index);
+					uint32_t type_index; WASM_READ_OML(type_index);
+					uint32_t table_index; WASM_READ_OML(table_index);
 				}
 				break;
 
@@ -4030,8 +4105,12 @@ NAMESPACE_SOUP
 			case 0x3d: // i64.store16
 			case 0x3e: // i64.store32
 				{
+#if SOUP_WASM_PEDANTIC
+					uint32_t memflags; WASM_READ_OML(memflags);
+#else
 					r.skip(1); // memflags
-					size_t offset; r.oml(offset);
+#endif
+					size_t offset; WASM_READ_OML(offset);
 				}
 				break;
 
@@ -4043,14 +4122,14 @@ NAMESPACE_SOUP
 			case 0x41: // i32.const
 				{
 					int32_t value;
-					r.soml(value);
+					WASM_READ_SOML(value);
 				}
 				break;
 
 			case 0x42: // i64.const
 				{
 					int64_t value;
-					r.soml(value);
+					WASM_READ_SOML(value);
 				}
 				break;
 
@@ -4069,7 +4148,7 @@ NAMESPACE_SOUP
 			case 0xd2: // ref.func
 				{
 					uint32_t idx;
-					r.oml(idx);
+					WASM_READ_OML(idx);
 				}
 				break;
 
@@ -4216,7 +4295,15 @@ NAMESPACE_SOUP
 #endif
 
 			case 0xfc:
+#if SOUP_WASM_PEDANTIC
+				{
+					uint32_t extended_op;
+					WASM_READ_OML(extended_op);
+					op = extended_op;
+				}
+#else
 				r.u8(op);
+#endif
 				switch (op)
 				{
 				case 0x0a: // memory.copy
@@ -4232,7 +4319,7 @@ NAMESPACE_SOUP
 				case 0x11: // table.fill
 					{
 						size_t imm;
-						r.oml(imm);
+						WASM_READ_OML(imm);
 					}
 					break;
 
@@ -4291,10 +4378,10 @@ NAMESPACE_SOUP
 		if (ctrlflow.top().position == -1)
 		{
 			// branch forwards
-			if (skipOverBranch(r, depth, func_index))
+			if (skipOverBranch(r, depth, script, func_index))
 			{
 				// also skip over 'else' branch
-				skipOverBranch(r, depth, func_index);
+				skipOverBranch(r, depth, script, func_index);
 			}
 		}
 		else

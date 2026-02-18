@@ -24,7 +24,7 @@
 
 NAMESPACE_SOUP
 {
-	class WasmVm;
+	struct WasmVm;
 
 	enum WasmType : uint8_t
 	{
@@ -205,6 +205,7 @@ NAMESPACE_SOUP
 		bool load(const std::string& data) SOUP_EXCAL;
 		bool load(Reader& r) SOUP_EXCAL;
 		static bool readConstant(Reader& r, WasmValue& out) noexcept;
+		bool validateFunctionBody(Reader& r) noexcept;
 
 		// Runs the start function of the script, if defined. May throw if an imported C++ function throws.
 		bool instantiate();
@@ -222,9 +223,8 @@ NAMESPACE_SOUP
 		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::vector<WasmValue>* out = nullptr);
 	};
 
-	class WasmVm
+	struct WasmVm
 	{
-	public:
 		std::vector<WasmValue> stack;
 		std::vector<WasmValue> locals;
 		WasmScript& script;
@@ -238,7 +238,6 @@ NAMESPACE_SOUP
 		bool run(const std::string& data, unsigned depth = 0, uint32_t func_index = -1);
 		bool run(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
 
-	protected:
 		struct CtrlFlowEntry
 		{
 			std::streamoff position; // -1 for forward jumps
@@ -246,7 +245,7 @@ NAMESPACE_SOUP
 			uint32_t num_values; // Number of values to keep on the stack top after branching. num_results for forward jumps; num_params for backward jumps.
 		};
 
-		bool skipOverBranch(Reader& r, uint32_t depth, uint32_t func_index) SOUP_EXCAL;
+		static bool skipOverBranch(Reader& r, uint32_t depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth = 0);
 	};
