@@ -157,6 +157,7 @@ NAMESPACE_SOUP
 		std::vector<WasmValue> globals{};
 		std::unordered_map<std::string, uint32_t> export_map{};
 		std::vector<std::string> code{};
+		std::unordered_map<uint64_t, std::vector<uint32_t>> _internal_branch_hints{};
 		std::vector<Table> tables{};
 		StructMap custom_data;
 		uint32_t start_func_idx = -1;
@@ -200,8 +201,8 @@ NAMESPACE_SOUP
 		}
 
 		// May throw if an imported C++ function throws.
-		bool run(const std::string& data, unsigned depth = 0);
-		bool run(Reader& r, unsigned depth = 0);
+		bool run(const std::string& data, unsigned depth = 0, uint32_t func_index = -1);
+		bool run(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
 
 	protected:
 		struct CtrlFlowEntry
@@ -211,8 +212,8 @@ NAMESPACE_SOUP
 			uint32_t num_values; // Number of values to keep on the stack top after branching. num_results for forward jumps; num_params for backward jumps.
 		};
 
-		bool skipOverBranch(Reader& r, uint32_t depth = 0) SOUP_EXCAL;
-		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
+		bool skipOverBranch(Reader& r, uint32_t depth, uint32_t func_index) SOUP_EXCAL;
+		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(uint32_t type_index, uint32_t function_index, unsigned depth = 0);
 		//[[nodiscard]] intptr_t popIPTR() noexcept;
 		[[nodiscard]] size_t popUPTR() noexcept;

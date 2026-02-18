@@ -13,9 +13,10 @@
 
 #define DEBUG_LOAD false
 #define DEBUG_VM false
+#define DEBUG_BRANCHING false
 #define DEBUG_API false
 
-#if DEBUG_LOAD || DEBUG_VM || DEBUG_API
+#if DEBUG_LOAD || DEBUG_VM || DEBUG_BRANCHING || DEBUG_API
 #include <iostream>
 #include "string.hpp"
 #endif
@@ -1405,7 +1406,7 @@ NAMESPACE_SOUP
 		}
 		WasmVm vm(*script);
 		vm.locals = std::move(args);
-		SOUP_IF_UNLIKELY (!vm.run(script->code[func_index]))
+		SOUP_IF_UNLIKELY (!vm.run(script->code[func_index], 0, func_index))
 		{
 #if DEBUG_LOAD || DEBUG_API
 			std::cout << "call: execution failed\n";
@@ -1421,10 +1422,10 @@ NAMESPACE_SOUP
 
 	// WasmVm
 
-	bool WasmVm::run(const std::string& data, unsigned depth)
+	bool WasmVm::run(const std::string& data, unsigned depth, uint32_t func_index)
 	{
 		MemoryRefReader r(data);
-		return run(r, depth);
+		return run(r, depth, func_index);
 	}
 
 #if DEBUG_VM
@@ -1450,7 +1451,7 @@ NAMESPACE_SOUP
 	static constexpr double F64_U64_MIN = -0.9999999999999999;
 	static constexpr double F64_U64_MAX = 18446744073709550000.0;
 
-	bool WasmVm::run(Reader& r, unsigned depth)
+	bool WasmVm::run(Reader& r, unsigned depth, uint32_t func_index)
 	{
 		size_t local_decl_count;
 		r.oml(local_decl_count);
@@ -1567,7 +1568,7 @@ NAMESPACE_SOUP
 					}
 					else
 					{
-						if (skipOverBranch(r))
+						if (skipOverBranch(r, 0, func_index))
 						{
 							// we're in the 'else' branch
 							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
@@ -1578,7 +1579,7 @@ NAMESPACE_SOUP
 
 			case 0x05: // else
 				//std::cout << "else: skipping over this branch\n";
-				skipOverBranch(r);
+				skipOverBranch(r, 0, func_index);
 				[[fallthrough]];
 			case 0x0b: // end
 				if (ctrlflow.empty())
@@ -1593,7 +1594,7 @@ NAMESPACE_SOUP
 				{
 					uint32_t depth;
 					r.oml(depth);
-					SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
+					SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 					{
 						return false;
 					}
@@ -1608,7 +1609,7 @@ NAMESPACE_SOUP
 					auto value = stack.back(); stack.pop_back();
 					if (value.i32)
 					{
-						SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
+						SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 						{
 							return false;
 						}
@@ -1636,7 +1637,7 @@ NAMESPACE_SOUP
 					{
 						depth = table.at(index);
 					}
-					SOUP_IF_UNLIKELY (!doBranch(r, depth, ctrlflow))
+					SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 					{
 						return false;
 					}
@@ -3698,8 +3699,41 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmVm::skipOverBranch(Reader& r, uint32_t depth) SOUP_EXCAL
+	bool WasmVm::skipOverBranch(Reader& r, uint32_t target_depth, uint32_t func_index) SOUP_EXCAL
 	{
+		std::vector<uint32_t> scrap;
+		std::vector<uint32_t>* hints = &scrap;
+		uint64_t hint_key = 0;
+		int32_t depth = 0;
+		if (func_index != -1)
+		{
+			hint_key = (static_cast<uint64_t>(func_index) << 32) | (r.getPosition() & 0xffff'ffff);
+			if (auto e = script._internal_branch_hints.find(hint_key); e != script._internal_branch_hints.end())
+			{
+				hints = &e->second;
+				if (target_depth < hints->size())
+				{
+					depth = target_depth;
+					r.seek(e->second[target_depth]);
+#if DEBUG_BRANCHING
+					std::cout << "skipOverBranching: straight hit: " << hint_key << " + depth " << depth << " -> " << e->second[target_depth] << "\n";
+#endif
+				}
+				else
+				{
+					depth = hints->size() - 1;
+					r.seek(hints->back());
+#if DEBUG_BRANCHING
+					std::cout << "skipOverBranching: partial hit: " << hint_key << " -> " << e->second[target_depth] << " (depth " << depth << "/" << target_depth << ")\n";
+#endif
+				}
+			}
+			else
+			{
+				hints = &script._internal_branch_hints.emplace(hint_key, std::vector<uint32_t>{}).first->second;
+			}
+		}
+
 		uint8_t op;
 		while (r.u8(op))
 		{
@@ -3709,22 +3743,36 @@ NAMESPACE_SOUP
 			case 0x03: // loop
 			case 0x04: // if
 				r.skip(1); // result type
-				++depth;
+				--depth;
 				break;
 
 			case 0x05: // else
-				if (depth == 0)
+				if (depth == hints->size())
+				{
+					hints->emplace_back(r.getPosition() - 1);
+#if DEBUG_BRANCHING
+					std::cout << "skipOverBranching: caching " << hint_key << " + depth " << depth << " -> " << hints->back() << "\n";
+#endif
+				}
+				if (depth == target_depth)
 				{
 					return true;
 				}
 				break;
 
 			case 0x0b: // end
-				if (depth == 0)
+				if (depth == hints->size())
+				{
+					hints->emplace_back(r.getPosition() - 1);
+#if DEBUG_BRANCHING
+					std::cout << "skipOverBranching: caching " << hint_key << " + depth " << depth << " -> " << hints->back() << "\n";
+#endif
+				}
+				if (depth == target_depth)
 				{
 					return false;
 				}
-				--depth;
+				++depth;
 				break;
 
 			case 0x0c: // br
@@ -4014,7 +4062,7 @@ NAMESPACE_SOUP
 		return false;
 	}
 
-	bool WasmVm::doBranch(Reader& r, uint32_t depth, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL
+	bool WasmVm::doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL
 	{
 #if DEBUG_VM
 		std::cout << "branch with depth " << depth << " at position " << r.getPosition() << "\n";
@@ -4044,10 +4092,10 @@ NAMESPACE_SOUP
 		if (ctrlflow.top().position == -1)
 		{
 			// branch forwards
-			if (skipOverBranch(r, depth))
+			if (skipOverBranch(r, depth, func_index))
 			{
 				// also skip over 'else' branch
-				skipOverBranch(r, depth);
+				skipOverBranch(r, depth, func_index);
 			}
 		}
 		else
@@ -4150,7 +4198,7 @@ NAMESPACE_SOUP
 #endif
 		const auto pre_call_stack_size = stack.size();
 		callvm.stack = std::move(stack);
-		SOUP_RETHROW_FALSE(callvm.run(script->code[function_index], depth));
+		SOUP_RETHROW_FALSE(callvm.run(script->code[function_index], depth, function_index));
 		stack = std::move(callvm.stack);
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
