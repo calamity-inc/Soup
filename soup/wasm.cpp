@@ -106,10 +106,10 @@ Spec tests (https://github.com/WebAssembly/spec/tree/20dc91f64194580a542a302b7e1
 - table_copy: FAIL (missing support for table.copy instruction)
 - table_fill: pass
 - table_get: pass
-- table_grow: FAIL (missing support for table.grow & table.size instructions)
+- table_grow: pass
 - table_init: FAIL (missing support for table.init instruction)
 - table_set: pass
-- table_size: FAIL (missing support for table.size & table.grow instructions)
+- table_size: pass
 - token: pass
 - traps: pass
 - type: pass
@@ -257,6 +257,23 @@ NAMESPACE_SOUP
 			this->size += delta_bytes;
 		}
 		return old_size_pages;
+	}
+
+	// WasmScript::Table
+
+	uint32_t WasmScript::Table::grow(uint32_t delta, int64_t value) SOUP_EXCAL
+	{
+		uint32_t old_size = -1;
+		if (values.size() + delta <= limit)
+		{
+			old_size = values.size();
+			values.reserve(old_size + delta);
+			while (delta--)
+			{
+				values.emplace_back(value);
+			}
+		}
+		return old_size;
 	}
 	
 	// WasmScript
@@ -490,12 +507,11 @@ NAMESPACE_SOUP
 						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 						size_t initial;
 						r.oml(initial);
+						auto& tbl = tables.emplace_back(static_cast<WasmType>(type));
 						if (flags & 1)
 						{
-							size_t maximum;
-							r.oml(maximum);
+							r.oml(tbl.limit);
 						}
-						auto& tbl = tables.emplace_back(static_cast<WasmType>(type));
 						while (initial != tbl.values.size())
 						{
 							tbl.values.emplace_back();
@@ -3714,6 +3730,47 @@ NAMESPACE_SOUP
 					}
 					break;
 
+				case 0x0f: // table.grow
+					{
+						size_t table_index;
+						r.oml(table_index);
+						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
+						{
+#if DEBUG_VM
+							std::cout << "table.grow: table index " << table_index << " >= " << script.tables.size() << "\n";
+#endif
+							return false;
+						}
+						auto& table = script.tables[table_index];
+						WASM_CHECK_STACK(2);
+						auto delta = stack.back().i32; stack.pop_back();
+						auto value = stack.back(); stack.pop_back();
+						SOUP_IF_UNLIKELY (value.type != table.type)
+						{
+#if DEBUG_VM
+							std::cout << "table.grow: attempt to assign " << wasm_type_to_string(value.type) << " to a table of " << wasm_type_to_string(table.type) << "\n";
+#endif
+							return false;
+						}
+						stack.emplace_back(table.grow(delta, value.i64));
+				}
+					break;
+
+				case 0x10: // table.size
+					{
+						size_t table_index;
+						r.oml(table_index);
+						SOUP_IF_UNLIKELY (table_index >= script.tables.size())
+						{
+#if DEBUG_VM
+							std::cout << "table.size: table index " << table_index << " >= " << script.tables.size() << "\n";
+#endif
+							return false;
+						}
+						stack.emplace_back(static_cast<uint32_t>(script.tables[table_index].values.size()));
+					}
+					break;
+
 				case 0x11: // table.fill
 					{
 						size_t table_index;
@@ -4102,6 +4159,8 @@ NAMESPACE_SOUP
 					r.skip(1);
 					break;
 
+				case 0x0f: // table.grow
+				case 0x10: // table.size
 				case 0x11: // table.fill
 					{
 						size_t imm;

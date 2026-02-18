@@ -153,12 +153,15 @@ NAMESPACE_SOUP
 		struct Table
 		{
 			const WasmType type;
+			uint32_t limit;
 			std::vector<uint64_t> values;
 
 			Table(WasmType type) noexcept
-				: type(type)
+				: type(type), limit(0x10'000)
 			{
 			}
+
+			uint32_t grow(uint32_t delta, int64_t value = 0) SOUP_EXCAL;
 		};
 
 		Memory memory;
