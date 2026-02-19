@@ -536,6 +536,7 @@ NAMESPACE_SOUP
 						if (kind == 0) // function
 						{
 							uint32_t type_index; WASM_READ_OML(type_index);
+							SOUP_RETHROW_FALSE(type_index < types.size());
 							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, {}, type_index, (uint32_t)-1 });
 						}
 						/*else if (kind == 1) // table
@@ -573,6 +574,7 @@ NAMESPACE_SOUP
 					{
 						uint32_t type_index;
 						WASM_READ_OML(type_index);
+						SOUP_RETHROW_FALSE(type_index < types.size());
 						functions.emplace_back(type_index);
 					}
 				}
@@ -892,9 +894,8 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_functions << " function(s)\n";
 #endif
-#if SOUP_WASM_PEDANTIC
 					SOUP_RETHROW_FALSE(num_functions == functions.size());
-#endif
+					code.reserve(num_functions);
 					while (num_functions--)
 					{
 						uint32_t body_size;
@@ -1075,15 +1076,21 @@ NAMESPACE_SOUP
 		if (auto e = export_map.find(name); e != export_map.end())
 		{
 			const size_t i = (e->second - function_imports.size());
-			if (i < code.size() && i < functions.size())
+			if (i < code.size()
+#if false // already checked at load
+				&& i < functions.size()
+#endif
+				)
 			{
 				if (optOutType)
 				{
 					const auto type_index = functions[i];
+#if false // already checked at load
 					SOUP_IF_UNLIKELY (type_index >= types.size())
 					{
 						return nullptr;
 					}
+#endif
 					*optOutType = &types[type_index];
 				}
 				return &code[i];
@@ -1101,6 +1108,7 @@ NAMESPACE_SOUP
 		return -1;
 	}
 
+	// guaranteed to return an in-bounds type index if the function index is in-bounds (due to range checks at load)
 	uint32_t WasmScript::getTypeIndexForFunction(uint32_t func_index) const noexcept
 	{
 		if (func_index < function_imports.size())
@@ -1605,12 +1613,14 @@ NAMESPACE_SOUP
 #endif
 			if (imp.ptr)
 			{
+#if false // already checked at load
 				SOUP_IF_UNLIKELY (imp.type_index >= script->types.size())
 				{
 #if DEBUG_LOAD || DEBUG_API
 					std::cout << "call: type is out-of-bounds\n";
 #endif
 				}
+#endif
 				WasmVm vm(*this);
 				vm.stack = std::move(args);
 				imp.ptr(vm, func_index, script->types[imp.type_index]);
@@ -1894,6 +1904,13 @@ NAMESPACE_SOUP
 			case 0x11: // call_indirect
 				{
 					uint32_t type_index; WASM_READ_OML(type_index);
+					SOUP_IF_UNLIKELY (type_index >= script.types.size())
+					{
+#if DEBUG_VM
+						std::cout << "call: type is out-of-bounds\n";
+#endif
+						return false;
+					}
 					uint32_t table_index; WASM_READ_OML(table_index);
 					SOUP_IF_UNLIKELY (table_index >= script.tables.size())
 					{
@@ -4602,6 +4619,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
+	// function_index will be range-checked. type_index is assumed to be in-bounds if function_index is in-bounds. (as guaranteed by getTypeIndexForFunction)
 	bool WasmVm::doCall(uint32_t type_index, uint32_t function_index, unsigned depth)
 	{
 		SOUP_IF_UNLIKELY (depth >= 200)
@@ -4616,21 +4634,14 @@ NAMESPACE_SOUP
 		WasmScript* script = &this->script;
 	_doCall_other_script:
 
-		SOUP_IF_UNLIKELY (type_index >= script->types.size())
-		{
-#if DEBUG_VM
-			std::cout << "call: type is out-of-bounds\n";
-#endif
-			return false;
-		}
-		const auto& type = script->types[type_index];
-
 #if SOUP_WASM_PEDANTIC
 		if (script == &this->script)
 		{
 			uint32_t func_type_index = script->getTypeIndexForFunction(function_index);
 			if (type_index != func_type_index)
 			{
+				const auto& type = script->types[type_index];
+#if false // already checked at load
 				SOUP_IF_UNLIKELY (func_type_index >= script->types.size())
 				{
 #if DEBUG_VM
@@ -4638,6 +4649,7 @@ NAMESPACE_SOUP
 #endif
 					return false;
 				}
+#endif
 				const auto& func_type = script->types[func_type_index];
 #if DEBUG_VM
 				std::cout << "call: calling " << func_type.toString() << " with " << type.toString() << "\n";
@@ -4661,6 +4673,7 @@ NAMESPACE_SOUP
 #endif
 			if (imp.ptr)
 			{
+				const auto& type = script->types[type_index];
 				imp.ptr(*this, function_index, type);
 				return true;
 			}
@@ -4685,6 +4698,7 @@ NAMESPACE_SOUP
 #endif
 			return false;
 		}
+		const auto& type = script->types[type_index];
 
 		WasmVm callvm(*script);
 		for (uint32_t i = 0; i != type.parameters.size(); ++i)
