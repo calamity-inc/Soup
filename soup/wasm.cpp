@@ -600,13 +600,13 @@ NAMESPACE_SOUP
 						}
 #endif
 						uint8_t kind; r.u8(kind);
-						if (kind == 0) // function
+						if (kind == IE_kFunction)
 						{
 							uint32_t type_index; WASM_READ_OML(type_index);
 							SOUP_RETHROW_FALSE(type_index < types.size());
 							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, {}, type_index, (uint32_t)-1 });
 						}
-						/*else if (kind == 1) // table
+						/*else if (kind == IE_kTable)
 						{
 							uint8_t type; r.u8(type);
 							uint8_t flags; r.u8(flags);
@@ -616,8 +616,7 @@ NAMESPACE_SOUP
 								WASM_READ_OML(size);
 							}
 						}*/
-						// 2 - memory
-						else if (kind == 3) // global
+						else if (kind == IE_kGlobal)
 						{
 							uint8_t type; r.u8(type);
 							r.skip(1); // mutability
@@ -1198,7 +1197,7 @@ NAMESPACE_SOUP
 			{
 				if (auto e = other->export_map.find(fi.function_name); e != other->export_map.end())
 				{
-					if (e->second.kind == Export::kFunction)
+					if (e->second.kind == IE_kFunction)
 					{
 						fi.source = other;
 						fi.func_index = e->second.index;
@@ -1213,7 +1212,7 @@ NAMESPACE_SOUP
 			{
 				if (auto e = other->export_map.find(gi.field_name); e != other->export_map.end())
 				{
-					if (e->second.kind == Export::kGlobal)
+					if (e->second.kind == IE_kGlobal)
 					{
 						if (auto value = other->getGlobalByIndex(e->second.index))
 						{
@@ -1236,7 +1235,7 @@ NAMESPACE_SOUP
 
 	const std::string* WasmScript::getExportedFuntion(const std::string& name, const WasmFunctionType** optOutType) const noexcept
 	{
-		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == Export::kFunction)
+		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == IE_kFunction)
 		{
 			const size_t i = (e->second.index - function_imports.size());
 			if (i < code.size()
@@ -1264,7 +1263,7 @@ NAMESPACE_SOUP
 
 	uint32_t WasmScript::getExportedFuntion2(const std::string& name) const noexcept
 	{
-		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == Export::kFunction)
+		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == IE_kFunction)
 		{
 			return e->second.index;
 		}
@@ -1288,7 +1287,7 @@ NAMESPACE_SOUP
 
 	WasmValue* WasmScript::getExportedGlobal(const std::string& name) noexcept
 	{
-		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == Export::kGlobal)
+		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == IE_kGlobal)
 		{
 			return getGlobalByIndex(e->second.index);
 		}

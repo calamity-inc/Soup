@@ -167,6 +167,14 @@ NAMESPACE_SOUP
 			uint32_t func_index; // to be used with `source` for WASM imports
 		};
 
+		enum ImportExportKind : uint8_t
+		{
+			IE_kFunction = 0,
+			IE_kTable = 1,
+			IE_kMemory = 2,
+			IE_kGlobal = 3,
+		};
+
 		struct Import
 		{
 			std::string module_name;
@@ -175,14 +183,6 @@ NAMESPACE_SOUP
 
 		struct Export
 		{
-			enum Kind : uint8_t
-			{
-				kFunction = 0,
-				kTable = 1,
-				kMemory = 2,
-				kGlobal = 3,
-			};
-
 			uint8_t kind;
 			uint32_t index;
 		};
