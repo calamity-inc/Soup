@@ -128,6 +128,7 @@ int cli_wast(const std::string& file)
 			{ "global_f32", soup::make_shared<WasmValue>(666.6f) },
 			{ "global_f64", soup::make_shared<WasmValue>(666.6) },
 		};
+		const auto spectest_memory = soup::make_shared<WasmScript::Memory>(1, 2, false);
 
 		SharedPtr<WasmScript> scr = soup::make_shared<WasmScript>();
 		std::unordered_map<std::string, SharedPtr<WasmScript>> named_modules;
@@ -150,6 +151,7 @@ int cli_wast(const std::string& file)
 					}
 					scr->provideImportedFunctions("spectest", spectest_functions);
 					scr->provideImportedGlobals("spectest", spectest_globals);
+					scr->provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
 						scr->importFromModule(mod.first, mod.second);
@@ -193,6 +195,7 @@ int cli_wast(const std::string& file)
 					}
 					scr->provideImportedFunctions("spectest", spectest_functions);
 					scr->provideImportedGlobals("spectest", spectest_globals);
+					scr->provideImportedMemory("spectest", "memory", spectest_memory);
 					SOUP_IF_UNLIKELY (tmp.instantiate())
 					{
 						std::cout << "Did not fail to instantiate malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;

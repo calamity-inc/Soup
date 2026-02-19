@@ -49,7 +49,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - const: pass
 - conversions: pass
 - custom: pedantic_pass
-- data: FAIL (missing support for memory imports)
+- data: FAIL (missing support for global.get in constants)
 - elem: FAIL (missing support for table imports)
 - endianness: pass
 - exports: pass
@@ -133,7 +133,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - memory64/float_memory64: pass
 - memory64/load64: pass
 - memory64/memory64: pass
-- memory64/memory64-imports: FAIL (missing support for memory & table imports & exports)
+- memory64/memory64-imports: FAIL (missing support for table imports & exports)
 - memory64/memory_copy64: pass
 - memory64/memory_fill64: pass
 - memory64/memory_grow64: pass
@@ -161,10 +161,10 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/float_exprs1: pass
 - multi-memory/float_memory0: pass
 - multi-memory/imports0: FAIL (missing support for assert_unlinkable)
-- multi-memory/imports1: FAIL
-- multi-memory/imports2: FAIL
+- multi-memory/imports1: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/imports2: FAIL (active data segments affecting imported memories don't take effect; missing support for assert_unlinkable)
 - multi-memory/imports3: FAIL (missing support for assert_unlinkable)
-- multi-memory/imports4: FAIL
+- multi-memory/imports4: pass
 - multi-memory/linking0: FAIL (missing support for assert_unlinkable)
 - multi-memory/linking1: FAIL
 - multi-memory/linking2: FAIL
@@ -240,6 +240,28 @@ NAMESPACE_SOUP
 	}
 
 	// WasmScript::Memory
+
+	WasmScript::Memory::Memory(uint64_t pages, uint64_t max_pages, bool _64bit) SOUP_EXCAL
+	: data(nullptr), size(0), page_limit(max_pages)
+#if SOUP_WASM_MEMORY64
+			, memory64(_64bit)
+#endif
+	{
+#if !SOUP_WASM_MEMORY64
+		SOUP_UNUSED(_64bit);
+#endif
+		if (pages == 0)
+		{
+			this->data = (uint8_t*)soup::malloc(1);
+			this->size = 1;
+		}
+		else
+		{
+			this->data = (uint8_t*)soup::malloc(pages * 0x10'000);
+			this->size = pages * 0x10'000;
+		}
+		memset(this->data, 0, this->size);
+	}
 
 	WasmScript::Memory::~Memory() noexcept
 	{
@@ -616,6 +638,28 @@ NAMESPACE_SOUP
 								WASM_READ_OML(size);
 							}
 						}*/
+						else if (kind == IE_kMemory)
+						{
+							uint8_t flags; r.u8(flags);
+							size_t size; WASM_READ_OML(size);
+							if (flags & 1)
+							{
+								WASM_READ_OML(size);
+							}
+#if SOUP_WASM_MULTI_MEMORY
+							memories.emplace_back();
+							memory_imports.emplace_back(Import{ std::move(module_name), std::move(field_name) });
+#else
+							SOUP_IF_UNLIKELY (memory || memory_import)
+							{
+#if DEBUG_LOAD
+								std::cout << "Too many memories\n";
+#endif
+								return false;
+							}
+							memory_import.emplace(Import{ std::move(module_name), std::move(field_name) });
+#endif
+						}
 						else if (kind == IE_kGlobal)
 						{
 							uint8_t type; r.u8(type);
@@ -691,10 +735,13 @@ NAMESPACE_SOUP
 			case 5: // Memory
 				{
 					uint32_t num_memories; WASM_READ_OML(num_memories);
+#if SOUP_WASM_MULTI_MEMORY
+					memories.reserve(memories.size() + num_memories);
+#endif
 					while (num_memories--)
 					{
 #if !SOUP_WASM_MULTI_MEMORY
-						SOUP_IF_UNLIKELY (memory)
+						SOUP_IF_UNLIKELY (memory || memory_import)
 						{
 #if DEBUG_LOAD
 							std::cout << "Too many memories\n";
@@ -703,74 +750,43 @@ NAMESPACE_SOUP
 						}
 #endif
 						uint8_t flags; r.u8(flags);
-						size_t pages;
-#if !SOUP_WASM_PEDANTIC
-						WASM_READ_OML(pages);
-#else
-	#if SOUP_WASM_MEMORY64
+#if !SOUP_WASM_MEMORY64
+						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+#endif
+						uint64_t pages;
+						uint64_t page_limit = 0x10'000;
+#if SOUP_WASM_MEMORY64
 						if (flags & 4)
 						{
-							uint64_t pages_u64;
-							WASM_READ_OML(pages_u64);
-							pages = pages_u64;
+							WASM_READ_OML(pages);
 						}
-	#endif
 						else
+#endif
 						{
 							uint32_t pages_u32;
 							WASM_READ_OML(pages_u32);
 							pages = pages_u32;
 						}
-#endif
-#if SOUP_WASM_MULTI_MEMORY
-						auto& memory = *this->memories.emplace_back(soup::make_shared<Memory>());
-#else
-						this->memory = soup::make_shared<Memory>();
-						auto& memory = *this->memory;
-#endif
 						if (flags & 1)
 						{
 #if SOUP_WASM_MEMORY64
 							if (flags & 4)
 							{
-								uint64_t page_limit;
 								WASM_READ_OML(page_limit);
-								memory.page_limit = page_limit;
 							}
 							else
+#endif
 							{
-								uint32_t page_limit;
-								WASM_READ_OML(page_limit);
-								memory.page_limit = page_limit;
+								uint32_t page_limit_u32;
+								WASM_READ_OML(page_limit_u32);
+								page_limit = page_limit_u32;
 							}
+						}
+						SOUP_RETHROW_FALSE(pages <= page_limit);
+#if SOUP_WASM_MULTI_MEMORY
+						this->memories.emplace_back(soup::make_shared<Memory>(pages, page_limit, flags & 4));
 #else
-							WASM_READ_OML(memory.page_limit);
-#endif
-						}
-#if SOUP_WASM_MEMORY64
-						if (flags & 4)
-						{
-							memory.memory64 = true;
-						}
-#else
-						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
-#endif
-						//std::cout << "pages = " << pages << "\n";
-						//std::cout << "page_limit = " << memory.page_limit << "\n";
-						if (pages == 0)
-						{
-							memory.data = (uint8_t*)soup::malloc(1);
-							memory.size = 1;
-						}
-						else
-						{
-							SOUP_RETHROW_FALSE(pages <= memory.page_limit);
-							memory.data = (uint8_t*)soup::malloc(pages * 0x10'000);
-							memory.size = pages * 0x10'000;
-						}
-						memset(memory.data, 0, memory.size);
-#if DEBUG_LOAD
-						std::cout << "Memory consists of " << pages << " pages, totalling " << memory.size << " bytes\n";
+						this->memory = soup::make_shared<Memory>(pages, page_limit, flags & 4);
 #endif
 					}
 				}
@@ -1033,10 +1049,10 @@ NAMESPACE_SOUP
 								WASM_READ_OML(memidx);
 							}
 							auto memory = getMemoryByIndex(memidx);
-							SOUP_RETHROW_FALSE(memory);
 
 							WasmValue base;
 							SOUP_RETHROW_FALSE(readConstant(r, base));
+							if (memory)
 							{
 								WasmType addr_type = WASM_I32;
 #if SOUP_WASM_MEMORY64
@@ -1054,15 +1070,22 @@ NAMESPACE_SOUP
 								}
 							}
 							size_t size; WASM_READ_OML(size);
-							auto ptr = memory->getView(base.uptr(), size);
-							SOUP_IF_UNLIKELY (!ptr)
+							if (memory)
 							{
+								auto ptr = memory->getView(base.uptr(), size);
+								SOUP_IF_UNLIKELY (!ptr)
+								{
 #if DEBUG_LOAD
-								std::cout << "data segment exceeds memory range: " << base.uptr() << " + " << size << " > " << memory.size << "\n";
+									std::cout << "data segment exceeds memory range: " << base.uptr() << " + " << size << " > " << memory->size << "\n";
 #endif
-								return false;
+									return false;
+								}
+								r.raw(ptr, size);
 							}
-							r.raw(ptr, size);
+							else
+							{
+								r.skip(size);
+							}
 						}
 					}
 				}
@@ -1129,6 +1152,20 @@ NAMESPACE_SOUP
 				return true;
 			}
 		}
+#if SOUP_WASM_MULTI_MEMORY
+		for (uint32_t i = 0; i != memory_imports.size(); ++i)
+		{
+			if (!memories[i])
+			{
+				return true;
+			}
+		}
+#else
+		if (memory_import && !memory)
+		{
+			return true;
+		}
+#endif
 		return false;
 	}
 
@@ -1189,6 +1226,27 @@ NAMESPACE_SOUP
 		}
 	}
 
+	void WasmScript::provideImportedMemory(const std::string& module_name, const std::string& field_name, SharedPtr<Memory> value) noexcept
+	{
+#if SOUP_WASM_MULTI_MEMORY
+		for (size_t i = 0; i != memory_imports.size(); ++i)
+		{
+			const auto& mi = memory_imports[i];
+			if (mi.field_name == field_name
+				&& mi.module_name == module_name
+				)
+			{
+				memories[i] = value;
+			}
+		}
+#else
+		if (memory_import && memory_import->module_name == module_name && memory_import->field_name == field_name)
+		{
+			memory = value;
+		}
+#endif
+	}
+
 	void WasmScript::importFromModule(const std::string& module_name, SharedPtr<WasmScript> other) noexcept
 	{
 		for (auto& fi : function_imports)
@@ -1212,16 +1270,47 @@ NAMESPACE_SOUP
 			{
 				if (auto e = other->export_map.find(gi.field_name); e != other->export_map.end())
 				{
-					if (e->second.kind == IE_kGlobal)
+					if (e->second.kind == IE_kGlobal
+						&& e->second.index < other->globals.size()
+						)
 					{
-						if (auto value = other->getGlobalByIndex(e->second.index))
-						{
-							globals[i] = value;
-						}
+						globals[i] = other->globals[e->second.index];
 					}
 				}
 			}
 		}
+#if SOUP_WASM_MULTI_MEMORY
+		for (size_t i = 0; i != memory_imports.size(); ++i)
+		{
+			const auto& mi = memory_imports[i];
+			if (mi.module_name == module_name)
+			{
+				if (auto e = other->export_map.find(mi.field_name); e != other->export_map.end())
+				{
+					if (e->second.kind == IE_kMemory
+						&& e->second.index < other->memories.size()
+						)
+					{
+						memories[i] = other->memories[e->second.index];
+					}
+				}
+			}
+		}
+#else
+		if (memory_import && memory_import->module_name == module_name)
+		{
+			if (auto e = other->export_map.find(memory_import->field_name); e != other->export_map.end())
+			{
+				if (e->second.kind == IE_kMemory
+					&& e->second.index == 0
+					&& other->memory
+					)
+				{
+					this->memory = other->memory;
+				}
+			}
+		}
+#endif
 	}
 
 	bool WasmScript::instantiate()

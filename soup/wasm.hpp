@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "math.hpp"
+#include "Optional.hpp"
 #include "SharedPtr.hpp"
 #include "StructMap.hpp"
 
@@ -110,14 +111,8 @@ NAMESPACE_SOUP
 			uint32_t page_limit;
 #endif
 
-			Memory() noexcept
-				: data(nullptr), size(0), page_limit(0x10'000)
-#if SOUP_WASM_MEMORY64
-				, memory64(0)
-#endif
-			{
-			}
-
+			// 1 page = 0x10'000 bytes.
+			Memory(uint64_t pages = 0, uint64_t max_pages = 0x10'000, bool _64bit = false) SOUP_EXCAL;
 			~Memory() noexcept;
 
 			[[nodiscard]] void* getView(size_t addr, size_t size) noexcept
@@ -211,8 +206,10 @@ NAMESPACE_SOUP
 
 #if SOUP_WASM_MULTI_MEMORY
 		std::vector<SharedPtr<Memory>> memories;
+		std::vector<Import> memory_imports;
 #else
 		SharedPtr<Memory> memory;
+		Optional<Import> memory_import;
 #endif
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<WasmFunctionType> types{};
@@ -244,6 +241,7 @@ NAMESPACE_SOUP
 		void provideImportedFunctions(const std::string& module_name, const std::unordered_map<std::string, wasm_ffi_func_t>& map) noexcept;
 		void provideImportedGlobal(const std::string& module_name, const std::string& field_name, SharedPtr<WasmValue> value) noexcept;
 		void provideImportedGlobals(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<WasmValue>>& map) noexcept;
+		void provideImportedMemory(const std::string& module_name, const std::string& field_name, SharedPtr<Memory> value) noexcept;
 		void importFromModule(const std::string& module_name, SharedPtr<WasmScript> other) noexcept;
 		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
 
