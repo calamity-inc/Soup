@@ -170,6 +170,20 @@ NAMESPACE_SOUP
 			SharedPtr<WasmValue> value;
 		};
 
+		struct Export
+		{
+			enum Kind : uint8_t
+			{
+				kFunction = 0,
+				kTable = 1,
+				kMemory = 2,
+				kGlobal = 3,
+			};
+
+			uint8_t kind;
+			uint32_t index;
+		};
+
 		struct Table
 		{
 			const WasmType type;
@@ -197,8 +211,8 @@ NAMESPACE_SOUP
 		std::vector<WasmFunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
 		std::vector<GlobalImport> global_imports{};
-		std::vector<WasmValue> globals{};
-		std::unordered_map<std::string, uint32_t> export_map{};
+		std::vector<SharedPtr<WasmValue>> globals{};
+		std::unordered_map<std::string, Export> export_map{};
 		std::vector<std::string> code{};
 		std::unordered_map<uint64_t, std::vector<uint32_t>> _internal_branch_hints{};
 		std::vector<Table> tables{};
@@ -223,7 +237,7 @@ NAMESPACE_SOUP
 		void provideImportedFunctions(const std::string& module_name, const std::unordered_map<std::string, wasm_ffi_func_t>& map) noexcept;
 		void provideImportedGlobal(const std::string& module_name, const std::string& field_name, SharedPtr<WasmValue> value) noexcept;
 		void provideImportedGlobals(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<WasmValue>>& map) noexcept;
-		void importFromModule(const std::string& module_name, const SharedPtr<WasmScript>& other);
+		void importFromModule(const std::string& module_name, SharedPtr<WasmScript> other) noexcept;
 		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
 
 		// Runs the start function of the script, if defined. May throw if an imported C++ function throws.
@@ -233,6 +247,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] uint32_t getExportedFuntion2(const std::string& name) const noexcept;
 		[[nodiscard]] uint32_t getTypeIndexForFunction(uint32_t func_index) const noexcept;
 		[[nodiscard]] WasmValue* getGlobalByIndex(uint32_t global_index) noexcept;
+		[[nodiscard]] WasmValue* getExportedGlobal(const std::string& name) noexcept;
 
 		// May throw if an imported C++ function throws.
 		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::vector<WasmValue>* out = nullptr);

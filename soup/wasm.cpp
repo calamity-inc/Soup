@@ -52,7 +52,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - data: FAIL (missing support for memory imports)
 - elem: FAIL (missing support for table imports)
 - endianness: pass
-- exports: FAIL (missing support for exported globals)
+- exports: pass
 - f32: pass
 - f32_bitwise: pass
 - f32_cmp: pass
@@ -71,13 +71,13 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - i32: pass
 - i64: pass
 - if: pass
-- imports: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for global exports)
+- imports: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for table imports)
 - inline-module: pass
 - int_exprs: pass
 - int_literals: pass
 - labels: pass
 - left-to-right: pass
-- linking: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for global exports)
+- linking: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for table imports)
 - load: pass
 - local_get: pass
 - local_set: pass
@@ -725,7 +725,7 @@ NAMESPACE_SOUP
 					{
 						uint8_t type; r.u8(type);
 						r.skip(1); // mutability
-						WasmValue& value = globals.emplace_back();
+						WasmValue& value = *globals.emplace_back(soup::make_shared<WasmValue>());
 						SOUP_RETHROW_FALSE(readConstant(r, value));
 						SOUP_IF_UNLIKELY (value.type != type)
 						{
@@ -745,6 +745,7 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_exports << " export(s)\n";
 #endif
+					export_map.reserve(num_exports);
 					while (num_exports--)
 					{
 						uint32_t name_len;
@@ -756,11 +757,7 @@ NAMESPACE_SOUP
 #endif
 						uint8_t kind; r.u8(kind);
 						uint32_t index; WASM_READ_OML(index);
-						if (kind == 0) // function 
-						{
-							export_map.emplace(std::move(name), index);
-						}
-						// kind 2 = memory
+						export_map.emplace(std::move(name), Export{ kind, index });
 					}
 				}
 				break;
@@ -1124,7 +1121,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void WasmScript::importFromModule(const std::string& module_name, const SharedPtr<WasmScript>& other)
+	void WasmScript::importFromModule(const std::string& module_name, SharedPtr<WasmScript> other) noexcept
 	{
 		for (auto& fi : function_imports)
 		{
@@ -1132,12 +1129,30 @@ NAMESPACE_SOUP
 			{
 				if (auto e = other->export_map.find(fi.function_name); e != other->export_map.end())
 				{
-					fi.source = other;
-					fi.func_index = e->second;
+					if (e->second.kind == Export::kFunction)
+					{
+						fi.source = other;
+						fi.func_index = e->second.index;
+					}
 				}
 			}
 		}
-		// TODO: Global exports -> global imports
+		for (auto& gi : global_imports)
+		{
+			if (gi.module_name == module_name)
+			{
+				if (auto e = other->export_map.find(gi.field_name); e != other->export_map.end())
+				{
+					if (e->second.kind == Export::kGlobal)
+					{
+						if (auto value = other->getGlobalByIndex(e->second.index))
+						{
+							gi.value = value;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	bool WasmScript::instantiate()
@@ -1151,9 +1166,9 @@ NAMESPACE_SOUP
 
 	const std::string* WasmScript::getExportedFuntion(const std::string& name, const WasmFunctionType** optOutType) const noexcept
 	{
-		if (auto e = export_map.find(name); e != export_map.end())
+		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == Export::kFunction)
 		{
-			const size_t i = (e->second - function_imports.size());
+			const size_t i = (e->second.index - function_imports.size());
 			if (i < code.size()
 #if false // already checked at load
 				&& i < functions.size()
@@ -1179,9 +1194,9 @@ NAMESPACE_SOUP
 
 	uint32_t WasmScript::getExportedFuntion2(const std::string& name) const noexcept
 	{
-		if (auto e = export_map.find(name); e != export_map.end())
+		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == Export::kFunction)
 		{
-			return e->second;
+			return e->second.index;
 		}
 		return -1;
 	}
@@ -1210,7 +1225,16 @@ NAMESPACE_SOUP
 		global_index -= static_cast<uint32_t>(global_imports.size());
 		if (global_index < globals.size())
 		{
-			return &globals[global_index];
+			return globals[global_index].get();
+		}
+		return nullptr;
+	}
+
+	WasmValue* WasmScript::getExportedGlobal(const std::string& name) noexcept
+	{
+		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == Export::kGlobal)
+		{
+			return getGlobalByIndex(e->second.index);
 		}
 		return nullptr;
 	}

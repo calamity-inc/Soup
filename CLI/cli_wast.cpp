@@ -213,33 +213,50 @@ int cli_wast(const std::string& file)
 						{
 							scr = named_modules.at(action.at("module").asStr().value);
 						}
-						const auto func_idx = scr->getExportedFuntion2(action.at("field").asStr());
-						SOUP_IF_UNLIKELY (func_idx == -1)
+						if (action.at("type").asStr() == "invoke")
 						{
-							std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value << " for test at line " << cmd.at("line").asInt().value << std::endl;
-							goto _wast_next_cmd;
-						}
-						//std::cout << "running code from line " << cmd.at("line").asInt().value << std::endl;
-						std::vector<WasmValue> args;
-						for (const auto& arg : action.at("args").asArr())
-						{
-							instantiate_value(arg.asObj(), args.emplace_back());
-						}
-						if (!scr->call(func_idx, std::move(args), &stack))
-						{
-							SOUP_IF_UNLIKELY (type != "assert_trap" && type != "assert_exhaustion")
+							const auto func_idx = scr->getExportedFuntion2(action.at("field").asStr());
+							SOUP_IF_UNLIKELY (func_idx == -1)
 							{
-								std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
+								std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value << " for test at line " << cmd.at("line").asInt().value << std::endl;
 								goto _wast_next_cmd;
 							}
+							//std::cout << "running code from line " << cmd.at("line").asInt().value << std::endl;
+							std::vector<WasmValue> args;
+							for (const auto& arg : action.at("args").asArr())
+							{
+								instantiate_value(arg.asObj(), args.emplace_back());
+							}
+							if (!scr->call(func_idx, std::move(args), &stack))
+							{
+								SOUP_IF_UNLIKELY (type != "assert_trap" && type != "assert_exhaustion")
+								{
+									std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
+									goto _wast_next_cmd;
+								}
+							}
+							else
+							{
+								SOUP_IF_UNLIKELY (type == "assert_trap" || type == "assert_exhaustion")
+								{
+									std::cout << "Execution did not fail for test at line " << cmd.at("line").asInt().value << std::endl;
+									goto _wast_next_cmd;
+								}
+							}
+						}
+						else if (action.at("type").asStr() == "get")
+						{
+							const auto global = scr->getExportedGlobal(action.at("field").asStr());
+							SOUP_IF_UNLIKELY (!global)
+							{
+								std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value << " for test at line " << cmd.at("line").asInt().value << std::endl;
+								goto _wast_next_cmd;
+							}
+							stack.emplace_back(*global);
 						}
 						else
 						{
-							SOUP_IF_UNLIKELY (type == "assert_trap" || type == "assert_exhaustion")
-							{
-								std::cout << "Execution did not fail for test at line " << cmd.at("line").asInt().value << std::endl;
-								goto _wast_next_cmd;
-							}
+							std::cout << "Unknown action type: " << action.at("type").asStr().value << std::endl;
 						}
 					}
 					if (type == "assert_return")
