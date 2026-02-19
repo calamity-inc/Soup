@@ -1726,6 +1726,7 @@ endif;)") == "");
 		{
 			WasmScript ws;
 			assert(ws.load(base64::decode("AGFzbQEAAAABBwFgAn9/AX8DAgEABwoBBmFkZFR3bwAACgkBBwAgACABagsACgRuYW1lAgMBAAA=")));
+			assert(ws.instantiate());
 			const WasmFunctionType* type = nullptr;
 			auto code = ws.getExportedFuntion("addTwo", &type);
 
@@ -1749,6 +1750,7 @@ endif;)") == "");
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABCgJgAAF/YAF/AX8DAwIAAQUDAQABByIDCmdldF9zdHJpbmcAAAhnZXRfYnl0ZQABBm1lbW9yeQIACg8CBQBBoAgLBwAgAC0AAAsLGwIAQYwICwEcAEGYCAsNAgAAAAYAAABsAG8AbABOBG5hbWUBIwIAEGluZGV4L2dldF9zdHJpbmcBDmluZGV4L2dldF9ieXRlAggCAAABAQABMAQHAgABMAEBMQYEAQABMAkJAgABMAEDMC4x")));
+			assert(scr.instantiate());
 			auto memory = scr.getMemoryByIndex(0);
 			assert(memory);
 			{
@@ -1787,6 +1789,7 @@ endif;)") == "");
 				vm.stack.emplace_back(a.i32 + b.i32);
 			});
 			assert(!scr.hasUnresolvedImports());
+			assert(scr.instantiate());
 			auto code = scr.getExportedFuntion("addTwo");
 			assert(code);
 			WasmVm vm(scr);
@@ -1800,6 +1803,7 @@ endif;)") == "");
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAX8Bf2ACf38BfwMDAgEABQMBAAEHDAEIaXNfbWFnaWMAAQo9AjIBAn8DQCAAIgNBAWohACABIgJBAWohASADLQAAIgMgAi0AAEcEQEEADwsgAw0AC0EBCwgAIABBARAACwsLAQBBAQsFZGVlegAANARuYW1lARoCAAZzdHJjbXABD2lzX2hvc3Rpbmdfc2x1ZwIRAgAEAAEwAQExAgEyAwEzAQA=")));
+			assert(scr.instantiate());
 			auto memory = scr.getMemoryByIndex(0);
 			assert(memory);
 			WasmScrapAllocator sa(*memory);
@@ -1835,6 +1839,7 @@ endif;)") == "");
 			// )
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABCgJgAX8Bf2AAAX8DAwIAAQQFAXABAQEFAwEAAQcIAQRtYWluAAEJBwEAQQALAQAKEwIHACAAQShqCwkAQQJBABEAAAsAMgRuYW1lAQ0CAAR0ZXN0AQRtYWluAggCAAEAATABAAQMAQAJRlVOQ1NJRyRpBgQBAAEw")));
+			assert(scr.instantiate());
 			auto code = scr.getExportedFuntion("main");
 			assert(code);
 			WasmVm vm(scr);
@@ -1860,6 +1865,7 @@ endif;)") == "");
 			// )
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABBQFgAAF/AwIBAAcIAQRtYWluAAAKEwERAAJAA0ACQAwCCwwACwtBKgsAEgRuYW1lAQYBAANmNjQCAwEAAA==")));
+			assert(scr.instantiate());
 			auto code = scr.getExportedFuntion("main");
 			assert(code);
 			WasmVm vm(scr);
@@ -1885,6 +1891,7 @@ endif;)") == "");
 			//   )
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABBQFgAAF/AwIBAAcIAQR0ZXN0AAAKHAEaAQF/QQEDQCAAQQFqIQBBAiAAQQpIDQAaCwsADQRuYW1lAgYBAAEAAWk=")));
+			assert(scr.instantiate());
 			auto code = scr.getExportedFuntion("test");
 			assert(code);
 			WasmVm vm(scr);
@@ -1898,6 +1905,7 @@ endif;)") == "");
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABBgFgAXwBfAMCAQAHBwEDZmFjAAAKLgEsACAARAAAAAAAAPA/YwR8RAAAAAAAAPA/BSAAIABEAAAAAAAA8D+hEACiCwsAEgRuYW1lAQYBAANmYWMCAwEAAA==")));
+			assert(scr.instantiate());
 			auto code = scr.getExportedFuntion("fac");
 			assert(code);
 			WasmVm vm(scr);
@@ -1921,6 +1929,7 @@ endif;)") == "");
 			// )
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABCQJgAXAAYAABcAMDAgABBAQBcAABBw0CA3NldAAAA2dldAABChECCABBACAAJgALBgBBACUACwAMBG5hbWUCBQIAAAEA")));
+			assert(scr.instantiate());
 			auto get = scr.getExportedFuntion("get");
 			assert(get);
 			auto set = scr.getExportedFuntion("set");
@@ -1958,6 +1967,7 @@ endif;)") == "");
 			// )
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABCQJgAW8AYAABbwMDAgABBgYBbwHQbwsHDQIDc2V0AAADZ2V0AAEKDQIGACAAJAALBAAjAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
+			assert(scr.instantiate());
 			auto get = scr.getExportedFuntion("get");
 			assert(get);
 			auto set = scr.getExportedFuntion("set");
@@ -1995,6 +2005,7 @@ endif;)") == "");
 			//   )
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABCAJgAAF/YAAAAwMCAAEGBgFwAdBwCwcTAgdpc19udWxsAAAFc2V0XzAAAQoOAgUAIwDRCwYA0gAkAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
+			assert(scr.instantiate());
 			auto is_null = scr.getExportedFuntion("is_null");
 			assert(is_null);
 			auto set_0 = scr.getExportedFuntion("set_0");
@@ -2037,6 +2048,7 @@ endif;)") == "");
 				assert(scr.hasUnresolvedImports());
 				scr.provideImportedGlobal("", "g", global);
 				assert(!scr.hasUnresolvedImports());
+				assert(scr.instantiate());
 				auto get = scr.getExportedFuntion2("get");
 				assert(get != -1);
 				auto set = scr.getExportedFuntion2("set");

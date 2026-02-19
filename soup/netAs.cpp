@@ -10,7 +10,7 @@ NAMESPACE_SOUP
 	bool netAs::isHosting(const netIntel& intel) const SOUP_EXCAL
 	{
 		WasmScript ws;
-		SOUP_IF_LIKELY (ws.load(intel.extra_wasm))
+		SOUP_IF_LIKELY (ws.load(intel.extra_wasm) && ws.instantiate())
 		{
 			if (auto code = ws.getExportedFuntion("is_hosting_asn"))
 			{
