@@ -37,18 +37,18 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - address: pass
 - align: FAIL (Soup doesn't fail on some malformed modules)
 - binary: FAIL (Soup doesn't fail on some malformed modules)
-- binary-leb128: pass_pedantic
+- binary-leb128: pedantic_pass
 - block: pass
 - br: pass
 - br_if: pass
 - br_table: pass
 - bulk: pass
 - call: pass
-- call_indirect: pass_pedantic
+- call_indirect: pedantic_pass
 - comments: pass
 - const: pass
 - conversions: pass
-- custom: pass_pedantic
+- custom: pedantic_pass
 - data: FAIL (missing support for memory imports)
 - elem: FAIL (missing support for table imports)
 - endianness: pass
@@ -120,13 +120,13 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - unreached-invalid: pass (Soup doesn't do static validation)
 - unreached-valid: pass
 - unwind: pass
-- utf8-custom-section-id: pass_pedantic
-- utf8-import-field: pass_pedantic
-- utf8-import-module: pass_pedantic
+- utf8-custom-section-id: pedantic_pass
+- utf8-import-field: pedantic_pass
+- utf8-import-module: pedantic_pass
 - utf8-invalid-encoding: pass (due to Soup not parsing .wat files)
 - memory64/address64: pass
 - memory64/align64: pass
-- memory64/binary_leb128_64: pass_pedantic
+- memory64/binary_leb128_64: pedantic_pass
 - memory64/bulk64: pass
 - memory64/call_indirect64: pass
 - memory64/endianness64: pass
@@ -149,6 +149,47 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - memory64/table_init64: pass
 - memory64/table_set64: pass
 - memory64/table_size64: pass
+- multi-memory/address0: pass
+- multi-memory/address1: pass
+- multi-memory/align0: pass
+- multi-memory/binary0: pedantic_pass
+- multi-memory/data0: FAIL
+- multi-memory/data1: FAIL
+- multi-memory/data_drop0: pass
+- multi-memory/exports0: pass
+- multi-memory/float_exprs0: pass
+- multi-memory/float_exprs1: pass
+- multi-memory/float_memory0: pass
+- multi-memory/imports0: FAIL (missing support for assert_unlinkable)
+- multi-memory/imports1: FAIL
+- multi-memory/imports2: FAIL
+- multi-memory/imports3: FAIL (missing support for assert_unlinkable)
+- multi-memory/imports4: FAIL
+- multi-memory/linking0: FAIL (missing support for assert_unlinkable)
+- multi-memory/linking1: FAIL
+- multi-memory/linking2: FAIL
+- multi-memory/linking3: FAIL (missing support for assert_unlinkable)
+- multi-memory/load0: pass
+- multi-memory/load1: FAIL
+- multi-memory/load2: pass
+- multi-memory/memory-multi: pass
+- multi-memory/memory_copy0: pass
+- multi-memory/memory_copy1: pass
+- multi-memory/memory_fill0: pass
+- multi-memory/memory_grow: FAIL
+- multi-memory/memory_init0: pass
+- multi-memory/memory_size0: pass
+- multi-memory/memory_size1: pass
+- multi-memory/memory_size2: pass
+- multi-memory/memory_size3: pass
+- multi-memory/memory_size_import: FAIL
+- multi-memory/memory_trap0: pass
+- multi-memory/memory_trap1: pass
+- multi-memory/start0: pass
+- multi-memory/store0: pass
+- multi-memory/store1: FAIL
+- multi-memory/store2: FAIL
+- multi-memory/traps0: pass
 */
 
 NAMESPACE_SOUP
@@ -337,6 +378,20 @@ NAMESPACE_SOUP
 #else
 #define WASM_READ_OML(v) r.oml(v);
 #define WASM_READ_SOML(v) r.soml(v);
+#endif
+
+#if SOUP_WASM_PEDANTIC
+#define WASM_READ_MEMALIGN uint32_t align; WASM_READ_OML(align)
+#define WASM_READ_MEMOFFSET uint64_t offset; WASM_READ_OML(offset)
+#else
+#define WASM_READ_MEMALIGN uint8_t align; r.u8(align)
+#define WASM_READ_MEMOFFSET size_t offset; WASM_READ_OML(offset)
+#endif
+
+#if SOUP_WASM_MULTI_MEMORY
+#define WASM_READ_MEMARG uint32_t memidx = 0; { WASM_READ_MEMALIGN; if (align & 0x40) { WASM_READ_OML(memidx); } } WASM_READ_MEMOFFSET
+#else
+#define WASM_READ_MEMARG constexpr uint32_t memidx = 0; { WASM_READ_MEMALIGN; } WASM_READ_MEMOFFSET
 #endif
 
 	bool WasmScript::load(const std::string& data) SOUP_EXCAL
@@ -637,15 +692,17 @@ NAMESPACE_SOUP
 			case 5: // Memory
 				{
 					uint32_t num_memories; WASM_READ_OML(num_memories);
-					if (num_memories != 0)
+					while (num_memories--)
 					{
-						SOUP_IF_UNLIKELY (memory || num_memories != 1)
+#if !SOUP_WASM_MULTI_MEMORY
+						SOUP_IF_UNLIKELY (memory)
 						{
 #if DEBUG_LOAD
 							std::cout << "Too many memories\n";
 #endif
 							return false;
 						}
+#endif
 						uint8_t flags; r.u8(flags);
 						size_t pages;
 #if !SOUP_WASM_PEDANTIC
@@ -666,8 +723,12 @@ NAMESPACE_SOUP
 							pages = pages_u32;
 						}
 #endif
+#if SOUP_WASM_MULTI_MEMORY
+						auto& memory = *this->memories.emplace_back(soup::make_shared<Memory>());
+#else
 						this->memory = soup::make_shared<Memory>();
 						auto& memory = *this->memory;
+#endif
 						if (flags & 1)
 						{
 #if SOUP_WASM_MEMORY64
@@ -967,12 +1028,13 @@ NAMESPACE_SOUP
 						}
 						else
 						{
-							SOUP_RETHROW_FALSE(memory);
-
+							uint32_t memidx = 0;
 							if (flags & 0b10)
 							{
-								size_t memidx; WASM_READ_OML(memidx);
+								WASM_READ_OML(memidx);
 							}
+							auto memory = getMemoryByIndex(memidx);
+							SOUP_RETHROW_FALSE(memory);
 
 							WasmValue base;
 							SOUP_RETHROW_FALSE(readConstant(r, base));
@@ -1224,15 +1286,6 @@ NAMESPACE_SOUP
 		return -1;
 	}
 
-	WasmValue* WasmScript::getGlobalByIndex(uint32_t global_index) noexcept
-	{
-		if (global_index < globals.size())
-		{
-			return globals[global_index].get();
-		}
-		return nullptr;
-	}
-
 	WasmValue* WasmScript::getExportedGlobal(const std::string& name) noexcept
 	{
 		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == Export::kGlobal)
@@ -1272,7 +1325,8 @@ NAMESPACE_SOUP
 
 	void WasmScript::linkWasiPreview1(std::vector<std::string> args) noexcept
 	{
-		SOUP_IF_UNLIKELY (!memory)
+		// Note: Technically, WASI should use the memory exported under the name "memory".
+		SOUP_IF_UNLIKELY (!getMemoryByIndex(0))
 		{
 			return;
 		}
@@ -1294,7 +1348,7 @@ NAMESPACE_SOUP
 			auto plen = vm.stack.back().i32; vm.stack.pop_back();
 			auto pargc = vm.stack.back().i32; vm.stack.pop_back();
 			WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
-			if (auto pLen = vm.script.memory->getPointer<int32_t>(plen))
+			if (auto pLen = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(plen))
 			{
 				*pLen = 0;
 				for (const auto& arg : wd.args)
@@ -1302,7 +1356,7 @@ NAMESPACE_SOUP
 					*pLen += arg.size() + 1;
 				}
 			}
-			if (auto pArgc = vm.script.memory->getPointer<int32_t>(pargc))
+			if (auto pArgc = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(pargc))
 			{
 				*pArgc = wd.args.size();
 			}
@@ -1317,13 +1371,13 @@ NAMESPACE_SOUP
 			std::string argstr;
 			for (uint32_t i = 0; i != wd.args.size(); ++i)
 			{
-				if (auto pArg = vm.script.memory->getPointer<int32_t>(pargv + i * 4))
+				if (auto pArg = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(pargv + i * 4))
 				{
 					*pArg = pstr + argstr.size();
 				}
 				argstr.append(wd.args[i].data(), wd.args[i].size() + 1);
 			}
-			vm.script.memory->write(pstr, argstr.data(), argstr.size());
+			vm.script.getMemoryByIndex(0)->write(pstr, argstr.data(), argstr.size());
 			vm.stack.emplace_back(WASI_ERRNO_SUCCESS);
 		});
 		provideImportedFunction("wasi_snapshot_preview1", "environ_sizes_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
@@ -1331,11 +1385,11 @@ NAMESPACE_SOUP
 			API_CHECK_STACK(2);
 			auto out_environ_buf_size = vm.stack.back().i32; vm.stack.pop_back();
 			auto out_environ_count = vm.stack.back().i32; vm.stack.pop_back();
-			if (auto ptr = vm.script.memory->getPointer<int32_t>(out_environ_count))
+			if (auto ptr = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(out_environ_count))
 			{
 				*ptr = 0;
 			}
-			if (auto ptr = vm.script.memory->getPointer<int32_t>(out_environ_buf_size))
+			if (auto ptr = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(out_environ_buf_size))
 			{
 				*ptr = 0;
 			}
@@ -1357,11 +1411,11 @@ NAMESPACE_SOUP
 #endif
 			if (fd == 3)
 			{
-				if (auto pTag = vm.script.memory->getPointer<uint32_t>(prestat + 0))
+				if (auto pTag = vm.script.getMemoryByIndex(0)->getPointer<uint32_t>(prestat + 0))
 				{
 					*pTag = 0; // __WASI_PREOPENTYPE_DIR
 				}
-				if (auto pDirNameLen = vm.script.memory->getPointer<uint32_t>(prestat + 4))
+				if (auto pDirNameLen = vm.script.getMemoryByIndex(0)->getPointer<uint32_t>(prestat + 4))
 				{
 					*pDirNameLen = 1;
 				}
@@ -1382,7 +1436,7 @@ NAMESPACE_SOUP
 			{
 				if (path_len >= 1)
 				{
-					vm.script.memory->write(path, ".", 1);
+					vm.script.getMemoryByIndex(0)->write(path, ".", 1);
 					vm.stack.emplace_back(WASI_ERRNO_SUCCESS);
 				}
 				else
@@ -1413,19 +1467,19 @@ NAMESPACE_SOUP
 #endif
 			if (fd == 3)
 			{
-				if (auto pFiletype = vm.script.memory->getPointer<uint8_t>(out + 0))
+				if (auto pFiletype = vm.script.getMemoryByIndex(0)->getPointer<uint8_t>(out + 0))
 				{
 					*pFiletype = 3; // directory, as per https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L785
 				}
-				if (auto pFlags = vm.script.memory->getPointer<uint16_t>(out + 2))
+				if (auto pFlags = vm.script.getMemoryByIndex(0)->getPointer<uint16_t>(out + 2))
 				{
 					*pFlags = 0;
 				}
-				if (auto pRightsBase = vm.script.memory->getPointer<uint64_t>(out + 8))
+				if (auto pRightsBase = vm.script.getMemoryByIndex(0)->getPointer<uint64_t>(out + 8))
 				{
 					*pRightsBase = -1;
 				}
-				if (auto pRightsInheriting = vm.script.memory->getPointer<uint64_t>(out + 16))
+				if (auto pRightsInheriting = vm.script.getMemoryByIndex(0)->getPointer<uint64_t>(out + 16))
 				{
 					*pRightsInheriting = -1;
 				}
@@ -1446,16 +1500,16 @@ NAMESPACE_SOUP
 			auto fd = vm.stack.back().i32; vm.stack.pop_back();
 			if (fd == 3)
 			{
-				auto path_str = vm.script.memory->readString(path, path_len);
+				auto path_str = vm.script.getMemoryByIndex(0)->readString(path, path_len);
 #if DEBUG_API
 				std::cout << "path_filestat_get: " << path_str << " (relative to .)\n";
 #endif
 				SOUP_UNUSED(flags);
-				if (auto pFiletype = vm.script.memory->getPointer<uint8_t>(buf + 16))
+				if (auto pFiletype = vm.script.getMemoryByIndex(0)->getPointer<uint8_t>(buf + 16))
 				{
 					*pFiletype = 4; // regular file, as per https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L785
 				}
-				if (auto pSize = vm.script.memory->getPointer<uint64_t>(buf + 32))
+				if (auto pSize = vm.script.getMemoryByIndex(0)->getPointer<uint64_t>(buf + 32))
 				{
 					*pSize = std::filesystem::file_size(path_str);
 #if DEBUG_API
@@ -1483,7 +1537,7 @@ NAMESPACE_SOUP
 			auto fd = vm.stack.back().i32; vm.stack.pop_back();
 			if (fd == 3)
 			{
-				auto path_str = vm.script.memory->readString(path, path_len);
+				auto path_str = vm.script.getMemoryByIndex(0)->readString(path, path_len);
 #if DEBUG_API
 				std::cout << "path_open: " << path_str << " (relative to .)\n";
 #endif
@@ -1495,7 +1549,7 @@ NAMESPACE_SOUP
 				if (auto f = fopen(path_str.c_str(), "rb"))
 				{
 					WasiData& wd = vm.script.custom_data.getStructFromMapConst(WasiData);
-					if (auto pOutFd = vm.script.memory->getPointer<uint32_t>(out_fd))
+					if (auto pOutFd = vm.script.getMemoryByIndex(0)->getPointer<uint32_t>(out_fd))
 					{
 						*pOutFd = WASI_FD_FILES_BASE + wd.files.size();
 					}
@@ -1527,7 +1581,7 @@ NAMESPACE_SOUP
 			{
 				auto f = wd.files[fd - WASI_FD_FILES_BASE];
 				fseek(f, delta, whence == 0 ? SEEK_SET : (whence == 1 ? SEEK_CUR : (whence == 2 ? SEEK_END : (SOUP_UNREACHABLE,SEEK_END))));
-				if (auto pOutOff = vm.script.memory->getPointer<uint64_t>(out_off))
+				if (auto pOutOff = vm.script.getMemoryByIndex(0)->getPointer<uint64_t>(out_off))
 				{
 					*pOutOff = ftell(f);
 #if DEBUG_API
@@ -1564,18 +1618,18 @@ NAMESPACE_SOUP
 				while (iovs_len--)
 				{
 					int32_t iov_base = 0;
-					if (auto ptr = vm.script.memory->getPointer<int32_t>(iovs))
+					if (auto ptr = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(iovs))
 					{
 						iov_base = *ptr;
 					}
 					iovs += 4;
 					int32_t iov_len = 0;
-					if (auto ptr = vm.script.memory->getPointer<int32_t>(iovs))
+					if (auto ptr = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(iovs))
 					{
 						iov_len = *ptr;
 					}
 					iovs += 4;
-					if (auto ptr = vm.script.memory->getView(iov_base, iov_len))
+					if (auto ptr = vm.script.getMemoryByIndex(0)->getView(iov_base, iov_len))
 					{
 						const auto ret = fread(ptr, 1, iov_len, f);
 						if (ret >= 0)
@@ -1584,7 +1638,7 @@ NAMESPACE_SOUP
 						}
 					}
 				}
-				if (auto pOut = vm.script.memory->getPointer<int32_t>(out_nread))
+				if (auto pOut = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(out_nread))
 				{
 #if DEBUG_API
 					std::cout << "read " << nread << " bytes from fd " << fd << "\n";
@@ -1621,18 +1675,18 @@ NAMESPACE_SOUP
 				while (iovs_len--)
 				{
 					int32_t iov_base = 0;
-					if (auto ptr = vm.script.memory->getPointer<int32_t>(iovs))
+					if (auto ptr = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(iovs))
 					{
 						iov_base = *ptr;
 					}
 					iovs += 4;
 					int32_t iov_len = 0;
-					if (auto ptr = vm.script.memory->getPointer<int32_t>(iovs))
+					if (auto ptr = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(iovs))
 					{
 						iov_len = *ptr;
 					}
 					iovs += 4;
-					if (auto ptr = vm.script.memory->getView(iov_base, iov_len))
+					if (auto ptr = vm.script.getMemoryByIndex(0)->getView(iov_base, iov_len))
 					{
 						const auto ret = fwrite(ptr, 1, iov_len, f);
 						if (ret >= 0)
@@ -1641,7 +1695,7 @@ NAMESPACE_SOUP
 						}
 					}
 				}
-				if (auto pOut = vm.script.memory->getPointer<int32_t>(out_nwritten))
+				if (auto pOut = vm.script.getMemoryByIndex(0)->getPointer<int32_t>(out_nwritten))
 				{
 					*pOut = nwritten;
 				}
@@ -2170,16 +2224,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int32_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
 						stack.emplace_back(*ptr);
 					}
@@ -2197,16 +2251,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int64_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int64_t>(base, offset))
 					{
 						stack.emplace_back(*ptr);
 					}
@@ -2224,16 +2278,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<float>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<float>(base, offset))
 					{
 						stack.emplace_back(*ptr);
 					}
@@ -2251,16 +2305,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<double>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<double>(base, offset))
 					{
 						stack.emplace_back(*ptr);
 					}
@@ -2278,16 +2332,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int8_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int32_t>(*ptr));
 					}
@@ -2305,16 +2359,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<uint8_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
 					}
@@ -2332,16 +2386,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int16_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
 					}
@@ -2359,16 +2413,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<uint16_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint32_t>(*ptr));
 					}
@@ -2386,16 +2440,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int8_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
 					}
@@ -2413,16 +2467,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<uint8_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint8_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
 					}
@@ -2440,16 +2494,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int16_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
 					}
@@ -2467,16 +2521,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<uint16_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint16_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
 					}
@@ -2494,16 +2548,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int32_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<int64_t>(*ptr));
 					}
@@ -2521,16 +2575,16 @@ NAMESPACE_SOUP
 				{
 					WASM_CHECK_STACK(1);
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<uint32_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint32_t>(base, offset))
 					{
 						stack.emplace_back(static_cast<uint64_t>(*ptr));
 					}
@@ -2550,16 +2604,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int32_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
 						*ptr = value.i32;
 					}
@@ -2578,16 +2632,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int64_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int64_t>(base, offset))
 					{
 						*ptr = value.i64;
 					}
@@ -2606,16 +2660,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<float>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<float>(base, offset))
 					{
 						*ptr = value.f32;
 					}
@@ -2634,16 +2688,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<double>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<double>(base, offset))
 					{
 						*ptr = value.f64;
 					}
@@ -2662,16 +2716,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int8_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i32);
 					}
@@ -2690,16 +2744,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int16_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i32);
 					}
@@ -2718,16 +2772,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int8_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
 						*ptr = static_cast<int8_t>(value.i64);
 					}
@@ -2746,16 +2800,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int16_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
 						*ptr = static_cast<int16_t>(value.i64);
 					}
@@ -2774,16 +2828,16 @@ NAMESPACE_SOUP
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
 					auto base = stack.back(); stack.pop_back();
-					r.skip(1); // memflags
-					size_t offset; WASM_READ_OML(offset);
-					SOUP_IF_UNLIKELY (!script.memory)
+					WASM_READ_MEMARG;
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
 						return false;
 					}
-					SOUP_IF_LIKELY (auto ptr = script.memory->getPointer<int32_t>(base, offset))
+					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
 						*ptr = static_cast<int32_t>(value.i64);
 					}
@@ -2799,22 +2853,26 @@ NAMESPACE_SOUP
 
 			case 0x3f: // memory.size
 				{
-					r.skip(1); // reserved
-					SOUP_IF_UNLIKELY (!script.memory)
+					uint32_t memidx;
+					WASM_READ_OML(memidx);
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory.size: no memory\n";
 #endif
 						return false;
 					}
-					script.memory->encodeUPTR(stack.emplace_back(), script.memory->size / 0x10'000);
+					memory->encodeUPTR(stack.emplace_back(), memory->size / 0x10'000);
 				}
 				break;
 
 			case 0x40: // memory.grow
 				{
-					r.skip(1); // reserved
-					SOUP_IF_UNLIKELY (!script.memory)
+					uint32_t memidx;
+					WASM_READ_OML(memidx);
+					auto memory = script.getMemoryByIndex(memidx);
+					SOUP_IF_UNLIKELY (!memory)
 					{
 #if DEBUG_VM
 						std::cout << "memory.grow: no memory\n";
@@ -2822,8 +2880,8 @@ NAMESPACE_SOUP
 						return false;
 					}
 					WASM_CHECK_STACK(1);
-					const auto old_size_pages = script.memory->grow(stack.back().uptr());
-					script.memory->encodeUPTR(stack.back(), old_size_pages);
+					const auto old_size_pages = memory->grow(stack.back().uptr());
+					memory->encodeUPTR(stack.back(), old_size_pages);
 				}
 				break;
 
@@ -4145,8 +4203,10 @@ NAMESPACE_SOUP
 					{
 						uint32_t segment_index;
 						WASM_READ_OML(segment_index);
-						r.skip(1); // memory index
-						SOUP_IF_UNLIKELY (!script.memory)
+						uint32_t memidx;
+						WASM_READ_OML(memidx);
+						auto memory = script.getMemoryByIndex(memidx);
+						SOUP_IF_UNLIKELY (!memory)
 						{
 #if DEBUG_VM
 							std::cout << "memory.init: no memory\n";
@@ -4167,7 +4227,7 @@ NAMESPACE_SOUP
 						}
 						std::string scrap;
 						const auto& data = e == script.passive_data_segments.end() ? scrap : e->second;
-						auto dst_ptr = script.memory->getView(dst_offset, size);
+						auto dst_ptr = memory->getView(dst_offset, size);
 						SOUP_IF_UNLIKELY (!dst_ptr || !can_add_without_overflow(src_offset, size) || src_offset + size > data.size())
 						{
 #if DEBUG_VM
@@ -4193,11 +4253,15 @@ NAMESPACE_SOUP
 
 				case 0x0a: // memory.copy
 					{
-						r.skip(2); // reserved
-						SOUP_IF_UNLIKELY (!script.memory)
+						uint32_t dst_memidx, src_memidx;
+						WASM_READ_OML(dst_memidx);
+						WASM_READ_OML(src_memidx);
+						auto dst_memory = script.getMemoryByIndex(dst_memidx);
+						auto src_memory = script.getMemoryByIndex(src_memidx);
+						SOUP_IF_UNLIKELY (!dst_memory || !src_memory)
 						{
 #if DEBUG_VM
-							std::cout << "memory.copy: no memory\n";
+							std::cout << "memory.copy: invalid memory index\n";
 #endif
 							return false;
 						}
@@ -4205,8 +4269,8 @@ NAMESPACE_SOUP
 						auto size = stack.back().uptr(); stack.pop_back();
 						auto src = stack.back().uptr(); stack.pop_back();
 						auto dst = stack.back().uptr(); stack.pop_back();
-						auto dst_ptr = script.memory->getView(dst, size);
-						auto src_ptr = script.memory->getView(src, size);
+						auto dst_ptr = dst_memory->getView(dst, size);
+						auto src_ptr = src_memory->getView(src, size);
 						SOUP_IF_UNLIKELY (!dst_ptr || !src_ptr)
 						{
 #if DEBUG_VM
@@ -4220,8 +4284,10 @@ NAMESPACE_SOUP
 
 				case 0x0b: // memory.fill
 					{
-						r.skip(1); // reserved
-						SOUP_IF_UNLIKELY (!script.memory)
+						uint32_t memidx;
+						WASM_READ_OML(memidx);
+						auto memory = script.getMemoryByIndex(memidx);
+						SOUP_IF_UNLIKELY (!memory)
 						{
 #if DEBUG_VM
 							std::cout << "memory.fill: no memory\n";
@@ -4232,7 +4298,7 @@ NAMESPACE_SOUP
 						auto size = stack.back().uptr(); stack.pop_back();
 						auto value = stack.back().i32; stack.pop_back();
 						auto addr = stack.back().uptr(); stack.pop_back();
-						auto ptr = script.memory->getView(addr, size);
+						auto ptr = memory->getView(addr, size);
 						SOUP_IF_UNLIKELY (!ptr)
 						{
 #if DEBUG_VM
@@ -4507,6 +4573,8 @@ NAMESPACE_SOUP
 			case 0x24: // global.set
 			case 0x25: // table.get
 			case 0x26: // table.set
+			case 0x3f: // memory.size
+			case 0x40: // memory.grow
 			case 0xd2: // ref.func
 				{
 					uint32_t imm;
@@ -4563,18 +4631,9 @@ NAMESPACE_SOUP
 			case 0x3d: // i64.store16
 			case 0x3e: // i64.store32
 				{
-#if SOUP_WASM_PEDANTIC
-					uint32_t memflags; WASM_READ_OML(memflags);
-#else
-					r.skip(1); // memflags
-#endif
-					size_t offset; WASM_READ_OML(offset);
+					WASM_READ_MEMARG;
+					SOUP_UNUSED(memidx);
 				}
-				break;
-
-			case 0x3f: // memory.size
-			case 0x40: // memory.grow
-				r.skip(1);
 				break;
 
 			case 0x41: // i32.const
@@ -4758,14 +4817,19 @@ NAMESPACE_SOUP
 				switch (op)
 				{
 				case 0x08: // memory.init
+				case 0x0a: // memory.copy
+				case 0x0c: // table.init
+				case 0x0e: // table.copy
 					{
-						uint32_t imm;
-						WASM_READ_OML(imm);
-						r.skip(1);
+						uint32_t imm1;
+						WASM_READ_OML(imm1);
+						uint32_t imm2;
+						WASM_READ_OML(imm2);
 					}
 					break;
 
 				case 0x09: // data.drop
+				case 0x0b: // memory.fill
 				case 0x0d: // elem.drop
 				case 0x0f: // table.grow
 				case 0x10: // table.size
@@ -4773,23 +4837,6 @@ NAMESPACE_SOUP
 					{
 						uint32_t imm;
 						WASM_READ_OML(imm);
-					}
-					break;
-
-				case 0x0a: // memory.copy
-					r.skip(2);
-					break;
-
-				case 0x0b: // memory.fill
-					r.skip(1);
-					break;
-
-				case 0x0c: // table.init
-					{
-						uint32_t segment_index;
-						WASM_READ_OML(segment_index);
-						uint32_t table_index;
-						WASM_READ_OML(table_index);
 					}
 					break;
 

@@ -17,6 +17,10 @@
 #define SOUP_WASM_MEMORY64 SOUP_BITS >= 64
 #endif
 
+#ifndef SOUP_WASM_MULTI_MEMORY
+#define SOUP_WASM_MULTI_MEMORY false
+#endif
+
 #ifndef SOUP_WASM_PEDANTIC
 // Set to true if you love wasting CPU time just so you can error in edge cases for spec conformity.
 #define SOUP_WASM_PEDANTIC false
@@ -205,7 +209,11 @@ NAMESPACE_SOUP
 			bool copy(const Table& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
 		};
 
+#if SOUP_WASM_MULTI_MEMORY
+		std::vector<SharedPtr<Memory>> memories;
+#else
 		SharedPtr<Memory> memory;
+#endif
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<WasmFunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
@@ -245,8 +253,13 @@ NAMESPACE_SOUP
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const WasmFunctionType** optOutType = nullptr) const noexcept;
 		[[nodiscard]] uint32_t getExportedFuntion2(const std::string& name) const noexcept;
 		[[nodiscard]] uint32_t getTypeIndexForFunction(uint32_t func_index) const noexcept;
-		[[nodiscard]] WasmValue* getGlobalByIndex(uint32_t global_index) noexcept;
+		[[nodiscard]] WasmValue* getGlobalByIndex(uint32_t global_index) noexcept { return global_index < globals.size() ? globals[global_index].get()  : nullptr; }
 		[[nodiscard]] WasmValue* getExportedGlobal(const std::string& name) noexcept;
+#if SOUP_WASM_MULTI_MEMORY
+		[[nodiscard]] Memory* getMemoryByIndex(uint32_t memidx) noexcept { return memidx < memories.size() ? memories[memidx].get() : nullptr; }
+#else
+		[[nodiscard]] Memory* getMemoryByIndex(uint32_t memidx) noexcept { return memidx == 0 ? memory.get() : nullptr; }
+#endif
 
 		// May throw if an imported C++ function throws.
 		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::vector<WasmValue>* out = nullptr);
