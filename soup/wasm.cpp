@@ -67,17 +67,17 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - forward: pass
 - func: pass
 - func_ptrs: pass
-- global: FAIL (missing support for global imports)
+- global: FAIL (missing support for global.get in constants)
 - i32: pass
 - i64: pass
 - if: pass
-- imports: FAIL (missing some spectest imports; missing support for assert_unlinkable; missing support for global imports)
+- imports: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for global exports)
 - inline-module: pass
 - int_exprs: pass
 - int_literals: pass
 - labels: pass
 - left-to-right: pass
-- linking: FAIL (imports are not type-checked; missing support for global imports)
+- linking: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for global exports)
 - load: pass
 - local_get: pass
 - local_set: pass
@@ -121,8 +121,8 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - unreached-valid: pass
 - unwind: pass
 - utf8-custom-section-id: pass_pedantic
-- utf8-import-field: pass (due to missing support for global imports)
-- utf8-import-module: pass (due to missing support for global imports)
+- utf8-import-field: pass_pedantic
+- utf8-import-module: pass_pedantic
 - utf8-invalid-encoding: pass (due to Soup not parsing .wat files)
 - memory64/address64: pass
 - memory64/align64: pass
@@ -449,7 +449,7 @@ NAMESPACE_SOUP
 					r.str(name_len, name);
 					auto name_utf32 = unicode::utf8_to_utf32(name);
 					SOUP_RETHROW_FALSE(name_utf32.find(unicode::REPLACEMENT_CHAR) == std::string::npos); // UTF-8 must be valid
-					SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == name); // UTF-8 must also be canonically represented (so, no overlong encodings)
+					SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == name); // UTF-8 must also be represented canonically (so, no overlong encodings)
 					r.seekEnd();
 					SOUP_RETHROW_FALSE(section_end <= r.getPosition());
 					r.seek(section_end);
@@ -532,6 +532,18 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 						std::cout << "- " << module_name << ":" << field_name << "\n";
 #endif
+#if SOUP_WASM_PEDANTIC
+						{
+							auto name_utf32 = unicode::utf8_to_utf32(module_name);
+							SOUP_RETHROW_FALSE(name_utf32.find(unicode::REPLACEMENT_CHAR) == std::string::npos); // UTF-8 must be valid
+							SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == module_name); // UTF-8 must also be represented canonically (so, no overlong encodings)
+						}
+						{
+							auto name_utf32 = unicode::utf8_to_utf32(field_name);
+							SOUP_RETHROW_FALSE(name_utf32.find(unicode::REPLACEMENT_CHAR) == std::string::npos); // UTF-8 must be valid
+							SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == field_name); // UTF-8 must also be represented canonically (so, no overlong encodings)
+						}
+#endif
 						uint8_t kind; r.u8(kind);
 						if (kind == 0) // function
 						{
@@ -550,7 +562,12 @@ NAMESPACE_SOUP
 							}
 						}*/
 						// 2 - memory
-						// 3 - global
+						else if (kind == 3) // global
+						{
+							uint8_t type; r.u8(type);
+							r.skip(1); // mutability
+							global_imports.emplace_back(GlobalImport{ std::move(module_name), std::move(field_name) });
+						}
 						else
 						{
 #if DEBUG_LOAD
@@ -1033,13 +1050,23 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmScript::instantiate()
+	bool WasmScript::hasUnresolvedImports() const noexcept
 	{
-		if (start_func_idx != -1)
+		for (const auto& fi : function_imports)
 		{
-			return this->call(start_func_idx);
+			if (!(fi.ptr || fi.source))
+			{
+				return true;
+			}
 		}
-		return true;
+		for (const auto& gi : global_imports)
+		{
+			if (!gi.value)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void WasmScript::provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr) noexcept
@@ -1052,6 +1079,47 @@ NAMESPACE_SOUP
 			{
 				fi.ptr = ptr;
 				// Function may be imported multiple times so not breaking
+			}
+		}
+	}
+
+	void WasmScript::provideImportedFunctions(const std::string& module_name, const std::unordered_map<std::string, wasm_ffi_func_t>& map) noexcept
+	{
+		for (auto& fi : function_imports)
+		{
+			if (fi.module_name == module_name)
+			{
+				if (auto e = map.find(fi.function_name); e != map.end())
+				{
+					fi.ptr = e->second;
+				}
+			}
+		}
+	}
+
+	void WasmScript::provideImportedGlobal(const std::string& module_name, const std::string& field_name, SharedPtr<WasmValue> value) noexcept
+	{
+		for (auto& gi : global_imports)
+		{
+			if (gi.field_name == field_name
+				&& gi.module_name == module_name
+				)
+			{
+				gi.value = value;
+			}
+		}
+	}
+
+	void WasmScript::provideImportedGlobals(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<WasmValue>>& map) noexcept
+	{
+		for (auto& gi : global_imports)
+		{
+			if (gi.module_name == module_name)
+			{
+				if (auto e = map.find(gi.field_name); e != map.end())
+				{
+					gi.value = e->second;
+				}
 			}
 		}
 	}
@@ -1069,6 +1137,16 @@ NAMESPACE_SOUP
 				}
 			}
 		}
+		// TODO: Global exports -> global imports
+	}
+
+	bool WasmScript::instantiate()
+	{
+		if (start_func_idx != -1)
+		{
+			return this->call(start_func_idx);
+		}
+		return true;
 	}
 
 	const std::string* WasmScript::getExportedFuntion(const std::string& name, const WasmFunctionType** optOutType) const noexcept
@@ -1115,12 +1193,26 @@ NAMESPACE_SOUP
 		{
 			return function_imports[func_index].type_index;
 		}
-		func_index -= function_imports.size();
+		func_index -= static_cast<uint32_t>(function_imports.size());
 		if (func_index < functions.size())
 		{
 			return functions[func_index];
 		}
 		return -1;
+	}
+
+	WasmValue* WasmScript::getGlobalByIndex(uint32_t global_index) noexcept
+	{
+		if (global_index < global_imports.size())
+		{
+			return global_imports[global_index].value.get();
+		}
+		global_index -= static_cast<uint32_t>(global_imports.size());
+		if (global_index < globals.size())
+		{
+			return &globals[global_index];
+		}
+		return nullptr;
 	}
 
 #define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
@@ -1540,19 +1632,6 @@ NAMESPACE_SOUP
 		});
 	}
 
-	void WasmScript::linkSpectestShim() noexcept
-	{
-		provideImportedFunction("spectest", "print_i32", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
-		{
-			API_CHECK_STACK(1);
-			vm.stack.pop_back();
-		});
-		provideImportedFunction("spectest", "print", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
-		{
-			// This function is apparently overloaded, so in theory it might have to pop a variable number of arguments.
-		});
-	}
-
 	bool WasmScript::call(uint32_t func_index, std::vector<WasmValue>&& args, std::vector<WasmValue>* out)
 	{
 		WasmScript* script = this;
@@ -1968,14 +2047,15 @@ NAMESPACE_SOUP
 				{
 					uint32_t global_index;
 					WASM_READ_OML(global_index);
-					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
+					auto global = script.getGlobalByIndex(global_index);
+					SOUP_IF_UNLIKELY (!global)
 					{
 #if DEBUG_VM
-						std::cout << "global.get: index is out-of-bounds: " << global_index << "\n";
+						std::cout << "global.get: invalid global index: " << global_index << "\n";
 #endif
 						return false;
 					}
-					stack.emplace_back(script.globals[global_index]);
+					stack.emplace_back(*global);
 				}
 				break;
 
@@ -1983,15 +2063,16 @@ NAMESPACE_SOUP
 				{
 					uint32_t global_index;
 					WASM_READ_OML(global_index);
-					SOUP_IF_UNLIKELY (global_index >= script.globals.size())
+					auto global = script.getGlobalByIndex(global_index);
+					SOUP_IF_UNLIKELY (!global)
 					{
 #if DEBUG_VM
-						std::cout << "global.set: index is out-of-bounds: " << global_index << "\n";
+						std::cout << "global.set: invalid global index: " << global_index << "\n";
 #endif
 						return false;
 					}
 					WASM_CHECK_STACK(1);
-					script.globals.at(global_index) = stack.back(); stack.pop_back();
+					*global = stack.back(); stack.pop_back();
 				}
 				break;
 

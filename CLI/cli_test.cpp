@@ -1770,10 +1770,11 @@ endif;)") == "");
 				assert(vm.stack.pop_back(), vm.stack.empty());
 			}
 		});
-		test("Imports", []
+		test("Function Imports", []
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAn9/AX9gAX8BfwINAQVpbmRleANhZGQAAAMCAQEFAwEAAAcTAgZhZGRUd28AAQZtZW1vcnkCAAoKAQgAIABBAhAACwA6BG5hbWUBGgIACWluZGV4L2FkZAEMaW5kZXgvYWRkVHdvAggCAAABAQABMAQHAgABMAEBMQYEAQABMA==")));
+			assert(scr.hasUnresolvedImports());
 			scr.provideImportedFunction("index", "add", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType& type)
 			{
 				assert(type.parameters.size() == 2);
@@ -1783,6 +1784,7 @@ endif;)") == "");
 				auto a = vm.stack.back(); vm.stack.pop_back();
 				vm.stack.emplace_back(a.i32 + b.i32);
 			});
+			assert(!scr.hasUnresolvedImports());
 			auto code = scr.getExportedFuntion("addTwo");
 			assert(code);
 			WasmVm vm(scr);
@@ -2010,6 +2012,47 @@ endif;)") == "");
 				assert(!vm.stack.empty());
 				assert(vm.stack.back().type == WASM_I32);
 				assert(!vm.stack.back().i32);
+			}
+		});
+		test("Global Imports", []
+		{
+			auto global = soup::make_shared<WasmValue>(WASM_I32);
+			{
+				// (module
+				//   (import "" "g" (global (mut i32)))
+				//   (func (export "set") (param i32)
+				//     local.get 0
+				//     global.set 0
+				//     )
+				//   (func (export "get") (result i32)
+				//     global.get 0
+				//     )
+				//   )
+				WasmScript scr;
+				assert(scr.load(base64::decode("AGFzbQEAAAABCQJgAX8AYAABfwIHAQABZwN/AQMDAgABBw0CA3NldAAAA2dldAABCg0CBgAgACQACwQAIwALAAwEbmFtZQIFAgAAAQA=")));
+				assert(scr.hasUnresolvedImports());
+				scr.provideImportedGlobal("", "g", global);
+				assert(!scr.hasUnresolvedImports());
+				auto get = scr.getExportedFuntion2("get");
+				assert(get != -1);
+				auto set = scr.getExportedFuntion2("set");
+				assert(set != -1);
+				std::vector<WasmValue> stack;
+				{
+					scr.call(get, {}, &stack);
+					assert(!stack.empty());
+					assert(stack.back().type == WASM_I32);
+					assert(stack.back().i32 == 0);
+				}
+				{
+					scr.call(set, { WasmValue((uint32_t)123) }, &stack);
+				}
+				{
+					scr.call(get, {}, &stack);
+					assert(!stack.empty());
+					assert(stack.back().type == WASM_I32);
+					assert(stack.back().i32 == 123);
+				}
 			}
 		});
 	}

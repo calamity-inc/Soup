@@ -163,6 +163,13 @@ NAMESPACE_SOUP
 			uint32_t func_index; // to be used with `source` for WASM imports
 		};
 
+		struct GlobalImport
+		{
+			std::string module_name;
+			std::string field_name;
+			SharedPtr<WasmValue> value;
+		};
+
 		struct Table
 		{
 			const WasmType type;
@@ -189,6 +196,7 @@ NAMESPACE_SOUP
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<WasmFunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
+		std::vector<GlobalImport> global_imports{};
 		std::vector<WasmValue> globals{};
 		std::unordered_map<std::string, uint32_t> export_map{};
 		std::vector<std::string> code{};
@@ -210,17 +218,21 @@ NAMESPACE_SOUP
 		static bool readConstant(Reader& r, WasmValue& out) noexcept;
 		bool validateFunctionBody(Reader& r) noexcept;
 
+		[[nodiscard]] bool hasUnresolvedImports() const noexcept;
+		void provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr) noexcept;
+		void provideImportedFunctions(const std::string& module_name, const std::unordered_map<std::string, wasm_ffi_func_t>& map) noexcept;
+		void provideImportedGlobal(const std::string& module_name, const std::string& field_name, SharedPtr<WasmValue> value) noexcept;
+		void provideImportedGlobals(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<WasmValue>>& map) noexcept;
+		void importFromModule(const std::string& module_name, const SharedPtr<WasmScript>& other);
+		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
+
 		// Runs the start function of the script, if defined. May throw if an imported C++ function throws.
 		bool instantiate();
 
-		void provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr) noexcept;
-		void importFromModule(const std::string& module_name, const SharedPtr<WasmScript>& other);
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const WasmFunctionType** optOutType = nullptr) const noexcept;
 		[[nodiscard]] uint32_t getExportedFuntion2(const std::string& name) const noexcept;
 		[[nodiscard]] uint32_t getTypeIndexForFunction(uint32_t func_index) const noexcept;
-
-		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
-		void linkSpectestShim() noexcept;
+		[[nodiscard]] WasmValue* getGlobalByIndex(uint32_t global_index) noexcept;
 
 		// May throw if an imported C++ function throws.
 		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::vector<WasmValue>* out = nullptr);

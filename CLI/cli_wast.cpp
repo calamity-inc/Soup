@@ -51,6 +51,8 @@ static void instantiate_value(const JsonObject& desc, WasmValue& out)
 	}
 }
 
+#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
+
 int cli_wast(const std::string& file)
 {
 #if WAIT_FOR_DEBUGGER
@@ -60,6 +62,73 @@ int cli_wast(const std::string& file)
 #endif
 	if (auto jr = json::decode(string::fromFile(file)))
 	{
+		// https://github.com/WebAssembly/spec/blob/main/interpreter/host/spectest.ml
+		const std::unordered_map<std::string, wasm_ffi_func_t> spectest_functions{
+			{
+				"print_i32",
+				[](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+				{
+					API_CHECK_STACK(1);
+					vm.stack.pop_back();
+				}
+			},
+			{
+				"print_i64",
+				[](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+				{
+					API_CHECK_STACK(1);
+					vm.stack.pop_back();
+				}
+			},
+			{
+				"print_f32",
+				[](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+				{
+					API_CHECK_STACK(1);
+					vm.stack.pop_back();
+				}
+			},
+			{
+				"print_f64",
+				[](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+				{
+					API_CHECK_STACK(1);
+					vm.stack.pop_back();
+				}
+			},
+			{
+				"print_i32_f32",
+				[](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+				{
+					API_CHECK_STACK(2);
+					vm.stack.pop_back();
+					vm.stack.pop_back();
+				}
+			},
+			{
+				"print_f64_f64",
+				[](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+				{
+					API_CHECK_STACK(2);
+					vm.stack.pop_back();
+					vm.stack.pop_back();
+				}
+			},
+			{
+				"print",
+				[](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+				{
+					// This function is apparently overloaded, so in theory it might have to pop a variable number of arguments.
+				}
+			},
+		};
+		const std::unordered_map<std::string, SharedPtr<WasmValue>> spectest_globals{
+			{ "global_i32", soup::make_shared<WasmValue>((uint32_t)666) },
+			{ "global_i64", soup::make_shared<WasmValue>((uint64_t)666) },
+			{ "global_f32", soup::make_shared<WasmValue>(666.6f) },
+			{ "global_f64", soup::make_shared<WasmValue>(666.6) },
+		};
+
 		SharedPtr<WasmScript> scr = soup::make_shared<WasmScript>();
 		std::unordered_map<std::string, SharedPtr<WasmScript>> named_modules;
 		std::vector<std::pair<std::string, SharedPtr<WasmScript>>> registered_module;
@@ -79,10 +148,15 @@ int cli_wast(const std::string& file)
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 						return 1;
 					}
-					scr->linkSpectestShim();
+					scr->provideImportedFunctions("spectest", spectest_functions);
+					scr->provideImportedGlobals("spectest", spectest_globals);
 					for (const auto& mod : registered_module)
 					{
 						scr->importFromModule(mod.first, mod.second);
+					}
+					SOUP_IF_UNLIKELY (scr->hasUnresolvedImports())
+					{
+						std::cout << "Warning: Unresolved imports for module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 					}
 					SOUP_IF_UNLIKELY (!scr->instantiate())
 					{
@@ -117,7 +191,8 @@ int cli_wast(const std::string& file)
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 						return 1;
 					}
-					tmp.linkSpectestShim();
+					scr->provideImportedFunctions("spectest", spectest_functions);
+					scr->provideImportedGlobals("spectest", spectest_globals);
 					SOUP_IF_UNLIKELY (tmp.instantiate())
 					{
 						std::cout << "Did not fail to instantiate malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
