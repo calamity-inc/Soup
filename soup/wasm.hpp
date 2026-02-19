@@ -163,11 +163,10 @@ NAMESPACE_SOUP
 			uint32_t func_index; // to be used with `source` for WASM imports
 		};
 
-		struct GlobalImport
+		struct Import
 		{
 			std::string module_name;
 			std::string field_name;
-			SharedPtr<WasmValue> value;
 		};
 
 		struct Export
@@ -210,7 +209,7 @@ NAMESPACE_SOUP
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<WasmFunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
-		std::vector<GlobalImport> global_imports{};
+		std::vector<Import> global_imports{};
 		std::vector<SharedPtr<WasmValue>> globals{};
 		std::unordered_map<std::string, Export> export_map{};
 		std::vector<std::string> code{};

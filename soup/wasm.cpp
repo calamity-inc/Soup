@@ -566,7 +566,8 @@ NAMESPACE_SOUP
 						{
 							uint8_t type; r.u8(type);
 							r.skip(1); // mutability
-							global_imports.emplace_back(GlobalImport{ std::move(module_name), std::move(field_name) });
+							global_imports.emplace_back(Import{ std::move(module_name), std::move(field_name) });
+							globals.emplace_back();
 						}
 						else
 						{
@@ -722,7 +723,7 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_globals << " global(s)\n";
 #endif
-					globals.reserve(num_globals);
+					globals.reserve(globals.size() + num_globals);
 					while (num_globals--)
 					{
 						uint8_t type; r.u8(type);
@@ -1060,9 +1061,9 @@ NAMESPACE_SOUP
 				return true;
 			}
 		}
-		for (const auto& gi : global_imports)
+		for (uint32_t i = 0; i != global_imports.size(); ++i)
 		{
-			if (!gi.value)
+			if (!globals[i])
 			{
 				return true;
 			}
@@ -1100,26 +1101,28 @@ NAMESPACE_SOUP
 
 	void WasmScript::provideImportedGlobal(const std::string& module_name, const std::string& field_name, SharedPtr<WasmValue> value) noexcept
 	{
-		for (auto& gi : global_imports)
+		for (size_t i = 0; i != global_imports.size(); ++i)
 		{
+			const auto& gi = global_imports[i];
 			if (gi.field_name == field_name
 				&& gi.module_name == module_name
 				)
 			{
-				gi.value = value;
+				globals[i] = value;
 			}
 		}
 	}
 
 	void WasmScript::provideImportedGlobals(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<WasmValue>>& map) noexcept
 	{
-		for (auto& gi : global_imports)
+		for (size_t i = 0; i != global_imports.size(); ++i)
 		{
+			const auto& gi = global_imports[i];
 			if (gi.module_name == module_name)
 			{
 				if (auto e = map.find(gi.field_name); e != map.end())
 				{
-					gi.value = e->second;
+					globals[i] = e->second;
 				}
 			}
 		}
@@ -1141,8 +1144,9 @@ NAMESPACE_SOUP
 				}
 			}
 		}
-		for (auto& gi : global_imports)
+		for (size_t i = 0; i != global_imports.size(); ++i)
 		{
+			const auto& gi = global_imports[i];
 			if (gi.module_name == module_name)
 			{
 				if (auto e = other->export_map.find(gi.field_name); e != other->export_map.end())
@@ -1151,7 +1155,7 @@ NAMESPACE_SOUP
 					{
 						if (auto value = other->getGlobalByIndex(e->second.index))
 						{
-							gi.value = value;
+							globals[i] = value;
 						}
 					}
 				}
@@ -1222,11 +1226,6 @@ NAMESPACE_SOUP
 
 	WasmValue* WasmScript::getGlobalByIndex(uint32_t global_index) noexcept
 	{
-		if (global_index < global_imports.size())
-		{
-			return global_imports[global_index].value.get();
-		}
-		global_index -= static_cast<uint32_t>(global_imports.size());
 		if (global_index < globals.size())
 		{
 			return globals[global_index].get();
