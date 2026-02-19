@@ -155,23 +155,23 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/align0: pass
 - multi-memory/binary0: pedantic_pass
 - multi-memory/data0: FAIL (missing support for global.get in constants)
-- multi-memory/data1: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/data1: pass
 - multi-memory/data_drop0: pass
 - multi-memory/exports0: pass
 - multi-memory/float_exprs0: pass
 - multi-memory/float_exprs1: pass
 - multi-memory/float_memory0: pass
 - multi-memory/imports0: FAIL (missing support for table imports)
-- multi-memory/imports1: FAIL (active data segments affecting imported memories don't take effect)
-- multi-memory/imports2: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/imports1: pass
+- multi-memory/imports2: pass
 - multi-memory/imports3: pass
 - multi-memory/imports4: pass
 - multi-memory/linking0: FAIL (missing support for table imports)
-- multi-memory/linking1: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/linking1: pass
 - multi-memory/linking2: pass
-- multi-memory/linking3: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/linking3: FAIL (missing support for table imports)
 - multi-memory/load0: pass
-- multi-memory/load1: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/load1: pass
 - multi-memory/load2: pass
 - multi-memory/memory-multi: pass
 - multi-memory/memory_copy0: pass
@@ -189,7 +189,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/start0: pass
 - multi-memory/store0: pass
 - multi-memory/store1: pass
-- multi-memory/store2: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/store2: pass
 - multi-memory/traps0: pass
 */
 
@@ -251,16 +251,8 @@ NAMESPACE_SOUP
 #if !SOUP_WASM_MEMORY64
 		SOUP_UNUSED(_64bit);
 #endif
-		if (pages == 0)
-		{
-			this->data = (uint8_t*)soup::malloc(1);
-			this->size = 1;
-		}
-		else
-		{
-			this->data = (uint8_t*)soup::malloc(pages * 0x10'000);
-			this->size = pages * 0x10'000;
-		}
+		this->data = pages != 0 ? (uint8_t*)soup::malloc(pages * 0x10'000) : nullptr;
+		this->size = pages * 0x10'000;
 		memset(this->data, 0, this->size);
 	}
 
@@ -446,60 +438,6 @@ NAMESPACE_SOUP
 	{
 		MemoryRefReader r(data);
 		return load(r);
-	}
-
-	bool WasmScript::readConstant(Reader& r, WasmValue& out) noexcept
-	{
-		uint8_t op;
-		r.u8(op);
-		switch (op)
-		{
-		case 0x41: // i32.const
-			WASM_READ_SOML(out.i32);
-			out.type = WASM_I32;
-			break;
-
-		case 0x42: // i64.const
-			WASM_READ_SOML(out.i64);
-			out.type = WASM_I64;
-			break;
-
-		case 0x43: // f32.const
-			r.f32(out.f32);
-			out.type = WASM_F32;
-			break;
-
-		case 0x44: // f64.const
-			r.f64(out.f64);
-			out.type = WASM_F64;
-			break;
-
-		case 0xd0: // ref.null
-			out.i64 = 0;
-			r.u8(reinterpret_cast<uint8_t&>(out.type)); static_assert(sizeof(WasmType) == sizeof(uint8_t));
-			break;
-
-		case 0xd2: // ref.func
-			WASM_READ_OML(out.i32);
-			out.hi32 = 1;
-			out.type = WASM_FUNCREF;
-			break;
-
-		default:
-#if DEBUG_LOAD
-			std::cout << "unexpected op for constant/initialisation: " << string::hex(op) << "\n";
-#endif
-			return false;
-		}
-		r.u8(op);
-		SOUP_IF_UNLIKELY (op != 0x0b) // end
-		{
-#if DEBUG_LOAD
-			std::cout << "missing end for constant/initialisation\n";
-#endif
-			return false;
-		}
-		return true;
 	}
 
 	bool WasmScript::load(Reader& r) SOUP_EXCAL
@@ -1055,6 +993,7 @@ NAMESPACE_SOUP
 						SOUP_RETHROW_FALSE(data_count == num_segments);
 					}
 #endif
+					data_segments.reserve(num_segments);
 					for (uint32_t i = 0; i != num_segments; ++i)
 					{
 						uint32_t flags;
@@ -1062,60 +1001,28 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 						std::cout << "data flags: " << flags << "\n";
 #endif
+						auto& data_segment = data_segments.emplace_back();
 						if (flags & 1)
 						{
-							size_t size;
-							WASM_READ_OML(size);
-							std::string data;
-							r.str(size, data);
-							passive_data_segments.emplace(i, std::move(data));
+							data_segment.memidx = -1;
 						}
 						else
 						{
-							uint32_t memidx = 0;
 							if (flags & 0b10)
 							{
-								WASM_READ_OML(memidx);
-							}
-							auto memory = getMemoryByIndex(memidx);
-
-							WasmValue base;
-							SOUP_RETHROW_FALSE(readConstant(r, base));
-							if (memory)
-							{
-								WasmType addr_type = WASM_I32;
-#if SOUP_WASM_MEMORY64
-								if (memory->memory64)
-								{
-									addr_type = WASM_I64;
-								}
-#endif
-								SOUP_IF_UNLIKELY (base.type != addr_type)
-								{
-#if DEBUG_LOAD
-									std::cout << "unexpected type for data initialisation: " << string::hex(static_cast<uint8_t>(base.type)) << "\n";
-#endif
-									return false;
-								}
-							}
-							size_t size; WASM_READ_OML(size);
-							if (memory)
-							{
-								auto ptr = memory->getView(base.uptr(), size);
-								SOUP_IF_UNLIKELY (!ptr)
-								{
-#if DEBUG_LOAD
-									std::cout << "data segment exceeds memory range: " << base.uptr() << " + " << size << " > " << memory->size << "\n";
-#endif
-									return false;
-								}
-								r.raw(ptr, size);
+								WASM_READ_OML(data_segment.memidx);
 							}
 							else
 							{
-								r.skip(size);
+								data_segment.memidx = 0;
 							}
+
+							SOUP_RETHROW_FALSE(readConstantExpression(r, data_segment.base, sizeof(data_segment.base)));
 						}
+
+						uint32_t size;
+						WASM_READ_OML(size);
+						r.str(size, data_segment.data);
 					}
 				}
 				break;
@@ -1131,6 +1038,72 @@ NAMESPACE_SOUP
 		return true;
 	}
 
+	bool WasmScript::readConstantExpression(Reader& r, uint8_t* buf, size_t bufsize) SOUP_EXCAL
+	{
+		const auto constexpr_start_pos = r.getPosition();
+		WasmVm::skipOverBranch(r, 0, *this, -1); // seek past 'end'
+		const size_t constexpr_size = r.getPosition() - constexpr_start_pos;
+		SOUP_RETHROW_FALSE(constexpr_size > 0 && constexpr_size <= bufsize);
+		r.seek(constexpr_start_pos);
+		r.raw(buf, constexpr_size);
+		SOUP_RETHROW_FALSE(buf[constexpr_size - 1] == 0x0b);
+		return true;
+	}
+
+	/*static*/ bool WasmScript::readConstant(Reader& r, WasmValue& out) noexcept
+	{
+		uint8_t op;
+		r.u8(op);
+		switch (op)
+		{
+		case 0x41: // i32.const
+			WASM_READ_SOML(out.i32);
+			out.type = WASM_I32;
+			break;
+
+		case 0x42: // i64.const
+			WASM_READ_SOML(out.i64);
+			out.type = WASM_I64;
+			break;
+
+		case 0x43: // f32.const
+			r.f32(out.f32);
+			out.type = WASM_F32;
+			break;
+
+		case 0x44: // f64.const
+			r.f64(out.f64);
+			out.type = WASM_F64;
+			break;
+
+		case 0xd0: // ref.null
+			out.i64 = 0;
+			r.u8(reinterpret_cast<uint8_t&>(out.type)); static_assert(sizeof(WasmType) == sizeof(uint8_t));
+			break;
+
+		case 0xd2: // ref.func
+			WASM_READ_OML(out.i32);
+			out.hi32 = 1;
+			out.type = WASM_FUNCREF;
+			break;
+
+		default:
+#if DEBUG_LOAD
+			std::cout << "unexpected op for constant/initialisation: " << string::hex(op) << "\n";
+#endif
+			return false;
+		}
+		r.u8(op);
+		SOUP_IF_UNLIKELY (op != 0x0b) // end
+		{
+#if DEBUG_LOAD
+			std::cout << "missing end for constant/initialisation\n";
+#endif
+			return false;
+		}
+		return true;
+	}
+
 	bool WasmScript::validateFunctionBody(Reader& r) noexcept
 	{
 		size_t local_decl_count;
@@ -1142,7 +1115,7 @@ NAMESPACE_SOUP
 			r.skip(1); // type
 		}
 
-		WasmVm::skipOverBranch(r, 0x8000'0000, *this, -1);
+		WasmVm::skipOverBranch(r, 0, *this, -1);
 		const auto pos_after_branching = r.getPosition();
 		r.seekEnd();
 		SOUP_IF_UNLIKELY (r.getPosition() != pos_after_branching)
@@ -1370,10 +1343,27 @@ NAMESPACE_SOUP
 
 	bool WasmScript::instantiate()
 	{
+		for (auto& ds : data_segments)
+		{
+			if (auto memory = getMemoryByIndex(ds.memidx))
+			{
+				MemoryRefReader r(ds.base, sizeof(ds.base));
+				WasmValue base;
+				SOUP_RETHROW_FALSE(readConstant(r, base));
+				SOUP_RETHROW_FALSE(base.type == memory->getAddrType());
+				auto view = memory->getView(base.uptr(), ds.data.size());
+				SOUP_RETHROW_FALSE(view || ds.data.size() == 0);
+				memcpy(view, ds.data.data(), ds.data.size());
+				ds.data.clear();
+				ds.data.shrink_to_fit();
+			}
+		}
+
 		if (start_func_idx != -1)
 		{
-			return this->call(start_func_idx);
+			SOUP_RETHROW_FALSE(this->call(start_func_idx));
 		}
+
 		return true;
 	}
 
@@ -1434,6 +1424,18 @@ NAMESPACE_SOUP
 		if (auto e = export_map.find(name); e != export_map.end() && e->second.kind == IE_kGlobal)
 		{
 			return getGlobalByIndex(e->second.index);
+		}
+		return nullptr;
+	}
+
+	std::string* WasmScript::getPassiveDataSegmentByIndex(uint32_t i) noexcept
+	{
+		if (i < data_segments.size())
+		{
+			if (data_segments[i].isPassive())
+			{
+				return &data_segments[i].data;
+			}
 		}
 		return nullptr;
 	}
@@ -4360,8 +4362,8 @@ NAMESPACE_SOUP
 						auto size = stack.back().uptr(); stack.pop_back();
 						auto src_offset = stack.back().uptr(); stack.pop_back();
 						auto dst_offset = stack.back().uptr(); stack.pop_back();
-						auto e = script.passive_data_segments.find(segment_index);
-						SOUP_IF_UNLIKELY (e == script.passive_data_segments.end() && size != 0)
+						auto data = script.getPassiveDataSegmentByIndex(segment_index);
+						SOUP_IF_UNLIKELY (!data && size != 0)
 						{
 #if DEBUG_VM
 							std::cout << "memory.init: invalid segment index\n";
@@ -4369,16 +4371,19 @@ NAMESPACE_SOUP
 							return false;
 						}
 						std::string scrap;
-						const auto& data = e == script.passive_data_segments.end() ? scrap : e->second;
+						if (!data)
+						{
+							data = &scrap;
+						}
 						auto dst_ptr = memory->getView(dst_offset, size);
-						SOUP_IF_UNLIKELY (!dst_ptr || !can_add_without_overflow(src_offset, size) || src_offset + size > data.size())
+						SOUP_IF_UNLIKELY (!dst_ptr || !can_add_without_overflow(src_offset, size) || src_offset + size > data->size())
 						{
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.init\n";
 #endif
 							return false;
 						}
-						memcpy(dst_ptr, data.data() + src_offset, size);
+						memcpy(dst_ptr, data->data() + src_offset, size);
 					}
 					break;
 
@@ -4386,10 +4391,10 @@ NAMESPACE_SOUP
 					{
 						uint32_t segment_index;
 						WASM_READ_OML(segment_index);
-						if (auto e = script.passive_data_segments.find(segment_index); e != script.passive_data_segments.end())
+						if (auto data = script.getPassiveDataSegmentByIndex(segment_index))
 						{
-							e->second.clear();
-							e->second.shrink_to_fit();
+							data->clear();
+							data->shrink_to_fit();
 						}
 					}
 					break;

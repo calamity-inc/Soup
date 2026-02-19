@@ -149,6 +149,17 @@ NAMESPACE_SOUP
 
 			void encodeUPTR(WasmValue& out, size_t in) noexcept;
 
+			[[nodiscard]] WasmType getAddrType() const noexcept
+			{
+#if SOUP_WASM_MEMORY64
+				if (memory64)
+				{
+					return WASM_I64;
+				}
+#endif
+				return WASM_I32;
+			}
+
 			size_t grow(size_t delta_pages) noexcept;
 		};
 
@@ -215,6 +226,15 @@ NAMESPACE_SOUP
 			uint32_t index;
 		};
 
+		struct DataSegment
+		{
+			uint8_t base[12];
+			uint32_t memidx;
+			std::string data;
+
+			[[nodiscard]] bool isPassive() const noexcept { return memidx == -1; }
+		};
+
 		struct Table
 		{
 			const WasmType type;
@@ -253,7 +273,7 @@ NAMESPACE_SOUP
 		std::vector<std::string> code{};
 		std::unordered_map<uint64_t, std::vector<uint32_t>> _internal_branch_hints{};
 		std::vector<Table> tables{};
-		std::unordered_map<uint32_t, std::string> passive_data_segments{};
+		std::vector<DataSegment> data_segments{};
 		std::unordered_map<uint32_t, Table> passive_elem_segments{};
 		StructMap custom_data;
 		uint32_t start_func_idx = -1;
@@ -266,6 +286,7 @@ NAMESPACE_SOUP
 
 		bool load(const std::string& data) SOUP_EXCAL;
 		bool load(Reader& r) SOUP_EXCAL;
+		bool readConstantExpression(Reader& r, uint8_t* buf, size_t bufsize) SOUP_EXCAL;
 		static bool readConstant(Reader& r, WasmValue& out) noexcept;
 		bool validateFunctionBody(Reader& r) noexcept;
 
@@ -291,6 +312,7 @@ NAMESPACE_SOUP
 #else
 		[[nodiscard]] Memory* getMemoryByIndex(uint32_t memidx) noexcept { return memidx == 0 ? memory.get() : nullptr; }
 #endif
+		[[nodiscard]] std::string* getPassiveDataSegmentByIndex(uint32_t i) noexcept;
 
 		// May throw if an imported C++ function throws.
 		bool call(uint32_t func_index, std::vector<WasmValue>&& args = {}, std::vector<WasmValue>* out = nullptr);
