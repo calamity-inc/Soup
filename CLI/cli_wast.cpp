@@ -184,6 +184,28 @@ int cli_wast(const std::string& file)
 						goto _wast_next_cmd;
 					}
 				}
+				else if (type == "assert_unlinkable")
+				{
+					FileReader fr(cmd.at("filename").asStr());
+					WasmScript tmp;
+					SOUP_IF_UNLIKELY(!tmp.load(fr))
+					{
+						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+						return 1;
+					}
+					tmp.provideImportedFunctions("spectest", spectest_functions);
+					tmp.provideImportedGlobals("spectest", spectest_globals);
+					tmp.provideImportedMemory("spectest", "memory", spectest_memory);
+					for (const auto& mod : registered_module)
+					{
+						tmp.importFromModule(mod.first, mod.second);
+					}
+					SOUP_IF_UNLIKELY (!tmp.hasUnresolvedImports())
+					{
+						std::cout << "Did not fail to link module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+						goto _wast_next_cmd;
+					}
+				}
 				else if (type == "assert_uninstantiable")
 				{
 					FileReader fr(cmd.at("filename").asStr());
@@ -193,9 +215,17 @@ int cli_wast(const std::string& file)
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 						return 1;
 					}
-					scr->provideImportedFunctions("spectest", spectest_functions);
-					scr->provideImportedGlobals("spectest", spectest_globals);
-					scr->provideImportedMemory("spectest", "memory", spectest_memory);
+					tmp.provideImportedFunctions("spectest", spectest_functions);
+					tmp.provideImportedGlobals("spectest", spectest_globals);
+					tmp.provideImportedMemory("spectest", "memory", spectest_memory);
+					for (const auto& mod : registered_module)
+					{
+						tmp.importFromModule(mod.first, mod.second);
+					}
+					SOUP_IF_UNLIKELY (tmp.hasUnresolvedImports())
+					{
+						std::cout << "Warning: Unresolved imports for module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+					}
 					SOUP_IF_UNLIKELY (tmp.instantiate())
 					{
 						std::cout << "Did not fail to instantiate malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
@@ -212,13 +242,14 @@ int cli_wast(const std::string& file)
 					if (cmd.contains("action"))
 					{
 						const auto& action = cmd.at("action").asObj();
+						WasmScript* action_scr = scr.get();
 						if (action.contains("module"))
 						{
-							scr = named_modules.at(action.at("module").asStr().value);
+							action_scr = named_modules.at(action.at("module").asStr().value).get();
 						}
 						if (action.at("type").asStr() == "invoke")
 						{
-							const auto func_idx = scr->getExportedFuntion2(action.at("field").asStr());
+							const auto func_idx = action_scr->getExportedFuntion2(action.at("field").asStr());
 							SOUP_IF_UNLIKELY (func_idx == -1)
 							{
 								std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value << " for test at line " << cmd.at("line").asInt().value << std::endl;
@@ -230,7 +261,7 @@ int cli_wast(const std::string& file)
 							{
 								instantiate_value(arg.asObj(), args.emplace_back());
 							}
-							if (!scr->call(func_idx, std::move(args), &stack))
+							if (!action_scr->call(func_idx, std::move(args), &stack))
 							{
 								SOUP_IF_UNLIKELY (type != "assert_trap" && type != "assert_exhaustion")
 								{
@@ -249,7 +280,7 @@ int cli_wast(const std::string& file)
 						}
 						else if (action.at("type").asStr() == "get")
 						{
-							const auto global = scr->getExportedGlobal(action.at("field").asStr());
+							const auto global = action_scr->getExportedGlobal(action.at("field").asStr());
 							SOUP_IF_UNLIKELY (!global)
 							{
 								std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value << " for test at line " << cmd.at("line").asInt().value << std::endl;

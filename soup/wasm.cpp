@@ -15,11 +15,12 @@
 #endif
 
 #define DEBUG_LOAD false
+#define DEBUG_LINK false
 #define DEBUG_VM false
 #define DEBUG_BRANCHING false
 #define DEBUG_API false
 
-#if DEBUG_LOAD || DEBUG_VM || DEBUG_BRANCHING || DEBUG_API
+#if DEBUG_LOAD || DEBUG_LINK || DEBUG_VM || DEBUG_BRANCHING || DEBUG_API
 #include <iostream>
 #include "string.hpp"
 #endif
@@ -71,13 +72,13 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - i32: pass
 - i64: pass
 - if: pass
-- imports: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for table imports)
+- imports: FAIL (missing support for table imports)
 - inline-module: pass
 - int_exprs: pass
 - int_literals: pass
 - labels: pass
 - left-to-right: pass
-- linking: FAIL (missing support for assert_unlinkable/imports are not type-checked; missing support for table imports)
+- linking: FAIL (missing support for table imports)
 - load: pass
 - local_get: pass
 - local_set: pass
@@ -153,42 +154,42 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/address1: pass
 - multi-memory/align0: pass
 - multi-memory/binary0: pedantic_pass
-- multi-memory/data0: FAIL
-- multi-memory/data1: FAIL
+- multi-memory/data0: FAIL (missing support for global.get in constants)
+- multi-memory/data1: FAIL (active data segments affecting imported memories don't take effect)
 - multi-memory/data_drop0: pass
 - multi-memory/exports0: pass
 - multi-memory/float_exprs0: pass
 - multi-memory/float_exprs1: pass
 - multi-memory/float_memory0: pass
-- multi-memory/imports0: FAIL (missing support for assert_unlinkable)
+- multi-memory/imports0: FAIL (missing support for table imports)
 - multi-memory/imports1: FAIL (active data segments affecting imported memories don't take effect)
-- multi-memory/imports2: FAIL (active data segments affecting imported memories don't take effect; missing support for assert_unlinkable)
-- multi-memory/imports3: FAIL (missing support for assert_unlinkable)
+- multi-memory/imports2: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/imports3: pass
 - multi-memory/imports4: pass
-- multi-memory/linking0: FAIL (missing support for assert_unlinkable)
-- multi-memory/linking1: FAIL
-- multi-memory/linking2: FAIL
-- multi-memory/linking3: FAIL (missing support for assert_unlinkable)
+- multi-memory/linking0: FAIL (missing support for table imports)
+- multi-memory/linking1: FAIL (active data segments affecting imported memories don't take effect)
+- multi-memory/linking2: pass
+- multi-memory/linking3: FAIL (active data segments affecting imported memories don't take effect)
 - multi-memory/load0: pass
-- multi-memory/load1: FAIL
+- multi-memory/load1: FAIL (active data segments affecting imported memories don't take effect)
 - multi-memory/load2: pass
 - multi-memory/memory-multi: pass
 - multi-memory/memory_copy0: pass
 - multi-memory/memory_copy1: pass
 - multi-memory/memory_fill0: pass
-- multi-memory/memory_grow: FAIL
+- multi-memory/memory_grow: pass
 - multi-memory/memory_init0: pass
 - multi-memory/memory_size0: pass
 - multi-memory/memory_size1: pass
 - multi-memory/memory_size2: pass
 - multi-memory/memory_size3: pass
-- multi-memory/memory_size_import: FAIL
+- multi-memory/memory_size_import: pass
 - multi-memory/memory_trap0: pass
 - multi-memory/memory_trap1: pass
 - multi-memory/start0: pass
 - multi-memory/store0: pass
-- multi-memory/store1: FAIL
-- multi-memory/store2: FAIL
+- multi-memory/store1: pass
+- multi-memory/store2: FAIL (active data segments affecting imported memories don't take effect)
 - multi-memory/traps0: pass
 */
 
@@ -340,6 +341,31 @@ NAMESPACE_SOUP
 			this->size += delta_bytes;
 		}
 		return old_size_pages;
+	}
+
+	// WasmScript::MemoryImport
+
+	bool WasmScript::MemoryImport::isCompatibleWith(const Memory& mem) const noexcept
+	{
+		if (min_pages > (mem.size / 0x10'000))
+		{
+			return false;
+		}
+		if (max_pages != 0x10'000) // Import has a page limit?
+		{
+			if (mem.page_limit != 0x10'000) // Memory has a page limit?
+			{
+				if (max_pages < mem.page_limit)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// WasmScript::Table
@@ -641,14 +667,16 @@ NAMESPACE_SOUP
 						else if (kind == IE_kMemory)
 						{
 							uint8_t flags; r.u8(flags);
-							size_t size; WASM_READ_OML(size);
+							uint64_t min_pages;
+							WASM_READ_OML(min_pages);
+							uint64_t max_pages = 0x10'000;
 							if (flags & 1)
 							{
-								WASM_READ_OML(size);
+								WASM_READ_OML(max_pages);
 							}
 #if SOUP_WASM_MULTI_MEMORY
 							memories.emplace_back();
-							memory_imports.emplace_back(Import{ std::move(module_name), std::move(field_name) });
+							memory_imports.emplace_back(std::move(module_name), std::move(field_name), min_pages, max_pages, flags & 4);
 #else
 							SOUP_IF_UNLIKELY (memory || memory_import)
 							{
@@ -657,14 +685,14 @@ NAMESPACE_SOUP
 #endif
 								return false;
 							}
-							memory_import.emplace(Import{ std::move(module_name), std::move(field_name) });
+							memory_import.emplace(std::move(module_name), std::move(field_name), min_pages, max_pages, flags & 4);
 #endif
 						}
 						else if (kind == IE_kGlobal)
 						{
 							uint8_t type; r.u8(type);
-							r.skip(1); // mutability
-							global_imports.emplace_back(Import{ std::move(module_name), std::move(field_name) });
+							uint8_t flags; r.u8(flags);
+							global_imports.emplace_back(GlobalImport{ { std::move(module_name), std::move(field_name) }, static_cast<WasmType>(type), (bool)(flags & 1)});
 							globals.emplace_back();
 						}
 						else
@@ -803,8 +831,9 @@ NAMESPACE_SOUP
 					while (num_globals--)
 					{
 						uint8_t type; r.u8(type);
-						r.skip(1); // mutability
+						uint8_t flags; r.u8(flags);
 						WasmValue& value = *globals.emplace_back(soup::make_shared<WasmValue>());
+						value.mut = (flags & 1);
 						SOUP_RETHROW_FALSE(readConstant(r, value));
 						SOUP_IF_UNLIKELY (value.type != type)
 						{
@@ -1228,19 +1257,29 @@ NAMESPACE_SOUP
 
 	void WasmScript::provideImportedMemory(const std::string& module_name, const std::string& field_name, SharedPtr<Memory> value) noexcept
 	{
+		SOUP_IF_UNLIKELY (!value)
+		{
+			return;
+		}
+
 #if SOUP_WASM_MULTI_MEMORY
 		for (size_t i = 0; i != memory_imports.size(); ++i)
 		{
 			const auto& mi = memory_imports[i];
 			if (mi.field_name == field_name
 				&& mi.module_name == module_name
+				&& mi.isCompatibleWith(*value)
 				)
 			{
 				memories[i] = value;
 			}
 		}
 #else
-		if (memory_import && memory_import->module_name == module_name && memory_import->field_name == field_name)
+		if (memory_import
+			&& memory_import->module_name == module_name
+			&& memory_import->field_name == field_name
+			&& memory_import->isCompatibleWith(*value)
+			)
 		{
 			memory = value;
 		}
@@ -1255,10 +1294,20 @@ NAMESPACE_SOUP
 			{
 				if (auto e = other->export_map.find(fi.function_name); e != other->export_map.end())
 				{
-					if (e->second.kind == IE_kFunction)
+					if (e->second.kind == IE_kFunction
+						&& e->second.index < other->functions.size()
+						)
 					{
-						fi.source = other;
-						fi.func_index = e->second.index;
+						auto& import_type = types[fi.type_index];
+						auto& export_type = other->types[other->getTypeIndexForFunction(e->second.index)];
+#if DEBUG_LINK
+						std::cout << "importing " << fi.module_name << ":" << fi.function_name << " as " << import_type.toString() << " from " << export_type.toString() << "\n";
+#endif
+						if (import_type == export_type)
+						{
+							fi.source = other;
+							fi.func_index = e->second.index;
+						}
 					}
 				}
 			}
@@ -1272,6 +1321,9 @@ NAMESPACE_SOUP
 				{
 					if (e->second.kind == IE_kGlobal
 						&& e->second.index < other->globals.size()
+						&& other->globals[e->second.index]
+						&& other->globals[e->second.index]->type == gi.type
+						&& other->globals[e->second.index]->mut == gi.mut
 						)
 					{
 						globals[i] = other->globals[e->second.index];
@@ -1289,6 +1341,8 @@ NAMESPACE_SOUP
 				{
 					if (e->second.kind == IE_kMemory
 						&& e->second.index < other->memories.size()
+						&& other->memories[e->second.index]
+						&& mi.isCompatibleWith(*other->memories[e->second.index])
 						)
 					{
 						memories[i] = other->memories[e->second.index];
@@ -1304,6 +1358,7 @@ NAMESPACE_SOUP
 				if (e->second.kind == IE_kMemory
 					&& e->second.index == 0
 					&& other->memory
+					&& memory_import->isCompatibleWith(*other->memory)
 					)
 				{
 					this->memory = other->memory;

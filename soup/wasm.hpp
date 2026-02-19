@@ -74,15 +74,16 @@ NAMESPACE_SOUP
 			double f64;
 		};
 		WasmType type;
+		bool mut; // only used for globals
 
-		constexpr WasmValue() noexcept : i64(0), type(static_cast<WasmType>(0)) {}
-		constexpr WasmValue(WasmType type) noexcept : i64(0), type(type) {}
-		constexpr WasmValue(int32_t i32) noexcept : i32(i32), hi32(0), type(WASM_I32) {}
-		constexpr WasmValue(uint32_t u32) noexcept : WasmValue(static_cast<int32_t>(u32)) {}
-		constexpr WasmValue(int64_t i64) noexcept : i64(i64), type(WASM_I64) {}
-		constexpr WasmValue(uint64_t u64) noexcept : WasmValue(static_cast<int64_t>(u64)) {}
-		constexpr WasmValue(float f32) noexcept : f32(f32), hi32(0), type(WASM_F32) {}
-		constexpr WasmValue(double f64) noexcept : f64(f64), type(WASM_F64) {}
+		SOUP_CONSTEXPR20 WasmValue() noexcept : i64(0), type(static_cast<WasmType>(0)) {}
+		SOUP_CONSTEXPR20 WasmValue(WasmType type) noexcept : i64(0), type(type) {}
+		SOUP_CONSTEXPR20 WasmValue(int32_t i32) noexcept : i32(i32), hi32(0), type(WASM_I32) {}
+		SOUP_CONSTEXPR20 WasmValue(uint32_t u32) noexcept : WasmValue(static_cast<int32_t>(u32)) {}
+		SOUP_CONSTEXPR20 WasmValue(int64_t i64) noexcept : i64(i64), type(WASM_I64) {}
+		SOUP_CONSTEXPR20 WasmValue(uint64_t u64) noexcept : WasmValue(static_cast<int64_t>(u64)) {}
+		SOUP_CONSTEXPR20 WasmValue(float f32) noexcept : f32(f32), hi32(0), type(WASM_F32) {}
+		SOUP_CONSTEXPR20 WasmValue(double f64) noexcept : f64(f64), type(WASM_F64) {}
 		WasmValue(void* ptr) noexcept : i64(reinterpret_cast<uintptr_t>(ptr)), type(WASM_EXTERNREF) {}
 
 		[[nodiscard]] bool operator==(const WasmValue& b) const noexcept { return i64 == b.i64 && type == b.type; }
@@ -176,6 +177,38 @@ NAMESPACE_SOUP
 			std::string field_name;
 		};
 
+		struct MemoryImport : public Import
+		{
+#if SOUP_WASM_MEMORY64
+			uint64_t min_pages /*: 48*/;
+			uint64_t max_pages : 48;
+			uint64_t memory64 : 1;
+#else
+			uint32_t min_pages;
+			uint32_t max_pages;
+			bool memory64;
+#endif
+
+			MemoryImport(std::string&& module_name, std::string&& field_name, uint64_t min_pages, uint64_t max_pages, bool _64bit) noexcept
+				: Import{ std::move(module_name), std::move(field_name) }, min_pages(min_pages), max_pages(max_pages)
+#if SOUP_WASM_MEMORY64
+				, memory64(_64bit)
+#endif
+			{
+#if !SOUP_WASM_MEMORY64
+				SOUP_UNUSED(_64bit);
+#endif
+			}
+
+			[[nodiscard]] bool isCompatibleWith(const Memory& mem) const noexcept;
+		};
+
+		struct GlobalImport : public Import
+		{
+			WasmType type;
+			bool mut;
+		};
+
 		struct Export
 		{
 			uint8_t kind;
@@ -206,15 +239,15 @@ NAMESPACE_SOUP
 
 #if SOUP_WASM_MULTI_MEMORY
 		std::vector<SharedPtr<Memory>> memories;
-		std::vector<Import> memory_imports;
+		std::vector<MemoryImport> memory_imports;
 #else
 		SharedPtr<Memory> memory;
-		Optional<Import> memory_import;
+		Optional<MemoryImport> memory_import;
 #endif
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<WasmFunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
-		std::vector<Import> global_imports{};
+		std::vector<GlobalImport> global_imports{};
 		std::vector<SharedPtr<WasmValue>> globals{};
 		std::unordered_map<std::string, Export> export_map{};
 		std::vector<std::string> code{};
