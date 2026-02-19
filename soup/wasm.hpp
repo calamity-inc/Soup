@@ -286,8 +286,8 @@ NAMESPACE_SOUP
 
 		bool load(const std::string& data) SOUP_EXCAL;
 		bool load(Reader& r) SOUP_EXCAL;
-		bool readConstantExpression(Reader& r, uint8_t* buf, size_t bufsize) SOUP_EXCAL;
-		static bool readConstant(Reader& r, WasmValue& out) noexcept;
+		bool readConstantExpression(Reader& r, std::string& out) SOUP_EXCAL;
+		bool readConstant(Reader& r, WasmValue& out) noexcept;
 		bool validateFunctionBody(Reader& r) noexcept;
 
 		[[nodiscard]] bool hasUnresolvedImports() const noexcept;

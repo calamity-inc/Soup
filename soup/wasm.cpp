@@ -10,6 +10,7 @@
 #include "Exception.hpp"
 #include "MemoryRefReader.hpp"
 #include "Reader.hpp"
+#include "StringRefWriter.hpp"
 #if SOUP_WASM_PEDANTIC
 #include "unicode.hpp"
 #endif
@@ -50,7 +51,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - const: pass
 - conversions: pass
 - custom: pedantic_pass
-- data: FAIL (missing support for global.get in constants)
+- data: pass
 - elem: FAIL (missing support for table imports)
 - endianness: pass
 - exports: pass
@@ -68,7 +69,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - forward: pass
 - func: pass
 - func_ptrs: pass
-- global: FAIL (missing support for global.get in constants)
+- global: pass
 - i32: pass
 - i64: pass
 - if: pass
@@ -154,7 +155,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/address1: pass
 - multi-memory/align0: pass
 - multi-memory/binary0: pedantic_pass
-- multi-memory/data0: FAIL (missing support for global.get in constants)
+- multi-memory/data0: pass
 - multi-memory/data1: pass
 - multi-memory/data_drop0: pass
 - multi-memory/exports0: pass
@@ -434,6 +435,8 @@ NAMESPACE_SOUP
 #define WASM_READ_MEMARG constexpr uint32_t memidx = 0; { WASM_READ_MEMALIGN; } WASM_READ_MEMOFFSET
 #endif
 
+	using WasmInternalStartCode = std::string;
+
 	bool WasmScript::load(const std::string& data) SOUP_EXCAL
 	{
 		MemoryRefReader r(data);
@@ -630,6 +633,7 @@ NAMESPACE_SOUP
 						{
 							uint8_t type; r.u8(type);
 							uint8_t flags; r.u8(flags);
+							SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 							global_imports.emplace_back(GlobalImport{ { std::move(module_name), std::move(field_name) }, static_cast<WasmType>(type), (bool)(flags & 1)});
 							globals.emplace_back();
 						}
@@ -768,18 +772,19 @@ NAMESPACE_SOUP
 					globals.reserve(globals.size() + num_globals);
 					while (num_globals--)
 					{
+						const uint32_t global_index = static_cast<uint32_t>(globals.size());
 						uint8_t type; r.u8(type);
 						uint8_t flags; r.u8(flags);
 						WasmValue& value = *globals.emplace_back(soup::make_shared<WasmValue>());
 						value.mut = (flags & 1);
-						SOUP_RETHROW_FALSE(readConstant(r, value));
-						SOUP_IF_UNLIKELY (value.type != type)
-						{
-#if DEBUG_LOAD
-							std::cout << "constant's type differs from global's type\n";
-#endif
-							return false;
-						}
+						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+
+						std::string initexpr;
+						SOUP_RETHROW_FALSE(readConstantExpression(r, initexpr)); // TODO: Possibly validate that the instruction is actually a valid constexpr
+						StringRefWriter w(custom_data.getStructFromMap(WasmInternalStartCode));
+						w.raw(initexpr.data(), initexpr.size() - 1);
+						{ uint8_t global_set_op = 0x24; w.u8(global_set_op); }
+						w.oml(global_index);
 					}
 				}
 				break;
@@ -1017,7 +1022,10 @@ NAMESPACE_SOUP
 								data_segment.memidx = 0;
 							}
 
-							SOUP_RETHROW_FALSE(readConstantExpression(r, data_segment.base, sizeof(data_segment.base)));
+							std::string base;
+							SOUP_RETHROW_FALSE(readConstantExpression(r, base));
+							SOUP_RETHROW_FALSE(base.size() <= sizeof(data_segment.base));
+							memcpy(data_segment.base, base.data(), base.size());
 						}
 
 						uint32_t size;
@@ -1038,24 +1046,34 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmScript::readConstantExpression(Reader& r, uint8_t* buf, size_t bufsize) SOUP_EXCAL
+	bool WasmScript::readConstantExpression(Reader& r, std::string& out) SOUP_EXCAL
 	{
 		const auto constexpr_start_pos = r.getPosition();
 		WasmVm::skipOverBranch(r, 0, *this, -1); // seek past 'end'
 		const size_t constexpr_size = r.getPosition() - constexpr_start_pos;
-		SOUP_RETHROW_FALSE(constexpr_size > 0 && constexpr_size <= bufsize);
+		SOUP_RETHROW_FALSE(constexpr_size != 0);
 		r.seek(constexpr_start_pos);
-		r.raw(buf, constexpr_size);
-		SOUP_RETHROW_FALSE(buf[constexpr_size - 1] == 0x0b);
+		r.str(constexpr_size, out);
+		SOUP_RETHROW_FALSE(out.back() == 0x0b);
 		return true;
 	}
 
-	/*static*/ bool WasmScript::readConstant(Reader& r, WasmValue& out) noexcept
+	bool WasmScript::readConstant(Reader& r, WasmValue& out) noexcept
 	{
 		uint8_t op;
 		r.u8(op);
 		switch (op)
 		{
+		case 0x23: // global.get
+			{
+				uint32_t global_index;
+				WASM_READ_SOML(global_index);
+				SOUP_RETHROW_FALSE(global_index < global_imports.size());
+				SOUP_RETHROW_FALSE(globals[global_index]);
+				out = *globals[global_index];
+			}
+			break;
+
 		case 0x41: // i32.const
 			WASM_READ_SOML(out.i32);
 			out.type = WASM_I32;
@@ -1352,11 +1370,22 @@ NAMESPACE_SOUP
 				SOUP_RETHROW_FALSE(readConstant(r, base));
 				SOUP_RETHROW_FALSE(base.type == memory->getAddrType());
 				auto view = memory->getView(base.uptr(), ds.data.size());
-				SOUP_RETHROW_FALSE(view || ds.data.size() == 0);
+				SOUP_RETHROW_FALSE(view || (base.uptr() == 0 && ds.data.size() == 0));
 				memcpy(view, ds.data.data(), ds.data.size());
 				ds.data.clear();
 				ds.data.shrink_to_fit();
 			}
+		}
+
+		if (custom_data.isStructInMap(WasmInternalStartCode))
+		{
+			custom_data.getStructFromMapConst(WasmInternalStartCode).insert(0, 1, '\0'); // local decl count
+#if DEBUG_LOAD
+			std::cout << "running 'constexpr' code now: " << string::bin2hex(custom_data.getStructFromMapConst(WasmInternalStartCode)) << "\n";
+#endif
+			WasmVm vm(*this);
+			SOUP_RETHROW_FALSE(vm.run(custom_data.getStructFromMapConst(WasmInternalStartCode)));
+			custom_data.removeStructFromMap(WasmInternalStartCode);
 		}
 
 		if (start_func_idx != -1)

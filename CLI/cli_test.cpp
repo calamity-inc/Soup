@@ -2071,6 +2071,25 @@ endif;)") == "");
 				}
 			}
 		});
+		test("global.get constexpr", []
+		{
+			// (module
+			//   (import "" "g" (global i32))
+			//   (global (export "g") i32 (global.get 0))
+			//   )
+			auto in_g = soup::make_shared<WasmValue>(static_cast<uint32_t>(123));
+			WasmScript scr;
+			assert(scr.load(base64::decode("AGFzbQEAAAACBwEAAWcDfwAGBgF/ACMACwcFAQFnAwEACARuYW1lAgEA")));
+			assert(scr.hasUnresolvedImports());
+			scr.provideImportedGlobal("", "g", in_g);
+			assert(!scr.hasUnresolvedImports());
+			assert(scr.instantiate());
+			auto g = scr.getExportedGlobal("g");
+			assert(g);
+			assert(g != in_g.get());
+			assert(g->type == WASM_I32);
+			assert(g->i32 == 123);
+		});
 	}
 
 	test("reflection", []
