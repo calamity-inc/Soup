@@ -213,7 +213,7 @@ NAMESPACE_SOUP
 		// Runs the start function of the script, if defined. May throw if an imported C++ function throws.
 		bool instantiate();
 
-		[[nodiscard]] FunctionImport* getImportedFunction(const std::string& module_name, const std::string& function_name) noexcept;
+		void provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr) noexcept;
 		void importFromModule(const std::string& module_name, const SharedPtr<WasmScript>& other);
 		[[nodiscard]] const std::string* getExportedFuntion(const std::string& name, const WasmFunctionType** optOutType = nullptr) const noexcept;
 		[[nodiscard]] uint32_t getExportedFuntion2(const std::string& name) const noexcept;
