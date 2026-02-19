@@ -1749,13 +1749,14 @@ endif;)") == "");
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABCgJgAAF/YAF/AX8DAwIAAQUDAQABByIDCmdldF9zdHJpbmcAAAhnZXRfYnl0ZQABBm1lbW9yeQIACg8CBQBBoAgLBwAgAC0AAAsLGwIAQYwICwEcAEGYCAsNAgAAAAYAAABsAG8AbABOBG5hbWUBIwIAEGluZGV4L2dldF9zdHJpbmcBDmluZGV4L2dldF9ieXRlAggCAAABAQABMAQHAgABMAEBMQYEAQABMAkJAgABMAEDMC4x")));
+			assert(scr.memory);
 			{
 				auto code = scr.getExportedFuntion("get_string");
 				assert(code);
 				WasmVm vm(scr);
 				assert(vm.run(*code));
 				assert(!vm.stack.empty());
-				assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(scr.memory.getPointer<const UTF16_CHAR_TYPE>(vm.stack.back().i32)) == "lol");
+				assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(scr.memory->getPointer<const UTF16_CHAR_TYPE>(vm.stack.back().i32)) == "lol");
 				assert(vm.stack.pop_back(), vm.stack.empty());
 			}
 			{
@@ -1798,13 +1799,14 @@ endif;)") == "");
 		{
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAX8Bf2ACf38BfwMDAgEABQMBAAEHDAEIaXNfbWFnaWMAAQo9AjIBAn8DQCAAIgNBAWohACABIgJBAWohASADLQAAIgMgAi0AAEcEQEEADwsgAw0AC0EBCwgAIABBARAACwsLAQBBAQsFZGVlegAANARuYW1lARoCAAZzdHJjbXABD2lzX2hvc3Rpbmdfc2x1ZwIRAgAEAAEwAQExAgEyAwEzAQA=")));
-			WasmScrapAllocator sa(scr);
+			assert(scr.memory);
+			WasmScrapAllocator sa(*scr.memory);
 			auto scrap = sa.allocate(sizeof("deez"));
-			assert(scr.memory.write(scrap, "deez", sizeof("deez")));
+			assert(scr.memory->write(scrap, "deez", sizeof("deez")));
 			auto code = scr.getExportedFuntion("is_magic");
 			assert(code);
 			WasmVm vm(scr);
-			scr.memory.encodeUPTR(vm.locals.emplace_back(), scrap);
+			scr.memory->encodeUPTR(vm.locals.emplace_back(), scrap);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
 			assert(vm.stack.back().i32 == 1);

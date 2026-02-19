@@ -206,7 +206,7 @@ NAMESPACE_SOUP
 			bool copy(const Table& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
 		};
 
-		Memory memory;
+		SharedPtr<Memory> memory;
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<WasmFunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
@@ -287,11 +287,6 @@ NAMESPACE_SOUP
 
 		WasmScrapAllocator(WasmScript::Memory& memory) noexcept
 			: memory(memory)
-		{
-		}
-
-		WasmScrapAllocator(WasmScript& script) noexcept
-			: WasmScrapAllocator(script.memory)
 		{
 		}
 

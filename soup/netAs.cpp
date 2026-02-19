@@ -24,19 +24,19 @@ NAMESPACE_SOUP
 				}
 			}
 
-			if (auto code = ws.getExportedFuntion("is_hosting_slug"))
+			if (auto code = ws.getExportedFuntion("is_hosting_slug"); code && ws.memory)
 			{
 				std::string slug = this->handle;
 				slug.push_back(' ');
 				slug.append(this->name);
 				string::lower(slug);
 
-				WasmScrapAllocator sa(ws);
+				WasmScrapAllocator sa(*ws.memory);
 				auto scrap = sa.allocate(slug.size() + 1);
-				if (ws.memory.write(scrap, slug.c_str(), slug.size() + 1))
+				if (ws.memory->write(scrap, slug.c_str(), slug.size() + 1))
 				{
 					WasmVm vm(ws);
-					ws.memory.encodeUPTR(vm.locals.emplace_back(), scrap);
+					ws.memory->encodeUPTR(vm.locals.emplace_back(), scrap);
 					if (vm.run(*code)
 						&& vm.stack.back().i32
 						)
