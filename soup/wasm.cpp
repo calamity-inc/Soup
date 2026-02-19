@@ -48,7 +48,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - comments: pass
 - const: pass
 - conversions: pass
-- custom: FAIL (Soup doesn't fail on some malformed modules)
+- custom: pass_pedantic
 - data: FAIL (missing support for memory imports)
 - elem: FAIL (missing support for table imports)
 - endianness: pass
@@ -412,6 +412,9 @@ NAMESPACE_SOUP
 		{
 			return false;
 		}
+#if SOUP_WASM_PEDANTIC
+		uint32_t data_count = -1;
+#endif
 		while (r.hasMore())
 		{
 			uint8_t section_type;
@@ -422,9 +425,11 @@ NAMESPACE_SOUP
 			{
 			default:
 #if DEBUG_LOAD
-				std::cout << "Ignoring section of type " << (int)section_type << " (size: " << section_size << ")\n";
+				std::cout << "Unhandled section type: " << (int)section_type << " (size: " << section_size << ")\n";
 #endif
+#if !SOUP_WASM_PEDANTIC
 				SOUP_IF_UNLIKELY (section_size == 0)
+#endif
 				{
 					return false;
 				}
@@ -445,6 +450,8 @@ NAMESPACE_SOUP
 					auto name_utf32 = unicode::utf8_to_utf32(name);
 					SOUP_RETHROW_FALSE(name_utf32.find(unicode::REPLACEMENT_CHAR) == std::string::npos); // UTF-8 must be valid
 					SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == name); // UTF-8 must also be canonically represented (so, no overlong encodings)
+					r.seekEnd();
+					SOUP_RETHROW_FALSE(section_end <= r.getPosition());
 					r.seek(section_end);
 				}
 				break;
@@ -559,7 +566,7 @@ NAMESPACE_SOUP
 					uint32_t num_functions;
 					WASM_READ_OML(num_functions);
 #if DEBUG_LOAD
-					std::cout << num_functions << " function(s)\n";
+					std::cout << num_functions << " function type(s)\n";
 #endif
 					functions.reserve(num_functions);
 					while (num_functions--)
@@ -872,12 +879,21 @@ NAMESPACE_SOUP
 				}
 				break;
 
+#if SOUP_WASM_PEDANTIC
+			case 12: // DataCount
+				WASM_READ_OML(data_count);
+				break;
+#endif
+
 			case 10: // Code
 				{
 					uint32_t num_functions;
 					WASM_READ_OML(num_functions);
 #if DEBUG_LOAD
 					std::cout << num_functions << " function(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE(num_functions == functions.size());
 #endif
 					while (num_functions--)
 					{
@@ -909,6 +925,12 @@ NAMESPACE_SOUP
 					WASM_READ_OML(num_segments);
 #if DEBUG_LOAD
 					std::cout << num_segments << " data segment(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					if (data_count != -1)
+					{
+						SOUP_RETHROW_FALSE(data_count == num_segments);
+					}
 #endif
 					for (uint32_t i = 0; i != num_segments; ++i)
 					{
