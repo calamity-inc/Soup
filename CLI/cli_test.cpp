@@ -1837,7 +1837,8 @@ endif;)") == "");
 			//   )
 			//   (export "main" (func $main))
 			// )
-			WasmScript scr;
+			WasmSharedEnvironment env;
+			auto& scr = *env.createScript();
 			assert(scr.load(base64::decode("AGFzbQEAAAABCgJgAX8Bf2AAAX8DAwIAAQQFAXABAQEFAwEAAQcIAQRtYWluAAEJBwEAQQALAQAKEwIHACAAQShqCwkAQQJBABEAAAsAMgRuYW1lAQ0CAAR0ZXN0AQRtYWluAggCAAEAATABAAQMAQAJRlVOQ1NJRyRpBgQBAAEw")));
 			assert(scr.instantiate());
 			auto code = scr.getExportedFuntion("main");
@@ -2003,7 +2004,8 @@ endif;)") == "");
 			//     (global.set $g (ref.func 0))
 			//     )
 			//   )
-			WasmScript scr;
+			WasmSharedEnvironment env;
+			auto& scr = *env.createScript();
 			assert(scr.load(base64::decode("AGFzbQEAAAABCAJgAAF/YAAAAwMCAAEGBgFwAdBwCwcTAgdpc19udWxsAAAFc2V0XzAAAQoOAgUAIwDRCwYA0gAkAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
 			assert(scr.instantiate());
 			auto is_null = scr.getExportedFuntion("is_null");

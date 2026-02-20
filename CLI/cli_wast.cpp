@@ -128,9 +128,14 @@ int cli_wast(const std::string& file)
 			{ "global_f32", soup::make_shared<WasmValue>(666.6f) },
 			{ "global_f64", soup::make_shared<WasmValue>(666.6) },
 		};
+		const std::unordered_map<std::string, SharedPtr<WasmScript::Table>> spectest_tables{
+			{ "table", soup::make_shared<WasmScript::Table>(WASM_FUNCREF, 10, 20, false) },
+			{ "table64", soup::make_shared<WasmScript::Table>(WASM_FUNCREF, 10, 20, true) },
+		};
 		const auto spectest_memory = soup::make_shared<WasmScript::Memory>(1, 2, false);
 
-		SharedPtr<WasmScript> scr = soup::make_shared<WasmScript>();
+		WasmSharedEnvironment shared_env;
+		SharedPtr<WasmScript> scr = shared_env.createScript();
 		std::unordered_map<std::string, SharedPtr<WasmScript>> named_modules;
 		std::vector<std::pair<std::string, SharedPtr<WasmScript>>> registered_module;
 		try
@@ -142,7 +147,7 @@ int cli_wast(const std::string& file)
 				if (type == "module")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					scr = soup::make_shared<WasmScript>();
+					scr = shared_env.createScript();
 					//std::cout << "Loading " << cmd.at("filename").asStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 					SOUP_IF_UNLIKELY (!scr->load(fr))
 					{
@@ -151,6 +156,7 @@ int cli_wast(const std::string& file)
 					}
 					scr->provideImportedFunctions("spectest", spectest_functions);
 					scr->provideImportedGlobals("spectest", spectest_globals);
+					scr->provideImportedTables("spectest", spectest_tables);
 					scr->provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
@@ -177,7 +183,7 @@ int cli_wast(const std::string& file)
 				else if (type == "assert_malformed")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					WasmScript tmp;
+					auto& tmp = *shared_env.createScript();
 					SOUP_IF_UNLIKELY (tmp.load(fr))
 					{
 						std::cout << "Did not fail to load malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
@@ -187,7 +193,7 @@ int cli_wast(const std::string& file)
 				else if (type == "assert_unlinkable")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					WasmScript tmp;
+					auto& tmp = *shared_env.createScript();
 					SOUP_IF_UNLIKELY(!tmp.load(fr))
 					{
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
@@ -195,6 +201,7 @@ int cli_wast(const std::string& file)
 					}
 					tmp.provideImportedFunctions("spectest", spectest_functions);
 					tmp.provideImportedGlobals("spectest", spectest_globals);
+					tmp.provideImportedTables("spectest", spectest_tables);
 					tmp.provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
@@ -209,7 +216,7 @@ int cli_wast(const std::string& file)
 				else if (type == "assert_uninstantiable")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					WasmScript tmp;
+					auto& tmp = *shared_env.createScript();
 					SOUP_IF_UNLIKELY (!tmp.load(fr))
 					{
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
@@ -217,6 +224,7 @@ int cli_wast(const std::string& file)
 					}
 					tmp.provideImportedFunctions("spectest", spectest_functions);
 					tmp.provideImportedGlobals("spectest", spectest_globals);
+					tmp.provideImportedTables("spectest", spectest_tables);
 					tmp.provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
