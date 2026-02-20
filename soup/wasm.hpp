@@ -347,6 +347,7 @@ NAMESPACE_SOUP
 		StructMap custom_data;
 		WasmSharedEnvironment* shared_env = nullptr;
 		uint32_t start_func_idx = -1;
+		bool has_data_count_section = false;
 
 		WasmScript() noexcept { /* default */ }
 		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env) {} // INTERNAL USAGE ONLY. WasmSharedEnvironment::createScript is for you!
@@ -435,7 +436,17 @@ NAMESPACE_SOUP
 			uint32_t num_values; // Number of values to keep on the stack top after branching. num_results for forward jumps; num_params for backward jumps.
 		};
 
-		static bool skipOverBranch(Reader& r, uint32_t depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL;
+		enum SkipOverBranchResult
+		{
+#if SOUP_WASM_PEDANTIC
+			PEDANTIC_ERROR = 0,
+#endif
+			ELSE_REACHED,
+			END_REACHED,
+			INSUFFICIENT_DATA,
+		};
+
+		static SkipOverBranchResult skipOverBranch(Reader& r, uint32_t depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(WasmScript* script, uint32_t type_index, uint32_t function_index, unsigned depth = 0);
 	};

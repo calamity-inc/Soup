@@ -37,8 +37,8 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 > Use wast2json from wabt then run `soup wast [jsonfile]`
 > Results:
 - address: pass
-- align: FAIL (Soup doesn't fail on some malformed modules)
-- binary: FAIL (Soup doesn't fail on some malformed modules)
+- align: pedantic_pass (assumes multi-memory is not supported)
+- binary: pedantic_pass (assumes multi-memory is not supported)
 - binary-leb128: pedantic_pass
 - block: pass
 - br: pass
@@ -515,9 +515,9 @@ NAMESPACE_SOUP
 #endif
 
 #if SOUP_WASM_MULTI_MEMORY
-#define WASM_READ_MEMARG uint32_t memidx = 0; { WASM_READ_MEMALIGN; if (align & 0x40) { WASM_READ_OML(memidx); } } WASM_READ_MEMOFFSET
+#define WASM_READ_MEMARG uint32_t memidx = 0; WASM_READ_MEMALIGN; if (align & 0x40) { WASM_READ_OML(memidx); } WASM_READ_MEMOFFSET
 #else
-#define WASM_READ_MEMARG constexpr uint32_t memidx = 0; { WASM_READ_MEMALIGN; } WASM_READ_MEMOFFSET
+#define WASM_READ_MEMARG constexpr uint32_t memidx = 0; WASM_READ_MEMALIGN; WASM_READ_MEMOFFSET
 #endif
 
 	using WasmInternalStartCode = std::string;
@@ -541,15 +541,14 @@ NAMESPACE_SOUP
 		{
 			return false;
 		}
-#if SOUP_WASM_PEDANTIC
 		uint32_t data_count = -1;
-#endif
 		while (r.hasMore())
 		{
 			uint8_t section_type;
 			r.u8(section_type);
 			uint32_t section_size;
 			WASM_READ_OML(section_size);
+			const auto section_end = r.getPosition() + section_size;
 			switch (section_type)
 			{
 			default:
@@ -562,14 +561,13 @@ NAMESPACE_SOUP
 				{
 					return false;
 				}
-				r.skip(section_size);
+				r.seek(section_end);
 				break;
 
 #if SOUP_WASM_PEDANTIC
 			case 0: // Custom
 				{
 					SOUP_RETHROW_FALSE(section_size != 0);
-					const auto section_end = r.getPosition() + section_size;
 					uint32_t name_len;
 					WASM_READ_OML(name_len);
 					//std::cout << "custom section: name_len = " << name_len << "\n";
@@ -684,7 +682,9 @@ NAMESPACE_SOUP
 						{
 							uint8_t type; r.u8(type);
 							uint8_t flags; r.u8(flags);
-#if !SOUP_WASM_MEMORY64
+#if SOUP_WASM_MEMORY64
+							SOUP_RETHROW_FALSE((flags & 0xfa) == 0);
+#else
 							SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 #endif
 							wasm_uptr_t min_size;
@@ -700,7 +700,9 @@ NAMESPACE_SOUP
 						else if (kind == IE_kMemory)
 						{
 							uint8_t flags; r.u8(flags);
-#if !SOUP_WASM_MEMORY64
+#if SOUP_WASM_MEMORY64
+							SOUP_RETHROW_FALSE((flags & 0xfa) == 0);
+#else
 							SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 #endif
 							wasm_uptr_t min_pages;
@@ -774,7 +776,9 @@ NAMESPACE_SOUP
 						r.u8(type);
 						uint8_t flags;
 						r.u8(flags);
-#if !SOUP_WASM_MEMORY64
+#if SOUP_WASM_MEMORY64
+						SOUP_RETHROW_FALSE((flags & 0xfa) == 0);
+#else
 						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 #endif
 						wasm_uptr_t initial;
@@ -807,7 +811,9 @@ NAMESPACE_SOUP
 						}
 #endif
 						uint8_t flags; r.u8(flags);
-#if !SOUP_WASM_MEMORY64
+#if SOUP_WASM_MEMORY64
+						SOUP_RETHROW_FALSE((flags & 0xfa) == 0);
+#else
 						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
 #endif
 						uint64_t pages;
@@ -969,6 +975,10 @@ NAMESPACE_SOUP
 							}
 						}
 
+#if SOUP_WASM_PEDANTIC
+						SOUP_RETHROW_FALSE(type == WASM_FUNCREF || type == WASM_EXTERNREF);
+#endif
+
 						ElemSegment& es = elem_segments.emplace_back(ElemSegment{ static_cast<WasmType>(type), static_cast<uint8_t>(flags) });
 #if SOUP_WASM_EXTENDED_CONST
 						es.base = std::move(base);
@@ -1001,11 +1011,10 @@ NAMESPACE_SOUP
 				}
 				break;
 
-#if SOUP_WASM_PEDANTIC
 			case 12: // DataCount
 				WASM_READ_OML(data_count);
+				has_data_count_section = true;
 				break;
-#endif
 
 			case 10: // Code
 				{
@@ -1014,7 +1023,6 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_functions << " function(s)\n";
 #endif
-					SOUP_RETHROW_FALSE(num_functions == functions.size());
 					code.reserve(num_functions);
 					while (num_functions--)
 					{
@@ -1047,12 +1055,10 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 					std::cout << num_segments << " data segment(s)\n";
 #endif
-#if SOUP_WASM_PEDANTIC
 					if (data_count != -1)
 					{
 						SOUP_RETHROW_FALSE(data_count == num_segments);
 					}
-#endif
 					data_segments.reserve(num_segments);
 					for (uint32_t i = 0; i != num_segments; ++i)
 					{
@@ -1089,7 +1095,7 @@ NAMESPACE_SOUP
 
 						uint32_t size;
 						WASM_READ_OML(size);
-						r.str(size, data_segment.data);
+						SOUP_RETHROW_FALSE(r.str(size, data_segment.data));
 					}
 				}
 				break;
@@ -1101,16 +1107,26 @@ NAMESPACE_SOUP
 				std::cout << "FIXUP section_size=" << section_size << "\n";
 #endif
 			}
+			else
+			{
+				SOUP_IF_UNLIKELY (r.getPosition() != section_end)
+				{
+#if DEBUG_LOAD
+					std::cout << "section did not end where it was supposed to\n";
+#endif
+					return false;
+				}
+			}
 		}
+		SOUP_RETHROW_FALSE(functions.size() == code.size());
 		return true;
 	}
 
 	bool WasmScript::readConstantExpression(Reader& r, std::string& out) SOUP_EXCAL
 	{
 		const auto constexpr_start_pos = r.getPosition();
-		WasmVm::skipOverBranch(r, 0, *this, -1); // seek past 'end'
+		SOUP_RETHROW_FALSE(WasmVm::skipOverBranch(r, 0, *this, -1) == WasmVm::END_REACHED); // guarantees constexpr_size != 0
 		const size_t constexpr_size = r.getPosition() - constexpr_start_pos;
-		SOUP_RETHROW_FALSE(constexpr_size != 0);
 		r.seek(constexpr_start_pos);
 		r.str(constexpr_size, out);
 		switch (static_cast<uint8_t>(out.front()))
@@ -1135,7 +1151,6 @@ NAMESPACE_SOUP
 		default:
 			return false;
 		}
-		SOUP_RETHROW_FALSE(out.back() == 0x0b);
 		return true;
 	}
 
@@ -1242,31 +1257,25 @@ NAMESPACE_SOUP
 
 	bool WasmScript::validateFunctionBody(Reader& r) noexcept
 	{
-		size_t local_decl_count;
+		uint32_t local_decl_count;
 		WASM_READ_OML(local_decl_count);
+		uint32_t total_locals = 0;
 		while (local_decl_count--)
 		{
-			size_t type_count;
+			uint32_t type_count;
 			WASM_READ_OML(type_count);
+			SOUP_RETHROW_FALSE(can_add_without_overflow(total_locals, type_count));
+			total_locals += type_count;
 			r.skip(1); // type
 		}
 
-		WasmVm::skipOverBranch(r, 0, *this, -1);
+		SOUP_RETHROW_FALSE(WasmVm::skipOverBranch(r, 0, *this, -1) == WasmVm::END_REACHED);
 		const auto pos_after_branching = r.getPosition();
 		r.seekEnd();
 		SOUP_IF_UNLIKELY (r.getPosition() != pos_after_branching)
 		{
 #if DEBUG_LOAD
 			std::cout << "load(pedantic): skipOverBranch bailed early\n";
-#endif
-			return false;
-		}
-
-		r.seek(r.getPosition() - 1);
-		SOUP_IF_UNLIKELY (uint8_t byte; !r.u8(byte) || byte != 0x0b)
-		{
-#if DEBUG_LOAD
-			std::cout << "load(pedantic): function body does not end on 'end' opcode\n";
 #endif
 			return false;
 		}
@@ -2248,11 +2257,11 @@ NAMESPACE_SOUP
 
 	bool WasmVm::run(Reader& r, unsigned depth, uint32_t func_index)
 	{
-		size_t local_decl_count;
+		uint32_t local_decl_count;
 		WASM_READ_OML(local_decl_count);
 		while (local_decl_count--)
 		{
-			size_t type_count;
+			uint32_t type_count;
 			WASM_READ_OML(type_count);
 			uint8_t type;
 			r.u8(type);
@@ -2363,7 +2372,7 @@ NAMESPACE_SOUP
 					}
 					else
 					{
-						if (skipOverBranch(r, 0, script, func_index))
+						if (skipOverBranch(r, 0, script, func_index) == ELSE_REACHED)
 						{
 							// we're in the 'else' branch
 							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
@@ -4936,7 +4945,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool WasmVm::skipOverBranch(Reader& r, uint32_t target_depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL
+	WasmVm::SkipOverBranchResult WasmVm::skipOverBranch(Reader& r, uint32_t target_depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL
 	{
 		std::vector<uint32_t> scrap;
 		std::vector<uint32_t>* hints = &scrap;
@@ -4993,7 +5002,7 @@ NAMESPACE_SOUP
 				}
 				if (depth == target_depth)
 				{
-					return true;
+					return ELSE_REACHED;
 				}
 				break;
 
@@ -5007,7 +5016,7 @@ NAMESPACE_SOUP
 				}
 				if (depth == target_depth)
 				{
-					return false;
+					return END_REACHED;
 				}
 				++depth;
 				break;
@@ -5022,8 +5031,6 @@ NAMESPACE_SOUP
 			case 0x24: // global.set
 			case 0x25: // table.get
 			case 0x26: // table.set
-			case 0x3f: // memory.size
-			case 0x40: // memory.grow
 			case 0xd2: // ref.func
 				{
 					uint32_t imm;
@@ -5082,6 +5089,23 @@ NAMESPACE_SOUP
 				{
 					WASM_READ_MEMARG;
 					SOUP_UNUSED(memidx);
+#if SOUP_WASM_PEDANTIC && !SOUP_WASM_MULTI_MEMORY
+					SOUP_RETHROW_FALSE(align < 0x20);
+#endif
+				}
+				break;
+
+			case 0x3f: // memory.size
+			case 0x40: // memory.grow
+				{
+#if SOUP_WASM_PEDANTIC && !SOUP_WASM_MULTI_MEMORY
+					uint8_t memidx;
+					r.u8(memidx);
+					SOUP_RETHROW_FALSE(memidx == 0);
+#else
+					uint32_t memidx;
+					WASM_READ_OML(memidx);
+#endif
 				}
 				break;
 
@@ -5266,6 +5290,10 @@ NAMESPACE_SOUP
 				switch (op)
 				{
 				case 0x08: // memory.init
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE(script.has_data_count_section);
+					[[fallthrough]];
+#endif
 				case 0x0a: // memory.copy
 				case 0x0c: // table.init
 				case 0x0e: // table.copy
@@ -5278,6 +5306,10 @@ NAMESPACE_SOUP
 					break;
 
 				case 0x09: // data.drop
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE(script.has_data_count_section);
+					[[fallthrough]];
+#endif
 				case 0x0b: // memory.fill
 				case 0x0d: // elem.drop
 				case 0x0f: // table.grow
@@ -5311,7 +5343,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 		std::cout << "skipOverBranch: end of stream reached\n";
 #endif
-		return false;
+		return INSUFFICIENT_DATA;
 	}
 
 	bool WasmVm::doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL
@@ -5344,7 +5376,7 @@ NAMESPACE_SOUP
 		if (ctrlflow.top().position == -1)
 		{
 			// branch forwards
-			if (skipOverBranch(r, depth, script, func_index))
+			if (skipOverBranch(r, depth, script, func_index) == ELSE_REACHED)
 			{
 				// also skip over 'else' branch
 				skipOverBranch(r, depth, script, func_index);
