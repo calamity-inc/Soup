@@ -711,7 +711,15 @@ NAMESPACE_SOUP
 
 		SOUP_ASSERT(HidD_GetFeature(handle, buf.data(), static_cast<ULONG>(buf.size())));
 #elif SOUP_LINUX
-		// TODO
+		if (buf.size() < feature_report_byte_length)
+		{
+			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
+		}
+		int len = ioctl(handle, HIDIOCGFEATURE(buf.size()), buf.data());
+		if (len != -1)
+		{
+			buf.resize(len);
+		}
 #elif SOUP_MACOS
 		if (!device)
 		{
