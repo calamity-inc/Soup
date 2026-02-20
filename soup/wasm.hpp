@@ -280,7 +280,7 @@ NAMESPACE_SOUP
 			uint64_t limit;
 #endif
 
-			Table(WasmType type, wasm_uptr_t init_size = 0, wasm_uptr_t max_size = -1, bool _64bit = false) noexcept
+			Table(WasmType type, wasm_uptr_t init_size = 0, wasm_uptr_t max_size = 0x10'000, bool _64bit = false) noexcept
 				: type(type)
 #if SOUP_WASM_MEMORY64
 				, table64(_64bit)

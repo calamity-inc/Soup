@@ -390,9 +390,9 @@ NAMESPACE_SOUP
 		{
 			return false;
 		}
-		if (max_size != -1) // Import has a size limit?
+		if (max_size != 0x10'000) // Import has a size limit?
 		{
-			if (tbl.limit == -1) // Table has no size limit?
+			if (tbl.limit == 0x10'000) // Table has no size limit?
 			{
 				return false;
 			}
@@ -688,7 +688,7 @@ NAMESPACE_SOUP
 #endif
 							wasm_uptr_t min_size;
 							WASM_READ_OML(min_size);
-							wasm_uptr_t max_size = -1;
+							wasm_uptr_t max_size = 0x10'000;
 							if (flags & 1)
 							{
 								WASM_READ_OML(max_size);
@@ -778,7 +778,7 @@ NAMESPACE_SOUP
 #endif
 						wasm_uptr_t initial;
 						WASM_READ_OML(initial);
-						wasm_uptr_t limit = -1;
+						wasm_uptr_t limit = 0x10'000;
 						if (flags & 1)
 						{
 							WASM_READ_OML(limit);
