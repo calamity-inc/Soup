@@ -320,18 +320,23 @@ NAMESPACE_SOUP
 
 	size_t WasmScript::Memory::grow(size_t delta_pages) noexcept
 	{
-		const auto delta_bytes = delta_pages * 0x10'000;
-		auto nmem = (((this->size + delta_bytes) / 0x10'000) <= this->page_limit)
-			? (uint8_t*)::realloc(this->data, this->size + delta_bytes)
-			: nullptr
-			;
 		size_t old_size_pages = -1;
-		if (nmem != nullptr)
+		const auto delta_bytes = delta_pages * 0x10'000;
+		if ((delta_pages == 0 || delta_bytes / delta_pages == 0x10'000) // Multiplication didn't overflow?
+			&& can_add_without_overflow(this->size, delta_bytes)
+			)
 		{
-			memset(&nmem[this->size], 0, delta_bytes);
-			old_size_pages = this->size / 0x10'000;
-			this->data = nmem;
-			this->size += delta_bytes;
+			auto nmem = (((this->size + delta_bytes) / 0x10'000) <= this->page_limit)
+				? (uint8_t*)::realloc(this->data, this->size + delta_bytes)
+				: nullptr
+				;
+			if (nmem != nullptr)
+			{
+				memset(&nmem[this->size], 0, delta_bytes);
+				old_size_pages = this->size / 0x10'000;
+				this->data = nmem;
+				this->size += delta_bytes;
+			}
 		}
 		return old_size_pages;
 	}
@@ -678,6 +683,9 @@ NAMESPACE_SOUP
 						{
 							uint8_t type; r.u8(type);
 							uint8_t flags; r.u8(flags);
+#if !SOUP_WASM_MEMORY64
+							SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+#endif
 							wasm_uptr_t min_size;
 							WASM_READ_OML(min_size);
 							wasm_uptr_t max_size = -1;
@@ -691,6 +699,9 @@ NAMESPACE_SOUP
 						else if (kind == IE_kMemory)
 						{
 							uint8_t flags; r.u8(flags);
+#if !SOUP_WASM_MEMORY64
+							SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+#endif
 							wasm_uptr_t min_pages;
 							WASM_READ_OML(min_pages);
 							wasm_uptr_t max_pages = 0x10'000;
@@ -4789,7 +4800,7 @@ NAMESPACE_SOUP
 							return false;
 						}
 						WASM_CHECK_STACK(2);
-						auto delta = stack.back().i32; stack.pop_back();
+						auto delta = stack.back().uptr(); stack.pop_back();
 						auto& value = stack.back();
 						SOUP_IF_UNLIKELY (value.type != table->type)
 						{

@@ -15,7 +15,7 @@
 #include "StructMap.hpp"
 
 #ifndef SOUP_WASM_MEMORY64
-#define SOUP_WASM_MEMORY64 SOUP_BITS >= 64
+#define SOUP_WASM_MEMORY64 (SOUP_BITS >= 64)
 #endif
 
 #ifndef SOUP_WASM_MULTI_MEMORY
@@ -147,7 +147,7 @@ NAMESPACE_SOUP
 			template <typename T>
 			[[nodiscard]] T* getPointer(const WasmValue& base, size_t offset = 0) noexcept
 			{
-				return getPointer<T>(base.uptr() + offset);
+				return can_add_without_overflow(base.uptr(), offset) ? getPointer<T>(base.uptr() + offset) : nullptr;
 			}
 
 			[[nodiscard]] std::string readString(size_t addr, size_t size) SOUP_EXCAL;
