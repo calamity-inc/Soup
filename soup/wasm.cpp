@@ -30,7 +30,7 @@
 // - https://webassembly.github.io/wabt/demo/wat2wasm/
 // - https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
 // - https://pengowray.github.io/wasm-ops/
-// - https://webassembly.github.io/spec/versions/core/WebAssembly-2.0.pdf (not the latest version, but "WASM 2.0 minus SIMD plus Memory64" seems like a reasonable target for Soup right now)
+// - https://webassembly.github.io/spec/versions/core/WebAssembly-2.0.pdf
 
 /*
 Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
@@ -55,6 +55,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - elem: pass
 - endianness: pass
 - exports: pass
+- extended-const: pass
 - f32: pass
 - f32_bitwise: pass
 - f32_cmp: pass
@@ -866,7 +867,7 @@ NAMESPACE_SOUP
 						value.mut = (flags & 1);
 
 						std::string initexpr;
-						SOUP_RETHROW_FALSE(readConstantExpression(r, initexpr)); // TODO: Possibly validate that the instruction is actually a valid constexpr
+						SOUP_RETHROW_FALSE(readConstantExpression(r, initexpr));
 						StringRefWriter w(custom_data.getStructFromMap(WasmInternalStartCode));
 						w.raw(initexpr.data(), initexpr.size() - 1);
 						{ uint8_t global_set_op = 0x24; w.u8(global_set_op); }
@@ -958,7 +959,9 @@ NAMESPACE_SOUP
 							type = getTableElemType(tblidx);
 
 							SOUP_RETHROW_FALSE(readConstantExpression(r, base));
+#if !SOUP_WASM_EXTENDED_CONST
 							SOUP_RETHROW_FALSE(base.size() <= sizeof(ElemSegment::base));
+#endif
 
 							if (flags & 0b10)
 							{
@@ -967,7 +970,11 @@ NAMESPACE_SOUP
 						}
 
 						ElemSegment& es = elem_segments.emplace_back(ElemSegment{ static_cast<WasmType>(type), static_cast<uint8_t>(flags) });
+#if SOUP_WASM_EXTENDED_CONST
+						es.base = std::move(base);
+#else
 						memcpy(es.base, base.data(), base.size());
+#endif
 						es.tblidx = tblidx;
 						uint32_t num_elements;
 						WASM_READ_OML(num_elements);
@@ -1070,10 +1077,14 @@ NAMESPACE_SOUP
 								data_segment.memidx = 0;
 							}
 
+#if SOUP_WASM_EXTENDED_CONST
+							SOUP_RETHROW_FALSE(readConstantExpression(r, data_segment.base));
+#else
 							std::string base;
 							SOUP_RETHROW_FALSE(readConstantExpression(r, base));
 							SOUP_RETHROW_FALSE(base.size() <= sizeof(data_segment.base));
 							memcpy(data_segment.base, base.data(), base.size());
+#endif
 						}
 
 						uint32_t size;
@@ -1213,6 +1224,21 @@ NAMESPACE_SOUP
 		}
 		return true;
 	}
+
+#if SOUP_WASM_EXTENDED_CONST
+	bool WasmScript::evaluateExtendedConstantExpression(std::string&& code, WasmValue& out) noexcept
+	{
+		code.insert(0, 1, '\0'); // local decl count
+		MemoryRefReader r(code);
+		WasmVm vm(*this);
+		SOUP_RETHROW_FALSE(vm.run(r, 0, -1));
+		SOUP_RETHROW_FALSE(vm.stack.size() == 1);
+		out = vm.stack.back();
+		code.clear();
+		code.shrink_to_fit();
+		return true;
+	}
+#endif
 
 	bool WasmScript::validateFunctionBody(Reader& r) noexcept
 	{
@@ -1514,12 +1540,15 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 				std::cout << "instantiate: processing elem segment\n";
 #endif
-				MemoryRefReader r(es.base, sizeof(es.base)); // TODO: -||-
-#if DEBUG_LOAD
-				//std::cout << "evaluating elem segment base: " << string::bin2hex((const char*)es.base, sizeof(es.base)) << "\n";
-#endif
 				WasmValue base;
-				SOUP_RETHROW_FALSE(evaluateConstantExpression(r, base)); // TODO: -||-
+				{
+#if SOUP_WASM_EXTENDED_CONST
+					SOUP_RETHROW_FALSE(evaluateExtendedConstantExpression(std::move(es.base), base));
+#else
+					MemoryRefReader r(es.base, sizeof(es.base));
+					SOUP_RETHROW_FALSE(evaluateConstantExpression(r, base));
+#endif
+				}
 				SOUP_IF_UNLIKELY (base.type != table->getAddrType())
 				{
 #if DEBUG_LOAD
@@ -1540,9 +1569,18 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 				std::cout << "instantiate: processing data segment\n";
 #endif
-				MemoryRefReader r(ds.base, sizeof(ds.base)); // TODO: Probably need to use a std::string for SOUP_WASM_EXTENDED_CONST
 				WasmValue base;
-				SOUP_RETHROW_FALSE(evaluateConstantExpression(r, base)); // TODO: evaluateConstantExpression does not support ops added by SOUP_WASM_EXTENDED_CONST
+				{
+#if SOUP_WASM_EXTENDED_CONST
+#if DEBUG_LOAD
+					std::cout << "instantiate: ds.base = " << string::bin2hex(ds.base) << "\n";
+#endif
+					SOUP_RETHROW_FALSE(evaluateExtendedConstantExpression(std::move(ds.base), base));
+#else
+					MemoryRefReader r(ds.base, sizeof(ds.base));
+					SOUP_RETHROW_FALSE(evaluateConstantExpression(r, base));
+#endif
+				}
 				SOUP_RETHROW_FALSE(base.type == memory->getAddrType());
 				auto view = memory->getView(base.uptr(), ds.data.size());
 				SOUP_RETHROW_FALSE(view || (base.uptr() == 0 && ds.data.size() == 0));

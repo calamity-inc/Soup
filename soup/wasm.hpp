@@ -14,6 +14,16 @@
 #include "SharedPtr.hpp"
 #include "StructMap.hpp"
 
+// Soup fully implements the WebAssembly 2.0 specification with the exception of SIMD types and instructions ("scalar profile").
+ 
+// Note that the spec requires loads to fail for various reasons that require a lot of CPU time to validate; Soup does not do these by default,
+// but if you do want that, you can enable enable pedantic mode.
+#ifndef SOUP_WASM_PEDANTIC
+#define SOUP_WASM_PEDANTIC false
+#endif
+
+// Additionally, the following proposals that landed in WebAssembly 3.0 are implemented.
+
 #ifndef SOUP_WASM_MEMORY64
 #define SOUP_WASM_MEMORY64 (SOUP_BITS >= 64)
 #endif
@@ -22,11 +32,8 @@
 #define SOUP_WASM_MULTI_MEMORY false
 #endif
 
+#ifndef SOUP_WASM_EXTENDED_CONST
 #define SOUP_WASM_EXTENDED_CONST false
-
-#ifndef SOUP_WASM_PEDANTIC
-// Set to true if you love wasting CPU time just so you can error in edge cases for spec conformity.
-#define SOUP_WASM_PEDANTIC false
 #endif
 
 NAMESPACE_SOUP
@@ -249,7 +256,11 @@ NAMESPACE_SOUP
 		struct DataSegment
 		{
 			uint32_t memidx;
+#if SOUP_WASM_EXTENDED_CONST
+			std::string base;
+#else
 			uint8_t base[12];
+#endif
 			std::string data;
 
 			[[nodiscard]] bool isPassive() const noexcept { return memidx == -1; }
@@ -259,8 +270,13 @@ NAMESPACE_SOUP
 		{
 			const WasmType type;
 			uint8_t flags;
+#if !SOUP_WASM_EXTENDED_CONST
 			uint8_t base[10];
+#endif
 			uint32_t tblidx;
+#if SOUP_WASM_EXTENDED_CONST
+			std::string base;
+#endif
 			std::vector<uint64_t> values;
 
 			[[nodiscard]] bool isActive() const noexcept { return (flags & 1) == 0; }
@@ -343,6 +359,9 @@ NAMESPACE_SOUP
 		bool load(Reader& r) SOUP_EXCAL;
 		bool readConstantExpression(Reader& r, std::string& out) SOUP_EXCAL;
 		bool evaluateConstantExpression(Reader& r, WasmValue& out) noexcept;
+#if SOUP_WASM_EXTENDED_CONST
+		bool evaluateExtendedConstantExpression(std::string&& code, WasmValue& out) noexcept;
+#endif
 		bool validateFunctionBody(Reader& r) noexcept;
 
 		[[nodiscard]] bool hasUnresolvedImports() const noexcept;
