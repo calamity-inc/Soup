@@ -183,68 +183,62 @@ int cli_wast(const std::string& file)
 				else if (type == "assert_malformed")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					auto& tmp = *shared_env.createScript();
-					SOUP_IF_UNLIKELY (tmp.load(fr))
+					WasmSharedEnvironment::ScriptRaii tmp(shared_env.createScript());
+					SOUP_IF_UNLIKELY (tmp->load(fr))
 					{
 						std::cout << "Did not fail to load malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
-						shared_env.markScriptAsNoLongerUsed(tmp);
 						goto _wast_next_cmd;
 					}
-					shared_env.markScriptAsNoLongerUsed(tmp);
 				}
 				else if (type == "assert_unlinkable")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					auto& tmp = *shared_env.createScript();
-					SOUP_IF_UNLIKELY(!tmp.load(fr))
+					WasmSharedEnvironment::ScriptRaii tmp(shared_env.createScript());
+					SOUP_IF_UNLIKELY(!tmp->load(fr))
 					{
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 						return 1;
 					}
-					tmp.provideImportedFunctions("spectest", spectest_functions);
-					tmp.provideImportedGlobals("spectest", spectest_globals);
-					tmp.provideImportedTables("spectest", spectest_tables);
-					tmp.provideImportedMemory("spectest", "memory", spectest_memory);
+					tmp->provideImportedFunctions("spectest", spectest_functions);
+					tmp->provideImportedGlobals("spectest", spectest_globals);
+					tmp->provideImportedTables("spectest", spectest_tables);
+					tmp->provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
-						tmp.importFromModule(mod.first, mod.second);
+						tmp->importFromModule(mod.first, mod.second);
 					}
-					SOUP_IF_UNLIKELY (!tmp.hasUnresolvedImports())
+					SOUP_IF_UNLIKELY (!tmp->hasUnresolvedImports())
 					{
 						std::cout << "Did not fail to link module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
-						shared_env.markScriptAsNoLongerUsed(tmp);
 						goto _wast_next_cmd;
 					}
-					shared_env.markScriptAsNoLongerUsed(tmp);
 				}
 				else if (type == "assert_uninstantiable")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					auto& tmp = *shared_env.createScript();
-					SOUP_IF_UNLIKELY (!tmp.load(fr))
+					WasmSharedEnvironment::ScriptRaii tmp(shared_env.createScript());
+					SOUP_IF_UNLIKELY (!tmp->load(fr))
 					{
 						std::cout << "Failed to load module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 						return 1;
 					}
-					tmp.provideImportedFunctions("spectest", spectest_functions);
-					tmp.provideImportedGlobals("spectest", spectest_globals);
-					tmp.provideImportedTables("spectest", spectest_tables);
-					tmp.provideImportedMemory("spectest", "memory", spectest_memory);
+					tmp->provideImportedFunctions("spectest", spectest_functions);
+					tmp->provideImportedGlobals("spectest", spectest_globals);
+					tmp->provideImportedTables("spectest", spectest_tables);
+					tmp->provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
-						tmp.importFromModule(mod.first, mod.second);
+						tmp->importFromModule(mod.first, mod.second);
 					}
-					SOUP_IF_UNLIKELY (tmp.hasUnresolvedImports())
+					SOUP_IF_UNLIKELY (tmp->hasUnresolvedImports())
 					{
 						std::cout << "Warning: Unresolved imports for module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 					}
-					SOUP_IF_UNLIKELY (tmp.instantiate())
+					SOUP_IF_UNLIKELY (tmp->instantiate())
 					{
 						std::cout << "Did not fail to instantiate malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
-						shared_env.markScriptAsNoLongerUsed(tmp);
 						goto _wast_next_cmd;
 					}
-					shared_env.markScriptAsNoLongerUsed(tmp);
 				}
 				else if (type == "assert_invalid")
 				{

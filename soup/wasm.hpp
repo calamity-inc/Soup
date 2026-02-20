@@ -414,6 +414,31 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] uint64_t createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] const FuncRef& getFuncRef(uint64_t value) const noexcept;
+
+		struct ScriptRaii
+		{
+			SharedPtr<WasmScript> spScript;
+
+			ScriptRaii(SharedPtr<WasmScript>&& spScript) noexcept
+				: spScript(std::move(spScript))
+			{
+			}
+
+			~ScriptRaii() noexcept
+			{
+				spScript->shared_env->markScriptAsNoLongerUsed(*spScript);
+			}
+
+			[[nodiscard]] WasmScript& operator*() const noexcept
+			{
+				return *spScript;
+			}
+
+			[[nodiscard]] WasmScript* operator->() const noexcept
+			{
+				return spScript.get();
+			}
+		};
 	};
 
 	struct WasmVm

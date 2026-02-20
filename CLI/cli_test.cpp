@@ -1838,12 +1838,12 @@ endif;)") == "");
 			//   (export "main" (func $main))
 			// )
 			WasmSharedEnvironment env;
-			auto& scr = *env.createScript();
-			assert(scr.load(base64::decode("AGFzbQEAAAABCgJgAX8Bf2AAAX8DAwIAAQQFAXABAQEFAwEAAQcIAQRtYWluAAEJBwEAQQALAQAKEwIHACAAQShqCwkAQQJBABEAAAsAMgRuYW1lAQ0CAAR0ZXN0AQRtYWluAggCAAEAATABAAQMAQAJRlVOQ1NJRyRpBgQBAAEw")));
-			assert(scr.instantiate());
-			auto code = scr.getExportedFuntion("main");
+			WasmSharedEnvironment::ScriptRaii scr(env.createScript());
+			assert(scr->load(base64::decode("AGFzbQEAAAABCgJgAX8Bf2AAAX8DAwIAAQQFAXABAQEFAwEAAQcIAQRtYWluAAEJBwEAQQALAQAKEwIHACAAQShqCwkAQQJBABEAAAsAMgRuYW1lAQ0CAAR0ZXN0AQRtYWluAggCAAEAATABAAQMAQAJRlVOQ1NJRyRpBgQBAAEw")));
+			assert(scr->instantiate());
+			auto code = scr->getExportedFuntion("main");
 			assert(code);
-			WasmVm vm(scr);
+			WasmVm vm(*scr);
 			assert(vm.run(*code));
 			assert(!vm.stack.empty());
 			assert(vm.stack.back().type == WASM_I32);
@@ -2005,26 +2005,26 @@ endif;)") == "");
 			//     )
 			//   )
 			WasmSharedEnvironment env;
-			auto& scr = *env.createScript();
-			assert(scr.load(base64::decode("AGFzbQEAAAABCAJgAAF/YAAAAwMCAAEGBgFwAdBwCwcTAgdpc19udWxsAAAFc2V0XzAAAQoOAgUAIwDRCwYA0gAkAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
-			assert(scr.instantiate());
-			auto is_null = scr.getExportedFuntion("is_null");
+			WasmSharedEnvironment::ScriptRaii scr(env.createScript());
+			assert(scr->load(base64::decode("AGFzbQEAAAABCAJgAAF/YAAAAwMCAAEGBgFwAdBwCwcTAgdpc19udWxsAAAFc2V0XzAAAQoOAgUAIwDRCwYA0gAkAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
+			assert(scr->instantiate());
+			auto is_null = scr->getExportedFuntion("is_null");
 			assert(is_null);
-			auto set_0 = scr.getExportedFuntion("set_0");
+			auto set_0 = scr->getExportedFuntion("set_0");
 			assert(set_0);
 			{
-				WasmVm vm(scr);
+				WasmVm vm(*scr);
 				assert(vm.run(*is_null));
 				assert(!vm.stack.empty());
 				assert(vm.stack.back().type == WASM_I32);
 				assert(vm.stack.back().i32);
 			}
 			{
-				WasmVm vm(scr);
+				WasmVm vm(*scr);
 				assert(vm.run(*set_0));
 			}
 			{
-				WasmVm vm(scr);
+				WasmVm vm(*scr);
 				assert(vm.run(*is_null));
 				assert(!vm.stack.empty());
 				assert(vm.stack.back().type == WASM_I32);
