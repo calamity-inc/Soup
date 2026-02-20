@@ -348,6 +348,7 @@ NAMESPACE_SOUP
 		WasmSharedEnvironment* shared_env = nullptr;
 		uint32_t start_func_idx = -1;
 		bool has_data_count_section = false;
+		bool has_created_funcrefs = false;
 
 		WasmScript() noexcept { /* default */ }
 		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env) {} // INTERNAL USAGE ONLY. WasmSharedEnvironment::createScript is for you!
@@ -409,6 +410,7 @@ NAMESPACE_SOUP
 		std::vector<FuncRef> funcrefs;
 
 		SharedPtr<WasmScript> createScript() SOUP_EXCAL;
+		void markScriptAsNoLongerUsed(WasmScript& scr) noexcept;
 
 		[[nodiscard]] uint64_t createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] const FuncRef& getFuncRef(uint64_t value) const noexcept;

@@ -187,8 +187,10 @@ int cli_wast(const std::string& file)
 					SOUP_IF_UNLIKELY (tmp.load(fr))
 					{
 						std::cout << "Did not fail to load malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+						shared_env.markScriptAsNoLongerUsed(tmp);
 						goto _wast_next_cmd;
 					}
+					shared_env.markScriptAsNoLongerUsed(tmp);
 				}
 				else if (type == "assert_unlinkable")
 				{
@@ -210,8 +212,10 @@ int cli_wast(const std::string& file)
 					SOUP_IF_UNLIKELY (!tmp.hasUnresolvedImports())
 					{
 						std::cout << "Did not fail to link module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+						shared_env.markScriptAsNoLongerUsed(tmp);
 						goto _wast_next_cmd;
 					}
+					shared_env.markScriptAsNoLongerUsed(tmp);
 				}
 				else if (type == "assert_uninstantiable")
 				{
@@ -237,8 +241,10 @@ int cli_wast(const std::string& file)
 					SOUP_IF_UNLIKELY (tmp.instantiate())
 					{
 						std::cout << "Did not fail to instantiate malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
+						shared_env.markScriptAsNoLongerUsed(tmp);
 						goto _wast_next_cmd;
 					}
+					shared_env.markScriptAsNoLongerUsed(tmp);
 				}
 				else if (type == "assert_invalid")
 				{

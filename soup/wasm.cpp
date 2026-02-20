@@ -2213,8 +2213,24 @@ NAMESPACE_SOUP
 		return scripts.emplace_back(soup::make_shared<WasmScript>(this));
 	}
 
+	void WasmSharedEnvironment::markScriptAsNoLongerUsed(WasmScript& scr) noexcept
+	{
+		if (!scr.has_created_funcrefs)
+		{
+			for (auto i = scripts.begin(); i != scripts.end(); ++i)
+			{
+				if (*i == &scr)
+				{
+					scripts.erase(i);
+					break;
+				}
+			}
+		}
+	}
+
 	uint64_t WasmSharedEnvironment::createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL
 	{
+		scr.has_created_funcrefs = true;
 		funcrefs.emplace_back(FuncRef{ &scr, func_index });
 		return funcrefs.size();
 	}
