@@ -117,6 +117,36 @@ NAMESPACE_SOUP
 
 	struct WasmScript
 	{
+		struct DataSegment
+		{
+			uint32_t memidx;
+#if SOUP_WASM_EXTENDED_CONST
+			std::string base;
+#else
+			uint8_t base[12];
+#endif
+			std::string data;
+
+			[[nodiscard]] bool isPassive() const noexcept { return memidx == -1; }
+		};
+
+		struct ElemSegment
+		{
+			const WasmType type;
+			uint8_t flags;
+#if !SOUP_WASM_EXTENDED_CONST
+			uint8_t base[10];
+#endif
+			uint32_t tblidx;
+#if SOUP_WASM_EXTENDED_CONST
+			std::string base;
+#endif
+			std::vector<uint64_t> values;
+
+			[[nodiscard]] bool isActive() const noexcept { return (flags & 1) == 0; }
+			[[nodiscard]] bool isPassive() const noexcept { return !isActive() && (flags & 2) == 0; }
+		};
+
 		struct Memory
 		{
 			uint8_t* data;
@@ -179,6 +209,48 @@ NAMESPACE_SOUP
 			size_t grow(size_t delta_pages) noexcept;
 		};
 
+		struct Table
+		{
+			const WasmType type;
+#if SOUP_WASM_MEMORY64
+			bool table64 = false;
+#else
+			uint32_t limit;
+#endif
+			std::vector<uint64_t> values;
+#if SOUP_WASM_MEMORY64
+			uint64_t limit;
+#endif
+
+			Table(WasmType type, wasm_uptr_t init_size = 0, wasm_uptr_t max_size = 0x10'000, bool _64bit = false) noexcept
+				: type(type)
+#if SOUP_WASM_MEMORY64
+				, table64(_64bit)
+#endif
+				, limit(max_size)
+			{
+				while (init_size != values.size())
+				{
+					values.emplace_back();
+				}
+			}
+
+			[[nodiscard]] WasmType getAddrType() const noexcept
+			{
+#if SOUP_WASM_MEMORY64
+				if (table64)
+				{
+					return WASM_I64;
+				}
+#endif
+				return WASM_I32;
+			}
+
+			size_t grow(size_t delta, int64_t value = 0) SOUP_EXCAL;
+			bool init(WasmScript& scr, const ElemSegment& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
+			bool copy(const Table& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
+		};
+
 		struct FunctionImport
 		{
 			std::string module_name;
@@ -235,8 +307,6 @@ NAMESPACE_SOUP
 			bool mut;
 		};
 
-		struct Table;
-
 		struct TableImport : public Import
 		{
 			WasmType type;
@@ -253,95 +323,23 @@ NAMESPACE_SOUP
 			uint32_t index;
 		};
 
-		struct DataSegment
-		{
-			uint32_t memidx;
-#if SOUP_WASM_EXTENDED_CONST
-			std::string base;
-#else
-			uint8_t base[12];
-#endif
-			std::string data;
-
-			[[nodiscard]] bool isPassive() const noexcept { return memidx == -1; }
-		};
-
-		struct ElemSegment
-		{
-			const WasmType type;
-			uint8_t flags;
-#if !SOUP_WASM_EXTENDED_CONST
-			uint8_t base[10];
-#endif
-			uint32_t tblidx;
-#if SOUP_WASM_EXTENDED_CONST
-			std::string base;
-#endif
-			std::vector<uint64_t> values;
-
-			[[nodiscard]] bool isActive() const noexcept { return (flags & 1) == 0; }
-			[[nodiscard]] bool isPassive() const noexcept { return !isActive() && (flags & 2) == 0; }
-		};
-
-		struct Table
-		{
-			const WasmType type;
-#if SOUP_WASM_MEMORY64
-			bool table64 = false;
-#else
-			uint32_t limit;
-#endif
-			std::vector<uint64_t> values;
-#if SOUP_WASM_MEMORY64
-			uint64_t limit;
-#endif
-
-			Table(WasmType type, wasm_uptr_t init_size = 0, wasm_uptr_t max_size = 0x10'000, bool _64bit = false) noexcept
-				: type(type)
-#if SOUP_WASM_MEMORY64
-				, table64(_64bit)
-#endif
-				, limit(max_size)
-			{
-				while (init_size != values.size())
-				{
-					values.emplace_back();
-				}
-			}
-
-			[[nodiscard]] WasmType getAddrType() const noexcept
-			{
-#if SOUP_WASM_MEMORY64
-				if (table64)
-				{
-					return WASM_I64;
-				}
-#endif
-				return WASM_I32;
-			}
-
-			size_t grow(size_t delta, int64_t value = 0) SOUP_EXCAL;
-			bool init(WasmScript& scr, const ElemSegment& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
-			bool copy(const Table& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
-		};
-
-#if SOUP_WASM_MULTI_MEMORY
-		std::vector<SharedPtr<Memory>> memories;
-		std::vector<MemoryImport> memory_imports;
-#else
-		SharedPtr<Memory> memory;
-		Optional<MemoryImport> memory_import;
-#endif
-		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
-		std::vector<WasmFunctionType> types{};
 		std::vector<FunctionImport> function_imports{};
 		std::vector<GlobalImport> global_imports{};
-		std::vector<SharedPtr<WasmValue>> globals{};
+		std::vector<TableImport> table_imports{};
+#if SOUP_WASM_MULTI_MEMORY
+		std::vector<MemoryImport> memory_imports;
+		std::vector<SharedPtr<Memory>> memories;
+#else
+		Optional<MemoryImport> memory_import;
+		SharedPtr<Memory> memory;
+#endif
 		std::unordered_map<std::string, Export> export_map{};
+		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
+		std::vector<WasmFunctionType> types{};
+		std::vector<SharedPtr<WasmValue>> globals{};
 		std::vector<std::string> code{};
 		std::unordered_map<uint64_t, std::vector<uint32_t>> _internal_branch_hints{};
 		std::vector<SharedPtr<Table>> tables{};
-		std::vector<TableImport> table_imports{};
 		std::vector<DataSegment> data_segments{};
 		std::vector<ElemSegment> elem_segments{};
 		StructMap custom_data;

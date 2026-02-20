@@ -342,69 +342,6 @@ NAMESPACE_SOUP
 		return old_size_pages;
 	}
 
-	// WasmScript::MemoryImport
-
-	bool WasmScript::MemoryImport::isCompatibleWith(const Memory& mem) const noexcept
-	{
-#if SOUP_WASM_MEMORY64
-		if ((bool)memory64 != (bool)mem.memory64)
-		{
-#if DEBUG_LOAD
-			std::cout << "type mismatch for memory " << module_name << ":" << field_name << " - export addr type " << wasm_type_to_string(mem.getAddrType()) << "; import addr type " << wasm_type_to_string(memory64 ? WASM_I64 : WASM_I32) << "\n";
-#endif
-			return false;
-		}
-#endif
-		if (min_pages > (mem.size / 0x10'000))
-		{
-			return false;
-		}
-		if (max_pages != 0x10'000) // Import has a page limit?
-		{
-			if (mem.page_limit == 0x10'000) // Memory has no page limit?
-			{
-				return false;
-			}
-			if (max_pages < mem.page_limit)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	// WasmScript::TableImport
-
-	bool WasmScript::TableImport::isCompatibleWith(const Table& tbl) const noexcept
-	{
-		if (type != tbl.type)
-		{
-			return false;
-		}
-#if SOUP_WASM_MEMORY64
-		if (table64 != tbl.table64)
-		{
-			return false;
-		}
-#endif
-		if (min_size > tbl.values.size())
-		{
-			return false;
-		}
-		if (max_size != 0x10'000) // Import has a size limit?
-		{
-			if (tbl.limit == 0x10'000) // Table has no size limit?
-			{
-				return false;
-			}
-			if (max_size < tbl.limit)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
 	// WasmScript::Table
 
 	size_t WasmScript::Table::grow(size_t delta, int64_t value) SOUP_EXCAL
@@ -491,6 +428,69 @@ NAMESPACE_SOUP
 			while (size--)
 			{
 				this->values[dst_offset++] = src.values[src_offset++];
+			}
+		}
+		return true;
+	}
+
+	// WasmScript::MemoryImport
+
+	bool WasmScript::MemoryImport::isCompatibleWith(const Memory& mem) const noexcept
+	{
+#if SOUP_WASM_MEMORY64
+		if ((bool)memory64 != (bool)mem.memory64)
+		{
+#if DEBUG_LOAD
+			std::cout << "type mismatch for memory " << module_name << ":" << field_name << " - export addr type " << wasm_type_to_string(mem.getAddrType()) << "; import addr type " << wasm_type_to_string(memory64 ? WASM_I64 : WASM_I32) << "\n";
+#endif
+			return false;
+		}
+#endif
+		if (min_pages > (mem.size / 0x10'000))
+		{
+			return false;
+		}
+		if (max_pages != 0x10'000) // Import has a page limit?
+		{
+			if (mem.page_limit == 0x10'000) // Memory has no page limit?
+			{
+				return false;
+			}
+			if (max_pages < mem.page_limit)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// WasmScript::TableImport
+
+	bool WasmScript::TableImport::isCompatibleWith(const Table& tbl) const noexcept
+	{
+		if (type != tbl.type)
+		{
+			return false;
+		}
+#if SOUP_WASM_MEMORY64
+		if (table64 != tbl.table64)
+		{
+			return false;
+		}
+#endif
+		if (min_size > tbl.values.size())
+		{
+			return false;
+		}
+		if (max_size != 0x10'000) // Import has a size limit?
+		{
+			if (tbl.limit == 0x10'000) // Table has no size limit?
+			{
+				return false;
+			}
+			if (max_size < tbl.limit)
+			{
+				return false;
 			}
 		}
 		return true;
