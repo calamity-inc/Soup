@@ -453,6 +453,8 @@ NAMESPACE_SOUP
 		// May throw if an imported C++ function throws.
 		bool run(const std::string& data, unsigned depth = 0, uint32_t func_index = -1);
 		bool run(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
+		bool processLocalDecls(Reader& r) SOUP_EXCAL;
+		bool runCode(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
 
 		struct CtrlFlowEntry
 		{

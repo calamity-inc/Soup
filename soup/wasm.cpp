@@ -1243,10 +1243,9 @@ NAMESPACE_SOUP
 #if SOUP_WASM_EXTENDED_CONST
 	bool WasmScript::evaluateExtendedConstantExpression(std::string&& code, WasmValue& out) noexcept
 	{
-		code.insert(0, 1, '\0'); // local decl count
 		MemoryRefReader r(code);
 		WasmVm vm(*this);
-		SOUP_RETHROW_FALSE(vm.run(r, 0, -1));
+		SOUP_RETHROW_FALSE(vm.runCode(r, 0, -1));
 		SOUP_RETHROW_FALSE(vm.stack.size() == 1);
 		out = vm.stack.back();
 		code.clear();
@@ -1601,12 +1600,12 @@ NAMESPACE_SOUP
 
 		if (custom_data.isStructInMap(WasmInternalStartCode))
 		{
-			custom_data.getStructFromMapConst(WasmInternalStartCode).insert(0, 1, '\0'); // local decl count
 #if DEBUG_LOAD
 			std::cout << "instantiate: initialising globals by running " << string::bin2hex(custom_data.getStructFromMapConst(WasmInternalStartCode)) << "\n";
 #endif
 			WasmVm vm(*this);
-			SOUP_RETHROW_FALSE(vm.run(custom_data.getStructFromMapConst(WasmInternalStartCode)));
+			MemoryRefReader r(custom_data.getStructFromMapConst(WasmInternalStartCode));
+			SOUP_RETHROW_FALSE(vm.runCode(r));
 			custom_data.removeStructFromMap(WasmInternalStartCode);
 		}
 
@@ -2248,6 +2247,30 @@ NAMESPACE_SOUP
 		return run(r, depth, func_index);
 	}
 
+	bool WasmVm::run(Reader& r, unsigned depth, uint32_t func_index)
+	{
+		SOUP_RETHROW_FALSE(processLocalDecls(r));
+		return runCode(r, depth, func_index);
+	}
+
+	bool WasmVm::processLocalDecls(Reader& r) SOUP_EXCAL
+	{
+		uint32_t local_decl_count;
+		WASM_READ_OML(local_decl_count);
+		while (local_decl_count--)
+		{
+			uint32_t type_count;
+			WASM_READ_OML(type_count);
+			uint8_t type;
+			r.u8(type);
+			while (type_count--)
+			{
+				locals.emplace_back(static_cast<WasmType>(type));
+			}
+		}
+		return true;
+	}
+
 #if DEBUG_VM
 #define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { /*__debugbreak();*/ std::cout << "Insufficient values on stack\n"; return false; }
 #else
@@ -2271,22 +2294,8 @@ NAMESPACE_SOUP
 	static constexpr double F64_U64_MIN = -0.9999999999999999;
 	static constexpr double F64_U64_MAX = 18446744073709550000.0;
 
-	bool WasmVm::run(Reader& r, unsigned depth, uint32_t func_index)
+	bool WasmVm::runCode(Reader& r, unsigned depth, uint32_t func_index)
 	{
-		uint32_t local_decl_count;
-		WASM_READ_OML(local_decl_count);
-		while (local_decl_count--)
-		{
-			uint32_t type_count;
-			WASM_READ_OML(type_count);
-			uint8_t type;
-			r.u8(type);
-			while (type_count--)
-			{
-				locals.emplace_back(static_cast<WasmType>(type));
-			}
-		}
-
 		std::stack<CtrlFlowEntry> ctrlflow{};
 
 		uint8_t op;
