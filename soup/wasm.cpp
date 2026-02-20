@@ -5347,7 +5347,7 @@ NAMESPACE_SOUP
 			uint32_t func_type_index = script->getTypeIndexForFunction(function_index);
 			if (type_index != func_type_index)
 			{
-				const auto& type = script->types[type_index];
+				const auto& type = this->script.types[type_index];
 #if false // already checked at load
 				SOUP_IF_UNLIKELY (func_type_index >= script->types.size())
 				{
@@ -5380,7 +5380,7 @@ NAMESPACE_SOUP
 #endif
 			if (imp.ptr)
 			{
-				const auto& type = script->types[type_index];
+				const auto& type = this->script.types[type_index];
 				imp.ptr(*this, function_index, type);
 				return true;
 			}
@@ -5393,7 +5393,6 @@ NAMESPACE_SOUP
 			}
 
 			script = imp.source.get();
-			type_index = imp.source->getTypeIndexForFunction(imp.func_index);
 			function_index = imp.func_index;
 			goto _doCall_other_script;
 		}
@@ -5405,7 +5404,7 @@ NAMESPACE_SOUP
 #endif
 			return false;
 		}
-		const auto& type = script->types[type_index];
+		const auto& type = this->script.types[type_index];
 
 		WasmVm callvm(*script);
 		for (uint32_t i = 0; i != type.parameters.size(); ++i)
