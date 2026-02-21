@@ -355,12 +355,13 @@ NAMESPACE_SOUP
 		StructMap custom_data;
 		WasmSharedEnvironment* shared_env = nullptr;
 		uint32_t start_func_idx = -1;
-		bool has_data_count_section = false;
-		bool has_created_funcrefs = false;
+		uint32_t ref_count : 30;
+		uint32_t has_data_count_section : 1;
+		uint32_t has_created_funcrefs : 1;
 
-		WasmScript() noexcept { /* default */ }
+		WasmScript() noexcept : ref_count(0), has_data_count_section(0), has_created_funcrefs(0) {}
 	protected:
-		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env) {}
+		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env), ref_count(0), has_data_count_section(0), has_created_funcrefs(0) {}
 		friend WasmSharedEnvironment;
 	public:
 		WasmScript(WasmScript&&) noexcept = default;
@@ -454,11 +455,15 @@ NAMESPACE_SOUP
 			ScriptRaii(WasmScript& script) noexcept
 				: script(script)
 			{
+				++script.ref_count;
 			}
 
 			~ScriptRaii() noexcept
 			{
-				script.shared_env->markScriptAsNoLongerUsed(script);
+				if (--script.ref_count == 0)
+				{
+					script.shared_env->markScriptAsNoLongerUsed(script);
+				}
 			}
 
 			[[nodiscard]] WasmScript& operator*() const noexcept
