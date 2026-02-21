@@ -65,7 +65,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] std::string toString() const SOUP_EXCAL;
 	};
 
-	using wasm_ffi_func_t = void(*)(WasmVm&, uint32_t func_index, const WasmFunctionType&);
+	using wasm_ffi_func_t = void(*)(WasmVm&, uint32_t user_data, const WasmFunctionType&);
 
 	struct WasmValue
 	{
@@ -259,7 +259,16 @@ NAMESPACE_SOUP
 			wasm_ffi_func_t ptr;
 			SharedPtr<WasmScript> source;
 			uint32_t type_index; // an index in WasmScript::types of the importing WasmScript
-			uint32_t func_index; // to be used with `source` for WASM imports
+			union
+			{
+				uint32_t func_index; // to be used with `source` for WASM imports
+				uint32_t user_data;
+			};
+
+			FunctionImport(std::string&& module_name, std::string&& function_name, uint32_t type_index)
+				: module_name(std::move(module_name)), function_name(std::move(function_name)), ptr(nullptr), type_index(), func_index(-1)
+			{
+			}
 		};
 
 		enum ImportExportKind : uint8_t
@@ -365,7 +374,7 @@ NAMESPACE_SOUP
 		bool validateFunctionBody(Reader& r) noexcept;
 
 		[[nodiscard]] bool hasUnresolvedImports() const noexcept;
-		void provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr) noexcept;
+		void provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr, uint32_t user_data = 0) noexcept;
 		void provideImportedFunctions(const std::string& module_name, const std::unordered_map<std::string, wasm_ffi_func_t>& map) noexcept;
 		void provideImportedGlobal(const std::string& module_name, const std::string& field_name, SharedPtr<WasmValue> value) noexcept;
 		void provideImportedGlobals(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<WasmValue>>& map) noexcept;
@@ -400,8 +409,28 @@ NAMESPACE_SOUP
 	{
 		struct FuncRef
 		{
-			WasmScript* source;
+			union
+			{
+				WasmScript* source;
+				//wasm_ffi_func_t ptr;
+			};
 			uint32_t index;
+			//uint32_t user_data;
+
+			FuncRef(WasmScript* source, uint32_t index)
+				: source(source), index(index)//, user_data(0)
+			{
+			}
+
+			/*FuncRef(wasm_ffi_func_t ptr, uint32_t user_data)
+				: ptr(ptr), index(-1), user_data(user_data)
+			{
+			}
+
+			[[nodiscard]] bool isC() const noexcept
+			{
+				return index == -1;
+			}*/
 		};
 
 		std::vector<SharedPtr<WasmScript>> scripts;
@@ -410,6 +439,7 @@ NAMESPACE_SOUP
 		SharedPtr<WasmScript> createScript() SOUP_EXCAL;
 		void markScriptAsNoLongerUsed(WasmScript& scr) noexcept;
 
+		//[[nodiscard]] uint64_t createFuncRef(wasm_ffi_func_t ptr, uint32_t user_data = 0) SOUP_EXCAL;
 		[[nodiscard]] uint64_t createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] const FuncRef& getFuncRef(uint64_t value) const noexcept;
 

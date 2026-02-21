@@ -1779,15 +1779,16 @@ endif;)") == "");
 			WasmScript scr;
 			assert(scr.load(base64::decode("AGFzbQEAAAABDAJgAn9/AX9gAX8BfwINAQVpbmRleANhZGQAAAMCAQEFAwEAAAcTAgZhZGRUd28AAQZtZW1vcnkCAAoKAQgAIABBAhAACwA6BG5hbWUBGgIACWluZGV4L2FkZAEMaW5kZXgvYWRkVHdvAggCAAABAQABMAQHAgABMAEBMQYEAQABMA==")));
 			assert(scr.hasUnresolvedImports());
-			scr.provideImportedFunction("index", "add", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType& type)
+			scr.provideImportedFunction("index", "add", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType& type)
 			{
 				assert(type.parameters.size() == 2);
 				assert(type.results.size() == 1);
+				assert(user_data == 1337);
 
 				auto b = vm.stack.back(); vm.stack.pop_back();
 				auto a = vm.stack.back(); vm.stack.pop_back();
 				vm.stack.emplace_back(a.i32 + b.i32);
-			});
+			}, 1337);
 			assert(!scr.hasUnresolvedImports());
 			assert(scr.instantiate());
 			auto code = scr.getExportedFuntion("addTwo");

@@ -676,7 +676,7 @@ NAMESPACE_SOUP
 						{
 							uint32_t type_index; WASM_READ_OML(type_index);
 							SOUP_RETHROW_FALSE(type_index < types.size());
-							function_imports.emplace_back(FunctionImport{ std::move(module_name), std::move(field_name), nullptr, {}, type_index, (uint32_t)-1 });
+							function_imports.emplace_back(std::move(module_name), std::move(field_name), type_index);
 						}
 						else if (kind == IE_kTable)
 						{
@@ -1322,7 +1322,7 @@ NAMESPACE_SOUP
 		return false;
 	}
 
-	void WasmScript::provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr) noexcept
+	void WasmScript::provideImportedFunction(const std::string& module_name, const std::string& function_name, wasm_ffi_func_t ptr, uint32_t user_data) noexcept
 	{
 		for (auto& fi : function_imports)
 		{
@@ -1331,6 +1331,7 @@ NAMESPACE_SOUP
 				)
 			{
 				fi.ptr = ptr;
+				fi.user_data = user_data;
 				// Function may be imported multiple times so not breaking
 			}
 		}
@@ -1765,7 +1766,7 @@ NAMESPACE_SOUP
 		//   - https://github.com/tyfkda/xcc/blob/main/libsrc/_wasm/wasi.h
 		//   - https://github.com/tyfkda/xcc/blob/main/libsrc/_wasm/crt0/_start.c#L41
 
-		provideImportedFunction("wasi_snapshot_preview1", "args_sizes_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "args_sizes_get", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(2);
 			auto plen = vm.stack.back().i32; vm.stack.pop_back();
@@ -1785,7 +1786,7 @@ NAMESPACE_SOUP
 			}
 			vm.stack.emplace_back(WASI_ERRNO_SUCCESS);
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "args_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "args_get", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(2);
 			auto pstr = vm.stack.back().i32; vm.stack.pop_back();
@@ -1803,7 +1804,7 @@ NAMESPACE_SOUP
 			vm.script.getMemoryByIndex(0)->write(pstr, argstr.data(), argstr.size());
 			vm.stack.emplace_back(WASI_ERRNO_SUCCESS);
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "environ_sizes_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "environ_sizes_get", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(2);
 			auto out_environ_buf_size = vm.stack.back().i32; vm.stack.pop_back();
@@ -1818,13 +1819,13 @@ NAMESPACE_SOUP
 			}
 			vm.stack.emplace_back(WASI_ERRNO_SUCCESS);
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "proc_exit", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "proc_exit", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(1);
 			auto code = vm.stack.back().i32; vm.stack.pop_back();
 			exit(code);
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_prestat_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_prestat_get", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(2);
 			auto prestat = vm.stack.back().i32; vm.stack.pop_back();
@@ -1849,7 +1850,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_prestat_dir_name", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_prestat_dir_name", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(3);
 			auto path_len = vm.stack.back().i32; vm.stack.pop_back();
@@ -1872,7 +1873,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_filestat_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_filestat_get", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(2);
 			auto out = vm.stack.back().i32; vm.stack.pop_back();
@@ -1880,7 +1881,7 @@ NAMESPACE_SOUP
 			SOUP_UNUSED(out);
 			vm.stack.emplace_back(fd < 3 ? WASI_ERRNO_SUCCESS : WASI_ERRNO_BADF);
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_fdstat_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_fdstat_get", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(2);
 			auto out = vm.stack.back().i32; vm.stack.pop_back(); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L945
@@ -1913,7 +1914,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "path_filestat_get", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "path_filestat_get", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(5);
 			auto buf = vm.stack.back().i32; vm.stack.pop_back(); // https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L1064
@@ -1946,7 +1947,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "path_open", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "path_open", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(8);
 			auto out_fd = vm.stack.back().i32; vm.stack.pop_back();
@@ -1989,7 +1990,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_seek", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_seek", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(4);
 			auto out_off = vm.stack.back().i32; vm.stack.pop_back();
@@ -2018,7 +2019,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_read", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_read", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(4);
 			auto out_nread = vm.stack.back().i32; vm.stack.pop_back();
@@ -2075,7 +2076,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_write", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_write", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(4);
 			auto out_nwritten = vm.stack.back().i32; vm.stack.pop_back();
@@ -2129,7 +2130,7 @@ NAMESPACE_SOUP
 				vm.stack.emplace_back(WASI_ERRNO_BADF);
 			}
 		});
-		provideImportedFunction("wasi_snapshot_preview1", "fd_close", [](WasmVm& vm, uint32_t func_index, const WasmFunctionType&)
+		provideImportedFunction("wasi_snapshot_preview1", "fd_close", [](WasmVm& vm, uint32_t user_data, const WasmFunctionType&)
 		{
 			API_CHECK_STACK(1);
 			auto fd = vm.stack.back().i32; vm.stack.pop_back();
@@ -2163,7 +2164,7 @@ NAMESPACE_SOUP
 #endif
 				WasmVm vm(*this);
 				vm.stack = std::move(args);
-				imp.ptr(vm, func_index, script->types[imp.type_index]);
+				imp.ptr(vm, imp.user_data, script->types[imp.type_index]);
 				if (out)
 				{
 					*out = std::move(vm.stack);
@@ -2227,10 +2228,16 @@ NAMESPACE_SOUP
 		}
 	}
 
+	/*uint64_t WasmSharedEnvironment::createFuncRef(wasm_ffi_func_t ptr, uint32_t user_data)
+	{
+		funcrefs.emplace_back(ptr, user_data);
+		return funcrefs.size();
+	}*/
+
 	uint64_t WasmSharedEnvironment::createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL
 	{
 		scr.has_created_funcrefs = true;
-		funcrefs.emplace_back(FuncRef{ &scr, func_index });
+		funcrefs.emplace_back(&scr, func_index);
 		return funcrefs.size();
 	}
 
@@ -2528,7 +2535,14 @@ NAMESPACE_SOUP
 						return false;
 					}
 					const auto& funcref = script.shared_env->getFuncRef(table->values[element_index]);
-					SOUP_RETHROW_FALSE(doCall(funcref.source, type_index, funcref.index, depth));
+					/*SOUP_IF_UNLIKELY (funcref.isC())
+					{
+						funcref.ptr(*this, funcref.user_data, script.types[type_index]);
+					}
+					else*/
+					{
+						SOUP_RETHROW_FALSE(doCall(funcref.source, type_index, funcref.index, depth));
+					}
 				}
 				break;
 
@@ -5487,7 +5501,7 @@ NAMESPACE_SOUP
 			if (imp.ptr)
 			{
 				const auto& type = this->script.types[type_index];
-				imp.ptr(*this, function_index, type);
+				imp.ptr(*this, imp.user_data, type);
 				return true;
 			}
 			SOUP_IF_UNLIKELY (!imp.source)
