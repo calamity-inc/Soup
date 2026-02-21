@@ -1326,7 +1326,7 @@ NAMESPACE_SOUP
 	{
 		for (auto& fi : function_imports)
 		{
-			if (fi.function_name == function_name
+			if (fi.field_name == function_name
 				&& fi.module_name == module_name
 				)
 			{
@@ -1343,7 +1343,7 @@ NAMESPACE_SOUP
 		{
 			if (fi.module_name == module_name)
 			{
-				if (auto e = map.find(fi.function_name); e != map.end())
+				if (auto e = map.find(fi.field_name); e != map.end())
 				{
 					fi.ptr = e->second;
 				}
@@ -1435,7 +1435,7 @@ NAMESPACE_SOUP
 		{
 			if (fi.module_name == module_name)
 			{
-				if (auto e = other.export_map.find(fi.function_name); e != other.export_map.end())
+				if (auto e = other.export_map.find(fi.field_name); e != other.export_map.end())
 				{
 					if (e->second.kind == IE_kFunction
 						&& e->second.index < other.functions.size()
@@ -1444,7 +1444,7 @@ NAMESPACE_SOUP
 						auto& import_type = types[fi.type_index];
 						auto& export_type = other.types[other.getTypeIndexForFunction(e->second.index)];
 #if DEBUG_LINK
-						std::cout << "importing " << fi.module_name << ":" << fi.function_name << " as " << import_type.toString() << " from " << export_type.toString() << "\n";
+						std::cout << "importing " << fi.module_name << ":" << fi.field_name << " as " << import_type.toString() << " from " << export_type.toString() << "\n";
 #endif
 						if (import_type == export_type)
 						{
@@ -2150,7 +2150,7 @@ NAMESPACE_SOUP
 		{
 			const auto& imp = script->function_imports[func_index];
 #if DEBUG_LOAD || DEBUG_API
-			std::cout << "Calling into " << imp.module_name << ":" << imp.function_name << "\n";
+			std::cout << "Calling into " << imp.module_name << ":" << imp.field_name << "\n";
 #endif
 			if (imp.ptr)
 			{
@@ -5505,7 +5505,7 @@ NAMESPACE_SOUP
 		{
 			const auto& imp = script->function_imports[function_index];
 #if DEBUG_VM || DEBUG_API
-			std::cout << "Calling into " << imp.module_name << ":" << imp.function_name << "\n";
+			std::cout << "Calling into " << imp.module_name << ":" << imp.field_name << "\n";
 #endif
 			if (imp.ptr)
 			{

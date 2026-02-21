@@ -252,11 +252,14 @@ NAMESPACE_SOUP
 			bool copy(const Table& src, size_t dst_offset, size_t src_offset, size_t size) noexcept;
 		};
 
-		struct FunctionImport
+		struct Import
 		{
 			std::string module_name;
-			std::string function_name;
+			std::string field_name;
+		};
 
+		struct FunctionImport : public Import
+		{
 			wasm_ffi_func_t ptr;
 			WasmScript* source;
 			uint32_t type_index; // an index in WasmScript::types of the importing WasmScript
@@ -267,23 +270,9 @@ NAMESPACE_SOUP
 			};
 
 			FunctionImport(std::string&& module_name, std::string&& function_name, uint32_t type_index)
-				: module_name(std::move(module_name)), function_name(std::move(function_name)), ptr(nullptr), source(nullptr), type_index(), func_index(-1)
+				: Import{ std::move(module_name), std::move(function_name) }, ptr(nullptr), source(nullptr), type_index(), func_index(-1)
 			{
 			}
-		};
-
-		enum ImportExportKind : uint8_t
-		{
-			IE_kFunction = 0,
-			IE_kTable = 1,
-			IE_kMemory = 2,
-			IE_kGlobal = 3,
-		};
-
-		struct Import
-		{
-			std::string module_name;
-			std::string field_name;
 		};
 
 		struct MemoryImport : public Import
@@ -325,6 +314,14 @@ NAMESPACE_SOUP
 			wasm_uptr_t max_size;
 
 			[[nodiscard]] bool isCompatibleWith(const Table& tbl) const noexcept;
+		};
+
+		enum ImportExportKind : uint8_t
+		{
+			IE_kFunction = 0,
+			IE_kTable = 1,
+			IE_kMemory = 2,
+			IE_kGlobal = 3,
 		};
 
 		struct Export
