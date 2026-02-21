@@ -135,9 +135,9 @@ int cli_wast(const std::string& file)
 		const auto spectest_memory = soup::make_shared<WasmScript::Memory>(1, 2, false);
 
 		WasmSharedEnvironment shared_env;
-		SharedPtr<WasmScript> scr = shared_env.createScript();
-		std::unordered_map<std::string, SharedPtr<WasmScript>> named_modules;
-		std::vector<std::pair<std::string, SharedPtr<WasmScript>>> registered_module;
+		WasmScript* scr = &shared_env.createScript();
+		std::unordered_map<std::string, WasmScript*> named_modules;
+		std::vector<std::pair<std::string, WasmScript*>> registered_module;
 		try
 		{
 			for (const auto& cmd_entry : jr->asObj().at("commands").asArr())
@@ -147,7 +147,7 @@ int cli_wast(const std::string& file)
 				if (type == "module")
 				{
 					FileReader fr(cmd.at("filename").asStr());
-					scr = shared_env.createScript();
+					scr = &shared_env.createScript();
 					//std::cout << "Loading " << cmd.at("filename").asStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
 					SOUP_IF_UNLIKELY (!scr->load(fr))
 					{
@@ -160,7 +160,7 @@ int cli_wast(const std::string& file)
 					scr->provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
-						scr->importFromModule(mod.first, mod.second);
+						scr->importFromModule(mod.first, *mod.second);
 					}
 					SOUP_IF_UNLIKELY (scr->hasUnresolvedImports())
 					{
@@ -205,7 +205,7 @@ int cli_wast(const std::string& file)
 					tmp->provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
-						tmp->importFromModule(mod.first, mod.second);
+						tmp->importFromModule(mod.first, *mod.second);
 					}
 					SOUP_IF_UNLIKELY (!tmp->hasUnresolvedImports())
 					{
@@ -228,7 +228,7 @@ int cli_wast(const std::string& file)
 					tmp->provideImportedMemory("spectest", "memory", spectest_memory);
 					for (const auto& mod : registered_module)
 					{
-						tmp->importFromModule(mod.first, mod.second);
+						tmp->importFromModule(mod.first, *mod.second);
 					}
 					SOUP_IF_UNLIKELY (tmp->hasUnresolvedImports())
 					{
@@ -250,10 +250,10 @@ int cli_wast(const std::string& file)
 					if (cmd.contains("action"))
 					{
 						const auto& action = cmd.at("action").asObj();
-						WasmScript* action_scr = scr.get();
+						WasmScript* action_scr = scr;
 						if (action.contains("module"))
 						{
-							action_scr = named_modules.at(action.at("module").asStr().value).get();
+							action_scr = named_modules.at(action.at("module").asStr().value);
 						}
 						if (action.at("type").asStr() == "invoke")
 						{

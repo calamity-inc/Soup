@@ -1429,26 +1429,26 @@ NAMESPACE_SOUP
 #endif
 	}
 
-	void WasmScript::importFromModule(const std::string& module_name, SharedPtr<WasmScript> other) noexcept
+	void WasmScript::importFromModule(const std::string& module_name, WasmScript& other) noexcept
 	{
 		for (auto& fi : function_imports)
 		{
 			if (fi.module_name == module_name)
 			{
-				if (auto e = other->export_map.find(fi.function_name); e != other->export_map.end())
+				if (auto e = other.export_map.find(fi.function_name); e != other.export_map.end())
 				{
 					if (e->second.kind == IE_kFunction
-						&& e->second.index < other->functions.size()
+						&& e->second.index < other.functions.size()
 						)
 					{
 						auto& import_type = types[fi.type_index];
-						auto& export_type = other->types[other->getTypeIndexForFunction(e->second.index)];
+						auto& export_type = other.types[other.getTypeIndexForFunction(e->second.index)];
 #if DEBUG_LINK
 						std::cout << "importing " << fi.module_name << ":" << fi.function_name << " as " << import_type.toString() << " from " << export_type.toString() << "\n";
 #endif
 						if (import_type == export_type)
 						{
-							fi.source = other;
+							fi.source = &other;
 							fi.func_index = e->second.index;
 						}
 					}
@@ -1460,21 +1460,21 @@ NAMESPACE_SOUP
 			const auto& gi = global_imports[i];
 			if (gi.module_name == module_name)
 			{
-				if (auto e = other->export_map.find(gi.field_name); e != other->export_map.end())
+				if (auto e = other.export_map.find(gi.field_name); e != other.export_map.end())
 				{
 					if (e->second.kind == IE_kGlobal
-						&& e->second.index < other->globals.size()
-						&& other->globals[e->second.index]
+						&& e->second.index < other.globals.size()
+						&& other.globals[e->second.index]
 						)
 					{
-						if (other->globals[e->second.index]->type == gi.type && other->globals[e->second.index]->mut == gi.mut)
+						if (other.globals[e->second.index]->type == gi.type && other.globals[e->second.index]->mut == gi.mut)
 						{
-							globals[i] = other->globals[e->second.index];
+							globals[i] = other.globals[e->second.index];
 						}
 #if DEBUG_LINK
 						else
 						{
-							std::cout << "type mismatch for global " << gi.module_name << ":" << gi.field_name << ": export is " << (other->globals[e->second.index]->mut ? "mut " : "") << wasm_type_to_string(other->globals[e->second.index]->type) << "; import is " << (gi.mut ? "mut " : "") << wasm_type_to_string(gi.type) << "\n";
+							std::cout << "type mismatch for global " << gi.module_name << ":" << gi.field_name << ": export is " << (other.globals[e->second.index]->mut ? "mut " : "") << wasm_type_to_string(other.globals[e->second.index]->type) << "; import is " << (gi.mut ? "mut " : "") << wasm_type_to_string(gi.type) << "\n";
 						}
 #endif
 					}
@@ -1486,15 +1486,15 @@ NAMESPACE_SOUP
 			const auto& ti = table_imports[i];
 			if (ti.module_name == module_name)
 			{
-				if (auto e = other->export_map.find(ti.field_name); e != other->export_map.end())
+				if (auto e = other.export_map.find(ti.field_name); e != other.export_map.end())
 				{
 					if (e->second.kind == IE_kTable
-						&& e->second.index < other->tables.size()
-						&& other->tables[e->second.index]
-						&& ti.isCompatibleWith(*other->tables[e->second.index])
+						&& e->second.index < other.tables.size()
+						&& other.tables[e->second.index]
+						&& ti.isCompatibleWith(*other.tables[e->second.index])
 						)
 					{
-						tables[i] = other->tables[e->second.index];
+						tables[i] = other.tables[e->second.index];
 					}
 				}
 			}
@@ -1505,15 +1505,15 @@ NAMESPACE_SOUP
 			const auto& mi = memory_imports[i];
 			if (mi.module_name == module_name)
 			{
-				if (auto e = other->export_map.find(mi.field_name); e != other->export_map.end())
+				if (auto e = other.export_map.find(mi.field_name); e != other.export_map.end())
 				{
 					if (e->second.kind == IE_kMemory
-						&& e->second.index < other->memories.size()
-						&& other->memories[e->second.index]
-						&& mi.isCompatibleWith(*other->memories[e->second.index])
+						&& e->second.index < other.memories.size()
+						&& other.memories[e->second.index]
+						&& mi.isCompatibleWith(*other.memories[e->second.index])
 						)
 					{
-						memories[i] = other->memories[e->second.index];
+						memories[i] = other.memories[e->second.index];
 					}
 				}
 			}
@@ -1521,15 +1521,15 @@ NAMESPACE_SOUP
 #else
 		if (memory_import && memory_import->module_name == module_name)
 		{
-			if (auto e = other->export_map.find(memory_import->field_name); e != other->export_map.end())
+			if (auto e = other.export_map.find(memory_import->field_name); e != other.export_map.end())
 			{
 				if (e->second.kind == IE_kMemory
 					&& e->second.index == 0
-					&& other->memory
-					&& memory_import->isCompatibleWith(*other->memory)
+					&& other.memory
+					&& memory_import->isCompatibleWith(*other.memory)
 					)
 				{
-					this->memory = other->memory;
+					this->memory = other.memory;
 				}
 			}
 		}
@@ -2178,7 +2178,7 @@ NAMESPACE_SOUP
 #endif
 				return false;
 			}
-			script = imp.source.get();
+			script = imp.source;
 			func_index = imp.func_index;
 			goto _call_other_script;
 		}
@@ -2208,9 +2208,9 @@ NAMESPACE_SOUP
 
 	// WasmSharedEnvironment
 
-	SharedPtr<WasmScript> WasmSharedEnvironment::createScript() SOUP_EXCAL
+	WasmScript& WasmSharedEnvironment::createScript() SOUP_EXCAL
 	{
-		return scripts.emplace_back(soup::make_shared<WasmScript>(this));
+		return *scripts.emplace_back(new WasmScript(this));
 	}
 
 	void WasmSharedEnvironment::markScriptAsNoLongerUsed(WasmScript& scr) noexcept
@@ -2221,6 +2221,7 @@ NAMESPACE_SOUP
 			{
 				if (*i == &scr)
 				{
+					delete *i;
 					scripts.erase(i);
 					break;
 				}
@@ -2244,6 +2245,14 @@ NAMESPACE_SOUP
 	const WasmSharedEnvironment::FuncRef& WasmSharedEnvironment::getFuncRef(uint64_t value) const noexcept
 	{
 		return funcrefs[value - 1];
+	}
+
+	WasmSharedEnvironment::~WasmSharedEnvironment() noexcept
+	{
+		for (auto& scr : scripts)
+		{
+			delete scr;
+		}
 	}
 
 	// WasmVm
@@ -5512,7 +5521,7 @@ NAMESPACE_SOUP
 				return false;
 			}
 
-			script = imp.source.get();
+			script = imp.source;
 			function_index = imp.func_index;
 			goto _doCall_other_script;
 		}

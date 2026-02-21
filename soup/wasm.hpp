@@ -115,8 +115,9 @@ NAMESPACE_SOUP
 	using wasm_uptr_t = uint32_t;
 #endif
 
-	struct WasmScript
+	class WasmScript
 	{
+	public:
 		struct DataSegment
 		{
 			uint32_t memidx;
@@ -257,7 +258,7 @@ NAMESPACE_SOUP
 			std::string function_name;
 
 			wasm_ffi_func_t ptr;
-			SharedPtr<WasmScript> source;
+			WasmScript* source;
 			uint32_t type_index; // an index in WasmScript::types of the importing WasmScript
 			union
 			{
@@ -266,7 +267,7 @@ NAMESPACE_SOUP
 			};
 
 			FunctionImport(std::string&& module_name, std::string&& function_name, uint32_t type_index)
-				: module_name(std::move(module_name)), function_name(std::move(function_name)), ptr(nullptr), type_index(), func_index(-1)
+				: module_name(std::move(module_name)), function_name(std::move(function_name)), ptr(nullptr), source(nullptr), type_index(), func_index(-1)
 			{
 			}
 		};
@@ -358,7 +359,10 @@ NAMESPACE_SOUP
 		bool has_created_funcrefs = false;
 
 		WasmScript() noexcept { /* default */ }
-		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env) {} // INTERNAL USAGE ONLY. WasmSharedEnvironment::createScript is for you!
+	protected:
+		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env) {}
+		friend WasmSharedEnvironment;
+	public:
 		WasmScript(WasmScript&&) noexcept = default;
 		WasmScript(const WasmScript&) = delete;
 		WasmScript& operator = (WasmScript&&) noexcept = default;
@@ -380,7 +384,7 @@ NAMESPACE_SOUP
 		void provideImportedGlobals(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<WasmValue>>& map) noexcept;
 		void provideImportedTables(const std::string& module_name, const std::unordered_map<std::string, SharedPtr<Table>>& map) noexcept;
 		void provideImportedMemory(const std::string& module_name, const std::string& field_name, SharedPtr<Memory> value) noexcept;
-		void importFromModule(const std::string& module_name, SharedPtr<WasmScript> other) noexcept;
+		void importFromModule(const std::string& module_name, WasmScript& other) noexcept; // both scripts must be part of the same WasmSharedEnvironment
 		void linkWasiPreview1(std::vector<std::string> args = {}) noexcept;
 
 		// Runs data, elem, and global intialisers, as well as the start function of the script, if defined, which may throw if an imported C++ function throws.
@@ -433,10 +437,10 @@ NAMESPACE_SOUP
 			}*/
 		};
 
-		std::vector<SharedPtr<WasmScript>> scripts;
+		std::vector<WasmScript*> scripts;
 		std::vector<FuncRef> funcrefs;
 
-		SharedPtr<WasmScript> createScript() SOUP_EXCAL;
+		WasmScript& createScript() SOUP_EXCAL;
 		void markScriptAsNoLongerUsed(WasmScript& scr) noexcept;
 
 		//[[nodiscard]] uint64_t createFuncRef(wasm_ffi_func_t ptr, uint32_t user_data = 0) SOUP_EXCAL;
@@ -445,28 +449,30 @@ NAMESPACE_SOUP
 
 		struct ScriptRaii
 		{
-			SharedPtr<WasmScript> spScript;
+			WasmScript& script;
 
-			ScriptRaii(SharedPtr<WasmScript>&& spScript) noexcept
-				: spScript(std::move(spScript))
+			ScriptRaii(WasmScript& script) noexcept
+				: script(script)
 			{
 			}
 
 			~ScriptRaii() noexcept
 			{
-				spScript->shared_env->markScriptAsNoLongerUsed(*spScript);
+				script.shared_env->markScriptAsNoLongerUsed(script);
 			}
 
 			[[nodiscard]] WasmScript& operator*() const noexcept
 			{
-				return *spScript;
+				return script;
 			}
 
 			[[nodiscard]] WasmScript* operator->() const noexcept
 			{
-				return spScript.get();
+				return &script;
 			}
 		};
+
+		~WasmSharedEnvironment() noexcept;
 	};
 
 	struct WasmVm
