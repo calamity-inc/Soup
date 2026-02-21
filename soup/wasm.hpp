@@ -274,7 +274,7 @@ NAMESPACE_SOUP
 			};
 
 			FunctionImport(std::string&& module_name, std::string&& function_name, uint32_t type_index)
-				: Import{ std::move(module_name), std::move(function_name) }, ptr(nullptr), source(nullptr), type_index(), func_index(-1)
+				: Import{ std::move(module_name), std::move(function_name) }, ptr(nullptr), source(nullptr), type_index(type_index), func_index(-1)
 			{
 			}
 		};
