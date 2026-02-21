@@ -1245,7 +1245,7 @@ NAMESPACE_SOUP
 	{
 		MemoryRefReader r(code);
 		WasmVm vm(*this);
-		SOUP_RETHROW_FALSE(vm.runCode(r, 0, -1));
+		SOUP_RETHROW_FALSE(vm.runCode(r, 0, -1) == WasmVm::CODE_RETURN);
 		SOUP_RETHROW_FALSE(vm.stack.size() == 1);
 		out = vm.stack.back();
 		code.clear();
@@ -1606,7 +1606,7 @@ NAMESPACE_SOUP
 #endif
 			WasmVm vm(*this);
 			MemoryRefReader r(custom_data.getStructFromMapConst(WasmInternalStartCode));
-			SOUP_RETHROW_FALSE(vm.runCode(r));
+			SOUP_RETHROW_FALSE(vm.runCode(r) == WasmVm::CODE_RETURN);
 			custom_data.removeStructFromMap(WasmInternalStartCode);
 		}
 
@@ -2263,10 +2263,62 @@ NAMESPACE_SOUP
 		return run(r, depth, func_index);
 	}
 
-	bool WasmVm::run(Reader& r, unsigned depth, uint32_t func_index)
+#if DEBUG_VM
+#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { /*__debugbreak();*/ std::cout << "Insufficient values on stack\n"; return {}; }
+#else
+#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { return {}; }
+#endif
+
+	bool WasmVm::run(Reader& _r, unsigned depth, uint32_t func_index)
 	{
-		SOUP_RETHROW_FALSE(processLocalDecls(r));
-		return runCode(r, depth, func_index);
+#if SOUP_WASM_TAIL_CALL
+		Reader* pr = &_r;
+		Optional<MemoryRefReader> rr;
+		RunCodeResult result;
+		while (true)
+		{
+			Reader& r = *pr;
+			SOUP_RETHROW_FALSE(processLocalDecls(r));
+			result = runCode(r, depth, func_index);
+			SOUP_IF_LIKELY (result < CODE_RETURN_CALL)
+			{
+				break;
+			}
+			if (result == CODE_RETURN_CALL)
+			{
+				WASM_READ_OML(func_index);
+			}
+			else //if (result == CODE_RETURN_CALL_INDIRECT)
+			{
+				uint32_t type_index; WASM_READ_OML(type_index);
+				uint32_t table_index; WASM_READ_OML(table_index);
+				auto table = script.getTableByIndex(table_index);
+				SOUP_RETHROW_FALSE(table && table->type == WASM_FUNCREF);
+				WASM_CHECK_STACK(1);
+				auto elem_index = static_cast<uint32_t>(stack.back().i32); stack.pop_back();
+				SOUP_RETHROW_FALSE(elem_index < table->values.size());
+				SOUP_RETHROW_FALSE(table->values[elem_index] != 0);
+				const auto& funcref = script.shared_env->getFuncRef(table->values[elem_index]);
+				SOUP_RETHROW_FALSE(funcref.source == &script);
+				func_index = funcref.index;
+			}
+#if DEBUG_VM
+			std::cout << "tail-call, weee! going to " << func_index << "\n";
+#endif
+			SOUP_RETHROW_FALSE(func_index >= script.function_imports.size());
+			func_index -= script.function_imports.size();
+			SOUP_RETHROW_FALSE(func_index < script.code.size());
+			locals.clear();
+			SOUP_RETHROW_FALSE(moveArguments(*this, script.types[script.functions[func_index]]));
+			stack.clear();
+			rr.emplace(script.code[func_index]);
+			pr = &*rr;
+		}
+		return result != CODE_ERROR;
+#else
+		SOUP_RETHROW_FALSE(processLocalDecls(_r));
+		return runCode(_r, depth, func_index);
+#endif
 	}
 
 	bool WasmVm::processLocalDecls(Reader& r) SOUP_EXCAL
@@ -2287,12 +2339,6 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-#if DEBUG_VM
-#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { /*__debugbreak();*/ std::cout << "Insufficient values on stack\n"; return false; }
-#else
-#define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { return false; }
-#endif
-
 	static constexpr float F32_I32_MIN = -2147483600.0f;
 	static constexpr float F32_I32_MAX = 2147483500.0f;
 	static constexpr float F32_U32_MIN = -0.99999994f;
@@ -2310,7 +2356,7 @@ NAMESPACE_SOUP
 	static constexpr double F64_U64_MIN = -0.9999999999999999;
 	static constexpr double F64_U64_MAX = 18446744073709550000.0;
 
-	bool WasmVm::runCode(Reader& r, unsigned depth, uint32_t func_index)
+	WasmVm::RunCodeResult WasmVm::runCode(Reader& r, unsigned depth, uint32_t func_index)
 	{
 		std::stack<CtrlFlowEntry> ctrlflow{};
 
@@ -2323,13 +2369,13 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 				std::cout << "Unsupported opcode: " << string::hex(op) << "\n";
 #endif
-				return false;
+				return CODE_ERROR;
 
 			case 0x00: // unreachable
 #if DEBUG_VM
 				std::cout << "unreachable\n";
 #endif
-				return false;
+				return CODE_ERROR;
 
 			case 0x01: // nop
 				break;
@@ -2429,7 +2475,7 @@ NAMESPACE_SOUP
 			case 0x0b: // end
 				if (ctrlflow.empty())
 				{
-					return true;
+					return CODE_RETURN;
 				}
 				ctrlflow.pop();
 				//std::cout << "ctrlflow stack now has " << ctrlflow.size() << " entries\n";
@@ -2441,7 +2487,7 @@ NAMESPACE_SOUP
 					WASM_READ_OML(depth);
 					SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 					{
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2456,7 +2502,7 @@ NAMESPACE_SOUP
 					{
 						SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 						{
-							return false;
+							return CODE_ERROR;
 						}
 					}
 				}
@@ -2484,13 +2530,13 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 					{
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
 
 			case 0x0f: // return
-				return true;
+				return CODE_RETURN;
 
 			case 0x10: // call
 				{
@@ -2509,7 +2555,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "call: type is out-of-bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					uint32_t table_index; WASM_READ_OML(table_index);
 					auto table = script.getTableByIndex(table_index);
@@ -2518,14 +2564,14 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "call: invalid table index\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_UNLIKELY (table->type != WASM_FUNCREF)
 					{
 #if DEBUG_VM
 						std::cout << "call: indexing non-funcref table\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					WASM_CHECK_STACK(1);
 					auto element_index = static_cast<uint32_t>(stack.back().i32); stack.pop_back();
@@ -2534,14 +2580,14 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "call: element is out-of-bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_UNLIKELY (table->values[element_index] == 0)
 					{
 #if DEBUG_VM
 						std::cout << "indirect call to null\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					const auto& funcref = script.shared_env->getFuncRef(table->values[element_index]);
 					/*SOUP_IF_UNLIKELY (funcref.isC())
@@ -2554,6 +2600,14 @@ NAMESPACE_SOUP
 					}
 				}
 				break;
+
+#if SOUP_WASM_TAIL_CALL
+			case 0x12: // return_call
+				return CODE_RETURN_CALL;
+
+			case 0x13: // return_call_indirect
+				return CODE_RETURN_CALL_INDIRECT;
+#endif
 
 			case 0x1a: // drop
 				stack.pop_back();
@@ -2581,7 +2635,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "local.get: index is out-of-bounds: " << local_index << "\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(locals.at(local_index));
 				}
@@ -2596,7 +2650,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "local.set: index is out-of-bounds: " << local_index << "\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					WASM_CHECK_STACK(1);
 					locals.at(local_index) = stack.back(); stack.pop_back();
@@ -2612,7 +2666,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "local.tee: index is out-of-bounds: " << local_index << "\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					WASM_CHECK_STACK(1);
 					locals.at(local_index) = stack.back();
@@ -2629,7 +2683,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "global.get: invalid global index: " << global_index << "\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(*global);
 				}
@@ -2645,7 +2699,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "global.set: invalid global index: " << global_index << "\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					WASM_CHECK_STACK(1);
 					SOUP_IF_UNLIKELY (stack.back().type != global->type)
@@ -2653,7 +2707,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "global.set: type mismatch\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					global->i64 = stack.back().i64;
 					stack.pop_back();
@@ -2670,7 +2724,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "table.get: invalid table index (" << table_index << ")\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					WASM_CHECK_STACK(1);
 					auto elem_index = stack.back().uptr(); stack.pop_back();
@@ -2679,7 +2733,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "table.get: element index " << elem_index << " >= " << table->values.size() << "\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(table->type).i64 = table->values[elem_index];
 				}
@@ -2695,7 +2749,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "table.set: invalid table index (" << table_index << ")\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					WASM_CHECK_STACK(2);
 					auto value = stack.back(); stack.pop_back();
@@ -2705,14 +2759,14 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "table.set: element index " << elem_index << " >= " << table->values.size() << "\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_UNLIKELY (value.type != table->type)
 					{
 #if DEBUG_VM
 						std::cout << "table.set: value type doesn't match table's element type\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					table->values[elem_index] = value.i64;
 				}
@@ -2729,7 +2783,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
@@ -2740,7 +2794,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2756,7 +2810,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int64_t>(base, offset))
 					{
@@ -2767,7 +2821,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2783,7 +2837,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<float>(base, offset))
 					{
@@ -2794,7 +2848,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2810,7 +2864,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<double>(base, offset))
 					{
@@ -2821,7 +2875,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2837,7 +2891,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
@@ -2848,7 +2902,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2864,7 +2918,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint8_t>(base, offset))
 					{
@@ -2875,7 +2929,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2891,7 +2945,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
@@ -2902,7 +2956,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2918,7 +2972,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint16_t>(base, offset))
 					{
@@ -2929,7 +2983,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2945,7 +2999,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
@@ -2956,7 +3010,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2972,7 +3026,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint8_t>(base, offset))
 					{
@@ -2983,7 +3037,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -2999,7 +3053,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
@@ -3010,7 +3064,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3026,7 +3080,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint16_t>(base, offset))
 					{
@@ -3037,7 +3091,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3053,7 +3107,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
@@ -3064,7 +3118,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3080,7 +3134,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint32_t>(base, offset))
 					{
@@ -3091,7 +3145,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3109,7 +3163,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
@@ -3120,7 +3174,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3137,7 +3191,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int64_t>(base, offset))
 					{
@@ -3148,7 +3202,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3165,7 +3219,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<float>(base, offset))
 					{
@@ -3176,7 +3230,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3193,7 +3247,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<double>(base, offset))
 					{
@@ -3204,7 +3258,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3221,7 +3275,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
@@ -3232,7 +3286,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3249,7 +3303,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
@@ -3260,7 +3314,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3277,7 +3331,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
@@ -3288,7 +3342,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3305,7 +3359,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
@@ -3316,7 +3370,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3333,7 +3387,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access without a memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
@@ -3344,7 +3398,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory access out of bounds\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 				}
 				break;
@@ -3359,7 +3413,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory.size: no memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					memory->encodeUPTR(stack.emplace_back(), memory->size / 0x10'000);
 				}
@@ -3375,7 +3429,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 						std::cout << "memory.grow: no memory\n";
 #endif
-						return false;
+						return CODE_ERROR;
 					}
 					WASM_CHECK_STACK(1);
 					const auto old_size_pages = memory->grow(stack.back().uptr());
@@ -3768,7 +3822,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i32 == 0 || (a.i32 == INT32_MIN && b.i32 == -1))
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(a.i32 / b.i32);
 				}
@@ -3781,7 +3835,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i32 == 0)
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(static_cast<uint32_t>(a.i32) / static_cast<uint32_t>(b.i32));
 				}
@@ -3794,7 +3848,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i32 == 0)
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					if (a.i32 == INT32_MIN && b.i32 == -1)
 					{
@@ -3814,7 +3868,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i32 == 0)
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(static_cast<uint32_t>(a.i32) % static_cast<uint32_t>(b.i32));
 				}
@@ -3941,7 +3995,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i64 == 0 || (a.i64 == INT64_MIN && b.i64 == -1))
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(a.i64 / b.i64);
 				}
@@ -3954,7 +4008,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i64 == 0)
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(static_cast<uint64_t>(a.i64) / static_cast<uint64_t>(b.i64));
 				}
@@ -3967,7 +4021,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i32 == 0)
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					if (a.i64 == INT64_MIN && b.i64 == -1)
 					{
@@ -3987,7 +4041,7 @@ NAMESPACE_SOUP
 					auto a = stack.back(); stack.pop_back();
 					SOUP_IF_UNLIKELY (b.i32 == 0)
 					{
-						return false;
+						return CODE_ERROR;
 					}
 					stack.emplace_back(static_cast<uint64_t>(a.i64) % static_cast<uint64_t>(b.i64));
 				}
@@ -4317,7 +4371,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "float cannot be represented as int\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<int32_t>(stack.back().f32);
 				break;
@@ -4329,7 +4383,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "float cannot be represented as int\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<uint32_t>(stack.back().f32);
 				break;
@@ -4341,7 +4395,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "float cannot be represented as int\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<int32_t>(stack.back().f64);
 				break;
@@ -4353,7 +4407,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "invalid value for i32.trunc_f64_u\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<uint32_t>(stack.back().f64);
 				break;
@@ -4375,7 +4429,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "float cannot be represented as int\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<int64_t>(stack.back().f32);
 				break;
@@ -4387,7 +4441,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "float cannot be represented as int\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<uint64_t>(stack.back().f32);
 				break;
@@ -4399,7 +4453,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "float cannot be represented as int\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<int64_t>(stack.back().f64);
 				break;
@@ -4411,7 +4465,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "float cannot be represented as int\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				stack.back() = static_cast<uint64_t>(stack.back().f64);
 				break;
@@ -4530,7 +4584,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "cannot use ref.func without a shared env\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				{
 					uint32_t idx;
@@ -4715,7 +4769,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "memory.init: no memory\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						WASM_CHECK_STACK(3);
 						auto size = stack.back().uptr(); stack.pop_back();
@@ -4727,7 +4781,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "memory.init: invalid segment index\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						std::string scrap;
 						if (!data)
@@ -4740,7 +4794,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.init\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						memcpy(dst_ptr, data->data() + src_offset, size);
 					}
@@ -4770,7 +4824,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "memory.copy: invalid memory index\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						WASM_CHECK_STACK(3);
 						auto size = stack.back().uptr(); stack.pop_back();
@@ -4783,7 +4837,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.copy\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						memcpy(dst_ptr, src_ptr, size);
 					}
@@ -4799,7 +4853,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "memory.fill: no memory\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						WASM_CHECK_STACK(3);
 						auto size = stack.back().uptr(); stack.pop_back();
@@ -4811,7 +4865,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "out-of-bounds memory.fill\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						memset(ptr, value, size);
 					}
@@ -4829,7 +4883,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.init: invalid table index (" << table_index << ")\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						WASM_CHECK_STACK(3);
 						auto size = stack.back().uptr(); stack.pop_back();
@@ -4841,7 +4895,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.init: invalid segment index\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						SOUP_RETHROW_FALSE(table->init(script, vtbl ? *vtbl : WasmScript::ElemSegment{ table->type }, dst_offset, src_offset, size));
 					}
@@ -4872,7 +4926,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.copy: invalid table index\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						WASM_CHECK_STACK(3);
 						auto size = stack.back().uptr(); stack.pop_back();
@@ -4892,7 +4946,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.grow: invalid table index (" << table_index << ")\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						WASM_CHECK_STACK(2);
 						auto delta = stack.back().uptr(); stack.pop_back();
@@ -4902,7 +4956,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.grow: attempt to assign " << wasm_type_to_string(value.type) << " to a table of " << wasm_type_to_string(table->type) << "\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						const auto old_size = table->grow(delta, value.i64);
 #if SOUP_WASM_MEMORY64
@@ -4928,7 +4982,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.size: invalid table index (" << table_index << ")\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 #if SOUP_WASM_MEMORY64
 						if (table->table64)
@@ -4953,7 +5007,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.fill: invalid table index (" << table_index << ")\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						WASM_CHECK_STACK(3);
 						auto& size = stack[stack.size() - 1].i32;
@@ -4964,14 +5018,14 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 							std::cout << "table.fill: attempt to assign " << wasm_type_to_string(value.type) << " to a table of " << wasm_type_to_string(table->type) << "\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						SOUP_IF_UNLIKELY (offset + size > table->values.size())
 						{
 #if DEBUG_VM
 							std::cout << "out-of-bounds table.fill\n";
 #endif
-							return false;
+							return CODE_ERROR;
 						}
 						while (size--)
 						{
@@ -4985,12 +5039,12 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "Unsupported opcode: " << string::hex(0xFC00 | op) << "\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 				break;
 			}
 		}
-		return true;
+		return CODE_RETURN;
 	}
 
 	WasmVm::SkipOverBranchResult WasmVm::skipOverBranch(Reader& r, uint32_t target_depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL
@@ -5072,6 +5126,9 @@ NAMESPACE_SOUP
 			case 0x0c: // br
 			case 0x0d: // br_if
 			case 0x10: // call
+#if SOUP_WASM_TAIL_CALL
+			case 0x12: // return_call
+#endif
 			case 0x20: // local.get
 			case 0x21: // local.set
 			case 0x22: // local.tee
@@ -5101,6 +5158,9 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x11: // call_indirect
+#if SOUP_WASM_TAIL_CALL
+			case 0x13: // return_call_indirect
+#endif
 				{
 					uint32_t type_index; WASM_READ_OML(type_index);
 					uint32_t table_index; WASM_READ_OML(table_index);
@@ -5536,17 +5596,7 @@ NAMESPACE_SOUP
 		const auto& type = this->script.types[type_index];
 
 		WasmVm callvm(*script);
-		for (uint32_t i = 0; i != type.parameters.size(); ++i)
-		{
-			SOUP_IF_UNLIKELY (stack.empty())
-			{
-#if DEBUG_VM
-				std::cout << "call: not enough values on the stack for parameters\n";
-#endif
-				return false;
-			}
-			callvm.locals.insert(callvm.locals.begin(), stack.back()); stack.pop_back();
-		}
+		SOUP_RETHROW_FALSE(moveArguments(callvm, type));
 #if DEBUG_VM
 		//std::cout << "call: enter " << function_index << "\n";
 		//std::cout << string::bin2hex(script->code[function_index]) << "\n";
@@ -5561,6 +5611,22 @@ NAMESPACE_SOUP
 		if (const auto result_stack_size = pre_call_stack_size + type.results.size(); stack.size() > result_stack_size)
 		{
 			stack.erase(stack.begin() + pre_call_stack_size, stack.end() - type.results.size());
+		}
+		return true;
+	}
+
+	bool WasmVm::moveArguments(WasmVm& callvm, const WasmFunctionType& type)
+	{
+		for (uint32_t i = 0; i != type.parameters.size(); ++i)
+		{
+			SOUP_IF_UNLIKELY (stack.empty())
+			{
+#if DEBUG_VM
+				std::cout << "call: not enough values on the stack for parameters\n";
+#endif
+				return false;
+			}
+			callvm.locals.insert(callvm.locals.begin(), stack.back()); stack.pop_back();
 		}
 		return true;
 	}

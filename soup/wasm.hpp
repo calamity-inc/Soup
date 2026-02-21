@@ -36,6 +36,10 @@
 #define SOUP_WASM_EXTENDED_CONST false
 #endif
 
+#ifndef SOUP_WASM_TAIL_CALL
+#define SOUP_WASM_TAIL_CALL false
+#endif
+
 NAMESPACE_SOUP
 {
 	struct WasmSharedEnvironment;
@@ -491,8 +495,23 @@ NAMESPACE_SOUP
 		// May throw if an imported C++ function throws.
 		bool run(const std::string& data, unsigned depth = 0, uint32_t func_index = -1);
 		bool run(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
+
+#if SOUP_WASM_TAIL_CALL
+		enum RunCodeResult
+		{
+			CODE_ERROR = 0,
+			CODE_RETURN,
+			CODE_RETURN_CALL,
+			CODE_RETURN_CALL_INDIRECT,
+		};
+#else
+		using RunCodeResult = bool;
+		static constexpr bool CODE_ERROR = false;
+		static constexpr bool CODE_RETURN = true;
+#endif
+
 		bool processLocalDecls(Reader& r) SOUP_EXCAL;
-		bool runCode(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
+		RunCodeResult runCode(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
 
 		struct CtrlFlowEntry
 		{
@@ -514,6 +533,7 @@ NAMESPACE_SOUP
 		static SkipOverBranchResult skipOverBranch(Reader& r, uint32_t depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(WasmScript* script, uint32_t type_index, uint32_t function_index, unsigned depth = 0);
+		bool moveArguments(WasmVm& callvm, const WasmFunctionType& type) SOUP_EXCAL;
 	};
 
 	struct WasmScrapAllocator
