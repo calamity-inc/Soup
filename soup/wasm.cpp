@@ -1436,7 +1436,7 @@ NAMESPACE_SOUP
 				if (auto e = other.export_map.find(fi.field_name); e != other.export_map.end())
 				{
 					if (e->second.kind == IE_kFunction
-						&& e->second.index < other.functions.size()
+						&& e->second.index < other.function_imports.size() + other.functions.size()
 						)
 					{
 						auto& import_type = types[fi.type_index];
