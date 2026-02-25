@@ -52,12 +52,6 @@ NAMESPACE_SOUP
 			return as<T>();
 		}
 
-		template <typename T>
-		void set(T val) const noexcept
-		{
-			*as<T*>() = val;
-		}
-
 		[[nodiscard]] constexpr This add(uintptr_t offset) const noexcept
 		{
 			return This(_offset() + offset);
