@@ -3,6 +3,7 @@
 #include "CompiletimePatternBase.hpp"
 
 #include <array>
+#include <vector>
 
 NAMESPACE_SOUP
 {
