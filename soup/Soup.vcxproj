@@ -975,6 +975,7 @@
     <ClInclude Include="memAllocating.hpp" />
     <ClInclude Include="MemoryMappedMap.hpp" />
     <ClInclude Include="MemoryMappedRangeMap.hpp" />
+    <ClInclude Include="memStlAllocator.hpp" />
     <ClInclude Include="Rc4State.hpp" />
     <ClInclude Include="ReplacementHook.hpp" />
     <ClInclude Include="HookBase.hpp" />
