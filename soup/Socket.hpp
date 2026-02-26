@@ -122,7 +122,7 @@ NAMESPACE_SOUP
 		static bool certchain_validator_none(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL; // Accepts everything.
 		static bool certchain_validator_default(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL;
 
-		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&, std::string&& alpn_protocol), Capture&& cap = {}, std::string&& initial_application_data = {}, certchain_validator_t certchain_validator = &Socket::certchain_validator_default, std::vector<std::string>&& alpn_protocols = {});
+		void enableCryptoClient(std::string server_name, void(*callback)(Socket&, Capture&&, std::string&& alpn_protocol), Capture&& cap = {}, std::string&& initial_application_data = {}, certchain_validator_t certchain_validator = &Socket::certchain_validator_default, std::vector<std::string>&& alpn_protocols = {}, bool require_ecdhe = false);
 	protected:
 		void enableCryptoClientRecvServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 		void enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
