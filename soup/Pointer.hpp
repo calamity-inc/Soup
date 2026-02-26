@@ -68,12 +68,6 @@ NAMESPACE_SOUP
 			this->uptr = uptr;
 		}
 
-		template <typename T>
-		void set(T val) const noexcept
-		{
-			*as<T*>() = val;
-		}
-
 		[[nodiscard]] void* addr() const noexcept
 		{
 			return ptr;
