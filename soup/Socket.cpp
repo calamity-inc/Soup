@@ -926,23 +926,16 @@ NAMESPACE_SOUP
 		}
 	}
 
-	[[nodiscard]] static bool tls_serverSupportsCipherSuite(uint16_t cs) noexcept
+	TlsCipherSuite_t Socket::default_select_ciphersuite(Socket&, const TlsClientHello& hello)
 	{
-		switch (cs)
+		for (const auto& cs : hello.cipher_suites)
 		{
-		case TLS_RSA_WITH_RC4_128_MD5:
-		case TLS_RSA_WITH_AES_128_CBC_SHA:
-		case TLS_RSA_WITH_AES_256_CBC_SHA:
-		case TLS_RSA_WITH_AES_128_CBC_SHA256:
-		case TLS_RSA_WITH_AES_256_CBC_SHA256:
-		case TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
-		case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256:
-		case TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
-		case TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:
-		case TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:
-			return true;
+			if (tls_serverSupportsCipherSuite(cs))
+			{
+				return cs;
+			}
 		}
-		return false;
+		return TLS_RSA_WITH_AES_128_CBC_SHA; // The TLS 1.2 spec says this one has to be supported, so surely everyone using TLS 1.2 supports it :derp:
 	}
 
 	struct CaptureDecryptPreMasterSecret
@@ -951,13 +944,13 @@ NAMESPACE_SOUP
 		Bigint data;
 	};
 
-	void Socket::enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_on_client_hello_t on_client_hello, tls_server_alpn_select_protocol_t alpn_select_protocol)
+	void Socket::enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap, tls_server_select_ciphersuite_t select_ciphersuite, tls_server_alpn_select_protocol_t alpn_select_protocol)
 	{
 		UniquePtr<SocketTlsHandshaker> handshaker = soup::make_unique<SocketTlsHandshakerServer>(
 			callback,
 			std::move(cap),
 			std::move(certstore),
-			on_client_hello,
+			select_ciphersuite ? select_ciphersuite : &default_select_ciphersuite,
 			alpn_select_protocol
 		);
 
@@ -987,18 +980,16 @@ NAMESPACE_SOUP
 
 				handshaker->layer_bytes.append(data.substr(2)); // "For the purposes of calculating Finished and CertificateVerify, the msg_length field is not considered to be a part of the handshake message."
 
+				TlsClientHello converted_hello;
+				converted_hello.cipher_suites.reserve(hello.cipher_suites.size());
 				for (const auto& val : hello.cipher_suites)
 				{
 					if (val <= 0xffff)
 					{
-						TlsCipherSuite_t cs = val;
-						if (tls_serverSupportsCipherSuite(cs))
-						{
-							handshaker->cipher_suite = cs;
-							break;
-						}
+						converted_hello.cipher_suites.emplace_back(static_cast<TlsCipherSuite_t>(val));
 					}
 				}
+				handshaker->cipher_suite = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->select_ciphersuite(s, converted_hello);
 
 				const CertStoreEntry* rsa_data = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->certstore->findEntryForDomain({});
 				if (!rsa_data)
@@ -1008,11 +999,6 @@ NAMESPACE_SOUP
 				}
 
 				handshaker->client_random = std::move(hello.challenge);
-
-				if (static_cast<SocketTlsHandshakerServer*>(handshaker.get())->on_client_hello)
-				{
-					// Meh
-				}
 
 				s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, {});
 			}
@@ -1039,14 +1025,7 @@ NAMESPACE_SOUP
 					s.tls_close(TlsAlertDescription::decode_error);
 					return;
 				}
-				for (const auto& cs : hello.cipher_suites)
-				{
-					if (tls_serverSupportsCipherSuite(cs))
-					{
-						handshaker->cipher_suite = cs;
-						break;
-					}
-				}
+				handshaker->cipher_suite = static_cast<SocketTlsHandshakerServer*>(handshaker.get())->select_ciphersuite(s, hello);
 
 				std::string server_name{};
 				for (const auto& ext : hello.extensions.extensions)
@@ -1112,11 +1091,6 @@ NAMESPACE_SOUP
 				}
 
 				handshaker->client_random = hello.random.toBinaryString();
-
-				if (static_cast<SocketTlsHandshakerServer*>(handshaker.get())->on_client_hello)
-				{
-					static_cast<SocketTlsHandshakerServer*>(handshaker.get())->on_client_hello(s, std::move(hello));
-				}
 			}
 
 			s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, std::move(alpn_selection));

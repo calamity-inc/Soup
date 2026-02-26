@@ -128,7 +128,9 @@ NAMESPACE_SOUP
 		void enableCryptoClientProcessServerHelloDone(UniquePtr<SocketTlsHandshaker>&& handshaker);
 
 	public:
-		void enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_on_client_hello_t on_client_hello = nullptr, tls_server_alpn_select_protocol_t alpn_select_protocol = nullptr);
+		static TlsCipherSuite_t default_select_ciphersuite(Socket&, const TlsClientHello& hello);
+
+		void enableCryptoServer(SharedPtr<CertStore> certstore, void(*callback)(Socket&, Capture&&), Capture&& cap = {}, tls_server_select_ciphersuite_t select_ciphersuite = &default_select_ciphersuite, tls_server_alpn_select_protocol_t alpn_select_protocol = nullptr);
 	protected:
 		void enableCryptoServerRecvTlsClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker);
 		void enableCryptoServerAfterClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker, const CertStoreEntry* rsa_data, std::string&& alpn_selection);

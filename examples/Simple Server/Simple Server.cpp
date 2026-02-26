@@ -178,7 +178,7 @@ static void handleRequest(soup::Socket& s, soup::HttpRequest&& req, soup::Server
 	}
 }
 
-static void on_client_hello(soup::Socket& s, soup::TlsClientHello&& hello) SOUP_EXCAL
+static soup::TlsCipherSuite_t on_client_hello(soup::Socket& s, const soup::TlsClientHello& hello) SOUP_EXCAL
 {
 	auto& data = s.custom_data.getStructFromMap(SimpleServerClientData);
 	data.cipher_suites = std::move(hello.cipher_suites);
@@ -188,6 +188,7 @@ static void on_client_hello(soup::Socket& s, soup::TlsClientHello&& hello) SOUP_
 	{
 		data.extensions.emplace_back(ext.id);
 	}
+	return soup::Socket::default_select_ciphersuite(s, hello);
 }
 
 int main()
