@@ -976,6 +976,7 @@
     <ClInclude Include="MemoryMappedMap.hpp" />
     <ClInclude Include="MemoryMappedRangeMap.hpp" />
     <ClInclude Include="memStlAllocator.hpp" />
+    <ClInclude Include="netSocketSecurity.hpp" />
     <ClInclude Include="Rc4State.hpp" />
     <ClInclude Include="ReplacementHook.hpp" />
     <ClInclude Include="HookBase.hpp" />

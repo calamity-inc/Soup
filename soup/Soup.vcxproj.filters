@@ -1692,6 +1692,9 @@
     <ClInclude Include="memStlAllocator.hpp">
       <Filter>mem\allocators</Filter>
     </ClInclude>
+    <ClInclude Include="netSocketSecurity.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

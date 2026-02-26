@@ -30,6 +30,7 @@ NAMESPACE_SOUP
 		bool prefer_ipv6 = false; // for funny things like https://api.lovense.com/api/lan/getToys
 		bool dont_use_reusable_sockets = false;
 		bool dont_make_reusable_sockets = false;
+		bool require_ecdhe = false;
 		bool retry_on_broken_pipe = false; // internal
 		std::string await_response_finish_reason; // internal
 #endif

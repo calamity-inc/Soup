@@ -54,7 +54,7 @@ NAMESPACE_SOUP
 			if (!dont_use_reusable_sockets)
 			{
 				const auto [host, port] = hr.getHostAndPort();
-				sock = Scheduler::get()->findReusableSocket(host, port, hr.use_tls);
+				sock = Scheduler::get()->findReusableSocket(host, port, hr.use_tls ? (require_ecdhe ? SOCKET_TLS_ECDHE : SOCKET_TLS) : SOCKET_INSECURE);
 				if (sock)
 				{
 					if (sock->custom_data.getStructFromMap(netReuseTag).is_busy)
@@ -101,10 +101,10 @@ NAMESPACE_SOUP
 				{
 					// Tag socket we just created for reuse, if it's not a one-off.
 					const auto [host, port] = hr.getHostAndPort();
-					SOUP_IF_LIKELY (!Scheduler::get()->findReusableSocket(host, port, hr.use_tls))
+					SOUP_IF_LIKELY (!Scheduler::get()->findReusableSocket(host, port, hr.use_tls ? (require_ecdhe ? SOCKET_TLS_ECDHE : SOCKET_TLS) : SOCKET_INSECURE))
 					{
 						hr.setKeepAlive();
-						sock->custom_data.getStructFromMap(netReuseTag).init(host, port, hr.use_tls);
+						sock->custom_data.getStructFromMap(netReuseTag).init(host, port, hr.use_tls ? (require_ecdhe ? SOCKET_TLS_ECDHE : SOCKET_TLS) : SOCKET_INSECURE);
 					}
 				}
 				state = AWAIT_RESPONSE;
@@ -114,7 +114,7 @@ NAMESPACE_SOUP
 					sock->enableCryptoClient(std::get<0>(hr.getHostAndPort()), [](Socket&, Capture&& cap, std::string&&) SOUP_EXCAL
 					{
 						cap.get<HttpRequestTask*>()->recvResponse();
-					}, this, hr.getDataToSend(), certchain_validator);
+					}, this, hr.getDataToSend(), certchain_validator, {}, require_ecdhe);
 				}
 				else
 				{
