@@ -1006,9 +1006,8 @@ if (combined[i]) \
 			{
 				r.skip(1); // unknown, seems to be 0x10 in most cases
 				uint16_t scancode; r.u16_be(scancode);
-				r.skip(2); // fvalue * 800 (u16_be)
-				r.skip(1); // unknown, seems to always be 0x00
-				uint8_t value; r.u8(value); // fvalue * 200
+				uint16_t value; r.u16_be(value); // fvalue * 800
+				r.skip(2); // (u16_be) fvalue * x where x seems to depend on the maximum key travel set in NuphyIO
 
 				Key sk;
 				SOUP_IF_UNLIKELY ((scancode >> 8) != 0)
@@ -1034,7 +1033,7 @@ if (combined[i]) \
 
 				SOUP_IF_LIKELY (sk != KEY_NONE)
 				{
-					nuphy.buffer[sk] = value;
+					nuphy.buffer[sk] = static_cast<uint8_t>(static_cast<float>(value) / 800.0f * 255.0);
 				}
 			}
 
@@ -1044,7 +1043,7 @@ if (combined[i]) \
 				{
 					keys.emplace_back(ActiveKey{
 						static_cast<Key>(i),
-						static_cast<float>(nuphy.buffer[i]) / 200.0f
+						static_cast<float>(nuphy.buffer[i]) / 255.0f
 					});
 				}
 			}
