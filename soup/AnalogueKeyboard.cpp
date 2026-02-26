@@ -1006,9 +1006,11 @@ if (combined[i]) \
 			{
 				r.skip(1); // unknown, seems to be 0x10 in most cases
 				uint16_t scancode; r.u16_be(scancode);
-				r.skip(2); // fvalue * 800 (u16_be)
+				uint16_t fvalue_800; r.u16_be(fvalue_800); // fvalue * 800 (u16_be) - true 16bit value
 				r.skip(1); // unknown, seems to always be 0x00
-				uint8_t value; r.u8(value); // fvalue * 200
+				uint8_t value_8bit; r.u8(value_8bit); // fvalue * 200 (8-bit, ignored)
+				
+				uint8_t value = static_cast<uint8_t>(std::min(255u, (fvalue_800 * 255u) / 1600u));
 
 				Key sk;
 				SOUP_IF_UNLIKELY ((scancode >> 8) != 0)
@@ -1044,7 +1046,7 @@ if (combined[i]) \
 				{
 					keys.emplace_back(ActiveKey{
 						static_cast<Key>(i),
-						static_cast<float>(nuphy.buffer[i]) / 200.0f
+						static_cast<float>(nuphy.buffer[i]) / 255.0f
 					});
 				}
 			}
