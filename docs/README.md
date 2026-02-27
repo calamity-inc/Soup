@@ -12,7 +12,3 @@ However, to help you get started or explain more complex topics, there are a few
 - [JSON](cpp/json.md)
 - [Programming a language](cpp/programming-a-language.md)
 - [RSA](cpp/rsa.md)
-
-## Bindings
-
-- [JS Bindings CDN](bindings/js-bindings-cdn.md)
