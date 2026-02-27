@@ -297,6 +297,10 @@ NAMESPACE_SOUP
 
 	void Regex::unparseFlags(std::string& str, uint16_t flags)
 	{
+		if (flags & RE_GLOBAL)
+		{
+			str.push_back('g');
+		}
 		if (flags & RE_MULTILINE)
 		{
 			str.push_back('m');

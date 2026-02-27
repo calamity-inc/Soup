@@ -70,12 +70,18 @@ NAMESPACE_SOUP
 			return str;
 		}
 
+		[[nodiscard]] bool hasGlobalFlag() const noexcept { return group.initial_flags & RE_GLOBAL; }
+
 		[[nodiscard]] static constexpr uint16_t parseFlags(const char* flags)
 		{
 			uint16_t res = 0;
 			for (; *flags != '\0'; ++flags)
 			{
-				if (*flags == 'm')
+				if (*flags == 'g')
+				{
+					res |= RE_GLOBAL;
+				}
+				else if (*flags == 'm')
 				{
 					res |= RE_MULTILINE;
 				}
