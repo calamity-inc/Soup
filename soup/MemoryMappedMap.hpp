@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 NAMESPACE_SOUP
 {
@@ -81,3 +82,5 @@ NAMESPACE_SOUP
 		}
 	};
 }
+
+#endif

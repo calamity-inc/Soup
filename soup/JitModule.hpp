@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <filesystem>
 
 #include "SharedLibrary.hpp"
@@ -28,3 +31,5 @@ NAMESPACE_SOUP
 		[[nodiscard]] void* getEntrypoint(const char* name) const noexcept;
 	};
 }
+
+#endif

@@ -1,9 +1,10 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <cstddef> // size_t
 #include <cstdint>
-
-#include "base.hpp"
 
 NAMESPACE_SOUP
 {
@@ -46,3 +47,5 @@ NAMESPACE_SOUP
 		void dispose() noexcept;
 	};
 }
+
+#endif

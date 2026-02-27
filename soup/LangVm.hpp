@@ -37,7 +37,9 @@ NAMESPACE_SOUP
 	public:
 		void addOpcode(uint8_t opcode, op_t op);
 		void execute();
+#if SOUP_X86 && SOUP_BITS == 64
 		void assembleAndExecute();
+#endif
 
 		// Stack manipulation
 

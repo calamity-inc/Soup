@@ -1,4 +1,5 @@
 #include "JitModule.hpp"
+#if !SOUP_WASM
 
 #include "Compiler.hpp"
 #include "filesystem.hpp"
@@ -61,3 +62,5 @@ NAMESPACE_SOUP
 		return dll.getAddress(name);
 	}
 }
+
+#endif

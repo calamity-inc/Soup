@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <iostream>
 #include <unordered_map>
@@ -181,3 +182,5 @@ void cli_dnsserver(size_t argc, std::string* argv)
 
 	serv.run();
 }
+
+#endif

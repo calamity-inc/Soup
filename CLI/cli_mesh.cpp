@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <iostream>
 
@@ -121,3 +122,5 @@ int cli_mesh(size_t argc, std::string* argv)
 	std::cout << "Syntax: mesh <link|list>\n";
 	return 1;
 }
+
+#endif

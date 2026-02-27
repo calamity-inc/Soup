@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 #include "fwd.hpp"
 
 #include <cstdint>
@@ -18,3 +19,5 @@ NAMESPACE_SOUP
 		[[nodiscard]] bool isHosting(const netIntel& intel) const SOUP_EXCAL;
 	};
 }
+
+#endif

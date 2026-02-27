@@ -2,7 +2,9 @@
 
 #include <cstring> // memcpy
 
+#if SOUP_X86 && SOUP_BITS == 64
 #include "AllocRaiiVirtual.hpp"
+#endif
 #include "UniquePtr.hpp"
 
 NAMESPACE_SOUP
@@ -221,10 +223,12 @@ NAMESPACE_SOUP
 		return m_data.size();
 	}
 
+#if SOUP_X86 && SOUP_BITS == 64
 	UniquePtr<AllocRaiiVirtual> AssemblyBuilder::allocate() const
 	{
 		auto alloc = soup::make_unique<AllocRaiiVirtual>(m_data.size());
 		memcpy(alloc->addr, m_data.data(), m_data.size());
 		return alloc;
 	}
+#endif
 }

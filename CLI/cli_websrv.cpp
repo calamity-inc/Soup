@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <filesystem>
 #include <iostream>
@@ -182,3 +183,5 @@ int cli_websrv(const std::string& dir)
 
 	return 0;
 }
+
+#endif

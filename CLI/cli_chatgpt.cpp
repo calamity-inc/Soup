@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <string>
 #include <iostream>
@@ -73,3 +74,5 @@ void cli_chatgpt(size_t argc, std::string* argv)
 		}
 	}
 }
+
+#endif

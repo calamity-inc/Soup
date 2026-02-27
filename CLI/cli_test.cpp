@@ -75,6 +75,7 @@
 
 // net
 #include <Socket.hpp>
+#include <SocketAddr.hpp>
 
 // os
 #include <ffi.hpp>
@@ -2413,6 +2414,7 @@ static void test_uri()
 	assert(uri.getRequestPath() == "/translate_a/t?client=dict-chrome-ex&sl=auto&tl=zh-CN&q=How+are+you%3F");
 }
 
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 static void test_dns()
 {
 	auto dr = dnsResolver::makeDefault();
@@ -2421,7 +2423,9 @@ static void test_dns()
 	assert(res.size() == 1);
 	assert(res[0].toString() == "127.0.0.1");
 }
+#endif
 
+#if !SOUP_WASM
 static void test_socket_raii_semantics()
 {
 	Socket s;
@@ -2437,6 +2441,7 @@ static void test_socket_raii_semantics()
 	assert(s3.hasConnection());
 	s3.fd.setMovedAway(); // don't try to actually close() fd 1337 now lol
 }
+#endif
 
 static void test_SocketAddr_fromString()
 {
@@ -2694,7 +2699,9 @@ void cli_test()
 		}
 		unit("net")
 		{
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 			test("dns", &test_dns);
+#endif
 			unit("email")
 			{
 				unit_net_email();
@@ -2704,7 +2711,9 @@ void cli_test()
 				test("mime", &test_mime);
 				test("uri", &test_uri);
 			}
+#if !SOUP_WASM
 			test("socket raii semantics", &test_socket_raii_semantics);
+#endif
 			test("SocketAddr::fromString", &test_SocketAddr_fromString);
 		}
 		unit("os")

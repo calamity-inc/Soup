@@ -2,7 +2,7 @@
 
 #include "base.hpp"
 
-#if SOUP_WASM || SOUP_CODE_INSPECTOR
+#if SOUP_EMSCRIPTEN || SOUP_CODE_INSPECTOR
 #include "WebSocketMessage.hpp"
 
 #include <emscripten/emscripten.h>

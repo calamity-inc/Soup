@@ -1,5 +1,8 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
+
 #include <string>
 #include <vector>
 
@@ -80,3 +83,5 @@ NAMESPACE_SOUP
 		MemoryMappedRangeMap<IpAddr, LocationData> ipv6_to_location{};
 	};
 }
+
+#endif

@@ -60,6 +60,8 @@ NAMESPACE_SOUP
 		const uint8_t* data() const;
 		size_t size() const noexcept;
 
+#if SOUP_X86 && SOUP_BITS == 64
 		[[nodiscard]] UniquePtr<AllocRaiiVirtual> allocate() const;
+#endif
 	};
 }

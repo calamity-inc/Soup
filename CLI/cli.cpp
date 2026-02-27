@@ -85,6 +85,7 @@ int entry(std::vector<std::string>&& args, bool)
 		}
 #endif
 
+#if !SOUP_WASM
 		if (subcommand == "chatgpt")
 		{
 			if (args.size() <= 2)
@@ -95,6 +96,7 @@ int entry(std::vector<std::string>&& args, bool)
 			cli_chatgpt(args.size() - 2, &args[2]);
 			return 0;
 		}
+#endif
 
 #ifdef SOUP_ENABLE_CHESS
 		if (subcommand == "chess")
@@ -115,6 +117,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "dhcp")
 		{
 			if (auto info = dhcp::requestInfo(); info.isValid())
@@ -144,6 +147,7 @@ int entry(std::vector<std::string>&& args, bool)
 			cli_dnsserver(args.size() - 2, &args[2]);
 			return 0;
 		}
+#endif
 
 		if (subcommand == "dvd")
 		{
@@ -280,6 +284,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 		if (subcommand == "geoip")
 		{
 			IpAddr addr;
@@ -329,6 +334,7 @@ int entry(std::vector<std::string>&& args, bool)
 			}
 			return 0;
 		}
+#endif
 
 		if (subcommand == "hid")
 		{
@@ -380,6 +386,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 		if (subcommand == "http")
 		{
 			if (args.size() != 3)
@@ -401,11 +408,14 @@ int entry(std::vector<std::string>&& args, bool)
 			}
 			return 0;
 		}
+#endif
 
+#if !SOUP_WASM
 		if (subcommand == "ircserver")
 		{
 			return cli_ircserver();
 		}
+#endif
 
 		if (subcommand == "json2bin")
 		{
@@ -424,10 +434,12 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "mesh")
 		{
 			return cli_mesh(args.size() - 2, &args[2]);
 		}
+#endif
 
 		if (subcommand == "midi")
 		{
@@ -447,6 +459,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "netintrospect")
 		{
 			netIntrospectTask t;
@@ -454,6 +467,7 @@ int entry(std::vector<std::string>&& args, bool)
 			std::cout << t.getDiagnosticsString();
 			return 0;
 		}
+#endif
 
 		if (subcommand == "qr")
 		{
@@ -469,6 +483,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "repl")
 		{
 			cli_repl();
@@ -490,6 +505,7 @@ int entry(std::vector<std::string>&& args, bool)
 			}
 			return 0;
 		}
+#endif
 
 		if (subcommand == "snake")
 		{
@@ -591,6 +607,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "websrv")
 		{
 			if (args.size() != 3)
@@ -600,6 +617,7 @@ int entry(std::vector<std::string>&& args, bool)
 			}
 			return cli_websrv(args[2]);
 		}
+#endif
 	}
 
 	std::string all_tools;
@@ -609,38 +627,56 @@ int entry(std::vector<std::string>&& args, bool)
 #ifdef SOUP_ENABLE_CHATBOT
 	string::listAppend(all_tools, "chatbot");
 #endif
+#if !SOUP_WASM
 	string::listAppend(all_tools, "chatgpt");
+#endif
 #ifdef SOUP_ENABLE_CHESS
 	string::listAppend(all_tools, "chess");
 #endif
 	string::listAppend(all_tools, "datareflection");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "dhcp");
 	string::listAppend(all_tools, "dig");
 	string::listAppend(all_tools, "dnsserver");
+#endif
 	string::listAppend(all_tools, "dvd");
 	string::listAppend(all_tools, "edit");
 	string::listAppend(all_tools, "gamepad");
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 	string::listAppend(all_tools, "geoip");
+#endif
 	string::listAppend(all_tools, "hid");
 	string::listAppend(all_tools, "html");
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 	string::listAppend(all_tools, "http");
+#endif
+#if !SOUP_WASM
 	string::listAppend(all_tools, "ircserver");
+#endif
 	string::listAppend(all_tools, "json2bin");
 	string::listAppend(all_tools, "keyboard");
 	string::listAppend(all_tools, "maze");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "mesh");
+#endif
 	string::listAppend(all_tools, "midi");
 	string::listAppend(all_tools, "morse");
 	string::listAppend(all_tools, "mouse");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "netintrospect");
+#endif
 	string::listAppend(all_tools, "qr");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "repl");
 	string::listAppend(all_tools, "script");
+#endif
 	string::listAppend(all_tools, "snake");
 	string::listAppend(all_tools, "test");
 	string::listAppend(all_tools, "wasm");
 	string::listAppend(all_tools, "wav");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "websrv");
+#endif
 
 	std::cout << R"EOC(Syntax: soup <tool>
 

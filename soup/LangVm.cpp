@@ -2,8 +2,10 @@
 
 #include <typeinfo> // bad_cast
 
-#include "AllocRaiiVirtual.hpp"
-#include "AssemblyBuilder.hpp"
+#if SOUP_X86 && SOUP_BITS == 64
+	#include "AllocRaiiVirtual.hpp"
+	#include "AssemblyBuilder.hpp"
+#endif
 #include "BuiltinOp.hpp"
 #include "Exception.hpp"
 #include "ParseError.hpp"
@@ -161,6 +163,7 @@ NAMESPACE_SOUP
 		rcx.push(soup::make_shared<Mixed>(rdx));
 	}
 
+#if SOUP_X86 && SOUP_BITS == 64
 	void LangVm::assembleAndExecute()
 	{
 		AssemblyBuilder b;
@@ -210,6 +213,7 @@ NAMESPACE_SOUP
 		using ft = void(*)(LangVm&);
 		((ft)f->addr)(*this);
 	}
+#endif
 
 	void LangVm::push(SharedPtr<Mixed> val)
 	{

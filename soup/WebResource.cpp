@@ -1,14 +1,15 @@
 #include "WebResource.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
-#if SOUP_WASM
-#include <emscripten/fetch.h>
+#if SOUP_EMSCRIPTEN
+	#include <emscripten/fetch.h>
 #else
-#include "FileReader.hpp"
-#include "FileWriter.hpp"
-#include "filesystem.hpp"
-#include "HttpRequest.hpp"
-#include "sha1.hpp"
-#include "string.hpp"
+	#include "FileReader.hpp"
+	#include "FileWriter.hpp"
+	#include "filesystem.hpp"
+	#include "HttpRequest.hpp"
+	#include "sha1.hpp"
+	#include "string.hpp"
 #endif
 #include "time.hpp"
 
@@ -24,7 +25,7 @@ NAMESPACE_SOUP
 		return static_cast<uint64_t>(time::unixSeconds()) > data_expires;
 	}
 
-#if SOUP_WASM
+#if SOUP_EMSCRIPTEN
 	static WebResource* fetch_wr;
 	static Callback<void(WebResource&)> fetch_cb;
 
@@ -161,3 +162,5 @@ NAMESPACE_SOUP
 	}
 #endif
 }
+
+#endif

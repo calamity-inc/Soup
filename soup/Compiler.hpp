@@ -1,9 +1,10 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <string>
 #include <vector>
-
-#include "base.hpp"
 
 NAMESPACE_SOUP
 {
@@ -42,3 +43,5 @@ NAMESPACE_SOUP
 		std::string makeDynamicLibrary(const std::vector<std::string>& objects, const std::string& out) const;
 	};
 }
+
+#endif

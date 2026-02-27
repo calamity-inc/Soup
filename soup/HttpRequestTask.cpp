@@ -1,4 +1,5 @@
 #include "HttpRequestTask.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 #if !SOUP_WASM
 #include "format.hpp"
@@ -25,7 +26,7 @@ NAMESPACE_SOUP
 	{
 	}
 
-#if !SOUP_WASM
+#if !SOUP_EMSCRIPTEN
 	HttpRequestTask::HttpRequestTask(HttpRequest&& hr)
 		: HttpRequestTask(std::move(hr), &Socket::certchain_validator_default)
 	{
@@ -316,3 +317,5 @@ NAMESPACE_SOUP
 	}
 #endif
 }
+
+#endif

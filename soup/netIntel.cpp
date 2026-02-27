@@ -1,4 +1,5 @@
 #include "netIntel.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 #include <fstream>
 
@@ -423,3 +424,5 @@ NAMESPACE_SOUP
 		return {};
 	}
 }
+
+#endif

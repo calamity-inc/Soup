@@ -8,15 +8,17 @@
 #include "unicode.hpp"
 
 #if SOUP_WINDOWS
-#pragma comment(lib, "user32.lib") // GetAsyncKeyState
+	#pragma comment(lib, "user32.lib") // GetAsyncKeyState
 
-#include <conio.h>
+	#include <conio.h>
 #else
-#include <fcntl.h> // open
-#include <termios.h>
-#include <unistd.h> // read, close
+	#include <fcntl.h> // open
+	#if SOUP_HAVE_TERMIOS
+		#include <termios.h>
+	#endif
+	#include <unistd.h> // read, close
 
-#include "signal.hpp"
+	#include "signal.hpp"
 #endif
 
 #define BEL "\x7"
@@ -44,7 +46,7 @@ NAMESPACE_SOUP
 		// Set console to UTF-8, MingW is UTF-8 regardless.
 		SetConsoleCP(CP_UTF8);
 		SetConsoleOutputCP(CP_UTF8);
-#else
+#elif SOUP_HAVE_TERMIOS
 		tcgetattr(0, &termattrs_og);
 		termattrs_cur = termattrs_og;
 #endif
@@ -230,9 +232,11 @@ NAMESPACE_SOUP
 #else
 		std::cout << std::flush;
 
+	#if SOUP_HAVE_TERMIOS
 		termattrs_cur.c_lflag &= ~ICANON; // no buffered i/o
 		termattrs_cur.c_lflag &= ~ECHO; // no echo
 		tcsetattr(0, TCSANOW, &termattrs_cur);
+	#endif
 
 		auto in = open("/dev/stdin", O_RDONLY | O_NONBLOCK);
 		while (true)
@@ -393,7 +397,7 @@ NAMESPACE_SOUP
 		clearScreen();
 		setCursorPos(0, 0);
 
-#if !SOUP_WINDOWS
+#if SOUP_HAVE_TERMIOS
 		tcsetattr(0, TCSANOW, &termattrs_og);
 #endif
 

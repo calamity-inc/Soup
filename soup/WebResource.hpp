@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 #include "Callback.hpp"
 #include <filesystem>
@@ -25,12 +26,12 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] bool isDataExpired() const noexcept;
 
-#if SOUP_WASM
+	#if SOUP_EMSCRIPTEN
 		void download(Callback<void(WebResource&)>&& cb = {});
-#else
+	#else
 		void download(Callback<void(WebResource&)>&& cb); // blocking
 		void download(); // blocking
-#endif
+	#endif
 
 		std::filesystem::path getCacheFile() const;
 
@@ -41,3 +42,5 @@ NAMESPACE_SOUP
 		void downloadWithStaleCaching(); // blocking
 	};
 }
+
+#endif

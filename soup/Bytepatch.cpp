@@ -1,4 +1,5 @@
 #include "Bytepatch.hpp"
+#if !SOUP_WASM
 
 #include <cstdlib>
 #include <cstring> // memcpy
@@ -160,3 +161,5 @@ NAMESPACE_SOUP
 		}
 	}
 }
+
+#endif

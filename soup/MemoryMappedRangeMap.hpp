@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filesystem.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 NAMESPACE_SOUP
 {
@@ -83,3 +84,5 @@ NAMESPACE_SOUP
 	};
 	static_assert(sizeof(MemoryMappedRangeMap<uint32_t, uint32_t>::Entry) == 3 * 4);
 }
+
+#endif

@@ -1,4 +1,5 @@
 #include "CompiledExecutable.hpp"
+#if !SOUP_WASM
 
 #include "Compiler.hpp"
 
@@ -29,3 +30,5 @@ NAMESPACE_SOUP
 		return res;
     }
 }
+
+#endif

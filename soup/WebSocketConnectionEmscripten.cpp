@@ -1,6 +1,6 @@
 #include "WebSocketConnectionEmscripten.hpp"
 
-#if SOUP_WASM || SOUP_CODE_INSPECTOR
+#if SOUP_EMSCRIPTEN || SOUP_CODE_INSPECTOR
 
 NAMESPACE_SOUP
 {

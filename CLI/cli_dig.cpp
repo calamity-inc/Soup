@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <iostream>
 
@@ -61,3 +62,5 @@ void cli_dig(size_t argc, std::string* argv)
 		std::cout << "Resolver did not answer\n";
 	}
 }
+
+#endif

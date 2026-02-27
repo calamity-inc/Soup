@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <iostream>
 
@@ -37,3 +38,5 @@ int cli_ircserver()
 	serv.run();
 	return 0;
 }
+
+#endif

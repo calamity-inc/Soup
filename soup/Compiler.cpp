@@ -1,6 +1,5 @@
 #include "Compiler.hpp"
-
-#include "base.hpp"
+#if !SOUP_WASM
 
 #include "os.hpp"
 
@@ -213,3 +212,5 @@ NAMESPACE_SOUP
 		return os::executeLong(prog, std::move(args));
 	}
 }
+
+#endif

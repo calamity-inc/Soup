@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <cstdio>
 #include <filesystem>
@@ -97,3 +98,5 @@ void cli_repl()
 		std::cout << "$ " << std::flush;
 	}
 }
+
+#endif

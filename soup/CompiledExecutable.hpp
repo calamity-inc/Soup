@@ -1,9 +1,11 @@
 #pragma once
 
+#include "base.hpp"
+#if !SOUP_WASM
+
 #include <filesystem>
 #include <string>
 
-#include "base.hpp"
 #include "Tempfile.hpp"
 
 NAMESPACE_SOUP
@@ -19,3 +21,5 @@ NAMESPACE_SOUP
 		[[nodiscard]] static CompiledExecutable fromCpp(const std::string& path);
 	};
 }
+
+#endif

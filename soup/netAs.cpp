@@ -1,4 +1,5 @@
 #include "netAs.hpp"
+#if !SOUP_WASM || SOUP_EMSCRIPTEN
 
 #include "netIntel.hpp"
 #include "string.hpp"
@@ -52,3 +53,5 @@ NAMESPACE_SOUP
 		return false;
 	}
 }
+
+#endif
