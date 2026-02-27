@@ -2508,23 +2508,24 @@ NAMESPACE_SOUP
 
 			case 0x0e: // br_table
 				{
-					std::vector<uint32_t> table;
 					uint32_t num_branches;
 					WASM_READ_OML(num_branches);
-					table.reserve(num_branches);
-					while (num_branches--)
-					{
-						uint32_t depth;
-						WASM_READ_OML(depth);
-						table.emplace_back(depth);
-					}
-					uint32_t depth;
-					WASM_READ_OML(depth);
 					WASM_CHECK_STACK(1);
 					auto index = static_cast<uint32_t>(stack.back().i32); stack.pop_back();
-					if (index < table.size())
+					if (index >= num_branches)
 					{
-						depth = table.at(index);
+						index = num_branches;
+					}
+					uint32_t depth;
+					for (uint32_t i = 0; i != index; ++i)
+					{
+						WASM_READ_OML(depth);
+					}
+					WASM_READ_OML(depth);
+					uint32_t unused_depth;
+					for (uint32_t i = index; i != num_branches; ++i)
+					{
+						WASM_READ_OML(unused_depth);
 					}
 					SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 					{
