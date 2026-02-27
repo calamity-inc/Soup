@@ -490,6 +490,9 @@ NAMESPACE_SOUP
 		std::vector<WasmValue> stack;
 		std::vector<WasmValue> locals;
 		WasmScript& script;
+#if SOUP_WASM_EXCEPTIONS
+		uint32_t current_throw_tagidx;
+#endif
 
 		WasmVm(WasmScript& script) noexcept
 			: script(script)

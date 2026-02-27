@@ -2667,9 +2667,9 @@ NAMESPACE_SOUP
 
 			case 0x08: // throw
 				{
-					uint32_t tagidx; WASM_READ_OML(tagidx);
+					WASM_READ_OML(current_throw_tagidx);
 #if DEBUG_VM
-					std::cout << "throwing tagidx " << tagidx << "\n";
+					std::cout << "throwing tagidx " << current_throw_tagidx << "\n";
 #endif
 					if (!doThrow(r, func_index, ctrlflow))
 					{
@@ -5672,6 +5672,9 @@ NAMESPACE_SOUP
 		callvm.stack = std::move(stack);
 		const auto result = callvm.run(script->code[function_index], depth, function_index);
 		stack = std::move(callvm.stack);
+#if SOUP_WASM_EXCEPTIONS
+		current_throw_tagidx = callvm.current_throw_tagidx;
+#endif
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
 #endif
@@ -5711,19 +5714,28 @@ NAMESPACE_SOUP
 				r.seek(ctrlflow.top().position);
 				ctrlflow.pop();
 				uint32_t num_catches; WASM_READ_OML(num_catches);
-				uint32_t labelidx;
+				uint32_t handler_depth = 0;
 				while (num_catches--)
 				{
 					uint8_t type; r.u8(type);
-					if (type < 0x02) { uint32_t tagidx; WASM_READ_OML(tagidx); }
-					WASM_READ_OML(labelidx);
+					uint32_t tagidx = -1;
+					if (type < 0x02) { WASM_READ_OML(tagidx); }
+					uint32_t labelidx; WASM_READ_OML(labelidx);
+					if (handler_depth == 0
+						&& (tagidx == -1 || tagidx == current_throw_tagidx)
+						)
+					{
+						handler_depth = labelidx + 1; // try_table will 'end' but apparently is not counted in the labelidx, so adding 1.
+					}
 				}
+				if (handler_depth != 0)
+				{
 #if DEBUG_VM
-				std::cout << "unwind: destination labelidx " << labelidx << "\n";
+					std::cout << "unwind: destination labelidx " << handler_depth << "\n";
 #endif
-				// try_table will 'end' but apparently is not counted in the labelidx, so adding 1.
-				skipOverBranch(r, labelidx + 1, script, func_index);
-				return true;
+					skipOverBranch(r, handler_depth, script, func_index);
+					return true;
+				}
 			}
 			ctrlflow.pop();
 		}
