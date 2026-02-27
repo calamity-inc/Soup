@@ -504,6 +504,9 @@ NAMESPACE_SOUP
 			CODE_RETURN_CALL, // will not be returned by `run`
 			CODE_RETURN_CALL_INDIRECT, // will not be returned by `run`
 #endif
+#if SOUP_WASM_EXCEPTIONS
+			CODE_THROW,
+#endif
 		};
 
 		// May throw if an imported C++ function throws.
@@ -535,7 +538,7 @@ NAMESPACE_SOUP
 
 		static SkipOverBranchResult skipOverBranch(Reader& r, uint32_t depth, WasmScript& script, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
-		[[nodiscard]] bool doCall(WasmScript* script, uint32_t type_index, uint32_t function_index, unsigned depth = 0);
+		[[nodiscard]] RunCodeResult doCall(WasmScript* script, uint32_t type_index, uint32_t function_index, unsigned depth = 0);
 		bool moveArguments(WasmVm& callvm, const WasmFunctionType& type) SOUP_EXCAL;
 #if SOUP_WASM_EXCEPTIONS
 		[[nodiscard]] bool doThrow(Reader& r, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) noexcept;

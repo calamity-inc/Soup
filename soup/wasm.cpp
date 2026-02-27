@@ -2543,7 +2543,16 @@ NAMESPACE_SOUP
 					WASM_READ_OML(function_index);
 					uint32_t type_index = script.getTypeIndexForFunction(function_index);
 					SOUP_RETHROW_FALSE(type_index != -1);
-					SOUP_RETHROW_FALSE(doCall(&this->script, type_index, function_index, depth));
+					const auto result = doCall(&this->script, type_index, function_index, depth);
+					SOUP_IF_UNLIKELY (result != CODE_RETURN)
+					{
+#if SOUP_WASM_EXCEPTIONS
+						if (result != CODE_THROW || !doThrow(r, func_index, ctrlflow))
+#endif
+						{
+							return result;
+						}
+					}
 				}
 				break;
 
@@ -2596,7 +2605,16 @@ NAMESPACE_SOUP
 					}
 					else*/
 					{
-						SOUP_RETHROW_FALSE(doCall(funcref.source, type_index, funcref.index, depth));
+						const auto result = doCall(funcref.source, type_index, funcref.index, depth);
+						SOUP_IF_UNLIKELY (result != CODE_RETURN)
+						{
+#if SOUP_WASM_EXCEPTIONS
+							if (result != CODE_THROW || !doThrow(r, func_index, ctrlflow))
+#endif
+							{
+								return result;
+							}
+						}
 					}
 				}
 				break;
@@ -2653,7 +2671,10 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "throwing tagidx " << tagidx << "\n";
 #endif
-					SOUP_RETHROW_FALSE(doThrow(r, func_index, ctrlflow));
+					if (!doThrow(r, func_index, ctrlflow))
+					{
+						return CODE_THROW;
+					}
 				}
 				break;
 #endif
@@ -5561,14 +5582,14 @@ NAMESPACE_SOUP
 	}
 
 	// function_index and type_index must be in-bounds.
-	bool WasmVm::doCall(WasmScript* script, uint32_t type_index, uint32_t function_index, unsigned depth)
+	WasmVm::RunCodeResult WasmVm::doCall(WasmScript* script, uint32_t type_index, uint32_t function_index, unsigned depth)
 	{
 		SOUP_IF_UNLIKELY (depth >= 200)
 		{
 #if DEBUG_VM
 			std::cout << "call: c stack overflow\n";
 #endif
-			return false;
+			return CODE_ERROR;
 		}
 		++depth;
 
@@ -5587,7 +5608,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "call(pedantic): function type is out-of-bounds\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 #endif
 				const auto& func_type = script->types[func_type_index];
@@ -5599,7 +5620,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 					std::cout << "call(pedantic): function type is incompatible with call type\n";
 #endif
-					return false;
+					return CODE_ERROR;
 				}
 			}
 		}
@@ -5615,14 +5636,14 @@ NAMESPACE_SOUP
 			{
 				const auto& type = this->script.types[type_index];
 				imp.ptr(*this, imp.user_data, type);
-				return true;
+				return CODE_RETURN;
 			}
 			SOUP_IF_UNLIKELY (!imp.source)
 			{
 #if DEBUG_VM
 				std::cout << "call: unresolved function import\n";
 #endif
-				return false;
+				return CODE_ERROR;
 			}
 
 			script = imp.source;
@@ -5636,7 +5657,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 			std::cout << "call: function is out-of-bounds\n";
 #endif
-			return false;
+			return CODE_ERROR;
 		}
 #endif
 		const auto& type = this->script.types[type_index];
@@ -5649,16 +5670,19 @@ NAMESPACE_SOUP
 #endif
 		const auto pre_call_stack_size = stack.size();
 		callvm.stack = std::move(stack);
-		SOUP_RETHROW_FALSE(callvm.run(script->code[function_index], depth, function_index) == WasmVm::CODE_RETURN);
+		const auto result = callvm.run(script->code[function_index], depth, function_index);
 		stack = std::move(callvm.stack);
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
 #endif
-		if (const auto result_stack_size = pre_call_stack_size + type.results.size(); stack.size() > result_stack_size)
+		SOUP_IF_LIKELY (result == WasmVm::CODE_RETURN)
 		{
-			stack.erase(stack.begin() + pre_call_stack_size, stack.end() - type.results.size());
+			if (const auto result_stack_size = pre_call_stack_size + type.results.size(); stack.size() > result_stack_size)
+			{
+				stack.erase(stack.begin() + pre_call_stack_size, stack.end() - type.results.size());
+			}
 		}
-		return true;
+		return result;
 	}
 
 	bool WasmVm::moveArguments(WasmVm& callvm, const WasmFunctionType& type)
