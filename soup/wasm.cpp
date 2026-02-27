@@ -2190,7 +2190,7 @@ NAMESPACE_SOUP
 		}
 		WasmVm vm(*script);
 		vm.locals = std::move(args);
-		SOUP_IF_UNLIKELY (!vm.run(script->code[func_index], 0, func_index))
+		SOUP_IF_UNLIKELY (vm.run(script->code[func_index], 0, func_index) != WasmVm::CODE_RETURN)
 		{
 #if DEBUG_LOAD || DEBUG_API
 			std::cout << "call: execution failed\n";
@@ -2255,7 +2255,7 @@ NAMESPACE_SOUP
 
 	// WasmVm
 
-	bool WasmVm::run(const std::string& data, unsigned depth, uint32_t func_index)
+	WasmVm::RunCodeResult WasmVm::run(const std::string& data, unsigned depth, uint32_t func_index)
 	{
 		MemoryRefReader r(data);
 		return run(r, depth, func_index);
@@ -2267,7 +2267,7 @@ NAMESPACE_SOUP
 #define WASM_CHECK_STACK(x) SOUP_IF_UNLIKELY (stack.size() < x) { return {}; }
 #endif
 
-	bool WasmVm::run(Reader& _r, unsigned depth, uint32_t func_index)
+	WasmVm::RunCodeResult WasmVm::run(Reader& _r, unsigned depth, uint32_t func_index)
 	{
 #if SOUP_WASM_TAIL_CALL
 		Reader* pr = &_r;
@@ -2312,7 +2312,7 @@ NAMESPACE_SOUP
 			rr.emplace(script.code[func_index]);
 			pr = &*rr;
 		}
-		return result != CODE_ERROR;
+		return result;
 #else
 		SOUP_RETHROW_FALSE(processLocalDecls(_r));
 		return runCode(_r, depth, func_index);
@@ -5649,7 +5649,7 @@ NAMESPACE_SOUP
 #endif
 		const auto pre_call_stack_size = stack.size();
 		callvm.stack = std::move(stack);
-		SOUP_RETHROW_FALSE(callvm.run(script->code[function_index], depth, function_index));
+		SOUP_RETHROW_FALSE(callvm.run(script->code[function_index], depth, function_index) == WasmVm::CODE_RETURN);
 		stack = std::move(callvm.stack);
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";

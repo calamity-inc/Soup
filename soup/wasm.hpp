@@ -496,23 +496,19 @@ NAMESPACE_SOUP
 		{
 		}
 
-		// May throw if an imported C++ function throws.
-		bool run(const std::string& data, unsigned depth = 0, uint32_t func_index = -1);
-		bool run(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
-
-#if SOUP_WASM_TAIL_CALL
 		enum RunCodeResult
 		{
 			CODE_ERROR = 0,
 			CODE_RETURN,
-			CODE_RETURN_CALL,
-			CODE_RETURN_CALL_INDIRECT,
-		};
-#else
-		using RunCodeResult = bool;
-		static constexpr bool CODE_ERROR = false;
-		static constexpr bool CODE_RETURN = true;
+#if SOUP_WASM_TAIL_CALL
+			CODE_RETURN_CALL, // will not be returned by `run`
+			CODE_RETURN_CALL_INDIRECT, // will not be returned by `run`
 #endif
+		};
+
+		// May throw if an imported C++ function throws.
+		RunCodeResult run(const std::string& data, unsigned depth = 0, uint32_t func_index = -1);
+		RunCodeResult run(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
 
 		bool processLocalDecls(Reader& r) SOUP_EXCAL;
 		RunCodeResult runCode(Reader& r, unsigned depth = 0, uint32_t func_index = -1);
