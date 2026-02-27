@@ -507,7 +507,7 @@ int entry(std::vector<std::string>&& args, bool)
 		{
 			if (args.size() < 3)
 			{
-				std::cout << "Syntax: soup wasm <file>" << std::endl;
+				std::cout << "Syntax: soup wasm <file> [args...]" << std::endl;
 				return 1;
 			}
 			FileReader fr(args[2]);
