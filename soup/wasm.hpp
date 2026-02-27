@@ -36,8 +36,12 @@
 #define SOUP_WASM_EXTENDED_CONST false
 #endif
 
-#ifndef SOUP_WASM_TAIL_CALL
+#ifndef SOUP_WASM_TAIL_CALL // Note: Soup currently traps on tail-calls to C++ functions, which is non-standard.
 #define SOUP_WASM_TAIL_CALL false
+#endif
+
+#ifndef SOUP_WASM_EXCEPTIONS // Very rough draft implementation; likely incorrect in several ways.
+#define SOUP_WASM_EXCEPTIONS false
 #endif
 
 NAMESPACE_SOUP
@@ -518,6 +522,9 @@ NAMESPACE_SOUP
 			std::streamoff position; // -1 for forward jumps
 			size_t stack_size;
 			uint32_t num_values; // Number of values to keep on the stack top after branching. num_results for forward jumps; num_params for backward jumps.
+#if SOUP_WASM_EXCEPTIONS
+			bool is_try_table = false;
+#endif
 		};
 
 		enum SkipOverBranchResult
@@ -534,6 +541,9 @@ NAMESPACE_SOUP
 		[[nodiscard]] bool doBranch(Reader& r, uint32_t depth, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) SOUP_EXCAL;
 		[[nodiscard]] bool doCall(WasmScript* script, uint32_t type_index, uint32_t function_index, unsigned depth = 0);
 		bool moveArguments(WasmVm& callvm, const WasmFunctionType& type) SOUP_EXCAL;
+#if SOUP_WASM_EXCEPTIONS
+		[[nodiscard]] bool doThrow(Reader& r, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) noexcept;
+#endif
 	};
 
 	struct WasmScrapAllocator

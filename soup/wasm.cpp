@@ -2626,6 +2626,38 @@ NAMESPACE_SOUP
 				}
 				break;
 
+#if SOUP_WASM_EXCEPTIONS
+			case 0x1f: // try_table
+				{
+					int32_t result_type; WASM_READ_SOML(result_type);
+					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size(), 0, true });
+					uint32_t num_catches; WASM_READ_OML(num_catches);
+#if DEBUG_VM
+					std::cout << "try_table: result_type=" << result_type << ", num_catches=" << num_catches << "\n";
+#endif
+					while (num_catches--)
+					{
+						uint8_t type; r.u8(type);
+#if DEBUG_VM
+						std::cout << "try_table: catch type: " << (int)type << "\n";
+#endif
+						if (type < 0x02) { uint32_t tagidx; WASM_READ_OML(tagidx); }
+						uint32_t labelidx; WASM_READ_OML(labelidx);
+					}
+				}
+				break;
+
+			case 0x08: // throw
+				{
+					uint32_t tagidx; WASM_READ_OML(tagidx);
+#if DEBUG_VM
+					std::cout << "throwing tagidx " << tagidx << "\n";
+#endif
+					SOUP_RETHROW_FALSE(doThrow(r, func_index, ctrlflow));
+				}
+				break;
+#endif
+
 			case 0x20: // local.get
 				{
 					uint32_t local_index;
@@ -5117,6 +5149,9 @@ NAMESPACE_SOUP
 				++depth;
 				break;
 
+#if SOUP_WASM_EXCEPTIONS
+			case 0x08: // throw
+#endif
 			case 0x0c: // br
 			case 0x0d: // br_if
 			case 0x10: // call
@@ -5164,6 +5199,21 @@ NAMESPACE_SOUP
 			case 0x1c: // select t
 				r.skip(2);
 				break;
+
+#if SOUP_WASM_EXCEPTIONS
+			case 0x1f: // try_table
+				{
+					int32_t result_type; WASM_READ_SOML(result_type);
+					uint32_t num_catches; WASM_READ_OML(num_catches);
+					while (num_catches--)
+					{
+						uint8_t type; r.u8(type);
+						if (type < 0x02) { uint32_t tagidx; WASM_READ_OML(tagidx); }
+						uint32_t labelidx; WASM_READ_OML(labelidx);
+					}
+				}
+				break;
+#endif
 
 			case 0x28: // i32.load
 			case 0x29: // i64.load
@@ -5626,4 +5676,34 @@ NAMESPACE_SOUP
 		}
 		return true;
 	}
+
+#if SOUP_WASM_EXCEPTIONS
+	bool WasmVm::doThrow(Reader& r, uint32_t func_index, std::stack<CtrlFlowEntry>& ctrlflow) noexcept
+	{
+		while (!ctrlflow.empty())
+		{
+			if (ctrlflow.top().is_try_table)
+			{
+				r.seek(ctrlflow.top().position);
+				ctrlflow.pop();
+				uint32_t num_catches; WASM_READ_OML(num_catches);
+				uint32_t labelidx;
+				while (num_catches--)
+				{
+					uint8_t type; r.u8(type);
+					if (type < 0x02) { uint32_t tagidx; WASM_READ_OML(tagidx); }
+					WASM_READ_OML(labelidx);
+				}
+#if DEBUG_VM
+				std::cout << "unwind: destination labelidx " << labelidx << "\n";
+#endif
+				// try_table will 'end' but apparently is not counted in the labelidx, so adding 1.
+				skipOverBranch(r, labelidx + 1, script, func_index);
+				return true;
+			}
+			ctrlflow.pop();
+		}
+		return false;
+	}
+#endif
 }
