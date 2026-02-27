@@ -1141,6 +1141,10 @@ spanning over multiple lines */
 			r.replaceAll(str, "x"); // This shouldn't infinitely loop.
 			assert(str == "xxx");
 		}
+
+		assert(Regex("(?s).(?-s).").toFullString() == "/(?s).(?-s)./");
+		assert(Regex(".(?-s).", RE_DOTALL).toFullString() == "/.(?-s)./s");
+		assert(Regex("(?s:.)").toFullString() == "/(?s:.)/");
 	});
 
 	test("MessageStream", []

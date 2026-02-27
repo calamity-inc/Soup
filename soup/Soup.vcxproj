@@ -1514,6 +1514,8 @@
     <ClCompile Include="lzf.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="Rc4State.cpp" />
+    <ClCompile Include="RegexConstraint.cpp" />
+    <ClCompile Include="RegexGroupConstraint.cpp" />
     <ClCompile Include="ReplacementHook.cpp" />
     <ClCompile Include="HookBase.cpp" />
     <ClCompile Include="HttpRequestTask.cpp" />

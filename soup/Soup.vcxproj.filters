@@ -2525,6 +2525,12 @@
     <ClCompile Include="whirlpool.cpp">
       <Filter>data\hash</Filter>
     </ClCompile>
+    <ClCompile Include="RegexConstraint.cpp">
+      <Filter>data\regex</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexGroupConstraint.cpp">
+      <Filter>data\regex\constraints</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
