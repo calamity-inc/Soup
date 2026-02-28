@@ -503,12 +503,12 @@ NAMESPACE_SOUP
 		{
 			CODE_ERROR = 0,
 			CODE_RETURN,
+#if SOUP_WASM_EXCEPTIONS
+			CODE_THROW,
+#endif
 #if SOUP_WASM_TAIL_CALL
 			CODE_RETURN_CALL, // will not be returned by `run`
 			CODE_RETURN_CALL_INDIRECT, // will not be returned by `run`
-#endif
-#if SOUP_WASM_EXCEPTIONS
-			CODE_THROW,
 #endif
 		};
 
