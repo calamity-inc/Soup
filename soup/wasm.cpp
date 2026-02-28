@@ -546,13 +546,16 @@ NAMESPACE_SOUP
 		SEC_FUNCTION = 3,
 		SEC_TABLE = 4,
 		SEC_MEMORY = 5,
+#if SOUP_WASM_EXCEPTIONS
+		SEC_TAG = 13,
+#endif
 		SEC_GLOBAL = 6,
 		SEC_EXPORT = 7,
 		SEC_START = 8,
 		SEC_ELEM = 9,
+		SEC_DATA_COUNT = 12,
 		SEC_CODE = 10,
 		SEC_DATA = 11,
-		SEC_DATA_COUNT = 12,
 	};
 
 	bool WasmScript::load(Reader& r) SOUP_EXCAL
@@ -592,12 +595,18 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 				std::cout << "Unhandled section type: " << (int)section_type << " (size: " << section_size << ")\n";
 #endif
-#if !SOUP_WASM_PEDANTIC
 				SOUP_IF_UNLIKELY (section_size == 0)
-#endif
 				{
 					return false;
 				}
+#if SOUP_WASM_PEDANTIC
+	#if SOUP_WASM_EXCEPTIONS
+				if (section_type != SEC_TAG)
+	#endif
+				{
+					return false;
+				}
+#endif
 				r.seek(section_end);
 				break;
 
@@ -1336,7 +1345,7 @@ NAMESPACE_SOUP
 		SOUP_IF_UNLIKELY (r.getPosition() != pos_after_branching)
 		{
 #if DEBUG_LOAD
-			std::cout << "load(pedantic): skipOverBranch bailed early\n";
+			std::cout << "load(pedantic): skipOverBranch bailed early at position " << pos_after_branching << "\n";
 #endif
 			return false;
 		}
@@ -2254,6 +2263,7 @@ NAMESPACE_SOUP
 		}
 		WasmVm vm(*script);
 		vm.locals = std::move(args);
+		//std::cout << "code: " << string::bin2hex(script->code[func_index]) << "\n";
 		SOUP_IF_UNLIKELY (vm.run(script->code[func_index], 0, func_index) != WasmVm::CODE_RETURN)
 		{
 #if DEBUG_LOAD || DEBUG_API
@@ -5479,6 +5489,7 @@ NAMESPACE_SOUP
 #if SOUP_WASM_EXCEPTIONS
 			case 0x1f: // try_table
 				{
+					--depth;
 					int32_t result_type; WASM_READ_SOML(result_type);
 					uint32_t num_catches; WASM_READ_OML(num_catches);
 					while (num_catches--)
