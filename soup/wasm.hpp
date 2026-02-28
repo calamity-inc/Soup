@@ -40,7 +40,7 @@
 #define SOUP_WASM_TAIL_CALL false
 #endif
 
-#ifndef SOUP_WASM_EXCEPTIONS // Very rough draft implementation; likely incorrect in several ways.
+#ifndef SOUP_WASM_EXCEPTIONS
 #define SOUP_WASM_EXCEPTIONS false
 #endif
 
@@ -57,10 +57,10 @@ NAMESPACE_SOUP
 		WASM_F64 = 0x7C, // -4
 		//WASM_V128 = 0x7B, // -5 (from the simd extension, which is currently not supported by Soup)
 		WASM_FUNCREF = 0x70,
+		WASM_EXTERNREF = 0x6F,
 #if SOUP_WASM_EXCEPTIONS
 		WASM_EXNREF = 0x69, // exception ref
 #endif
-		WASM_EXTERNREF = 0x6F,
 	};
 	[[nodiscard]] WasmType wasm_type_from_string(const std::string& str) noexcept;
 	[[nodiscard]] std::string wasm_type_to_string(WasmType type) SOUP_EXCAL;
@@ -333,6 +333,9 @@ NAMESPACE_SOUP
 			IE_kTable = 1,
 			IE_kMemory = 2,
 			IE_kGlobal = 3,
+#if SOUP_WASM_EXCEPTIONS
+			IE_kTag = 4,
+#endif
 		};
 
 		struct Export
@@ -341,17 +344,30 @@ NAMESPACE_SOUP
 			uint32_t index;
 		};
 
+#if SOUP_WASM_EXCEPTIONS
+		struct Tag
+		{
+			uint32_t type_index;
+		};
+#endif
+
 		std::vector<FunctionImport> function_imports{};
 		std::vector<GlobalImport> global_imports{};
 		std::vector<TableImport> table_imports{};
 #if SOUP_WASM_MULTI_MEMORY
 		std::vector<MemoryImport> memory_imports;
-		std::vector<SharedPtr<Memory>> memories;
 #else
 		Optional<MemoryImport> memory_import;
-		SharedPtr<Memory> memory;
+#endif
+#if SOUP_WASM_EXCEPTIONS
+		std::vector<Import> tag_imports{};
 #endif
 		std::unordered_map<std::string, Export> export_map{};
+#if SOUP_WASM_MULTI_MEMORY
+		std::vector<SharedPtr<Memory>> memories;
+#else
+		SharedPtr<Memory> memory;
+#endif
 		std::vector<uint32_t> functions{}; // (function_index - function_imports.size()) -> type_index
 		std::vector<WasmFunctionType> types{};
 		std::vector<SharedPtr<WasmValue>> globals{};
@@ -360,6 +376,9 @@ NAMESPACE_SOUP
 		std::vector<SharedPtr<Table>> tables{};
 		std::vector<DataSegment> data_segments{};
 		std::vector<ElemSegment> elem_segments{};
+#if SOUP_WASM_EXCEPTIONS
+		std::vector<SharedPtr<Tag>> tags{};
+#endif
 		StructMap custom_data;
 		WasmSharedEnvironment* shared_env = nullptr;
 		uint32_t start_func_idx = -1;
@@ -510,7 +529,7 @@ NAMESPACE_SOUP
 		std::vector<WasmValue> locals;
 		WasmScript& script;
 #if SOUP_WASM_EXCEPTIONS
-		uint32_t current_throw_tagidx;
+		WasmScript::Tag* current_throw_tag;
 #endif
 
 		WasmVm(WasmScript& script) noexcept

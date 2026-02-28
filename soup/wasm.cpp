@@ -196,10 +196,10 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/store1: pass
 - multi-memory/store2: pass
 - multi-memory/traps0: pass
-- exceptions/tag: FAIL
+- exceptions/tag: pass
 - exceptions/throw: pass
 - exceptions/throw_ref: pass
-- exceptions/try_table: FAIL
+- exceptions/try_table: pass
 */
 
 NAMESPACE_SOUP
@@ -212,6 +212,9 @@ NAMESPACE_SOUP
 		if (str == "f64") { return WASM_F64; }
 		if (str == "funcref") { return WASM_FUNCREF; }
 		if (str == "externref") { return WASM_EXTERNREF; }
+#if SOUP_WASM_EXCEPTIONS
+		if (str == "exnref") { return WASM_EXNREF; }
+#endif
 		return static_cast<WasmType>(0);
 	}
 
@@ -224,10 +227,10 @@ NAMESPACE_SOUP
 		case WASM_F32: return "f32";
 		case WASM_F64: return "f64";
 		case WASM_FUNCREF: return "funcref";
+		case WASM_EXTERNREF: return "externref";
 #if SOUP_WASM_EXCEPTIONS
 		case WASM_EXNREF: return "exnref";
 #endif
-		case WASM_EXTERNREF: return "externref";
 		}
 		return std::to_string(type);
 	}
@@ -786,6 +789,16 @@ NAMESPACE_SOUP
 							global_imports.emplace_back(GlobalImport{ { std::move(module_name), std::move(field_name) }, static_cast<WasmType>(type), (bool)(flags & 1)});
 							globals.emplace_back();
 						}
+#if SOUP_WASM_EXCEPTIONS
+						else if (kind == IE_kTag)
+						{
+							uint8_t type; r.u8(type);
+							SOUP_RETHROW_FALSE(type == 0);
+							uint32_t typeidx; WASM_READ_OML(typeidx);
+							tag_imports.emplace_back(std::move(module_name), std::move(field_name));
+							tags.emplace_back();
+						}
+#endif
 						else
 						{
 #if DEBUG_LOAD
@@ -915,6 +928,26 @@ NAMESPACE_SOUP
 					}
 				}
 				break;
+
+#if SOUP_WASM_EXCEPTIONS
+			case SEC_TAG:
+				{
+					uint32_t num_tags;
+					WASM_READ_OML(num_tags);
+#if DEBUG_LOAD
+					std::cout << num_tags << " tag(s)\n";
+#endif
+					tags.reserve(tags.size() + num_tags);
+					while (num_tags--)
+					{
+						uint8_t type; r.u8(type);
+						SOUP_RETHROW_FALSE(type == 0);
+						uint32_t typeidx; WASM_READ_OML(typeidx);
+						tags.emplace_back(soup::make_shared<Tag>(typeidx));
+					}
+				}
+				break;
+#endif
 
 			case SEC_GLOBAL:
 				{
@@ -1390,6 +1423,15 @@ NAMESPACE_SOUP
 			return true;
 		}
 #endif
+#if SOUP_WASM_EXCEPTIONS
+		for (uint32_t i = 0; i != tag_imports.size(); ++i)
+		{
+			if (!tags[i])
+			{
+				return true;
+			}
+		}
+#endif
 		return false;
 	}
 
@@ -1601,6 +1643,25 @@ NAMESPACE_SOUP
 					)
 				{
 					this->memory = other.memory;
+				}
+			}
+		}
+#endif
+#if SOUP_WASM_EXCEPTIONS
+		for (size_t i = 0; i != tag_imports.size(); ++i)
+		{
+			const auto& ti = tag_imports[i];
+			if (ti.module_name == module_name)
+			{
+				if (auto e = other.export_map.find(ti.field_name); e != other.export_map.end())
+				{
+					if (e->second.kind == IE_kTag
+						&& e->second.index < other.tags.size()
+						&& other.tags[e->second.index]
+						)
+					{
+						tags[i] = other.tags[e->second.index];
+					}
 				}
 			}
 		}
@@ -2919,10 +2980,13 @@ NAMESPACE_SOUP
 
 			case 0x08: // throw
 				{
-					WASM_READ_OML(current_throw_tagidx);
+					uint32_t tagidx;
+					WASM_READ_OML(tagidx);
 #if DEBUG_VM
-					std::cout << "throw: tagidx=" << current_throw_tagidx << "\n";
+					std::cout << "throw: tagidx=" << tagidx << "\n";
 #endif
+					SOUP_RETHROW_FALSE(tagidx < script.tags.size());
+					current_throw_tag = script.tags[tagidx].get();
 					if (!doThrow(r, func_index, ctrlflow))
 					{
 						return CODE_THROW;
@@ -2932,10 +2996,7 @@ NAMESPACE_SOUP
 
 			case 0x0a: // throw_ref
 				WASM_CHECK_STACK(1);
-				current_throw_tagidx = stack.back().i32;
-#if DEBUG_VM
-				std::cout << "throw_ref: tagidx=" << current_throw_tagidx << "\n";
-#endif
+				current_throw_tag = reinterpret_cast<WasmScript::Tag*>(stack.back().i64);
 				stack.pop_back();
 				if (!doThrow(r, func_index, ctrlflow))
 				{
@@ -5949,7 +6010,7 @@ NAMESPACE_SOUP
 		const auto result = callvm.run(script->code[function_index], depth, function_index);
 		stack = std::move(callvm.stack);
 #if SOUP_WASM_EXCEPTIONS
-		current_throw_tagidx = callvm.current_throw_tagidx;
+		current_throw_tag = callvm.current_throw_tag;
 #endif
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
@@ -5998,7 +6059,7 @@ NAMESPACE_SOUP
 					if (type < 0x02) { WASM_READ_OML(tagidx); }
 					uint32_t labelidx; WASM_READ_OML(labelidx);
 					if (handler_depth == 0
-						&& (tagidx == -1 || tagidx == current_throw_tagidx)
+						&& (tagidx >= script.tags.size() || script.tags[tagidx].get() == current_throw_tag)
 						)
 					{
 						handler_depth = labelidx + 1; // try_table will 'end' but apparently is not counted in the labelidx, so adding 1.
@@ -6014,7 +6075,7 @@ NAMESPACE_SOUP
 					ctrlflow.pop();
 					if (push_ref)
 					{
-						stack.emplace_back(WASM_EXNREF).i32 = current_throw_tagidx;
+						stack.emplace_back(WASM_EXNREF).i64 = reinterpret_cast<uintptr_t>(current_throw_tag);
 					}
 					return true;
 				}
