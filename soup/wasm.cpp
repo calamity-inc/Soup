@@ -5784,7 +5784,6 @@ NAMESPACE_SOUP
 			if (ctrlflow.top().is_try_table)
 			{
 				r.seek(ctrlflow.top().position);
-				ctrlflow.pop();
 				uint32_t num_catches; WASM_READ_OML(num_catches);
 				uint32_t handler_depth = 0;
 				while (num_catches--)
@@ -5806,6 +5805,7 @@ NAMESPACE_SOUP
 					std::cout << "unwind: destination labelidx " << handler_depth << "\n";
 #endif
 					skipOverBranch(r, handler_depth, script, func_index);
+					ctrlflow.pop();
 					return true;
 				}
 			}
