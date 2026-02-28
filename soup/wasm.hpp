@@ -36,7 +36,7 @@
 #define SOUP_WASM_EXTENDED_CONST false
 #endif
 
-#ifndef SOUP_WASM_TAIL_CALL // Note: Soup currently traps on tail-calls to C++ functions, which is non-standard.
+#ifndef SOUP_WASM_TAIL_CALL
 #define SOUP_WASM_TAIL_CALL false
 #endif
 

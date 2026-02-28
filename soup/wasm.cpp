@@ -2606,16 +2606,22 @@ NAMESPACE_SOUP
 				SOUP_RETHROW_FALSE(elem_index < table->values.size());
 				SOUP_RETHROW_FALSE(table->values[elem_index] != 0);
 				const auto& funcref = script.shared_env->getFuncRef(table->values[elem_index]);
-				SOUP_RETHROW_FALSE(funcref.source == &script);
+				SOUP_IF_UNLIKELY (funcref.source != &script)
+				{
+					return doCall(funcref.source, type_index, funcref.index, depth);
+				}
 				func_index = funcref.index;
 #if SOUP_WASM_PEDANTIC
 				SOUP_RETHROW_FALSE(this->script.types[type_index] == script.types[script.getTypeIndexForFunction(func_index)]);
 #endif
 			}
+			SOUP_IF_UNLIKELY (func_index < script.function_imports.size())
+			{
+				return doCall(&script, script.function_imports[func_index].type_index, func_index, depth);
+			}
 #if DEBUG_VM
 			std::cout << "tail-call, weee! going to " << func_index << "\n";
 #endif
-			SOUP_RETHROW_FALSE(func_index >= script.function_imports.size());
 			func_index -= script.function_imports.size();
 			SOUP_RETHROW_FALSE(func_index < script.code.size());
 			locals.clear();
