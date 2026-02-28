@@ -2444,7 +2444,7 @@ NAMESPACE_SOUP
 			case 0x02: // block
 				{
 					int32_t result_type; WASM_READ_SOML(result_type);
-					size_t stack_size = stack.size();
+					uint32_t stack_size = stack.size();
 					uint32_t num_values = 0;
 					if (result_type != -64)
 					{
@@ -2461,7 +2461,7 @@ NAMESPACE_SOUP
 							num_values = 1;
 						}
 					}
-					ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
+					ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)-1, stack_size, num_values });
 #if DEBUG_VM
 					std::cout << "block at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_values << "\n";
 #endif
@@ -2471,7 +2471,7 @@ NAMESPACE_SOUP
 			case 0x03: // loop
 				{
 					int32_t result_type; WASM_READ_SOML(result_type);
-					size_t stack_size = stack.size();
+					uint32_t stack_size = stack.size();
 					uint32_t num_values = 0;
 					if (result_type != -64)
 					{
@@ -2484,7 +2484,7 @@ NAMESPACE_SOUP
 							stack_size -= num_values;
 						}
 					}
-					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack_size, num_values });
+					ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)r.getPosition(), stack_size, num_values });
 #if DEBUG_VM
 					std::cout << "loop at position " << r.getPosition() << " with stack size " << stack.size() << " + " << num_values << "\n";
 #endif
@@ -2494,7 +2494,7 @@ NAMESPACE_SOUP
 			case 0x04: // if
 				{
 					int32_t result_type; WASM_READ_SOML(result_type);
-					size_t stack_size = stack.size();
+					uint32_t stack_size = stack.size();
 					uint32_t num_values = 0;
 					if (result_type != -64)
 					{
@@ -2516,14 +2516,14 @@ NAMESPACE_SOUP
 					//std::cout << "if: condition is " << (value.i32 ? "true" : "false") << "\n";
 					if (value.i32)
 					{
-						ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
+						ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)-1, stack_size, num_values });
 					}
 					else
 					{
 						if (skipOverBranch(r, 0, script, func_index) == ELSE_REACHED)
 						{
 							// we're in the 'else' branch
-							ctrlflow.emplace(CtrlFlowEntry{ (std::streamoff)-1, stack_size, num_values });
+							ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)-1, stack_size, num_values });
 						}
 					}
 				}
@@ -2712,7 +2712,7 @@ NAMESPACE_SOUP
 			case 0x1f: // try_table
 				{
 					int32_t result_type; WASM_READ_SOML(result_type);
-					ctrlflow.emplace(CtrlFlowEntry{ r.getPosition(), stack.size(), 0, true });
+					ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)r.getPosition(), (uint32_t)stack.size(), 0, true });
 					uint32_t num_catches; WASM_READ_OML(num_catches);
 #if DEBUG_VM
 					std::cout << "try_table: result_type=" << result_type << ", num_catches=" << num_catches << "\n";
