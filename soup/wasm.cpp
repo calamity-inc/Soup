@@ -37,8 +37,8 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 > Use wast2json from wabt then run `soup wast [jsonfile]`
 > Results:
 - address: pass
-- align: pedantic_pass (assumes multi-memory is not supported)
-- binary: pedantic_pass (assumes multi-memory is not supported)
+- align: pedantic_pass
+- binary: pedantic_pass
 - binary-leb128: pedantic_pass
 - block: pass
 - br: pass
@@ -101,6 +101,8 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - ref_is_null: pass
 - ref_null: pass
 - return: pass
+- return_call: pass
+- return_call_indirect: pass
 - select: pass
 - skip-stack-guard-page: pass
 - stack: pass
@@ -193,6 +195,10 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/store1: pass
 - multi-memory/store2: pass
 - multi-memory/traps0: pass
+- exceptions/tag: FAIL
+- exceptions/throw: FAIL
+- exceptions/throw_ref: FAIL
+- exceptions/try_table: FAIL
 */
 
 NAMESPACE_SOUP
@@ -528,6 +534,23 @@ NAMESPACE_SOUP
 		return load(r);
 	}
 
+	enum WasmSectionType : uint8_t
+	{
+		SEC_CUSTOM = 0,
+		SEC_TYPE = 1,
+		SEC_IMPORT = 2,
+		SEC_FUNCTION = 3,
+		SEC_TABLE = 4,
+		SEC_MEMORY = 5,
+		SEC_GLOBAL = 6,
+		SEC_EXPORT = 7,
+		SEC_START = 8,
+		SEC_ELEM = 9,
+		SEC_CODE = 10,
+		SEC_DATA = 11,
+		SEC_DATA_COUNT = 12,
+	};
+
 	bool WasmScript::load(Reader& r) SOUP_EXCAL
 	{
 		uint32_t u;
@@ -542,10 +565,20 @@ NAMESPACE_SOUP
 			return false;
 		}
 		uint32_t data_count = -1;
+#if SOUP_WASM_PEDANTIC
+		uint32_t sections_set = 0;
+#endif
 		while (r.hasMore())
 		{
 			uint8_t section_type;
 			r.u8(section_type);
+#if SOUP_WASM_PEDANTIC
+			if (section_type != SEC_CUSTOM && section_type < 32)
+			{
+				SOUP_RETHROW_FALSE((sections_set & (1 << section_type)) == 0);
+				sections_set |= (1 << section_type);
+			}
+#endif
 			uint32_t section_size;
 			WASM_READ_OML(section_size);
 			const auto section_end = r.getPosition() + section_size;
@@ -565,7 +598,7 @@ NAMESPACE_SOUP
 				break;
 
 #if SOUP_WASM_PEDANTIC
-			case 0: // Custom
+			case SEC_CUSTOM:
 				{
 					SOUP_RETHROW_FALSE(section_size != 0);
 					uint32_t name_len;
@@ -584,12 +617,15 @@ NAMESPACE_SOUP
 				break;
 #endif
 
-			case 1: // Type
+			case SEC_TYPE:
 				{
 					uint32_t num_types;
 					WASM_READ_OML(num_types);
 #if DEBUG_LOAD
 					std::cout << num_types << " type(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_IMPORT)) == 0);
 #endif
 					while (num_types--)
 					{
@@ -643,12 +679,15 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 2: // Import
+			case SEC_IMPORT:
 				{
 					uint32_t num_imports;
 					WASM_READ_OML(num_imports);
 #if DEBUG_LOAD
 					std::cout << num_imports << " import(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_FUNCTION)) == 0);
 #endif
 					while (num_imports--)
 					{
@@ -745,12 +784,15 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 3: // Function
+			case SEC_FUNCTION:
 				{
 					uint32_t num_functions;
 					WASM_READ_OML(num_functions);
 #if DEBUG_LOAD
 					std::cout << num_functions << " function type(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_TABLE)) == 0);
 #endif
 					functions.reserve(num_functions);
 					while (num_functions--)
@@ -763,11 +805,14 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 4: // Table
+			case SEC_TABLE:
 				{
 					uint32_t num_tables; WASM_READ_OML(num_tables);
 #if DEBUG_LOAD
 					std::cout << num_tables << " table(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_MEMORY)) == 0);
 #endif
 					tables.reserve(num_tables);
 					while (num_tables--)
@@ -793,11 +838,14 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 5: // Memory
+			case SEC_MEMORY:
 				{
 					uint32_t num_memories; WASM_READ_OML(num_memories);
 #if SOUP_WASM_MULTI_MEMORY
 					memories.reserve(memories.size() + num_memories);
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_GLOBAL)) == 0);
 #endif
 					while (num_memories--)
 					{
@@ -855,12 +903,15 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 6: // Global
+			case SEC_GLOBAL:
 				{
 					uint32_t num_globals;
 					WASM_READ_OML(num_globals);
 #if DEBUG_LOAD
 					std::cout << num_globals << " global(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_EXPORT)) == 0);
 #endif
 					globals.reserve(globals.size() + num_globals);
 					while (num_globals--)
@@ -882,12 +933,15 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 7: // Export
+			case SEC_EXPORT:
 				{
 					uint32_t num_exports;
 					WASM_READ_OML(num_exports);
 #if DEBUG_LOAD
 					std::cout << num_exports << " export(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_START)) == 0);
 #endif
 					export_map.reserve(num_exports);
 					while (num_exports--)
@@ -906,7 +960,7 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 8: // Start
+			case SEC_START:
 				SOUP_IF_UNLIKELY (start_func_idx != -1)
 				{
 #if DEBUG_LOAD
@@ -920,12 +974,15 @@ NAMESPACE_SOUP
 #endif
 				break;
 
-			case 9: // Elem
+			case SEC_ELEM:
 				{
 					uint32_t num_segments;
 					WASM_READ_OML(num_segments);
 #if DEBUG_LOAD
 					std::cout << num_segments << " element segment(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_DATA_COUNT)) == 0);
 #endif
 					for (uint32_t i = 0; i != num_segments; ++i)
 					{
@@ -1015,17 +1072,20 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 12: // DataCount
+			case SEC_DATA_COUNT:
 				WASM_READ_OML(data_count);
 				has_data_count_section = true;
 				break;
 
-			case 10: // Code
+			case SEC_CODE:
 				{
 					uint32_t num_functions;
 					WASM_READ_OML(num_functions);
 #if DEBUG_LOAD
 					std::cout << num_functions << " function(s)\n";
+#endif
+#if SOUP_WASM_PEDANTIC
+					SOUP_RETHROW_FALSE((sections_set & (1 << SEC_DATA)) == 0);
 #endif
 					code.reserve(num_functions);
 					while (num_functions--)
@@ -1052,17 +1112,13 @@ NAMESPACE_SOUP
 				}
 				break;
 
-			case 11: // Data
+			case SEC_DATA:
 				{
 					uint32_t num_segments;
 					WASM_READ_OML(num_segments);
 #if DEBUG_LOAD
 					std::cout << num_segments << " data segment(s)\n";
 #endif
-					if (data_count != -1)
-					{
-						SOUP_RETHROW_FALSE(data_count == num_segments);
-					}
 					data_segments.reserve(num_segments);
 					for (uint32_t i = 0; i != num_segments; ++i)
 					{
@@ -1123,6 +1179,10 @@ NAMESPACE_SOUP
 			}
 		}
 		SOUP_RETHROW_FALSE(functions.size() == code.size());
+		if (data_count != -1)
+		{
+			SOUP_RETHROW_FALSE(data_count == data_segments.size());
+		}
 		return true;
 	}
 
@@ -2299,6 +2359,9 @@ NAMESPACE_SOUP
 				const auto& funcref = script.shared_env->getFuncRef(table->values[elem_index]);
 				SOUP_RETHROW_FALSE(funcref.source == &script);
 				func_index = funcref.index;
+#if SOUP_WASM_PEDANTIC
+				SOUP_RETHROW_FALSE(this->script.types[type_index] == script.types[script.getTypeIndexForFunction(func_index)]);
+#endif
 			}
 #if DEBUG_VM
 			std::cout << "tail-call, weee! going to " << func_index << "\n";
@@ -5262,8 +5325,12 @@ NAMESPACE_SOUP
 				{
 					WASM_READ_MEMARG;
 					SOUP_UNUSED(memidx);
-#if SOUP_WASM_PEDANTIC && !SOUP_WASM_MULTI_MEMORY
+#if SOUP_WASM_PEDANTIC
+	#if SOUP_WASM_MULTI_MEMORY
+					SOUP_RETHROW_FALSE(align < 0x80);
+	#else
 					SOUP_RETHROW_FALSE(align < 0x20);
+	#endif
 #endif
 				}
 				break;
@@ -5511,6 +5578,11 @@ NAMESPACE_SOUP
 #endif
 				}
 				break;
+
+#if SOUP_WASM_PEDANTIC
+			case 0xff:
+				return PEDANTIC_ERROR;
+#endif
 			}
 		}
 #if DEBUG_VM
