@@ -197,7 +197,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/traps0: pass
 - exceptions/tag: FAIL
 - exceptions/throw: pass
-- exceptions/throw_ref: FAIL
+- exceptions/throw_ref: pass
 - exceptions/try_table: FAIL
 */
 
@@ -223,6 +223,9 @@ NAMESPACE_SOUP
 		case WASM_F32: return "f32";
 		case WASM_F64: return "f64";
 		case WASM_FUNCREF: return "funcref";
+#if SOUP_WASM_EXCEPTIONS
+		case WASM_EXNREF: return "exnref";
+#endif
 		case WASM_EXTERNREF: return "externref";
 		}
 		return std::to_string(type);
@@ -2733,12 +2736,25 @@ NAMESPACE_SOUP
 				{
 					WASM_READ_OML(current_throw_tagidx);
 #if DEBUG_VM
-					std::cout << "throwing tagidx " << current_throw_tagidx << "\n";
+					std::cout << "throw: tagidx=" << current_throw_tagidx << "\n";
 #endif
 					if (!doThrow(r, func_index, ctrlflow))
 					{
 						return CODE_THROW;
 					}
+				}
+				break;
+
+			case 0x0a: // throw_ref
+				WASM_CHECK_STACK(1);
+				current_throw_tagidx = stack.back().i32;
+#if DEBUG_VM
+				std::cout << "throw_ref: tagidx=" << current_throw_tagidx << "\n";
+#endif
+				stack.pop_back();
+				if (!doThrow(r, func_index, ctrlflow))
+				{
+					return CODE_THROW;
 				}
 				break;
 #endif
@@ -5379,6 +5395,7 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 			case 0x00: // unreachable
 			case 0x01: // nop
+			case 0x0a: // throw_ref
 			case 0x0f: // return
 			case 0x1a: // drop
 			case 0x1b: // select
@@ -5787,6 +5804,7 @@ NAMESPACE_SOUP
 				r.seek(ctrlflow.top().position);
 				uint32_t num_catches; WASM_READ_OML(num_catches);
 				uint32_t handler_depth = 0;
+				bool push_ref = false;
 				while (num_catches--)
 				{
 					uint8_t type; r.u8(type);
@@ -5798,6 +5816,7 @@ NAMESPACE_SOUP
 						)
 					{
 						handler_depth = labelidx + 1; // try_table will 'end' but apparently is not counted in the labelidx, so adding 1.
+						push_ref = (type & 1);
 					}
 				}
 				if (handler_depth != 0)
@@ -5807,6 +5826,10 @@ NAMESPACE_SOUP
 #endif
 					skipOverBranch(r, handler_depth, script, func_index);
 					ctrlflow.pop();
+					if (push_ref)
+					{
+						stack.emplace_back(WASM_EXNREF).i32 = current_throw_tagidx;
+					}
 					return true;
 				}
 			}

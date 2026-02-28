@@ -57,6 +57,9 @@ NAMESPACE_SOUP
 		WASM_F64 = 0x7C, // -4
 		//WASM_V128 = 0x7B, // -5 (from the simd extension, which is currently not supported by Soup)
 		WASM_FUNCREF = 0x70,
+#if SOUP_WASM_EXCEPTIONS
+		WASM_EXNREF = 0x69, // exception ref
+#endif
 		WASM_EXTERNREF = 0x6F,
 	};
 	[[nodiscard]] WasmType wasm_type_from_string(const std::string& str) noexcept;
