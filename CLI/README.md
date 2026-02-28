@@ -1,6 +1,6 @@
 # Soup CLI
 
-The Soup CLI offers many useful tools to test and make use of functionality provided in the Soup library, including:
+The Soup CLI offers many tools to test and make use of functionality provided in the Soup library, including:
 
 - Keyboard and gamepad visualisation (`soup keyboard`, `soup gamepad`)
 - WASM runtime with WASI support (`soup wasm <file> [args...]`)
