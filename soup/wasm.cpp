@@ -20,8 +20,9 @@
 #define DEBUG_VM false
 #define DEBUG_BRANCHING false
 #define DEBUG_API false
+#define DEBUG_GC false
 
-#if DEBUG_LOAD || DEBUG_LINK || DEBUG_VM || DEBUG_BRANCHING || DEBUG_API
+#if DEBUG_LOAD || DEBUG_LINK || DEBUG_VM || DEBUG_BRANCHING || DEBUG_API || DEBUG_GC
 #include <iostream>
 #include "string.hpp"
 #endif
@@ -2271,13 +2272,21 @@ NAMESPACE_SOUP
 
 	WasmScript& WasmSharedEnvironment::createScript() SOUP_EXCAL
 	{
-		return *scripts.emplace_back(new WasmScript(this));
+		WasmScript* scr = new WasmScript(this);
+#if DEBUG_GC
+		std::cout << "createScript: " << (void*)scr << "\n";
+#endif
+		return *scripts.emplace_back(scr);
 	}
 
-	void WasmSharedEnvironment::markScriptAsNoLongerUsed(WasmScript& scr) noexcept
+	void WasmSharedEnvironment::onRefCountHitZero(WasmScript& scr) noexcept
 	{
 		if (!scr.has_created_funcrefs)
 		{
+			// We can bypass the GC because no funcrefs means gcMark will not reach this script, and gcSweep will not have to free any funcref slots.
+#if DEBUG_GC
+			std::cout << "onRefCountHitZero: sweeping " << (void*)&scr << "\n";
+#endif
 			for (auto i = scripts.begin(); i != scripts.end(); ++i)
 			{
 				if (*i == &scr)
@@ -2299,6 +2308,19 @@ NAMESPACE_SOUP
 	uint64_t WasmSharedEnvironment::createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL
 	{
 		scr.has_created_funcrefs = true;
+
+		// Check if there's a free slot to reuse
+		for (size_t i = 0; i != funcrefs.size(); ++i)
+		{
+			if (funcrefs[i].source == nullptr)
+			{
+				funcrefs[i].source = &scr;
+				funcrefs[i].index = func_index;
+				return i + 1;
+			}
+		}
+		
+		// Allocate a new slot
 		funcrefs.emplace_back(&scr, func_index);
 		return funcrefs.size();
 	}
@@ -2308,10 +2330,98 @@ NAMESPACE_SOUP
 		return funcrefs[value - 1];
 	}
 
-	WasmSharedEnvironment::~WasmSharedEnvironment() noexcept
+	void WasmSharedEnvironment::gcMark() noexcept
 	{
 		for (auto& scr : scripts)
 		{
+			for (const auto& g : scr->globals)
+			{
+				if (g->type == WASM_FUNCREF
+					&& g->i64
+					)
+				{
+					const auto& fr = getFuncRef(g->i64);
+					if (fr.source != scr)
+					{
+#if DEBUG_GC
+						std::cout << "gcMark: " << (void*)fr.source << " is reachable via a global in " << scr << "\n";
+#endif
+						fr.source->_gc_reachable = true;
+					}
+				}
+			}
+			for (const auto& t : scr->tables)
+			{
+				if (t->type == WASM_FUNCREF)
+				{
+					for (const auto& fri : t->values)
+					{
+						if (fri)
+						{
+							const auto& fr = getFuncRef(fri);
+							if (fr.source != scr)
+							{
+#if DEBUG_GC
+								std::cout << "gcMark: " << (void*)fr.source << " is reachable via a table in " << scr << "\n";
+#endif
+								fr.source->_gc_reachable = true;
+							}
+						}
+					}
+				}
+			}
+			if (scr->ref_count > 0)
+			{
+#if DEBUG_GC
+				std::cout << "gcMark: " << (void*)scr << " is reachable via ScriptRaii\n";
+#endif
+				scr->_gc_reachable = true;
+			}
+		}
+	}
+
+	void WasmSharedEnvironment::gcSweep() noexcept
+	{
+#if DEBUG_GC
+		std::cout << "gcSweep\n";
+#endif
+		for (auto it = scripts.begin(); it != scripts.end(); )
+		{
+			WasmScript* scr = *it;
+			if (scr->_gc_reachable)
+			{
+#if DEBUG_GC
+				std::cout << "- " << (void*)scr << " is reachable\n";
+#endif
+				// Reset for next mark phase
+				scr->_gc_reachable = false;
+				++it;
+			}
+			else
+			{
+#if DEBUG_GC
+				std::cout << "- " << (void*)scr << " is unreachable; sweeping\n";
+#endif
+				for (auto& fr : funcrefs)
+				{
+					if (fr.source == scr)
+					{
+						fr.source = nullptr;
+					}
+				}
+				delete scr;
+				it = scripts.erase(it);
+			}
+		}
+	}
+
+	WasmSharedEnvironment::~WasmSharedEnvironment() noexcept
+	{
+		for (WasmScript* scr : scripts)
+		{
+#if DEBUG_GC
+			std::cout << "dtor: sweeping " << (void*)scr << "\n";
+#endif
 			delete scr;
 		}
 	}

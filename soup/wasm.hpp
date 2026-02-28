@@ -363,13 +363,14 @@ NAMESPACE_SOUP
 		StructMap custom_data;
 		WasmSharedEnvironment* shared_env = nullptr;
 		uint32_t start_func_idx = -1;
-		uint32_t ref_count : 30;
+		uint32_t ref_count : 29; // how many ScriptRaii are pointing at this script
 		uint32_t has_data_count_section : 1;
 		uint32_t has_created_funcrefs : 1;
+		uint32_t _gc_reachable : 1;
 
-		WasmScript() noexcept : ref_count(0), has_data_count_section(0), has_created_funcrefs(0) {}
+		WasmScript() noexcept : ref_count(0), has_data_count_section(0), has_created_funcrefs(0), _gc_reachable(0) {}
 	protected:
-		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env), ref_count(0), has_data_count_section(0), has_created_funcrefs(0) {}
+		WasmScript(WasmSharedEnvironment* shared_env) : shared_env(shared_env), ref_count(0), has_data_count_section(0), has_created_funcrefs(0), _gc_reachable(0) {}
 		friend WasmSharedEnvironment;
 	public:
 		WasmScript(WasmScript&&) noexcept = default;
@@ -450,11 +451,15 @@ NAMESPACE_SOUP
 		std::vector<FuncRef> funcrefs;
 
 		WasmScript& createScript() SOUP_EXCAL;
-		void markScriptAsNoLongerUsed(WasmScript& scr) noexcept;
+		void onRefCountHitZero(WasmScript& scr) noexcept;
 
 		//[[nodiscard]] uint64_t createFuncRef(wasm_ffi_func_t ptr, uint32_t user_data = 0) SOUP_EXCAL;
 		[[nodiscard]] uint64_t createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] const FuncRef& getFuncRef(uint64_t value) const noexcept;
+
+		void collectGarbage() noexcept { gcMark(); gcSweep(); }
+		void gcMark() noexcept;
+		void gcSweep() noexcept;
 
 		struct ScriptRaii
 		{
@@ -470,7 +475,7 @@ NAMESPACE_SOUP
 			{
 				if (--script.ref_count == 0)
 				{
-					script.shared_env->markScriptAsNoLongerUsed(script);
+					script.shared_env->onRefCountHitZero(script);
 				}
 			}
 

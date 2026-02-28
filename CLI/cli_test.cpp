@@ -1972,32 +1972,41 @@ endif;)") == "");
 			//     (global.get $g)
 			//   )
 			// )
-			WasmScript scr;
-			assert(scr.load(base64::decode("AGFzbQEAAAABCQJgAW8AYAABbwMDAgABBgYBbwHQbwsHDQIDc2V0AAADZ2V0AAEKDQIGACAAJAALBAAjAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
-			assert(scr.instantiate());
-			auto get = scr.getExportedFuntion("get");
-			assert(get);
-			auto set = scr.getExportedFuntion("set");
-			assert(set);
+			WasmSharedEnvironment env;
+			TransientTokenRef wr;
 			{
-				WasmVm vm(scr);
-				assert(vm.run(*get) == WasmVm::CODE_RETURN);
-				assert(!vm.stack.empty());
-				assert(vm.stack.back().type == WASM_EXTERNREF);
-				assert(vm.stack.back().i64 == 0);
+				WasmSharedEnvironment::ScriptRaii scr(env.createScript());
+				wr = scr->custom_data.getStructFromMap(TransientToken);
+				assert(scr->load(base64::decode("AGFzbQEAAAABCQJgAW8AYAABbwMDAgABBgYBbwHQbwsHDQIDc2V0AAADZ2V0AAEKDQIGACAAJAALBAAjAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
+				assert(scr->instantiate());
+				auto get = scr->getExportedFuntion("get");
+				assert(get);
+				auto set = scr->getExportedFuntion("set");
+				assert(set);
+				{
+					WasmVm vm(*scr);
+					assert(vm.run(*get) == WasmVm::CODE_RETURN);
+					assert(!vm.stack.empty());
+					assert(vm.stack.back().type == WASM_EXTERNREF);
+					assert(vm.stack.back().i64 == 0);
+				}
+				{
+					WasmVm vm(*scr);
+					vm.locals.emplace_back((void*)123);
+					assert(vm.run(*set) == WasmVm::CODE_RETURN);
+				}
+				{
+					WasmVm vm(*scr);
+					assert(vm.run(*get) == WasmVm::CODE_RETURN);
+					assert(!vm.stack.empty());
+					assert(vm.stack.back().type == WASM_EXTERNREF);
+					assert(vm.stack.back().i64 == 123);
+				}
+
+				env.collectGarbage();
+				assert(wr.isValid()); // ScriptRaii still in scope; script must not already be free'd
 			}
-			{
-				WasmVm vm(scr);
-				vm.locals.emplace_back((void*)123);
-				assert(vm.run(*set) == WasmVm::CODE_RETURN);
-			}
-			{
-				WasmVm vm(scr);
-				assert(vm.run(*get) == WasmVm::CODE_RETURN);
-				assert(!vm.stack.empty());
-				assert(vm.stack.back().type == WASM_EXTERNREF);
-				assert(vm.stack.back().i64 == 123);
-			}
+			assert(!wr.isValid()); // ScriptRaii went out of scope and the script did not create funcrefs, so it can instantly be free'd
 		});
 		test("funcref global", []
 		{
@@ -2011,31 +2020,41 @@ endif;)") == "");
 			//     )
 			//   )
 			WasmSharedEnvironment env;
-			WasmSharedEnvironment::ScriptRaii scr(env.createScript());
-			assert(scr->load(base64::decode("AGFzbQEAAAABCAJgAAF/YAAAAwMCAAEGBgFwAdBwCwcTAgdpc19udWxsAAAFc2V0XzAAAQoOAgUAIwDRCwYA0gAkAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
-			assert(scr->instantiate());
-			auto is_null = scr->getExportedFuntion("is_null");
-			assert(is_null);
-			auto set_0 = scr->getExportedFuntion("set_0");
-			assert(set_0);
+			TransientTokenRef wr;
 			{
-				WasmVm vm(*scr);
-				assert(vm.run(*is_null) == WasmVm::CODE_RETURN);
-				assert(!vm.stack.empty());
-				assert(vm.stack.back().type == WASM_I32);
-				assert(vm.stack.back().i32);
+				WasmSharedEnvironment::ScriptRaii scr(env.createScript());
+				wr = scr->custom_data.getStructFromMap(TransientToken);
+				assert(scr->load(base64::decode("AGFzbQEAAAABCAJgAAF/YAAAAwMCAAEGBgFwAdBwCwcTAgdpc19udWxsAAAFc2V0XzAAAQoOAgUAIwDRCwYA0gAkAAsAEgRuYW1lAgUCAAABAAcEAQABZw==")));
+				assert(scr->instantiate());
+				auto is_null = scr->getExportedFuntion("is_null");
+				assert(is_null);
+				auto set_0 = scr->getExportedFuntion("set_0");
+				assert(set_0);
+				{
+					WasmVm vm(*scr);
+					assert(vm.run(*is_null) == WasmVm::CODE_RETURN);
+					assert(!vm.stack.empty());
+					assert(vm.stack.back().type == WASM_I32);
+					assert(vm.stack.back().i32);
+				}
+				{
+					WasmVm vm(*scr);
+					assert(vm.run(*set_0) == WasmVm::CODE_RETURN);
+				}
+				{
+					WasmVm vm(*scr);
+					assert(vm.run(*is_null) == WasmVm::CODE_RETURN);
+					assert(!vm.stack.empty());
+					assert(vm.stack.back().type == WASM_I32);
+					assert(!vm.stack.back().i32);
+				}
+
+				env.collectGarbage();
+				assert(wr.isValid()); // ScriptRaii still in scope; script must not already be free'd
 			}
-			{
-				WasmVm vm(*scr);
-				assert(vm.run(*set_0) == WasmVm::CODE_RETURN);
-			}
-			{
-				WasmVm vm(*scr);
-				assert(vm.run(*is_null) == WasmVm::CODE_RETURN);
-				assert(!vm.stack.empty());
-				assert(vm.stack.back().type == WASM_I32);
-				assert(!vm.stack.back().i32);
-			}
+			assert(wr.isValid()); // ScriptRaii out of scope now, but the script has created funcrefs, so a GC cycle will be needed to safely free it
+			env.collectGarbage();
+			assert(!wr.isValid()); // script should be free'd now
 		});
 		test("Global Imports", []
 		{
