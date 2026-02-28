@@ -196,7 +196,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - multi-memory/store2: pass
 - multi-memory/traps0: pass
 - exceptions/tag: FAIL
-- exceptions/throw: FAIL
+- exceptions/throw: pass
 - exceptions/throw_ref: FAIL
 - exceptions/try_table: FAIL
 */

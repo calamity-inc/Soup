@@ -271,7 +271,7 @@ int cli_wast(const std::string& file)
 							}
 							if (!action_scr->call(func_idx, std::move(args), &stack))
 							{
-								SOUP_IF_UNLIKELY (type != "assert_trap" && type != "assert_exhaustion")
+								SOUP_IF_UNLIKELY (type != "assert_trap" && type != "assert_exhaustion" && type != "assert_exception")
 								{
 									std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
 									goto _wast_next_cmd;
@@ -279,7 +279,7 @@ int cli_wast(const std::string& file)
 							}
 							else
 							{
-								SOUP_IF_UNLIKELY (type == "assert_trap" || type == "assert_exhaustion")
+								SOUP_IF_UNLIKELY (type == "assert_trap" || type == "assert_exhaustion" || type == "assert_exception")
 								{
 									std::cout << "Execution did not fail for test at line " << cmd.at("line").asInt().value << std::endl;
 									goto _wast_next_cmd;
@@ -381,7 +381,7 @@ int cli_wast(const std::string& file)
 							goto _wast_next_cmd;
 						}*/
 					}
-					else if (type != "action" && type != "assert_trap" && type != "assert_exhaustion")
+					else if (type != "action" && type != "assert_trap" && type != "assert_exhaustion" && type != "assert_exception")
 					{
 						std::cout << "Unknown command type: " << type.value << std::endl;
 					}
