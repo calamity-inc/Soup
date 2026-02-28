@@ -447,9 +447,11 @@ NAMESPACE_SOUP
 			}*/
 		};
 
+		using on_pre_free_script_t = void(*)(WasmScript&);
 		using free_externref_t = void(*)(uint64_t);
 
 		std::vector<WasmScript*> scripts;
+		on_pre_free_script_t on_pre_free_script = nullptr;
 		std::vector<FuncRef> funcrefs;
 		std::unordered_map<uint64_t, bool> tracked_externrefs;
 		free_externref_t free_externref = nullptr;

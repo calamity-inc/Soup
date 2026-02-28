@@ -2291,6 +2291,10 @@ NAMESPACE_SOUP
 			{
 				if (*i == &scr)
 				{
+					if (on_pre_free_script)
+					{
+						on_pre_free_script(**i);
+					}
 					delete *i;
 					scripts.erase(i);
 					break;
@@ -2437,6 +2441,10 @@ NAMESPACE_SOUP
 #if DEBUG_GC
 				std::cout << "- " << (void*)scr << " is unreachable; sweeping\n";
 #endif
+				if (on_pre_free_script)
+				{
+					on_pre_free_script(*scr);
+				}
 				for (auto& fr : funcrefs)
 				{
 					if (fr.source == scr)
@@ -2471,6 +2479,10 @@ NAMESPACE_SOUP
 #if DEBUG_GC
 			std::cout << "dtor: sweeping " << (void*)scr << "\n";
 #endif
+			if (on_pre_free_script)
+			{
+				on_pre_free_script(*scr);
+			}
 			delete scr;
 		}
 		for (const auto& er : tracked_externrefs)
