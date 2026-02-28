@@ -2691,6 +2691,7 @@ NAMESPACE_SOUP
 #endif
 
 			case 0x1a: // drop
+				WASM_CHECK_STACK(1);
 				stack.pop_back();
 				break;
 
