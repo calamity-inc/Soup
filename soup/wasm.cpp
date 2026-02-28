@@ -598,18 +598,12 @@ NAMESPACE_SOUP
 #if DEBUG_LOAD
 				std::cout << "Unhandled section type: " << (int)section_type << " (size: " << section_size << ")\n";
 #endif
+#if !SOUP_WASM_PEDANTIC
 				SOUP_IF_UNLIKELY (section_size == 0)
-				{
-					return false;
-				}
-#if SOUP_WASM_PEDANTIC
-	#if SOUP_WASM_EXCEPTIONS
-				if (section_type != SEC_TAG)
-	#endif
-				{
-					return false;
-				}
 #endif
+				{
+					return false;
+				}
 				r.seek(section_end);
 				break;
 
@@ -943,7 +937,7 @@ NAMESPACE_SOUP
 						uint8_t type; r.u8(type);
 						SOUP_RETHROW_FALSE(type == 0);
 						uint32_t typeidx; WASM_READ_OML(typeidx);
-						tags.emplace_back(soup::make_shared<Tag>(typeidx));
+						tags.emplace_back(soup::make_shared<Tag>(/*typeidx*/));
 					}
 				}
 				break;

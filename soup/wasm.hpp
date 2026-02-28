@@ -347,7 +347,7 @@ NAMESPACE_SOUP
 #if SOUP_WASM_EXCEPTIONS
 		struct Tag
 		{
-			uint32_t type_index;
+			//uint32_t type_index; // would also need a WasmScript* for reference at which point the GC would need to get involved and meh, we really don't need to know this information
 		};
 #endif
 
