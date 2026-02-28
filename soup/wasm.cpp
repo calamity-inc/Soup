@@ -2330,23 +2330,39 @@ NAMESPACE_SOUP
 		return funcrefs[value - 1];
 	}
 
+	void WasmSharedEnvironment::trackExternRef(uint64_t value) SOUP_EXCAL
+	{
+		tracked_externrefs.emplace(value, false);
+	}
+
 	void WasmSharedEnvironment::gcMark() noexcept
 	{
 		for (auto& scr : scripts)
 		{
 			for (const auto& g : scr->globals)
 			{
-				if (g->type == WASM_FUNCREF
-					&& g->i64
-					)
+				if (g->i64)
 				{
-					const auto& fr = getFuncRef(g->i64);
-					if (fr.source != scr)
+					if (g->type == WASM_FUNCREF)
 					{
+						if (scripts.size() > 1)
+						{
+							const auto& fr = getFuncRef(g->i64);
+							if (fr.source != scr)
+							{
 #if DEBUG_GC
-						std::cout << "gcMark: " << (void*)fr.source << " is reachable via a global in " << scr << "\n";
+								std::cout << "gcMark: " << (void*)fr.source << " is reachable via a global in " << scr << "\n";
 #endif
-						fr.source->_gc_reachable = true;
+								fr.source->_gc_reachable = true;
+							}
+						}
+					}
+					else if (g->type == WASM_EXTERNREF)
+					{
+						if (auto e = tracked_externrefs.find(g->i64); e != tracked_externrefs.end())
+						{
+							e->second = true;
+						}
 					}
 				}
 			}
@@ -2354,17 +2370,36 @@ NAMESPACE_SOUP
 			{
 				if (t->type == WASM_FUNCREF)
 				{
-					for (const auto& fri : t->values)
+					if (scripts.size() > 1)
 					{
-						if (fri)
+						for (const auto& fri : t->values)
 						{
-							const auto& fr = getFuncRef(fri);
-							if (fr.source != scr)
+							if (fri)
 							{
+								const auto& fr = getFuncRef(fri);
+								if (fr.source != scr)
+								{
 #if DEBUG_GC
-								std::cout << "gcMark: " << (void*)fr.source << " is reachable via a table in " << scr << "\n";
+									std::cout << "gcMark: " << (void*)fr.source << " is reachable via a table in " << scr << "\n";
 #endif
-								fr.source->_gc_reachable = true;
+									fr.source->_gc_reachable = true;
+								}
+							}
+						}
+					}
+				}
+				else if (t->type == WASM_EXTERNREF)
+				{
+					if (!tracked_externrefs.empty())
+					{
+						for (const auto& value : t->values)
+						{
+							if (value)
+							{
+								if (auto e = tracked_externrefs.find(value); e != tracked_externrefs.end())
+								{
+									e->second = true;
+								}
 							}
 						}
 					}
@@ -2380,7 +2415,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	void WasmSharedEnvironment::gcSweep() noexcept
+	void WasmSharedEnvironment::gcSweep()
 	{
 #if DEBUG_GC
 		std::cout << "gcSweep\n";
@@ -2413,6 +2448,20 @@ NAMESPACE_SOUP
 				it = scripts.erase(it);
 			}
 		}
+		for (auto it = tracked_externrefs.begin(); it != tracked_externrefs.end(); )
+		{
+			if (it->second)
+			{
+				// Reset for next mark phase
+				it->second = false;
+				++it;
+			}
+			else
+			{
+				free_externref(it->first);
+				it = tracked_externrefs.erase(it);
+			}
+		}
 	}
 
 	WasmSharedEnvironment::~WasmSharedEnvironment() noexcept
@@ -2423,6 +2472,10 @@ NAMESPACE_SOUP
 			std::cout << "dtor: sweeping " << (void*)scr << "\n";
 #endif
 			delete scr;
+		}
+		for (const auto& er : tracked_externrefs)
+		{
+			free_externref(er.first);
 		}
 	}
 

@@ -447,8 +447,12 @@ NAMESPACE_SOUP
 			}*/
 		};
 
+		using free_externref_t = void(*)(uint64_t);
+
 		std::vector<WasmScript*> scripts;
 		std::vector<FuncRef> funcrefs;
+		std::unordered_map<uint64_t, bool> tracked_externrefs;
+		free_externref_t free_externref = nullptr;
 
 		WasmScript& createScript() SOUP_EXCAL;
 		void onRefCountHitZero(WasmScript& scr) noexcept;
@@ -457,10 +461,15 @@ NAMESPACE_SOUP
 		[[nodiscard]] uint64_t createFuncRef(WasmScript& scr, uint32_t func_index) SOUP_EXCAL;
 		[[nodiscard]] const FuncRef& getFuncRef(uint64_t value) const noexcept;
 
-		void collectGarbage() noexcept { gcMark(); gcSweep(); }
-		void gcMark() noexcept;
-		void gcSweep() noexcept;
+		// Requests that `this->free_externref(value);` be called at some point when no more scripts are referencing it.
+		void trackExternRef(uint64_t value) SOUP_EXCAL;
 
+		void collectGarbage() { gcMark(); gcSweep(); }
+	private:
+		void gcMark() noexcept;
+		void gcSweep();
+
+	public:
 		struct ScriptRaii
 		{
 			WasmScript& script;

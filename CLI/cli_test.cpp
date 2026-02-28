@@ -1972,6 +1972,7 @@ endif;)") == "");
 			//     (global.get $g)
 			//   )
 			// )
+			static bool externref_123_freed = false;
 			WasmSharedEnvironment env;
 			TransientTokenRef wr;
 			{
@@ -1993,6 +1994,12 @@ endif;)") == "");
 				{
 					WasmVm vm(*scr);
 					vm.locals.emplace_back((void*)123);
+					env.free_externref = [](uint64_t value)
+					{
+						assert(value == 123);
+						externref_123_freed = true;
+					};
+					env.trackExternRef(123);
 					assert(vm.run(*set) == WasmVm::CODE_RETURN);
 				}
 				{
@@ -2005,8 +2012,11 @@ endif;)") == "");
 
 				env.collectGarbage();
 				assert(wr.isValid()); // ScriptRaii still in scope; script must not already be free'd
+				assert(!externref_123_freed); // externref is stored in a global in that script so must still be valid
 			}
 			assert(!wr.isValid()); // ScriptRaii went out of scope and the script did not create funcrefs, so it can instantly be free'd
+			env.collectGarbage();
+			assert(externref_123_freed);
 		});
 		test("funcref global", []
 		{
