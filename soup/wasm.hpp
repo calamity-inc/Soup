@@ -48,6 +48,12 @@
 #define SOUP_WASM_EXCEPTIONS false
 #endif
 
+// And the following feature proposals are implemented.
+
+#ifndef SOUP_WASM_CUSTOM_PAGE_SIZES
+#define SOUP_WASM_CUSTOM_PAGE_SIZES false
+#endif
+
 NAMESPACE_SOUP
 {
 	struct WasmSharedEnvironment;
@@ -202,16 +208,29 @@ NAMESPACE_SOUP
 		{
 			uint8_t* data;
 			size_t size;
-#if SOUP_WASM_MEMORY64
-			uint64_t page_limit : 48;
+			uint64_t limit : 62;
 			uint64_t memory64 : 1;
-#else
-			uint32_t page_limit;
-#endif
+			uint64_t one_byte_pages : 1;
 
-			// 1 page = 0x10'000 bytes.
-			Memory(wasm_uptr_t pages = 0, wasm_uptr_t max_pages = 0x10'000, bool _64bit = false) SOUP_EXCAL;
+			Memory(wasm_uptr_t pages = 0, wasm_uptr_t max_pages = 0x10'000, bool _64bit = false) SOUP_EXCAL
+				: Memory(pages * 0x10'000, static_cast<uint64_t>(max_pages) * 0x10'000, _64bit, false)
+			{
+			}
+
+			Memory(size_t size, uint64_t limit, bool _64bit, bool one_byte_pages) SOUP_EXCAL;
+
 			~Memory() noexcept;
+
+			[[nodiscard]] unsigned getPageSize() const noexcept
+			{
+#if SOUP_WASM_CUSTOM_PAGE_SIZES
+				if (one_byte_pages)
+				{
+					return 1;
+				}
+#endif
+				return 0x10'000;
+			}
 
 			[[nodiscard]] void* getView(size_t addr, size_t size) noexcept
 			{
@@ -327,24 +346,14 @@ NAMESPACE_SOUP
 
 		struct MemoryImport : public Import
 		{
-#if SOUP_WASM_MEMORY64
-			uint64_t min_pages /*: 48*/;
-			uint64_t max_pages : 48;
+			uint64_t min_bytes;
+			uint64_t max_bytes : 62;
 			uint64_t memory64 : 1;
-#else
-			uint32_t min_pages;
-			uint32_t max_pages;
-#endif
+			uint64_t one_byte_pages : 1;
 
-			MemoryImport(std::string&& module_name, std::string&& field_name, wasm_uptr_t min_pages, wasm_uptr_t max_pages, bool _64bit) noexcept
-				: Import{ std::move(module_name), std::move(field_name) }, min_pages(min_pages), max_pages(max_pages)
-#if SOUP_WASM_MEMORY64
-				, memory64(_64bit)
-#endif
+			MemoryImport(std::string&& module_name, std::string&& field_name, uint64_t min_bytes, uint64_t max_bytes, bool _64bit, bool one_byte_pages) noexcept
+				: Import{ std::move(module_name), std::move(field_name) }, min_bytes(min_bytes), max_bytes(max_bytes), memory64(_64bit), one_byte_pages(one_byte_pages)
 			{
-#if !SOUP_WASM_MEMORY64
-				SOUP_UNUSED(_64bit);
-#endif
 			}
 
 			[[nodiscard]] bool isCompatibleWith(const Memory& mem) const noexcept;

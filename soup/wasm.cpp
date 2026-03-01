@@ -320,17 +320,9 @@ NAMESPACE_SOUP
 
 	// WasmScript::Memory
 
-	WasmScript::Memory::Memory(wasm_uptr_t pages, wasm_uptr_t max_pages, bool _64bit) SOUP_EXCAL
-	: data(nullptr), size(0), page_limit(max_pages)
-#if SOUP_WASM_MEMORY64
-			, memory64(_64bit)
-#endif
+	WasmScript::Memory::Memory(size_t size, uint64_t limit, bool _64bit, bool one_byte_pages) SOUP_EXCAL
+		: data(size ? (uint8_t*)soup::malloc(size) : nullptr), size(size), limit(limit), memory64(_64bit), one_byte_pages(one_byte_pages)
 	{
-#if !SOUP_WASM_MEMORY64
-		SOUP_UNUSED(_64bit);
-#endif
-		this->data = pages != 0 ? (uint8_t*)soup::malloc(pages * 0x10'000) : nullptr;
-		this->size = pages * 0x10'000;
 		memset(this->data, 0, this->size);
 	}
 
@@ -398,21 +390,22 @@ NAMESPACE_SOUP
 	size_t WasmScript::Memory::grow(size_t delta_pages) noexcept
 	{
 		size_t old_size_pages = -1;
-		const auto delta_bytes = delta_pages * 0x10'000;
-		if ((delta_pages == 0 || delta_bytes / delta_pages == 0x10'000) // Multiplication didn't overflow?
+		const auto page_size = getPageSize();
+		const auto delta_bytes = delta_pages * page_size;
+		if ((delta_pages == 0 || delta_bytes / delta_pages == page_size) // Multiplication didn't overflow?
 			&& can_add_without_overflow(this->size, delta_bytes)
 			)
 		{
-			auto nmem = (((this->size + delta_bytes) / 0x10'000) <= this->page_limit)
-				? (uint8_t*)::realloc(this->data, this->size + delta_bytes)
-				: nullptr
-				;
-			if (nmem != nullptr)
+			const auto new_size_bytes = this->size + delta_bytes;
+			if (new_size_bytes <= this->limit)
 			{
-				memset(&nmem[this->size], 0, delta_bytes);
-				old_size_pages = this->size / 0x10'000;
-				this->data = nmem;
-				this->size += delta_bytes;
+				if (auto nmem = (uint8_t*)::realloc(this->data, new_size_bytes))
+				{
+					memset(&nmem[this->size], 0, delta_bytes);
+					old_size_pages = this->size / page_size;
+					this->data = nmem;
+					this->size = new_size_bytes;
+				}
 			}
 		}
 		return old_size_pages;
@@ -514,7 +507,7 @@ NAMESPACE_SOUP
 	bool WasmScript::MemoryImport::isCompatibleWith(const Memory& mem) const noexcept
 	{
 #if SOUP_WASM_MEMORY64
-		if ((bool)memory64 != (bool)mem.memory64)
+		if (memory64 != mem.memory64)
 		{
 #if DEBUG_LOAD
 			std::cout << "type mismatch for memory " << module_name << ":" << field_name << " - export addr type " << wasm_type_to_string(mem.getAddrType()) << "; import addr type " << wasm_type_to_string(memory64 ? WASM_I64 : WASM_I32) << "\n";
@@ -522,17 +515,23 @@ NAMESPACE_SOUP
 			return false;
 		}
 #endif
-		if (min_pages > (mem.size / 0x10'000))
+#if SOUP_WASM_CUSTOM_PAGE_SIZES
+		if (one_byte_pages != mem.one_byte_pages)
 		{
 			return false;
 		}
-		if (max_pages != 0x10'000) // Import has a page limit?
+#endif
+		if (min_bytes > mem.size)
 		{
-			if (mem.page_limit == 0x10'000) // Memory has no page limit?
+			return false;
+		}
+		if (max_bytes != 0x1'0000'0000) // Import has a page limit?
+		{
+			if (mem.limit == 0x1'0000'0000) // Memory has no page limit?
 			{
 				return false;
 			}
-			if (max_pages < mem.page_limit)
+			if (max_bytes < mem.limit)
 			{
 				return false;
 			}
@@ -812,21 +811,39 @@ NAMESPACE_SOUP
 						else if (kind == IE_kMemory)
 						{
 							uint8_t flags; r.u8(flags);
+							uint8_t known_flags = 1;
 #if SOUP_WASM_MEMORY64
-							SOUP_RETHROW_FALSE((flags & 0xfa) == 0);
-#else
-							SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+							known_flags |= 4;
 #endif
-							wasm_uptr_t min_pages;
+#if SOUP_WASM_CUSTOM_PAGE_SIZES
+							known_flags |= 8;
+#endif
+#if SOUP_WASM_MEMORY64
+							SOUP_RETHROW_FALSE((flags & ~known_flags) == 0);
+#endif
+							uint64_t min_pages;
 							WASM_READ_OML(min_pages);
-							wasm_uptr_t max_pages = 0x10'000;
+							uint64_t max_pages = 0x10'000;
 							if (flags & 1)
 							{
 								WASM_READ_OML(max_pages);
 							}
+							uint32_t page_size = 0x10'000;
+#if SOUP_WASM_CUSTOM_PAGE_SIZES
+							if (flags & 8)
+							{
+								WASM_READ_OML(page_size);
+								page_size = (1 << page_size);
+								SOUP_RETHROW_FALSE(page_size == 1 || page_size == 0x10'000);
+								if (page_size == 1 && !(flags & 1))
+								{
+									max_pages = 0x1'0000'0000;
+								}
+							}
+#endif
 #if SOUP_WASM_MULTI_MEMORY
 							memories.emplace_back();
-							memory_imports.emplace_back(std::move(module_name), std::move(field_name), min_pages, max_pages, flags & 4);
+							memory_imports.emplace_back(std::move(module_name), std::move(field_name), min_pages * page_size, max_pages * page_size, flags & 4, page_size == 1);
 #else
 							SOUP_IF_UNLIKELY (memory || memory_import)
 							{
@@ -835,7 +852,7 @@ NAMESPACE_SOUP
 #endif
 								return false;
 							}
-							memory_import.emplace(std::move(module_name), std::move(field_name), min_pages, max_pages, flags & 4);
+							memory_import.emplace(std::move(module_name), std::move(field_name), min_pages * page_size, max_pages * page_size, flags & 4, page_size == 1);
 #endif
 						}
 						else if (kind == IE_kGlobal)
@@ -942,13 +959,19 @@ NAMESPACE_SOUP
 						}
 #endif
 						uint8_t flags; r.u8(flags);
+						uint8_t known_flags = 1;
 #if SOUP_WASM_MEMORY64
-						SOUP_RETHROW_FALSE((flags & 0xfa) == 0);
-#else
-						SOUP_RETHROW_FALSE((flags & 0xfe) == 0);
+						known_flags |= 4;
+#endif
+#if SOUP_WASM_CUSTOM_PAGE_SIZES
+						known_flags |= 8;
+#endif
+#if SOUP_WASM_MEMORY64
+						SOUP_RETHROW_FALSE((flags & ~known_flags) == 0);
 #endif
 						uint64_t pages;
 						uint64_t page_limit = 0x10'000;
+						uint32_t page_size = 0x10'000;
 #if SOUP_WASM_MEMORY64
 						if (flags & 4)
 						{
@@ -976,11 +999,23 @@ NAMESPACE_SOUP
 								page_limit = page_limit_u32;
 							}
 						}
+#if SOUP_WASM_CUSTOM_PAGE_SIZES
+						if (flags & 8)
+						{
+							WASM_READ_OML(page_size);
+							page_size = (1 << page_size);
+							SOUP_RETHROW_FALSE(page_size == 1 || page_size == 0x10'000);
+							if (page_size == 1 && !(flags & 1))
+							{
+								page_limit = 0x1'0000'0000;
+							}
+						}
+#endif
 						SOUP_RETHROW_FALSE(pages <= page_limit);
 #if SOUP_WASM_MULTI_MEMORY
-						this->memories.emplace_back(soup::make_shared<Memory>(pages, page_limit, flags & 4));
+						this->memories.emplace_back(soup::make_shared<Memory>(pages * page_size, page_limit * page_size, flags & 4, page_size == 1));
 #else
-						this->memory = soup::make_shared<Memory>(pages, page_limit, flags & 4);
+						this->memory = soup::make_shared<Memory>(pages * page_size, page_limit * page_size, flags & 4, page_size == 1);
 #endif
 					}
 				}
@@ -4157,7 +4192,7 @@ NAMESPACE_SOUP
 #endif
 						return CODE_ERROR;
 					}
-					memory->encodeUPTR(stack.emplace_back(), memory->size / 0x10'000);
+					memory->encodeUPTR(stack.emplace_back(), memory->size / memory->getPageSize());
 				}
 				break;
 
