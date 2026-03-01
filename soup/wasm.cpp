@@ -132,7 +132,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - utf8-invalid-encoding: pass (due to Soup not parsing .wat files)
 - simd/simd_address: pass
 - simd/simd_align: pass
-- simd/simd_bit_shift: FAIL
+- simd/simd_bit_shift: pass
 - simd/simd_bitwise: pass
 - simd/simd_boolean: pass
 - simd/simd_const: pass
@@ -3000,6 +3000,42 @@ NAMESPACE_SOUP
 		stack.back().i32 = mask;
 		stack.back().hi32 = 0;
 		stack.back().type = WASM_I32;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_shl(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = static_cast<uint32_t>(stack.back().i32) % (sizeof(T) * 8); stack.pop_back();
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane <<= b;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_shr_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = static_cast<uint32_t>(stack.back().i32) % (sizeof(T) * 8); stack.pop_back();
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane >>= b;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_shr_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = static_cast<uint32_t>(stack.back().i32) % (sizeof(T) * 8); stack.pop_back();
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = static_cast<std::make_unsigned_t<T>>(lane) >> b;
+		}
 		return true;
 	}
 
@@ -6171,6 +6207,18 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i8x16));
 					break;
 
+				case 0x6b: // i8x16.shl
+					SOUP_RETHROW_FALSE(simd_shl(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x6c: // i8x16.shr_s
+					SOUP_RETHROW_FALSE(simd_shr_s(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x6d: // i8x16.shr_u
+					SOUP_RETHROW_FALSE(simd_shr_u(stack, &WasmValue::i8x16));
+					break;
+
 				case 0x6e: // i8x16.add
 					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i8x16));
 					break;
@@ -6185,6 +6233,18 @@ NAMESPACE_SOUP
 
 				case 0x84: // i16x8.bitmask
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x8b: // i16x8.shl
+					SOUP_RETHROW_FALSE(simd_shl(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x8c: // i16x8.shr_s
+					SOUP_RETHROW_FALSE(simd_shr_s(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x8d: // i16x8.shr_u
+					SOUP_RETHROW_FALSE(simd_shr_u(stack, &WasmValue::i16x8));
 					break;
 
 				case 0x8e: // i16x8.add
@@ -6205,6 +6265,18 @@ NAMESPACE_SOUP
 
 				case 0xa4: // i32x4.bitmask
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xab: // i32x4.shl
+					SOUP_RETHROW_FALSE(simd_shl(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xac: // i32x4.shr_s
+					SOUP_RETHROW_FALSE(simd_shr_s(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xad: // i32x4.shr_u
+					SOUP_RETHROW_FALSE(simd_shr_u(stack, &WasmValue::i32x4));
 					break;
 
 				case 0xae: // i32x4.add
@@ -6249,6 +6321,18 @@ NAMESPACE_SOUP
 
 				case 0xc4: // i64x2.bitmask
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xcb: // i64x2.shl
+					SOUP_RETHROW_FALSE(simd_shl(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xcc: // i64x2.shr_s
+					SOUP_RETHROW_FALSE(simd_shr_s(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xcd: // i64x2.shr_u
+					SOUP_RETHROW_FALSE(simd_shr_u(stack, &WasmValue::i64x2));
 					break;
 
 				case 0xce: // i64x2.add
