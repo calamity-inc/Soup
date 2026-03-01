@@ -130,6 +130,63 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - utf8-import-field: pedantic_pass
 - utf8-import-module: pedantic_pass
 - utf8-invalid-encoding: pass (due to Soup not parsing .wat files)
+- simd/simd_address: pass
+- simd/simd_align: pass
+- simd/simd_bit_shift: FAIL
+- simd/simd_bitwise: pass
+- simd/simd_boolean: pass
+- simd/simd_const: pass
+- simd/simd_conversions: FAIL
+- simd/simd_f32x4: FAIL
+- simd/simd_f32x4_arith: FAIL
+- simd/simd_f32x4_cmp: FAIL
+- simd/simd_f32x4_pmin_pmax: FAIL
+- simd/simd_f32x4_rounding: FAIL
+- simd/simd_f64x2: FAIL
+- simd/simd_f64x2_arith: FAIL
+- simd/simd_f64x2_cmp: FAIL
+- simd/simd_f64x2_pmin_pmax: FAIL
+- simd/simd_f64x2_rounding: FAIL
+- simd/simd_i16x8_arith: FAIL
+- simd/simd_i16x8_arith2: FAIL
+- simd/simd_i16x8_cmp: FAIL
+- simd/simd_i16x8_extadd_pairwise_i8x16: FAIL
+- simd/simd_i16x8_extmul_i8x16: FAIL
+- simd/simd_i16x8_q15mulr_sat_s: FAIL
+- simd/simd_i16x8_sat_arith: FAIL
+- simd/simd_i32x4_arith: FAIL
+- simd/simd_i32x4_arith2: FAIL
+- simd/simd_i32x4_cmp: FAIL
+- simd/simd_i32x4_dot_i16x8: FAIL
+- simd/simd_i32x4_extadd_pairwise_i16x8: FAIL
+- simd/simd_i32x4_extmul_i16x8: FAIL
+- simd/simd_i32x4_trunc_sat_f32x4: FAIL
+- simd/simd_i32x4_trunc_sat_f64x2: FAIL
+- simd/simd_i64x2_arith: FAIL
+- simd/simd_i64x2_arith2: FAIL
+- simd/simd_i64x2_cmp: FAIL
+- simd/simd_i64x2_extmul_i32x4: FAIL
+- simd/simd_i8x16_arith: FAIL
+- simd/simd_i8x16_arith2: FAIL
+- simd/simd_i8x16_cmp: FAIL
+- simd/simd_i8x16_sat_arith: FAIL
+- simd/simd_int_to_int_extend: FAIL
+- simd/simd_lane: pass
+- simd/simd_linking: pass
+- simd/simd_load: FAIL
+- simd/simd_load16_lane: FAIL
+- simd/simd_load32_lane: FAIL
+- simd/simd_load64_lane: FAIL
+- simd/simd_load8_lane: FAIL
+- simd/simd_load_extend: FAIL
+- simd/simd_load_splat: FAIL
+- simd/simd_load_zero: FAIL
+- simd/simd_splat: FAIL
+- simd/simd_store: pass
+- simd/simd_store16_lane: FAIL
+- simd/simd_store32_lane: FAIL
+- simd/simd_store64_lane: FAIL
+- simd/simd_store8_lane: FAIL
 - memory64/address64: pass
 - memory64/align64: pass
 - memory64/binary_leb128_64: pedantic_pass
@@ -210,6 +267,9 @@ NAMESPACE_SOUP
 		if (str == "i64") { return WASM_I64; }
 		if (str == "f32") { return WASM_F32; }
 		if (str == "f64") { return WASM_F64; }
+#if SOUP_WASM_SIMD
+		if (str == "v128") { return WASM_V128; }
+#endif
 		if (str == "funcref") { return WASM_FUNCREF; }
 		if (str == "externref") { return WASM_EXTERNREF; }
 #if SOUP_WASM_EXCEPTIONS
@@ -226,6 +286,9 @@ NAMESPACE_SOUP
 		case WASM_I64: return "i64";
 		case WASM_F32: return "f32";
 		case WASM_F64: return "f64";
+#if SOUP_WASM_SIMD
+		case WASM_V128: return "v128";
+#endif
 		case WASM_FUNCREF: return "funcref";
 		case WASM_EXTERNREF: return "externref";
 #if SOUP_WASM_EXCEPTIONS
@@ -1252,6 +1315,14 @@ NAMESPACE_SOUP
 #endif
 			break;
 
+#if SOUP_WASM_SIMD
+		case 0xfd:
+			if (out.c_str()[1] == 0x0c) // v128.const
+			{
+				return true;
+			}
+			[[fallthrough]];
+#endif
 		default:
 			return false;
 		}
@@ -2666,6 +2737,141 @@ NAMESPACE_SOUP
 	static constexpr double F64_U64_MIN = -0.9999999999999999;
 	static constexpr double F64_U64_MAX = 18446744073709550000.0;
 
+#if SOUP_WASM_SIMD
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_splat(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		const auto value = stack.back().get<T>();
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = value;
+		}
+		stack.back().type = WASM_V128;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool extract_lane_s(std::vector<WasmValue>& stack, Reader& r, T(WasmValue::* ptr)[S]) noexcept
+	{
+		uint8_t idx; r.u8(idx);
+		SOUP_RETHROW_FALSE(idx < S);
+		WASM_CHECK_STACK(1);
+		stack.back().i32 = static_cast<int32_t>((stack.back().*ptr)[idx]);
+		stack.back().hi32 = 0;
+		stack.back().type = WASM_I32;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool extract_lane_u(std::vector<WasmValue>& stack, Reader& r, T(WasmValue::* ptr)[S]) noexcept
+	{
+		uint8_t idx; r.u8(idx);
+		SOUP_RETHROW_FALSE(idx < S);
+		WASM_CHECK_STACK(1);
+		stack.back().i32 = static_cast<int32_t>(static_cast<uint32_t>(static_cast<std::make_unsigned_t<T>>((stack.back().*ptr)[idx])));
+		stack.back().hi32 = 0;
+		stack.back().type = WASM_I32;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool extract_lane(std::vector<WasmValue>& stack, Reader& r, T(WasmValue::* ptr)[S]) noexcept
+	{
+		uint8_t idx; r.u8(idx);
+		SOUP_RETHROW_FALSE(idx < S);
+		WASM_CHECK_STACK(1);
+		stack.back() = (stack.back().*ptr)[idx];
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool replace_lane(std::vector<WasmValue>& stack, Reader& r, T(WasmValue::* ptr)[S]) noexcept
+	{
+		uint8_t idx; r.u8(idx);
+		SOUP_RETHROW_FALSE(idx < S);
+		WASM_CHECK_STACK(1);
+		const auto value = stack.back().get<T>();
+		stack.pop_back();
+		(stack.back().*ptr)[idx] = value;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool all_true(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		stack.back().type = WASM_I32;
+		for (const auto& lane : stack.back().*ptr)
+		{
+			if (!lane)
+			{
+				stack.back().i64 = 0;
+				return true;
+			}
+		}
+		stack.back().i64 = 1;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_bitmask(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		uint32_t mask = 0;
+		for (size_t i = 0; i != S; ++i)
+		{
+			if ((stack.back().*ptr)[i] < 0)
+			{
+				mask |= (1 << i);
+			}
+		}
+		stack.back().i32 = mask;
+		stack.back().hi32 = 0;
+		stack.back().type = WASM_I32;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_add(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] += b[i];
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_sub(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] -= b[i];
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_mul(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] *= b[i];
+		}
+		return true;
+	}
+#endif
+
 	WasmVm::RunCodeResult WasmVm::runCode(Reader& r, unsigned depth, uint32_t func_index)
 	{
 		std::stack<CtrlFlowEntry> ctrlflow{};
@@ -3088,7 +3294,11 @@ NAMESPACE_SOUP
 #endif
 						return CODE_ERROR;
 					}
+#if SOUP_WASM_SIMD
+					memcpy(global->i8x16, stack.back().i8x16, 16);
+#else
 					global->i64 = stack.back().i64;
+#endif
 					stack.pop_back();
 				}
 				break;
@@ -5379,6 +5589,332 @@ NAMESPACE_SOUP
 					return CODE_ERROR;
 				}
 				break;
+
+#if SOUP_WASM_SIMD
+			case 0xfd:
+				r.u8(op);
+				switch (op)
+				{
+				case 0x00: // v128.load
+					{
+						WASM_CHECK_STACK(1);
+						auto base = stack.back().uptr(); stack.pop_back();
+						WASM_READ_MEMARG;
+						auto memory = script.getMemoryByIndex(memidx);
+						SOUP_RETHROW_FALSE(memory);
+						auto ptr = memory->getView(base + offset, 16);
+						SOUP_RETHROW_FALSE(ptr);
+						memcpy(stack.emplace_back(WASM_V128).i8x16, ptr, 16);
+					}
+					break;
+
+				case 0x0b: // v128.store
+					{
+						WASM_CHECK_STACK(2);
+						auto value = stack.back(); stack.pop_back();
+						auto base = stack.back().uptr(); stack.pop_back();
+						WASM_READ_MEMARG;
+						auto memory = script.getMemoryByIndex(memidx);
+						SOUP_RETHROW_FALSE(memory);
+						auto ptr = memory->getView(base + offset, 16);
+						SOUP_RETHROW_FALSE(ptr);
+						memcpy(ptr, value.i8x16, 16);
+					}
+					break;
+
+				case 0x0c: // v128.const
+					r.raw(stack.emplace_back(WASM_V128).i8x16, 16);
+					break;
+
+				case 0x0d: // i8x16.shuffle
+					{
+						WASM_CHECK_STACK(2);
+						const auto b = stack.back(); stack.pop_back();
+						const auto a = stack.back(); stack.pop_back();
+						auto& result = stack.emplace_back(WASM_V128);
+						for (int i = 0; i != 16; ++i)
+						{
+							uint8_t idx;
+							r.u8(idx);
+							SOUP_RETHROW_FALSE(idx < 32);
+							if (idx < 16)
+							{
+								result.i8x16[i] = a.i8x16[idx];
+							}
+							else
+							{
+								result.i8x16[i] = b.i8x16[idx - 16];
+							}
+						}
+					}
+					break;
+
+				case 0x0e: // i8x16.swizzle
+					{
+						WASM_CHECK_STACK(2);
+						const auto s = stack.back(); stack.pop_back();
+						const auto a = stack.back(); stack.pop_back();
+						auto& result = stack.emplace_back(WASM_V128);
+						for (int i = 0; i != 16; ++i)
+						{
+							result.i8x16[i] = static_cast<uint8_t>(s.i8x16[i]) < 16 ? a.i8x16[s.i8x16[i]] : 0;
+						}
+					}
+					break;
+
+				case 0x0f: // i8x16.splat
+					SOUP_RETHROW_FALSE(simd_splat(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x10: // i16x8.splat
+					SOUP_RETHROW_FALSE(simd_splat(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x11: // i32x4.splat
+					SOUP_RETHROW_FALSE(simd_splat(stack, &WasmValue::i32x4));
+					break;
+
+				case 0x12: // i64x2.splat
+					SOUP_RETHROW_FALSE(simd_splat(stack, &WasmValue::i64x2));
+					break;
+
+				case 0x13: // f32x4.splat
+					SOUP_RETHROW_FALSE(simd_splat(stack, &WasmValue::f32x4));
+					break;
+
+				case 0x14: // f64x2.splat
+					SOUP_RETHROW_FALSE(simd_splat(stack, &WasmValue::f64x2));
+					break;
+
+				case 0x15: // i8x16.extract_lane_s
+					SOUP_RETHROW_FALSE(extract_lane_s(stack, r, &WasmValue::i8x16));
+					break;
+
+				case 0x16: // i8x16.extract_lane_u
+					SOUP_RETHROW_FALSE(extract_lane_u(stack, r, &WasmValue::i8x16));
+					break;
+
+				case 0x17: // i8x16.replace_lane
+					SOUP_RETHROW_FALSE(replace_lane(stack, r, &WasmValue::i8x16));
+					break;
+
+				case 0x18: // i16x8.extract_lane_s
+					SOUP_RETHROW_FALSE(extract_lane_s(stack, r, &WasmValue::i16x8));
+					break;
+
+				case 0x19: // i16x8.extract_lane_u
+					SOUP_RETHROW_FALSE(extract_lane_u(stack, r, &WasmValue::i16x8));
+					break;
+
+				case 0x1a: // i16x8.replace_lane
+					SOUP_RETHROW_FALSE(replace_lane(stack, r, &WasmValue::i16x8));
+					break;
+
+				case 0x1b: // i32x4.extract_lane
+					SOUP_RETHROW_FALSE(extract_lane(stack, r, &WasmValue::i32x4));
+					break;
+
+				case 0x1c: // i32x4.replace_lane
+					SOUP_RETHROW_FALSE(replace_lane(stack, r, &WasmValue::i32x4));
+					break;
+
+				case 0x1d: // i64x2.extract_lane
+					SOUP_RETHROW_FALSE(extract_lane(stack, r, &WasmValue::i64x2));
+					break;
+
+				case 0x1e: // i64x2.replace_lane
+					SOUP_RETHROW_FALSE(replace_lane(stack, r, &WasmValue::i64x2));
+					break;
+
+				case 0x1f: // f32x4.extract_lane
+					SOUP_RETHROW_FALSE(extract_lane(stack, r, &WasmValue::f32x4));
+					break;
+
+				case 0x20: // f32x4.replace_lane
+					SOUP_RETHROW_FALSE(replace_lane(stack, r, &WasmValue::f32x4));
+					break;
+
+				case 0x21: // f64x2.extract_lane
+					SOUP_RETHROW_FALSE(extract_lane(stack, r, &WasmValue::f64x2));
+					break;
+
+				case 0x22: // f64x2.replace_lane
+					SOUP_RETHROW_FALSE(replace_lane(stack, r, &WasmValue::f64x2));
+					break;
+
+				case 0x4d: // v128.not
+					WASM_CHECK_STACK(1);
+					stack.back().i64x2[0] = ~stack.back().i64x2[0];
+					stack.back().i64x2[1] = ~stack.back().i64x2[1];
+					break;
+
+				case 0x4e: // v128.and
+					{
+						WASM_CHECK_STACK(2);
+						const auto b = stack.back().i64x2; stack.pop_back();
+						stack.back().i64x2[0] &= b[0];
+						stack.back().i64x2[1] &= b[1];
+					}
+					break;
+
+				case 0x4f: // v128.andnot
+					{
+						WASM_CHECK_STACK(2);
+						const auto b = stack.back().i64x2; stack.pop_back();
+						stack.back().i64x2[0] &= ~b[0];
+						stack.back().i64x2[1] &= ~b[1];
+					}
+					break;
+
+				case 0x50: // v128.or
+					{
+						WASM_CHECK_STACK(2);
+						const auto b = stack.back().i64x2; stack.pop_back();
+						stack.back().i64x2[0] |= b[0];
+						stack.back().i64x2[1] |= b[1];
+					}
+					break;
+
+				case 0x51: // v128.xor
+					{
+						WASM_CHECK_STACK(2);
+						const auto b = stack.back().i64x2; stack.pop_back();
+						stack.back().i64x2[0] ^= b[0];
+						stack.back().i64x2[1] ^= b[1];
+					}
+					break;
+
+				case 0x52: // v128.bitselect
+					{
+						WASM_CHECK_STACK(3);
+						const auto c = stack.back().i64x2; stack.pop_back();
+						const auto b = stack.back().i64x2; stack.pop_back();
+						stack.back().i64x2[0] = (stack.back().i64x2[0] & c[0]) | (b[0] & ~c[0]);
+						stack.back().i64x2[1] = (stack.back().i64x2[1] & c[1]) | (b[1] & ~c[1]);
+					}
+					break;
+
+				case 0x53: // v128.any_true
+					WASM_CHECK_STACK(1);
+					if (stack.back().i64x2[0] || stack.back().i64x2[1])
+					{
+						stack.back().i64 = 1;
+					}
+					else
+					{
+						stack.back().i64 = 0;
+					}
+					stack.back().type = WASM_I32;
+					break;
+
+				case 0x63: // i8x16.all_true
+					SOUP_RETHROW_FALSE(all_true(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x64: // i8x16.bitmask
+					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x6e: // i8x16.add
+					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x71: // i8x16.sub
+					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x83: // i16x8.all_true
+					SOUP_RETHROW_FALSE(all_true(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x84: // i16x8.bitmask
+					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x8e: // i16x8.add
+					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i16x8));
+					break;
+					
+				case 0x91: // i16x8.sub
+					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x95: // i16x8.mul
+					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::i16x8));
+					break;
+
+				case 0xa3: // i32x4.all_true
+					SOUP_RETHROW_FALSE(all_true(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xa4: // i32x4.bitmask
+					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xae: // i32x4.add
+					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xb1: // i32x4.sub
+					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xb5: // i32x4.mul
+					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xc3: // i64x2.all_true
+					SOUP_RETHROW_FALSE(all_true(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xc4: // i64x2.bitmask
+					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xce: // i64x2.add
+					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xd1: // i64x2.sub
+					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xd5: // i64x2.mul
+					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::i64x2));
+					break;
+
+				case 0xe4: // f32x4.add
+					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xe5: // f32x4.sub
+					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xe6: // f32x4.mul
+					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xf0: // f64x2.add
+					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf1: // f64x2.sub
+					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf2: // f64x2.mul
+					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::f64x2));
+					break;
+
+				default:
+#if DEBUG_VM
+					std::cout << "Unsupported opcode: " << string::hex(0xFD00 | op) << "\n";
+#endif
+					return CODE_ERROR;
+				}
+				break;
+#endif
 			}
 		}
 		return CODE_RETURN;
@@ -5807,6 +6343,277 @@ NAMESPACE_SOUP
 #endif
 				}
 				break;
+
+#if SOUP_WASM_SIMD
+			case 0xfd:
+				r.u8(op);
+				switch (op)
+				{
+				case 0x00: // v128.load
+				case 0x01: // v128.load8x8_s
+				case 0x02: // v128.load8x8_u
+				case 0x03: // v128.load16x4_s
+				case 0x04: // v128.load16x4_u
+				case 0x05: // v128.load32x2_s
+				case 0x06: // v128.load32x2_u
+				case 0x07: // v128.load8_splat
+				case 0x08: // v128.load16_splat
+				case 0x09: // v128.load32_splat
+				case 0x0a: // v128.load64_splat
+				case 0x0b: // v128.store
+				case 0x5c: // v128.load32_zero
+				case 0x5d: // v128.load64_zero
+					{
+						WASM_READ_MEMARG;
+						SOUP_UNUSED(memidx);
+					}
+					break;
+
+				case 0x0c: // v128.const
+				case 0x0d: // i8x16.shuffle
+					r.skip(16);
+					break;
+
+				case 0x15: // i8x16.extract_lane_s
+				case 0x16: // i8x16.extract_lane_u
+				case 0x17: // i8x16.replace_lane
+				case 0x18: // i16x8.extract_lane_s
+				case 0x19: // i16x8.extract_lane_u
+				case 0x1a: // i16x8.replace_lane
+				case 0x1b: // i32x4.extract_lane
+				case 0x1c: // i32x4.replace_lane
+				case 0x1d: // i64x2.extract_lane
+				case 0x1e: // i64x2.replace_lane
+				case 0x1f: // f32x4.extract_lane
+				case 0x20: // f32x4.replace_lane
+				case 0x21: // f64x2.extract_lane
+				case 0x22: // f64x2.replace_lane
+					r.skip(1); // lane idx
+					break;
+
+				case 0x54: // v128.load8_lane
+				case 0x55: // v128.load16_lane
+				case 0x56: // v128.load32_lane
+				case 0x57: // v128.load64_lane
+				case 0x58: // v128.store8_lane
+				case 0x59: // v128.store16_lane
+				case 0x5a: // v128.store32_lane
+				case 0x5b: // v128.store64_lane
+					{
+						WASM_READ_MEMARG;
+						SOUP_UNUSED(memidx);
+					}
+					r.skip(1); // lane idx
+					break;
+
+#if DEBUG_VM
+				case 0x0e: // i8x16.swizzle
+				case 0x0f: // i8x16.splat
+				case 0x10: // i16x8.splat
+				case 0x11: // i32x4.splat
+				case 0x12: // i64x2.splat
+				case 0x13: // f32x4.splat
+				case 0x14: // f64x2.splat
+				case 0x23: // i8x16.eq
+				case 0x24: // i8x16.ne
+				case 0x25: // i8x16.lt_s
+				case 0x26: // i8x16.lt_u
+				case 0x27: // i8x16.gt_s
+				case 0x28: // i8x16.gt_u
+				case 0x29: // i8x16.le_s
+				case 0x2a: // i8x16.le_u
+				case 0x2b: // i8x16.ge_s
+				case 0x2c: // i8x16.ge_u
+				case 0x2d: // i16x8.eq
+				case 0x2e: // i16x8.ne
+				case 0x2f: // i16x8.lt_s
+				case 0x30: // i16x8.lt_u
+				case 0x31: // i16x8.gt_s
+				case 0x32: // i16x8.gt_u
+				case 0x33: // i16x8.le_s
+				case 0x34: // i16x8.le_u
+				case 0x35: // i16x8.ge_s
+				case 0x36: // i16x8.ge_u
+				case 0x37: // i32x4.eq
+				case 0x38: // i32x4.ne
+				case 0x39: // i32x4.lt_s
+				case 0x3a: // i32x4.lt_u
+				case 0x3b: // i32x4.gt_s
+				case 0x3c: // i32x4.gt_u
+				case 0x3d: // i32x4.le_s
+				case 0x3e: // i32x4.le_u
+				case 0x3f: // i32x4.ge_s
+				case 0x40: // i32x4.ge_u
+				case 0x41: // f32x4.eq
+				case 0x42: // f32x4.ne
+				case 0x43: // f32x4.lt
+				case 0x44: // f32x4.gt
+				case 0x45: // f32x4.le
+				case 0x46: // f32x4.ge
+				case 0x47: // f64x2.eq
+				case 0x48: // f64x2.ne
+				case 0x49: // f64x2.lt
+				case 0x4a: // f64x2.gt
+				case 0x4b: // f64x2.le
+				case 0x4c: // f64x2.ge
+				case 0x4d: // v128.not
+				case 0x4e: // v128.and
+				case 0x4f: // v128.andnot
+				case 0x50: // v128.or
+				case 0x51: // v128.xor
+				case 0x52: // v128.bitselect
+				case 0x60: // i8x16.abs
+				case 0x61: // i8x16.neg
+				case 0x63: // i8x16.all_true
+				case 0x64: // i8x16.bitmask
+				case 0x65: // i8x16.narrow_i16x8_s
+				case 0x66: // i8x16.narrow_i16x8_u
+				case 0x6b: // i8x16.shl
+				case 0x6c: // i8x16.shr_s
+				case 0x6d: // i8x16.shr_u
+				case 0x6e: // i8x16.add
+				case 0x6f: // i8x16.add_sat_s
+				case 0x70: // i8x16.add_sat_u
+				case 0x71: // i8x16.sub
+				case 0x72: // i8x16.sub_sat_s
+				case 0x73: // i8x16.sub_sat_u
+				case 0x76: // i8x16.min_s
+				case 0x77: // i8x16.min_u
+				case 0x78: // i8x16.max_s
+				case 0x79: // i8x16.max_u
+				case 0x7b: // i8x16.avgr_u
+				case 0x80: // i16x8.abs
+				case 0x81: // i16x8.neg
+				case 0x83: // i16x8.all_true
+				case 0x84: // i16x8.bitmask
+				case 0x85: // i16x8.narrow_i32x4_s
+				case 0x86: // i16x8.narrow_i32x4_u
+				case 0x87: // i16x8.extend_low_i8x16_s
+				case 0x88: // i16x8.extend_high_i8x16_s
+				case 0x89: // i16x8.extend_low_i8x16_u
+				case 0x8a: // i16x8.extend_high_i8x16_u
+				case 0x8b: // i16x8.shl
+				case 0x8c: // i16x8.shr_s
+				case 0x8d: // i16x8.shr_u
+				case 0x8e: // i16x8.add
+				case 0x8f: // i16x8.add_sat_s
+				case 0x90: // i16x8.add_sat_u
+				case 0x91: // i16x8.sub
+				case 0x92: // i16x8.sub_sat_s
+				case 0x93: // i16x8.sub_sat_u
+				case 0x95: // i16x8.mul
+				case 0x96: // i16x8.min_s
+				case 0x97: // i16x8.min_u
+				case 0x98: // i16x8.max_s
+				case 0x99: // i16x8.max_u
+				case 0x9b: // i16x8.avgr_u
+				case 0xa0: // i32x4.abs
+				case 0xa1: // i32x4.neg
+				case 0xa3: // i32x4.all_true
+				case 0xa4: // i32x4.bitmask
+				case 0xa7: // i32x4.extend_low_i16x8_s
+				case 0xa8: // i32x4.extend_high_i16x8_s
+				case 0xa9: // i32x4.extend_low_i16x8_u
+				case 0xaa: // i32x4.extend_high_i16x8_u
+				case 0xab: // i32x4.shl
+				case 0xac: // i32x4.shr_s
+				case 0xad: // i32x4.shr_u
+				case 0xae: // i32x4.add
+				case 0xb1: // i32x4.sub
+				case 0xb5: // i32x4.mul
+				case 0xb6: // i32x4.min_s
+				case 0xb7: // i32x4.min_u
+				case 0xb8: // i32x4.max_s
+				case 0xb9: // i32x4.max_u
+				case 0xba: // i32x4.dot_i16x8_s
+				case 0xc0: // i64x2.abs
+				case 0xc1: // i64x2.neg
+				case 0xc4: // i64x2.bitmask
+				case 0xc7: // i64x2.extend_low_i32x4_s
+				case 0xc8: // i64x2.extend_high_i32x4_s
+				case 0xc9: // i64x2.extend_low_i32x4_u
+				case 0xca: // i64x2.extend_high_i32x4_u
+				case 0xcb: // i64x2.shl
+				case 0xcc: // i64x2.shr_s
+				case 0xcd: // i64x2.shr_u
+				case 0xce: // i64x2.add
+				case 0xd1: // i64x2.sub
+				case 0xd5: // i64x2.mul
+				case 0x67: // f32x4.ceil
+				case 0x68: // f32x4.floor
+				case 0x69: // f32x4.trunc
+				case 0x6a: // f32x4.nearest
+				case 0x74: // f64x2.ceil
+				case 0x75: // f64x2.floor
+				case 0x7a: // f64x2.trunc
+				case 0x94: // f64x2.nearest
+				case 0xe0: // f32x4.abs
+				case 0xe1: // f32x4.neg
+				case 0xe3: // f32x4.sqrt
+				case 0xe4: // f32x4.add
+				case 0xe5: // f32x4.sub
+				case 0xe6: // f32x4.mul
+				case 0xe7: // f32x4.div
+				case 0xe8: // f32x4.min
+				case 0xe9: // f32x4.max
+				case 0xea: // f32x4.pmin
+				case 0xeb: // f32x4.pmax
+				case 0xec: // f64x2.abs
+				case 0xed: // f64x2.neg
+				case 0xef: // f64x2.sqrt
+				case 0xf0: // f64x2.add
+				case 0xf1: // f64x2.sub
+				case 0xf2: // f64x2.mul
+				case 0xf3: // f64x2.div
+				case 0xf4: // f64x2.min
+				case 0xf5: // f64x2.max
+				case 0xf6: // f64x2.pmin
+				case 0xf7: // f64x2.pmax
+				case 0xf8: // i32x4.trunc_sat_f32x4_s
+				case 0xf9: // i32x4.trunc_sat_f32x4_u
+				case 0xfa: // f32x4.convert_i32x4_s
+				case 0xfb: // f32x4.convert_i32x4_u
+				case 0x9c: // i16x8.extmul_low_i8x16_s
+				case 0x9d: // i16x8.extmul_high_i8x16_s
+				case 0x9e: // i16x8.extmul_low_i8x16_u
+				case 0x9f: // i16x8.extmul_high_i8x16_u
+				case 0xbc: // i32x4.extmul_low_i16x8_s
+				case 0xbd: // i32x4.extmul_high_i16x8_s
+				case 0xbe: // i32x4.extmul_low_i16x8_u
+				case 0xbf: // i32x4.extmul_high_i16x8_u
+				case 0xdc: // i64x2.extmul_low_i32x4_s
+				case 0xdd: // i64x2.extmul_high_i32x4_s
+				case 0xde: // i64x2.extmul_low_i32x4_u
+				case 0xdf: // i64x2.extmul_high_i32x4_u
+				case 0x82: // i16x8.q15mulr_sat_s
+				case 0x53: // v128.any_true
+				case 0xd6: // i64x2.eq
+				case 0xd7: // i64x2.ne
+				case 0xd8: // i64x2.lt_s
+				case 0xd9: // i64x2.gt_s
+				case 0xda: // i64x2.le_s
+				case 0xdb: // i64x2.ge_s
+				case 0xc3: // i64x2.all_true
+				case 0xfe: // f64x2.convert_low_i32x4_s
+				case 0xff: // f64x2.convert_low_i32x4_u
+				case 0xfc: // i32x4.trunc_sat_f64x2_s_zero
+				case 0xfd: // i32x4.trunc_sat_f64x2_u_zero
+				case 0x5e: // f32x4.demote_f64x2_zero
+				case 0x5f: // f64x2.promote_low_f32x4
+				case 0x62: // i8x16.popcnt
+				case 0x7c: // i16x8.extadd_pairwise_i8x16_s
+				case 0x7d: // i16x8.extadd_pairwise_i8x16_u
+				case 0x7e: // i32x4.extadd_pairwise_i16x8_s
+				case 0x7f: // i32x4.extadd_pairwise_i16x8_u
+					break;
+
+				default:
+					std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFD00 | op)) << ", might cause problems\n";
+					break;
+#endif
+				}
+				break;
+#endif
 
 #if SOUP_WASM_PEDANTIC
 			case 0xff:

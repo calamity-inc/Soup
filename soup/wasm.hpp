@@ -22,6 +22,10 @@
 #define SOUP_WASM_PEDANTIC false
 #endif
 
+#ifndef SOUP_WASM_SIMD // Partial implementation (work in progress). The intent is to keep this feature off by default, tho.
+#define SOUP_WASM_SIMD false
+#endif
+
 // Additionally, the following proposals that landed in WebAssembly 3.0 are implemented.
 
 #ifndef SOUP_WASM_MEMORY64
@@ -55,7 +59,9 @@ NAMESPACE_SOUP
 		WASM_I64 = 0x7E, // -2
 		WASM_F32 = 0x7D, // -3
 		WASM_F64 = 0x7C, // -4
-		//WASM_V128 = 0x7B, // -5 (from the simd extension, which is currently not supported by Soup)
+#if SOUP_WASM_SIMD
+		WASM_V128 = 0x7B, // -5
+#endif
 		WASM_FUNCREF = 0x70,
 		WASM_EXTERNREF = 0x6F,
 #if SOUP_WASM_EXCEPTIONS
@@ -93,6 +99,14 @@ NAMESPACE_SOUP
 			};
 			int64_t i64;
 			double f64;
+#if SOUP_WASM_SIMD
+			int8_t i8x16[16];
+			int16_t i16x8[8];
+			int32_t i32x4[4];
+			int64_t i64x2[2];
+			float f32x4[4];
+			double f64x2[2];
+#endif
 		};
 		WasmType type;
 		bool mut; // only used for globals
@@ -107,7 +121,23 @@ NAMESPACE_SOUP
 		SOUP_CONSTEXPR20 WasmValue(double f64) noexcept : f64(f64), type(WASM_F64) {}
 		WasmValue(void* ptr) noexcept : i64(reinterpret_cast<uintptr_t>(ptr)), type(WASM_EXTERNREF) {}
 
-		[[nodiscard]] bool operator==(const WasmValue& b) const noexcept { return i64 == b.i64 && type == b.type; }
+		[[nodiscard]] bool operator==(const WasmValue& b) const noexcept
+		{
+#if SOUP_WASM_SIMD
+			if (type != b.type)
+			{
+				return false;
+			}
+			if (type == WASM_V128)
+			{
+				return memcmp(i8x16, b.i8x16, 16) == 0;
+			}
+			return i64 == b.i64;
+#else
+			return i64 == b.i64 && type == b.type;
+#endif
+		}
+
 		[[nodiscard]] bool operator!=(const WasmValue& b) const noexcept { return !operator==(b); }
 
 		[[nodiscard]] size_t uptr() const noexcept
@@ -118,7 +148,16 @@ NAMESPACE_SOUP
 			return i32;
 #endif
 		}
+
+		template <typename T>
+		T get() const noexcept;
 	};
+	template<> inline int8_t WasmValue::get<int8_t>() const noexcept { return i32; }
+	template<> inline int16_t WasmValue::get<int16_t>() const noexcept { return i32; }
+	template<> inline int32_t WasmValue::get<int32_t>() const noexcept { return i32; }
+	template<> inline int64_t WasmValue::get<int64_t>() const noexcept { return i64; }
+	template<> inline float WasmValue::get<float>() const noexcept { return f32; }
+	template<> inline double WasmValue::get<double>() const noexcept { return f64; }
 
 #if SOUP_WASM_MEMORY64
 	using wasm_uptr_t = uint64_t;

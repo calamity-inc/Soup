@@ -18,8 +18,44 @@ static std::vector<UniquePtr<int64_t>> externrefs;
 
 static void instantiate_value(const JsonObject& desc, WasmValue& out)
 {
-	const std::string& value = desc.at("value").asStr();
+	//std::cout << "instantiate_value: " << desc.encode() << "\n";
 	out.type = wasm_type_from_string(desc.at("type").asStr());
+#if SOUP_WASM_SIMD
+	if (out.type == WASM_V128)
+	{
+		const auto& value = desc.at("value").asArr();
+		if (value.size() == 2)
+		{
+			for (int i = 0; i != 2; ++i)
+			{
+				out.i64x2[i] = string::toIntOpt<uint64_t>(value.at(i).asStr(), string::TI_FULL).value();
+			}
+		}
+		else if (value.size() == 4)
+		{
+			for (int i = 0; i != 4; ++i)
+			{
+				out.i32x4[i] = string::toIntOpt<uint32_t>(value.at(i).asStr(), string::TI_FULL).value();
+			}
+		}
+		else if (value.size() == 8)
+		{
+			for (int i = 0; i != 8; ++i)
+			{
+				out.i16x8[i] = string::toIntOpt<uint16_t>(value.at(i).asStr(), string::TI_FULL).value();
+			}
+		}
+		else
+		{
+			for (int i = 0; i != 16; ++i)
+			{
+				out.i8x16[i] = string::toIntOpt<uint8_t>(value.at(i).asStr(), string::TI_FULL).value();
+			}
+		}
+		return;
+	}
+#endif
+	const std::string& value = desc.at("value").asStr();
 	if (value == "null")
 	{
 		out.i64 = 0;
@@ -50,6 +86,10 @@ static void instantiate_value(const JsonObject& desc, WasmValue& out)
 		}
 	}
 }
+
+#if SOUP_WASM_SIMD
+static const std::string EMPTY_STRING;
+#endif
 
 #define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
 
@@ -187,7 +227,7 @@ int cli_wast(const std::string& file)
 					SOUP_IF_UNLIKELY (tmp->load(fr))
 					{
 						std::cout << "Did not fail to load malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
-						goto _wast_next_cmd;
+						goto _wast_on_error;
 					}
 				}
 				else if (type == "assert_unlinkable")
@@ -210,7 +250,7 @@ int cli_wast(const std::string& file)
 					SOUP_IF_UNLIKELY (!tmp->hasUnresolvedImports())
 					{
 						std::cout << "Did not fail to link module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
-						goto _wast_next_cmd;
+						goto _wast_on_error;
 					}
 				}
 				else if (type == "assert_uninstantiable")
@@ -237,7 +277,7 @@ int cli_wast(const std::string& file)
 					SOUP_IF_UNLIKELY (tmp->instantiate())
 					{
 						std::cout << "Did not fail to instantiate malformed module " << cmd.at("filename").reinterpretAsStr().value << " (defined on line " << cmd.at("line").asInt().value << ")" << std::endl;
-						goto _wast_next_cmd;
+						goto _wast_on_error;
 					}
 				}
 				else if (type == "assert_invalid")
@@ -261,7 +301,7 @@ int cli_wast(const std::string& file)
 							SOUP_IF_UNLIKELY (func_idx == -1)
 							{
 								std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value << " for test at line " << cmd.at("line").asInt().value << std::endl;
-								goto _wast_next_cmd;
+								goto _wast_on_error;
 							}
 							//std::cout << "running code from line " << cmd.at("line").asInt().value << std::endl;
 							std::vector<WasmValue> args;
@@ -274,7 +314,7 @@ int cli_wast(const std::string& file)
 								SOUP_IF_UNLIKELY (type != "assert_trap" && type != "assert_exhaustion" && type != "assert_exception")
 								{
 									std::cout << "Execution failed for test at line " << cmd.at("line").asInt().value << std::endl;
-									goto _wast_next_cmd;
+									goto _wast_on_error;
 								}
 							}
 							else
@@ -282,7 +322,7 @@ int cli_wast(const std::string& file)
 								SOUP_IF_UNLIKELY (type == "assert_trap" || type == "assert_exhaustion" || type == "assert_exception")
 								{
 									std::cout << "Execution did not fail for test at line " << cmd.at("line").asInt().value << std::endl;
-									goto _wast_next_cmd;
+									goto _wast_on_error;
 								}
 							}
 						}
@@ -292,7 +332,7 @@ int cli_wast(const std::string& file)
 							SOUP_IF_UNLIKELY (!global)
 							{
 								std::cout << "Could not find export " << action.at("field").reinterpretAsStr().value << " for test at line " << cmd.at("line").asInt().value << std::endl;
-								goto _wast_next_cmd;
+								goto _wast_on_error;
 							}
 							stack.emplace_back(*global);
 						}
@@ -309,20 +349,24 @@ int cli_wast(const std::string& file)
 							SOUP_IF_UNLIKELY (stack.empty())
 							{
 								std::cout << "Stack too empty for test at line " << cmd.at("line").asInt().value << std::endl;
-								goto _wast_next_cmd;
+								goto _wast_on_error;
 							}
 							const auto& expected = (*i)->asObj();
 							const std::string& type = expected.at("type").asStr();
+#if SOUP_WASM_SIMD
+							const std::string& value = expected.at("value").isStr() ? expected.at("value").asStr() : EMPTY_STRING;
+#else
 							const std::string& value = expected.at("value").asStr();
+#endif
 							if (value == "nan:arithmetic")
 							{
 								SOUP_IF_UNLIKELY (type == "f32"
 									? !std::isnan(stack.back().f32)
 									: !std::isnan(stack.back().f64)
-								)
+									)
 								{
 									std::cout << "Return value was not NaN for test at line " << cmd.at("line").asInt().value << std::endl;
-									goto _wast_next_cmd;
+									goto _wast_on_error;
 								}
 							}
 							else if (value == "nan:canonical")
@@ -333,11 +377,12 @@ int cli_wast(const std::string& file)
 									)
 								{
 									std::cout << "Return value was not nan:canonical for test at line " << cmd.at("line").asInt().value << std::endl;
-									goto _wast_next_cmd;
+									goto _wast_on_error;
 								}
 							}
 							else
 							{
+								// TODO: Handle nan:canonical in v128 (currently throws "bad optional access")
 								WasmValue expected_vw;
 								instantiate_value(expected, expected_vw);
 								SOUP_IF_UNLIKELY (stack.back() != expected_vw)
@@ -354,9 +399,15 @@ int cli_wast(const std::string& file)
 										{
 											std::cout << " (*-> " << *(uint64_t*)expected_vw.i64 << ")";
 										}
+#if SOUP_WASM_SIMD
+										else if (expected_vw.type == WASM_V128)
+										{
+											std::cout << ", " << (uint64_t)expected_vw.i64x2[1];
+										}
+#endif
 										std::cout << std::endl;
 									}
-									std::cout << "- Actual: <" << wasm_type_to_string(stack.back().type) << "> " << (uint64_t)stack.back().i64;
+									std::cout << "- Actual:   <" << wasm_type_to_string(stack.back().type) << "> " << (uint64_t)stack.back().i64;
 									if (stack.back().type == WASM_EXTERNREF)
 									{
 										if (stack.back().i64 == 0)
@@ -368,8 +419,14 @@ int cli_wast(const std::string& file)
 											std::cout << " (*-> " << *(uint64_t*)stack.back().i64 << ")";
 										}
 									}
+#if SOUP_WASM_SIMD
+									else if (stack.back().type == WASM_V128)
+									{
+										std::cout << ", " << (uint64_t)stack.back().i64x2[1];
+									}
+#endif
 									std::cout << std::endl;
-									goto _wast_next_cmd;
+									goto _wast_on_error;
 								}
 							}
 							stack.pop_back();
@@ -378,7 +435,7 @@ int cli_wast(const std::string& file)
 						/*SOUP_IF_UNLIKELY (!stack.empty())
 						{
 							std::cout << "Stack too full for test at line " << cmd.at("line").asInt().value << std::endl;
-							goto _wast_next_cmd;
+							goto _wast_on_error;
 						}*/
 					}
 					else if (type != "action" && type != "assert_trap" && type != "assert_exhaustion" && type != "assert_exception")
@@ -386,7 +443,9 @@ int cli_wast(const std::string& file)
 						std::cout << "Unknown command type: " << type.value << std::endl;
 					}
 				}
-			_wast_next_cmd:;
+				continue;
+			_wast_on_error:
+				return 1;
 			}
 		}
 		catch (const std::exception& e)
@@ -400,6 +459,6 @@ int cli_wast(const std::string& file)
 		std::cout << "Input file is not valid JSON (use wast2json if need be)" << std::endl;
 		return 1;
 	}
-	std::cout << "Done." << std::endl;
+	std::cout << "OK" << std::endl;
 	return 0;
 }
