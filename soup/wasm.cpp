@@ -139,24 +139,24 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - simd/simd_conversions: FAIL
 - simd/simd_f32x4: FAIL
 - simd/simd_f32x4_arith: FAIL
-- simd/simd_f32x4_cmp: FAIL
+- simd/simd_f32x4_cmp: pass
 - simd/simd_f32x4_pmin_pmax: FAIL
 - simd/simd_f32x4_rounding: FAIL
 - simd/simd_f64x2: FAIL
 - simd/simd_f64x2_arith: FAIL
-- simd/simd_f64x2_cmp: FAIL
+- simd/simd_f64x2_cmp: pass
 - simd/simd_f64x2_pmin_pmax: FAIL
 - simd/simd_f64x2_rounding: FAIL
 - simd/simd_i16x8_arith: FAIL
 - simd/simd_i16x8_arith2: FAIL
-- simd/simd_i16x8_cmp: FAIL
+- simd/simd_i16x8_cmp: pass
 - simd/simd_i16x8_extadd_pairwise_i8x16: FAIL
 - simd/simd_i16x8_extmul_i8x16: FAIL
 - simd/simd_i16x8_q15mulr_sat_s: FAIL
 - simd/simd_i16x8_sat_arith: FAIL
 - simd/simd_i32x4_arith: FAIL
 - simd/simd_i32x4_arith2: FAIL
-- simd/simd_i32x4_cmp: FAIL
+- simd/simd_i32x4_cmp: pass
 - simd/simd_i32x4_dot_i16x8: FAIL
 - simd/simd_i32x4_extadd_pairwise_i16x8: FAIL
 - simd/simd_i32x4_extmul_i16x8: FAIL
@@ -164,11 +164,11 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - simd/simd_i32x4_trunc_sat_f64x2: FAIL
 - simd/simd_i64x2_arith: FAIL
 - simd/simd_i64x2_arith2: FAIL
-- simd/simd_i64x2_cmp: FAIL
+- simd/simd_i64x2_cmp: pass
 - simd/simd_i64x2_extmul_i32x4: FAIL
 - simd/simd_i8x16_arith: FAIL
 - simd/simd_i8x16_arith2: FAIL
-- simd/simd_i8x16_cmp: FAIL
+- simd/simd_i8x16_cmp: pass
 - simd/simd_i8x16_sat_arith: FAIL
 - simd/simd_int_to_int_extend: FAIL
 - simd/simd_lane: pass
@@ -2794,6 +2794,142 @@ NAMESPACE_SOUP
 		const auto value = stack.back().get<T>();
 		stack.pop_back();
 		(stack.back().*ptr)[idx] = value;
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S>
+	[[nodiscard]] static bool simd_eq(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = (a[i] == b[i]) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S>
+	[[nodiscard]] static bool simd_ne(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = (a[i] != b[i]) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S>
+	[[nodiscard]] static bool simd_lt(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = (a[i] < b[i]) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_lt_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = (static_cast<std::make_unsigned_t<T>>(a[i]) < static_cast<std::make_unsigned_t<T>>(b[i])) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S>
+	[[nodiscard]] static bool simd_gt(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = (a[i] > b[i]) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_gt_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = (static_cast<std::make_unsigned_t<T>>(a[i]) > static_cast<std::make_unsigned_t<T>>(b[i])) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S>
+	[[nodiscard]] static bool simd_le(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = (a[i] <= b[i]) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_le_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = (static_cast<std::make_unsigned_t<T>>(a[i]) <= static_cast<std::make_unsigned_t<T>>(b[i])) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S>
+	[[nodiscard]] static bool simd_ge(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = (a[i] >= b[i]) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_ge_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		auto& a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = (static_cast<std::make_unsigned_t<T>>(a[i]) >= static_cast<std::make_unsigned_t<T>>(b[i])) ? -1 : 0;
+		}
 		return true;
 	}
 
@@ -5742,6 +5878,174 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(replace_lane(stack, r, &WasmValue::f64x2));
 					break;
 
+				case 0x23: // i8x16.eq
+					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::i8x16, &WasmValue::i8x16));
+					break;
+
+				case 0x24: // i8x16.ne
+					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::i8x16, &WasmValue::i8x16));
+					break;
+
+				case 0x25: // i8x16.lt_s
+					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::i8x16, &WasmValue::i8x16));
+					break;
+
+				case 0x26: // i8x16.lt_u
+					SOUP_RETHROW_FALSE(simd_lt_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x27: // i8x16.gt_s
+					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::i8x16, &WasmValue::i8x16));
+					break;
+
+				case 0x28: // i8x16.gt_u
+					SOUP_RETHROW_FALSE(simd_gt_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x29: // i8x16.le_s
+					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::i8x16, &WasmValue::i8x16));
+					break;
+
+				case 0x2a: // i8x16.le_u
+					SOUP_RETHROW_FALSE(simd_le_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x2b: // i8x16.ge_s
+					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::i8x16, &WasmValue::i8x16));
+					break;
+
+				case 0x2c: // i8x16.ge_u
+					SOUP_RETHROW_FALSE(simd_ge_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x2d: // i16x8.eq
+					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::i16x8, &WasmValue::i16x8));
+					break;
+
+				case 0x2e: // i16x8.ne
+					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::i16x8, &WasmValue::i16x8));
+					break;
+
+				case 0x2f: // i16x8.lt_s
+					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::i16x8, &WasmValue::i16x8));
+					break;
+
+				case 0x30: // i16x8.lt_u
+					SOUP_RETHROW_FALSE(simd_lt_u(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x31: // i16x8.gt_s
+					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::i16x8, &WasmValue::i16x8));
+					break;
+
+				case 0x32: // i16x8.gt_u
+					SOUP_RETHROW_FALSE(simd_gt_u(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x33: // i16x8.le_s
+					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::i16x8, &WasmValue::i16x8));
+					break;
+
+				case 0x34: // i16x8.le_u
+					SOUP_RETHROW_FALSE(simd_le_u(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x35: // i16x8.ge_s
+					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::i16x8, &WasmValue::i16x8));
+					break;
+
+				case 0x36: // i16x8.ge_u
+					SOUP_RETHROW_FALSE(simd_ge_u(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x37: // i32x4.eq
+					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::i32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x38: // i32x4.ne
+					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::i32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x39: // i32x4.lt_s
+					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::i32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x3a: // i32x4.lt_u
+					SOUP_RETHROW_FALSE(simd_lt_u(stack, &WasmValue::i32x4));
+					break;
+
+				case 0x3b: // i32x4.gt_s
+					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::i32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x3c: // i32x4.gt_u
+					SOUP_RETHROW_FALSE(simd_gt_u(stack, &WasmValue::i32x4));
+					break;
+
+				case 0x3d: // i32x4.le_s
+					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::i32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x3e: // i32x4.le_u
+					SOUP_RETHROW_FALSE(simd_le_u(stack, &WasmValue::i32x4));
+					break;
+
+				case 0x3f: // i32x4.ge_s
+					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::i32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x40: // i32x4.ge_u
+					SOUP_RETHROW_FALSE(simd_ge_u(stack, &WasmValue::i32x4));
+					break;
+
+				case 0x41: // f32x4.eq
+					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::f32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x42: // f32x4.ne
+					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::f32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x43: // f32x4.lt
+					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::f32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x44: // f32x4.gt
+					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::f32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x45: // f32x4.le
+					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::f32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x46: // f32x4.ge
+					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::f32x4, &WasmValue::i32x4));
+					break;
+
+				case 0x47: // f64x2.eq
+					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::f64x2, &WasmValue::i64x2));
+					break;
+
+				case 0x48: // f64x2.ne
+					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::f64x2, &WasmValue::i64x2));
+					break;
+
+				case 0x49: // f64x2.lt
+					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::f64x2, &WasmValue::i64x2));
+					break;
+
+				case 0x4a: // f64x2.gt
+					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::f64x2, &WasmValue::i64x2));
+					break;
+
+				case 0x4b: // f64x2.le
+					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::f64x2, &WasmValue::i64x2));
+					break;
+
+				case 0x4c: // f64x2.ge
+					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::f64x2, &WasmValue::i64x2));
+					break;
+
 				case 0x4d: // v128.not
 					WASM_CHECK_STACK(1);
 					stack.back().i64x2[0] = ~stack.back().i64x2[0];
@@ -5861,6 +6165,30 @@ NAMESPACE_SOUP
 
 				case 0xb5: // i32x4.mul
 					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xd6: // i64x2.eq
+					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xd7: // i64x2.ne
+					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xd8: // i64x2.lt_s
+					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xd9: // i64x2.gt_s
+					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xda: // i64x2.le_s
+					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xdb: // i64x2.ge_s
+					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::i64x2, &WasmValue::i64x2));
 					break;
 
 				case 0xc3: // i64x2.all_true
