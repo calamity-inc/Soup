@@ -10,6 +10,7 @@
 #include "Exception.hpp"
 #include "MemoryRefReader.hpp"
 #include "Reader.hpp"
+#include "string.hpp"
 #include "StringRefWriter.hpp"
 #if SOUP_WASM_PEDANTIC
 #include "unicode.hpp"
@@ -24,7 +25,6 @@
 
 #if DEBUG_LOAD || DEBUG_LINK || DEBUG_VM || DEBUG_BRANCHING || DEBUG_API || DEBUG_GC
 #include <iostream>
-#include "string.hpp"
 #endif
 
 // Useful resources:
@@ -136,7 +136,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - simd/simd_bitwise: pass
 - simd/simd_boolean: pass
 - simd/simd_const: pass
-- simd/simd_conversions: FAIL
+- simd/simd_conversions: pass
 - simd/simd_f32x4: FAIL
 - simd/simd_f32x4_arith: FAIL
 - simd/simd_f32x4_cmp: pass
@@ -170,7 +170,7 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - simd/simd_i8x16_arith2: FAIL
 - simd/simd_i8x16_cmp: pass
 - simd/simd_i8x16_sat_arith: FAIL
-- simd/simd_int_to_int_extend: FAIL
+- simd/simd_int_to_int_extend: pass
 - simd/simd_lane: pass
 - simd/simd_linking: pass
 - simd/simd_load: FAIL
@@ -315,6 +315,28 @@ NAMESPACE_SOUP
 			str.append(wasm_type_to_string(t));
 		}
 		str.push_back(')');
+		return str;
+	}
+
+	// WasmValue
+
+	std::string WasmValue::toString() const SOUP_EXCAL
+	{
+		std::string str(1, '<');
+		str.append(wasm_type_to_string(type));
+		str.append("> ");
+		str.append(string::hex((uint64_t)i64));
+		if ((type == WASM_EXTERNREF || type == WASM_FUNCREF) && i64 == 0)
+		{
+			str.append(" (null)");
+		}
+#if SOUP_WASM_SIMD
+		if (type == WASM_V128)
+		{
+			str.append(", ");
+			str.append(string::hex((uint64_t)i64x2[1]));
+		}
+#endif
 		return str;
 	}
 
@@ -3000,6 +3022,114 @@ NAMESPACE_SOUP
 		stack.back().i32 = mask;
 		stack.back().hi32 = 0;
 		stack.back().type = WASM_I32;
+		return true;
+	}
+
+	template <typename OutT, typename T>
+	[[nodiscard]] static OutT saturate(T in)
+	{
+		if (in < std::numeric_limits<OutT>::min())
+		{
+			return std::numeric_limits<OutT>::min();
+		}
+		if (in > std::numeric_limits<OutT>::max())
+		{
+			return std::numeric_limits<OutT>::max();
+		}
+		return static_cast<OutT>(in);
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool simd_narrow_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(S * 2 == OutS);
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		const auto a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = saturate<OutT>(a[i]);
+		}
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[S + i] = saturate<OutT>(b[i]);
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool simd_narrow_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(S * 2 == OutS);
+		WASM_CHECK_STACK(2);
+		const auto b = stack.back().*ptr; stack.pop_back();
+		const auto a = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[i] = saturate<std::make_unsigned_t<OutT>>(a[i]);
+		}
+		for (size_t i = 0; i != S; ++i)
+		{
+			out[S + i] = saturate<std::make_unsigned_t<OutT>>(b[i]);
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool simd_extend_low_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(1);
+		T in[S]; memcpy(in, stack.back().*ptr, 16);
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			out[i] = static_cast<OutT>(in[i]);
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool simd_extend_high_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(1);
+		T in[S]; memcpy(in, stack.back().*ptr, 16);
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			out[i] = static_cast<OutT>(in[OutS + i]);
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool simd_extend_low_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(1);
+		T in[S]; memcpy(in, stack.back().*ptr, 16);
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			out[i] = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(in[i]));
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool simd_extend_high_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(1);
+		T in[S]; memcpy(in, stack.back().*ptr, 16);
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			out[i] = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(in[OutS + i]));
+		}
 		return true;
 	}
 
@@ -5815,9 +5945,10 @@ NAMESPACE_SOUP
 				break;
 
 #if SOUP_WASM_SIMD
-			case 0xfd:
-				r.u8(op);
-				switch (op)
+			case 0xfd: {
+				uint32_t simdop;
+				WASM_READ_OML(simdop);
+				switch (simdop)
 				{
 				case 0x00: // v128.load
 					{
@@ -6207,6 +6338,14 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i8x16));
 					break;
 
+				case 0x65: // i8x16.narrow_i16x8_s
+					SOUP_RETHROW_FALSE(simd_narrow_s(stack, &WasmValue::i16x8, &WasmValue::i8x16));
+					break;
+
+				case 0x66: // i8x16.narrow_i16x8_u
+					SOUP_RETHROW_FALSE(simd_narrow_u(stack, &WasmValue::i16x8, &WasmValue::i8x16));
+					break;
+
 				case 0x6b: // i8x16.shl
 					SOUP_RETHROW_FALSE(simd_shl(stack, &WasmValue::i8x16));
 					break;
@@ -6235,6 +6374,30 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i16x8));
 					break;
 
+				case 0x85: // i16x8.narrow_i32x4_s
+					SOUP_RETHROW_FALSE(simd_narrow_s(stack, &WasmValue::i32x4, &WasmValue::i16x8));
+					break;
+
+				case 0x86: // i16x8.narrow_i32x4_u
+					SOUP_RETHROW_FALSE(simd_narrow_u(stack, &WasmValue::i32x4, &WasmValue::i16x8));
+					break;
+					
+				case 0x87: // i16x8.extend_low_i8x16_s
+					SOUP_RETHROW_FALSE(simd_extend_low_s(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x88: // i16x8.extend_high_i8x16_s
+					SOUP_RETHROW_FALSE(simd_extend_high_s(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x89: // i16x8.extend_low_i8x16_u
+					SOUP_RETHROW_FALSE(simd_extend_low_u(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x8a: // i16x8.extend_high_i8x16_u
+					SOUP_RETHROW_FALSE(simd_extend_high_u(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
 				case 0x8b: // i16x8.shl
 					SOUP_RETHROW_FALSE(simd_shl(stack, &WasmValue::i16x8));
 					break;
@@ -6250,7 +6413,7 @@ NAMESPACE_SOUP
 				case 0x8e: // i16x8.add
 					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i16x8));
 					break;
-					
+
 				case 0x91: // i16x8.sub
 					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::i16x8));
 					break;
@@ -6265,6 +6428,22 @@ NAMESPACE_SOUP
 
 				case 0xa4: // i32x4.bitmask
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xa7: // i32x4.extend_low_i16x8_s
+					SOUP_RETHROW_FALSE(simd_extend_low_s(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0xa8: // i32x4.extend_high_i16x8_s
+					SOUP_RETHROW_FALSE(simd_extend_high_s(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0xa9: // i32x4.extend_low_i16x8_u
+					SOUP_RETHROW_FALSE(simd_extend_low_u(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0xaa: // i32x4.extend_high_i16x8_u
+					SOUP_RETHROW_FALSE(simd_extend_high_u(stack, &WasmValue::i16x8, &WasmValue::i32x4));
 					break;
 
 				case 0xab: // i32x4.shl
@@ -6323,6 +6502,22 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_bitmask(stack, &WasmValue::i64x2));
 					break;
 
+				case 0xc7: // i64x2.extend_low_i32x4_s
+					SOUP_RETHROW_FALSE(simd_extend_low_s(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
+				case 0xc8: // i64x2.extend_high_i32x4_s
+					SOUP_RETHROW_FALSE(simd_extend_high_s(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
+				case 0xc9: // i64x2.extend_low_i32x4_u
+					SOUP_RETHROW_FALSE(simd_extend_low_u(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
+				case 0xca: // i64x2.extend_high_i32x4_u
+					SOUP_RETHROW_FALSE(simd_extend_high_u(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
 				case 0xcb: // i64x2.shl
 					SOUP_RETHROW_FALSE(simd_shl(stack, &WasmValue::i64x2));
 					break;
@@ -6371,13 +6566,71 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::f64x2));
 					break;
 
+				case 0xfa: // f32x4.convert_i32x4_s
+					WASM_CHECK_STACK(1);
+					for (int i = 0; i != 4; ++i)
+					{
+						stack.back().f32x4[i] = static_cast<float>(stack.back().i32x4[i]);
+					}
+					break;
+
+				case 0xfb: // f32x4.convert_i32x4_u
+					WASM_CHECK_STACK(1);
+					for (int i = 0; i != 4; ++i)
+					{
+						stack.back().f32x4[i] = static_cast<float>(static_cast<uint32_t>(stack.back().i32x4[i]));
+					}
+					break;
+
+				case 0xfe: // f64x2.convert_low_i32x4_s
+					{
+						WASM_CHECK_STACK(1);
+						const auto in0 = stack.back().i32x4[0];
+						const auto in1 = stack.back().i32x4[1];
+						stack.back().f64x2[0] = static_cast<double>(in0);
+						stack.back().f64x2[1] = static_cast<double>(in1);
+					}
+					break;
+
+				case 0xff: // f64x2.convert_low_i32x4_u
+					{
+						WASM_CHECK_STACK(1);
+						const auto in0 = stack.back().i32x4[0];
+						const auto in1 = stack.back().i32x4[1];
+						stack.back().f64x2[0] = static_cast<double>(static_cast<uint32_t>(in0));
+						stack.back().f64x2[1] = static_cast<double>(static_cast<uint32_t>(in1));
+					}
+					break;
+
+				case 0x5e: // f32x4.demote_f64x2_zero
+					{
+						WASM_CHECK_STACK(1);
+						const auto in0 = stack.back().f64x2[0];
+						const auto in1 = stack.back().f64x2[1];
+						stack.back().f32x4[0] = static_cast<float>(in0);
+						stack.back().f32x4[1] = static_cast<float>(in1);
+						stack.back().f32x4[2] = 0.0f;
+						stack.back().f32x4[3] = 0.0f;
+					}
+					break;
+
+				case 0x5f: // f64x2.promote_low_f32x4
+					{
+						WASM_CHECK_STACK(1);
+						const auto in0 = stack.back().f32x4[0];
+						const auto in1 = stack.back().f32x4[1];
+						stack.back().f64x2[0] = static_cast<double>(in0);
+						stack.back().f64x2[1] = static_cast<double>(in1);
+					}
+					break;
+
 				default:
 #if DEBUG_VM
-					std::cout << "Unsupported opcode: " << string::hex(0xFD00 | op) << "\n";
+					std::cout << "Unsupported opcode: FD " << string::hex(simdop) << "\n";
 #endif
 					return CODE_ERROR;
 				}
-				break;
+			} break;
 #endif
 			}
 		}
@@ -6809,9 +7062,10 @@ NAMESPACE_SOUP
 				break;
 
 #if SOUP_WASM_SIMD
-			case 0xfd:
-				r.u8(op);
-				switch (op)
+			case 0xfd: {
+				uint32_t simdop;
+				WASM_READ_OML(simdop);
+				switch (simdop)
 				{
 				case 0x00: // v128.load
 				case 0x01: // v128.load8x8_s
@@ -7072,11 +7326,11 @@ NAMESPACE_SOUP
 					break;
 
 				default:
-					std::cout << "skipOverBranch: unknown instruction " << string::hex(static_cast<uint16_t>(0xFD00 | op)) << ", might cause problems\n";
+					std::cout << "skipOverBranch: unknown instruction FD " << string::hex(simdop) << ", might cause problems\n";
 					break;
 #endif
 				}
-				break;
+			} break;
 #endif
 
 #if SOUP_WASM_PEDANTIC

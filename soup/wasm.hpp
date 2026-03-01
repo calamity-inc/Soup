@@ -155,6 +155,8 @@ NAMESPACE_SOUP
 #endif
 		}
 
+		[[nodiscard]] std::string toString() const SOUP_EXCAL;
+
 		template <typename T>
 		T get() const noexcept;
 	};

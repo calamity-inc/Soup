@@ -16,7 +16,7 @@ using namespace soup;
 
 static std::vector<UniquePtr<int64_t>> externrefs;
 
-static void instantiate_value(const JsonObject& desc, WasmValue& out)
+[[nodiscard]] static bool instantiate_value(const JsonObject& desc, WasmValue& out)
 {
 	//std::cout << "instantiate_value: " << desc.encode() << "\n";
 	out.type = wasm_type_from_string(desc.at("type").asStr());
@@ -28,31 +28,31 @@ static void instantiate_value(const JsonObject& desc, WasmValue& out)
 		{
 			for (int i = 0; i != 2; ++i)
 			{
-				out.i64x2[i] = string::toIntOpt<uint64_t>(value.at(i).asStr(), string::TI_FULL).value();
+				SOUP_RETHROW_FALSE(string::toIntOpt<uint64_t>(value.at(i).asStr(), string::TI_FULL).consume(reinterpret_cast<uint64_t&>(out.i64x2[i])));
 			}
 		}
 		else if (value.size() == 4)
 		{
 			for (int i = 0; i != 4; ++i)
 			{
-				out.i32x4[i] = string::toIntOpt<uint32_t>(value.at(i).asStr(), string::TI_FULL).value();
+				SOUP_RETHROW_FALSE(string::toIntOpt<uint32_t>(value.at(i).asStr(), string::TI_FULL).consume(reinterpret_cast<uint32_t&>(out.i32x4[i])));
 			}
 		}
 		else if (value.size() == 8)
 		{
 			for (int i = 0; i != 8; ++i)
 			{
-				out.i16x8[i] = string::toIntOpt<uint16_t>(value.at(i).asStr(), string::TI_FULL).value();
+				SOUP_RETHROW_FALSE(string::toIntOpt<uint16_t>(value.at(i).asStr(), string::TI_FULL).consume(reinterpret_cast<uint16_t&>(out.i16x8[i])));
 			}
 		}
 		else
 		{
 			for (int i = 0; i != 16; ++i)
 			{
-				out.i8x16[i] = string::toIntOpt<uint8_t>(value.at(i).asStr(), string::TI_FULL).value();
+				SOUP_RETHROW_FALSE(string::toIntOpt<uint8_t>(value.at(i).asStr(), string::TI_FULL).consume(reinterpret_cast<uint8_t&>(out.i8x16[i])));
 			}
 		}
-		return;
+		return true;
 	}
 #endif
 	const std::string& value = desc.at("value").asStr();
@@ -62,7 +62,7 @@ static void instantiate_value(const JsonObject& desc, WasmValue& out)
 	}
 	else
 	{
-		out.i64 = string::toIntOpt<uint64_t>(value, string::TI_FULL).value();
+		SOUP_RETHROW_FALSE(string::toIntOpt<uint64_t>(value, string::TI_FULL).consume(reinterpret_cast<uint64_t&>(out.i64)));
 		if (out.type == WASM_FUNCREF)
 		{
 			out.i64 |= 0x1'0000'0000;
@@ -85,11 +85,102 @@ static void instantiate_value(const JsonObject& desc, WasmValue& out)
 			out.i64 = reinterpret_cast<uintptr_t>(ptr);
 		}
 	}
+	return true;
 }
 
+[[nodiscard]] static std::string stringify_value(const WasmValue& value)
+{
+	std::string str = value.toString();
+	if (value.type == WASM_EXTERNREF && value.i64)
+	{
+		str.append(" (*-> ");
+		str.append(std::to_string(*(uint64_t*)value.i64));
+		str.push_back(')');
+	}
+	return str;
+}
+
+[[nodiscard]] static bool check_form(const WasmValue& actual, const JsonObject& expected)
+{
 #if SOUP_WASM_SIMD
-static const std::string EMPTY_STRING;
+	if (expected.at("value").isStr())
 #endif
+	{
+		const std::string& type = expected.at("type").asStr();
+		const std::string& value = expected.at("value").asStr();
+		if (value == "nan:arithmetic")
+		{
+			SOUP_IF_UNLIKELY (type == "f32"
+				? !std::isnan(actual.f32)
+				: !std::isnan(actual.f64)
+				)
+			{
+				return false;
+			}
+		}
+		else if (value == "nan:canonical")
+		{
+			SOUP_IF_UNLIKELY (type == "f32"
+				? (actual.i32 != 0x7fc00000 && actual.i32 != 0xffc00000)
+				: (actual.i64 != 0x7ff8000000000000 && actual.i64 != 0xfff8000000000000)
+				)
+			{
+				return false;
+			}
+		}
+	}
+#if SOUP_WASM_SIMD
+	else
+	{
+		const auto& value = expected.at("value").asArr();
+		if (value.size() == 2)
+		{
+			for (int i = 0; i != 2; ++i)
+			{
+				if (value.at(i).asStr() == "nan:arithmetic")
+				{
+					SOUP_RETHROW_FALSE(std::isnan(actual.f64x2[i]));
+				}
+				else if (value.at(i).asStr() == "nan:canonical")
+				{
+					SOUP_RETHROW_FALSE(actual.i64x2[i] == 0x7ff8000000000000 || actual.i64x2[i] == 0xfff8000000000000);
+				}
+				else
+				{
+					uint64_t u;
+					SOUP_RETHROW_FALSE(string::toIntOpt<uint64_t>(value.at(i).asStr(), string::TI_FULL).consume(u));
+					SOUP_RETHROW_FALSE(actual.i64x2[i] == u);
+				}
+			}
+		}
+		else if (value.size() == 4)
+		{
+			for (int i = 0; i != 4; ++i)
+			{
+				if (value.at(i).asStr() == "nan:arithmetic")
+				{
+					SOUP_RETHROW_FALSE(std::isnan(actual.f32x4[i]));
+				}
+				else if (value.at(i).asStr() == "nan:canonical")
+				{
+					SOUP_RETHROW_FALSE(actual.i32x4[i] == 0x7fc00000 || actual.i32x4[i] == 0xffc00000);
+				}
+				else
+				{
+					uint32_t u;
+					SOUP_RETHROW_FALSE(string::toIntOpt<uint32_t>(value.at(i).asStr(), string::TI_FULL).consume(u));
+					SOUP_RETHROW_FALSE(actual.i32x4[i] == u);
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+#endif
+	return true;
+}
 
 #define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
 
@@ -307,7 +398,11 @@ int cli_wast(const std::string& file)
 							std::vector<WasmValue> args;
 							for (const auto& arg : action.at("args").asArr())
 							{
-								instantiate_value(arg.asObj(), args.emplace_back());
+								SOUP_IF_UNLIKELY (!instantiate_value(arg.asObj(), args.emplace_back()))
+								{
+									std::cout << "Failed to instantiate value: " << arg.encode() << std::endl;
+									goto _wast_on_error;
+								}
 							}
 							if (!action_scr->call(func_idx, std::move(args), &stack))
 							{
@@ -352,80 +447,23 @@ int cli_wast(const std::string& file)
 								goto _wast_on_error;
 							}
 							const auto& expected = (*i)->asObj();
-							const std::string& type = expected.at("type").asStr();
-#if SOUP_WASM_SIMD
-							const std::string& value = expected.at("value").isStr() ? expected.at("value").asStr() : EMPTY_STRING;
-#else
-							const std::string& value = expected.at("value").asStr();
-#endif
-							if (value == "nan:arithmetic")
+							if (WasmValue expected_vw; instantiate_value(expected, expected_vw))
 							{
-								SOUP_IF_UNLIKELY (type == "f32"
-									? !std::isnan(stack.back().f32)
-									: !std::isnan(stack.back().f64)
-									)
+								SOUP_IF_UNLIKELY (stack.back() != expected_vw)
 								{
-									std::cout << "Return value was not NaN for test at line " << cmd.at("line").asInt().value << std::endl;
-									goto _wast_on_error;
-								}
-							}
-							else if (value == "nan:canonical")
-							{
-								if (type == "f32"
-									? (stack.back().i32 != 0x7fc00000 && stack.back().i32 != 0xffc00000)
-									: (stack.back().i64 != 0x7ff8000000000000 && stack.back().i64 != 0xfff8000000000000)
-									)
-								{
-									std::cout << "Return value was not nan:canonical for test at line " << cmd.at("line").asInt().value << std::endl;
+									std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
+									std::cout << "- Expected: " << stringify_value(expected_vw) << std::endl;
+									std::cout << "- Actual: " << stringify_value(stack.back()) << std::endl;
 									goto _wast_on_error;
 								}
 							}
 							else
 							{
-								// TODO: Handle nan:canonical in v128 (currently throws "bad optional access")
-								WasmValue expected_vw;
-								instantiate_value(expected, expected_vw);
-								SOUP_IF_UNLIKELY (stack.back() != expected_vw)
+								SOUP_IF_UNLIKELY (!check_form(stack.back(), expected))
 								{
 									std::cout << "Return value mismatch for test at line " << cmd.at("line").asInt().value << std::endl;
-									if (value == "null")
-									{
-										std::cout << "- Expected: <" << type << "> 0 (null)" << std::endl;
-									}
-									else
-									{
-										std::cout << "- Expected: <" << type << "> " << (uint64_t)expected_vw.i64;
-										if (expected_vw.type == WASM_EXTERNREF)
-										{
-											std::cout << " (*-> " << *(uint64_t*)expected_vw.i64 << ")";
-										}
-#if SOUP_WASM_SIMD
-										else if (expected_vw.type == WASM_V128)
-										{
-											std::cout << ", " << (uint64_t)expected_vw.i64x2[1];
-										}
-#endif
-										std::cout << std::endl;
-									}
-									std::cout << "- Actual:   <" << wasm_type_to_string(stack.back().type) << "> " << (uint64_t)stack.back().i64;
-									if (stack.back().type == WASM_EXTERNREF)
-									{
-										if (stack.back().i64 == 0)
-										{
-											std::cout << " (null)";
-										}
-										else
-										{
-											std::cout << " (*-> " << *(uint64_t*)stack.back().i64 << ")";
-										}
-									}
-#if SOUP_WASM_SIMD
-									else if (stack.back().type == WASM_V128)
-									{
-										std::cout << ", " << (uint64_t)stack.back().i64x2[1];
-									}
-#endif
-									std::cout << std::endl;
+									std::cout << "- Expected: " << expected.encode() << std::endl;
+									std::cout << "- Actual: " << stringify_value(stack.back()) << std::endl;
 									goto _wast_on_error;
 								}
 							}
