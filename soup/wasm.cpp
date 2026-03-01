@@ -4170,72 +4170,68 @@ NAMESPACE_SOUP
 			case 0x6a: // i32.add
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 + b.i32);
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 += b;
 				}
 				break;
 
 			case 0x6b: // i32.sub
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 - b.i32);
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 -= b;
 				}
 				break;
 
 			case 0x6c: // i32.mul
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 * b.i32);
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 *= b;
 				}
 				break;
 
 			case 0x6d: // i32.div_s
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i32 == 0 || (a.i32 == INT32_MIN && b.i32 == -1))
+					auto b = stack.back().i32; stack.pop_back();
+					auto a = stack.back().i32;
+					SOUP_IF_UNLIKELY (b == 0 || (a == INT32_MIN && b == -1))
 					{
 						return CODE_ERROR;
 					}
-					stack.emplace_back(a.i32 / b.i32);
+					stack.back().i32 = a / b;
 				}
 				break;
 
 			case 0x6e: // i32.div_u
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i32 == 0)
+					auto b = stack.back().i32; stack.pop_back();
+					SOUP_IF_UNLIKELY (b == 0)
 					{
 						return CODE_ERROR;
 					}
-					stack.emplace_back(static_cast<uint32_t>(a.i32) / static_cast<uint32_t>(b.i32));
+					stack.back().i32 = static_cast<uint32_t>(stack.back().i32) / static_cast<uint32_t>(b);
 				}
 				break;
 
 			case 0x6f: // i32.rem_s
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i32 == 0)
+					auto b = stack.back().i32; stack.pop_back();
+					auto a = stack.back().i32;
+					SOUP_IF_UNLIKELY (b == 0)
 					{
 						return CODE_ERROR;
 					}
-					if (a.i32 == INT32_MIN && b.i32 == -1)
+					if (a == INT32_MIN && b == -1)
 					{
-						stack.emplace_back(0);
+						stack.back().i32 = 0;
 					}
 					else
 					{
-						stack.emplace_back(a.i32 % b.i32);
+						stack.back().i32 = a % b;
 					}
 				}
 				break;
@@ -4243,85 +4239,76 @@ NAMESPACE_SOUP
 			case 0x70: // i32.rem_u
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i32 == 0)
+					auto b = stack.back().i32; stack.pop_back();
+					SOUP_IF_UNLIKELY (b == 0)
 					{
 						return CODE_ERROR;
 					}
-					stack.emplace_back(static_cast<uint32_t>(a.i32) % static_cast<uint32_t>(b.i32));
+					stack.back().i32 = static_cast<uint32_t>(stack.back().i32) % static_cast<uint32_t>(b);
 				}
 				break;
 
 			case 0x71: // i32.and
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 & b.i32);
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 &= b;
 				}
 				break;
 
 			case 0x72: // i32.or
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 | b.i32);
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 |= b;
 				}
 				break;
 
 			case 0x73: // i32.xor
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 ^ b.i32);
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 ^= b;
 				}
 				break;
 
 			case 0x74: // i32.shl
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 << (static_cast<uint32_t>(b.i32) % (sizeof(uint32_t) * 8)));
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 <<= (static_cast<uint32_t>(b) % (sizeof(uint32_t) * 8));
 				}
 				break;
 
 			case 0x75: // i32.shr_s ("arithmetic right shift")
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i32 >> (static_cast<uint32_t>(b.i32) % (sizeof(uint32_t) * 8)));
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 >>= (static_cast<uint32_t>(b) % (sizeof(uint32_t) * 8));
 				}
 				break;
 
 			case 0x76: // i32.shr_u ("logical right shift")
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(static_cast<uint32_t>(a.i32) >> (static_cast<uint32_t>(b.i32) % (sizeof(uint32_t) * 8)));
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back().i32 = static_cast<uint32_t>(stack.back().i32) >> (static_cast<uint32_t>(b) % (sizeof(uint32_t) * 8));
 				}
 				break;
 
 			case 0x77: // i32.rotl
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(soup::rotl<uint32_t>(a.i32, b.i32));
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back() = soup::rotl<uint32_t>(stack.back().i32, b);
 				}
 				break;
 
 			case 0x78: // i32.rotr
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(soup::rotr<uint32_t>(a.i32, b.i32));
+					auto b = stack.back().i32; stack.pop_back();
+					stack.back() = soup::rotr<uint32_t>(stack.back().i32, b);
 				}
 				break;
 
@@ -4343,72 +4330,68 @@ NAMESPACE_SOUP
 			case 0x7c: // i64.add
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 + b.i64);
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 += b;
 				}
 				break;
 
 			case 0x7d: // i64.sub
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 - b.i64);
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 -= b;
 				}
 				break;
 
 			case 0x7e: // i64.mul
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 * b.i64);
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 *= b;
 				}
 				break;
 
 			case 0x7f: // i64.div_s
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i64 == 0 || (a.i64 == INT64_MIN && b.i64 == -1))
+					auto b = stack.back().i64; stack.pop_back();
+					auto a = stack.back().i64;
+					SOUP_IF_UNLIKELY (b == 0 || (a == INT64_MIN && b == -1))
 					{
 						return CODE_ERROR;
 					}
-					stack.emplace_back(a.i64 / b.i64);
+					stack.back().i64 = a / b;
 				}
 				break;
 
 			case 0x80: // i64.div_u
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i64 == 0)
+					auto b = stack.back().i64; stack.pop_back();
+					SOUP_IF_UNLIKELY (b == 0)
 					{
 						return CODE_ERROR;
 					}
-					stack.emplace_back(static_cast<uint64_t>(a.i64) / static_cast<uint64_t>(b.i64));
+					stack.back().i64 = static_cast<uint64_t>(stack.back().i64) / static_cast<uint64_t>(b);
 				}
 				break;
 
 			case 0x81: // i64.rem_s
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i32 == 0)
+					auto b = stack.back().i64; stack.pop_back();
+					auto a = stack.back().i64;
+					SOUP_IF_UNLIKELY (b == 0)
 					{
 						return CODE_ERROR;
 					}
-					if (a.i64 == INT64_MIN && b.i64 == -1)
+					if (a == INT64_MIN && b == -1)
 					{
-						stack.emplace_back(static_cast<int64_t>(0));
+						stack.back().i64 = 0;
 					}
 					else
 					{
-						stack.emplace_back(a.i64 % b.i64);
+						stack.back().i64 = a % b;
 					}
 				}
 				break;
@@ -4416,85 +4399,76 @@ NAMESPACE_SOUP
 			case 0x82: // i64.rem_u
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					SOUP_IF_UNLIKELY (b.i32 == 0)
+					auto b = stack.back().i64; stack.pop_back();
+					SOUP_IF_UNLIKELY (b == 0)
 					{
 						return CODE_ERROR;
 					}
-					stack.emplace_back(static_cast<uint64_t>(a.i64) % static_cast<uint64_t>(b.i64));
+					stack.back().i64 = static_cast<uint64_t>(stack.back().i64) % static_cast<uint64_t>(b);
 				}
 				break;
 
 			case 0x83: // i64.and
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 & b.i64);
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 &= b;
 				}
 				break;
 
 			case 0x84: // i64.or
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 | b.i64);
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 |= b;
 				}
 				break;
 
 			case 0x85: // i64.xor
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 ^ b.i64);
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 ^= b;
 				}
 				break;
 
 			case 0x86: // i64.shl
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 << (static_cast<uint64_t>(b.i64) % (sizeof(uint64_t) * 8)));
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 <<= (static_cast<uint64_t>(b) % (sizeof(uint64_t) * 8));
 				}
 				break;
 
 			case 0x87: // i64.shr_s ("arithmetic right shift")
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.i64 >> (static_cast<uint64_t>(b.i64) % (sizeof(uint64_t) * 8)));
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 >>= (static_cast<uint64_t>(b) % (sizeof(uint64_t) * 8));
 				}
 				break;
 
 			case 0x88: // i64.shr_u ("logical right shift")
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(static_cast<uint64_t>(a.i64) >> (static_cast<uint64_t>(b.i64) % (sizeof(uint64_t) * 8)));
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 = static_cast<uint64_t>(stack.back().i64) >> (static_cast<uint64_t>(b) % (sizeof(uint64_t) * 8));
 				}
 				break;
 
 			case 0x89: // i64.rotl
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(soup::rotl<uint64_t>(a.i64, static_cast<int>(b.i64)));
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 = soup::rotl<uint64_t>(stack.back().i64, static_cast<int>(b));
 				}
 				break;
 
 			case 0x8a: // i64.rotr
 				{
 					WASM_CHECK_STACK(2);
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(soup::rotr<uint64_t>(a.i64, static_cast<int>(b.i64)));
+					auto b = stack.back().i64; stack.pop_back();
+					stack.back().i64 = soup::rotr<uint64_t>(stack.back().i64, static_cast<int>(b));
 				}
 				break;
 
@@ -4536,55 +4510,51 @@ NAMESPACE_SOUP
 			case 0x92: // f32.add
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f32 + b.f32);
+					auto b = stack.back().f32; stack.pop_back();
+					stack.back().f32 += b;
 				}
 				break;
 
 			case 0x93: // f32.sub
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f32 - b.f32);
+					auto b = stack.back().f32; stack.pop_back();
+					stack.back().f32 -= b;
 				}
 				break;
 
 			case 0x94: // f32.mul
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f32 * b.f32);
+					auto b = stack.back().f32; stack.pop_back();
+					stack.back().f32 *= b;
 				}
 				break;
 
 			case 0x95: // f32.div
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f32 / b.f32);
+					auto b = stack.back().f32; stack.pop_back();
+					stack.back().f32 /= b;
 				}
 				break;
 
 			case 0x96: // f32.min
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					if (std::isnan(a.f32) || std::isnan(b.f32))
+					auto b = stack.back().f32; stack.pop_back();
+					auto a = stack.back().f32;
+					if (std::isnan(a) || std::isnan(b))
 					{
-						stack.emplace_back(std::numeric_limits<float>::quiet_NaN());
+						stack.back().f32 = std::numeric_limits<float>::quiet_NaN();
 					}
-					else if (a.f32 < b.f32 || (std::signbit(a.f32) && !std::signbit(b.f32)))
+					else if (a < b || (std::signbit(a) && !std::signbit(b)))
 					{
-						stack.emplace_back(a.f32);
+						//stack.back().f32 = a;
 					}
 					else
 					{
-						stack.emplace_back(b.f32);
+						stack.back().f32 = b;
 					}
 				}
 				break;
@@ -4592,19 +4562,19 @@ NAMESPACE_SOUP
 			case 0x97: // f32.max
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					if (std::isnan(a.f32) || std::isnan(b.f32))
+					auto b = stack.back().f32; stack.pop_back();
+					auto a = stack.back().f32;
+					if (std::isnan(a) || std::isnan(b))
 					{
-						stack.emplace_back(std::numeric_limits<float>::quiet_NaN());
+						stack.back().f32 = std::numeric_limits<float>::quiet_NaN();
 					}
-					else if (a.f32 < b.f32 || (std::signbit(a.f32) && !std::signbit(b.f32)))
+					else if (a < b || (std::signbit(a) && !std::signbit(b)))
 					{
-						stack.emplace_back(b.f32);
+						stack.back().f32 = b;
 					}
 					else
 					{
-						stack.emplace_back(a.f32);
+						//stack.back().f32 = a;
 					}
 				}
 				break;
@@ -4612,9 +4582,8 @@ NAMESPACE_SOUP
 			case 0x98: // f32.copysign
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(std::copysign(a.f32, b.f32));
+					auto b = stack.back().f32; stack.pop_back();
+					stack.back().f32 = std::copysign(stack.back().f32, b);
 				}
 				break;
 
@@ -4656,55 +4625,51 @@ NAMESPACE_SOUP
 			case 0xa0: // f64.add
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f64 + b.f64);
+					auto b = stack.back().f64; stack.pop_back();
+					stack.back().f64 += b;
 				}
 				break;
 
 			case 0xa1: // f64.sub
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f64 - b.f64);
+					auto b = stack.back().f64; stack.pop_back();
+					stack.back().f64 -= b;
 				}
 				break;
 
 			case 0xa2: // f64.mul
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f64 * b.f64);
+					auto b = stack.back().f64; stack.pop_back();
+					stack.back().f64 *= b;
 				}
 				break;
 
 			case 0xa3: // f64.div
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(a.f64 / b.f64);
+					auto b = stack.back().f64; stack.pop_back();
+					stack.back().f64 /= b;
 				}
 				break;
 
 			case 0xa4: // f64.min
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					if (std::isnan(a.f64) || std::isnan(b.f64))
+					auto b = stack.back().f64; stack.pop_back();
+					auto a = stack.back().f64;
+					if (std::isnan(a) || std::isnan(b))
 					{
-						stack.emplace_back(std::numeric_limits<double>::quiet_NaN());
+						stack.back().f64 = std::numeric_limits<double>::quiet_NaN();
 					}
-					else if (a.f64 < b.f64 || (std::signbit(a.f64) && !std::signbit(b.f64)))
+					else if (a < b || (std::signbit(a) && !std::signbit(b)))
 					{
-						stack.emplace_back(a.f64);
+						//stack.back().f64 = a;
 					}
 					else
 					{
-						stack.emplace_back(b.f64);
+						stack.back().f64 = b;
 					}
 				}
 				break;
@@ -4712,19 +4677,19 @@ NAMESPACE_SOUP
 			case 0xa5: // f64.max
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					if (std::isnan(a.f64) || std::isnan(b.f64))
+					auto b = stack.back().f64; stack.pop_back();
+					auto a = stack.back().f64;
+					if (std::isnan(a) || std::isnan(b))
 					{
-						stack.emplace_back(std::numeric_limits<double>::quiet_NaN());
+						stack.back().f64 = std::numeric_limits<double>::quiet_NaN();
 					}
-					else if (a.f64 < b.f64 || (std::signbit(a.f64) && !std::signbit(b.f64)))
+					else if (a < b || (std::signbit(a) && !std::signbit(b)))
 					{
-						stack.emplace_back(b.f64);
+						stack.back().f64 = b;
 					}
 					else
 					{
-						stack.emplace_back(a.f64);
+						//stack.back().f64 = a;
 					}
 				}
 				break;
@@ -4732,9 +4697,8 @@ NAMESPACE_SOUP
 			case 0xa6: // f64.copysign
 				WASM_CHECK_STACK(2);
 				{
-					auto b = stack.back(); stack.pop_back();
-					auto a = stack.back(); stack.pop_back();
-					stack.emplace_back(std::copysign(a.f64, b.f64));
+					auto b = stack.back().f64; stack.pop_back();
+					stack.back().f64 = std::copysign(stack.back().f64, b);
 				}
 				break;
 
