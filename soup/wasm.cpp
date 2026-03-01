@@ -3517,7 +3517,7 @@ NAMESPACE_SOUP
 			case 0x28: // i32.load
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3529,7 +3529,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
-						stack.emplace_back(*ptr);
+						stack.back() = *ptr;
 					}
 					else
 					{
@@ -3544,7 +3544,7 @@ NAMESPACE_SOUP
 			case 0x29: // i64.load
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3556,7 +3556,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int64_t>(base, offset))
 					{
-						stack.emplace_back(*ptr);
+						stack.back() = *ptr;
 					}
 					else
 					{
@@ -3571,7 +3571,7 @@ NAMESPACE_SOUP
 			case 0x2a: // f32.load
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3583,7 +3583,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<float>(base, offset))
 					{
-						stack.emplace_back(*ptr);
+						stack.back() = *ptr;
 					}
 					else
 					{
@@ -3598,7 +3598,7 @@ NAMESPACE_SOUP
 			case 0x2b: // f64.load
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3610,7 +3610,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<double>(base, offset))
 					{
-						stack.emplace_back(*ptr);
+						stack.back() = *ptr;
 					}
 					else
 					{
@@ -3625,7 +3625,7 @@ NAMESPACE_SOUP
 			case 0x2c: // i32.load8_s
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3637,7 +3637,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<int32_t>(*ptr));
+						stack.back() = static_cast<int32_t>(*ptr);
 					}
 					else
 					{
@@ -3652,7 +3652,7 @@ NAMESPACE_SOUP
 			case 0x2d: // i32.load8_u
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3664,7 +3664,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint8_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<uint32_t>(*ptr));
+						stack.back() = static_cast<uint32_t>(*ptr);
 					}
 					else
 					{
@@ -3679,7 +3679,7 @@ NAMESPACE_SOUP
 			case 0x2e: // i32.load16_s
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3691,7 +3691,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<uint32_t>(*ptr));
+						stack.back() = static_cast<uint32_t>(*ptr);
 					}
 					else
 					{
@@ -3706,7 +3706,7 @@ NAMESPACE_SOUP
 			case 0x2f: // i32.load16_u
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3718,7 +3718,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint16_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<uint32_t>(*ptr));
+						stack.back() = static_cast<uint32_t>(*ptr);
 					}
 					else
 					{
@@ -3733,7 +3733,7 @@ NAMESPACE_SOUP
 			case 0x30: // i64.load8_s
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3745,7 +3745,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<int64_t>(*ptr));
+						stack.back() = static_cast<int64_t>(*ptr);
 					}
 					else
 					{
@@ -3760,7 +3760,7 @@ NAMESPACE_SOUP
 			case 0x31: // i64.load8_u
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3772,7 +3772,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint8_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<uint64_t>(*ptr));
+						stack.back() = static_cast<uint64_t>(*ptr);
 					}
 					else
 					{
@@ -3787,7 +3787,7 @@ NAMESPACE_SOUP
 			case 0x32: // i64.load16_s
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3799,7 +3799,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<int64_t>(*ptr));
+						stack.back() = static_cast<int64_t>(*ptr);
 					}
 					else
 					{
@@ -3814,7 +3814,7 @@ NAMESPACE_SOUP
 			case 0x33: // i64.load16_u
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3826,7 +3826,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint16_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<uint64_t>(*ptr));
+						stack.back() = static_cast<uint64_t>(*ptr);
 					}
 					else
 					{
@@ -3841,7 +3841,7 @@ NAMESPACE_SOUP
 			case 0x34: // i64.load32_s
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3853,7 +3853,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<int64_t>(*ptr));
+						stack.back() = static_cast<int64_t>(*ptr);
 					}
 					else
 					{
@@ -3868,7 +3868,7 @@ NAMESPACE_SOUP
 			case 0x35: // i64.load32_u
 				{
 					WASM_CHECK_STACK(1);
-					auto base = stack.back(); stack.pop_back();
+					auto base = stack.back().uptr();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3880,7 +3880,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<uint32_t>(base, offset))
 					{
-						stack.emplace_back(static_cast<uint64_t>(*ptr));
+						stack.back() = static_cast<uint64_t>(*ptr);
 					}
 					else
 					{
@@ -3896,8 +3896,8 @@ NAMESPACE_SOUP
 			case 0x36: // i32.store
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = stack.back().i32; stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3909,7 +3909,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
-						*ptr = value.i32;
+						*ptr = value;
 					}
 					else
 					{
@@ -3924,8 +3924,8 @@ NAMESPACE_SOUP
 			case 0x37: // i64.store
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = stack.back().i64; stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3937,7 +3937,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int64_t>(base, offset))
 					{
-						*ptr = value.i64;
+						*ptr = value;
 					}
 					else
 					{
@@ -3952,8 +3952,8 @@ NAMESPACE_SOUP
 			case 0x38: // f32.store
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = stack.back().f32; stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3965,7 +3965,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<float>(base, offset))
 					{
-						*ptr = value.f32;
+						*ptr = value;
 					}
 					else
 					{
@@ -3980,8 +3980,8 @@ NAMESPACE_SOUP
 			case 0x39: // f64.store
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = stack.back().f64; stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -3993,7 +3993,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<double>(base, offset))
 					{
-						*ptr = value.f64;
+						*ptr = value;
 					}
 					else
 					{
@@ -4008,8 +4008,8 @@ NAMESPACE_SOUP
 			case 0x3a: // i32.store8
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = static_cast<int8_t>(stack.back().i32); stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -4021,7 +4021,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
-						*ptr = static_cast<int8_t>(value.i32);
+						*ptr = value;
 					}
 					else
 					{
@@ -4036,8 +4036,8 @@ NAMESPACE_SOUP
 			case 0x3b: // i32.store16
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = static_cast<int16_t>(stack.back().i32); stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -4049,7 +4049,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
-						*ptr = static_cast<int16_t>(value.i32);
+						*ptr = value;
 					}
 					else
 					{
@@ -4064,8 +4064,8 @@ NAMESPACE_SOUP
 			case 0x3c: // i64.store8
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = static_cast<int8_t>(stack.back().i64); stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -4077,7 +4077,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int8_t>(base, offset))
 					{
-						*ptr = static_cast<int8_t>(value.i64);
+						*ptr = value;
 					}
 					else
 					{
@@ -4092,8 +4092,8 @@ NAMESPACE_SOUP
 			case 0x3d: // i64.store16
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = static_cast<int16_t>(stack.back().i64); stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -4105,7 +4105,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int16_t>(base, offset))
 					{
-						*ptr = static_cast<int16_t>(value.i64);
+						*ptr = value;
 					}
 					else
 					{
@@ -4120,8 +4120,8 @@ NAMESPACE_SOUP
 			case 0x3e: // i64.store32
 				{
 					WASM_CHECK_STACK(2);
-					auto value = stack.back(); stack.pop_back();
-					auto base = stack.back(); stack.pop_back();
+					auto value = static_cast<int32_t>(stack.back().i64); stack.pop_back();
+					auto base = stack.back().uptr(); stack.pop_back();
 					WASM_READ_MEMARG;
 					auto memory = script.getMemoryByIndex(memidx);
 					SOUP_IF_UNLIKELY (!memory)
@@ -4133,7 +4133,7 @@ NAMESPACE_SOUP
 					}
 					SOUP_IF_LIKELY (auto ptr = memory->getPointer<int32_t>(base, offset))
 					{
-						*ptr = static_cast<int32_t>(value.i64);
+						*ptr = value;
 					}
 					else
 					{

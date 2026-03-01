@@ -233,9 +233,9 @@ NAMESPACE_SOUP
 			}
 
 			template <typename T>
-			[[nodiscard]] T* getPointer(const WasmValue& base, size_t offset = 0) noexcept
+			[[nodiscard]] T* getPointer(size_t base, size_t offset) noexcept
 			{
-				return can_add_without_overflow(base.uptr(), offset) ? getPointer<T>(base.uptr() + offset) : nullptr;
+				return can_add_without_overflow(base, offset) ? getPointer<T>(base + offset) : nullptr;
 			}
 
 			[[nodiscard]] std::string readString(size_t addr, size_t size) SOUP_EXCAL;
