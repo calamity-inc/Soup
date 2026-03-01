@@ -3303,7 +3303,24 @@ NAMESPACE_SOUP
 			case 0x1f: // try_table
 				{
 					int32_t result_type; WASM_READ_SOML(result_type);
-					ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)r.getPosition(), (uint32_t)stack.size(), 0, true });
+					uint32_t stack_size = stack.size();
+					uint32_t num_values = 0;
+					if (result_type != -64)
+					{
+						if (result_type >= 0 && result_type < script.types.size())
+						{
+#if DEBUG_VM
+							std::cout << "result type is a type index: " << script.types[result_type].parameters.size() << " + " << script.types[result_type].results.size() << "\n";
+#endif
+							stack_size -= script.types[result_type].parameters.size();
+							num_values = script.types[result_type].results.size();
+						}
+						else
+						{
+							num_values = 1;
+						}
+					}
+					ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)r.getPosition(), stack_size, num_values, true });
 					uint32_t num_catches; WASM_READ_OML(num_catches);
 #if DEBUG_VM
 					std::cout << "try_table: result_type=" << result_type << ", num_catches=" << num_catches << "\n";
@@ -6982,7 +6999,8 @@ NAMESPACE_SOUP
 			}
 		}
 
-		if (ctrlflow.top().position == -1)
+		const bool is_forward = ctrlflow.top().isForwardJump();
+		if (is_forward)
 		{
 			// branch forwards
 			if (skipOverBranch(r, depth, script, func_index) == ELSE_REACHED)
@@ -7009,7 +7027,7 @@ NAMESPACE_SOUP
 		std::cout << "stack size after branch: " << stack.size() << "\n";
 #endif
 
-		if (ctrlflow.top().position == -1)
+		if (is_forward)
 		{
 			ctrlflow.pop(); // we passed 'end', so need to pop here.
 		}

@@ -598,12 +598,21 @@ NAMESPACE_SOUP
 
 		struct CtrlFlowEntry
 		{
-			uint32_t position; // -1 for forward jumps
+			uint32_t position;
 			uint32_t stack_size;
 			uint32_t num_values; // Number of values to keep on the stack top after branching. num_results for forward jumps; num_params for backward jumps.
 #if SOUP_WASM_EXCEPTIONS
 			bool is_try_table = false;
 #endif
+
+			[[nodiscard]] bool isForwardJump() const noexcept
+			{
+				return position == -1
+#if SOUP_WASM_EXCEPTIONS
+					|| is_try_table
+#endif
+					;
+			}
 		};
 
 		enum SkipOverBranchResult
