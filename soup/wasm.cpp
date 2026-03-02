@@ -963,6 +963,9 @@ NAMESPACE_SOUP
 			case SEC_MEMORY:
 				{
 					uint32_t num_memories; WASM_READ_OML(num_memories);
+#if DEBUG_LOAD
+					std::cout << num_memories << " memory/memories\n";
+#endif
 #if SOUP_WASM_MULTI_MEMORY
 					memories.reserve(memories.size() + num_memories);
 #endif
@@ -1034,6 +1037,9 @@ NAMESPACE_SOUP
 						}
 #endif
 						SOUP_RETHROW_FALSE(pages <= page_limit);
+#if DEBUG_LOAD
+						std::cout << "- " << pages << " pages (" << (pages * page_size) << " bytes total), max. " << page_limit <<"\n";
+#endif
 #if SOUP_WASM_MULTI_MEMORY
 						this->memories.emplace_back(soup::make_shared<Memory>(pages * page_size, page_limit * page_size, flags & 4, page_size == 1));
 #else
@@ -1266,7 +1272,7 @@ NAMESPACE_SOUP
 						std::string body;
 						r.str(body_size, body);
 #if DEBUG_LOAD
-						std::cout << "- " << string::bin2hex(body) << "\n";
+						//std::cout << "- " << string::bin2hex(body) << "\n";
 #endif
 #if SOUP_WASM_PEDANTIC
 						{
@@ -4269,7 +4275,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4296,7 +4302,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4323,7 +4329,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4350,7 +4356,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4377,7 +4383,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4404,7 +4410,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4431,7 +4437,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4458,7 +4464,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4485,7 +4491,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4512,7 +4518,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4539,7 +4545,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4566,7 +4572,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4593,7 +4599,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4620,7 +4626,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4649,7 +4655,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4677,7 +4683,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4705,7 +4711,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4733,7 +4739,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4761,7 +4767,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4789,7 +4795,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4817,7 +4823,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4845,7 +4851,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
@@ -4873,7 +4879,7 @@ NAMESPACE_SOUP
 					else
 					{
 #if DEBUG_VM
-						std::cout << "memory access out of bounds\n";
+						std::cout << "memory access out of bounds: " << base << " + " << offset << "\n";
 #endif
 						return CODE_ERROR;
 					}
