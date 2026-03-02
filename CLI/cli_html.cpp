@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <lyoDocument.hpp>
 #include <string.hpp>
@@ -12,3 +13,5 @@ void cli_html(const std::string& file)
 	auto w = doc->createWindow("SoupHTML - Blink and you'll miss it!");
 	w.runMessageLoop();
 }
+
+#endif

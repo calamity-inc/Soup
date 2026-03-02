@@ -1,4 +1,5 @@
 #include "EditorTab.hpp"
+#if !SOUP_WASM
 
 #include "console.hpp"
 #include "Editor.hpp"
@@ -47,3 +48,5 @@ NAMESPACE_SOUP
 		return text.substr(1, text.length() - 2);
 	}
 }
+
+#endif

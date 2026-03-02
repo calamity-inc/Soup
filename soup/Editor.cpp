@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#if !SOUP_WASM
 
 #include <fstream>
 
@@ -186,3 +187,5 @@ NAMESPACE_SOUP
 		return *static_cast<EditorText*>(children.at(0).get());
 	}
 }
+
+#endif

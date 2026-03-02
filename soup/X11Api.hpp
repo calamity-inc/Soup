@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base.hpp"
+#if !SOUP_WASM
 
 #include "Exception.hpp"
 #include "SharedLibrary.hpp"
@@ -289,3 +290,5 @@ NAMESPACE_SOUP
 		}*/
 	};
 }
+
+#endif

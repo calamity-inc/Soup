@@ -1,7 +1,5 @@
 #include "console.hpp"
 
-#if !SOUP_WASM
-
 #include <thread>
 
 #include "MouseButton.hpp"
@@ -13,7 +11,7 @@
 	#include <conio.h>
 #else
 	#include <fcntl.h> // open
-	#if SOUP_HAVE_TERMIOS
+	#if SOUP_POSIX && !SOUP_WASM
 		#include <termios.h>
 	#endif
 	#include <unistd.h> // read, close
@@ -46,7 +44,7 @@ NAMESPACE_SOUP
 		// Set console to UTF-8, MingW is UTF-8 regardless.
 		SetConsoleCP(CP_UTF8);
 		SetConsoleOutputCP(CP_UTF8);
-#elif SOUP_HAVE_TERMIOS
+#elif SOUP_POSIX && !SOUP_WASM
 		tcgetattr(0, &termattrs_og);
 		termattrs_cur = termattrs_og;
 #endif
@@ -232,7 +230,7 @@ NAMESPACE_SOUP
 #else
 		std::cout << std::flush;
 
-	#if SOUP_HAVE_TERMIOS
+	#if SOUP_POSIX && !SOUP_WASM
 		termattrs_cur.c_lflag &= ~ICANON; // no buffered i/o
 		termattrs_cur.c_lflag &= ~ECHO; // no echo
 		tcsetattr(0, TCSANOW, &termattrs_cur);
@@ -397,7 +395,7 @@ NAMESPACE_SOUP
 		clearScreen();
 		setCursorPos(0, 0);
 
-#if SOUP_HAVE_TERMIOS
+#if SOUP_POSIX && !SOUP_WASM
 		tcsetattr(0, TCSANOW, &termattrs_og);
 #endif
 
@@ -448,7 +446,7 @@ NAMESPACE_SOUP
 		std::cout << OSC "2;" << title << ST;
 	}
 
-#if SOUP_POSIX
+#if SOUP_POSIX && !SOUP_WASM
 	void console_impl::sigwinch_handler_proc(int)
 	{
 		std::cout << CSI "18t";
@@ -456,6 +454,7 @@ NAMESPACE_SOUP
 	}
 #endif
 
+#if SOUP_WINDOWS || (SOUP_POSIX && !SOUP_WASM)
 	void console_impl::enableSizeTracking(void(*fp)(unsigned int, unsigned int, const Capture&), Capture&& cap)
 	{
 		size_handler.set(fp, std::move(cap));
@@ -468,6 +467,7 @@ NAMESPACE_SOUP
 		signal::handle(SIGWINCH, &sigwinch_handler_proc);
 #endif
 	}
+#endif
 
 	void console_impl::bell()
 	{
@@ -545,7 +545,8 @@ NAMESPACE_SOUP
 		std::cout << CSI "m";
 	}
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS || (SOUP_POSIX && !SOUP_WASM)
+  #if SOUP_WINDOWS
 	BOOL WINAPI console_impl::CtrlHandler(DWORD ctrlType)
 	{
 		if (ctrlType == CTRL_C_EVENT)
@@ -555,7 +556,7 @@ NAMESPACE_SOUP
 		}
 		return FALSE;
 	}
-#else
+  #else
 	void console_impl::sigint_handler_proc(int)
 	{
 		if (!ctrl_c_handler)
@@ -564,20 +565,21 @@ NAMESPACE_SOUP
 		}
 		ctrl_c_handler();
 	}
-#endif
+  #endif
 
 	void console_impl::overrideCtrlC(ctrl_c_handler_t handler)
 	{
 		if (!ctrl_c_handler)
 		{
-#if SOUP_WINDOWS
+  #if SOUP_WINDOWS
 			SetConsoleCtrlHandler(&CtrlHandler, TRUE);
-#else
+  #else
 			signal::handle(SIGINT, &sigint_handler_proc);
-#endif
+  #endif
 		}
 		ctrl_c_handler = handler;
 	}
+#endif
 }
 
 #undef BEL
@@ -585,5 +587,3 @@ NAMESPACE_SOUP
 #undef CSI
 #undef OSC
 #undef ST
-
-#endif

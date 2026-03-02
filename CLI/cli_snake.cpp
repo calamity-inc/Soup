@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <thread>
 
@@ -174,3 +175,5 @@ void cli_snake()
 
 	soup::console.run();
 }
+
+#endif

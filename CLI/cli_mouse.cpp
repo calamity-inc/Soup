@@ -1,4 +1,5 @@
 #include "main.hpp"
+#if !SOUP_WASM
 
 #include <iostream>
 
@@ -45,3 +46,5 @@ void cli_mouse()
 	std::cout << "Sorry, only available on Windows!\n";
 #endif
 }
+
+#endif

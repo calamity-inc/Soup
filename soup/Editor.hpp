@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConuiApp.hpp"
+#if !SOUP_WASM
 
 #include "EditorTab.hpp"
 
@@ -27,3 +28,5 @@ NAMESPACE_SOUP
 		[[nodiscard]] EditorText& getTextChild() const noexcept;
 	};
 }
+
+#endif

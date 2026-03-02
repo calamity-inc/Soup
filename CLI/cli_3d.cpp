@@ -1,4 +1,5 @@
 ﻿#include "cli.hpp"
+#if !SOUP_WASM
 
 #include <fstream>
 
@@ -290,7 +291,9 @@ void cli_3d()
 			}
 			console.setBackgroundColour(Rgb::BLACK);
 			console.setForegroundColour(Rgb::WHITE);
+#if !SOUP_WASM
 			system("ffmpeg -y -i hires.ppm hires.png");
+#endif
 			console.clearScreen();
 			render();
 		}
@@ -325,3 +328,5 @@ void cli_3d()
 	});
 	console.run();
 }
+
+#endif

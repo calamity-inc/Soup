@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <Canvas.hpp>
 #include <console.hpp>
@@ -41,3 +42,5 @@ void cli_maze()
 	});
 	console.run();
 }
+
+#endif

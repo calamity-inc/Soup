@@ -1,4 +1,5 @@
 #include "Window.hpp"
+#if !SOUP_WASM
 
 #if SOUP_WINDOWS
 #include <windowsx.h> // GET_X_LPARAM, GET_Y_LPARAM
@@ -523,3 +524,5 @@ NAMESPACE_SOUP
 	}
 #endif
 }
+
+#endif

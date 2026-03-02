@@ -38,11 +38,13 @@ int entry(std::vector<std::string>&& args, bool)
 		std::string subcommand = args[1];
 		string::lower(subcommand);
 
+#if !SOUP_WASM
 		if (subcommand == "3d")
 		{
 			cli_3d();
 			return 0;
 		}
+#endif
 
 		if (subcommand == "bench")
 		{
@@ -147,7 +149,6 @@ int entry(std::vector<std::string>&& args, bool)
 			cli_dnsserver(args.size() - 2, &args[2]);
 			return 0;
 		}
-#endif
 
 		if (subcommand == "dvd")
 		{
@@ -174,6 +175,7 @@ int entry(std::vector<std::string>&& args, bool)
 			edit.run();
 			return 0;
 		}
+#endif
 
 		if (subcommand == "gamepad")
 		{
@@ -375,6 +377,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "html")
 		{
 			if (args.size() != 3)
@@ -385,6 +388,7 @@ int entry(std::vector<std::string>&& args, bool)
 			cli_html(args[2]);
 			return 0;
 		}
+#endif
 
 #if !SOUP_WASM || SOUP_EMSCRIPTEN
 		if (subcommand == "http")
@@ -422,6 +426,7 @@ int entry(std::vector<std::string>&& args, bool)
 			return cli_json2bin(args.size(), args.data());
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "keyboard")
 		{
 			cli_keyboard();
@@ -434,7 +439,6 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
-#if !SOUP_WASM
 		if (subcommand == "mesh")
 		{
 			return cli_mesh(args.size() - 2, &args[2]);
@@ -453,11 +457,13 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if !SOUP_WASM
 		if (subcommand == "mouse")
 		{
 			cli_mouse();
 			return 0;
 		}
+#endif
 
 #if !SOUP_WASM
 		if (subcommand == "netintrospect")
@@ -505,13 +511,13 @@ int entry(std::vector<std::string>&& args, bool)
 			}
 			return 0;
 		}
-#endif
 
 		if (subcommand == "snake")
 		{
 			cli_snake();
 			return 0;
 		}
+#endif
 
 #if SOUP_EXCEPTIONS
 		if (subcommand == "test")
@@ -623,7 +629,9 @@ int entry(std::vector<std::string>&& args, bool)
 	}
 
 	std::string all_tools;
+#if !SOUP_WASM
 	string::listAppend(all_tools, "3d");
+#endif
 	string::listAppend(all_tools, "bench");
 	string::listAppend(all_tools, "cat2json");
 #ifdef SOUP_ENABLE_CHATBOT
@@ -640,15 +648,17 @@ int entry(std::vector<std::string>&& args, bool)
 	string::listAppend(all_tools, "dhcp");
 	string::listAppend(all_tools, "dig");
 	string::listAppend(all_tools, "dnsserver");
-#endif
 	string::listAppend(all_tools, "dvd");
 	string::listAppend(all_tools, "edit");
+#endif
 	string::listAppend(all_tools, "gamepad");
 #if !SOUP_WASM || SOUP_EMSCRIPTEN
 	string::listAppend(all_tools, "geoip");
 #endif
 	string::listAppend(all_tools, "hid");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "html");
+#endif
 #if !SOUP_WASM || SOUP_EMSCRIPTEN
 	string::listAppend(all_tools, "http");
 #endif
@@ -656,14 +666,18 @@ int entry(std::vector<std::string>&& args, bool)
 	string::listAppend(all_tools, "ircserver");
 #endif
 	string::listAppend(all_tools, "json2bin");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "keyboard");
 	string::listAppend(all_tools, "maze");
+#endif
 #if !SOUP_WASM
 	string::listAppend(all_tools, "mesh");
 #endif
 	string::listAppend(all_tools, "midi");
 	string::listAppend(all_tools, "morse");
+#if !SOUP_WASM
 	string::listAppend(all_tools, "mouse");
+#endif
 #if !SOUP_WASM
 	string::listAppend(all_tools, "netintrospect");
 #endif
@@ -672,7 +686,9 @@ int entry(std::vector<std::string>&& args, bool)
 	string::listAppend(all_tools, "repl");
 	string::listAppend(all_tools, "script");
 #endif
+#if !SOUP_WASM
 	string::listAppend(all_tools, "snake");
+#endif
 #if SOUP_EXCEPTIONS
 	string::listAppend(all_tools, "test");
 #endif

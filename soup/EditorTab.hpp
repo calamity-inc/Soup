@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConuiSpan.hpp"
+#if !SOUP_WASM
 
 #include "EditorFile.hpp"
 
@@ -28,3 +29,5 @@ NAMESPACE_SOUP
 		[[nodiscard]] std::string getName() const;
 	};
 }
+
+#endif

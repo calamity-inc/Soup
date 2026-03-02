@@ -153,6 +153,7 @@ NAMESPACE_SOUP
 		lyoFlatDocument flat;
 	};
 
+#if !SOUP_WASM
 	Window lyoDocument::createWindow(const std::string& title)
 	{
 		auto w = Window::create(title, 200, 200);
@@ -214,4 +215,5 @@ NAMESPACE_SOUP
 #endif
 		return w;
 	}
+#endif
 }

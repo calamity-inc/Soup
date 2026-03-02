@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <iostream>
 
@@ -147,3 +148,5 @@ void cli_keyboard()
 	std::cout << "Sorry, this is currently not supported on your platform.\n";
 #endif
 }
+
+#endif

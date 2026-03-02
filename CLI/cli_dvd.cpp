@@ -1,4 +1,5 @@
 #include "cli.hpp"
+#if !SOUP_WASM
 
 #include <thread>
 
@@ -63,3 +64,5 @@ void cli_dvd()
 	});
 	console.run();
 }
+
+#endif
