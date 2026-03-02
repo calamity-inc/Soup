@@ -207,7 +207,52 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: "WASM"
+          name: "WASM - JS Bindings (Emscripten)"
           path: |
             bindings/libsoup.js
             bindings/libsoup.wasm
+
+  wasi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang 20
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget lsb-release software-properties-common gnupg
+
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 20
+
+          # Verify installation
+          clang-20 --version
+
+      - name: Setup WASI compilation
+        run: |
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-30/libclang_rt-30.0.tar.gz
+          tar -zxvf libclang_rt-30.0.tar.gz
+          sudo cp -r libclang_rt-30.0/wasm32-unknown-wasi /usr/lib/llvm-20/lib/clang/20/lib/wasm32-unknown-wasi
+
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-30/wasi-sysroot-30.0.tar.gz
+          tar -zxvf wasi-sysroot-30.0.tar.gz
+
+      - name: Build Soup
+        run: rm soup/soup.cpp && php build_lib.php "clang-20 --target=wasm32-wasi --sysroot=wasi-sysroot-30.0 -fno-exceptions"
+
+      - name: Build CLI
+        run: php build_cli.php "clang-20 --target=wasm32-wasi --sysroot=wasi-sysroot-30.0 -fno-exceptions -lc++ -lc++abi"
+
+      - name: Ensure files exist
+        uses: andstor/file-existence-action@v3
+        with:
+          files: "CLI/soup"
+          fail: true
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: "WASM - CLI (wasi-sdk)"
+          path: |
+            CLI/soup

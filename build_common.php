@@ -16,7 +16,7 @@ if (PHP_OS_FAMILY != "Darwin")
 {
 	$clanglink .= " -fuse-ld=lld";
 }
-if (!defined("PHP_WINDOWS_VERSION_MAJOR"))
+if (!defined("PHP_WINDOWS_VERSION_MAJOR") && strpos($clang, "--target=wasm") === false)
 {
 	if (PHP_OS_FAMILY == "Darwin")
 	{
