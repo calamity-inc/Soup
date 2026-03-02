@@ -137,56 +137,56 @@ Spec tests (https://github.com/Sainan/wasm-spec/tree/wast2json/test/core)
 - simd/simd_boolean: pass
 - simd/simd_const: pass
 - simd/simd_conversions: pass
-- simd/simd_f32x4: FAIL
-- simd/simd_f32x4_arith: FAIL
+- simd/simd_f32x4: pass
+- simd/simd_f32x4_arith: pass
 - simd/simd_f32x4_cmp: pass
-- simd/simd_f32x4_pmin_pmax: FAIL
-- simd/simd_f32x4_rounding: FAIL
-- simd/simd_f64x2: FAIL
-- simd/simd_f64x2_arith: FAIL
+- simd/simd_f32x4_pmin_pmax: pass
+- simd/simd_f32x4_rounding: pass
+- simd/simd_f64x2: pass
+- simd/simd_f64x2_arith: pass
 - simd/simd_f64x2_cmp: pass
-- simd/simd_f64x2_pmin_pmax: FAIL
-- simd/simd_f64x2_rounding: FAIL
-- simd/simd_i16x8_arith: FAIL
-- simd/simd_i16x8_arith2: FAIL
+- simd/simd_f64x2_pmin_pmax: apss
+- simd/simd_f64x2_rounding: pass
+- simd/simd_i16x8_arith: pass
+- simd/simd_i16x8_arith2: pass
 - simd/simd_i16x8_cmp: pass
-- simd/simd_i16x8_extadd_pairwise_i8x16: FAIL
-- simd/simd_i16x8_extmul_i8x16: FAIL
-- simd/simd_i16x8_q15mulr_sat_s: FAIL
-- simd/simd_i16x8_sat_arith: FAIL
-- simd/simd_i32x4_arith: FAIL
-- simd/simd_i32x4_arith2: FAIL
+- simd/simd_i16x8_extadd_pairwise_i8x16: pass
+- simd/simd_i16x8_extmul_i8x16: pass
+- simd/simd_i16x8_q15mulr_sat_s: pass
+- simd/simd_i16x8_sat_arith: pass
+- simd/simd_i32x4_arith: pass
+- simd/simd_i32x4_arith2: pass
 - simd/simd_i32x4_cmp: pass
-- simd/simd_i32x4_dot_i16x8: FAIL
-- simd/simd_i32x4_extadd_pairwise_i16x8: FAIL
-- simd/simd_i32x4_extmul_i16x8: FAIL
-- simd/simd_i32x4_trunc_sat_f32x4: FAIL
-- simd/simd_i32x4_trunc_sat_f64x2: FAIL
-- simd/simd_i64x2_arith: FAIL
-- simd/simd_i64x2_arith2: FAIL
+- simd/simd_i32x4_dot_i16x8: pass
+- simd/simd_i32x4_extadd_pairwise_i16x8: pass
+- simd/simd_i32x4_extmul_i16x8: pass
+- simd/simd_i32x4_trunc_sat_f32x4: pass
+- simd/simd_i32x4_trunc_sat_f64x2: pass
+- simd/simd_i64x2_arith: pass
+- simd/simd_i64x2_arith2: pass
 - simd/simd_i64x2_cmp: pass
-- simd/simd_i64x2_extmul_i32x4: FAIL
-- simd/simd_i8x16_arith: FAIL
-- simd/simd_i8x16_arith2: FAIL
+- simd/simd_i64x2_extmul_i32x4: pass
+- simd/simd_i8x16_arith: pass
+- simd/simd_i8x16_arith2: pass
 - simd/simd_i8x16_cmp: pass
-- simd/simd_i8x16_sat_arith: FAIL
+- simd/simd_i8x16_sat_arith: pass
 - simd/simd_int_to_int_extend: pass
 - simd/simd_lane: pass
 - simd/simd_linking: pass
-- simd/simd_load: FAIL
-- simd/simd_load16_lane: FAIL
-- simd/simd_load32_lane: FAIL
-- simd/simd_load64_lane: FAIL
-- simd/simd_load8_lane: FAIL
-- simd/simd_load_extend: FAIL
-- simd/simd_load_splat: FAIL
-- simd/simd_load_zero: FAIL
-- simd/simd_splat: FAIL
+- simd/simd_load: pass
+- simd/simd_load16_lane: pass
+- simd/simd_load32_lane: pass
+- simd/simd_load64_lane: pass
+- simd/simd_load8_lane: pass
+- simd/simd_load_extend: pass
+- simd/simd_load_splat: pass
+- simd/simd_load_zero: pass
+- simd/simd_splat: pass
 - simd/simd_store: pass
-- simd/simd_store16_lane: FAIL
-- simd/simd_store32_lane: FAIL
-- simd/simd_store64_lane: FAIL
-- simd/simd_store8_lane: FAIL
+- simd/simd_store16_lane: pass
+- simd/simd_store32_lane: pass
+- simd/simd_store64_lane: pass
+- simd/simd_store8_lane: pass
 - memory64/address64: pass
 - memory64/align64: pass
 - memory64/binary_leb128_64: pedantic_pass
@@ -2777,24 +2777,160 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	static constexpr float F32_I32_MIN = -2147483600.0f;
-	static constexpr float F32_I32_MAX = 2147483500.0f;
-	static constexpr float F32_U32_MIN = -0.99999994f;
-	static constexpr float F32_U32_MAX = 4294967000.0f;
-	static constexpr double F64_I32_MIN = -2147483648.9;
-	static constexpr double F64_I32_MAX = 2147483647.9;
-	static constexpr double F64_U32_MIN = -0.9999999999999999;
-	static constexpr double F64_U32_MAX = 4294967295.9;
-	static constexpr float F32_I64_MIN = -9223372000000000000.0f;
-	static constexpr float F32_I64_MAX = 9223371500000000000.0f;
-	static constexpr float F32_U64_MIN = -0.99999994f;
-	static constexpr float F32_U64_MAX = 18446743000000000000.0f;
-	static constexpr double F64_I64_MIN = -9223372036854776000.0;
-	static constexpr double F64_I64_MAX = 9223372036854775000.0;
-	static constexpr double F64_U64_MIN = -0.9999999999999999;
-	static constexpr double F64_U64_MAX = 18446744073709550000.0;
+	template <typename T>
+	[[nodiscard]] static T wasm_fmin(T a, T b)
+	{
+		if (std::isnan(a) || std::isnan(b))
+		{
+			return std::numeric_limits<T>::quiet_NaN();
+		}
+		else if (a < b || (std::signbit(a) && !std::signbit(b)))
+		{
+			return a;
+		}
+		else
+		{
+			return b;
+		}
+	}
+
+	template <typename T>
+	[[nodiscard]] static T wasm_fmax(T a, T b)
+	{
+		if (std::isnan(a) || std::isnan(b))
+		{
+			return std::numeric_limits<T>::quiet_NaN();
+		}
+		else if (a < b || (std::signbit(a) && !std::signbit(b)))
+		{
+			return b;
+		}
+		else
+		{
+			return a;
+		}
+	}
+
+	template <typename Float, typename Int>
+	struct float_to_int_traits;
+
+	template <>
+	struct float_to_int_traits<float, int32_t>
+	{
+		static constexpr float min = -2147483600.0f;
+		static constexpr float max = 2147483500.0f;
+	};
+
+	template <>
+	struct float_to_int_traits<float, uint32_t>
+	{
+		static constexpr float min = -0.99999994f;
+		static constexpr float max = 4294967000.0f;
+	};
+
+	template <>
+	struct float_to_int_traits<double, int32_t>
+	{
+		static constexpr double min = -2147483648.9;
+		static constexpr double max = 2147483647.9;
+	};
+
+	template <>
+	struct float_to_int_traits<double, uint32_t>
+	{
+		static constexpr double min = -0.9999999999999999;
+		static constexpr double max = 4294967295.9;
+	};
+
+	template <>
+	struct float_to_int_traits<float, int64_t>
+	{
+		static constexpr float min = -9223372000000000000.0f;
+		static constexpr float max = 9223371500000000000.0f;
+	};
+
+	template <>
+	struct float_to_int_traits<float, uint64_t>
+	{
+		static constexpr float min = -0.99999994f;
+		static constexpr float max = 18446743000000000000.0f;
+	};
+
+	template <>
+	struct float_to_int_traits<double, int64_t>
+	{
+		static constexpr double min = -9223372036854776000.0;
+		static constexpr double max = 9223372036854775000.0;
+	};
+
+	template <>
+	struct float_to_int_traits<double, uint64_t>
+	{
+		static constexpr double min = -0.9999999999999999;
+		static constexpr double max = 18446744073709550000.0;
+	};
+
+	template <typename Float, typename Int>
+	static bool float_to_int(Float in, Int& out)
+	{
+		static_assert(std::is_floating_point_v<Float>);
+		static_assert(std::is_integral_v<Int>);
+		SOUP_IF_UNLIKELY (std::isnan(in))
+		{
+			out = 0;
+			return false;
+		}
+		SOUP_IF_UNLIKELY (in < float_to_int_traits<Float, Int>::min)
+		{
+			out = std::numeric_limits<Int>::min();
+			return false;
+		}
+		SOUP_IF_UNLIKELY (in > float_to_int_traits<Float, Int>::max)
+		{
+			out = std::numeric_limits<Int>::max();
+			return false;
+		}
+		out = static_cast<Int>(in);
+		return true;
+	}
 
 #if SOUP_WASM_SIMD
+	template <typename T, typename OutT, size_t S>
+	[[nodiscard]] static bool simd_loadx(std::vector<WasmValue>& stack, Reader& r, WasmScript& script, OutT(WasmValue::* field)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		auto base = stack.back().uptr(); stack.pop_back();
+		WASM_READ_MEMARG;
+		auto memory = script.getMemoryByIndex(memidx);
+		SOUP_RETHROW_FALSE(memory);
+		auto ptr = (const T*)memory->getView(base + offset, sizeof(T) * S);
+		SOUP_RETHROW_FALSE(ptr);
+		auto& v = stack.emplace_back(WASM_V128);
+		for (size_t i = 0; i != S; ++i)
+		{
+			(v.*field)[i] = static_cast<OutT>(ptr[i]);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_load_splat(std::vector<WasmValue>& stack, Reader& r, WasmScript& script, T(WasmValue::* field)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		auto base = stack.back().uptr(); stack.pop_back();
+		WASM_READ_MEMARG;
+		auto memory = script.getMemoryByIndex(memidx);
+		SOUP_RETHROW_FALSE(memory);
+		auto ptr = memory->getPointer<T>(base, offset);
+		SOUP_RETHROW_FALSE(ptr);
+		auto& v = stack.emplace_back(WASM_V128);
+		for (size_t i = 0; i != S; ++i)
+		{
+			(v.*field)[i] = *ptr;
+		}
+		return true;
+	}
+
 	template <typename T, size_t S>
 	[[nodiscard]] static bool simd_splat(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
@@ -2848,8 +2984,7 @@ NAMESPACE_SOUP
 		uint8_t idx; r.u8(idx);
 		SOUP_RETHROW_FALSE(idx < S);
 		WASM_CHECK_STACK(1);
-		const auto value = stack.back().get<T>();
-		stack.pop_back();
+		const T value = stack.back().get<T>(); stack.pop_back();
 		(stack.back().*ptr)[idx] = value;
 		return true;
 	}
@@ -2858,7 +2993,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_eq(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		auto& out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
@@ -2872,7 +3007,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_ne(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		auto& out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
@@ -2886,7 +3021,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_lt(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		auto& out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
@@ -2900,7 +3035,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_lt_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		for (size_t i = 0; i != S; ++i)
 		{
@@ -2913,7 +3048,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_gt(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		auto& out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
@@ -2927,7 +3062,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_gt_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		for (size_t i = 0; i != S; ++i)
 		{
@@ -2940,7 +3075,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_le(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		auto& out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
@@ -2954,7 +3089,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_le_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		for (size_t i = 0; i != S; ++i)
 		{
@@ -2967,7 +3102,7 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_ge(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		auto& out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
@@ -2981,11 +3116,83 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_ge_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		auto& a = stack.back().*ptr;
 		for (size_t i = 0; i != S; ++i)
 		{
 			a[i] = (static_cast<std::make_unsigned_t<T>>(a[i]) >= static_cast<std::make_unsigned_t<T>>(b[i])) ? -1 : 0;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool load_lane(std::vector<WasmValue>& stack, Reader& r, WasmScript& script, T(WasmValue::* field)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		auto v = stack.back(); stack.pop_back();
+		auto base = stack.back().uptr(); stack.pop_back();
+		WASM_READ_MEMARG;
+		auto memory = script.getMemoryByIndex(memidx);
+		SOUP_RETHROW_FALSE(memory);
+		auto ptr = memory->getPointer<T>(base, offset);
+		SOUP_RETHROW_FALSE(ptr);
+		uint8_t laneidx; r.u8(laneidx);
+		SOUP_RETHROW_FALSE(laneidx < S);
+		(v.*field)[laneidx] = *ptr;
+		stack.emplace_back(v);
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool store_lane(std::vector<WasmValue>& stack, Reader& r, WasmScript& script, T(WasmValue::* field)[S]) noexcept
+	{
+		WASM_READ_MEMARG;
+		uint8_t laneidx; r.u8(laneidx);
+		SOUP_RETHROW_FALSE(laneidx < S);
+		WASM_CHECK_STACK(2);
+		auto value = (stack.back().*field)[laneidx]; stack.pop_back();
+		auto base = stack.back().uptr(); stack.pop_back();
+		auto memory = script.getMemoryByIndex(memidx);
+		SOUP_RETHROW_FALSE(memory);
+		auto ptr = memory->getPointer<T>(base, offset);
+		SOUP_RETHROW_FALSE(ptr);
+		*ptr = value;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool load_zero(std::vector<WasmValue>& stack, Reader& r, WasmScript& script, T(WasmValue::* field)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		auto base = stack.back().uptr(); stack.pop_back();
+		WASM_READ_MEMARG;
+		auto memory = script.getMemoryByIndex(memidx);
+		SOUP_RETHROW_FALSE(memory);
+		auto ptr = memory->getPointer<T>(base, offset);
+		SOUP_RETHROW_FALSE(ptr);
+		memset(stack.emplace_back(WASM_V128).*field, 0, 16);
+		(stack.back().*field)[0] = *ptr;
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_abs(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = std::abs(lane);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_neg(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = -lane;
 		}
 		return true;
 	}
@@ -3044,9 +3251,9 @@ NAMESPACE_SOUP
 	{
 		static_assert(S * 2 == OutS);
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		const auto a = stack.back().*ptr;
-		auto& out = stack.back().*outptr;
+		OutT* out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
 		{
 			out[i] = saturate<OutT>(a[i]);
@@ -3063,9 +3270,9 @@ NAMESPACE_SOUP
 	{
 		static_assert(S * 2 == OutS);
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
 		const auto a = stack.back().*ptr;
-		auto& out = stack.back().*outptr;
+		OutT* out = stack.back().*outptr;
 		for (size_t i = 0; i != S; ++i)
 		{
 			out[i] = saturate<std::make_unsigned_t<OutT>>(a[i]);
@@ -3083,7 +3290,7 @@ NAMESPACE_SOUP
 		static_assert(OutS * 2 == S);
 		WASM_CHECK_STACK(1);
 		T in[S]; memcpy(in, stack.back().*ptr, 16);
-		auto& out = stack.back().*outptr;
+		OutT* out = stack.back().*outptr;
 		for (size_t i = 0; i != OutS; ++i)
 		{
 			out[i] = static_cast<OutT>(in[i]);
@@ -3097,7 +3304,7 @@ NAMESPACE_SOUP
 		static_assert(OutS * 2 == S);
 		WASM_CHECK_STACK(1);
 		T in[S]; memcpy(in, stack.back().*ptr, 16);
-		auto& out = stack.back().*outptr;
+		OutT* out = stack.back().*outptr;
 		for (size_t i = 0; i != OutS; ++i)
 		{
 			out[i] = static_cast<OutT>(in[OutS + i]);
@@ -3111,7 +3318,7 @@ NAMESPACE_SOUP
 		static_assert(OutS * 2 == S);
 		WASM_CHECK_STACK(1);
 		T in[S]; memcpy(in, stack.back().*ptr, 16);
-		auto& out = stack.back().*outptr;
+		OutT* out = stack.back().*outptr;
 		for (size_t i = 0; i != OutS; ++i)
 		{
 			out[i] = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(in[i]));
@@ -3125,7 +3332,7 @@ NAMESPACE_SOUP
 		static_assert(OutS * 2 == S);
 		WASM_CHECK_STACK(1);
 		T in[S]; memcpy(in, stack.back().*ptr, 16);
-		auto& out = stack.back().*outptr;
+		OutT* out = stack.back().*outptr;
 		for (size_t i = 0; i != OutS; ++i)
 		{
 			out[i] = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(in[OutS + i]));
@@ -3173,8 +3380,8 @@ NAMESPACE_SOUP
 	[[nodiscard]] static bool simd_add(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
-		auto& a = stack.back().*ptr;
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
 		for (size_t i = 0; i != S; ++i)
 		{
 			a[i] += b[i];
@@ -3183,11 +3390,37 @@ NAMESPACE_SOUP
 	}
 
 	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_add_sat_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = saturate<T>(static_cast<int32_t>(a[i]) + static_cast<int32_t>(b[i]));
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_add_sat_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = saturate<std::make_unsigned_t<T>>(static_cast<int32_t>(static_cast<std::make_unsigned_t<T>>(a[i])) + static_cast<int32_t>(static_cast<std::make_unsigned_t<T>>(b[i])));
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
 	[[nodiscard]] static bool simd_sub(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
-		auto& a = stack.back().*ptr;
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
 		for (size_t i = 0; i != S; ++i)
 		{
 			a[i] -= b[i];
@@ -3196,14 +3429,308 @@ NAMESPACE_SOUP
 	}
 
 	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_sub_sat_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = saturate<T>(static_cast<int32_t>(a[i]) - static_cast<int32_t>(b[i]));
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_sub_sat_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = saturate<std::make_unsigned_t<T>>(static_cast<int32_t>(static_cast<std::make_unsigned_t<T>>(a[i])) - static_cast<int32_t>(static_cast<std::make_unsigned_t<T>>(b[i])));
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_pmin(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = std::min(a[i], b[i]);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_min_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = std::min(static_cast<std::make_unsigned_t<T>>(a[i]), static_cast<std::make_unsigned_t<T>>(b[i]));
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_pmax(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = std::max(a[i], b[i]);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_max_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = std::max(static_cast<std::make_unsigned_t<T>>(a[i]), static_cast<std::make_unsigned_t<T>>(b[i]));
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_avgr_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = (static_cast<std::make_unsigned_t<T>>(a[i]) + static_cast<std::make_unsigned_t<T>>(b[i]) + 1) >> 1;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
 	[[nodiscard]] static bool simd_mul(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
 	{
 		WASM_CHECK_STACK(2);
-		const auto b = stack.back().*ptr; stack.pop_back();
-		auto& a = stack.back().*ptr;
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
 		for (size_t i = 0; i != S; ++i)
 		{
 			a[i] *= b[i];
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_div(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] /= b[i]; static_assert(std::is_floating_point_v<T>);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_ceil(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = std::ceil(lane);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_floor(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = std::floor(lane);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_trunc(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = std::trunc(lane);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_nearest(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = std::nearbyint(lane);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_sqrt(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = std::sqrt(lane);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_min(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		static_assert(std::is_floating_point_v<T>);
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = wasm_fmin(a[i], b[i]);
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_max(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		static_assert(std::is_floating_point_v<T>);
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T* a = stack.back().*ptr;
+		for (size_t i = 0; i != S; ++i)
+		{
+			a[i] = wasm_fmax(a[i], b[i]);
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool extmul_low_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T a[S]; memcpy(a, stack.back().*ptr, 16);
+		OutT* out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			auto av = static_cast<OutT>(a[i]);
+			auto bv = static_cast<OutT>(b[i]);
+			out[i] = av * bv;
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool extmul_low_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T a[S]; memcpy(a, stack.back().*ptr, 16);
+		OutT* out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			auto av = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(a[i]));
+			auto bv = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(b[i]));
+			out[i] = av * bv;
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool extmul_high_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T a[S]; memcpy(a, stack.back().*ptr, 16);
+		OutT* out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			auto av = static_cast<OutT>(a[OutS + i]);
+			auto bv = static_cast<OutT>(b[OutS + i]);
+			out[i] = av * bv;
+		}
+		return true;
+	}
+	
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool extmul_high_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(2);
+		T b[S]; memcpy(b, stack.back().*ptr, 16); stack.pop_back();
+		T a[S]; memcpy(a, stack.back().*ptr, 16);
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			auto av = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(a[OutS + i]));
+			auto bv = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(b[OutS + i]));
+			out[i] = av * bv;
+		}
+		return true;
+	}
+
+	template <typename T, size_t S>
+	[[nodiscard]] static bool simd_popcnt(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S]) noexcept
+	{
+		WASM_CHECK_STACK(1);
+		for (auto& lane : stack.back().*ptr)
+		{
+			lane = bitutil::getNumSetBits(lane);
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool extadd_pairwise_s(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(1);
+		auto& in = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			out[i] = static_cast<OutT>(in[i * 2]) + static_cast<OutT>(in[i * 2 + 1]);
+		}
+		return true;
+	}
+
+	template <typename T, typename OutT, size_t S, size_t OutS>
+	[[nodiscard]] static bool extadd_pairwise_u(std::vector<WasmValue>& stack, T(WasmValue::* ptr)[S], OutT(WasmValue::* outptr)[OutS]) noexcept
+	{
+		static_assert(OutS * 2 == S);
+		WASM_CHECK_STACK(1);
+		auto& in = stack.back().*ptr;
+		auto& out = stack.back().*outptr;
+		for (size_t i = 0; i != OutS; ++i)
+		{
+			out[i] = static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(in[i * 2])) + static_cast<std::make_unsigned_t<OutT>>(static_cast<std::make_unsigned_t<T>>(in[i * 2 + 1]));
 		}
 		return true;
 	}
@@ -5108,18 +5635,7 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.back().f32; stack.pop_back();
 					auto a = stack.back().f32;
-					if (std::isnan(a) || std::isnan(b))
-					{
-						stack.back().f32 = std::numeric_limits<float>::quiet_NaN();
-					}
-					else if (a < b || (std::signbit(a) && !std::signbit(b)))
-					{
-						//stack.back().f32 = a;
-					}
-					else
-					{
-						stack.back().f32 = b;
-					}
+					stack.back().f32 = wasm_fmin(a, b);
 				}
 				break;
 
@@ -5128,18 +5644,7 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.back().f32; stack.pop_back();
 					auto a = stack.back().f32;
-					if (std::isnan(a) || std::isnan(b))
-					{
-						stack.back().f32 = std::numeric_limits<float>::quiet_NaN();
-					}
-					else if (a < b || (std::signbit(a) && !std::signbit(b)))
-					{
-						stack.back().f32 = b;
-					}
-					else
-					{
-						//stack.back().f32 = a;
-					}
+					stack.back().f32 = wasm_fmax(a, b);
 				}
 				break;
 
@@ -5223,18 +5728,7 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.back().f64; stack.pop_back();
 					auto a = stack.back().f64;
-					if (std::isnan(a) || std::isnan(b))
-					{
-						stack.back().f64 = std::numeric_limits<double>::quiet_NaN();
-					}
-					else if (a < b || (std::signbit(a) && !std::signbit(b)))
-					{
-						//stack.back().f64 = a;
-					}
-					else
-					{
-						stack.back().f64 = b;
-					}
+					stack.back().f64 = wasm_fmin(a, b);
 				}
 				break;
 
@@ -5243,18 +5737,7 @@ NAMESPACE_SOUP
 				{
 					auto b = stack.back().f64; stack.pop_back();
 					auto a = stack.back().f64;
-					if (std::isnan(a) || std::isnan(b))
-					{
-						stack.back().f64 = std::numeric_limits<double>::quiet_NaN();
-					}
-					else if (a < b || (std::signbit(a) && !std::signbit(b)))
-					{
-						stack.back().f64 = b;
-					}
-					else
-					{
-						//stack.back().f64 = a;
-					}
+					stack.back().f64 = wasm_fmax(a, b);
 				}
 				break;
 
@@ -5273,50 +5756,62 @@ NAMESPACE_SOUP
 
 			case 0xa8: // i32.trunc_f32_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f32) || stack.back().f32 < F32_I32_MIN || stack.back().f32 > F32_I32_MAX)
 				{
+					int32_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f32, i))
+					{
 #if DEBUG_VM
-					std::cout << "float cannot be represented as int\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<int32_t>(stack.back().f32);
 				break;
 
 			case 0xa9: // i32.trunc_f32_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f32) || stack.back().f32 < F32_U32_MIN || stack.back().f32 > F32_U32_MAX)
 				{
+					uint32_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f32, i))
+					{
 #if DEBUG_VM
-					std::cout << "float cannot be represented as int\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<uint32_t>(stack.back().f32);
 				break;
 
 			case 0xaa: // i32.trunc_f64_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f64) || stack.back().f64 < F64_I32_MIN || stack.back().f64 > F64_I32_MAX)
 				{
+					int32_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f64, i))
+					{
 #if DEBUG_VM
-					std::cout << "float cannot be represented as int\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<int32_t>(stack.back().f64);
 				break;
 
 			case 0xab: // i32.trunc_f64_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f64) || stack.back().f64 < F64_U32_MIN || stack.back().f64 > F64_U32_MAX)
 				{
+					uint32_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f64, i))
+					{
 #if DEBUG_VM
-					std::cout << "invalid value for i32.trunc_f64_u\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<uint32_t>(stack.back().f64);
 				break;
 
 			case 0xac: // i64.extend_i32_s
@@ -5331,50 +5826,62 @@ NAMESPACE_SOUP
 
 			case 0xae: // i64.trunc_f32_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f32) || stack.back().f32 < F32_I64_MIN || stack.back().f32 > F32_I64_MAX)
 				{
+					int64_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f32, i))
+					{
 #if DEBUG_VM
-					std::cout << "float cannot be represented as int\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<int64_t>(stack.back().f32);
 				break;
 
 			case 0xaf: // i64.trunc_f32_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f32) || stack.back().f32 < F32_U64_MIN || stack.back().f32 > F32_U64_MAX)
 				{
+					uint64_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f32, i))
+					{
 #if DEBUG_VM
-					std::cout << "float cannot be represented as int\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<uint64_t>(stack.back().f32);
 				break;
 
 			case 0xb0: // i64.trunc_f64_s
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f64) || stack.back().f64 < F64_I64_MIN || stack.back().f64 > F64_I64_MAX)
 				{
+					int64_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f64, i))
+					{
 #if DEBUG_VM
-					std::cout << "float cannot be represented as int\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<int64_t>(stack.back().f64);
 				break;
 
 			case 0xb1: // i64.trunc_f64_u
 				WASM_CHECK_STACK(1);
-				SOUP_IF_UNLIKELY (std::isnan(stack.back().f64) || stack.back().f64 < F64_U64_MIN || stack.back().f64 > F64_U64_MAX)
 				{
+					uint64_t i;
+					SOUP_IF_UNLIKELY (!float_to_int(stack.back().f64, i))
+					{
 #if DEBUG_VM
-					std::cout << "float cannot be represented as int\n";
+						std::cout << "float cannot be represented as int\n";
 #endif
-					return CODE_ERROR;
+						return CODE_ERROR;
+					}
+					stack.back() = i;
 				}
-				stack.back() = static_cast<uint64_t>(stack.back().f64);
 				break;
 
 			case 0xb2: // f32.convert_i32_s
@@ -5500,161 +6007,73 @@ NAMESPACE_SOUP
 				{
 				case 0x00: // i32.trunc_sat_f32_s
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f32))
 					{
-						stack.back() = 0;
-					}
-					else if (stack.back().f32 < F32_I32_MIN)
-					{
-						stack.back() = INT32_MIN;
-					}
-					else if (stack.back().f32 > F32_I32_MAX)
-					{
-						stack.back() = INT32_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<int32_t>(stack.back().f32);
+						int32_t i;
+						float_to_int(stack.back().f32, i);
+						stack.back() = i;
 					}
 					break;
 
 				case 0x01: // i32.trunc_sat_f32_u
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f32))
 					{
-						stack.back() = 0;
-					}
-					else if (stack.back().f32 < F32_U32_MIN)
-					{
-						stack.back() = 0;
-					}
-					else if (stack.back().f32 > F32_U32_MAX)
-					{
-						stack.back() = UINT32_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<uint32_t>(stack.back().f32);
+						uint32_t i;
+						float_to_int(stack.back().f32, i);
+						stack.back() = i;
 					}
 					break;
 
 				case 0x02: // i32.trunc_sat_f64_s
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f64))
 					{
-						stack.back() = 0;
-					}
-					else if (stack.back().f64 < F64_I32_MIN)
-					{
-						stack.back() = INT32_MIN;
-					}
-					else if (stack.back().f64 > F64_I32_MAX)
-					{
-						stack.back() = INT32_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<int32_t>(stack.back().f64);
+						int32_t i;
+						float_to_int(stack.back().f64, i);
+						stack.back() = i;
 					}
 					break;
 
 				case 0x03: // i32.trunc_sat_f64_u
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f64))
 					{
-						stack.back() = 0;
-					}
-					else if (stack.back().f64 < F64_U32_MIN)
-					{
-						stack.back() = 0;
-					}
-					else if (stack.back().f64 > F64_U32_MAX)
-					{
-						stack.back() = UINT32_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<uint32_t>(stack.back().f64);
+						uint32_t i;
+						float_to_int(stack.back().f64, i);
+						stack.back() = i;
 					}
 					break;
 
 				case 0x04: // i64.trunc_sat_f32_s
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f32))
 					{
-						stack.back() = static_cast<int64_t>(0);
-					}
-					else if (stack.back().f32 < F32_I64_MIN)
-					{
-						stack.back() = INT64_MIN;
-					}
-					else if (stack.back().f32 > F32_I64_MAX)
-					{
-						stack.back() = INT64_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<int64_t>(stack.back().f32);
+						int64_t i;
+						float_to_int(stack.back().f32, i);
+						stack.back() = i;
 					}
 					break;
 
 				case 0x05: // i64.trunc_sat_f32_u
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f32))
 					{
-						stack.back() = static_cast<int64_t>(0);
-					}
-					else if (stack.back().f32 < F32_U64_MIN)
-					{
-						stack.back() = static_cast<int64_t>(0);
-					}
-					else if (stack.back().f32 > F32_U64_MAX)
-					{
-						stack.back() = UINT64_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<uint64_t>(stack.back().f32);
+						uint64_t i;
+						float_to_int(stack.back().f32, i);
+						stack.back() = i;
 					}
 					break;
 
 				case 0x06: // i64.trunc_sat_f64_s
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f64))
 					{
-						stack.back() = static_cast<int64_t>(0);
-					}
-					else if (stack.back().f64 < F64_I64_MIN)
-					{
-						stack.back() = INT64_MIN;
-					}
-					else if (stack.back().f64 > F64_I64_MAX)
-					{
-						stack.back() = INT64_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<int64_t>(stack.back().f64);
+						int64_t i;
+						float_to_int(stack.back().f64, i);
+						stack.back() = i;
 					}
 					break;
 
 				case 0x07: // i64.trunc_sat_f64_u
 					WASM_CHECK_STACK(1);
-					if (std::isnan(stack.back().f64))
 					{
-						stack.back() = static_cast<int64_t>(0);
-					}
-					else if (stack.back().f64 < F64_U64_MIN)
-					{
-						stack.back() = static_cast<int64_t>(0);
-					}
-					else if (stack.back().f64 > F64_U64_MAX)
-					{
-						stack.back() = UINT64_MAX;
-					}
-					else
-					{
-						stack.back() = static_cast<uint64_t>(stack.back().f64);
+						uint64_t i;
+						float_to_int(stack.back().f64, i);
+						stack.back() = i;
 					}
 					break;
 
@@ -5963,6 +6382,46 @@ NAMESPACE_SOUP
 					}
 					break;
 
+				case 0x01: // v128.load8x8_s
+					SOUP_RETHROW_FALSE(simd_loadx<int8_t>(stack, r, script, &WasmValue::i16x8));
+					break;
+
+				case 0x02: // v128.load8x8_u
+					SOUP_RETHROW_FALSE(simd_loadx<uint8_t>(stack, r, script, &WasmValue::i16x8));
+					break;
+
+				case 0x03: // v128.load16x4_s
+					SOUP_RETHROW_FALSE(simd_loadx<int16_t>(stack, r, script, &WasmValue::i32x4));
+					break;
+
+				case 0x04: // v128.load16x4_u
+					SOUP_RETHROW_FALSE(simd_loadx<uint16_t>(stack, r, script, &WasmValue::i32x4));
+					break;
+
+				case 0x05: // v128.load32x2_s
+					SOUP_RETHROW_FALSE(simd_loadx<int32_t>(stack, r, script, &WasmValue::i64x2));
+					break;
+
+				case 0x06: // v128.load32x2_u
+					SOUP_RETHROW_FALSE(simd_loadx<uint32_t>(stack, r, script, &WasmValue::i64x2));
+					break;
+
+				case 0x07: // v128.load8_splat
+					SOUP_RETHROW_FALSE(simd_load_splat(stack, r, script, &WasmValue::i8x16));
+					break;
+
+				case 0x08: // v128.load16_splat
+					SOUP_RETHROW_FALSE(simd_load_splat(stack, r, script, &WasmValue::i16x8));
+					break;
+
+				case 0x09: // v128.load32_splat
+					SOUP_RETHROW_FALSE(simd_load_splat(stack, r, script, &WasmValue::i32x4));
+					break;
+
+				case 0x0a: // v128.load64_splat
+					SOUP_RETHROW_FALSE(simd_load_splat(stack, r, script, &WasmValue::i64x2));
+					break;
+
 				case 0x0b: // v128.store
 					{
 						WASM_CHECK_STACK(2);
@@ -5984,9 +6443,9 @@ NAMESPACE_SOUP
 				case 0x0d: // i8x16.shuffle
 					{
 						WASM_CHECK_STACK(2);
-						const auto b = stack.back(); stack.pop_back();
-						const auto a = stack.back(); stack.pop_back();
-						auto& result = stack.emplace_back(WASM_V128);
+						int8_t b[16]; memcpy(b, stack.back().i8x16, 16); stack.pop_back();
+						int8_t a[16]; memcpy(a, stack.back().i8x16, 16);
+						WasmValue& result = stack.back();
 						for (int i = 0; i != 16; ++i)
 						{
 							uint8_t idx;
@@ -5994,11 +6453,11 @@ NAMESPACE_SOUP
 							SOUP_RETHROW_FALSE(idx < 32);
 							if (idx < 16)
 							{
-								result.i8x16[i] = a.i8x16[idx];
+								result.i8x16[i] = a[idx];
 							}
 							else
 							{
-								result.i8x16[i] = b.i8x16[idx - 16];
+								result.i8x16[i] = b[idx - 16];
 							}
 						}
 					}
@@ -6007,12 +6466,12 @@ NAMESPACE_SOUP
 				case 0x0e: // i8x16.swizzle
 					{
 						WASM_CHECK_STACK(2);
-						const auto s = stack.back(); stack.pop_back();
-						const auto a = stack.back(); stack.pop_back();
-						auto& result = stack.emplace_back(WASM_V128);
+						int8_t s[16]; memcpy(s, stack.back().i8x16, 16); stack.pop_back();
+						int8_t a[16]; memcpy(a, stack.back().i8x16, 16);
+						WasmValue& result = stack.back();
 						for (int i = 0; i != 16; ++i)
 						{
-							result.i8x16[i] = static_cast<uint8_t>(s.i8x16[i]) < 16 ? a.i8x16[s.i8x16[i]] : 0;
+							result.i8x16[i] = static_cast<uint8_t>(s[i]) < 16 ? a[s[i]] : 0;
 						}
 					}
 					break;
@@ -6274,7 +6733,7 @@ NAMESPACE_SOUP
 				case 0x4e: // v128.and
 					{
 						WASM_CHECK_STACK(2);
-						const auto b = stack.back().i64x2; stack.pop_back();
+						int64_t b[2]; memcpy(b, stack.back().i64x2, 16); stack.pop_back();
 						stack.back().i64x2[0] &= b[0];
 						stack.back().i64x2[1] &= b[1];
 					}
@@ -6283,7 +6742,7 @@ NAMESPACE_SOUP
 				case 0x4f: // v128.andnot
 					{
 						WASM_CHECK_STACK(2);
-						const auto b = stack.back().i64x2; stack.pop_back();
+						int64_t b[2]; memcpy(b, stack.back().i64x2, 16); stack.pop_back();
 						stack.back().i64x2[0] &= ~b[0];
 						stack.back().i64x2[1] &= ~b[1];
 					}
@@ -6292,7 +6751,7 @@ NAMESPACE_SOUP
 				case 0x50: // v128.or
 					{
 						WASM_CHECK_STACK(2);
-						const auto b = stack.back().i64x2; stack.pop_back();
+						int64_t b[2]; memcpy(b, stack.back().i64x2, 16); stack.pop_back();
 						stack.back().i64x2[0] |= b[0];
 						stack.back().i64x2[1] |= b[1];
 					}
@@ -6301,7 +6760,7 @@ NAMESPACE_SOUP
 				case 0x51: // v128.xor
 					{
 						WASM_CHECK_STACK(2);
-						const auto b = stack.back().i64x2; stack.pop_back();
+						int64_t b[2]; memcpy(b, stack.back().i64x2, 16); stack.pop_back();
 						stack.back().i64x2[0] ^= b[0];
 						stack.back().i64x2[1] ^= b[1];
 					}
@@ -6310,24 +6769,19 @@ NAMESPACE_SOUP
 				case 0x52: // v128.bitselect
 					{
 						WASM_CHECK_STACK(3);
-						const auto c = stack.back().i64x2; stack.pop_back();
-						const auto b = stack.back().i64x2; stack.pop_back();
+						int64_t c[2]; memcpy(c, stack.back().i64x2, 16); stack.pop_back();
+						int64_t b[2]; memcpy(b, stack.back().i64x2, 16); stack.pop_back();
 						stack.back().i64x2[0] = (stack.back().i64x2[0] & c[0]) | (b[0] & ~c[0]);
 						stack.back().i64x2[1] = (stack.back().i64x2[1] & c[1]) | (b[1] & ~c[1]);
 					}
 					break;
 
-				case 0x53: // v128.any_true
-					WASM_CHECK_STACK(1);
-					if (stack.back().i64x2[0] || stack.back().i64x2[1])
-					{
-						stack.back().i64 = 1;
-					}
-					else
-					{
-						stack.back().i64 = 0;
-					}
-					stack.back().type = WASM_I32;
+				case 0x60: // i8x16.abs
+					SOUP_RETHROW_FALSE(simd_abs(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x61: // i8x16.neg
+					SOUP_RETHROW_FALSE(simd_neg(stack, &WasmValue::i8x16));
 					break;
 
 				case 0x63: // i8x16.all_true
@@ -6362,8 +6816,52 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i8x16));
 					break;
 
+				case 0x6f: // i8x16.add_sat_s
+					SOUP_RETHROW_FALSE(simd_add_sat_s(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x70: // i8x16.add_sat_u
+					SOUP_RETHROW_FALSE(simd_add_sat_u(stack, &WasmValue::i8x16));
+					break;
+
 				case 0x71: // i8x16.sub
 					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x72: // i8x16.sub_sat_s
+					SOUP_RETHROW_FALSE(simd_sub_sat_s(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x73: // i8x16.sub_sat_u
+					SOUP_RETHROW_FALSE(simd_sub_sat_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x76: // i8x16.min_s
+					SOUP_RETHROW_FALSE(simd_pmin(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x77: // i8x16.min_u
+					SOUP_RETHROW_FALSE(simd_min_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x78: // i8x16.max_s
+					SOUP_RETHROW_FALSE(simd_pmax(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x79: // i8x16.max_u
+					SOUP_RETHROW_FALSE(simd_max_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x7b: // i8x16.avgr_u
+					SOUP_RETHROW_FALSE(simd_avgr_u(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x80: // i16x8.abs
+					SOUP_RETHROW_FALSE(simd_abs(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x81: // i16x8.neg
+					SOUP_RETHROW_FALSE(simd_neg(stack, &WasmValue::i16x8));
 					break;
 
 				case 0x83: // i16x8.all_true
@@ -6414,12 +6912,56 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::i16x8));
 					break;
 
+				case 0x8f: // i16x8.add_sat_s
+					SOUP_RETHROW_FALSE(simd_add_sat_s(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x90: // i16x8.add_sat_u
+					SOUP_RETHROW_FALSE(simd_add_sat_u(stack, &WasmValue::i16x8));
+					break;
+
 				case 0x91: // i16x8.sub
 					SOUP_RETHROW_FALSE(simd_sub(stack, &WasmValue::i16x8));
 					break;
 
+				case 0x92: // i16x8.sub_sat_s
+					SOUP_RETHROW_FALSE(simd_sub_sat_s (stack, &WasmValue::i16x8));
+					break;
+
+				case 0x93: // i16x8.sub_sat_u
+					SOUP_RETHROW_FALSE(simd_sub_sat_u(stack, &WasmValue::i16x8));
+					break;
+
 				case 0x95: // i16x8.mul
 					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x96: // i16x8.min_s
+					SOUP_RETHROW_FALSE(simd_pmin(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x97: // i16x8.min_u
+					SOUP_RETHROW_FALSE(simd_min_u(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x98: // i16x8.max_s
+					SOUP_RETHROW_FALSE(simd_pmax(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x99: // i16x8.max_u
+					SOUP_RETHROW_FALSE(simd_max_u(stack, &WasmValue::i16x8));
+					break;
+
+				case 0x9b: // i16x8.avgr_u
+					SOUP_RETHROW_FALSE(simd_avgr_u(stack, &WasmValue::i16x8));
+					break;
+
+				case 0xa0: // i32x4.abs
+					SOUP_RETHROW_FALSE(simd_abs(stack, &WasmValue::i32x4));
+					break;
+
+				case 0xa1: // i32x4.neg
+					SOUP_RETHROW_FALSE(simd_neg(stack, &WasmValue::i32x4));
 					break;
 
 				case 0xa3: // i32x4.all_true
@@ -6470,32 +7012,43 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::i32x4));
 					break;
 
-				case 0xd6: // i64x2.eq
-					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+				case 0xb6: // i32x4.min_s
+					SOUP_RETHROW_FALSE(simd_pmin(stack, &WasmValue::i32x4));
 					break;
 
-				case 0xd7: // i64x2.ne
-					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+				case 0xb7: // i32x4.min_u
+					SOUP_RETHROW_FALSE(simd_min_u(stack, &WasmValue::i32x4));
 					break;
 
-				case 0xd8: // i64x2.lt_s
-					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+				case 0xb8: // i32x4.max_s
+					SOUP_RETHROW_FALSE(simd_pmax(stack, &WasmValue::i32x4));
 					break;
 
-				case 0xd9: // i64x2.gt_s
-					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+				case 0xb9: // i32x4.max_u
+					SOUP_RETHROW_FALSE(simd_max_u(stack, &WasmValue::i32x4));
 					break;
 
-				case 0xda: // i64x2.le_s
-					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+				case 0xba: // i32x4.dot_i16x8_s
+					{
+						WASM_CHECK_STACK(1);
+						int16_t b[8]; memcpy(b, stack.back().i16x8, 16); stack.pop_back();
+						int16_t a[8]; memcpy(a, stack.back().i16x8, 16);
+						int32_t* res = stack.back().i32x4;
+						for (int i = 0; i != 4; ++i)
+						{
+							res[i] = static_cast<int32_t>(a[i * 2]) * static_cast<int32_t>(b[i * 2])
+								+ static_cast<int32_t>(a[i * 2 + 1]) * static_cast<int32_t>(b[i * 2 + 1])
+								;
+						}
+					}
 					break;
 
-				case 0xdb: // i64x2.ge_s
-					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+				case 0xc0: // i64x2.abs
+					SOUP_RETHROW_FALSE(simd_abs(stack, &WasmValue::i64x2));
 					break;
 
-				case 0xc3: // i64x2.all_true
-					SOUP_RETHROW_FALSE(all_true(stack, &WasmValue::i64x2));
+				case 0xc1: // i64x2.neg
+					SOUP_RETHROW_FALSE(simd_neg(stack, &WasmValue::i64x2));
 					break;
 
 				case 0xc4: // i64x2.bitmask
@@ -6542,6 +7095,50 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::i64x2));
 					break;
 
+				case 0x67: // f32x4.ceil
+					SOUP_RETHROW_FALSE(simd_ceil(stack, &WasmValue::f32x4));
+					break;
+
+				case 0x68: // f32x4.floor
+					SOUP_RETHROW_FALSE(simd_floor(stack, &WasmValue::f32x4));
+					break;
+
+				case 0x69: // f32x4.trunc
+					SOUP_RETHROW_FALSE(simd_trunc(stack, &WasmValue::f32x4));
+					break;
+
+				case 0x6a: // f32x4.nearest
+					SOUP_RETHROW_FALSE(simd_nearest(stack, &WasmValue::f32x4));
+					break;
+
+				case 0x74: // f64x2.ceil
+					SOUP_RETHROW_FALSE(simd_ceil(stack, &WasmValue::f64x2));
+					break;
+
+				case 0x75: // f64x2.floor
+					SOUP_RETHROW_FALSE(simd_floor(stack, &WasmValue::f64x2));
+					break;
+
+				case 0x7a: // f64x2.trunc
+					SOUP_RETHROW_FALSE(simd_trunc(stack, &WasmValue::f64x2));
+					break;
+
+				case 0x94: // f64x2.nearest
+					SOUP_RETHROW_FALSE(simd_nearest(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xe0: // f32x4.abs
+					SOUP_RETHROW_FALSE(simd_abs(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xe1: // f32x4.neg
+					SOUP_RETHROW_FALSE(simd_neg(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xe3: // f32x4.sqrt
+					SOUP_RETHROW_FALSE(simd_sqrt(stack, &WasmValue::f32x4));
+					break;
+
 				case 0xe4: // f32x4.add
 					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::f32x4));
 					break;
@@ -6554,6 +7151,38 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::f32x4));
 					break;
 
+				case 0xe7: // f32x4.div
+					SOUP_RETHROW_FALSE(simd_div(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xe8: // f32x4.min
+					SOUP_RETHROW_FALSE(simd_min(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xe9: // f32x4.max
+					SOUP_RETHROW_FALSE(simd_max(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xea: // f32x4.pmin
+					SOUP_RETHROW_FALSE(simd_pmin(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xeb: // f32x4.pmax
+					SOUP_RETHROW_FALSE(simd_pmax(stack, &WasmValue::f32x4));
+					break;
+
+				case 0xec: // f64x2.abs
+					SOUP_RETHROW_FALSE(simd_abs(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xed: // f64x2.neg
+					SOUP_RETHROW_FALSE(simd_neg(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xef: // f64x2.sqrt
+					SOUP_RETHROW_FALSE(simd_sqrt(stack, &WasmValue::f64x2));
+					break;
+
 				case 0xf0: // f64x2.add
 					SOUP_RETHROW_FALSE(simd_add(stack, &WasmValue::f64x2));
 					break;
@@ -6564,6 +7193,42 @@ NAMESPACE_SOUP
 
 				case 0xf2: // f64x2.mul
 					SOUP_RETHROW_FALSE(simd_mul(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf3: // f64x2.div
+					SOUP_RETHROW_FALSE(simd_div(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf4: // f64x2.min
+					SOUP_RETHROW_FALSE(simd_min(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf5: // f64x2.max
+					SOUP_RETHROW_FALSE(simd_max(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf6: // f64x2.pmin
+					SOUP_RETHROW_FALSE(simd_pmin(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf7: // f64x2.pmax
+					SOUP_RETHROW_FALSE(simd_pmax(stack, &WasmValue::f64x2));
+					break;
+
+				case 0xf8: // i32x4.trunc_sat_f32x4_s
+					WASM_CHECK_STACK(1);
+					for (int i = 0; i != 4; ++i)
+					{
+						float_to_int(stack.back().f32x4[i], stack.back().i32x4[i]);
+					}
+					break;
+
+				case 0xf9: // i32x4.trunc_sat_f32x4_u
+					WASM_CHECK_STACK(1);
+					for (int i = 0; i != 4; ++i)
+					{
+						float_to_int(stack.back().f32x4[i], reinterpret_cast<uint32_t&>(stack.back().i32x4[i]));
+					}
 					break;
 
 				case 0xfa: // f32x4.convert_i32x4_s
@@ -6580,6 +7245,147 @@ NAMESPACE_SOUP
 					{
 						stack.back().f32x4[i] = static_cast<float>(static_cast<uint32_t>(stack.back().i32x4[i]));
 					}
+					break;
+
+				case 0x5c: // v128.load32_zero
+					SOUP_RETHROW_FALSE(load_zero(stack, r, script, &WasmValue::i32x4));
+					break;
+
+				case 0x5d: // v128.load64_zero
+					SOUP_RETHROW_FALSE(load_zero(stack, r, script, &WasmValue::i64x2));
+					break;
+
+				case 0x9c: // i16x8.extmul_low_i8x16_s
+					SOUP_RETHROW_FALSE(extmul_low_s(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x9d: // i16x8.extmul_high_i8x16_s
+					SOUP_RETHROW_FALSE(extmul_high_s(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x9e: // i16x8.extmul_low_i8x16_u
+					SOUP_RETHROW_FALSE(extmul_low_u(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x9f: // i16x8.extmul_high_i8x16_u
+					SOUP_RETHROW_FALSE(extmul_high_u(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0xbc: // i32x4.extmul_low_i16x8_s
+					SOUP_RETHROW_FALSE(extmul_low_s(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0xbd: // i32x4.extmul_high_i16x8_s
+					SOUP_RETHROW_FALSE(extmul_high_s(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0xbe: // i32x4.extmul_low_i16x8_u
+					SOUP_RETHROW_FALSE(extmul_low_u(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0xbf: // i32x4.extmul_high_i16x8_u
+					SOUP_RETHROW_FALSE(extmul_high_u(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0xdc: // i64x2.extmul_low_i32x4_s
+					SOUP_RETHROW_FALSE(extmul_low_s(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
+				case 0xdd: // i64x2.extmul_high_i32x4_s
+					SOUP_RETHROW_FALSE(extmul_high_s(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
+				case 0xde: // i64x2.extmul_low_i32x4_u
+					SOUP_RETHROW_FALSE(extmul_low_u(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
+				case 0xdf: // i64x2.extmul_high_i32x4_u
+					SOUP_RETHROW_FALSE(extmul_high_u(stack, &WasmValue::i32x4, &WasmValue::i64x2));
+					break;
+
+				case 0x82: // i16x8.q15mulr_sat_s
+					WASM_CHECK_STACK(2);
+					{
+						int16_t b[8]; memcpy(b, stack.back().i16x8, 16); stack.pop_back();
+						auto a = stack.back().i16x8;
+						for (int i = 0; i != 8; ++i)
+						{
+							a[i] = saturate<int16_t>((static_cast<int32_t>(a[i]) * static_cast<int32_t>(b[i]) + 0x4000) >> 15);
+						}
+					}
+					break;
+
+				case 0x53: // v128.any_true
+					WASM_CHECK_STACK(1);
+					if (stack.back().i64x2[0] || stack.back().i64x2[1])
+					{
+						stack.back().i64 = 1;
+					}
+					else
+					{
+						stack.back().i64 = 0;
+					}
+					stack.back().type = WASM_I32;
+					break;
+
+				case 0x54: // v128.load8_lane
+					SOUP_RETHROW_FALSE(load_lane(stack, r, script, &WasmValue::i8x16));
+					break;
+
+				case 0x55: // v128.load16_lane
+					SOUP_RETHROW_FALSE(load_lane(stack, r, script, &WasmValue::i16x8));
+					break;
+
+				case 0x56: // v128.load32_lane
+					SOUP_RETHROW_FALSE(load_lane(stack, r, script, &WasmValue::i32x4));
+					break;
+
+				case 0x57: // v128.load64_lane
+					SOUP_RETHROW_FALSE(load_lane(stack, r, script, &WasmValue::i64x2));
+					break;
+
+				case 0x58: // v128.store8_lane
+					SOUP_RETHROW_FALSE(store_lane(stack, r, script, &WasmValue::i8x16));
+					break;
+
+				case 0x59: // v128.store16_lane
+					SOUP_RETHROW_FALSE(store_lane(stack, r, script, &WasmValue::i16x8));
+					break;
+
+				case 0x5a: // v128.store32_lane
+					SOUP_RETHROW_FALSE(store_lane(stack, r, script, &WasmValue::i32x4));
+					break;
+
+				case 0x5b: // v128.store64_lane
+					SOUP_RETHROW_FALSE(store_lane(stack, r, script, &WasmValue::i64x2));
+					break;
+
+				case 0xd6: // i64x2.eq
+					SOUP_RETHROW_FALSE(simd_eq(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xd7: // i64x2.ne
+					SOUP_RETHROW_FALSE(simd_ne(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xd8: // i64x2.lt_s
+					SOUP_RETHROW_FALSE(simd_lt(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xd9: // i64x2.gt_s
+					SOUP_RETHROW_FALSE(simd_gt(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xda: // i64x2.le_s
+					SOUP_RETHROW_FALSE(simd_le(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xdb: // i64x2.ge_s
+					SOUP_RETHROW_FALSE(simd_ge(stack, &WasmValue::i64x2, &WasmValue::i64x2));
+					break;
+
+				case 0xc3: // i64x2.all_true
+					SOUP_RETHROW_FALSE(all_true(stack, &WasmValue::i64x2));
 					break;
 
 				case 0xfe: // f64x2.convert_low_i32x4_s
@@ -6599,6 +7405,30 @@ NAMESPACE_SOUP
 						const auto in1 = stack.back().i32x4[1];
 						stack.back().f64x2[0] = static_cast<double>(static_cast<uint32_t>(in0));
 						stack.back().f64x2[1] = static_cast<double>(static_cast<uint32_t>(in1));
+					}
+					break;
+
+				case 0xfc: // i32x4.trunc_sat_f64x2_s_zero
+					WASM_CHECK_STACK(1);
+					for (int i = 0; i != 2; ++i)
+					{
+						float_to_int(stack.back().f64x2[i], stack.back().i32x4[i]);
+					}
+					for (int i = 2; i != 4; ++i)
+					{
+						stack.back().i32x4[i] = 0;
+					}
+					break;
+
+				case 0xfd: // i32x4.trunc_sat_f64x2_u_zero
+					WASM_CHECK_STACK(1);
+					for (int i = 0; i != 2; ++i)
+					{
+						float_to_int(stack.back().f64x2[i], reinterpret_cast<uint32_t&>(stack.back().i32x4[i]));
+					}
+					for (int i = 2; i != 4; ++i)
+					{
+						stack.back().i32x4[i] = 0;
 					}
 					break;
 
@@ -6622,6 +7452,26 @@ NAMESPACE_SOUP
 						stack.back().f64x2[0] = static_cast<double>(in0);
 						stack.back().f64x2[1] = static_cast<double>(in1);
 					}
+					break;
+
+				case 0x62: // i8x16.popcnt
+					SOUP_RETHROW_FALSE(simd_popcnt(stack, &WasmValue::i8x16));
+					break;
+
+				case 0x7c: // i16x8.extadd_pairwise_i8x16_s
+					SOUP_RETHROW_FALSE(extadd_pairwise_s(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x7d: // i16x8.extadd_pairwise_i8x16_u
+					SOUP_RETHROW_FALSE(extadd_pairwise_u(stack, &WasmValue::i8x16, &WasmValue::i16x8));
+					break;
+
+				case 0x7e: // i32x4.extadd_pairwise_i16x8_s
+					SOUP_RETHROW_FALSE(extadd_pairwise_s(stack, &WasmValue::i16x8, &WasmValue::i32x4));
+					break;
+
+				case 0x7f: // i32x4.extadd_pairwise_i16x8_u
+					SOUP_RETHROW_FALSE(extadd_pairwise_u(stack, &WasmValue::i16x8, &WasmValue::i32x4));
 					break;
 
 				default:

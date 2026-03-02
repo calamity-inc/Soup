@@ -14,44 +14,40 @@
 #include "SharedPtr.hpp"
 #include "StructMap.hpp"
 
-// Soup fully implements the WebAssembly 2.0 specification with the exception of SIMD types and instructions ("scalar profile").
- 
-// Note that the spec requires loads to fail for various reasons that require a lot of CPU time to validate; Soup does not do these by default,
-// but if you do want that, you can enable enable pedantic mode.
-#ifndef SOUP_WASM_PEDANTIC
-#define SOUP_WASM_PEDANTIC false
-#endif
+// Soup fully implements the WebAssembly 2.0 specification.
 
-#ifndef SOUP_WASM_SIMD // Partial implementation (work in progress). The intent is to keep this feature off by default, tho.
+// By default, Soup uses the scalar profile, meaning SIMD is unavailable.
+#ifndef SOUP_WASM_SIMD
 #define SOUP_WASM_SIMD false
 #endif
 
-// Additionally, the following proposals that landed in WebAssembly 3.0 are implemented.
-
+// Additionally, the following proposals that landed in WebAssembly 3.0 are implemented:
 #ifndef SOUP_WASM_MEMORY64
 #define SOUP_WASM_MEMORY64 (SOUP_BITS >= 64)
 #endif
-
 #ifndef SOUP_WASM_MULTI_MEMORY
 #define SOUP_WASM_MULTI_MEMORY false
 #endif
-
 #ifndef SOUP_WASM_EXTENDED_CONST
 #define SOUP_WASM_EXTENDED_CONST false
 #endif
-
 #ifndef SOUP_WASM_TAIL_CALL
 #define SOUP_WASM_TAIL_CALL false
 #endif
-
 #ifndef SOUP_WASM_EXCEPTIONS
 #define SOUP_WASM_EXCEPTIONS false
 #endif
+// Unimplemented WASM 3.0 proposals: Typed References, Garbage Collection, Relaxed SIMD + Deterministic Profile, and JS string builtins (dependent on GC proposal)
 
-// And the following feature proposals are implemented.
-
+// And the following phase 3 proposals are implemented:
 #ifndef SOUP_WASM_CUSTOM_PAGE_SIZES
 #define SOUP_WASM_CUSTOM_PAGE_SIZES false
+#endif
+
+// When running Soup against the test suite, you may wish to enable pedantic mode.
+// In pedantic mode, Soup spends more time when loading a WASM module to make sure all UTF-8 is valid, LEB128 encodings are not overlong, etc.
+#ifndef SOUP_WASM_PEDANTIC
+#define SOUP_WASM_PEDANTIC false
 #endif
 
 NAMESPACE_SOUP
