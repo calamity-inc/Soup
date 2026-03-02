@@ -930,7 +930,8 @@ NAMESPACE_SOUP
 							uint8_t type; r.u8(type);
 							SOUP_RETHROW_FALSE(type == 0);
 							uint32_t typeidx; WASM_READ_OML(typeidx);
-							tag_imports.emplace_back(std::move(module_name), std::move(field_name));
+							SOUP_RETHROW_FALSE(typeidx < types.size());
+							tag_imports.emplace_back(TagImport{ { std::move(module_name), std::move(field_name) }, types[typeidx].parameters });
 							tags.emplace_back();
 						}
 #endif
@@ -1102,7 +1103,8 @@ NAMESPACE_SOUP
 						uint8_t type; r.u8(type);
 						SOUP_RETHROW_FALSE(type == 0);
 						uint32_t typeidx; WASM_READ_OML(typeidx);
-						tags.emplace_back(soup::make_shared<Tag>(/*typeidx*/));
+						SOUP_RETHROW_FALSE(typeidx < types.size());
+						tags.emplace_back(soup::make_shared<Tag>(types[typeidx].parameters));
 					}
 				}
 				break;
@@ -1832,6 +1834,7 @@ NAMESPACE_SOUP
 					if (e->second.kind == IE_kTag
 						&& e->second.index < other.tags.size()
 						&& other.tags[e->second.index]
+						&& ti.parameters == other.tags[e->second.index]->parameters
 						)
 					{
 						tags[i] = other.tags[e->second.index];
