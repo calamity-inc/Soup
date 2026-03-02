@@ -33,7 +33,9 @@ void cli_mouse();
 void cli_repl();
 #endif
 void cli_snake();
+#if SOUP_EXCEPTIONS
 void cli_test();
+#endif
 int cli_wast(const std::string& file);
 #if !SOUP_WASM || SOUP_EMSCRIPTEN
 int cli_websrv(const std::string& dir);

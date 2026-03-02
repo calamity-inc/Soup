@@ -1973,7 +1973,7 @@ NAMESPACE_SOUP
 		return nullptr;
 	}
 
-#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
+#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { SOUP_THROW(Exception("Insufficient values on stack for function call")); }
 
 	// https://github.com/WebAssembly/wasi-libc/blob/d02bdc21afc4d835383b006c11e285c4a7c78439/libc-bottom-half/headers/public/wasi/wasip1.h#L106
 	enum WasiErrno : int32_t

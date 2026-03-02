@@ -492,11 +492,11 @@ NAMESPACE_SOUP
 		X11Api::XEvent event, prev_event;
 		while (true)
 		{
-			try
+			SOUP_TRY
 			{
 				x.nextEvent(x.display, &event);
 			}
-			catch (const X11Api::IoError&)
+			SOUP_CATCH (X11Api::IoError, _)
 			{
 				break;
 			}

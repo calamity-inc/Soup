@@ -1,4 +1,5 @@
 ﻿#include "cli.hpp"
+#if SOUP_EXCEPTIONS
 
 #include <x64.hpp>
 
@@ -2769,3 +2770,5 @@ void cli_test()
 		}
 	}
 }
+
+#endif

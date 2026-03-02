@@ -513,11 +513,13 @@ int entry(std::vector<std::string>&& args, bool)
 			return 0;
 		}
 
+#if SOUP_EXCEPTIONS
 		if (subcommand == "test")
 		{
 			cli_test();
 			return 0;
 		}
+#endif
 
 		if (subcommand == "wasm")
 		{
@@ -671,7 +673,9 @@ int entry(std::vector<std::string>&& args, bool)
 	string::listAppend(all_tools, "script");
 #endif
 	string::listAppend(all_tools, "snake");
+#if SOUP_EXCEPTIONS
 	string::listAppend(all_tools, "test");
+#endif
 	string::listAppend(all_tools, "wasm");
 	string::listAppend(all_tools, "wav");
 #if !SOUP_WASM

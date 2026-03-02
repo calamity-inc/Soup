@@ -257,7 +257,7 @@ NAMESPACE_SOUP
 
 			((int(*)(int(*handler)(Display*)))getAddressMandatory("XSetIOErrorHandler"))([](Display*) -> int
 			{
-				throw IoError();
+				SOUP_THROW(IoError());
 			});
 
 			// This disables auto-repeat on the entire X11 server until XAutoRepeatOn is called.

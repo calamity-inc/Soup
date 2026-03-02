@@ -182,7 +182,7 @@ static std::vector<UniquePtr<int64_t>> externrefs;
 	return true;
 }
 
-#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { throw Exception("Insufficient values on stack for function call"); }
+#define API_CHECK_STACK(x) SOUP_IF_UNLIKELY (vm.stack.size() < x) { SOUP_THROW(Exception("Insufficient values on stack for function call")); }
 
 int cli_wast(const std::string& file)
 {
@@ -269,7 +269,7 @@ int cli_wast(const std::string& file)
 		WasmScript* scr = &shared_env.createScript();
 		std::unordered_map<std::string, WasmScript*> named_modules;
 		std::vector<std::pair<std::string, WasmScript*>> registered_module;
-		try
+		SOUP_TRY
 		{
 			for (const auto& cmd_entry : jr->asObj().at("commands").asArr())
 			{
@@ -486,7 +486,7 @@ int cli_wast(const std::string& file)
 				return 1;
 			}
 		}
-		catch (const std::exception& e)
+		SOUP_CATCH (std::exception, e)
 		{
 			std::cout << e.what() << std::endl;
 			return 1;
