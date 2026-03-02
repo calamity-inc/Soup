@@ -1192,9 +1192,16 @@ NAMESPACE_SOUP
 							}
 						}
 
+						if (type == WASM_FUNCREF)
+						{
+							SOUP_RETHROW_FALSE(shared_env);
+						}
+						else
+						{
 #if SOUP_WASM_PEDANTIC
-						SOUP_RETHROW_FALSE(type == WASM_FUNCREF || type == WASM_EXTERNREF);
+							SOUP_RETHROW_FALSE(type == WASM_EXTERNREF);
 #endif
+						}
 
 						ElemSegment& es = elem_segments.emplace_back(ElemSegment{ static_cast<WasmType>(type), static_cast<uint8_t>(flags) });
 #if SOUP_WASM_EXTENDED_CONST
@@ -1222,7 +1229,7 @@ NAMESPACE_SOUP
 								uint32_t function_index;
 								WASM_READ_OML(function_index);
 								es.values.emplace_back(
-									es.type == WASM_FUNCREF && shared_env && function_index < function_imports.size() + functions.size()
+									es.type == WASM_FUNCREF && function_index < function_imports.size() + functions.size()
 									? shared_env->createFuncRef(*this, function_index)
 									: 0
 								);
