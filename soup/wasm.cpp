@@ -2488,8 +2488,8 @@ NAMESPACE_SOUP
 			func_index = imp.func_index;
 			goto _call_other_script;
 		}
-		func_index -= script->function_imports.size();
-		SOUP_IF_UNLIKELY (func_index >= script->code.size())
+		const auto code_index = func_index - script->function_imports.size();
+		SOUP_IF_UNLIKELY (code_index >= script->code.size())
 		{
 #if DEBUG_LOAD || DEBUG_API
 			std::cout << "call: function is out-of-bounds\n";
@@ -2499,7 +2499,7 @@ NAMESPACE_SOUP
 		WasmVm vm(*script);
 		vm.locals = std::move(args);
 		//std::cout << "code: " << string::bin2hex(script->code[func_index]) << "\n";
-		SOUP_IF_UNLIKELY (vm.run(script->code[func_index], 0, func_index) != WasmVm::CODE_RETURN)
+		SOUP_IF_UNLIKELY (vm.run(script->code[code_index], 0, func_index) != WasmVm::CODE_RETURN)
 		{
 #if DEBUG_LOAD || DEBUG_API
 			std::cout << "call: execution failed\n";
@@ -2796,12 +2796,12 @@ NAMESPACE_SOUP
 #if DEBUG_VM
 			std::cout << "tail-call, weee! going to " << func_index << "\n";
 #endif
-			func_index -= script.function_imports.size();
-			SOUP_RETHROW_FALSE(func_index < script.code.size());
+			const auto code_index = func_index - script.function_imports.size();
+			SOUP_RETHROW_FALSE(code_index < script.code.size());
 			locals.clear();
-			SOUP_RETHROW_FALSE(moveArguments(*this, script.types[script.functions[func_index]]));
+			SOUP_RETHROW_FALSE(moveArguments(*this, script.types[script.functions[code_index]]));
 			stack.clear();
-			rr.emplace(script.code[func_index]);
+			rr.emplace(script.code[code_index]);
 			pr = &*rr;
 		}
 		return result;
@@ -8379,9 +8379,9 @@ NAMESPACE_SOUP
 			function_index = imp.func_index;
 			goto _doCall_other_script;
 		}
-		function_index -= script->function_imports.size();
+		const auto code_index = function_index - script->function_imports.size();
 #if false // already checked by caller
-		SOUP_IF_UNLIKELY (function_index >= script->code.size())
+		SOUP_IF_UNLIKELY (code_index >= script->code.size())
 		{
 #if DEBUG_VM
 			std::cout << "call: function is out-of-bounds\n";
@@ -8395,11 +8395,11 @@ NAMESPACE_SOUP
 		SOUP_RETHROW_FALSE(moveArguments(callvm, type));
 #if DEBUG_VM
 		//std::cout << "call: enter " << function_index << "\n";
-		//std::cout << string::bin2hex(script->code[function_index]) << "\n";
+		//std::cout << string::bin2hex(script->code[code_index]) << "\n";
 #endif
 		const auto pre_call_stack_size = stack.size();
 		callvm.stack = std::move(stack);
-		const auto result = callvm.run(script->code[function_index], depth, function_index);
+		const auto result = callvm.run(script->code[code_index], depth, function_index);
 		stack = std::move(callvm.stack);
 #if SOUP_WASM_EXCEPTIONS
 		current_throw_tag = callvm.current_throw_tag;
