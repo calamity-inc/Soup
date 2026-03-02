@@ -691,7 +691,6 @@ NAMESPACE_SOUP
 				r.seek(section_end);
 				break;
 
-#if SOUP_WASM_PEDANTIC
 			case SEC_CUSTOM:
 				{
 					SOUP_RETHROW_FALSE(section_size != 0);
@@ -701,15 +700,55 @@ NAMESPACE_SOUP
 					SOUP_RETHROW_FALSE(name_len <= 0x1000);
 					std::string name;
 					r.str(name_len, name);
-					auto name_utf32 = unicode::utf8_to_utf32(name);
-					SOUP_RETHROW_FALSE(name_utf32.find(unicode::REPLACEMENT_CHAR) == std::string::npos); // UTF-8 must be valid
-					SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == name); // UTF-8 must also be represented canonically (so, no overlong encodings)
+#if SOUP_WASM_PEDANTIC
+					{
+						auto name_utf32 = unicode::utf8_to_utf32(name);
+						SOUP_RETHROW_FALSE(name_utf32.find(unicode::REPLACEMENT_CHAR) == std::string::npos); // UTF-8 must be valid
+						SOUP_RETHROW_FALSE(unicode::utf32_to_utf8(name_utf32) == name); // UTF-8 must also be represented canonically (so, no overlong encodings)
+					}
 					r.seekEnd();
 					SOUP_RETHROW_FALSE(section_end <= r.getPosition());
+#endif
+					if (name == "name")
+					{
+						auto& nd = custom_data.getStructFromMap(WasmNameData);
+						while (r.getPosition() < section_end)
+						{
+							uint8_t subsection_id;
+							r.u8(subsection_id);
+							uint32_t subsection_size;
+							WASM_READ_OML(subsection_size);
+							SOUP_RETHROW_FALSE(subsection_size != 0);
+							const auto subsection_end = r.getPosition() + subsection_size;
+							switch (subsection_id)
+							{
+							case 0:
+								WASM_READ_OML(name_len);
+								r.str(name_len, nd.module_name);
+								break;
+
+							case 1:
+								{
+									uint32_t list_len;
+									WASM_READ_OML(list_len);
+									while (list_len--)
+									{
+										uint32_t func_idx;
+										WASM_READ_OML(func_idx);
+										WASM_READ_OML(name_len);
+										std::string func_name;
+										r.str(name_len, func_name);
+										nd.function_names.emplace(func_idx, std::move(func_name));
+									}
+								}
+								break;
+							}
+							r.seek(subsection_end);
+						}
+					}
 					r.seek(section_end);
 				}
 				break;
-#endif
 
 			case SEC_TYPE:
 				{

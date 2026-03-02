@@ -661,4 +661,11 @@ NAMESPACE_SOUP
 			return last_alloc;
 		}
 	};
+
+	// Example usage: script.custom_data.getStructFromMap(WasmNameData).function_names.at(func_index)
+	struct WasmNameData
+	{
+		std::string module_name;
+		std::unordered_map<uint32_t, std::string> function_names;
+	};
 }
