@@ -535,7 +535,8 @@ int entry(std::vector<std::string>&& args, bool)
 				return 1;
 			}
 			FileReader fr(args[2]);
-			WasmScript scr;
+			WasmSharedEnvironment shared_env;
+			auto& scr = shared_env.createScript();
 			if (!scr.load(fr))
 			{
 				std::cout << "Failed to load\n";
