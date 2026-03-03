@@ -3886,9 +3886,9 @@ NAMESPACE_SOUP
 						}
 					}
 					WASM_CHECK_STACK(1);
-					auto value = stack.back(); stack.pop_back();
+					auto value = stack.back().i32; stack.pop_back();
 					//std::cout << "if: condition is " << (value.i32 ? "true" : "false") << "\n";
-					if (value.i32)
+					if (value)
 					{
 						ctrlflow.emplace(CtrlFlowEntry{ (uint32_t)-1, stack_size, num_values });
 					}
@@ -3932,8 +3932,8 @@ NAMESPACE_SOUP
 					uint32_t depth;
 					WASM_READ_OML(depth);
 					WASM_CHECK_STACK(1);
-					auto value = stack.back(); stack.pop_back();
-					if (value.i32)
+					auto value = stack.back().i32; stack.pop_back();
+					if (value)
 					{
 						SOUP_IF_UNLIKELY (!doBranch(r, depth, func_index, ctrlflow))
 						{
@@ -4995,11 +4995,8 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x45: // i32.eqz
-				{
-					WASM_CHECK_STACK(1);
-					auto value = stack.back(); stack.pop_back();
-					stack.emplace_back(value.i32 == 0);
-				}
+				WASM_CHECK_STACK(1);
+				stack.back() = (stack.back().i32 == 0);
 				break;
 
 			case 0x46: // i32.eq
@@ -5093,11 +5090,8 @@ NAMESPACE_SOUP
 				break;
 
 			case 0x50: // i64.eqz
-				{
-					WASM_CHECK_STACK(1);
-					auto value = stack.back(); stack.pop_back();
-					stack.emplace_back(value.i64 == 0);
-				}
+				WASM_CHECK_STACK(1);
+				stack.back() = (stack.back().i64 == 0);
 				break;
 
 			case 0x51: // i64.eq
@@ -6480,14 +6474,14 @@ NAMESPACE_SOUP
 				case 0x0b: // v128.store
 					{
 						WASM_CHECK_STACK(2);
-						auto value = stack.back(); stack.pop_back();
+						int8_t value[16]; memcpy(value, stack.back().i8x16, 16); stack.pop_back();
 						auto base = stack.back().uptr(); stack.pop_back();
 						WASM_READ_MEMARG;
 						auto memory = script.getMemoryByIndex(memidx);
 						SOUP_RETHROW_FALSE(memory);
 						auto ptr = memory->getView(base + offset, 16);
 						SOUP_RETHROW_FALSE(ptr);
-						memcpy(ptr, value.i8x16, 16);
+						memcpy(ptr, value, 16);
 					}
 					break;
 
