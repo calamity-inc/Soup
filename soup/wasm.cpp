@@ -16,6 +16,9 @@
 #include "unicode.hpp"
 #endif
 
+#define WASM_CALL_REUSES_STACK true
+static_assert(WASM_CALL_REUSES_STACK || !SOUP_WASM_EXCEPTIONS);
+
 #define DEBUG_LOAD false
 #define DEBUG_LINK false
 #define DEBUG_VM false
@@ -8394,16 +8397,21 @@ NAMESPACE_SOUP
 		//std::cout << "call: enter " << function_index << "\n";
 		//std::cout << string::bin2hex(script->code[code_index]) << "\n";
 #endif
+#if WASM_CALL_REUSES_STACK
 		const auto pre_call_stack_size = stack.size();
 		callvm.stack = std::move(stack);
+#endif
 		const auto result = callvm.run(script->code[code_index], depth, function_index);
+#if WASM_CALL_REUSES_STACK
 		stack = std::move(callvm.stack);
+#endif
 #if SOUP_WASM_EXCEPTIONS
 		current_throw_tag = callvm.current_throw_tag;
 #endif
 #if DEBUG_VM
 		//std::cout << "call: leave " << function_index << "\n";
 #endif
+#if WASM_CALL_REUSES_STACK
 		SOUP_IF_LIKELY (result == WasmVm::CODE_RETURN)
 		{
 			if (const auto result_stack_size = pre_call_stack_size + type.results.size(); stack.size() > result_stack_size)
@@ -8411,6 +8419,16 @@ NAMESPACE_SOUP
 				stack.erase(stack.begin() + pre_call_stack_size, stack.end() - type.results.size());
 			}
 		}
+#else
+		SOUP_IF_UNLIKELY (callvm.stack.size() < type.results.size())
+		{
+#if DEBUG_VM
+			std::cout << "call: not enough values on the stack after return\n";
+#endif
+			return CODE_ERROR;
+		}
+		this->stack.insert(this->stack.end(), callvm.stack.end() - type.results.size(), callvm.stack.end());
+#endif
 		return result;
 	}
 
