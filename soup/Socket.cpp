@@ -1003,7 +1003,7 @@ NAMESPACE_SOUP
 
 				handshaker->client_random = std::move(hello.challenge);
 
-				s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, {});
+				s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, {}, false);
 			}
 		}, std::move(handshaker));
 	}
@@ -1020,6 +1020,7 @@ NAMESPACE_SOUP
 
 			const CertStoreEntry* rsa_data;
 			std::string alpn_selection;
+			bool client_supports_secure_renegotiation = false;
 
 			{
 				TlsClientHello hello;
@@ -1079,6 +1080,10 @@ NAMESPACE_SOUP
 					{
 						handshaker->extended_master_secret = true;
 					}
+					else if (ext.id == TlsExtensionType::renegotiation_info)
+					{
+						client_supports_secure_renegotiation = true;
+					}
 				}
 
 				if (tls_isEcdheCiphersuite(handshaker->cipher_suite) && handshaker->ecdhe_curve == 0)
@@ -1096,11 +1101,11 @@ NAMESPACE_SOUP
 				handshaker->client_random = hello.random.toBinaryString();
 			}
 
-			s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, std::move(alpn_selection));
+			s.enableCryptoServerAfterClientHello(std::move(handshaker), rsa_data, std::move(alpn_selection), client_supports_secure_renegotiation);
 		});
 	}
 
-	void Socket::enableCryptoServerAfterClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker, const CertStoreEntry* rsa_data, std::string&& alpn_selection)
+	void Socket::enableCryptoServerAfterClientHello(UniquePtr<SocketTlsHandshaker>&& handshaker, const CertStoreEntry* rsa_data, std::string&& alpn_selection, bool client_supports_secure_renegotiation)
 	{
 		{
 			TlsServerHello shello{};
@@ -1120,6 +1125,13 @@ NAMESPACE_SOUP
 				TlsExtAlpn ext_alpn;
 				ext_alpn.protocol_names.emplace_back(std::move(alpn_selection));
 				shello.extensions.add(TlsExtensionType::application_layer_protocol_negotiation, ext_alpn);
+			}
+
+			if (client_supports_secure_renegotiation)
+			{
+				// OpenSSL might feel left out and drop the connection if we don't play along with this little signalling game.
+				// Of course, Soup doesn't support renegotiation, so all abuse of this mechanism is precluded. :')
+				shello.extensions.add(TlsExtensionType::renegotiation_info, std::string(1, '\0'));
 			}
 
 			if (!tls_sendHandshake(handshaker, TlsHandshake::server_hello, shello.toBinaryString()))
