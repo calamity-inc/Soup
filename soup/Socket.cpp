@@ -1759,6 +1759,13 @@ NAMESPACE_SOUP
 	{
 		transport_recvExact(5, [](Socket& s, std::string&& data, Capture&& cap) SOUP_EXCAL
 		{
+			SOUP_IF_UNLIKELY (data.empty())
+			{
+				SOUP_ASSUME(remote_closed && callback_recv_on_close);
+				cap.get<CaptureSocketTlsRecvRecord1>().callback(s, TlsContentType::application_data, {}, std::move(cap.get<CaptureSocketTlsRecvRecord1>().cap));
+				return;
+			}
+
 			TlsRecord record{};
 			if (!record.fromBinary(data)
 				|| record.version.major != 3
@@ -2034,6 +2041,10 @@ NAMESPACE_SOUP
 			}
 			if (remote_closed)
 			{
+				if (callback_recv_on_close)
+				{
+					callback(*this, {}, std::move(cap));
+				}
 				return;
 			}
 		}
