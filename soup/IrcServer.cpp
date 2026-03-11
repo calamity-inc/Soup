@@ -286,7 +286,9 @@ NAMESPACE_SOUP
 					{
 						std::string msg(1, ':');
 						msg.append(cd.nick);
-						msg.push_back(' ');
+						msg.push_back('!');
+						msg.append(cd.name);
+						msg.append("@Soup ");
 						msg.append(line);
 						msg.append("\r\n");
 						ircChannelMsg(serv, channel_name, msg, &s);
@@ -295,7 +297,9 @@ NAMESPACE_SOUP
 					{
 						std::string msg(1, ':');
 						msg.append(cd.nick);
-						msg.push_back(' ');
+						msg.push_back('!');
+						msg.append(cd.name);
+						msg.append("@Soup ");
 						msg.append(line);
 						msg.append("\r\n");
 						client.socket->send(msg);
