@@ -342,7 +342,17 @@ NAMESPACE_SOUP
 	{
 		s.udpRecv([](Socket& s, SocketAddr&& sender, std::string&& data, Capture&& cap)
 		{
-			cap.get<udp_callback_t>()(s, std::move(sender), std::move(data));
+			SOUP_TRY
+			{
+				cap.get<udp_callback_t>()(s, std::move(sender), std::move(data));
+			}
+			SOUP_CATCH (std::exception, e)
+			{
+				if (Scheduler::get()->on_exception)
+				{
+					Scheduler::get()->on_exception(s, e, *Scheduler::get());
+				}
+			}
 			setDataAvailableHandlerUdp(s, cap.get<udp_callback_t>());
 		}, callback);
 	}
@@ -351,7 +361,17 @@ NAMESPACE_SOUP
 	{
 		s.udpRecv([](Socket& s, SocketAddr&& sender, std::string&& data, Capture&& cap)
 		{
-			cap.get<ServerServiceUdp*>()->callback(s, std::move(sender), std::move(data), *cap.get<ServerServiceUdp*>());
+			SOUP_TRY
+			{
+				cap.get<ServerServiceUdp*>()->callback(s, std::move(sender), std::move(data), *cap.get<ServerServiceUdp*>());
+			}
+			SOUP_CATCH (std::exception, e)
+			{
+				if (Scheduler::get()->on_exception)
+				{
+					Scheduler::get()->on_exception(s, e, *Scheduler::get());
+				}
+			}
 			setDataAvailableHandlerUdp(s, cap.get<ServerServiceUdp*>());
 		}, service);
 	}
