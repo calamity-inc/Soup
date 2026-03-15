@@ -53,7 +53,10 @@ NAMESPACE_SOUP
 
 	void ServerWebService::sendContent(Socket& s, HttpResponse&& resp)
 	{
-		sendContent(s, "200 OK", std::move(resp));
+		std::string status = std::to_string(resp.status_code);
+		status.push_back(' ');
+		status.append(resp.status_text);
+		sendContent(s, status.c_str(), std::move(resp));
 	}
 
 	void ServerWebService::sendContent(Socket& s, const char* status, HttpResponse&& resp)
