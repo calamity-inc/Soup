@@ -146,8 +146,8 @@ NAMESPACE_SOUP
 		bool send(const void* data, size_t size) SOUP_EXCAL;
 
 		bool initUdpBroadcast4();
-
-		bool setSourcePort4(uint16_t port);
+		bool setSource(native_u32_t ip_addr, native_u16_t port);
+		bool setSourcePort4(native_u16_t port) { return setSource((native_u32_t)0, port); }
 
 		bool udpClientSend(const SocketAddr& addr, const std::string& data) noexcept { return udpClientSend(addr, data.data(), data.size()); }
 		bool udpClientSend(const SocketAddr& addr, const char* data, size_t size) noexcept;

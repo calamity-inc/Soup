@@ -1408,13 +1408,15 @@ NAMESPACE_SOUP
 			;
 	}
 
-	bool Socket::setSourcePort4(uint16_t port)
+	bool Socket::setSource(native_u32_t ip_addr, native_u16_t port)
 	{
 		sockaddr_in bindto{};
 		bindto.sin_family = AF_INET;
-		bindto.sin_addr.s_addr = INADDR_ANY;
+		bindto.sin_addr.s_addr = Endianness::toNetwork(ip_addr);
 		bindto.sin_port = Endianness::toNetwork(port);
-		return ::bind(fd, (sockaddr*)&bindto, sizeof(bindto)) != -1;
+		return (ip_addr == 0 || setOpt<int>(SOL_SOCKET, SO_REUSEADDR, 1))
+			&& ::bind(fd, (sockaddr*)&bindto, sizeof(bindto)) != -1
+			;
 	}
 
 	bool Socket::udpClientSend(const SocketAddr& addr, const char* data, size_t size) noexcept
