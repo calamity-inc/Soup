@@ -3,6 +3,7 @@
 
 #include "HttpRequest.hpp"
 #include "IpAddr.hpp"
+#include "netStun.hpp"
 
 NAMESPACE_SOUP
 {
@@ -13,7 +14,8 @@ NAMESPACE_SOUP
 
 	IpAddr netInfo::getPublicAddressV4()
 	{
-		return getPublicAddressImpl("whatismyip.akamai.com");
+		//return getPublicAddressImpl("whatismyip.akamai.com");
+		return netStun::queryBinding(SOUP_IPV4_NWE(74, 125, 250, 129), 19302, 700);
 	}
 
 	IpAddr netInfo::getPublicAddressV6()
