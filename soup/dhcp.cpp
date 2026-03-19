@@ -18,7 +18,7 @@ NAMESPACE_SOUP
 		DhcpMessage req;
 		req.type = 1; // Boot Request
 		req.transaction_id = soup::rand.t<uint32_t>(0, -1);
-		req.client_addr = adaptor_ip_addr;
+		req.client_addr = adaptor_ip_addr ? adaptor_ip_addr : (native_u32_t)-1;
 		req.addOption(12, "Soup");
 		req.addOption(53, "\x8"); // DHCP message type; Inform
 		req.addOption(55, "\x06\x0f"); // Parameter request list; Domain name server, Domain name
@@ -26,7 +26,7 @@ NAMESPACE_SOUP
 		Scheduler sched;
 		Socket& sock = *sched.addSocket();
 		if (sock.initUdpBroadcast4()
-			&& sock.setSourcePort4(68)
+			&& sock.setSource(adaptor_ip_addr, 68)
 			&& sock.udpClientSend(SOUP_IPV4_NWE(255, 255, 255, 255), 67, req.toBinaryString())
 			)
 		{

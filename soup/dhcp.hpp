@@ -24,7 +24,7 @@ NAMESPACE_SOUP
 			}
 		};
 
-		[[nodiscard]] static Info requestInfo(native_u32_t adaptor_ip_addr = -1);
+		[[nodiscard]] static Info requestInfo(native_u32_t adaptor_ip_addr = 0);
 
 		static native_u32_t requestAddress(native_u32_t server, native_u32_t netmask, const MacAddr& mac_addr = MacAddr::SOUP_FIRST);
 		static bool requestSpecificAddress(native_u32_t server, native_u32_t addr, const MacAddr& mac_addr = MacAddr::SOUP_FIRST);
