@@ -69,6 +69,27 @@ NAMESPACE_SOUP
 		return ret;
 	}
 
+	void netStun::requestTraffic(const IpAddr& server_addr, uint16_t server_port, uint16_t target_port)
+	{
+		StringWriter sw;
+		uint32_t i = (0x0001 << 16) | 8; // Binding Request, Length 8
+		sw.u32_be(i);
+		i = 0x2112A442;
+		sw.u32_be(i);
+		i = 0;
+		sw.u32_be(i);
+		sw.u32_be(i);
+		sw.u32_be(i);
+
+		i = (0x0027 << 16) | 4; // RESPONSE-PORT attribute, Length 4
+		sw.u32_be(i);
+		sw.u16_be(target_port);
+		sw.skip(2); // padding so we're 4-byte aligned
+
+		Socket s;
+		s.udpClientSend(server_addr, server_port, sw.data);
+	}
+
 	void netStun::addMessageIntegrity(std::string& data, const std::string& key) SOUP_EXCAL
 	{
 		// Compute data to HMAC
