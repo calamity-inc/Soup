@@ -15,6 +15,7 @@ NAMESPACE_SOUP
 		// Asks the server to 'hit us' on UDP/target_port. If you have that port bound and see traffic there, you know it's reachable!
 		// This requires a server supporting RFC5780 (an extension to STUN): https://github.com/muink/rfc5780-stun-server/blob/master/valid_hosts_rfc5780.txt
 		static void requestTraffic(const IpAddr& server_addr, uint16_t server_port, uint16_t target_port);
+		static bool isExternallyReachable(const IpAddr& server_addr, uint16_t server_port, uint16_t target_port, unsigned int timeout_ms = 1000);
 
 		static void addMessageIntegrity(std::string& data, const std::string& key) SOUP_EXCAL;
 		static void addFingerprint(std::string& data) noexcept;

@@ -90,6 +90,22 @@ NAMESPACE_SOUP
 		s.udpClientSend(server_addr, server_port, sw.data);
 	}
 
+	bool netStun::isExternallyReachable(const IpAddr& server_addr, uint16_t server_port, uint16_t target_port, unsigned int timeout_ms)
+	{
+		Scheduler sched;
+		Socket& s = *sched.addSocket();
+		SOUP_RETHROW_FALSE(s.udpBind4(target_port));
+		//s.udpServerSend(SocketAddr(server_addr, (native_u16_t)server_port), "NAT training");
+		netStun::requestTraffic(server_addr, server_port, target_port);
+		bool ret = false;
+		s.recv([](Socket& s, std::string&& data, Capture&& cap)
+		{
+			*cap.get<bool*>() = true;
+		}, &ret);
+		sched.runFor(timeout_ms);
+		return ret;
+	}
+
 	void netStun::addMessageIntegrity(std::string& data, const std::string& key) SOUP_EXCAL
 	{
 		// Compute data to HMAC
