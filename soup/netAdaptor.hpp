@@ -2,7 +2,7 @@
 
 #include "base.hpp"
 
-#if SOUP_WINDOWS
+#if SOUP_WINDOWS || SOUP_LINUX
 
 #include <string>
 #include <vector>
