@@ -1036,7 +1036,14 @@ if (combined[i]) \
 
 				SOUP_IF_LIKELY (sk != KEY_NONE)
 				{
-					nuphy.buffer[sk] = static_cast<uint8_t>(static_cast<float>(value) / 800.0f * 255.0);
+					if (hid.product_id == 0x6120 || hid.product_id == 0xFEE0) // NuPhy Air75/60 HE
+					{
+						nuphy.buffer[sk] = static_cast<uint8_t>(static_cast<float>(value) / 1600.0f * 255.0);
+					}
+					else // Others
+					{
+						nuphy.buffer[sk] = static_cast<uint8_t>(static_cast<float>(value) / 800.0f * 255.0);
+					}
 				}
 			}
 
