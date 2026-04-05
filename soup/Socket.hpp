@@ -150,14 +150,14 @@ NAMESPACE_SOUP
 		bool setSourcePort4(native_u16_t port) { return setSource((native_u32_t)0, port); }
 
 		bool udpClientSend(const SocketAddr& addr, const std::string& data) noexcept { return udpClientSend(addr, data.data(), data.size()); }
-		bool udpClientSend(const SocketAddr& addr, const char* data, size_t size) noexcept;
+		bool udpClientSend(const SocketAddr& addr, const void* data, size_t size) noexcept;
 		bool udpClientSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept { return udpClientSend(ip, port, data.data(), data.size()); }
-		bool udpClientSend(const IpAddr& ip, uint16_t port, const char* data, size_t size) noexcept;
+		bool udpClientSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept;
 
 		bool udpServerSend(const SocketAddr& addr, const std::string& data) noexcept { return udpServerSend(addr, data.data(), data.size()); }
-		bool udpServerSend(const SocketAddr& addr, const char* data, size_t size) noexcept;
+		bool udpServerSend(const SocketAddr& addr, const void* data, size_t size) noexcept;
 		bool udpServerSend(const IpAddr& ip, uint16_t port, const std::string& data) noexcept { return udpServerSend(ip, port, data.data(), data.size()); }
-		bool udpServerSend(const IpAddr& ip, uint16_t port, const char* data, size_t size) noexcept;
+		bool udpServerSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept;
 
 		void recv(void(*callback)(Socket&, std::string&&, Capture&&), Capture&& cap = {}); // noexcept but may rethrow callback's exceptions
 

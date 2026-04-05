@@ -1419,7 +1419,7 @@ NAMESPACE_SOUP
 			;
 	}
 
-	bool Socket::udpClientSend(const SocketAddr& addr, const char* data, size_t size) noexcept
+	bool Socket::udpClientSend(const SocketAddr& addr, const void* data, size_t size) noexcept
 	{
 		peer = addr;
 #if SOUP_WINDOWS
@@ -1431,12 +1431,12 @@ NAMESPACE_SOUP
 			;
 	}
 
-	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const char* data, size_t size) noexcept
+	bool Socket::udpClientSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept
 	{
 		return udpClientSend(SocketAddr(ip, native_u16_t(port)), data, size);
 	}
 
-	bool Socket::udpServerSend(const SocketAddr& addr, const char* data, size_t size) noexcept
+	bool Socket::udpServerSend(const SocketAddr& addr, const void* data, size_t size) noexcept
 	{
 #if !SOUP_MACOS
 		if (addr.ip.isV4())
@@ -1445,7 +1445,7 @@ NAMESPACE_SOUP
 			sa.sin_family = AF_INET;
 			sa.sin_port = addr.port;
 			sa.sin_addr.s_addr = addr.ip.getV4();
-			if (::sendto(fd, data, static_cast<int>(size), 0, (sockaddr*)&sa, sizeof(sa)) != size)
+			if (::sendto(fd, (const char*)data, static_cast<int>(size), 0, (sockaddr*)&sa, sizeof(sa)) != size)
 			{
 				return false;
 			}
@@ -1457,7 +1457,7 @@ NAMESPACE_SOUP
 			sa.sin6_family = AF_INET6;
 			memcpy(&sa.sin6_addr, &addr.ip.data, sizeof(in6_addr));
 			sa.sin6_port = addr.port;
-			if (::sendto(fd, data, static_cast<int>(size), 0, (sockaddr*)&sa, sizeof(sa)) != size)
+			if (::sendto(fd, (const char*)data, static_cast<int>(size), 0, (sockaddr*)&sa, sizeof(sa)) != size)
 			{
 				return false;
 			}
@@ -1465,7 +1465,7 @@ NAMESPACE_SOUP
 		return true;
 	}
 
-	bool Socket::udpServerSend(const IpAddr& ip, uint16_t port, const char* data, size_t size) noexcept
+	bool Socket::udpServerSend(const IpAddr& ip, uint16_t port, const void* data, size_t size) noexcept
 	{
 		return udpServerSend(SocketAddr(ip, native_u16_t(port)), data, size);
 	}
