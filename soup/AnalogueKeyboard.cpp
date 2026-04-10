@@ -34,14 +34,14 @@ NAMESPACE_SOUP
 		// Wooting, https://github.com/WootingKb/wooting-analog-sdk/blob/develop/wooting-analog-plugin/src/lib.rs
 		if (hid.vendor_id == 0x31E3)
 		{
-			if (hid.usage_page == 0xFF54)
+			if (hid.usage_page == 0xFF54 || hid.usage_page == 0xFF53)
 			{
 				return hid.getProductName();
 			}
 		}
 		else if (hid.vendor_id == 0x03EB)
 		{
-			if (hid.usage_page == 0xFF54)
+			if (hid.usage_page == 0xFF54) // Old Firmware only supports v1 interface
 			{
 				if (hid.product_id == 0xFF01)
 				{
@@ -405,6 +405,37 @@ NAMESPACE_SOUP
 		return res;
 	}
 
+	[[nodiscard]] static Key wooting_scancode_to_soup_key(uint16_t scancode) noexcept
+	{
+		Key sk;
+		SOUP_IF_UNLIKELY ((scancode >> 8) != 0)
+		{
+			switch (scancode)
+			{
+			default: sk = KEY_NONE; break;
+				// Usage Page 0x0C
+			case 0x3B5: sk = KEY_NEXT_TRACK; break;
+			case 0x3B6: sk = KEY_PREV_TRACK; break;
+			case 0x3B7: sk = KEY_STOP_MEDIA; break;
+			case 0x3CD: sk = KEY_PLAY_PAUSE; break;
+				// OEM-specific
+			case 0x401: sk = KEY_OEM_5; break; // Brightness Up
+			case 0x402: sk = KEY_OEM_6; break; // Brightness Down
+			case 0x403: sk = KEY_OEM_1; break; // Profile 1
+			case 0x404: sk = KEY_OEM_2; break; // Profile 2
+			case 0x405: sk = KEY_OEM_3; break; // Profile 3
+			case 0x408: sk = KEY_OEM_4; break; // Profile Switch
+			case 0x409: sk = KEY_FN; break;
+			}
+		}
+		else
+		{
+			// Usage Page 0x07
+			sk = hid_scancode_to_soup_key(static_cast<uint8_t>(scancode));
+		}
+		return sk;
+	}
+
 	[[nodiscard]] static Key razer_scancode_to_soup_key(uint8_t scancode) noexcept
 	{
 		switch (scancode)
@@ -536,7 +567,14 @@ NAMESPACE_SOUP
 	{
 		if (hid.vendor_id == 0x31E3 || hid.vendor_id == 0x03EB)
 		{
-			return getActiveKeysWooting();
+			if (hid.usage_page == 0xFF54)
+			{
+				return getActiveKeysWootingV1();
+			}
+			else //if (hid.usage_page == 0xFF53)
+			{
+				return getActiveKeysWootingV2();
+			}
 		}
 		else if (hid.vendor_id == 0x1532)
 		{
@@ -564,7 +602,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeysWooting()
+	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeysWootingV1()
 	{
 		std::vector<ActiveKey> keys{};
 		const Buffer<>& report = hid.receiveReport();
@@ -583,32 +621,7 @@ NAMESPACE_SOUP
 				&& r.u8(value)
 				)
 			{
-				Key sk;
-				SOUP_IF_UNLIKELY ((scancode >> 8) != 0)
-				{
-					switch (scancode)
-					{
-					default: sk = KEY_NONE; break;
-						// Usage Page 0x0C
-					case 0x3B5: sk = KEY_NEXT_TRACK; break;
-					case 0x3B6: sk = KEY_PREV_TRACK; break;
-					case 0x3B7: sk = KEY_STOP_MEDIA; break;
-					case 0x3CD: sk = KEY_PLAY_PAUSE; break;
-						// OEM-specific
-					case 0x401: sk = KEY_OEM_5; break; // Brightness Up
-					case 0x402: sk = KEY_OEM_6; break; // Brightness Down
-					case 0x403: sk = KEY_OEM_1; break; // Profile 1
-					case 0x404: sk = KEY_OEM_2; break; // Profile 2
-					case 0x405: sk = KEY_OEM_3; break; // Profile 3
-					case 0x408: sk = KEY_OEM_4; break; // Profile Switch
-					case 0x409: sk = KEY_FN; break;
-					}
-				}
-				else
-				{
-					// Usage Page 0x07
-					sk = hid_scancode_to_soup_key(static_cast<uint8_t>(scancode));
-				}
+				const Key sk = wooting_scancode_to_soup_key(scancode);
 				SOUP_IF_LIKELY (sk != KEY_NONE)
 				{
 					// some keys seem to be getting reported multiple times on older firmware, so just use last reported value
@@ -625,6 +638,50 @@ NAMESPACE_SOUP
 						static_cast<float>(value) / 255.0f
 					});
 				_no_emplace:;
+				}
+			}
+		}
+		return keys;
+	}
+
+	// https://github.com/WootingKb/wooting-analog-sdk/blob/be67cbf479eb1e10e2859e71dbdcc12fff7ba266/wooting-analog-sdk/src/plugin.rs#L276
+	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeysWootingV2()
+	{
+		std::vector<ActiveKey> keys{};
+		const Buffer<>& report = hid.receiveReport();
+		SOUP_IF_UNLIKELY (report.empty())
+		{
+			disconnected = true;
+		}
+		else
+		{
+			MemoryRefReader r(report);
+			uint8_t matrix_pos, scancode_lo, packed, value_hi;
+			while (r.hasMore()
+				&& r.u8(matrix_pos)
+				&& r.u8(scancode_lo)
+				&& scancode_lo != 0
+				&& r.u8(packed)
+				&& r.u8(value_hi)
+				)
+			{
+				//uint8_t row = (matrix_pos >> 5) & 0x7;
+				//uint8_t column = matrix_pos & 0x1f;
+				//bool actuated = (packed & 1) != 0;
+				//bool _reserved = (packed >> 1) & 1;
+				uint8_t scancode_hi = (packed >> 2) & 0xf;
+				uint8_t value_lo = (packed >> 6) & 0x3;
+
+				uint16_t scancode = (static_cast<uint16_t>(scancode_hi) << 8 | scancode_lo);
+				uint16_t value = (static_cast<uint16_t>(value_hi) << 2 | value_lo);
+
+				const Key sk = wooting_scancode_to_soup_key(scancode);
+				SOUP_IF_LIKELY (sk != KEY_NONE)
+				{
+					keys.emplace_back(ActiveKey{
+						sk,
+						static_cast<float>(value) / 1023.0f
+					});
 				}
 			}
 		}

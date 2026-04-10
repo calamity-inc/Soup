@@ -94,7 +94,8 @@ NAMESPACE_SOUP
 		// This will block unless `isPoll()` or `hid.hasReport()` is true.
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeys();
 	protected:
-		[[nodiscard]] std::vector<ActiveKey> getActiveKeysWooting();
+		[[nodiscard]] std::vector<ActiveKey> getActiveKeysWootingV1();
+		[[nodiscard]] std::vector<ActiveKey> getActiveKeysWootingV2();
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeysRazer();
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeysDrunkdeer();
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeysKeychron();
