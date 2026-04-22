@@ -184,6 +184,7 @@ NAMESPACE_SOUP
 				if (
 					hid.product_id == 0x1055 || hid.product_id == 0x1056 || hid.product_id == 0x105D // Mine says 0x105d but their web driver includes these 3
 					|| hid.product_id == 0x1053 // https://github.com/AnalogSense/universal-analog-plugin/issues/32
+					|| hid.product_id == 0x1054 // https://github.com/AnalogSense/universal-analog-plugin/issues/37
 					)
 				{
 					return "Madlions MAD60HE";
@@ -388,7 +389,7 @@ NAMESPACE_SOUP
 					}
 					else if (kbd.hid.vendor_id == 0x373b) // Madlions
 					{
-						if (hid.product_id == 0x1055 || hid.product_id == 0x1056 || hid.product_id == 0x105D || hid.product_id == 0x1053)
+						if (hid.product_id == 0x1055 || hid.product_id == 0x1056 || hid.product_id == 0x105D || hid.product_id == 0x1053 || hid.product_id == 0x1054)
 						{
 							kbd.madlions.layout_size = sizeof(layout_madlions_mad60he);
 							kbd.madlions.layout = layout_madlions_mad60he;
