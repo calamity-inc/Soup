@@ -11,10 +11,10 @@ struct DummyVfs : soup::VirtualFilesystem
 	{
 		std::cout << "Enumerating ./" << path << "\n";
 		std::vector<FileInfo> files{};
-		if (path.empty() || path.substr(0, 15) == "The Rabbit Hole")
+		/*if (path.empty() || path.substr(0, 15) == "The Rabbit Hole")
 		{
 			files.emplace_back(soup::VirtualFilesystem::FileInfo{ "The Rabbit Hole", 0, true });
-		}
+		}*/
 		if (path.empty())
 		{
 			files.emplace_back(soup::VirtualFilesystem::FileInfo{ "A Folder", 0, true });
