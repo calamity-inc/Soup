@@ -77,7 +77,7 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			str.append(urlenc::encode(path));
+			str.append(urlenc::encodePathWithQuery(path));
 		}
 		return str;
 	}
