@@ -1763,7 +1763,7 @@ NAMESPACE_SOUP
 		{
 			SOUP_IF_UNLIKELY (data.empty())
 			{
-				SOUP_ASSUME(remote_closed && callback_recv_on_close);
+				SOUP_ASSUME(s.remote_closed && s.callback_recv_on_close);
 				cap.get<CaptureSocketTlsRecvRecord1>().callback(s, TlsContentType::application_data, {}, std::move(cap.get<CaptureSocketTlsRecvRecord1>().cap));
 				return;
 			}
