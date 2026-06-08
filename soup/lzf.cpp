@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <cstring> // memset
 
+#include "alloc.hpp"
+
 /*
  * Copyright (c) 2000-2010 Marc Alexander Lehmann <schmorp@schmorp.de>
  *
@@ -65,6 +67,21 @@ NAMESPACE_SOUP
 
 	using LZF_STATE = LZF_HSLOT[HSIZE];
 
+	struct LZF_STATE_RAII
+	{
+		LZF_HSLOT* const htab;
+
+		LZF_STATE_RAII() SOUP_EXCAL
+			: htab((LZF_HSLOT*)soup::malloc(sizeof(LZF_HSLOT)* HSIZE))
+		{
+		}
+
+		~LZF_STATE_RAII() noexcept
+		{
+			soup::free(htab);
+		}
+	};
+
 	static constexpr auto MAX_LIT = (1 <<  5);
 	static constexpr auto MAX_OFF = (1 << 13);
 	static constexpr auto MAX_REF = ((1 << 8) + (1 << 3));
@@ -80,7 +97,12 @@ NAMESPACE_SOUP
 
 	unsigned int lzf::compress(const void* const in_data, unsigned int in_len, void* out_data, unsigned int out_len)
 	{
-		LZF_STATE htab;
+#if true
+		LZF_STATE_RAII htab_raii;
+		const auto htab = htab_raii.htab;
+#else
+		LZF_STATE htab; static_assert(!SOUP_WASM); // Very big stack allocation!!!
+#endif
 		const u8* ip = (const u8*)in_data;
 		u8* op = (u8*)out_data;
 		const u8* in_end = ip + in_len;
@@ -105,7 +127,7 @@ NAMESPACE_SOUP
 		if (!in_len || !out_len)
 			return 0;
 
-		memset(htab, 0, sizeof(htab));
+		memset(htab, 0, sizeof(LZF_HSLOT) * HSIZE);
 
 		lit = 0; op++; /* start run */
 
