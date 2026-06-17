@@ -17,7 +17,7 @@ NAMESPACE_SOUP
 	{
 		bool use_tls;
 		netConnectTask connect;
-		SharedPtr<WebSocketConnection> sock; // Output
+		SharedPtr<WebSocketConnection> sock; // Output. May be a default-initialised if connection failed.
 		std::string host;
 		std::string path;
 		time_t upgrading_since = 0;
