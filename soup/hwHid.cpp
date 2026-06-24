@@ -296,11 +296,22 @@ NAMESPACE_SOUP
 			udev_unref(udev);
 		}
 #elif SOUP_MACOS
-		IOHIDManagerRef manager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+		// Keep a single persistent IOHIDManager for the process. IOHIDManagerClose() also closes every
+		// device the manager opened, which would leave our retained device refs non-null but un-open
+		// (later IOHIDDeviceSetReport/read calls then fail with kIOReturnNotOpen). Mirrors hidapi's
+		// shared-manager model: create + open once, never close.
+		static IOHIDManagerRef manager = nullptr;
+		if (!manager)
+		{
+			manager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+			if (manager)
+			{
+				IOHIDManagerSetDeviceMatching(manager, NULL);
+				IOHIDManagerOpen(manager, kIOHIDOptionsTypeNone);
+			}
+		}
 		if (manager)
 		{
-			IOHIDManagerSetDeviceMatching(manager, NULL);
-			IOHIDManagerOpen(manager, kIOHIDOptionsTypeNone);
 			CFSetRef device_set = IOHIDManagerCopyDevices(manager);
 			if (device_set)
 			{
@@ -448,8 +459,7 @@ NAMESPACE_SOUP
 				}
 				CFRelease(device_set);
 			}
-			IOHIDManagerClose(manager, kIOHIDOptionsTypeNone);
-			CFRelease(manager);
+			// Intentionally not closed/released: the manager must outlive the devices it opened.
 		}
 #endif
 		return res;
@@ -766,13 +776,24 @@ NAMESPACE_SOUP
 #elif SOUP_LINUX
 		return write(handle, data, size) == size;
 #elif SOUP_MACOS
-		if (!device)
+		if (!device || size == 0)
 		{
 			return false;
 		}
+		// macOS: IOHIDDeviceSetReport takes the report id as a separate argument. Soup's cross-platform
+		// convention prepends a report-id byte to the buffer; for unnumbered reports (id 0) that byte must
+		// be stripped before sending, or the report runs one byte over its length and the call is rejected.
+		// (Matches hidapi's macOS set_report behaviour.)
 		const uint8_t* bytes = static_cast<const uint8_t*>(data);
-		uint8_t report_id = size > 0 ? bytes[0] : 0;
-		return IOHIDDeviceSetReport((IOHIDDeviceRef)device, kIOHIDReportTypeOutput, report_id, bytes, size) == kIOReturnSuccess;
+		uint8_t report_id = bytes[0];
+		const uint8_t* send_data = bytes;
+		size_t send_size = size;
+		if (report_id == 0)
+		{
+			send_data = bytes + 1;
+			send_size = size - 1;
+		}
+		return IOHIDDeviceSetReport((IOHIDDeviceRef)device, kIOHIDReportTypeOutput, report_id, send_data, send_size) == kIOReturnSuccess;
 #else
 		return false;
 #endif

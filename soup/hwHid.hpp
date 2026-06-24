@@ -188,12 +188,17 @@ NAMESPACE_SOUP
 #if SOUP_MACOS
 			if (device)
 			{
-				if (registered_callback)
-				{
-					IOHIDDeviceUnscheduleFromRunLoop((IOHIDDeviceRef)device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-					registered_callback = false;
-				}
-				IOHIDDeviceClose((IOHIDDeviceRef)device, kIOHIDOptionsTypeNone);
+				// NOTE: deliberately NOT calling IOHIDDeviceUnscheduleFromRunLoop here. reset() can run on a
+				// different thread than the one that scheduled the device (a static destructor during dylib
+				// unload, or device-removal cleanup on the discovery thread). Unschedule uses
+				// CFRunLoopGetCurrent(), which on the wrong/finalizing thread crashes on a freed run-loop mode
+				// (observed as a bus error / NSException at uninitialise). reset() only runs when the device is
+				// going away (disconnect or process exit), so its input callback won't fire again; just drop
+				// our reference. Also do NOT IOHIDDeviceClose(): the persistent IOHIDManager owns each device's
+				// open state, and getAll() hands out fresh hwHid wrappers around the SAME IOHIDDeviceRef on
+				// every rediscovery, so closing a discarded duplicate would shut the device out from under an
+				// active poll thread.
+				registered_callback = false;
 				CFRelease((IOHIDDeviceRef)device);
 				device = nullptr;
 			}
