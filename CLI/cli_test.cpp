@@ -1533,6 +1533,37 @@ static void unit_io()
 		sr = string::hex2bin("FFFFFEFEFEFEFEFEFE");
 		assert(!sr.i64_dyn_b(x));
 	});
+	test("i64_dyn_p", []
+	{
+		struct { int64_t v; const char* d; size_t s; } pairs[] = {
+			{ 0, "\x00", 1 },
+			{ 0x7f, "\xBF\x02", 2 },
+			{ 0x80, "\x80\x04", 2 },
+			{ 1337, "\xB9\x28", 2 },
+			{ 42069, "\xD5\x44\x0A", 3 },
+			{ -1, "\x40", 1 },
+			{ INT64_MIN, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 9 },
+		};
+		for (auto& pair : pairs)
+		{
+			StringWriter sw;
+			sw.i64_dyn_p(pair.v);
+			assert(sw.data.size() == pair.s);
+			assert(memcmp(sw.data.data(), pair.d, pair.s) == 0);
+			MemoryRefReader sr(sw.data);
+			int64_t readback = 0;
+			assert(sr.i64_dyn_p(readback));
+			assert(readback == pair.v);
+		}
+		// Unfinished data
+		int64_t x;
+		StringReader sr;
+		assert(!sr.i64_dyn_p(x));
+		sr = string::hex2bin("80");
+		assert(!sr.i64_dyn_p(x));
+		sr = string::hex2bin("FF00000000000000");
+		assert(!sr.i64_dyn_p(x));
+	});
 	test("i64_dyn_bp", []
 	{
 		struct { int64_t v; const char* d; size_t s; } pairs[] = {
