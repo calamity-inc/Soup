@@ -276,7 +276,7 @@ NAMESPACE_SOUP
 					size_t cmdlen = (line.substr(0, 7) == "PRIVMSG" ? 7 : 6);
 					size_t channel_name_begin = (cmdlen + 1);
 					size_t channel_name_end = line.find(" :", channel_name_begin);
-					SOUP_IF_UNLIKELY(channel_name_end == std::string::npos)
+					SOUP_IF_UNLIKELY (channel_name_end == std::string::npos)
 					{
 						return;
 					}
@@ -295,14 +295,21 @@ NAMESPACE_SOUP
 					}
 					else if (auto client = serv->getClient(channel_name); client.isValid())
 					{
-						std::string msg(1, ':');
-						msg.append(cd.nick);
-						msg.push_back('!');
-						msg.append(cd.name);
-						msg.append("@Soup ");
-						msg.append(line);
-						msg.append("\r\n");
-						client.socket->send(msg);
+						SOUP_IF_UNLIKELY (cd.nick.empty())
+						{
+							s.send(":Soup 451 Soup :Please select a unique nickname first.\r\n");
+						}
+						else
+						{
+							std::string msg(1, ':');
+							msg.append(cd.nick);
+							msg.push_back('!');
+							msg.append(cd.name);
+							msg.append("@Soup ");
+							msg.append(line);
+							msg.append("\r\n");
+							client.socket->send(msg);
+						}
 					}
 					else
 					{
