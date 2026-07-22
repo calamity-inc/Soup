@@ -54,13 +54,18 @@ NAMESPACE_SOUP
 			}
 		}
 
-		static void internal_register(uint32_t name_joaat_hash, std::atomic<T>* pValue) noexcept
+		static std::unordered_map<uint32_t, std::atomic<T>*>& internal_get_map()
 		{
 			if (!s_tunables_map.has_value())
 			{
 				s_tunables_map.emplace();
 			}
-			s_tunables_map->emplace(name_joaat_hash, pValue);
+			return *s_tunables_map;
+		}
+
+		static void internal_register(uint32_t name_joaat_hash, std::atomic<T>* pValue) noexcept
+		{
+			internal_get_map().emplace(name_joaat_hash, pValue);
 		}
 	};
 	

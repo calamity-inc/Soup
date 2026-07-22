@@ -1704,6 +1704,9 @@
     <ClInclude Include="cadArchiveInterface.hpp">
       <Filter>data\content-addressed</Filter>
     </ClInclude>
+    <ClInclude Include="hotfix.hpp">
+      <Filter>util\config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2539,6 +2542,9 @@
     </ClCompile>
     <ClCompile Include="RegexGroupConstraint.cpp">
       <Filter>data\regex\constraints</Filter>
+    </ClCompile>
+    <ClCompile Include="hotfix.cpp">
+      <Filter>util\config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

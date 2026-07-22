@@ -971,6 +971,7 @@
     <ClInclude Include="HidReportDescriptor.hpp" />
     <ClInclude Include="HidScancode.hpp" />
     <ClInclude Include="HidUsage.hpp" />
+    <ClInclude Include="hotfix.hpp" />
     <ClInclude Include="IrcServer.hpp" />
     <ClInclude Include="loc.hpp" />
     <ClInclude Include="lzf.hpp" />
@@ -1512,6 +1513,7 @@
     <ClCompile Include="HammingCode.cpp" />
     <ClCompile Include="HardwareRng.cpp" />
     <ClCompile Include="HidReportDescriptor.cpp" />
+    <ClCompile Include="hotfix.cpp" />
     <ClCompile Include="IrcServer.cpp" />
     <ClCompile Include="loc.cpp" />
     <ClCompile Include="lzf.cpp" />
