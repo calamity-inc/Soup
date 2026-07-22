@@ -6,7 +6,7 @@ jobs:
   ubuntu-24-04:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build Soup
         run: php build_lib.php
@@ -21,7 +21,7 @@ jobs:
   ubuntu-22-04:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build Soup
         run: php build_lib.php
@@ -36,7 +36,7 @@ jobs:
   debian-10:
     runs-on: [debian-10]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build Soup
         run: php build_lib.php
@@ -55,7 +55,7 @@ jobs:
           fail: true
 
       - name: Upload soup
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "Debian 10 and above (X64)"
           path: |
@@ -66,7 +66,7 @@ jobs:
   arm64:
     runs-on: [ARM64]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build Soup
         run: php build_lib.php
@@ -85,7 +85,7 @@ jobs:
           fail: true
 
       - name: Upload soup
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "Debian 12 and above (ARM64)"
           path: |
@@ -96,7 +96,7 @@ jobs:
   macos-15-intel:
     runs-on: macos-15-intel
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build Soup
         run: php build_lib.php
@@ -115,7 +115,7 @@ jobs:
           fail: true
 
       - name: Upload soup
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "MacOS (X64)"
           path: |
@@ -126,7 +126,7 @@ jobs:
   macos-14:
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
 
@@ -147,7 +147,7 @@ jobs:
           fail: true
 
       - name: Upload soup
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "MacOS (ARM64)"
           path: |
@@ -158,7 +158,7 @@ jobs:
   windows-latest:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Ensure LLVM is up-to-date
         run: choco upgrade llvm
@@ -180,7 +180,7 @@ jobs:
           fail: true
 
       - name: Upload soup
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "Windows (X64)"
           path: |
@@ -191,9 +191,9 @@ jobs:
   emscripten:
     runs-on: ubuntu-latest
     steps:
-      - uses: mymindstorm/setup-emsdk@v13
+      - uses: emscripten-core/setup-emsdk@v16
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build Soup
         run: php wasm.php
@@ -205,7 +205,7 @@ jobs:
           fail: true
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "WASM - JS Bindings (Emscripten)"
           path: |
@@ -215,7 +215,7 @@ jobs:
   wasi:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Clang 20
         run: |
@@ -251,7 +251,7 @@ jobs:
           fail: true
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "WASM - CLI (wasi-sdk)"
           path: |
