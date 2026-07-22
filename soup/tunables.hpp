@@ -7,7 +7,7 @@
 #include "joaat.hpp"
 
 // Example usage:
-// static SOUP_TUNABLE(uint32_t, MY_TUNABLE) = 69;
+// {static|inline} SOUP_TUNABLE(uint32_t, MY_TUNABLE) = 69;
 // soup::tunables<uint32_t>::set("MY_TUNABLE", 420);
 
 #define SOUP_TUNABLE(T, name) ::soup::Tunable<T, ::soup::joaat::compileTimeHash(#name)> name
