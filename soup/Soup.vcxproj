@@ -900,8 +900,11 @@
     <ClInclude Include="BufferWriter.hpp" />
     <ClInclude Include="buttons.hpp" />
     <ClInclude Include="ByteTraits.hpp" />
+    <ClInclude Include="cadArchiveInterface.hpp" />
+    <ClInclude Include="cadInterface.hpp" />
     <ClInclude Include="CallsiteHook.hpp" />
     <ClInclude Include="CApiUtil.hpp" />
+    <ClInclude Include="cadArchive.hpp" />
     <ClInclude Include="cat.hpp" />
     <ClInclude Include="catTreeReader.hpp" />
     <ClInclude Include="catTreeWriter.hpp" />

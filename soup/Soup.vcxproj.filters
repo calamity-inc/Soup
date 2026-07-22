@@ -1695,6 +1695,15 @@
     <ClInclude Include="netSocketSecurity.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="cadArchive.hpp">
+      <Filter>data\content-addressed</Filter>
+    </ClInclude>
+    <ClInclude Include="cadInterface.hpp">
+      <Filter>data\content-addressed</Filter>
+    </ClInclude>
+    <ClInclude Include="cadArchiveInterface.hpp">
+      <Filter>data\content-addressed</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2796,6 +2805,9 @@
     </Filter>
     <Filter Include="util\config">
       <UniqueIdentifier>{7c9623e7-7b68-4531-b297-c4c8f60a8a63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data\content-addressed">
+      <UniqueIdentifier>{7f56cda1-a0a3-44f1-a2b7-b769043fa802}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
