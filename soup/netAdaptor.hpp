@@ -19,12 +19,10 @@ NAMESPACE_SOUP
 		native_u32_t ip_addr;
 		native_u32_t netmask;
 
-		[[nodiscard]] constexpr bool hasNetwork() const noexcept
-		{
-			return ip_addr != 0;
-		}
-
 		[[nodiscard]] static std::vector<netAdaptor> getAll();
+
+		[[nodiscard]] constexpr bool hasNetwork() const noexcept { return ip_addr != 0; }
+		[[nodiscard]] bool isVirtual() const noexcept;
 	};
 }
 

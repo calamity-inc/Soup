@@ -87,6 +87,15 @@ NAMESPACE_SOUP
 	#endif
 		return res;
 	}
+
+	bool netAdaptor::isVirtual() const noexcept
+	{
+#if SOUP_WINDOWS
+		return name.find("Virtual") != std::string::npos;
+#else
+		return name == "lo";
+#endif
+	}
 }
 
 #endif
