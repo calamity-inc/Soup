@@ -2540,21 +2540,23 @@ static uintptr_t ffi_integral_args_func(uintptr_t a, uintptr_t b, uintptr_t c, u
 	uintptr_t x = e + f;
 	uintptr_t y = g + h;
 	uintptr_t z = i + j;
-	return (v << 32) | (w << 24) | (x << 16) | (y << 8) | z;
+	return (v << 24) | (w << 18) | (x << 12) | (y << 6) | z;
 }
 
-static double ffi_float_args_func(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j)
+using native_float_t = ffi::native_float_t;
+
+static native_float_t ffi_float_args_func(native_float_t a, native_float_t b, native_float_t c, native_float_t d, native_float_t e, native_float_t f, native_float_t g, native_float_t h, native_float_t i, native_float_t j)
 {
-	double y = a + b + c + d + e;
-	double z = f + g + h + i + j;
+	native_float_t y = a + b + c + d + e;
+	native_float_t z = f + g + h + i + j;
 	return y * z;
 }
 
-static double ffi_mixed_args_func(uintptr_t a, double b, uintptr_t c, double d, uintptr_t e, double f, uintptr_t g, double h, uintptr_t i, double j)
+static double ffi_mixed_args_func(uintptr_t a, native_float_t b, uintptr_t c, native_float_t d, uintptr_t e, native_float_t f, uintptr_t g, native_float_t h, uintptr_t i, native_float_t j)
 {
 	uintptr_t y = a + c + e + g + i;
-	double z = b + d + f + h + j;
-	return static_cast<double>(y) * z;
+	native_float_t z = b + d + f + h + j;
+	return static_cast<native_float_t>(y) * z;
 }
 
 #if SOUP_FFI_CALLBACK_AVAILABLE
@@ -2586,7 +2588,7 @@ static void unit_ffi()
 		const ffi::ValueType types[11] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
 		const uintptr_t args[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_integral_args_func), types, args, 10);
-		assert(ret == (((uintptr_t)(0 + 1) << 32) | ((2 + 3) << 24) | ((4 + 5) << 16) | ((6 + 7) << 8) | (8 + 9)));
+		assert(ret == (((0 + 1) << 24) | ((2 + 3) << 18) | ((4 + 5) << 12) | ((6 + 7) << 6) | (8 + 9)));
 	});
 	test("float args", []
 	{
@@ -2597,7 +2599,7 @@ static void unit_ffi()
 		};
 		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_float_args_func), types, args, 10);
 		const auto fret = ffi::reinterpret_int_to_float(ret);
-		assert(fret == 1.5 * (0.25 + 0.45 + 3.0 + (-1.5) + 0.75));
+		assert(fret == static_cast<native_float_t>(1.5 * (0.25 + 0.45 + 3.0 + (-1.5) + 0.75)));
 	});
 	test("mixed args", []
 	{
@@ -2614,7 +2616,7 @@ static void unit_ffi()
 		};
 		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_mixed_args_func), types, args, 10);
 		const auto fret = ffi::reinterpret_int_to_float(ret);
-		assert(fret == 15.0 * (0.11 + 0.22 + 0.33 + 0.44 + 0.55));
+		assert(fret == (static_cast<native_float_t>(15.0) * (static_cast<native_float_t>(0.11) + static_cast<native_float_t>(0.22) + static_cast<native_float_t>(0.33) + static_cast<native_float_t>(0.44) + static_cast<native_float_t>(0.55))));
 	});
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	test("callback", []

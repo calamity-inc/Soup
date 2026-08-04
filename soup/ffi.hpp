@@ -30,14 +30,20 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
 
-		[[nodiscard]] static uintptr_t reinterpret_float_to_int(double value)
+#if SOUP_BITS == 32
+		using native_float_t = float;
+#else
+		using native_float_t = double;
+#endif
+
+		[[nodiscard]] static uintptr_t reinterpret_float_to_int(native_float_t value)
 		{
 			return *reinterpret_cast<uintptr_t*>(&value);
 		}
 
-		[[nodiscard]] static double reinterpret_int_to_float(uintptr_t value)
+		[[nodiscard]] static native_float_t reinterpret_int_to_float(uintptr_t value)
 		{
-			return *reinterpret_cast<double*>(&value);
+			return *reinterpret_cast<native_float_t*>(&value);
 		}
 
 		// types[nargs] is used for the return type.
