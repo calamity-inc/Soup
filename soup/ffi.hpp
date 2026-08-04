@@ -7,7 +7,7 @@
 
 NAMESPACE_SOUP
 {
-	// Raised if nargs > ffi::MAX_ARGS
+	// Raised by ffi::call if nargs > ffi::MAX_CALL_ARGS
 	struct BadCall : public Exception
 	{
 		BadCall()
@@ -18,11 +18,13 @@ NAMESPACE_SOUP
 
 	struct ffi
 	{
-		constexpr static auto MAX_ARGS = 20;
+		constexpr static auto MAX_CALL_ARGS = 20;
+		constexpr static auto /*deprecated*/ MAX_ARGS = MAX_CALL_ARGS;
+		constexpr static auto MAX_CALLBACK_ARGS = 20;
 
 		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
 
-		static uintptr_t call(void* func, const uintptr_t* args, size_t nargs);
+		static uintptr_t call(void* func, const uintptr_t args[/*nargs*/], size_t nargs);
 
 		static uintptr_t call(void* func, const std::vector<uintptr_t>& args)
 		{
@@ -38,7 +40,7 @@ NAMESPACE_SOUP
 #if SOUP_FFI_CALLBACK_AVAILABLE
 		// Returns nullptr on allocation failure.
 		// On MacOS, allocation may fail if the 'com.apple.security.cs.allow-jit' entitlement is missing.
-		[[nodiscard]] static void* callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data) noexcept;
+		[[nodiscard]] static void* callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t args[MAX_CALLBACK_ARGS]), uintptr_t user_data) noexcept;
 		static void callbackFree(void* cb) noexcept;
 #endif
 	};

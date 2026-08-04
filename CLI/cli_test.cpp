@@ -2535,9 +2535,9 @@ static void test_SocketAddr_fromString()
 
 #if SOUP_FFI_CALLBACK_AVAILABLE
 static uintptr_t cb_user_data;
-static uintptr_t cb_args[20];
+static uintptr_t cb_args[ffi::MAX_CALLBACK_ARGS];
 
-static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t* args)
+static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t args[ffi::MAX_CALLBACK_ARGS])
 {
 	/*for (int i = 0; i != 20; ++i)
 	{
