@@ -3,7 +3,7 @@ $max_args = 20;
 
 function call_case(int $args): string
 {
-	$str = "case ".$args.": return reinterpret_cast<uintptr_t(*)(";
+	$str = "\t\tcase ".$args.": return reinterpret_cast<uintptr_t(*)(";
 	for ($i = 0; $i != $args; ++$i)
 	{
 		if($i != 0)
@@ -21,15 +21,14 @@ function call_case(int $args): string
 		}
 		$str .= "args[".$i."]";
 	}
-	$str .= ");";
+	$str .= ");\n";
 	return $str;
 }
 
-$fh = fopen("ffi.cpp", "w");
-fwrite($fh, "switch (nargs)\n");
-fwrite($fh, "{\n");
+echo "\t\tswitch (nargs)\n";
+echo "\t\t{\n";
 for ($i = 0; $i != $max_args + 1; ++$i)
 {
-	fwrite($fh, call_case($i)."\n");
+	echo call_case($i);
 }
-fwrite($fh, "}\n");
+echo "\t\t}\n";

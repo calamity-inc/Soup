@@ -4,3 +4,6 @@
 
 # Pluto files should be shown with Lua syntax highlighting on Github.com.
 *.pluto linguist-language=Lua
+
+# Suppress diffs of auto-generated files.
+soup/ffi_call_*.cpp linguist-generated
