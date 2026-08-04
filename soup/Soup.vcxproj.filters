@@ -2546,6 +2546,9 @@
     <ClCompile Include="hotfix.cpp">
       <Filter>util\config</Filter>
     </ClCompile>
+    <ClCompile Include="ffi_call_win_x64.cpp">
+      <Filter>os</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">

@@ -2533,13 +2533,39 @@ static void test_SocketAddr_fromString()
 	}
 }
 
+static uintptr_t ffi_integral_args_func(uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j)
+{
+	uintptr_t v = a + b;
+	uintptr_t w = c + d;
+	uintptr_t x = e + f;
+	uintptr_t y = g + h;
+	uintptr_t z = i + j;
+	return (v << 24) | (w << 18) | (x << 12) | (y << 6) | z;
+}
+
+using native_float_t = ffi::native_float_t;
+
+static native_float_t ffi_float_args_func(native_float_t a, native_float_t b, native_float_t c, native_float_t d, native_float_t e, native_float_t f, native_float_t g, native_float_t h, native_float_t i, native_float_t j)
+{
+	native_float_t y = a + b + c + d + e;
+	native_float_t z = f + g + h + i + j;
+	return y * z;
+}
+
+static double ffi_mixed_args_func(uintptr_t a, native_float_t b, uintptr_t c, native_float_t d, uintptr_t e, native_float_t f, uintptr_t g, native_float_t h, uintptr_t i, native_float_t j)
+{
+	uintptr_t y = a + c + e + g + i;
+	native_float_t z = b + d + f + h + j;
+	return static_cast<native_float_t>(y) * z;
+}
+
 #if SOUP_FFI_CALLBACK_AVAILABLE
 static uintptr_t cb_user_data;
 static uintptr_t cb_args[ffi::MAX_CALLBACK_ARGS];
 
-static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t args[ffi::MAX_CALLBACK_ARGS])
+static uintptr_t ffi_callback_func(uintptr_t user_data, const uintptr_t args[ffi::MAX_CALLBACK_ARGS])
 {
-	/*for (int i = 0; i != 20; ++i)
+	/*for (int i = 0; i != ffi::MAX_CALLBACK_ARGS; ++i)
 	{
 		std::cout << i << ": " << std::hex << args[i] << std::dec << std::endl;
 	}*/
@@ -2553,47 +2579,87 @@ static uintptr_t ffi_test_callback(uintptr_t user_data, const uintptr_t args[ffi
 	memcpy(cb_args, args, sizeof(cb_args));
 	return 0xDEADBEAF;
 }
-
-static void test_ffi()
-{
-	if (auto func = ffi::callbackAlloc(ffi_test_callback, 0xCAFEBABE))
-	{
-		assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(0x00000000, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555, 0x66666666, 0x77777777, 0x88888888, 0x99999999, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC, 0xDDDDDDDD, 0xEEEEEEEE, 0xFFFFFFFF, 0x11000000, 0x00220000, 0x00003300, 0x00000044));
-		assert(cb_user_data == 0xCAFEBABE);
-		assert(cb_args[0] == 0x00000000);
-		assert(cb_args[1] == 0x11111111);
-		assert(cb_args[2] == 0x22222222);
-		assert(cb_args[3] == 0x33333333);
-		assert(cb_args[4] == 0x44444444);
-		assert(cb_args[5] == 0x55555555);
-		assert(cb_args[6] == 0x66666666);
-		assert(cb_args[7] == 0x77777777);
-		assert(cb_args[8] == 0x88888888);
-		assert(cb_args[9] == 0x99999999);
-		assert(cb_args[10] == 0xAAAAAAAA);
-		assert(cb_args[11] == 0xBBBBBBBB);
-		assert(cb_args[12] == 0xCCCCCCCC);
-		assert(cb_args[13] == 0xDDDDDDDD);
-		assert(cb_args[14] == 0xEEEEEEEE);
-		assert(cb_args[15] == 0xFFFFFFFF);
-		assert(cb_args[16] == 0x11000000);
-		assert(cb_args[17] == 0x00220000);
-		assert(cb_args[18] == 0x00003300);
-		assert(cb_args[19] == 0x00000044);
-
-		int caught_val = 0;
-		try
-		{
-			reinterpret_cast<uintptr_t(*)(uintptr_t)>(func)(0xFFFFFFFF);
-		}
-		catch (int& val)
-		{
-			caught_val = val;
-		}
-		assert(caught_val == 69);
-	}
-}
 #endif
+
+static void unit_ffi()
+{
+	test("integral args", []
+	{
+		const ffi::ValueType types[11] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
+		const uintptr_t args[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_integral_args_func), types, args, 10);
+		assert(ret == (((0 + 1) << 24) | ((2 + 3) << 18) | ((4 + 5) << 12) | ((6 + 7) << 6) | (8 + 9)));
+	});
+	test("float args", []
+	{
+		const ffi::ValueType types[11] = { ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT };
+		const uintptr_t args[10] = {
+			ffi::reinterpret_float_to_int(0.1), ffi::reinterpret_float_to_int(0.2), ffi::reinterpret_float_to_int(0.3), ffi::reinterpret_float_to_int(0.4), ffi::reinterpret_float_to_int(0.5), // sum = 1.5
+			ffi::reinterpret_float_to_int(0.25), ffi::reinterpret_float_to_int(0.45), ffi::reinterpret_float_to_int(3.0), ffi::reinterpret_float_to_int(-1.5), ffi::reinterpret_float_to_int(0.75), // sum = 2.95
+		};
+		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_float_args_func), types, args, 10);
+		const auto fret = ffi::reinterpret_int_to_float(ret);
+		assert(fret == static_cast<native_float_t>(1.5 * (0.25 + 0.45 + 3.0 + (-1.5) + 0.75)));
+	});
+	test("mixed args", []
+	{
+		const ffi::ValueType types[11] = {
+			ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT,
+			ffi::VT_FLOAT
+		};
+		const uintptr_t args[10] = {
+			1, ffi::reinterpret_float_to_int(0.11),
+			2, ffi::reinterpret_float_to_int(0.22),
+			3, ffi::reinterpret_float_to_int(0.33),
+			4, ffi::reinterpret_float_to_int(0.44),
+			5, ffi::reinterpret_float_to_int(0.55)
+		};
+		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_mixed_args_func), types, args, 10);
+		const auto fret = ffi::reinterpret_int_to_float(ret);
+		assert(fret == (static_cast<native_float_t>(15.0) * (static_cast<native_float_t>(0.11) + static_cast<native_float_t>(0.22) + static_cast<native_float_t>(0.33) + static_cast<native_float_t>(0.44) + static_cast<native_float_t>(0.55))));
+	});
+#if SOUP_FFI_CALLBACK_AVAILABLE
+	test("callback", []
+	{
+		if (auto func = ffi::callbackAlloc(&ffi_callback_func, 0xCAFEBABE))
+		{
+			assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(0x00000000, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555, 0x66666666, 0x77777777, 0x88888888, 0x99999999, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC, 0xDDDDDDDD, 0xEEEEEEEE, 0xFFFFFFFF, 0x11000000, 0x00220000, 0x00003300, 0x00000044));
+			assert(cb_user_data == 0xCAFEBABE);
+			assert(cb_args[0] == 0x00000000);
+			assert(cb_args[1] == 0x11111111);
+			assert(cb_args[2] == 0x22222222);
+			assert(cb_args[3] == 0x33333333);
+			assert(cb_args[4] == 0x44444444);
+			assert(cb_args[5] == 0x55555555);
+			assert(cb_args[6] == 0x66666666);
+			assert(cb_args[7] == 0x77777777);
+			assert(cb_args[8] == 0x88888888);
+			assert(cb_args[9] == 0x99999999);
+			assert(cb_args[10] == 0xAAAAAAAA);
+			assert(cb_args[11] == 0xBBBBBBBB);
+			assert(cb_args[12] == 0xCCCCCCCC);
+			assert(cb_args[13] == 0xDDDDDDDD);
+			assert(cb_args[14] == 0xEEEEEEEE);
+			assert(cb_args[15] == 0xFFFFFFFF);
+			assert(cb_args[16] == 0x11000000);
+			assert(cb_args[17] == 0x00220000);
+			assert(cb_args[18] == 0x00003300);
+			assert(cb_args[19] == 0x00000044);
+
+			int caught_val = 0;
+			try
+			{
+				reinterpret_cast<uintptr_t(*)(uintptr_t)>(func)(0xFFFFFFFF);
+			}
+			catch (int& val)
+			{
+				caught_val = val;
+			}
+			assert(caught_val == 69);
+		}
+	});
+#endif
+}
 
 static void unit_util_string()
 {
@@ -2779,9 +2845,10 @@ void cli_test()
 		}
 		unit("os")
 		{
-#if SOUP_FFI_CALLBACK_AVAILABLE
-			test("ffi", &test_ffi);
-#endif
+			unit("ffi")
+			{
+				unit_ffi();
+			}
 		}
 		unit("util")
 		{

@@ -1475,6 +1475,7 @@
     <ClCompile Include="DetourHookBase.cpp" />
     <ClCompile Include="DetourHookNoreg.cpp" />
     <ClCompile Include="exceptions.cpp" />
+    <ClCompile Include="ffi_call_win_x64.cpp" />
     <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="gmBox.cpp" />
     <ClCompile Include="gmAxisAlignedBox.cpp" />
