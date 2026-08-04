@@ -2533,20 +2533,28 @@ static void test_SocketAddr_fromString()
 	}
 }
 
-static uintptr_t ffi_integral_args_func(uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h)
+static uintptr_t ffi_integral_args_func(uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j)
 {
-	auto w = a + b;
-	auto x = c + d;
-	auto y = e + f;
-	auto z = g + h;
-	return (w << 24) | (x << 16) | (y << 8) | z;
+	uintptr_t v = a + b;
+	uintptr_t w = c + d;
+	uintptr_t x = e + f;
+	uintptr_t y = g + h;
+	uintptr_t z = i + j;
+	return (v << 32) | (w << 24) | (x << 16) | (y << 8) | z;
 }
 
-static double ffi_float_args_func(double a, double b, double c, double d, double e, double f, double g, double h)
+static double ffi_float_args_func(double a, double b, double c, double d, double e, double f, double g, double h, double i, double j)
 {
-	auto y = a + b + c + d;
-	auto z = e + f + g + h;
+	double y = a + b + c + d + e;
+	double z = f + g + h + i + j;
 	return y * z;
+}
+
+static double ffi_mixed_args_func(uintptr_t a, double b, uintptr_t c, double d, uintptr_t e, double f, uintptr_t g, double h, uintptr_t i, double j)
+{
+	uintptr_t y = a + c + e + g + i;
+	double z = b + d + f + h + j;
+	return static_cast<double>(y) * z;
 }
 
 #if SOUP_FFI_CALLBACK_AVAILABLE
@@ -2575,21 +2583,38 @@ static void unit_ffi()
 {
 	test("integral args", []
 	{
-		const ffi::ValueType types[9] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
-		const uintptr_t args[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_integral_args_func), types, args, 8);
-		assert(ret == (((1 + 2) << 24) | ((3 + 4) << 16) | ((5 + 6) << 8) | (7 + 8)));
+		const ffi::ValueType types[11] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
+		const uintptr_t args[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_integral_args_func), types, args, 10);
+		assert(ret == (((uintptr_t)(0 + 1) << 32) | ((2 + 3) << 24) | ((4 + 5) << 16) | ((6 + 7) << 8) | (8 + 9)));
 	});
 	test("float args", []
 	{
-		const ffi::ValueType types[9] = { ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT };
-		const uintptr_t args[8] = {
-			ffi::reinterpret_float_to_int(0.2), ffi::reinterpret_float_to_int(0.3), ffi::reinterpret_float_to_int(0.4), ffi::reinterpret_float_to_int(0.5), // sum = 1.4
-			ffi::reinterpret_float_to_int(0.1), ffi::reinterpret_float_to_int(0.6), ffi::reinterpret_float_to_int(3.0), ffi::reinterpret_float_to_int(-1.5) // sum = 2.2
+		const ffi::ValueType types[11] = { ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT };
+		const uintptr_t args[10] = {
+			ffi::reinterpret_float_to_int(0.1), ffi::reinterpret_float_to_int(0.2), ffi::reinterpret_float_to_int(0.3), ffi::reinterpret_float_to_int(0.4), ffi::reinterpret_float_to_int(0.5), // sum = 1.5
+			ffi::reinterpret_float_to_int(0.25), ffi::reinterpret_float_to_int(0.45), ffi::reinterpret_float_to_int(3.0), ffi::reinterpret_float_to_int(-1.5), ffi::reinterpret_float_to_int(0.75), // sum = 2.95
 		};
-		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_float_args_func), types, args, 8);
+		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_float_args_func), types, args, 10);
 		const auto fret = ffi::reinterpret_int_to_float(ret);
-		assert(fret == 3.08);
+		assert(fret == 1.5 * (0.25 + 0.45 + 3.0 + (-1.5) + 0.75));
+	});
+	test("mixed args", []
+	{
+		const ffi::ValueType types[11] = {
+			ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT,
+			ffi::VT_FLOAT
+		};
+		const uintptr_t args[10] = {
+			1, ffi::reinterpret_float_to_int(0.11),
+			2, ffi::reinterpret_float_to_int(0.22),
+			3, ffi::reinterpret_float_to_int(0.33),
+			4, ffi::reinterpret_float_to_int(0.44),
+			5, ffi::reinterpret_float_to_int(0.55)
+		};
+		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_mixed_args_func), types, args, 10);
+		const auto fret = ffi::reinterpret_int_to_float(ret);
+		assert(fret == 15.0 * (0.11 + 0.22 + 0.33 + 0.44 + 0.55));
 	});
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	test("callback", []
