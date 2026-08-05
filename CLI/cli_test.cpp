@@ -2621,7 +2621,9 @@ static void unit_ffi()
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	test("callback", []
 	{
-		if (auto func = ffi::callbackAlloc(&ffi_callback_func, 0xCAFEBABE))
+		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS];
+		memset(types, ffi::VT_INTEGRAL, sizeof(types));
+		if (auto func = ffi::callbackAlloc(&ffi_callback_func, 0xCAFEBABE, types))
 		{
 			assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t)>(func)(0x00000000, 0x11111111, 0x22222222, 0x33333333, 0x44444444, 0x55555555, 0x66666666, 0x77777777, 0x88888888, 0x99999999, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC, 0xDDDDDDDD, 0xEEEEEEEE, 0xFFFFFFFF, 0x11000000, 0x00220000, 0x00003300, 0x00000044));
 			assert(cb_user_data == 0xCAFEBABE);
@@ -2656,6 +2658,40 @@ static void unit_ffi()
 				caught_val = val;
 			}
 			assert(caught_val == 69);
+
+			ffi::callbackFree(func);
+		}
+	});
+	test("callback floats", []
+	{
+		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS];
+		memset(types, ffi::VT_FLOAT, sizeof(types));
+		if (auto func = ffi::callbackAlloc(&ffi_callback_func, 0x1337, types))
+		{
+			assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t)>(func)(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0));
+			assert(cb_user_data == 0x1337);
+			assert(ffi::reinterpret_int_to_float(cb_args[0]) == 1.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[1]) == 2.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[2]) == 3.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[3]) == 4.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[4]) == 5.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[5]) == 6.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[6]) == 7.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[7]) == 8.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[8]) == 9.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[9]) == 10.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[10]) == 11.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[11]) == 12.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[12]) == 13.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[13]) == 14.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[14]) == 15.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[15]) == 16.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[16]) == 17.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[17]) == 18.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[18]) == 19.0);
+			assert(ffi::reinterpret_int_to_float(cb_args[19]) == 20.0);
+
+			ffi::callbackFree(func);
 		}
 	});
 #endif
