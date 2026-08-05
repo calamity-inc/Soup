@@ -54,7 +54,8 @@ NAMESPACE_SOUP
 		using callback_t = uintptr_t(*)(uintptr_t user_data, const uintptr_t args[MAX_CALLBACK_ARGS]);
 
 		// Returns nullptr on allocation failure. On MacOS, allocation may fail if the 'com.apple.security.cs.allow-jit' entitlement is missing.
-		[[nodiscard]] static void* callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept;
+		// types[MAX_CALLBACK_ARGS] is used for the return type.
+		[[nodiscard]] static void* callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS + 1]) noexcept;
 		static void callbackFree(void* cb) noexcept;
 #endif
 	};

@@ -2579,6 +2579,13 @@ static uintptr_t ffi_callback_func(uintptr_t user_data, const uintptr_t args[ffi
 	memcpy(cb_args, args, sizeof(cb_args));
 	return 0xDEADBEAF;
 }
+
+static uintptr_t ffi_float_callback_func(uintptr_t user_data, const uintptr_t args[ffi::MAX_CALLBACK_ARGS])
+{
+	cb_user_data = user_data;
+	memcpy(cb_args, args, sizeof(cb_args));
+	return ffi::reinterpret_float_to_int(420.0);
+}
 #endif
 
 static void unit_ffi()
@@ -2621,7 +2628,7 @@ static void unit_ffi()
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	test("callback", []
 	{
-		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS];
+		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS + 1];
 		memset(types, ffi::VT_INTEGRAL, sizeof(types));
 		if (auto func = ffi::callbackAlloc(&ffi_callback_func, 0xCAFEBABE, types))
 		{
@@ -2664,11 +2671,11 @@ static void unit_ffi()
 	});
 	test("callback floats", []
 	{
-		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS];
+		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS + 1];
 		memset(types, ffi::VT_FLOAT, sizeof(types));
-		if (auto func = ffi::callbackAlloc(&ffi_callback_func, 0x1337, types))
+		if (auto func = ffi::callbackAlloc(&ffi_float_callback_func, 0x1337, types))
 		{
-			assert(0xDEADBEAF == reinterpret_cast<uintptr_t(*)(native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t)>(func)(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0));
+			assert(((native_float_t)420.0) == reinterpret_cast<native_float_t(*)(native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t, native_float_t)>(func)(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0));
 			assert(cb_user_data == 0x1337);
 			assert(ffi::reinterpret_int_to_float(cb_args[0]) == 1.0);
 			assert(ffi::reinterpret_int_to_float(cb_args[1]) == 2.0);

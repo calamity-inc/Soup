@@ -213,7 +213,8 @@ NAMESPACE_SOUP
 		ffi_callback_tls.floats[3] = d;
 	}
 
-	static uintptr_t callback_finish(const FfiCallbackParameters* parameters, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
+	template <typename RetT>
+	static RetT callback_finish(const FfiCallbackParameters* parameters, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
 	{
 		uintptr_t args[ffi::MAX_CALLBACK_ARGS] = {
 			ffi_callback_tls.a, ffi_callback_tls.b, ffi_callback_tls.c, ffi_callback_tls.d,
@@ -226,7 +227,15 @@ NAMESPACE_SOUP
 				args[i] = ffi_callback_tls.floats[i];
 			}
 		}
-		return parameters->func(parameters->user_data, args);
+		const uintptr_t ret = parameters->func(parameters->user_data, args);
+		if constexpr (!std::is_same_v<RetT, uintptr_t>)
+		{
+			return ffi::reinterpret_int_to_float(ret);
+		}
+		else
+		{
+			return ret;
+		}
 	}
 
 	static const uint8_t callback_bytes[] = {
@@ -247,7 +256,7 @@ NAMESPACE_SOUP
 	};
 	static_assert(sizeof(callback_bytes) == 83);
 
-	void* ffi::callbackAlloc(callback_t func , uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
+	void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS + 1]) noexcept
 	{
 		void* block = memGuard::alloc(sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_RWX);
 		SOUP_IF_LIKELY (block)
@@ -255,7 +264,7 @@ NAMESPACE_SOUP
 			memcpy(block, callback_bytes, sizeof(callback_bytes));
 			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 3) = (void*)&callback_save_args;
 			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_floats;
-			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = types[MAX_CALLBACK_ARGS] == ffi::VT_INTEGRAL ? (void*)&callback_finish<uintptr_t> : (void*)&callback_finish<double>;
 			const auto parameters = (FfiCallbackParameters*)((uint8_t*)block + sizeof(callback_bytes));
 			parameters->func = func;
 			parameters->user_data = user_data;
@@ -300,7 +309,8 @@ NAMESPACE_SOUP
 		ffi_callback_tls.floats[7] = f7;
 	}
 
-	static uintptr_t callback_finish(const FfiCallbackParameters* parameters, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
+	template <typename RetT>
+	static RetT callback_finish(const FfiCallbackParameters* parameters, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
 	{
 	#if SOUP_ARM
 		const uintptr_t stack[ffi::MAX_CALLBACK_ARGS - ABI_INT_REGS] = { i, j, k, l, m, n, o, p, q, r, s, t };
@@ -331,7 +341,15 @@ NAMESPACE_SOUP
 			}
 			args[i] = stack[si++];
 		}
-		return parameters->func(parameters->user_data, args);
+		const uintptr_t ret = parameters->func(parameters->user_data, args);
+		if constexpr (!std::is_same_v<RetT, uintptr_t>)
+		{
+			return ffi::reinterpret_int_to_float(ret);
+		}
+		else
+		{
+			return ret;
+		}
 	}
 
 	#if SOUP_X86
@@ -368,14 +386,14 @@ NAMESPACE_SOUP
 		static_assert(sizeof(callback_bytes) == 60);
 	#endif
 
-	void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
+	void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS + 1]) noexcept
 	{
 		void* block = memGuard::alloc(sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_RWX);
 		SOUP_IF_LIKELY (block)
 		{
 			memcpy(block, callback_bytes, sizeof(callback_bytes));
 			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_args;
-			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = types[MAX_CALLBACK_ARGS] == ffi::VT_INTEGRAL ? (void*)&callback_finish<uintptr_t> : (void*)&callback_finish<double>;
 			const auto parameters = (FfiCallbackParameters*)((uint8_t*)block + sizeof(callback_bytes));
 			parameters->func = func;
 			parameters->user_data = user_data;
@@ -417,9 +435,18 @@ NAMESPACE_SOUP
 		ffi_callback_tls.args[19] = t;
 	}
 
-	static uintptr_t callback_finish(ffi::callback_t func, uintptr_t user_data)
+	template <typename RetT>
+	static RetT callback_finish(ffi::callback_t func, uintptr_t user_data)
 	{
-		return func(user_data, ffi_callback_tls.args);
+		const uintptr_t ret = func(user_data, ffi_callback_tls.args);
+		if constexpr (!std::is_same_v<RetT, uintptr_t>)
+		{
+			return ffi::reinterpret_int_to_float(ret);
+		}
+		else
+		{
+			return ret;
+		}
 	}
 
 	static const uint8_t callback_bytes[] = {
@@ -431,7 +458,7 @@ NAMESPACE_SOUP
 		/* 28 */ 0xFF, 0xE0,										// jmp     eax
 	};
 
-	void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
+	void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS + 1]) noexcept
 	{
 		void* block = memGuard::alloc(sizeof(callback_bytes), memGuard::ACC_RWX);
 		SOUP_IF_LIKELY (block)
@@ -440,7 +467,7 @@ NAMESPACE_SOUP
 			*(void**)((uint8_t*)block + 0 + 1) = (void*)&callback_save_args;
 			*(void**)((uint8_t*)block + 7 + 4) = (void*)func;
 			*(uintptr_t*)((uint8_t*)block + 15 + 4) = user_data;
-			*(void**)((uint8_t*)block + 23 + 1) = (void*)&callback_finish;
+			*(void**)((uint8_t*)block + 23 + 1) = types[MAX_CALLBACK_ARGS] == ffi::VT_INTEGRAL ? (void*)&callback_finish<uintptr_t> : (void*)&callback_finish<double>;
 			memGuard::setAllowedAccess(block, sizeof(callback_bytes), memGuard::ACC_READ | memGuard::ACC_EXEC);
 		}
 		return block;
