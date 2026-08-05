@@ -178,23 +178,6 @@ NAMESPACE_SOUP
 #endif
 
 #if SOUP_FFI_CALLBACK_AVAILABLE
-	struct FfiCallbackTls
-	{
-		uintptr_t a, b, c, d;
-#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
-		uintptr_t e, f;
-#endif
-#if SOUP_ARM || SOUP_BITS == 32
-		uintptr_t g, h;
-#endif
-#if SOUP_X86 && SOUP_BITS == 32
-		uintptr_t i, j, k, l, m, n, o, p, q, r, s, t;
-#endif
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
-		uintptr_t floats[4];
-#endif
-	};
-
 	struct FfiCallbackParameters
 	{
 		ffi::callback_t func;
@@ -202,53 +185,22 @@ NAMESPACE_SOUP
 		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS];
 	};
 
+  #if SOUP_WINDOWS && SOUP_X86 && SOUP_BITS == 64
+	struct FfiCallbackTls
+	{
+		uintptr_t a, b, c, d;
+		uintptr_t floats[4];
+	};
 	static thread_local FfiCallbackTls ffi_callback_tls;
 
-	static void callback_save_args(
-#if SOUP_X86 && SOUP_BITS == 32
-		void* _retaddr,
-#endif
-		uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d
-#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
-		, uintptr_t e, uintptr_t f
-#endif
-#if SOUP_ARM || SOUP_BITS == 32
-		, uintptr_t g, uintptr_t h
-#endif
-#if SOUP_X86 && SOUP_BITS == 32
-		, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t
-#endif
-	)
+	static void callback_save_args(uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d)
 	{
 		ffi_callback_tls.a = a;
 		ffi_callback_tls.b = b;
 		ffi_callback_tls.c = c;
 		ffi_callback_tls.d = d;
-#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
-		ffi_callback_tls.e = e;
-		ffi_callback_tls.f = f;
-#endif
-#if SOUP_ARM || SOUP_BITS == 32
-		ffi_callback_tls.g = g;
-		ffi_callback_tls.h = h;
-#endif
-#if SOUP_X86 && SOUP_BITS == 32
-		ffi_callback_tls.i = i;
-		ffi_callback_tls.j = j;
-		ffi_callback_tls.k = k;
-		ffi_callback_tls.l = l;
-		ffi_callback_tls.m = m;
-		ffi_callback_tls.n = n;
-		ffi_callback_tls.o = o;
-		ffi_callback_tls.p = p;
-		ffi_callback_tls.q = q;
-		ffi_callback_tls.r = r;
-		ffi_callback_tls.s = s;
-		ffi_callback_tls.t = t;
-#endif
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
 	static void callback_save_floats(uint64_t a, uint64_t b, uint64_t c, uint64_t d)
 	{
 		ffi_callback_tls.floats[0] = a;
@@ -256,38 +208,13 @@ NAMESPACE_SOUP
 		ffi_callback_tls.floats[2] = c;
 		ffi_callback_tls.floats[3] = d;
 	}
-#endif
 
-	static uintptr_t callback_finish(
-	#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
-		const FfiCallbackParameters* parameters, uintptr_t b
-	#else
-		uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data
-	#endif
-		, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t
-		)
+	static uintptr_t callback_finish(const FfiCallbackParameters* parameters, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
 	{
 		uintptr_t args[ffi::MAX_CALLBACK_ARGS] = {
 			ffi_callback_tls.a, ffi_callback_tls.b, ffi_callback_tls.c, ffi_callback_tls.d,
-#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
-			ffi_callback_tls.e, ffi_callback_tls.f,
-#else
-			e, f,
-#endif
-#if SOUP_ARM || SOUP_BITS == 32
-			ffi_callback_tls.g, ffi_callback_tls.h,
-#else
-			g, h,
-#endif
-#if SOUP_X86 && SOUP_BITS == 32
-			ffi_callback_tls.i, ffi_callback_tls.j, ffi_callback_tls.k, ffi_callback_tls.l, ffi_callback_tls.m, ffi_callback_tls.n, ffi_callback_tls.o, ffi_callback_tls.p, ffi_callback_tls.q, ffi_callback_tls.r, ffi_callback_tls.s, ffi_callback_tls.t,
-#else
-			i, j, k, l, m, n, o, p, q, r, s, t,
-#endif
+			e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t,
 		};
-	#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
-		const auto func = parameters->func;
-		const auto user_data = parameters->user_data;
 		for (int i = 0; i != 4; ++i)
 		{
 			if (parameters->types[i] != ffi::VT_INTEGRAL)
@@ -295,11 +222,9 @@ NAMESPACE_SOUP
 				args[i] = ffi_callback_tls.floats[i];
 			}
 		}
-	#endif
-		return func(user_data, args);
+		return parameters->func(parameters->user_data, args);
 	}
 
-  #if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
 	static const uint8_t callback_bytes[] = {
 		/*  0 */ 0x48, 0x81, 0xEC, 0xA8, 0x00, 0x00, 0x00,			// sub     rsp, 0xa8
 		/*  7 */ 0xFF, 0x15, (59 - 13), 0, 0, 0,					// call    QWORD PTR [rip+...] ; callback_save_args
@@ -336,6 +261,88 @@ NAMESPACE_SOUP
 		return block;
 	}
   #else
+	struct FfiCallbackTls
+	{
+		uintptr_t a, b, c, d;
+	#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
+		uintptr_t e, f;
+	#endif
+	#if SOUP_ARM || SOUP_BITS == 32
+		uintptr_t g, h;
+	#endif
+	#if SOUP_X86 && SOUP_BITS == 32
+		uintptr_t i, j, k, l, m, n, o, p, q, r, s, t;
+	#endif
+	};
+	static thread_local FfiCallbackTls ffi_callback_tls;
+
+	static void callback_save_args(
+	#if SOUP_X86 && SOUP_BITS == 32
+		void* _retaddr,
+	#endif
+		uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d
+	#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
+		, uintptr_t e, uintptr_t f
+	#endif
+	#if SOUP_ARM || SOUP_BITS == 32
+		, uintptr_t g, uintptr_t h
+	#endif
+	#if SOUP_X86 && SOUP_BITS == 32
+		, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t
+	#endif
+	)
+	{
+		ffi_callback_tls.a = a;
+		ffi_callback_tls.b = b;
+		ffi_callback_tls.c = c;
+		ffi_callback_tls.d = d;
+	#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
+		ffi_callback_tls.e = e;
+		ffi_callback_tls.f = f;
+	#endif
+	#if SOUP_ARM || SOUP_BITS == 32
+		ffi_callback_tls.g = g;
+		ffi_callback_tls.h = h;
+	#endif
+	#if SOUP_X86 && SOUP_BITS == 32
+		ffi_callback_tls.i = i;
+		ffi_callback_tls.j = j;
+		ffi_callback_tls.k = k;
+		ffi_callback_tls.l = l;
+		ffi_callback_tls.m = m;
+		ffi_callback_tls.n = n;
+		ffi_callback_tls.o = o;
+		ffi_callback_tls.p = p;
+		ffi_callback_tls.q = q;
+		ffi_callback_tls.r = r;
+		ffi_callback_tls.s = s;
+		ffi_callback_tls.t = t;
+	#endif
+	}
+
+	static uintptr_t callback_finish(uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t)
+	{
+		uintptr_t args[ffi::MAX_CALLBACK_ARGS] = {
+			ffi_callback_tls.a, ffi_callback_tls.b, ffi_callback_tls.c, ffi_callback_tls.d,
+#if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
+			ffi_callback_tls.e, ffi_callback_tls.f,
+#else
+			e, f,
+#endif
+#if SOUP_ARM || SOUP_BITS == 32
+			ffi_callback_tls.g, ffi_callback_tls.h,
+#else
+			g, h,
+#endif
+#if SOUP_X86 && SOUP_BITS == 32
+			ffi_callback_tls.i, ffi_callback_tls.j, ffi_callback_tls.k, ffi_callback_tls.l, ffi_callback_tls.m, ffi_callback_tls.n, ffi_callback_tls.o, ffi_callback_tls.p, ffi_callback_tls.q, ffi_callback_tls.r, ffi_callback_tls.s, ffi_callback_tls.t,
+#else
+			i, j, k, l, m, n, o, p, q, r, s, t,
+#endif
+		};
+		return func(user_data, args);
+	}
+
 	static const uint8_t callback_bytes[] = {
 	#if SOUP_X86
 	  #if SOUP_BITS == 32
