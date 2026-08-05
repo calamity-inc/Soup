@@ -28,7 +28,7 @@ NAMESPACE_SOUP
 	uintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)
 	{
 	#if (SOUP_X86 && SOUP_BITS == 64) || (SOUP_ARM && SOUP_BITS == 64)
-		// Linux (and MacOS) on x64 and aarch64 use separate pools for integral and float arguments. The stack is only used when the pool is full.
+		// aarch64 and the System V ABI for x64 (Linux, MacOS) use separate pools for integral and float arguments. The stack is only used when the pool is full.
 		// The only noteworthy difference is that on aarch64, we have 8 int registers before needing to go to the stack.
 		constexpr int NUM_INT_REGS = (SOUP_X86) ? 6 : 8;
 		int fi = 0;
@@ -190,6 +190,14 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 32
 		uintptr_t i, j, k, l, m, n, o, p, q, r, s, t;
 #endif
+		uintptr_t floats[4];
+	};
+
+	struct FfiCallbackParameters
+	{
+		ffi::callback_t func;
+		uintptr_t user_data;
+		ffi::ValueType types[ffi::MAX_CALLBACK_ARGS];
 	};
 
 	static thread_local FfiCallbackTls ffi_callback_tls;
@@ -238,12 +246,24 @@ NAMESPACE_SOUP
 #endif
 	}
 
+	static void callback_save_floats(uint64_t a, uint64_t b, uint64_t c, uint64_t d)
+	{
+		ffi_callback_tls.floats[0] = a;
+		ffi_callback_tls.floats[1] = b;
+		ffi_callback_tls.floats[2] = c;
+		ffi_callback_tls.floats[3] = d;
+	}
+
 	static uintptr_t callback_finish(
+	#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
+		const FfiCallbackParameters* parameters, uintptr_t b
+	#else
 		uintptr_t(*func)(uintptr_t user_data, const uintptr_t* args), uintptr_t user_data
+	#endif
 		, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j, uintptr_t k, uintptr_t l, uintptr_t m, uintptr_t n, uintptr_t o, uintptr_t p, uintptr_t q, uintptr_t r, uintptr_t s, uintptr_t t
 		)
 	{
-		const uintptr_t args[ffi::MAX_CALLBACK_ARGS] = {
+		uintptr_t args[ffi::MAX_CALLBACK_ARGS] = {
 			ffi_callback_tls.a, ffi_callback_tls.b, ffi_callback_tls.c, ffi_callback_tls.d,
 #if SOUP_ARM || SOUP_BITS == 32 || !SOUP_WINDOWS
 			ffi_callback_tls.e, ffi_callback_tls.f,
@@ -261,34 +281,77 @@ NAMESPACE_SOUP
 			i, j, k, l, m, n, o, p, q, r, s, t,
 #endif
 		};
+	#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
+		const auto func = parameters->func;
+		const auto user_data = parameters->user_data;
+		for (int i = 0; i != 4; ++i)
+		{
+			if (parameters->types[i] != ffi::VT_INTEGRAL)
+			{
+				args[i] = ffi_callback_tls.floats[i];
+			}
+		}
+	#endif
 		return func(user_data, args);
 	}
 
+  #if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
 	static const uint8_t callback_bytes[] = {
-#if SOUP_X86
-  #if SOUP_BITS == 32
+		/*  0 */ 0x48, 0x81, 0xEC, 0xA8, 0x00, 0x00, 0x00,			// sub     rsp, 0xa8
+		/*  7 */ 0xFF, 0x15, (59 - 13), 0, 0, 0,					// call    QWORD PTR [rip+...] ; callback_save_args
+		/* 13 */ 0x48, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00,			// add     rsp, 0xa8
+		/* 20 */ 0x66, 0x48, 0x0F, 0x7E, 0xC1,						// movq    rcx, xmm0
+		/* 25 */ 0x66, 0x48, 0x0F, 0x7E, 0xCA,						// movq    rdx, xmm1
+		/* 30 */ 0x66, 0x49, 0x0F, 0x7E, 0xD0,						// movq    r8, xmm2
+		/* 35 */ 0x66, 0x49, 0x0F, 0x7E, 0xD9,						// movq    r9, xmm3
+		/* 40 */ 0xFF, 0x15, (67 - 46), 0, 0, 0,					// call    QWORD PTR [rip+...] ; callback_save_floats
+		/* 46 */ 0x48, 0x8D, 0x0D, (83 - 53), 0, 0, 0,				// lea     rcx, QWORD PTR [rip+...] ; parameters
+		/* 53 */ 0xFF, 0x25, 0x10, 0x00, 0x00, 0x00,				// jmp     QWORD PTR [rip+0x10] ; callback_finish
+		/* 59 */ 0, 0, 0, 0, 0, 0, 0, 0,							// callback_save_args
+		/* 67 */ 0, 0, 0, 0, 0, 0, 0, 0,							// callback_save_floats
+		/* 75 */ 0, 0, 0, 0, 0, 0, 0, 0,							// callback_finish
+																	// parameters
+	};
+	static_assert(sizeof(callback_bytes) == 83);
+
+	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t args[MAX_CALLBACK_ARGS]), uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
+	{
+		void* block = memGuard::alloc(sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_RWX);
+		SOUP_IF_LIKELY (block)
+		{
+			memcpy(block, callback_bytes, sizeof(callback_bytes));
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 3) = (void*)&callback_save_args;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_floats;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
+			const auto parameters = (FfiCallbackParameters*)((uint8_t*)block + sizeof(callback_bytes));
+			parameters->func = func;
+			parameters->user_data = user_data;
+			memcpy(parameters->types, types, sizeof(parameters->types));
+			memGuard::setAllowedAccess(block, sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_READ | memGuard::ACC_EXEC);
+		}
+		return block;
+	}
+  #else
+	static const uint8_t callback_bytes[] = {
+	#if SOUP_X86
+	  #if SOUP_BITS == 32
 		/*  0 */ 0xB8, 0, 0, 0, 0,									// mov     eax, (4 bytes) ; callback_save_args
 		/*  5 */ 0xFF, 0xD0,										// call    eax
 		/*  7 */ 0xC7, 0x44, 0x24, 0x04, 0, 0, 0, 0,				// mov     DWORD PTR [esp+0x4], (4 bytes) ; func
 		/* 15 */ 0xC7, 0x44, 0x24, 0x08, 0, 0, 0, 0,				// mov     DWORD PTR [esp+0x8], (4 bytes) ; user_data
 		/* 23 */ 0xB8, 0, 0, 0, 0,									// mov     eax, (4 bytes) ; callback_finish
 		/* 28 */ 0xFF, 0xE0,										// jmp     eax
-  #else
+	  #else
 		/*  0 */ 0x48, 0x81, 0xEC, 0xA8, 0x00, 0x00, 0x00,			// sub     rsp, 0xa8
 		/*  7 */ 0xFF, 0x15, (46 - 13), 0, 0, 0,					// call    QWORD PTR [rip+...] ; callback_save_args
 		/* 13 */ 0x48, 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00,			// add     rsp, 0xa8
-	#if SOUP_WINDOWS
-		/* 20 */ 0x48, 0xB9, 0, 0, 0, 0, 0, 0, 0, 0,				// mov     rcx, (8 bytes) ; func
-		/* 30 */ 0x48, 0xBA, 0, 0, 0, 0, 0, 0, 0, 0,				// mov     rdx, (8 bytes) ; user_data
-	#else
 		/* 20 */ 0x48, 0xBF, 0, 0, 0, 0, 0, 0, 0, 0,				// mov     rdi, (8 bytes) ; func
 		/* 30 */ 0x48, 0xBE, 0, 0, 0, 0, 0, 0, 0, 0,				// mov     rsi, (8 bytes) ; user_data
-	#endif
 		/* 40 */ 0xFF, 0x25, 0x08, 0x00, 0x00, 0x00,				// jmp     QWORD PTR [rip+0x8] ; callback_finish
 		/* 46 */ 0, 0, 0, 0, 0, 0, 0, 0,							// callback_save_args
 		/* 54 */ 0, 0, 0, 0, 0, 0, 0, 0,							// callback_finish
-  #endif
-#else
+	  #endif
+	#else
 		/*  0 */ 0xff, 0x43, 0x00, 0xd1, // sub sp, sp, #16
 		/*  4 */ 0xfe, 0x27, 0x00, 0xa9, // stp x30, x9, [sp]
 		/*  8 */ 0x89, 0x01, 0x00, 0x10, // adr x9, #48 ; callback_save_args (56 - 8)
@@ -307,33 +370,31 @@ NAMESPACE_SOUP
 		/* 64 */ 0, 0, 0, 0, 0, 0, 0, 0, // func
 		/* 72 */ 0, 0, 0, 0, 0, 0, 0, 0, // user_data
 		/* 80 */ 0, 0, 0, 0, 0, 0, 0, 0, // callback_finish
-#endif
+	#endif
 	};
-#endif
 
-#if SOUP_FFI_CALLBACK_AVAILABLE
-	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t args[MAX_CALLBACK_ARGS]), uintptr_t user_data) noexcept
+	void* ffi::callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t args[MAX_CALLBACK_ARGS]), uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
 	{
-#if SOUP_X86
+	#if SOUP_X86
 		void* block = memGuard::alloc(sizeof(callback_bytes), memGuard::ACC_RWX);
 		SOUP_IF_LIKELY (block)
 		{
 			memcpy(block, callback_bytes, sizeof(callback_bytes));
-	#if SOUP_BITS == 32
+		#if SOUP_BITS == 32
 			*(void**)((uint8_t*)block + 0 + 1) = (void*)&callback_save_args;
 			*(void**)((uint8_t*)block + 7 + 4) = (void*)func;
 			*(uintptr_t*)((uint8_t*)block + 15 + 4) = user_data;
 			*(void**)((uint8_t*)block + 23 + 1) = (void*)&callback_finish;
-	#else
+		#else
 			*(void**)((uint8_t*)block + 20 + 2) = (void*)func;
 			*(uintptr_t*)((uint8_t*)block + 30 + 2) = user_data;
 			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_args;
 			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
-	#endif
+		#endif
+			memGuard::setAllowedAccess(block, sizeof(callback_bytes), memGuard::ACC_READ | memGuard::ACC_EXEC);
 		}
-		memGuard::setAllowedAccess(block, sizeof(callback_bytes), memGuard::ACC_READ | memGuard::ACC_EXEC);
 		return block;
-#elif SOUP_ARM && SOUP_BITS == 64
+	#elif SOUP_ARM && SOUP_BITS == 64
 		void* block = memGuard::alloc(sizeof(callback_bytes), memGuard::ACC_RWX);
 		SOUP_IF_LIKELY (block)
 		{
@@ -345,10 +406,11 @@ NAMESPACE_SOUP
 			memGuard::setAllowedAccess(block, sizeof(callback_bytes), memGuard::ACC_READ | memGuard::ACC_EXEC);
 		}
 		return block;
-#else
+	#else
 		return nullptr;
-#endif
+	#endif
 	}
+  #endif
 
 	void ffi::callbackFree(void* cb) noexcept
 	{

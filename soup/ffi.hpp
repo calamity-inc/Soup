@@ -51,9 +51,10 @@ NAMESPACE_SOUP
 
 #define SOUP_FFI_CALLBACK_AVAILABLE (SOUP_X86 || (SOUP_ARM && SOUP_BITS == 64))
 #if SOUP_FFI_CALLBACK_AVAILABLE
-		// Returns nullptr on allocation failure.
-		// On MacOS, allocation may fail if the 'com.apple.security.cs.allow-jit' entitlement is missing.
-		[[nodiscard]] static void* callbackAlloc(uintptr_t(*func)(uintptr_t user_data, const uintptr_t args[MAX_CALLBACK_ARGS]), uintptr_t user_data) noexcept;
+		using callback_t = uintptr_t(*)(uintptr_t user_data, const uintptr_t args[MAX_CALLBACK_ARGS]);
+
+		// Returns nullptr on allocation failure. On MacOS, allocation may fail if the 'com.apple.security.cs.allow-jit' entitlement is missing.
+		[[nodiscard]] static void* callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept;
 		static void callbackFree(void* cb) noexcept;
 #endif
 	};
