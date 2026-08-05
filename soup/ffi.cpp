@@ -178,6 +178,9 @@ NAMESPACE_SOUP
 	}
 #endif
 
+	// Helpful resources for handwriting bytecode:
+	// - https://defuse.ca/online-x86-assembler.htm
+	// - https://armconverter.com
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	struct FfiCallbackParameters
 	{
@@ -343,63 +346,44 @@ NAMESPACE_SOUP
 																		// parameters
 		};
 		static_assert(sizeof(callback_bytes) == 49);
-
-		void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
-		{
-			void* block = memGuard::alloc(sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_RWX);
-			SOUP_IF_LIKELY (block)
-			{
-				memcpy(block, callback_bytes, sizeof(callback_bytes));
-				*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_args;
-				*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
-				const auto parameters = (FfiCallbackParameters*)((uint8_t*)block + sizeof(callback_bytes));
-				parameters->func = func;
-				parameters->user_data = user_data;
-				memcpy(parameters->types, types, sizeof(parameters->types));
-				memGuard::setAllowedAccess(block, sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_READ | memGuard::ACC_EXEC);
-			}
-			return block;
-		}
 	#else
-		static_assert(SOUP_ARM); // TODO: Update the bytecode + alloc to pass 'parameters' instead of 'func' and 'user_data'
+		static_assert(SOUP_ARM);
 
 		static const uint8_t callback_bytes[] = {
-			/*  0 */ 0xff, 0x43, 0x00, 0xd1, // sub sp, sp, #16
-			/*  4 */ 0xfe, 0x27, 0x00, 0xa9, // stp x30, x9, [sp]
-			/*  8 */ 0x89, 0x01, 0x00, 0x10, // adr x9, #48 ; callback_save_args (56 - 8)
-			/* 12 */ 0x29, 0x01, 0x40, 0xf9, // ldr x9, [x9]
-			/* 16 */ 0x20, 0x01, 0x3f, 0xd6, // blr x9
-			/* 20 */ 0xfe, 0x27, 0x40, 0xa9, // ldp x30, x9, [sp]
-			/* 24 */ 0xff, 0x43, 0x00, 0x91, // add sp, sp, #16
-			/* 28 */ 0x20, 0x01, 0x00, 0x10, // adr x0, #36 ; func (64 - 28)
-			/* 32 */ 0x00, 0x00, 0x40, 0xf9, // ldr x0, [x0]
-			/* 36 */ 0x21, 0x01, 0x00, 0x10, // adr x1, #36 ; user_data (72 - 36)
-			/* 40 */ 0x21, 0x00, 0x40, 0xf9, // ldr x1, [x1]
-			/* 44 */ 0x22, 0x01, 0x00, 0x10, // adr x2, #36 ; callback_finish (80 - 44)
-			/* 48 */ 0x42, 0x00, 0x40, 0xf9, // ldr x2, [x2]
-			/* 52 */ 0x40, 0x00, 0x1f, 0xd6, // br x2
-			/* 56 */ 0, 0, 0, 0, 0, 0, 0, 0, // callback_save_args
-			/* 64 */ 0, 0, 0, 0, 0, 0, 0, 0, // func
-			/* 72 */ 0, 0, 0, 0, 0, 0, 0, 0, // user_data
-			/* 80 */ 0, 0, 0, 0, 0, 0, 0, 0, // callback_finish
+			/*  0 */ 0xFF, 0x43, 0x00, 0xD1, // sub sp, sp, #16
+			/*  4 */ 0xFE, 0x27, 0x00, 0xA9, // stp x30, x9, [sp]
+			/*  8 */ 0x09, 0x01, 0x00, 0x10, // adr x9, #32 ; callback_save_args (44 - 12)
+			/* 12 */ 0x29, 0x01, 0x40, 0xF9, // ldr x9, [x9]
+			/* 16 */ 0x20, 0x01, 0x3F, 0xD6, // blr x9
+			/* 20 */ 0xFE, 0x27, 0x40, 0xA9, // ldp x30, x9, [sp]
+			/* 24 */ 0xFF, 0x43, 0x00, 0x91, // add sp, sp, #16
+			/* 28 */ 0xE0, 0x00, 0x00, 0x10, // adr x0, #28 ; parameters (60 - 32)
+			/* 32 */ 0x81, 0x00, 0x00, 0x10, // adr x1, #16 ; callback_finish (52 - 36)
+			/* 36 */ 0x21, 0x00, 0x40, 0xF9, // ldr x1, [x1]
+			/* 40 */ 0x20, 0x00, 0x1F, 0xD6, // br x1
+			/* 44 */ 0, 0, 0, 0, 0, 0, 0, 0, // callback_save_args
+			/* 52 */ 0, 0, 0, 0, 0, 0, 0, 0, // callback_finish
+											 // parameters
 		};
-		static_assert(sizeof(callback_bytes) == 88);
-
-		void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
-		{
-			void* block = memGuard::alloc(sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_RWX);
-			SOUP_IF_LIKELY (block)
-			{
-				memcpy(block, callback_bytes, sizeof(callback_bytes));
-				*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 4) = (void*)&callback_save_args;
-				*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 3) = (void*)func;
-				*(uintptr_t*)((uint8_t*)block + sizeof(callback_bytes) - 8 * 2) = user_data;
-				*(void**)((uint8_t*)block + sizeof(callback_bytes) - 8 * 1) = (void*)&callback_finish;
-				memGuard::setAllowedAccess(block, sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_READ | memGuard::ACC_EXEC);
-			}
-			return block;
-		}
+		static_assert(sizeof(callback_bytes) == 60);
 	#endif
+
+	void* ffi::callbackAlloc(callback_t func, uintptr_t user_data, const ValueType types[MAX_CALLBACK_ARGS]) noexcept
+	{
+		void* block = memGuard::alloc(sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_RWX);
+		SOUP_IF_LIKELY (block)
+		{
+			memcpy(block, callback_bytes, sizeof(callback_bytes));
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 2) = (void*)&callback_save_args;
+			*(void**)((uint8_t*)block + sizeof(callback_bytes) - sizeof(void*) * 1) = (void*)&callback_finish;
+			const auto parameters = (FfiCallbackParameters*)((uint8_t*)block + sizeof(callback_bytes));
+			parameters->func = func;
+			parameters->user_data = user_data;
+			memcpy(parameters->types, types, sizeof(parameters->types));
+			memGuard::setAllowedAccess(block, sizeof(callback_bytes) + sizeof(FfiCallbackParameters), memGuard::ACC_READ | memGuard::ACC_EXEC);
+		}
+		return block;
+	}
   #else
 	static_assert(SOUP_X86 && SOUP_BITS == 32);
 
