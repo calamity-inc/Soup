@@ -322,7 +322,7 @@ NAMESPACE_SOUP
 			{
 				if (fi != ABI_FLOAT_REGS)
 				{
-					args[i] = ffi_callback_tls.floats[fi++];
+					args[i] = ffi::reinterpret_float_to_int(ffi_callback_tls.floats[fi++]);
 					continue;
 				}
 			}
