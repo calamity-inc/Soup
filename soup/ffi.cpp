@@ -190,7 +190,9 @@ NAMESPACE_SOUP
 #if SOUP_X86 && SOUP_BITS == 32
 		uintptr_t i, j, k, l, m, n, o, p, q, r, s, t;
 #endif
+#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
 		uintptr_t floats[4];
+#endif
 	};
 
 	struct FfiCallbackParameters
@@ -246,6 +248,7 @@ NAMESPACE_SOUP
 #endif
 	}
 
+#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
 	static void callback_save_floats(uint64_t a, uint64_t b, uint64_t c, uint64_t d)
 	{
 		ffi_callback_tls.floats[0] = a;
@@ -253,6 +256,7 @@ NAMESPACE_SOUP
 		ffi_callback_tls.floats[2] = c;
 		ffi_callback_tls.floats[3] = d;
 	}
+#endif
 
 	static uintptr_t callback_finish(
 	#if SOUP_X86 && SOUP_BITS == 64 && SOUP_WINDOWS
