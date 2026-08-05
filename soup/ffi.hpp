@@ -24,9 +24,9 @@ NAMESPACE_SOUP
 			VT_FLOAT,
 		};
 
-		constexpr static auto MAX_CALL_ARGS = 20;
-		constexpr static auto /*deprecated*/ MAX_ARGS = MAX_CALL_ARGS;
-		constexpr static auto MAX_CALLBACK_ARGS = 20;
+		constexpr static size_t MAX_CALL_ARGS = 20;
+		constexpr static size_t /*deprecated*/ MAX_ARGS = MAX_CALL_ARGS;
+		constexpr static size_t MAX_CALLBACK_ARGS = 20;
 
 		[[nodiscard]] static bool isSafeToCall(void* func) noexcept;
 
