@@ -20,7 +20,7 @@ if (!defined("PHP_WINDOWS_VERSION_MAJOR") && strpos($clang, "--target=wasm") ===
 {
 	if (PHP_OS_FAMILY == "Darwin")
 	{
-		$clanglink .= " -lc++ -framework IOKit -framework CoreFoundation";
+		$clanglink .= " -lc++ -framework CoreFoundation -framework IOKit";
 	}
 	else
 	{

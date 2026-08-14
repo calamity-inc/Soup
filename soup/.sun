@@ -6,3 +6,10 @@ arg -O3
 if not windows
 	arg -fPIC
 endif
+
+if macos
+	global_linker_arg -framework
+	global_linker_arg CoreFoundation
+	global_linker_arg -framework
+	global_linker_arg IOKit
+endif
