@@ -974,6 +974,7 @@
     <ClInclude Include="hotfix.hpp" />
     <ClInclude Include="IrcServer.hpp" />
     <ClInclude Include="loc.hpp" />
+    <ClInclude Include="lookup3.hpp" />
     <ClInclude Include="lzf.hpp" />
     <ClInclude Include="md5.hpp" />
     <ClInclude Include="memAllocating.hpp" />
@@ -1517,6 +1518,7 @@
     <ClCompile Include="hotfix.cpp" />
     <ClCompile Include="IrcServer.cpp" />
     <ClCompile Include="loc.cpp" />
+    <ClCompile Include="lookup3.cpp" />
     <ClCompile Include="lzf.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="Rc4State.cpp" />

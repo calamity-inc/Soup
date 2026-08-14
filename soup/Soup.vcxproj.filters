@@ -1707,6 +1707,9 @@
     <ClInclude Include="hotfix.hpp">
       <Filter>util\config</Filter>
     </ClInclude>
+    <ClInclude Include="lookup3.hpp">
+      <Filter>data\hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2548,6 +2551,9 @@
     </ClCompile>
     <ClCompile Include="ffi_call_win_x64.cpp">
       <Filter>os</Filter>
+    </ClCompile>
+    <ClCompile Include="lookup3.cpp">
+      <Filter>data\hash</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
