@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Reader.hpp"
+
 NAMESPACE_SOUP
 {
 	struct RiffChunk
