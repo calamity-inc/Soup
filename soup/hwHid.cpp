@@ -830,7 +830,10 @@ NAMESPACE_SOUP
 			IOHIDDeviceRegisterInputReportCallback((IOHIDDeviceRef)device, read_buffer.data(), read_buffer.capacity(), [](void* context, IOReturn result, void* sender, IOHIDReportType type, uint32_t reportID, uint8_t* report, CFIndex reportLength)
 			{
 				static_cast<hwHid*>(context)->read_buffer.resize(reportLength);
-				static_cast<hwHid*>(context)->read_buffer.insert_front(1, reportID);
+				if (reportID == 0)
+				{
+					static_cast<hwHid*>(context)->read_buffer.insert_front(1, reportID);
+				}
 				static_cast<hwHid*>(context)->got_a_report = true;
 			}, this);
 			IOHIDDeviceScheduleWithRunLoop((IOHIDDeviceRef)device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode); // Schedule with the current run loop so that callbacks are delivered
