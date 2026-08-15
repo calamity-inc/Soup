@@ -770,24 +770,7 @@ NAMESPACE_SOUP
 #elif SOUP_LINUX
 		return write(handle, data, size) == size;
 #elif SOUP_MACOS
-		if (!device || size == 0)
-		{
-			return false;
-		}
-		// macOS: IOHIDDeviceSetReport takes the report id as a separate argument. Soup's cross-platform
-		// convention prepends a report-id byte to the buffer; for unnumbered reports (id 0) that byte must
-		// be stripped before sending, or the report runs one byte over its length and the call is rejected.
-		// (Matches hidapi's macOS set_report behaviour.)
-		const uint8_t* bytes = static_cast<const uint8_t*>(data);
-		uint8_t report_id = bytes[0];
-		const uint8_t* send_data = bytes;
-		size_t send_size = size;
-		if (report_id == 0)
-		{
-			send_data = bytes + 1;
-			send_size = size - 1;
-		}
-		return IOHIDDeviceSetReport((IOHIDDeviceRef)device, kIOHIDReportTypeOutput, report_id, send_data, send_size) == kIOReturnSuccess;
+		return sendReportImpl(kIOHIDReportTypeOutput, static_cast<const uint8_t*>(data), size);
 #else
 		return false;
 #endif
@@ -807,11 +790,7 @@ NAMESPACE_SOUP
 #elif SOUP_LINUX
 		return ioctl(handle, HIDIOCSFEATURE(buf.size()), buf.data()) == buf.size();
 #elif SOUP_MACOS
-		if (!device)
-		{
-			return false;
-		}
-		return IOHIDDeviceSetReport((IOHIDDeviceRef)device, kIOHIDReportTypeFeature, buf.empty()?0:static_cast<uint8_t>(buf.at(0)), (uint8_t*)buf.data(), buf.size()) == kIOReturnSuccess;
+		return sendReportImpl(kIOHIDReportTypeFeature, buf.data(), buf.size());
 #else
 		return false;
 #endif
@@ -856,6 +835,25 @@ NAMESPACE_SOUP
 			}, this);
 			IOHIDDeviceScheduleWithRunLoop((IOHIDDeviceRef)device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode); // Schedule with the current run loop so that callbacks are delivered
 		}
+	}
+
+	bool hwHid::sendReportImpl(IOHIDReportType type, const uint8_t* data, size_t size) const noexcept
+	{
+		if (!device || size == 0)
+		{
+			return false;
+		}
+		// IOHIDDeviceSetReport takes the report id as a separate argument. Soup's cross-platform
+		// convention prepends a report-id byte to the buffer; for unnumbered reports (id 0) that byte must
+		// be stripped before sending, or the report runs one byte over its length and the call is rejected.
+		// (Matches hidapi's macOS set_report behaviour.)
+		const uint8_t report_id = data[0];
+		if (report_id == 0)
+		{
+			++data;
+			--size;
+		}
+		return IOHIDDeviceSetReport((IOHIDDeviceRef)device, type, report_id, data, size) == kIOReturnSuccess;
 	}
 #endif
 

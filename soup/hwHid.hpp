@@ -218,6 +218,9 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS || SOUP_MACOS
 		void kickOffRead() noexcept;
 #endif
+#if SOUP_MACOS
+		bool sendReportImpl(IOHIDReportType type, const uint8_t* data, size_t size) const noexcept;
+#endif
 
 	public:
 		[[nodiscard]] HidReportDescriptor getReportDescriptor() const;
