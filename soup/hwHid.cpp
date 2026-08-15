@@ -713,36 +713,30 @@ NAMESPACE_SOUP
 	// SET_REPORT response
 	void hwHid::receiveFeatureReport(Buffer<>& buf) const
 	{
-#if SOUP_WINDOWS
 		if (buf.size() < feature_report_byte_length)
 		{
 			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
 		}
 
+#if SOUP_WINDOWS
 		SOUP_ASSERT(HidD_GetFeature(handle, buf.data(), static_cast<ULONG>(buf.size())));
 #elif SOUP_LINUX
-		if (buf.size() < feature_report_byte_length)
-		{
-			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
-		}
 		int len = ioctl(handle, HIDIOCGFEATURE(buf.size()), buf.data());
 		if (len != -1)
 		{
 			buf.resize(len);
 		}
 #elif SOUP_MACOS
-		if (!device)
+		if (device)
+		{
+			CFIndex len = buf.size();
+			IOHIDDeviceGetReport((IOHIDDeviceRef)device, kIOHIDReportTypeFeature, buf.empty() ? 0 : static_cast<uint8_t>(buf.at(0)), (uint8_t*)buf.data(), &len);
+			buf.resize(len);
+		}
+		else
 		{
 			buf.clear();
-			return;
 		}
-		if (buf.size() < feature_report_byte_length)
-		{
-			buf.insert_back(feature_report_byte_length - buf.size(), '\0');
-		}
-		CFIndex len = buf.size();
-		IOHIDDeviceGetReport((IOHIDDeviceRef)device, kIOHIDReportTypeFeature, buf.empty()?0:static_cast<uint8_t>(buf.at(0)), (uint8_t*)buf.data(), &len);
-		buf.resize(len);
 #endif
 	}
 
