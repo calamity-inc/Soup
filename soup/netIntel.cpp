@@ -398,7 +398,7 @@ NAMESPACE_SOUP
 	{
 		if (auto data = ipv4_to_location.find(ip))
 		{
-			netIntelLocationData res{ data->country_code };
+			netIntelLocationData res{ data->country_code, "", "" };
 			if (data->state < location_string_pool.size && data->city < location_string_pool.size)
 			{
 				res.state = &location_string_pool.data[data->state];
@@ -413,7 +413,7 @@ NAMESPACE_SOUP
 	{
 		if (auto data = ipv6_to_location.find(addr))
 		{
-			netIntelLocationData res{ data->country_code };
+			netIntelLocationData res{ data->country_code, "", "" };
 			if (data->state < location_string_pool.size && data->city < location_string_pool.size)
 			{
 				res.state = &location_string_pool.data[data->state];
