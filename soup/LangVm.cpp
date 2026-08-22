@@ -153,6 +153,7 @@ NAMESPACE_SOUP
 		}
 	}
 
+#if SOUP_X86 && SOUP_BITS == 64
 	static void asmvm_pushInt(LangVm& rcx, int64_t rdx)
 	{
 		rcx.push(soup::make_shared<Mixed>(rdx));
@@ -163,7 +164,6 @@ NAMESPACE_SOUP
 		rcx.push(soup::make_shared<Mixed>(rdx));
 	}
 
-#if SOUP_X86 && SOUP_BITS == 64
 	void LangVm::assembleAndExecute()
 	{
 		AssemblyBuilder b;
