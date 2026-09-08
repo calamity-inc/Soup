@@ -1713,6 +1713,9 @@
     <ClInclude Include="truHostTask.hpp">
       <Filter>net\tru</Filter>
     </ClInclude>
+    <ClInclude Include="faketls.hpp">
+      <Filter>net\tls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2560,6 +2563,9 @@
     </ClCompile>
     <ClCompile Include="truHostTask.cpp">
       <Filter>net\tru</Filter>
+    </ClCompile>
+    <ClCompile Include="faketls.cpp">
+      <Filter>net\tls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

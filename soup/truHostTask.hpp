@@ -9,12 +9,12 @@
 NAMESPACE_SOUP
 {
 	// Host implementation for https://github.com/calamity-inc/tru
-	// Currently does not support "secure context" clients.
 	class truHostTask : public Task
 	{
 	public:
 		netConnectTask relay_connector;
 		const std::string id;
+		const SharedPtr<CertStore> faketls_cert;
 	private:
 		Server lan_server;
 		ServerWebService lan_service;
@@ -27,7 +27,11 @@ NAMESPACE_SOUP
 		bool relaying = false;
 
 	public:
-		truHostTask(const IpAddr& relay/*= SOUP_IPV4_NWE(198, 251, 89, 45)*/, std::string id);
+		truHostTask(
+			const IpAddr& relay/*= SOUP_IPV4_NWE(198, 251, 89, 45)*/,
+			std::string id,
+			SharedPtr<CertStore> faketls_cert = {} // needed for "secure context" clients. see faketls::getLatestCert.
+		);
 
 		void onTick() final;
 

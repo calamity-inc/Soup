@@ -962,6 +962,7 @@
     <ClInclude Include="ecc.hpp" />
     <ClInclude Include="EstablishWebSocketConnectionTask.hpp" />
     <ClInclude Include="exceptions.hpp" />
+    <ClInclude Include="faketls.hpp" />
     <ClInclude Include="FiberTask.hpp" />
     <ClInclude Include="filesystem.hpp" />
     <ClInclude Include="fnv.hpp" />
@@ -1477,6 +1478,7 @@
     <ClCompile Include="DetourHookBase.cpp" />
     <ClCompile Include="DetourHookNoreg.cpp" />
     <ClCompile Include="exceptions.cpp" />
+    <ClCompile Include="faketls.cpp" />
     <ClCompile Include="ffi_call_win_x64.cpp" />
     <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="gmBox.cpp" />

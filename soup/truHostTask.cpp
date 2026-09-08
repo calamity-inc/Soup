@@ -1,12 +1,13 @@
 #include "truHostTask.hpp"
 #if SOUP_WINDOWS || SOUP_LINUX
 
+#include "CertStore.hpp"
 #include "netAdaptor.hpp"
 
 NAMESPACE_SOUP
 {
-	truHostTask::truHostTask(const IpAddr& relay, std::string id)
-		: relay_connector(relay, 7987), id(std::move(id))
+	truHostTask::truHostTask(const IpAddr& relay, std::string id, SharedPtr<CertStore> faketls_cert)
+		: relay_connector(relay, 7987), id(std::move(id)), faketls_cert(std::move(faketls_cert))
 	{
 		lan_service.should_accept_websocket_connection = [](Socket&, const HttpRequest&, ServerWebService&) -> bool
 		{
@@ -46,7 +47,14 @@ NAMESPACE_SOUP
 							lan_ips.push_back(',');
 						}
 						IpAddr ip_addr(ad.ip_addr);
-						port = lan_server.bind(ip_addr, port, &lan_service); // TODO: This only allows non-TLS traffic.
+						if (faketls_cert)
+						{
+							port = lan_server.bindOptCrypto(ip_addr, port, &lan_service, faketls_cert);
+						}
+						else
+						{
+							port = lan_server.bind(ip_addr, port, &lan_service);
+						}
 						lan_ips.append(ip_addr.toString());
 					}
 				}
