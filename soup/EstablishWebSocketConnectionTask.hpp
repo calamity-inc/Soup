@@ -27,8 +27,13 @@ NAMESPACE_SOUP
 		{
 		}
 
-		EstablishWebSocketConnectionTask(bool use_tls, const std::string& host, uint16_t port, const std::string& path)
-			: use_tls(use_tls), connect(host, port), host(host), path(path)
+		EstablishWebSocketConnectionTask(bool use_tls, const std::string& host, uint16_t port, std::string path = "/")
+			: use_tls(use_tls), connect(host, port), host(host), path(std::move(path))
+		{
+		}
+
+		EstablishWebSocketConnectionTask(const IpAddr& host, uint16_t port, std::string path = "/")
+			: use_tls(false), connect(host, port), host(host.toString()), path(std::move(path))
 		{
 		}
 
