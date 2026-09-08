@@ -1089,6 +1089,7 @@
     <ClInclude Include="TlsExtAlpn.hpp" />
     <ClInclude Include="TlsSignatureScheme.hpp" />
     <ClInclude Include="TransientToken.hpp" />
+    <ClInclude Include="truHostTask.hpp" />
     <ClInclude Include="tunables.hpp" />
     <ClInclude Include="UniqueList.hpp" />
     <ClInclude Include="hwHid.hpp" />
@@ -1619,6 +1620,7 @@
     <ClCompile Include="TreeWriter.cpp" />
     <ClCompile Include="gmText.cpp" />
     <ClCompile Include="hwHid.cpp" />
+    <ClCompile Include="truHostTask.cpp" />
     <ClCompile Include="Uuid.cpp" />
     <ClCompile Include="version_compare.cpp" />
     <ClCompile Include="VirtualFilesystem.cpp" />

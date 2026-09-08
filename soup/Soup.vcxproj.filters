@@ -1710,6 +1710,9 @@
     <ClInclude Include="lookup3.hpp">
       <Filter>data\hash</Filter>
     </ClInclude>
+    <ClInclude Include="truHostTask.hpp">
+      <Filter>net\tru</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2555,6 +2558,9 @@
     <ClCompile Include="lookup3.cpp">
       <Filter>data\hash</Filter>
     </ClCompile>
+    <ClCompile Include="truHostTask.cpp">
+      <Filter>net\tru</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
@@ -2823,6 +2829,9 @@
     </Filter>
     <Filter Include="data\content-addressed">
       <UniqueIdentifier>{7f56cda1-a0a3-44f1-a2b7-b769043fa802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\tru">
+      <UniqueIdentifier>{0bb3300c-6756-43e1-b34b-79e932bf7a2f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
