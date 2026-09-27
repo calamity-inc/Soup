@@ -109,7 +109,7 @@ NAMESPACE_SOUP
 					}
 				}
 				state = AWAIT_RESPONSE;
-				awaiting_response_since = time::unixSeconds();
+				await_response_timeout = time::unixSeconds() + FIRST_CHUNK_TIMEOUT_SECS;
 				if (hr.use_tls)
 				{
 					sock->enableCryptoClient(std::get<0>(hr.getHostAndPort()), [](Socket&, Capture&& cap, std::string&&) SOUP_EXCAL
@@ -126,7 +126,7 @@ NAMESPACE_SOUP
 			break;
 
 		case AWAIT_RESPONSE:
-			if (time::unixSecondsSince(awaiting_response_since) > 30)
+			if (time::unixSeconds() > await_response_timeout)
 			{
 				//logWriteLine(soup::format("AWAIT_RESPONSE from {} - timeout", hr.getHost()));
 				sock->close();
@@ -143,7 +143,7 @@ NAMESPACE_SOUP
 		state = AWAIT_RESPONSE;
 		retry_on_broken_pipe = true;
 		sock->custom_data.getStructFromMapConst(netReuseTag).is_busy = true;
-		awaiting_response_since = time::unixSeconds();
+		await_response_timeout = time::unixSeconds() + FIRST_CHUNK_TIMEOUT_SECS;
 		hr.setKeepAlive();
 		hr.send(*sock);
 		recvResponse();
@@ -159,7 +159,11 @@ NAMESPACE_SOUP
 
 	void HttpRequestTask::recvResponse() SOUP_EXCAL
 	{
-		HttpRequest::recvResponse(*sock, [](Socket& s, Optional<HttpResponse>&& res, Capture&& cap) SOUP_EXCAL
+		HttpRequest::recvResponse(*sock, [](Socket&, const std::string&, const Capture& cap)
+		{
+			cap.get<HttpRequestTask*>()->await_response_timeout = time::unixSeconds() + SUBSEQUENT_CHUNK_TIMEOUT_SECS;
+			return true;
+		}, [](Socket& s, Optional<HttpResponse>&& res, Capture&& cap) SOUP_EXCAL
 		{
 			if (res.has_value())
 			{

@@ -281,6 +281,11 @@ NAMESPACE_SOUP
 		{
 		}
 
+		HttpResponseReceiver(bool on_body_part(Socket&, const std::string&, const Capture&) SOUP_EXCAL, void callback(Socket&, Optional<HttpResponse>&&, Capture&&) SOUP_EXCAL, Capture&& cap) noexcept
+			: on_body_part(on_body_part), callback(callback), cap(std::move(cap))
+		{
+		}
+
 		void tick(Socket& s, Capture&& cap) SOUP_EXCAL
 		{
 			s.callback_recv_on_close = true;
@@ -370,6 +375,9 @@ NAMESPACE_SOUP
 									self.status = BODY_LEN;
 									if (auto opt = string::toIntOpt<uint64_t>(*len, string::TI_FULL); opt.has_value())
 									{
+#if LOGGING
+										logWriteLine("Got Content-Length");
+#endif
 										self.bytes_remain = opt.value();
 									}
 									else
@@ -460,6 +468,13 @@ NAMESPACE_SOUP
 					{
 						if (self.buf.size() < self.bytes_remain)
 						{
+							if (self.on_body_part)
+							{
+								SOUP_IF_UNLIKELY (!self.on_body_part(s, app, self.cap))
+								{
+									return;
+								}
+							}
 							break;
 						}
 						self.resp.body = self.buf.substr(0, static_cast<size_t>(self.bytes_remain));
@@ -497,6 +512,12 @@ NAMESPACE_SOUP
 	void HttpRequest::recvResponse(Socket& s, void callback(Socket&, Optional<HttpResponse>&&, Capture&&) SOUP_EXCAL, Capture&& _cap) SOUP_EXCAL
 	{
 		Capture cap = HttpResponseReceiver(callback, std::move(_cap));
+		cap.get<HttpResponseReceiver>().tick(s, std::move(cap));
+	}
+
+	void HttpRequest::recvResponse(Socket& s, bool on_body_part(Socket&, const std::string&, const Capture&) SOUP_EXCAL, void callback(Socket&, Optional<HttpResponse>&&, Capture&&) SOUP_EXCAL, Capture&& _cap) SOUP_EXCAL
+	{
+		Capture cap = HttpResponseReceiver(on_body_part, callback, std::move(_cap));
 		cap.get<HttpResponseReceiver>().tick(s, std::move(cap));
 	}
 
