@@ -283,6 +283,7 @@ NAMESPACE_SOUP
 
 		void tick(Socket& s, Capture&& cap) SOUP_EXCAL
 		{
+			s.callback_recv_on_close = true;
 			s.recv([](Socket& s, std::string&& app, Capture&& cap) SOUP_EXCAL
 			{
 				auto& self = cap.get<HttpResponseReceiver>();
@@ -393,7 +394,6 @@ NAMESPACE_SOUP
 											logWriteLine("Server will close connection to signal EOF");
 #endif
 											self.status = BODY_CLOSE;
-											s.callback_recv_on_close = true;
 										}
 									}
 									if (self.status == HEADER)
