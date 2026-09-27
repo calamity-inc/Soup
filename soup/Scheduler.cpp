@@ -1,9 +1,5 @@
 #include "Scheduler.hpp"
 
-#if !SOUP_WINDOWS
-#include <netinet/tcp.h> // TCP_NODELAY
-#endif
-
 #include "log.hpp"
 #include "os.hpp"
 #include "Promise.hpp"
@@ -41,7 +37,6 @@ NAMESPACE_SOUP
 		{
 			sock->setNonBlocking();
 		}
-		sock->setOpt<int>(IPPROTO_TCP, TCP_NODELAY, 1);
 		return addWorker(std::move(sock));
 	}
 #endif

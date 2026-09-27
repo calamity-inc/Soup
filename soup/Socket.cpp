@@ -11,6 +11,10 @@
 #include "signal.hpp"
 #endif
 
+#if !SOUP_WINDOWS
+#include <netinet/tcp.h> // TCP_NODELAY
+#endif
+
 #include "aes.hpp"
 #include "Buffer.hpp"
 #include "BufferRefWriter.hpp"
@@ -155,15 +159,16 @@ NAMESPACE_SOUP
 		return true;
 	}
 
+	// Makes this an outgoing TCP socket.
 	bool Socket::kickOffConnect(const SocketAddr& addr) noexcept
 	{
 		peer = addr;
 		if (addr.ip.isV4())
 		{
-			if (!init(AF_INET, SOCK_STREAM))
-			{
-				return false;
-			}
+			SOUP_RETHROW_FALSE(init(AF_INET, SOCK_STREAM));
+
+			setOpt<int>(IPPROTO_TCP, TCP_NODELAY, 1);
+
 			sockaddr_in sa{};
 			sa.sin_family = AF_INET;
 			sa.sin_port = addr.port;
@@ -172,10 +177,10 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			if (!init(AF_INET6, SOCK_STREAM))
-			{
-				return false;
-			}
+			SOUP_RETHROW_FALSE(init(AF_INET6, SOCK_STREAM));
+
+			setOpt<int>(IPPROTO_TCP, TCP_NODELAY, 1);
+
 			sockaddr_in6 sa{};
 			sa.sin6_family = AF_INET6;
 			sa.sin6_port = addr.port;
@@ -303,6 +308,7 @@ NAMESPACE_SOUP
 		return addr;
 	}
 
+	// Returns an incoming TCP socket.
 	Socket Socket::accept6() noexcept
 	{
 		Socket res{};
@@ -314,9 +320,11 @@ NAMESPACE_SOUP
 			memcpy(&res.peer.ip.data, &addr.sin6_addr, sizeof(addr.sin6_addr));
 			res.peer.port = addr.sin6_port;
 		}
+		res.setOpt<int>(IPPROTO_TCP, TCP_NODELAY, 1);
 		return res;
 	}
 
+	// Returns an incoming TCP socket.
 	Socket Socket::accept4() noexcept
 	{
 		Socket res{};
@@ -328,6 +336,7 @@ NAMESPACE_SOUP
 			res.peer.ip = network_u32_t(addr.sin_addr.s_addr);
 			res.peer.port = addr.sin_port;
 		}
+		res.setOpt<int>(IPPROTO_TCP, TCP_NODELAY, 1);
 		return res;
 	}
 
