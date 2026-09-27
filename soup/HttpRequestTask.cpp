@@ -126,31 +126,7 @@ NAMESPACE_SOUP
 			break;
 
 		case AWAIT_RESPONSE:
-			if (sock->isWorkDoneOrClosed())
-			{
-				if (retry_on_broken_pipe)
-				{
-					retry_on_broken_pipe = false;
-					//logWriteLine(soup::format("AWAIT_RESPONSE from {} - broken pipe, making a new one", hr.getHost()));
-					cannotRecycle(); // transition to CONNECTING state
-				}
-				else
-				{
-					//logWriteLine(soup::format("AWAIT_RESPONSE from {} - request failed", hr.getHost()));
-					if (sock->custom_data.isStructInMap(SocketCloseReason))
-					{
-						await_response_finish_reason = sock->custom_data.getStructFromMapConst(SocketCloseReason);
-					}
-					else
-					{
-						await_response_finish_reason = netStatusToString(NET_FAIL_L7_PREMATURE_END);
-					}
-					setWorkDone();
-				}
-				sock->close();
-				sock.reset();
-			}
-			else if (time::unixSecondsSince(awaiting_response_since) > 30)
+			if (time::unixSecondsSince(awaiting_response_since) > 30)
 			{
 				//logWriteLine(soup::format("AWAIT_RESPONSE from {} - timeout", hr.getHost()));
 				sock->close();
@@ -199,7 +175,22 @@ NAMESPACE_SOUP
 			}
 			else
 			{
-				cap.get<HttpRequestTask*>()->await_response_finish_reason = soup::ObfusString("Protocol Error").str();
+				if (cap.get<HttpRequestTask*>()->retry_on_broken_pipe)
+				{
+					cap.get<HttpRequestTask*>()->retry_on_broken_pipe = false;
+					//logWriteLine(soup::format("AWAIT_RESPONSE from {} - broken pipe, making a new one", hr.getHost()));
+					cap.get<HttpRequestTask*>()->cannotRecycle(); // transition to CONNECTING state
+					return;
+				}
+				//logWriteLine(soup::format("AWAIT_RESPONSE from {} - request failed", hr.getHost()));
+				if (s.custom_data.isStructInMap(SocketCloseReason))
+				{
+					cap.get<HttpRequestTask*>()->await_response_finish_reason = s.custom_data.getStructFromMapConst(SocketCloseReason);
+				}
+				else
+				{
+					cap.get<HttpRequestTask*>()->await_response_finish_reason = netStatusToString(NET_FAIL_L7_PREMATURE_END);
+				}
 			}
 			cap.get<HttpRequestTask*>()->fulfil(std::move(res));
 			if (s.custom_data.isStructInMap(netReuseTag))
