@@ -160,9 +160,7 @@ NAMESPACE_SOUP
 		peer = addr;
 		if (addr.ip.isV4())
 		{
-			if (!init(AF_INET, SOCK_STREAM)
-				|| !setNonBlocking()
-				)
+			if (!init(AF_INET, SOCK_STREAM))
 			{
 				return false;
 			}
@@ -174,9 +172,7 @@ NAMESPACE_SOUP
 		}
 		else
 		{
-			if (!init(AF_INET6, SOCK_STREAM)
-				|| !setNonBlocking()
-				)
+			if (!init(AF_INET6, SOCK_STREAM))
 			{
 				return false;
 			}
@@ -1392,6 +1388,7 @@ NAMESPACE_SOUP
 		return tls_encrypter_send.isActive();
 	}
 
+	// BUG: send fails to send the full extent of the given data if it exceeds the internal buffer and the socket is nonblocking.
 	bool Socket::send(const void* data, size_t size) SOUP_EXCAL
 	{
 		if (tls_encrypter_send.isActive())

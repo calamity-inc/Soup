@@ -137,6 +137,7 @@ NAMESPACE_SOUP
 		if (sock->connect(resolver, host, port))
 		{
 			Scheduler sched{};
+			sched.setBlocking();
 			sched.addSocket(sock);
 			if (use_tls)
 			{
@@ -151,7 +152,6 @@ NAMESPACE_SOUP
 				send(*sock);
 				execute_recvResponse(*sock, &data.resp);
 			}
-			sched.setAddWorkerCanWaitForeverForAllICare();
 			sched.run();
 		}
 		SOUP_MOVE_RETURN(data.resp);
@@ -178,6 +178,7 @@ NAMESPACE_SOUP
 		if (sock->connect(resolver, host, port))
 		{
 			Scheduler sched{};
+			sched.setBlocking();
 			sched.addSocket(sock);
 			if (use_tls)
 			{
