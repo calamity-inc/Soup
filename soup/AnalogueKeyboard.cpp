@@ -160,6 +160,10 @@ NAMESPACE_SOUP
 				{
 					return "Keychron K2 HE";
 				}
+				if (hid.product_id == 0x0E60) // ANSI
+				{
+					return "Keychron K6 HE";
+				}
 				if (hid.product_id == 0x0ea0) // ANSI
 				{
 					return "Keychron K10 HE";
@@ -279,6 +283,15 @@ NAMESPACE_SOUP
 		KEY_LCTRL,     KEY_LMETA, KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RALT,  KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN,   KEY_ARROW_RIGHT, KEY_NONE,
 	};
 	static_assert(sizeof(layout_keychron_k2_he) == 2 + 6 * 16);
+
+	static const uint8_t layout_keychron_k6_he[] = { 5, 15,
+		KEY_ESCAPE, KEY_1,     KEY_2,    KEY_3,    KEY_4,    KEY_5,    KEY_6,     KEY_7,    KEY_8,    KEY_9,     KEY_0,         KEY_MINUS,        KEY_EQUALS,        KEY_BACKSPACE,    KEY_PAGE_UP,    
+		KEY_TAB,       KEY_Q,     KEY_W,    KEY_E,    KEY_R,    KEY_T,    KEY_Y,     KEY_U,    KEY_I,    KEY_O,     KEY_P,         KEY_BRACKET_LEFT, KEY_BRACKET_RIGHT, KEY_BACKSLASH,    KEY_PAGE_DOWN,  
+		KEY_CAPS_LOCK, KEY_A,     KEY_S,    KEY_D,    KEY_F,    KEY_G,    KEY_H,     KEY_J,    KEY_K,    KEY_L,     KEY_SEMICOLON, KEY_QUOTE,        KEY_ENTER,         KEY_HOME,         KEY_NONE,       
+		KEY_LSHIFT,    KEY_NONE,  KEY_Z,    KEY_X,    KEY_C,    KEY_V,    KEY_B,     KEY_N,    KEY_M,    KEY_COMMA, KEY_PERIOD,    KEY_SLASH,        KEY_RSHIFT,        KEY_ARROW_UP,     KEY_END,        
+		KEY_LCTRL,     KEY_LMETA, KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RALT,  KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN,   KEY_ARROW_RIGHT,
+	};
+	static_assert(sizeof(layout_keychron_k6_he) == 2 + 5 * 15);
 
 	static const uint8_t layout_keychron_k10_he[] = { 6, 20,
 		KEY_ESCAPE,    KEY_F1,    KEY_F2,   KEY_F3,   KEY_F4,   KEY_F5,   KEY_F6,    KEY_F7,   KEY_F8,   KEY_F9,    KEY_F10,       KEY_F11,          KEY_F12,           KEY_PRINT_SCREEN, KEY_OEM_1,      KEY_OEM_2,		KEY_NONE,	   KEY_NONE,		  KEY_NONE,		   KEY_NONE,
@@ -417,6 +430,10 @@ NAMESPACE_SOUP
 							)
 						{
 							kbd.keychron.layout = layout_keychron_k2_he;
+						}
+						else if (hid.product_id == 0x0E60)
+						{
+							kbd.keychron.layout = layout_keychron_k6_he;
 						}
 						else if (kbd.hid.product_id == 0x0ea0)
 						{
