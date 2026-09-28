@@ -324,6 +324,7 @@ NAMESPACE_SOUP
 		case AWAIT_RESPONSE:
 			return isWorkDone() ? await_response_finish_reason : netStatusToString(NET_PENDING);
 		}
+		SOUP_UNREACHABLE;
 	}
 #else
 	HttpRequestTask::HttpRequestTask(HttpRequest&& _hr)
