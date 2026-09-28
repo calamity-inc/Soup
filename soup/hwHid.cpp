@@ -279,8 +279,14 @@ NAMESPACE_SOUP
 					// The product string we got from `parse_uevent_info` is a bit bad because it is actually vendor string + product string.
 					if (auto usb_dev = udev_device_get_parent_with_subsystem_devtype(device, "usb", "usb_device"))
 					{
-						hid.manufacturer_name = udev_device_get_sysattr_value(usb_dev, "manufacturer");
-						hid.product_name = udev_device_get_sysattr_value(usb_dev, "product");
+						if (auto value = udev_device_get_sysattr_value(usb_dev, "manufacturer"))
+						{
+							hid.manufacturer_name = value;
+						}
+						if (auto value = udev_device_get_sysattr_value(usb_dev, "product"))
+						{
+							hid.product_name = value;
+						}
 					}
 
 					// I don't quite trust input_report_byte_length yet, so ensuring a minimum of 1024 bytes.
