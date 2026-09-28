@@ -149,6 +149,10 @@ NAMESPACE_SOUP
 				{
 					return "Keychron Q6 HE";
 				}
+				if (hid.product_id == 0x1260) // ANSI
+				{
+					return "Keychron Q6 HE 8K";
+				}
 				if (hid.product_id == 0x0E20 // ANSI
 					|| hid.product_id == 0x0E21 // ISO
 					|| hid.product_id == 0x0E22 // JIS
@@ -400,6 +404,10 @@ NAMESPACE_SOUP
 							kbd.keychron.layout = layout_keychron_q5_he;
 						}
 						else if (kbd.hid.product_id == 0x0B60)
+						{
+							kbd.keychron.layout = layout_keychron_q6_he;
+						}
+						else if (kbd.hid.product_id == 0x1260) // 8k version, uses same layout
 						{
 							kbd.keychron.layout = layout_keychron_q6_he;
 						}
