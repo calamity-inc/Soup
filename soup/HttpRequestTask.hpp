@@ -24,6 +24,8 @@ NAMESPACE_SOUP
 			START = 0,
 			WAIT_TO_REUSE,
 			CONNECTING,
+			TLS_HANDSHAKE,
+			SEND_REQUEST,
 			AWAIT_RESPONSE,
 		};
 
@@ -42,6 +44,7 @@ NAMESPACE_SOUP
 		certchain_validator_t certchain_validator;
 		Optional<netConnectTask> connector;
 		SharedPtr<Socket> sock;
+		std::string overflow_buffer;
 		time_t await_response_timeout;
 		static constexpr time_t FIRST_CHUNK_TIMEOUT_SECS = 30;
 		static constexpr time_t SUBSEQUENT_CHUNK_TIMEOUT_SECS = 10;
@@ -66,6 +69,7 @@ NAMESPACE_SOUP
 		void sendRequestOnReusedSocket();
 		void cannotRecycle();
 
+		void sendRequest() SOUP_EXCAL;
 		void recvResponse() SOUP_EXCAL;
 
 	public:

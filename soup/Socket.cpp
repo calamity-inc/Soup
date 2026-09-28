@@ -2,6 +2,8 @@
 
 #if !SOUP_WASM
 
+#include <climits> // INT_MAX
+
 #if SOUP_POSIX
 #include <fcntl.h>
 #include <unistd.h> // close
@@ -51,6 +53,7 @@
 #define LOGGING false
 
 #if LOGGING
+#include "format.hpp"
 #include "log.hpp"
 #endif
 
@@ -1397,7 +1400,6 @@ NAMESPACE_SOUP
 		return tls_encrypter_send.isActive();
 	}
 
-	// BUG: send fails to send the full extent of the given data if it exceeds the internal buffer and the socket is nonblocking.
 	bool Socket::send(const void* data, size_t size) SOUP_EXCAL
 	{
 		if (tls_encrypter_send.isActive())
@@ -1405,6 +1407,41 @@ NAMESPACE_SOUP
 			return tls_sendRecordEncrypted(TlsContentType::application_data, data, size);
 		}
 		return transport_send(data, static_cast<int>(size));
+	}
+
+	void Socket::send(const void* data, size_t size, std::string& overflow_buffer) SOUP_EXCAL
+	{
+		if (tls_encrypter_send.isActive())
+		{
+			tls_sendRecordEncrypted(TlsContentType::application_data, data, size, overflow_buffer);
+		}
+		else
+		{
+			// Assuming `overflow_buffer.empty()`
+			const int isize = size > INT_MAX ? INT_MAX : static_cast<int>(size);
+			const size_t sent = transport_send(data, isize);
+			SOUP_IF_UNLIKELY (sent != size)
+			{
+				overflow_buffer = std::string((const char*)data + sent, size - sent);
+			}
+		}
+	}
+
+	bool Socket::sendRetry(std::string& overflow_buffer)
+	{
+		SOUP_IF_UNLIKELY (isClosed())
+		{
+			return false;
+		}
+		const int size = overflow_buffer.size() > INT_MAX ? INT_MAX : static_cast<int>(overflow_buffer.size());
+		if (size_t sent = transport_send(overflow_buffer.data(), size))
+		{
+#if LOGGING
+			logWriteLine(soup::format("sendRetry: {} bytes transmitted", sent));
+#endif
+			overflow_buffer.erase(0, sent);
+		}
+		return true;
 	}
 
 	bool Socket::initUdpBroadcast4()
@@ -1588,7 +1625,7 @@ NAMESPACE_SOUP
 		size_t chunk_size;
 		do
 		{
-			chunk_size = size > 16384 ? 16384 : size;
+			chunk_size = size > 0x4000 ? 0x4000 : size;
 			auto body = tls_encrypter_send.encrypt(content_type, data, chunk_size);
 
 			TlsRecord record{};
@@ -1601,12 +1638,43 @@ NAMESPACE_SOUP
 			record.write(bw);
 
 			body.prepend(header.data(), header.size());
+
 			SOUP_RETHROW_FALSE(transport_send(body));
 
 			data = (const uint8_t*)data + chunk_size;
 			size -= chunk_size;
 		} while (size != 0);
 		return true;
+	}
+
+	void Socket::tls_sendRecordEncrypted(TlsContentType_t content_type, const void* data, size_t size, std::string& overflow_buffer)
+	{
+		size_t chunk_size;
+		do
+		{
+			chunk_size = size > 0x4000 ? 0x4000 : size;
+			auto body = tls_encrypter_send.encrypt(content_type, data, chunk_size);
+
+			TlsRecord record{};
+			record.content_type = content_type;
+			record.length = static_cast<uint16_t>(body.size());
+
+			Buffer header;
+			header.reserve(5);
+			BufferRefWriter bw(header);
+			record.write(bw);
+
+			body.prepend(header.data(), header.size());
+
+			const size_t sent = overflow_buffer.empty() ? transport_send(body.data(), static_cast<int>(body.size())) : 0;
+			if (sent != body.size())
+			{
+				overflow_buffer.append((const char*)body.data() + sent, body.size() - sent);
+			}
+
+			data = (const uint8_t*)data + chunk_size;
+			size -= chunk_size;
+		} while (size != 0);
 	}
 
 	struct CaptureSocketTlsRecvHandshake
@@ -1946,17 +2014,20 @@ NAMESPACE_SOUP
 
 	bool Socket::transport_send(const Buffer<>& buf) const noexcept
 	{
-		return transport_send(buf.data(), static_cast<int>(buf.size()));
+		const auto size = static_cast<int>(buf.size());
+		return transport_send(buf.data(), size) == size;
 	}
 
 	bool Socket::transport_send(const std::string& data) const noexcept
 	{
-		return transport_send(data.data(), static_cast<int>(data.size()));
+		const auto size = static_cast<int>(data.size());
+		return transport_send(data.data(), size) == size;
 	}
 
-	bool Socket::transport_send(const void* data, int size) const noexcept
+	int Socket::transport_send(const void* data, int size) const noexcept
 	{
-		return ::send(fd, (const char*)data, size, 0) == size;
+		const int res = ::send(fd, (const char*)data, size, 0);
+		return res < 0 ? 0 : res;
 	}
 
 	std::string Socket::transport_recvCommon(int max_bytes) SOUP_EXCAL
@@ -2081,14 +2152,6 @@ NAMESPACE_SOUP
 #endif
 			fd = -1;
 		}
-	}
-
-	bool Socket::isWorkDoneOrClosed() const noexcept
-	{
-		return isWorkDone()
-			|| !hasConnection()
-			|| remote_closed
-			;
 	}
 
 	void Socket::keepAlive() SOUP_EXCAL
