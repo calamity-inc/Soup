@@ -137,19 +137,28 @@ NAMESPACE_SOUP
 				{
 					return "Keychron Q1 HE";
 				}
-				if (hid.product_id == 0x0B30) // ANSI
+				if (hid.product_id == 0x0B30 // ANSI
+					|| hid.product_id == 0x0B31 // ISO
+					|| hid.product_id == 0x0B32 // JIS
+					)
 				{
 					return "Keychron Q3 HE";
 				}
-				if (hid.product_id == 0x0B50) // ANSI
+				if (hid.product_id == 0x0B50 // ANSI
+					|| hid.product_id == 0x0B51 // ISO
+					|| hid.product_id == 0x0B52 // JIS
+					)
 				{
 					return "Keychron Q5 HE";
 				}
-				if (hid.product_id == 0x0B60) // ANSI
+				if (hid.product_id == 0x0B60 // ANSI
+					|| hid.product_id == 0x0B61 // ISO
+					|| hid.product_id == 0x0B62 // JIS
+					)
 				{
 					return "Keychron Q6 HE";
 				}
-				if (hid.product_id == 0x1260) // ANSI (unverified pid, might not be correct)
+				if (hid.product_id == 0x1060) // ANSI
 				{
 					return "Keychron Q6 HE 8K";
 				}
@@ -160,11 +169,15 @@ NAMESPACE_SOUP
 				{
 					return "Keychron K2 HE";
 				}
-				if (hid.product_id == 0x0E60) // ANSI
+				if (hid.product_id == 0x0E60 // ANSI
+					|| hid.product_id == 0x0E61 // ISO
+					)
 				{
 					return "Keychron K6 HE";
 				}
-				if (hid.product_id == 0x0EA0) // ANSI (unverified pid, might not be correct)
+				if (hid.product_id == 0x0EA0 // ANSI
+					|| hid.product_id == 0x0EA1 // ISO
+					)
 				{
 					return "Keychron K10 HE";
 				}
@@ -408,19 +421,28 @@ NAMESPACE_SOUP
 						{
 							kbd.keychron.layout = layout_keychron_q1_he;
 						}
-						else if (kbd.hid.product_id == 0x0B30)
+						else if (hid.product_id == 0x0B30 // ANSI
+							|| hid.product_id == 0x0B31 // ISO
+							|| hid.product_id == 0x0B32 // JIS
+							)
 						{
 							kbd.keychron.layout = layout_keychron_q3_he;
 						}
-						else if (kbd.hid.product_id == 0x0B50)
+						else if (hid.product_id == 0x0B50 // ANSI
+							|| hid.product_id == 0x0B51 // ISO
+							|| hid.product_id == 0x0B52 // JIS
+							)
 						{
 							kbd.keychron.layout = layout_keychron_q5_he;
 						}
-						else if (kbd.hid.product_id == 0x0B60)
+						else if (hid.product_id == 0x0B60 // ANSI
+							|| hid.product_id == 0x0B61 // ISO
+							|| hid.product_id == 0x0B62 // JIS
+							)
 						{
 							kbd.keychron.layout = layout_keychron_q6_he;
 						}
-						else if (kbd.hid.product_id == 0x1260) // 8k version, uses same layout
+						else if (kbd.hid.product_id == 0x1260) // q6 he 8k, uses same layout as q6 he
 						{
 							kbd.keychron.layout = layout_keychron_q6_he;
 						}
@@ -431,11 +453,15 @@ NAMESPACE_SOUP
 						{
 							kbd.keychron.layout = layout_keychron_k2_he;
 						}
-						else if (hid.product_id == 0x0E60)
+						else if (hid.product_id == 0x0E60 // ANSI
+							|| hid.product_id == 0x0E61 // ISO
+							)
 						{
 							kbd.keychron.layout = layout_keychron_k6_he;
 						}
-						else if (kbd.hid.product_id == 0x0EA0)
+						else if (hid.product_id == 0x0EA0 // ANSI
+							|| hid.product_id == 0x0EA1 // ISO
+							)
 						{
 							kbd.keychron.layout = layout_keychron_k10_he;
 						}
