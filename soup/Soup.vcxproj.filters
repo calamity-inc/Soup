@@ -1689,15 +1689,6 @@
     <ClInclude Include="netSocketSecurity.hpp">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="cadArchive.hpp">
-      <Filter>data\content-addressed</Filter>
-    </ClInclude>
-    <ClInclude Include="cadInterface.hpp">
-      <Filter>data\content-addressed</Filter>
-    </ClInclude>
-    <ClInclude Include="cadArchiveInterface.hpp">
-      <Filter>data\content-addressed</Filter>
-    </ClInclude>
     <ClInclude Include="hotfix.hpp">
       <Filter>util\config</Filter>
     </ClInclude>
@@ -2826,9 +2817,6 @@
     </Filter>
     <Filter Include="util\config">
       <UniqueIdentifier>{7c9623e7-7b68-4531-b297-c4c8f60a8a63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="data\content-addressed">
-      <UniqueIdentifier>{7f56cda1-a0a3-44f1-a2b7-b769043fa802}</UniqueIdentifier>
     </Filter>
     <Filter Include="net\tru">
       <UniqueIdentifier>{0bb3300c-6756-43e1-b34b-79e932bf7a2f}</UniqueIdentifier>

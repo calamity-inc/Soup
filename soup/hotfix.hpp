@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-#include "fwd.hpp"
 
 #include <cstdint>
 #include <string>
@@ -32,8 +31,6 @@ NAMESPACE_SOUP
 
 		static std::string packU32Tunables(const std::unordered_map<uint32_t, uint32_t>& map);
 
-		static std::string packHotfix(const std::string& u32_pack);
-
-		static void applyHotfix(cadInterface& cai);
+		static void applyU32Tunables(const std::string& u32_pack);
 	};
 }

@@ -3,13 +3,10 @@
 #include <algorithm>
 #include <vector>
 
-#include "cadArchive.hpp"
-#include "cadInterface.hpp"
-#include "md5.hpp"
-#include "Packet.hpp"
+#include "MemoryRefReader.hpp"
 #include "StringWriter.hpp"
 #include "tunables.hpp"
-#include "utility.hpp"
+#include "utility.hpp" // SOUP_MOVE_RETURN
 
 NAMESPACE_SOUP
 {
@@ -44,53 +41,15 @@ NAMESPACE_SOUP
 		SOUP_MOVE_RETURN(sw.data);
 	}
 
-	std::string hotfix::packHotfix(const std::string& u32_pack)
+	void hotfix::applyU32Tunables(const std::string& u32_pack)
 	{
-		const std::string u32_pack_hash = md5::hash(u32_pack);
-
-		// Write root object
-		StringWriter sw;
-		{ uint8_t version = 0; sw.u8(version); }
-		sw.str(md5::DIGEST_BYTES, u32_pack_hash);
-
-		const std::string& root = sw.data;
-		const std::string root_hash = md5::hash(root);
-
-		cadArchive car;
-		car.hash_bytes = md5::DIGEST_BYTES;
-		car.hash_function = "md5";
-		car.root_hash = root_hash;
-		car.objects.emplace(root_hash, root);
-		car.objects.emplace(u32_pack_hash, u32_pack);
-
-		return car.toBinaryString();
-	}
-
-	void hotfix::applyHotfix(cadInterface& cai)
-	{
-		const auto root_hash = cai.getRootHash();
-		SOUP_ASSERT(!root_hash.empty());
-
-		const auto root = cai.getContent(root_hash);
-		std::string u32_pack_hash;
+		MemoryRefReader r(u32_pack);
+		while (r.hasMore())
 		{
-			MemoryRefReader r(root);
-			uint8_t version;
-			r.u8(version);
-			SOUP_ASSERT(version == 0);
-			r.str(md5::DIGEST_BYTES, u32_pack_hash);
-		}
-
-		if (const auto u32_pack = cai.getContent(u32_pack_hash); !u32_pack.empty())
-		{
-			MemoryRefReader r(u32_pack);
-			do
-			{
-				uint32_t hash, value;
-				r.u32_le(hash);
-				r.u32_le(value);
-				tunables<uint32_t>::set(hash, value);
-			} while (r.hasMore());
+			uint32_t hash, value;
+			r.u32_le(hash);
+			r.u32_le(value);
+			tunables<uint32_t>::set(hash, value);
 		}
 	}
 }
