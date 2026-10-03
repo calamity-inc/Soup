@@ -2150,7 +2150,7 @@ NAMESPACE_SOUP
 #else
 			::close(fd);
 #endif
-			fd = -1;
+			fd = (fd_t)-1;
 		}
 	}
 
