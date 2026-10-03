@@ -946,7 +946,9 @@ NAMESPACE_SOUP
 
 			current_out_offset += block_result;
 
-			if (final_block)
+			if (final_block
+				|| (block_result == 0 && br.getInBlock() == end_compressed_data) // non-standard end marker from RFC7692
+				)
 			{
 				break;
 			}

@@ -1,6 +1,7 @@
 #include "WebSocket.hpp"
 
 #include "base64.hpp"
+#include "deflate.hpp"
 #include "MemoryRefReader.hpp"
 #include "rand.hpp"
 #include "sha1.hpp"
@@ -34,7 +35,10 @@ NAMESPACE_SOUP
 			return BAD;
 		}
 		fin = (buf >> 7);
-		opcode = (buf & 0x7F);
+		bool rsv1 = (buf >> 6) & 1; // "Per-Message Compressed" as per RFC7692
+		//bool rsv2 = (buf >> 5) & 1;
+		//bool rsv3 = (buf >> 4) & 1;
+		opcode = (buf & 0xF);
 
 		SOUP_IF_UNLIKELY (!r.u8(buf))
 		{
@@ -83,6 +87,12 @@ NAMESPACE_SOUP
 			{
 				payload[i] ^= mask.at(i % 4);
 			}
+		}
+		if (rsv1)
+		{
+			payload.append("\x00\x00\xff\xff", 4);
+			auto res = deflate::decompress(payload);
+			payload = std::move(res.decompressed);
 		}
 		return OK;
 	}

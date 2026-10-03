@@ -261,6 +261,13 @@ NAMESPACE_SOUP
 							// Firefox throws a SkillIssueException if we say HTTP/1.0
 							std::string cont = "HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nServer: Soup\r\nSec-WebSocket-Accept: ";
 							cont.append(WebSocket::hashKey(*key_value));
+							if (auto extensions = req.findHeader("Sec-WebSocket-Extensions"))
+							{
+								if (extensions->find("permessage-deflate") != std::string::npos)
+								{
+									cont.append("\r\nSec-WebSocket-Extensions: permessage-deflate; client_no_context_takeover");
+								}
+							}
 							cont.append("\r\n\r\n");
 							s.send(cont);
 
