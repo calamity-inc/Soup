@@ -91,8 +91,7 @@ NAMESPACE_SOUP
 		if (rsv1)
 		{
 			payload.append("\x00\x00\xff\xff", 4);
-			auto res = deflate::decompress(payload);
-			payload = std::move(res.decompressed);
+			payload = deflate::decompressZeroTerminated(payload);
 		}
 		return OK;
 	}

@@ -18,6 +18,7 @@
 #include <base64.hpp>
 #include <bitutil.hpp>
 #include <cat.hpp>
+#include <deflate.hpp>
 #include <punycode.hpp>
 #include <ripemd160.hpp>
 #include <sha1.hpp>
@@ -505,6 +506,35 @@ static void unit_data()
 		{
 			assert(base64::urlDecode("SGVsbG8=") == "Hello");
 			assert(base64::urlDecode("8J-YgA==") == "😀");
+		});
+	}
+
+	unit("deflate")
+	{
+		test("decompress", []
+		{
+			assert(deflate::decompress(string::hex2bin("f348cdc9c90700")).decompressed == "Hello");
+			assert(deflate::decompress(string::hex2bin("010500faff48656c6c6f00")).decompressed == "Hello");
+		});
+
+		test("context", []
+		{
+			std::string data = string::hex2bin("f248cdc9c907000000ffff");
+			deflate::Context ctx;
+			deflate::initContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
+			uint8_t out[16];
+			memset(out, 0, sizeof(out));
+			bool final_block;
+			assert(deflate::decompressBlock(ctx, out, 0, sizeof(out), final_block) == 5);
+			assert(memcmp(&out[0], "Hello", 5) == 0);
+			assert(deflate::decompressBlock(ctx, out, 5, sizeof(out), final_block) == 0);
+			assert(deflate::decompressBlock(ctx, out, 5, sizeof(out), final_block) == -1);
+		});
+
+		test("decompressZeroTerminated", []
+		{
+			assert(deflate::decompressZeroTerminated(string::hex2bin("f248cdc9c907000000ffff")) == "Hello");
+			assert(deflate::decompressZeroTerminated(string::hex2bin("000500faff48656c6c6f000000ffff")) == "Hello");
 		});
 	}
 
