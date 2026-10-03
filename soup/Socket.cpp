@@ -2164,7 +2164,17 @@ NAMESPACE_SOUP
 
 	std::string Socket::toString() const SOUP_EXCAL
 	{
-		return peer.toString();
+		auto res = peer.toString();
+		if (!hasConnection())
+		{
+			res.append(ObfusString(" <closed>").str());
+		}
+		else if (custom_data.isStructInMap(netReuseTag))
+		{
+			res.push_back(' ');
+			res.append(custom_data.getStructFromMapConst(netReuseTag).toString());
+		}
+		return res;
 	}
 }
 
