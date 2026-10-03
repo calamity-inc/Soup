@@ -1147,8 +1147,6 @@
     <ClInclude Include="LcgRng.hpp" />
     <ClInclude Include="LexemeParser.hpp" />
     <ClInclude Include="log.hpp" />
-    <ClInclude Include="logSink.hpp" />
-    <ClInclude Include="logStdSink.hpp" />
     <ClInclude Include="lyoStyle.hpp" />
     <ClInclude Include="lyoStylesheet.hpp" />
     <ClInclude Include="memObject.hpp" />

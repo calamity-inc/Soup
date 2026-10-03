@@ -871,12 +871,6 @@
     <ClInclude Include="BufferWriter.hpp">
       <Filter>io\stream</Filter>
     </ClInclude>
-    <ClInclude Include="logSink.hpp">
-      <Filter>log</Filter>
-    </ClInclude>
-    <ClInclude Include="logStdSink.hpp">
-      <Filter>log</Filter>
-    </ClInclude>
     <ClInclude Include="log.hpp">
       <Filter>log</Filter>
     </ClInclude>
