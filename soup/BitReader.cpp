@@ -141,23 +141,4 @@ NAMESPACE_SOUP
 #endif
 		return true;
 	}
-
-	bool BitReader::u20_dyn(uint32_t& val)
-	{
-		uint8_t nibbles_needed;
-		if (!u8(2, nibbles_needed))
-		{
-			return false;
-		}
-		val = 0;
-		if (nibbles_needed == 0
-			? t(20, val)
-			: t(nibbles_needed * 4, val)
-			)
-		{
-			//std::cout << "Got u20_dyn: " << val << "\n";
-			return true;
-		}
-		return false;
-	}
 }

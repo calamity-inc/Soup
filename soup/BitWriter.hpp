@@ -57,6 +57,5 @@ NAMESPACE_SOUP
 
 		bool b(bool val);
 		bool u8(uint8_t bits, uint8_t val);
-		[[deprecated]] bool u20_dyn(uint32_t val); // A 20-bit value encoded using 6-22 bits. Assumes that smaller numbers are the norm.
 	};
 }

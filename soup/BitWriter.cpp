@@ -61,31 +61,4 @@ NAMESPACE_SOUP
 			&& u8(next_byte_bits, val)
 			;
 	}
-
-	bool BitWriter::u20_dyn(uint32_t val)
-	{
-		uint8_t nibbles_needed = 0;
-		if (val <= 0xF)
-		{
-			nibbles_needed = 1;
-		}
-		else if (val <= 0xFF)
-		{
-			nibbles_needed = 2;
-		}
-		else if (val <= 0xFFF)
-		{
-			nibbles_needed = 3;
-		}
-
-		if (!u8(2, nibbles_needed))
-		{
-			return false;
-		}
-
-		return nibbles_needed == 0
-			? t(20, val)
-			: t(nibbles_needed * 4, val)
-			;
-	}
 }
