@@ -519,22 +519,31 @@ static void unit_data()
 
 		test("context", []
 		{
-			std::string data = string::hex2bin("f248cdc9c907000000ffff");
 			deflate::Context ctx;
-			deflate::initContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
 			uint8_t out[16];
 			memset(out, 0, sizeof(out));
 			bool final_block;
+
+			std::string data = string::hex2bin("f248cdc9c90700" "0000ffff");
+			deflate::initContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
 			assert(deflate::decompressBlock(ctx, out, 0, sizeof(out), final_block) == 5);
 			assert(memcmp(&out[0], "Hello", 5) == 0);
 			assert(deflate::decompressBlock(ctx, out, 5, sizeof(out), final_block) == 0);
 			assert(deflate::decompressBlock(ctx, out, 5, sizeof(out), final_block) == -1);
+
+			// Reuse sliding window
+			data = string::hex2bin("f200110000" "0000ffff");
+			deflate::initContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
+			assert(deflate::decompressBlock(ctx, out, 5, sizeof(out), final_block) == 5);
+			assert(memcmp(&out[0], "HelloHello", 10) == 0);
+			assert(deflate::decompressBlock(ctx, out, 10, sizeof(out), final_block) == 0);
+			assert(deflate::decompressBlock(ctx, out, 10, sizeof(out), final_block) == -1);
 		});
 
 		test("decompressZeroTerminated", []
 		{
-			assert(deflate::decompressZeroTerminated(string::hex2bin("f248cdc9c907000000ffff")) == "Hello");
-			assert(deflate::decompressZeroTerminated(string::hex2bin("000500faff48656c6c6f000000ffff")) == "Hello");
+			assert(deflate::decompressZeroTerminated(string::hex2bin("f248cdc9c90700" "0000ffff")) == "Hello");
+			assert(deflate::decompressZeroTerminated(string::hex2bin("000500faff48656c6c6f00" "0000ffff")) == "Hello");
 		});
 	}
 
