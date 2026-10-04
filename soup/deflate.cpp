@@ -911,7 +911,6 @@ NAMESPACE_SOUP
 			{
 				return {};
 			}
-			current_out_offset += block_result;
 
 			switch (checksum_type)
 			{
@@ -926,6 +925,8 @@ NAMESPACE_SOUP
 				check_sum = adler32::hash(out + current_out_offset, block_result, check_sum);
 				break;
 			}
+
+			current_out_offset += block_result;
 		} while (!final_block);
 
 		res.decompressed.resize(current_out_offset);
