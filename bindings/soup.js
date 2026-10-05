@@ -1,7 +1,5 @@
 (function()
 {
-	console.warn("Soup JS Bindings are deprecated. Consider using PlutoScript (https://github.com/PlutoLang/PlutoScript) instead as Pluto's standard library consists of many useful libraries with much more thoughtful Soup bindings.");
-
 	var soup_q = [];
 
 	window.soup = {
