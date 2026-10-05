@@ -1283,7 +1283,6 @@
     <ClInclude Include="MysqlHandshakeResponse.hpp" />
     <ClInclude Include="MysqlStmtPrepareOk.hpp" />
     <ClInclude Include="Notifyable.hpp" />
-    <ClInclude Include="OpaqueString.hpp" />
     <ClInclude Include="ParserState.hpp" />
     <ClInclude Include="parse_tree.hpp" />
     <ClInclude Include="os.hpp" />
@@ -1685,7 +1684,6 @@
     <ClCompile Include="DefaultRngInterface.cpp" />
     <ClCompile Include="MysqlConnection.cpp" />
     <ClCompile Include="Oid.cpp" />
-    <ClCompile Include="OpaqueString.cpp" />
     <ClCompile Include="os.cpp" />
     <ClCompile Include="ParserState.cpp" />
     <ClCompile Include="parse_tree.cpp" />

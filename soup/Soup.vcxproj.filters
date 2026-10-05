@@ -508,9 +508,6 @@
     <ClInclude Include="structing.hpp">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="OpaqueString.hpp">
-      <Filter>util\string</Filter>
-    </ClInclude>
     <ClInclude Include="MysqlHandshake.hpp">
       <Filter>net\mysql</Filter>
     </ClInclude>
@@ -1945,9 +1942,6 @@
     </ClCompile>
     <ClCompile Include="ModuleHider.cpp">
       <Filter>os</Filter>
-    </ClCompile>
-    <ClCompile Include="OpaqueString.cpp">
-      <Filter>util\string</Filter>
     </ClCompile>
     <ClCompile Include="unit_testing.cpp">
       <Filter>util</Filter>
