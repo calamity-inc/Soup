@@ -3,8 +3,8 @@ name: Build
 on: push
 
 jobs:
-  ubuntu-24-04:
-    runs-on: ubuntu-24.04
+  ubuntu-26-04:
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
@@ -33,21 +33,6 @@ jobs:
 
       - run: ./CLI/soup bench
 
-  debian-10:
-    runs-on: [debian-10]
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Build Soup
-        run: php build_lib.php
-
-      - name: Build CLI
-        run: php build_cli.php
-
-      - run: ./CLI/soup test
-
-      - run: ./CLI/soup bench
-
       - name: Ensure files exist
         uses: andstor/file-existence-action@v3
         with:
@@ -57,7 +42,7 @@ jobs:
       - name: Upload soup
         uses: actions/upload-artifact@v7
         with:
-          name: "Debian 10 and above (X64)"
+          name: "Ubuntu 22.04 and above (X64)"
           path: |
             CLI/soup
             libsoup.a
