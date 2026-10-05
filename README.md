@@ -24,6 +24,15 @@ This will make it so that you have to use `#include <soup/NAME.hpp>` in your cod
 
 ## Getting Started
 
-If you want some ideas as to how start using Soup, check out [the docs](docs).
+Once you have Soup included in your project, you have a truly ridiculous amount of APIs at your disposal, including:
+- HTTP — [sync](soup/HttpRequest.hpp) and [async](soup/HttpRequestTask.hpp)
+- [JSON](docs/cpp/json.md)
+- [Regex](soup/Regex.hpp) (supports look-behind 😉)
+- [Pattern Scanning](docs/cpp/pattern-scanning.md)
+- [RSA](docs/cpp/rsa.md)
+
+If anything seems unclear, feel free to dig into the code or [ask a question](https://github.com/calamity-inc/Soup/issues/new).
+
+---
 
 If you're looking to use Soup from a language other than C++, have a look at [the bindings](https://github.com/calamity-inc/Soup/tree/senpai/bindings).
