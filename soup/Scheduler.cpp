@@ -27,7 +27,8 @@ NAMESPACE_SOUP
 	SharedPtr<Socket> Scheduler::addSocket() SOUP_EXCAL
 	{
 		auto s = soup::make_shared<Socket>();
-		addSocket(s);
+		//addSocket(s); // can't setBlocking on an uninitalised socket
+		addWorker(s);
 		return s;
 	}
 
