@@ -1,4 +1,5 @@
 +*.cpp
+c++ 20
 static
 
 arg -O3

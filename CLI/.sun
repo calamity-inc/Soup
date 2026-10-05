@@ -1,3 +1,4 @@
 +*.cpp
+c++ 20
 name soup
 require ../soup

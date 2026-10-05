@@ -12,7 +12,7 @@ NAMESPACE_SOUP
 	{
 		std::string prog;
 		std::string prog_ar;
-		std::string lang; // defaults to "c++20" or "c++17" depending on platform
+		std::string lang = "c++20";
 		bool rtti = false;
 		std::vector<std::string> extra_args{};
 		std::vector<std::string> extra_linker_args{};

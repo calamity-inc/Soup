@@ -8,12 +8,9 @@ NAMESPACE_SOUP
 	Compiler::Compiler()
 		: prog("clang"),
 #if SOUP_WINDOWS
-		prog_ar("llvm-ar"),
-		lang("c++20")
+		prog_ar("llvm-ar")
 #else
-		// Debian's at clang 11 right now, which does support C++20, but not enough to compile Soup without modifications.
-		prog_ar("ar"),
-		lang("c++17")
+		prog_ar("ar")
 #endif
 	{
 	}

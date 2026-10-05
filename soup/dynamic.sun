@@ -1,3 +1,4 @@
 +*.cpp
+c++ 20
 dynamic
 arg -DSOUP_STANDALONE
