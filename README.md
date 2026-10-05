@@ -22,12 +22,6 @@ require ../Soup/soup include_dir=../Soup
 
 This will make it so that you have to use `#include <soup/NAME.hpp>` in your code, which we recommend to avoid name clashes, similar to opting not to use `using namespace`. However, if you omit the `include_dir` part, you can use `#include <NAME.hpp>` directly.
 
-### Bindings
-
-To build Soup as a DLL/SO with C ABI exports, run `php build_lib.php` (in the root folder) or `sun dynamic` (in the "soup" folder).
-
-For WASM, it can be done via `php wasm.php` (in the root folder) or `sun wasm` (in the "soup" folder).
-
 ## Getting Started
 
 If you want some ideas as to how start using Soup, check out [the docs](docs).
