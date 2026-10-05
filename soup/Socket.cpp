@@ -357,11 +357,6 @@ NAMESPACE_SOUP
 #endif
 	}
 
-	bool Socket::setNonBlocking() noexcept
-	{
-		return setBlocking(false);
-	}
-
 	bool Socket::certchain_validator_none(const X509Certchain&, const std::string&, StructMap&) SOUP_EXCAL
 	{
 		return true;
