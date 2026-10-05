@@ -476,6 +476,10 @@ static void unit_data()
 		{
 			assert(string::bin2hex(base58::decode("5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ")) == "800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D");
 		});
+		test("encode", []
+		{
+			assert(base58::encode(string::hex2bin("800C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D507A5B8D")) == "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ");
+		});
 	}
 	
 	unit("base64")

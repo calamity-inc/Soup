@@ -1991,9 +1991,6 @@
     <ClCompile Include="bech32.cpp">
       <Filter>crypto\btc</Filter>
     </ClCompile>
-    <ClCompile Include="base58.cpp">
-      <Filter>data\enc</Filter>
-    </ClCompile>
     <ClCompile Include="FileRaii.cpp">
       <Filter>io\files</Filter>
     </ClCompile>

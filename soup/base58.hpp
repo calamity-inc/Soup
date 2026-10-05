@@ -1,13 +1,8 @@
 #pragma once
 
-#include <string>
-
-#include "base.hpp"
+#include "CustomEncoding.hpp"
 
 NAMESPACE_SOUP
 {
-	struct base58
-	{
-		[[nodiscard]] static std::string decode(const std::string& in);
-	};
+	using base58 = CustomEncoding<"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz">;
 }
