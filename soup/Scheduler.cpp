@@ -34,10 +34,7 @@ NAMESPACE_SOUP
 
 	void Scheduler::addSocket(SharedPtr<Socket> sock) SOUP_EXCAL
 	{
-		if (!blocking)
-		{
-			sock->setNonBlocking();
-		}
+		sock->setBlocking(blocking);
 		return addWorker(std::move(sock));
 	}
 #endif
