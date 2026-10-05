@@ -62,7 +62,8 @@ A common encapsulation for the signature is base64-encoded binary data, which yo
 
 ```cpp
 #include <soup/base64.hpp>
-
+```
+```cpp
 std::string signature_base64 = soup::base64::encode(signature_bigint.toMessage());
 ```
 

@@ -8,7 +8,8 @@ The API for this is `Range::scan`. To get the range for the current process/modu
 #include <soup/Module.hpp>
 #include <soup/Pattern.hpp>
 #include <soup/pattern_macros.hpp> // SIG_INST
-
+```
+```cpp
 SIG_INST("C3");
 std::cout << Module(nullptr).range.scan(sig_inst).as<void*>(); // 00007FF_________
 ```
