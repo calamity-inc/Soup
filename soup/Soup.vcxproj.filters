@@ -662,10 +662,10 @@
       <Filter>vis\layout</Filter>
     </ClInclude>
     <ClInclude Include="AssemblyBuilder.hpp">
-      <Filter>cpu\x64</Filter>
+      <Filter>hardware\cpu\x64</Filter>
     </ClInclude>
     <ClInclude Include="x64.hpp">
-      <Filter>cpu\x64</Filter>
+      <Filter>hardware\cpu\x64</Filter>
     </ClInclude>
     <ClInclude Include="netIntel.hpp">
       <Filter>net\intel</Filter>
@@ -867,9 +867,6 @@
     </ClInclude>
     <ClInclude Include="BufferWriter.hpp">
       <Filter>io\stream</Filter>
-    </ClInclude>
-    <ClInclude Include="log.hpp">
-      <Filter>log</Filter>
     </ClInclude>
     <ClInclude Include="netInfo.hpp">
       <Filter>net</Filter>
@@ -1452,7 +1449,7 @@
       <Filter>lang\compiler\ir</Filter>
     </ClInclude>
     <ClInclude Include="CpuInfo.hpp">
-      <Filter>cpu</Filter>
+      <Filter>hardware\cpu</Filter>
     </ClInclude>
     <ClInclude Include="laMathFrontend.hpp">
       <Filter>lang\compiler\frontend</Filter>
@@ -1543,13 +1540,13 @@
       <Filter>mem</Filter>
     </ClInclude>
     <ClInclude Include="CompactDetourHook.hpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClInclude>
     <ClInclude Include="DetourHook.hpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClInclude>
     <ClInclude Include="DetourHookBase.hpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClInclude>
     <ClInclude Include="aes_intrin.hpp">
       <Filter>crypto</Filter>
@@ -1570,16 +1567,16 @@
       <Filter>io\tar</Filter>
     </ClInclude>
     <ClInclude Include="HookBase.hpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClInclude>
     <ClInclude Include="ReplacementHook.hpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClInclude>
     <ClInclude Include="Spinlock.hpp">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="CallsiteHook.hpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClInclude>
     <ClInclude Include="md5.hpp">
       <Filter>data\hash</Filter>
@@ -1588,7 +1585,7 @@
       <Filter>ling</Filter>
     </ClInclude>
     <ClInclude Include="DetourHookNoreg.hpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClInclude>
     <ClInclude Include="IrcServer.hpp">
       <Filter>net</Filter>
@@ -1697,6 +1694,9 @@
     </ClInclude>
     <ClInclude Include="faketls.hpp">
       <Filter>net\tls</Filter>
+    </ClInclude>
+    <ClInclude Include="log.hpp">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2034,10 +2034,10 @@
       <Filter>vis\layout</Filter>
     </ClCompile>
     <ClCompile Include="AssemblyBuilder.cpp">
-      <Filter>cpu\x64</Filter>
+      <Filter>hardware\cpu\x64</Filter>
     </ClCompile>
     <ClCompile Include="x64.cpp">
-      <Filter>cpu\x64</Filter>
+      <Filter>hardware\cpu\x64</Filter>
     </ClCompile>
     <ClCompile Include="netIntel.cpp">
       <Filter>net\intel</Filter>
@@ -2119,9 +2119,6 @@
     </ClCompile>
     <ClCompile Include="LcgRng.cpp">
       <Filter>algos\rng</Filter>
-    </ClCompile>
-    <ClCompile Include="log.cpp">
-      <Filter>log</Filter>
     </ClCompile>
     <ClCompile Include="netInfo.cpp">
       <Filter>net</Filter>
@@ -2408,7 +2405,7 @@
       <Filter>lang\compiler\ir</Filter>
     </ClCompile>
     <ClCompile Include="CpuInfo.cpp">
-      <Filter>cpu</Filter>
+      <Filter>hardware\cpu</Filter>
     </ClCompile>
     <ClCompile Include="laMathFrontend.cpp">
       <Filter>lang\compiler\frontend</Filter>
@@ -2466,25 +2463,25 @@
       <Filter>mem</Filter>
     </ClCompile>
     <ClCompile Include="DetourHook.cpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClCompile>
     <ClCompile Include="CompactDetourHook.cpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClCompile>
     <ClCompile Include="DetourHookBase.cpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClCompile>
     <ClCompile Include="TarReader.cpp">
       <Filter>io\tar</Filter>
     </ClCompile>
     <ClCompile Include="HookBase.cpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClCompile>
     <ClCompile Include="ReplacementHook.cpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClCompile>
     <ClCompile Include="CallsiteHook.cpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClCompile>
     <ClCompile Include="md5.cpp">
       <Filter>data\hash</Filter>
@@ -2493,7 +2490,7 @@
       <Filter>ling</Filter>
     </ClCompile>
     <ClCompile Include="DetourHookNoreg.cpp">
-      <Filter>util\hooks</Filter>
+      <Filter>mem\hooks</Filter>
     </ClCompile>
     <ClCompile Include="IrcServer.cpp">
       <Filter>net</Filter>
@@ -2545,6 +2542,9 @@
     </ClCompile>
     <ClCompile Include="faketls.cpp">
       <Filter>net\tls</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2665,12 +2665,6 @@
     <Filter Include="vis\layout">
       <UniqueIdentifier>{16ee7ff8-9fa2-45ca-a0dc-af917f737be9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cpu">
-      <UniqueIdentifier>{b18c0394-f8e2-4766-8d61-5935815a793a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cpu\x64">
-      <UniqueIdentifier>{5cebdfd1-ff30-423b-ac88-52db95a78ef4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net\intel">
       <UniqueIdentifier>{8dd56217-4732-43f0-9717-85a0debe1adf}</UniqueIdentifier>
     </Filter>
@@ -2700,9 +2694,6 @@
     </Filter>
     <Filter Include="algos\rng\interface">
       <UniqueIdentifier>{915ef795-feb7-4250-86db-669eca6e99fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="log">
-      <UniqueIdentifier>{4c970a96-ef10-46fc-a11b-19d57ae6ff4d}</UniqueIdentifier>
     </Filter>
     <Filter Include="lang\reflection">
       <UniqueIdentifier>{9004d1b5-0669-4083-b4a5-aa132fc59a80}</UniqueIdentifier>
@@ -2794,9 +2785,6 @@
     <Filter Include="mem\allocators">
       <UniqueIdentifier>{8d0fb062-3f88-4509-8569-f89f3fb97186}</UniqueIdentifier>
     </Filter>
-    <Filter Include="util\hooks">
-      <UniqueIdentifier>{a7f4aeee-77a2-4381-a5cb-7d9492511b79}</UniqueIdentifier>
-    </Filter>
     <Filter Include="io\tar">
       <UniqueIdentifier>{362041cb-1458-4b94-a12e-e5369f3ce84e}</UniqueIdentifier>
     </Filter>
@@ -2814,6 +2802,15 @@
     </Filter>
     <Filter Include="net\tru">
       <UniqueIdentifier>{0bb3300c-6756-43e1-b34b-79e932bf7a2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\cpu">
+      <UniqueIdentifier>{b18c0394-f8e2-4766-8d61-5935815a793a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hardware\cpu\x64">
+      <UniqueIdentifier>{5cebdfd1-ff30-423b-ac88-52db95a78ef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mem\hooks">
+      <UniqueIdentifier>{a7f4aeee-77a2-4381-a5cb-7d9492511b79}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
