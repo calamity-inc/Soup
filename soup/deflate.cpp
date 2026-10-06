@@ -781,18 +781,31 @@ NAMESPACE_SOUP
 		return decompress(compressed_data, compressed_data_size, getMaxDecompressedSize(compressed_data, compressed_data_size));
 	}
 
-	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size) SOUP_EXCAL
+	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t decompressed_size) SOUP_EXCAL
 	{
+		DecompressResult res{};
+		res.decompressed = std::string(decompressed_size, '\0'); // excal
+		res.compressed_size = decompress(compressed_data, compressed_data_size, res.decompressed.data(), decompressed_size, res.checksum_state);
+		SOUP_IF_UNLIKELY (res.compressed_size == -1)
+		{
+			return {};
+		}
+		res.decompressed.resize(decompressed_size);
+		return res;
+	}
+
+	size_t deflate::decompress(const void* compressed_data, size_t compressed_data_size, void* _out, size_t& decompressed_size, ChecksumState& out_checksum_state) noexcept
+	{
+		const size_t max_decompressed_size = decompressed_size;
+
 		const uint8_t* current_compressed_data = static_cast<const uint8_t*>(compressed_data);
 		const uint8_t* end_compressed_data = current_compressed_data + compressed_data_size;
 
-		DecompressResult res{};
-
 		checksum_type checksum_type = checksum_type::NONE;
 
-		if ((current_compressed_data + 2) > end_compressed_data)
+		SOUP_IF_UNLIKELY ((current_compressed_data + 2) > end_compressed_data)
 		{
-			return {};
+			return -1;
 		}
 
 		if (current_compressed_data[0] == 0x1f && current_compressed_data[1] == 0x8b) // gzip magic
@@ -800,7 +813,7 @@ NAMESPACE_SOUP
 			current_compressed_data += 2;
 			if ((current_compressed_data + 8) > end_compressed_data || current_compressed_data[0] != 0x08)
 			{
-				return {};
+				return -1;
 			}
 
 			current_compressed_data++;
@@ -812,7 +825,7 @@ NAMESPACE_SOUP
 			{
 				if ((current_compressed_data + 2) > end_compressed_data)
 				{
-					return {};
+					return -1;
 				}
 
 				current_compressed_data += 2;
@@ -822,7 +835,7 @@ NAMESPACE_SOUP
 			{
 				if ((current_compressed_data + 2) > end_compressed_data)
 				{
-					return {};
+					return -1;
 				}
 
 				unsigned short extra_field_len = ((unsigned short)current_compressed_data[0]) | (((unsigned short)current_compressed_data[1]) << 8);
@@ -830,7 +843,7 @@ NAMESPACE_SOUP
 
 				if ((current_compressed_data + extra_field_len) > end_compressed_data)
 				{
-					return {};
+					return -1;
 				}
 
 				current_compressed_data += extra_field_len;
@@ -842,7 +855,7 @@ NAMESPACE_SOUP
 				{
 					if (current_compressed_data >= end_compressed_data)
 					{
-						return {};
+						return -1;
 					}
 
 					current_compressed_data++;
@@ -855,7 +868,7 @@ NAMESPACE_SOUP
 				{
 					if (current_compressed_data >= end_compressed_data)
 					{
-						return {};
+						return -1;
 					}
 
 					current_compressed_data++;
@@ -864,10 +877,10 @@ NAMESPACE_SOUP
 
 			if (flags & 0x20)
 			{
-				return {};
+				return -1;
 			}
 
-			res.checksum_state = CHKSUM_FAIL;
+			out_checksum_state = CHKSUM_FAIL;
 			checksum_type = checksum_type::GZIP;
 		}
 		else if ((current_compressed_data[0] & 0x0f) == 0x08)
@@ -883,13 +896,13 @@ NAMESPACE_SOUP
 				{
 					if ((current_compressed_data + 4) > end_compressed_data)
 					{
-						return {};
+						return -1;
 					}
 					current_compressed_data += 4;
 				}
 			}
 
-			res.checksum_state = CHKSUM_FAIL;
+			out_checksum_state = CHKSUM_FAIL;
 			checksum_type = checksum_type::ZLIB;
 		}
 
@@ -901,8 +914,7 @@ NAMESPACE_SOUP
 
 		DeflateBitReader br(current_compressed_data, end_compressed_data);
 
-		res.decompressed = std::string(max_decompressed_size, '\0'); // excal
-		auto out = reinterpret_cast<uint8_t*>(&res.decompressed[0]);
+		auto out = reinterpret_cast<uint8_t*>(_out);
 		size_t current_out_offset = 0;
 		bool final_block;
 		do
@@ -910,7 +922,7 @@ NAMESPACE_SOUP
 			unsigned int block_result = decompressBlock(reinterpret_cast<Context&>(br), out, current_out_offset, max_decompressed_size, final_block);
 			SOUP_IF_UNLIKELY (block_result == -1)
 			{
-				return {};
+				return -1;
 			}
 
 			switch (checksum_type)
@@ -930,7 +942,7 @@ NAMESPACE_SOUP
 			current_out_offset += block_result;
 		} while (!final_block);
 
-		res.decompressed.resize(current_out_offset);
+		decompressed_size = current_out_offset;
 
 		br.alignToByte();
 		current_compressed_data = br.getInBlock();
@@ -945,7 +957,7 @@ NAMESPACE_SOUP
 		case checksum_type::GZIP:
 			if ((current_compressed_data + 4) > end_compressed_data)
 			{
-				return {};
+				return -1;
 			}
 
 			stored_check_sum = ((unsigned int)current_compressed_data[0]);
@@ -955,7 +967,7 @@ NAMESPACE_SOUP
 
 			if (stored_check_sum == check_sum)
 			{
-				res.checksum_state = CHKSUM_PASS;
+				out_checksum_state = CHKSUM_PASS;
 			}
 
 			current_compressed_data += 4;
@@ -964,7 +976,7 @@ NAMESPACE_SOUP
 		case checksum_type::ZLIB:
 			if ((current_compressed_data + 4) > end_compressed_data)
 			{
-				return {};
+				return -1;
 			}
 
 			stored_check_sum = ((unsigned int)current_compressed_data[0]) << 24;
@@ -974,16 +986,14 @@ NAMESPACE_SOUP
 
 			if (stored_check_sum == check_sum)
 			{
-				res.checksum_state = CHKSUM_PASS;
+				out_checksum_state = CHKSUM_PASS;
 			}
 
 			current_compressed_data += 4;
 			break;
 		}
 
-		res.compressed_size = (current_compressed_data - (unsigned char*)compressed_data);
-
-		return res;
+		return (current_compressed_data - (unsigned char*)compressed_data);
 	}
 
 	void deflate::initContext(Context& ctx, const uint8_t* compressed_data, size_t compressed_data_size) noexcept

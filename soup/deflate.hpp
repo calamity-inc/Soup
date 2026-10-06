@@ -31,6 +31,7 @@ NAMESPACE_SOUP
 		static DecompressResult decompress(const std::string& compressed_data, size_t max_decompressed_size) SOUP_EXCAL;
 		static DecompressResult decompress(const void* compressed_data, size_t compressed_data_size) SOUP_EXCAL;
 		static DecompressResult decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size) SOUP_EXCAL;
+		static size_t decompress(const void* compressed_data, size_t compressed_data_size, void* out, /*in/out*/ size_t& decompressed_size, /*out*/ ChecksumState& checksum_state) noexcept; // Returns compressed size or -1 on failure.
 
 		[[nodiscard]] static size_t getMaxDecompressedSize(const void* compressed_data, size_t compressed_data_size) noexcept
 		{
