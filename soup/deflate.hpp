@@ -12,12 +12,18 @@ NAMESPACE_SOUP
 
 	struct deflate
 	{
+		enum ChecksumState : uint8_t
+		{
+			CHKSUM_NONE,
+			CHKSUM_PASS,
+			CHKSUM_FAIL,
+		};
+
 		struct DecompressResult
 		{
 			std::string decompressed{};
 			size_t compressed_size = 0;
-			bool checksum_present = false;
-			bool checksum_mismatch = false;
+			ChecksumState checksum_state = CHKSUM_NONE;
 		};
 
 		// accepts DEFLATE, gzip & zlib formats

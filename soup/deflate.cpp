@@ -867,7 +867,7 @@ NAMESPACE_SOUP
 				return {};
 			}
 
-			res.checksum_present = true;
+			res.checksum_state = CHKSUM_FAIL;
 			checksum_type = checksum_type::GZIP;
 		}
 		else if ((current_compressed_data[0] & 0x0f) == 0x08)
@@ -889,7 +889,7 @@ NAMESPACE_SOUP
 				}
 			}
 
-			res.checksum_present = true;
+			res.checksum_state = CHKSUM_FAIL;
 			checksum_type = checksum_type::ZLIB;
 		}
 
@@ -953,7 +953,10 @@ NAMESPACE_SOUP
 			stored_check_sum |= ((unsigned int)current_compressed_data[2]) << 16;
 			stored_check_sum |= ((unsigned int)current_compressed_data[3]) << 24;
 
-			res.checksum_mismatch |= (stored_check_sum != check_sum);
+			if (stored_check_sum == check_sum)
+			{
+				res.checksum_state = CHKSUM_PASS;
+			}
 
 			current_compressed_data += 4;
 			break;
@@ -969,7 +972,10 @@ NAMESPACE_SOUP
 			stored_check_sum |= ((unsigned int)current_compressed_data[2]) << 8;
 			stored_check_sum |= ((unsigned int)current_compressed_data[3]);
 
-			res.checksum_mismatch |= (stored_check_sum != check_sum);
+			if (stored_check_sum == check_sum)
+			{
+				res.checksum_state = CHKSUM_PASS;
+			}
 
 			current_compressed_data += 4;
 			break;
