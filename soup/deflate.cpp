@@ -88,13 +88,13 @@ NAMESPACE_SOUP
 		 * @param in_block pointer to the start of the compressed block
 		 * @param in_block_end pointer to the end of the compressed block + 1
 		 */
-		explicit DeflateBitReader(const uint8_t* in_block, const uint8_t* in_block_end)
+		explicit DeflateBitReader(const uint8_t* in_block, const uint8_t* in_block_end) noexcept
 			: in_block_(in_block), in_block_end_(in_block_end), in_block_start_(in_block)
 		{
 		}
 
 		/** Refill 32 bits at a time if the architecture allows it, otherwise do nothing. */
-		void refill32()
+		void refill32() noexcept
 		{
 #if SOUP_BITS == 64
 			if (this->shifter_bit_count_ <= 32 && (this->in_block_ + 4) <= this->in_block_end_)
@@ -125,13 +125,13 @@ NAMESPACE_SOUP
 		 *
 		 * @param n size of value to consume, in bits
 		 */
-		void consumeBits(const int n)
+		void consumeBits(const int n) noexcept
 		{
 			this->shifter_data_ >>= n;
 			this->shifter_bit_count_ -= n;
 		}
 
-		void modifyInBlock(const int v)
+		void modifyInBlock(const int v) noexcept
 		{
 			this->in_block_ += v;
 		}
@@ -143,7 +143,7 @@ NAMESPACE_SOUP
 		 *
 		 * @return value, or -1 for failure
 		 */
-		unsigned int getBits(const int n)
+		[[nodiscard]] unsigned int getBits(const int n) noexcept
 		{
 			if (this->shifter_bit_count_ < n)
 			{
@@ -175,7 +175,7 @@ NAMESPACE_SOUP
 		 *
 		 * @return value
 		 */
-		unsigned int peekBits()
+		[[nodiscard]] unsigned int peekBits() noexcept
 		{
 			if (this->shifter_bit_count_ < 16)
 			{
@@ -192,9 +192,10 @@ NAMESPACE_SOUP
 		}
 
 		/** Re-align bitstream on a byte */
-		bool alignToByte()
+		bool alignToByte() noexcept
 		{
-			while (this->shifter_bit_count_ >= 8) {
+			while (this->shifter_bit_count_ >= 8)
+			{
 				this->shifter_bit_count_ -= 8;
 				this->in_block_--;
 				if (this->in_block_ < this->in_block_start_)
@@ -208,9 +209,9 @@ NAMESPACE_SOUP
 			return true;
 		}
 
-		const uint8_t* getInBlock() { return this->in_block_; };
-		const uint8_t* getInBlockEnd() { return this->in_block_end_; };
-		const uint8_t* getInBlockStart() { return this->in_block_start_; };
+		[[nodiscard]] const uint8_t* getInBlock() noexcept { return this->in_block_; };
+		[[nodiscard]] const uint8_t* getInBlockEnd() noexcept { return this->in_block_end_; };
+		[[nodiscard]] const uint8_t* getInBlockStart() noexcept { return this->in_block_start_; };
 	};
 	static_assert(sizeof(deflate::Context) >= sizeof(DeflateBitReader));
 	static_assert(std::is_trivially_destructible_v<DeflateBitReader>);
@@ -235,7 +236,7 @@ NAMESPACE_SOUP
 		 * @param rev_symbol_table array of 2 * symbols entries for storing the reverse lookup table
 		 * @param code_length codeword lengths table
 		 */
-		bool prepareTable(unsigned int* rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length)
+		bool prepareTable(unsigned int* rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length) noexcept
 		{
 			int num_symbols_per_len[16];
 			int i;
@@ -284,7 +285,7 @@ NAMESPACE_SOUP
 		 *
 		 * @param rev_symbol_table array of 2 * symbols entries that contains the reverse lookup table
 		 */
-		bool finaliseTable(unsigned int* rev_symbol_table)
+		bool finaliseTable(unsigned int* rev_symbol_table) noexcept
 		{
 			const int symbols = this->symbols_;
 			unsigned int canonical_code_word = 0;
@@ -368,7 +369,7 @@ NAMESPACE_SOUP
 		 * @param code_length output code lengths table
 		 * @param bit_reader bit reader context
 		 */
-		static bool readRawLengths(const int len_bits, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader)
+		static bool readRawLengths(const int len_bits, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader) noexcept
 		{
 			const unsigned char code_len_syms[kCodeLenSyms] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 			int i;
@@ -403,7 +404,7 @@ NAMESPACE_SOUP
 		 * @param code_length output code lengths table
 		 * @param bit_reader bit reader context
 		 */
-		bool readLength(const unsigned int* tables_rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader)
+		bool readLength(const unsigned int* tables_rev_symbol_table, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader) noexcept
 		{
 			int i;
 			if (read_symbols < 0 || symbols < 0 || read_symbols > symbols)
@@ -472,7 +473,7 @@ NAMESPACE_SOUP
 		 *
 		 * @return symbol, or -1 for error
 		 */
-		unsigned int readValue(const unsigned int* rev_symbol_table, DeflateBitReader& bit_reader)
+		unsigned int readValue(const unsigned int* rev_symbol_table, DeflateBitReader& bit_reader) noexcept
 		{
 			unsigned int stream = bit_reader.peekBits();
 			unsigned int fast_sym_bits = this->fast_symbol_[stream & ((1 << kFastSymbolBits) - 1)];
@@ -507,7 +508,7 @@ NAMESPACE_SOUP
 		}
 	};
 
-	static unsigned int copy_stored(DeflateBitReader& bit_reader, unsigned char* out, size_t out_offset, size_t block_size_max)
+	static unsigned int copy_stored(DeflateBitReader& bit_reader, unsigned char* out, size_t out_offset, size_t block_size_max) noexcept
 	{
 		SOUP_IF_UNLIKELY (!bit_reader.alignToByte())
 		{
@@ -541,7 +542,7 @@ NAMESPACE_SOUP
 		return stored_length;
 	}
 
-	static unsigned int decompress_block(DeflateBitReader& br, bool dynamic_block, unsigned char* out, size_t out_offset, size_t block_size_max)
+	static unsigned int decompress_block(DeflateBitReader& br, bool dynamic_block, unsigned char* out, size_t out_offset, size_t block_size_max) noexcept
 	{
 		HuffmanDecoder literals_decoder;
 		HuffmanDecoder offset_decoder;
@@ -780,7 +781,7 @@ NAMESPACE_SOUP
 		return decompress(compressed_data, compressed_data_size, getMaxDecompressedSize(compressed_data, compressed_data_size));
 	}
 
-	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size)
+	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t max_decompressed_size) SOUP_EXCAL
 	{
 		const uint8_t* current_compressed_data = static_cast<const uint8_t*>(compressed_data);
 		const uint8_t* end_compressed_data = current_compressed_data + compressed_data_size;
@@ -900,7 +901,7 @@ NAMESPACE_SOUP
 
 		DeflateBitReader br(current_compressed_data, end_compressed_data);
 
-		res.decompressed = std::string(max_decompressed_size, '\0');
+		res.decompressed = std::string(max_decompressed_size, '\0'); // excal
 		auto out = reinterpret_cast<uint8_t*>(&res.decompressed[0]);
 		size_t current_out_offset = 0;
 		bool final_block;
@@ -979,12 +980,12 @@ NAMESPACE_SOUP
 		return res;
 	}
 
-	void deflate::initContext(Context& ctx, const uint8_t* compressed_data, size_t compressed_data_size)
+	void deflate::initContext(Context& ctx, const uint8_t* compressed_data, size_t compressed_data_size) noexcept
 	{
 		soup::construct_at<DeflateBitReader>(reinterpret_cast<DeflateBitReader*>(&ctx), compressed_data, compressed_data + compressed_data_size);
 	}
 
-	unsigned int deflate::decompressBlock(Context& ctx, uint8_t* out, size_t current_out_offset, size_t max_decompressed_size, bool& final_block)
+	unsigned int deflate::decompressBlock(Context& ctx, uint8_t* out, size_t current_out_offset, size_t max_decompressed_size, bool& final_block) noexcept
 	{
 		auto& br = reinterpret_cast<DeflateBitReader&>(ctx);
 		final_block = br.getBits(1);
@@ -1006,12 +1007,12 @@ NAMESPACE_SOUP
 		SOUP_UNREACHABLE;
 	}
 
-	std::string deflate::decompressZeroTerminated(const std::string& data)
+	std::string deflate::decompressZeroTerminated(const std::string& data) SOUP_EXCAL
 	{
 		Context ctx;
 		initContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
 		const size_t max_decompressed_size = getMaxDecompressedSize(data.data(), data.size());
-		std::string out(max_decompressed_size, '\0');
+		std::string out(max_decompressed_size, '\0'); // excal
 		size_t current_out_offset = 0;
 		unsigned int block_result;
 		do {
