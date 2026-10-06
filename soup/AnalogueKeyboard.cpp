@@ -636,6 +636,9 @@ NAMESPACE_SOUP
 					}
 					keys.emplace_back(ActiveKey{
 						sk,
+						false,
+						0xff,
+						0xff,
 						static_cast<float>(value) / 255.0f
 					});
 				_no_emplace:;
@@ -666,8 +669,8 @@ NAMESPACE_SOUP
 				&& r.u8(value_hi)
 				)
 			{
-				//uint8_t row = (matrix_pos >> 5) & 0x7;
-				//uint8_t column = matrix_pos & 0x1f;
+				uint8_t row = (matrix_pos >> 5) & 0x7;
+				uint8_t column = matrix_pos & 0x1f;
 				//bool actuated = (packed & 1) != 0;
 				//bool _reserved = (packed >> 1) & 1;
 				uint8_t scancode_hi = (packed >> 2) & 0xf;
@@ -681,6 +684,9 @@ NAMESPACE_SOUP
 				{
 					keys.emplace_back(ActiveKey{
 						sk,
+						false,
+						row,
+						column,
 						static_cast<float>(value) / 1023.0f
 					});
 				}
@@ -727,6 +733,9 @@ NAMESPACE_SOUP
 					{
 						keys.emplace_back(ActiveKey{
 							sk,
+							false,
+							0xff,
+							0xff,
 							static_cast<float>(value) / 255.0f
 						});
 					}
@@ -747,6 +756,9 @@ NAMESPACE_SOUP
 					{
 						keys.emplace_back(ActiveKey{
 							sk,
+							false,
+							0xff,
+							0xff,
 							static_cast<float>(value) / 255.0f
 						});
 					}
@@ -795,7 +807,7 @@ NAMESPACE_SOUP
 constexpr auto i = (row * 21) + column; \
 if (combined[i]) \
 { \
-	keys.emplace_back(ActiveKey{ key, static_cast<float>(combined[i]) / 40.0f }); \
+	keys.emplace_back(ActiveKey{ key, true, row, column, static_cast<float>(combined[i]) / 40.0f }); \
 } \
 }
 
@@ -971,6 +983,9 @@ if (combined[i]) \
 						{
 							keys.emplace_back(ActiveKey{
 								sk,
+								true,
+								layout_index_to_row(keychron.layout, i),
+								layout_index_to_col(keychron.layout, i),
 								std::min(static_cast<float>(travel) / 235.0f, 1.0f)
 							});
 						}
@@ -1035,6 +1050,9 @@ if (combined[i]) \
 				{
 					keys.emplace_back(ActiveKey{
 						sk,
+						true,
+						layout_index_to_row(keychron.layout, i),
+						layout_index_to_col(keychron.layout, i),
 						std::min(static_cast<float>(keychron.buffer[sk]) / 235.0f, 1.0f)
 					});
 				}
@@ -1111,6 +1129,9 @@ if (combined[i]) \
 				{
 					keys.emplace_back(ActiveKey{
 						static_cast<Key>(i),
+						false,
+						0xff,
+						0xff,
 						static_cast<float>(nuphy.buffer[i]) / 255.0f
 					});
 				}
@@ -1136,6 +1157,8 @@ if (combined[i]) \
 #endif
 		dkbd.update();
 #endif
+
+		const uint8_t num_cols = madlions.layout_size / static_cast<uint8_t>(5); // assume 5 rows
 
 		uint8_t report[33];
 		memset(report, 0, sizeof(report));
@@ -1171,7 +1194,13 @@ if (combined[i]) \
 					{
 						if (madlions.buffer[sk] != 0)
 						{
-							keys.emplace_back(ActiveKey{ sk, static_cast<float>(madlions.buffer[sk]) / 255.0f });
+							keys.emplace_back(ActiveKey{
+								sk,
+								true,
+								static_cast<uint8_t>((offset + i) / num_cols),
+								static_cast<uint8_t>((offset + i) % num_cols),
+								static_cast<float>(madlions.buffer[sk]) / 255.0f
+							});
 						}
 					}
 				}
@@ -1210,7 +1239,13 @@ if (combined[i]) \
 						madlions.buffer[sk] = static_cast<uint8_t>(fvalue * 255.0f);
 						if (travel != 0)
 						{
-							keys.emplace_back(ActiveKey{ sk, fvalue });
+							keys.emplace_back(ActiveKey{
+								sk,
+								true,
+								static_cast<uint8_t>((offset + i) / num_cols),
+								static_cast<uint8_t>((offset + i) % num_cols),
+								fvalue
+							});
 
 #if SOUP_WINDOWS && SOUP_DIGITALKEYBOARD_AVAILABLE
 							if (!dkbd_okay && travel == 350)

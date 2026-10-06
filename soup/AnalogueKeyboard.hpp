@@ -50,6 +50,9 @@ NAMESPACE_SOUP
 		{
 		public:
 			Key sk;
+			bool sk_guessed_from_position;
+			uint8_t row; // 0xff if unknown
+			uint8_t column; // 0xff if unknown
 			float fvalue;
 
 			[[nodiscard]] Key getSoupKey() const noexcept
