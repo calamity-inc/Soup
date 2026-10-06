@@ -766,21 +766,6 @@ NAMESPACE_SOUP
 
 	using DecompressResult = deflate::DecompressResult;
 
-	DecompressResult deflate::decompress(const std::string& compressed_data)
-	{
-		return decompress(compressed_data.data(), compressed_data.size());
-	}
-
-	DecompressResult deflate::decompress(const std::string& compressed_data, size_t max_decompressed_size)
-	{
-		return decompress(compressed_data.data(), compressed_data.size(), max_decompressed_size);
-	}
-
-	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size)
-	{
-		return decompress(compressed_data, compressed_data_size, getMaxDecompressedSize(compressed_data, compressed_data_size));
-	}
-
 	DecompressResult deflate::decompress(const void* compressed_data, size_t compressed_data_size, size_t decompressed_size) SOUP_EXCAL
 	{
 		DecompressResult res{};
