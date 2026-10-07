@@ -104,6 +104,12 @@ static void unicode_bench()
 			SOUP_ASSERT(unicode::utf16_to_utf8(str) == "abcdefghijklmnopqrstuvwxyz アエイオウ あえいおう 💯💯💯");
 		});
 	});
+	BENCHMARK("utf8_to_utf16_len", {
+		std::string str = "abcdefghijklmnopqrstuvwxyz アエイオウ あえいおう 💯💯💯";
+		BENCHMARK_LOOP({
+			SOUP_ASSERT(unicode::utf8_to_utf16_len(str) == 45);
+		});
+	});
 }
 
 #define U64_DYN_BENCH(variant) \

@@ -35,13 +35,19 @@ NAMESPACE_SOUP
 		[[nodiscard]] static char32_t utf8_to_utf32_char(const char*& it, const char* end) noexcept;
 		[[nodiscard]] static char32_t utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept;
 		[[nodiscard]] static std::u32string utf8_to_utf32(const std::string& utf8) SOUP_EXCAL;
+
+		[[nodiscard]] static size_t utf8_to_utf16_len(const char* data, size_t size) noexcept;
+		[[nodiscard]] static size_t utf8_to_utf16_len(const std::string& utf8) noexcept { return utf8_to_utf16_len(utf8.data(), utf8.size()); }
 		[[nodiscard]] static UTF16_STRING_TYPE utf8_to_utf16(const char* data, size_t size) SOUP_EXCAL;
 		[[nodiscard]] static UTF16_STRING_TYPE utf8_to_utf16(const std::string& utf8) SOUP_EXCAL { return utf8_to_utf16(utf8.data(), utf8.size()); }
+
 #if SOUP_WINDOWS
 		[[nodiscard]] static UTF16_STRING_TYPE acp_to_utf16(const std::string& acp) SOUP_EXCAL;
 #endif
+
 		[[nodiscard]] static UTF16_STRING_TYPE utf32_to_utf16(const std::u32string& utf32) SOUP_EXCAL;
 		static void utf32_to_utf16_char(UTF16_STRING_TYPE& utf16, char32_t c) SOUP_EXCAL;
+
 		[[nodiscard]] static size_t utf32_to_utf8_len(char32_t utf32) noexcept;
 		static size_t utf32_to_utf8(char32_t utf32, char out[/*utf32_to_utf8_len(utf32)*/]) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(char32_t utf32) SOUP_EXCAL;
@@ -153,6 +159,11 @@ NAMESPACE_SOUP
 	};
 
 #if SOUP_WINDOWS
+	SOUP_FORCEINLINE size_t unicode::utf8_to_utf16_len(const char* data, size_t size) noexcept
+	{
+		return MultiByteToWideChar(CP_UTF8, 0, data, (int)size, nullptr, 0);
+	}
+
 	SOUP_FORCEINLINE size_t unicode::utf16_to_utf8_len(const void* data, size_t size) noexcept
 	{
 		return WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)data, (int)size, NULL, 0, NULL, NULL);

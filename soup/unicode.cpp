@@ -71,6 +71,20 @@ NAMESPACE_SOUP
 		return utf32;
 	}
 
+#if !SOUP_WINDOWS
+	size_t unicode::utf8_to_utf16_len(const char* data, size_t size) noexcept
+	{
+		auto it = data;
+		const auto end = data + size;
+		size_t res = 0;
+		while (it != end)
+		{
+			res += 1 + (utf8_to_utf32_char(it, end) > 0xFFFF);
+		}
+		return res;
+	}
+#endif
+
 	UTF16_STRING_TYPE unicode::utf8_to_utf16(const char* data, size_t size) SOUP_EXCAL
 	{
 #if SOUP_WINDOWS
