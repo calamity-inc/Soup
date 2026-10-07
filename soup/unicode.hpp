@@ -108,14 +108,19 @@ NAMESPACE_SOUP
 
 		static void utf16_to_utf8(const void* data, size_t size, char out[/*utf16_to_utf8_len(data, size)*/]) noexcept; // data must be an array of 2-byte elements, with size being given in number of elements, not bytes.
 
+		[[nodiscard]] static std::string utf16_to_utf8(const void* data, size_t size) SOUP_EXCAL // data must be an array of 2-byte elements, with size being given in number of elements, not bytes.
+		{
+			std::string res(utf16_to_utf8_len(data, size), '\0');
+			utf16_to_utf8(data, size, res.data());
+			return res;
+		}
+
 		template <typename Str = UTF16_STRING_TYPE>
 		[[nodiscard]] static std::string utf16_to_utf8(const Str& utf16) SOUP_EXCAL
 		{
 			static_assert(sizeof(typename Str::value_type) == 2);
 
-			std::string res(utf16_to_utf8_len(utf16.data(), utf16.size()), '\0');
-			utf16_to_utf8(utf16.data(), utf16.size(), res.data());
-			return res;
+			return utf16_to_utf8(utf16.data(), utf16.size());
 		}
 
 		[[nodiscard]] static size_t utf8_char_len(const std::string& str) noexcept;
