@@ -29,9 +29,9 @@ NAMESPACE_SOUP
 			size_t alpha_size;
 			SOUP_ASSERT(ALPHA_SIZE.toPrimitive(alpha_size));
 			uint8_t seqlen = bitutil::getBitsNeededToEncodeRange(alpha_size);
-			size_t bytelen = ceil(8.0f / seqlen);
+			size_t bytelen = static_cast<size_t>(ceil(8.0f / seqlen));
 			inlen *= bytelen;
-			return ceil(((float)inlen * seqlen) / 8);
+			return static_cast<size_t>(ceil(((float)inlen * seqlen) / 8));
 		}
 
 		[[nodiscard]] static std::string encode(const std::string& msg) { return encode(msg.data(), msg.size()); }
