@@ -148,4 +148,11 @@ NAMESPACE_SOUP
 		static bool utf8_validate(const char* it, const char* const end) noexcept;
 		static bool utf8_validate(const std::string& str) noexcept { return utf8_validate(str.data(), str.data() + str.size()); }
 	};
+
+#if SOUP_WINDOWS
+	SOUP_FORCEINLINE size_t unicode::utf16_to_utf8_len(const void* data, size_t size) noexcept
+	{
+		return WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)data, (int)size, NULL, 0, NULL, NULL);
+	}
+#endif
 }

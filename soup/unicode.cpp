@@ -208,6 +208,7 @@ NAMESPACE_SOUP
 		return utf8;
 	}
 
+#if !SOUP_WINDOWS
 	size_t unicode::utf16_to_utf8_len(const void* _data, size_t size) noexcept
 	{
 		const uint16_t* data = (const uint16_t*)_data;
@@ -231,6 +232,7 @@ NAMESPACE_SOUP
 		}
 		return out;
 	}
+#endif
 
 	size_t unicode::utf8_char_len(const std::string& str) noexcept
 	{
