@@ -71,22 +71,22 @@ NAMESPACE_SOUP
 		return utf32;
 	}
 
-	UTF16_STRING_TYPE unicode::utf8_to_utf16(const std::string& utf8) SOUP_EXCAL
+	UTF16_STRING_TYPE unicode::utf8_to_utf16(const char* data, size_t size) SOUP_EXCAL
 	{
 #if SOUP_WINDOWS
 		std::wstring utf16;
-		const int sizeRequired = MultiByteToWideChar(CP_UTF8, 0, utf8.data(), (int)utf8.size(), nullptr, 0);
+		const int sizeRequired = MultiByteToWideChar(CP_UTF8, 0, data, (int)size, nullptr, 0);
 		SOUP_IF_LIKELY (sizeRequired != 0)
 		{
 			utf16 = std::wstring(sizeRequired, 0);
-			MultiByteToWideChar(CP_UTF8, 0, utf8.data(), (int)utf8.size(), utf16.data(), sizeRequired);
+			MultiByteToWideChar(CP_UTF8, 0, data, (int)size, utf16.data(), sizeRequired);
 		}
 		return utf16;
 #else
 		UTF16_STRING_TYPE utf16{};
-		utf16.reserve(utf8.size()); // Note: we could end up with a slightly oversized buffer here if UTF8 input has many 3 or 4 byte symbols
-		auto it = utf8.cbegin();
-		const auto end = utf8.cend();
+		utf16.reserve(size); // Note: we could end up with a slightly oversized buffer here if UTF8 input has many 3 or 4 byte symbols
+		auto it = data;
+		const auto end = data + size;
 		while (it != end)
 		{
 			utf32_to_utf16_char(utf16, utf8_to_utf32_char(it, end));
