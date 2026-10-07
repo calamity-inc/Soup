@@ -34,22 +34,8 @@ NAMESPACE_SOUP
 			return ceil(((float)inlen * seqlen) / 8);
 		}
 
-		[[nodiscard]] static std::string encode(const std::string& msg)
-		{
-			return encode(Bigint::fromBinary(msg));
-		}
-
-		[[nodiscard]] static std::string encodeWithPadding(const std::string& msg)
-		{
-			auto enc = encode(msg);
-			auto len = getEncodedLength(msg.size());
-			while (enc.size() < len)
-			{
-				enc.insert(0, 1, ALPHA[0]);
-			}
-			return enc;
-		}
-
+		[[nodiscard]] static std::string encode(const std::string& msg) { return encode(msg.data(), msg.size()); }
+		[[nodiscard]] static std::string encode(const char* data, size_t size) { return encode(Bigint::fromBinary(data, size)); }
 		[[nodiscard]] static std::string encode(Bigint msg)
 		{
 			std::string enc{};
@@ -62,14 +48,27 @@ NAMESPACE_SOUP
 			return enc;
 		}
 
+		[[nodiscard]] static std::string encodeWithPadding(const std::string& msg) { return encodeWithPadding(msg.data(), msg.size()); }
+		[[nodiscard]] static std::string encodeWithPadding(const char* data, size_t size)
+		{
+			auto enc = encode(data, size);
+			auto len = getEncodedLength(size);
+			while (enc.size() < len)
+			{
+				enc.insert(0, 1, ALPHA[0]);
+			}
+			return enc;
+		}
+
 		// Note that leading zero-bytes will be trimmed both when encoding without padding, and by Bigint::toBinary during decoding, so if there is a certain length expectation, zeroes should be added to the front of the decoded data if that expectation is not met.
-		[[nodiscard]] static std::string decode(const std::string& enc)
+		[[nodiscard]] static std::string decode(const std::string& enc) { return decode(enc.data(), enc.size()); }
+		[[nodiscard]] static std::string decode(const char* data, size_t size)
 		{
 			Bigint dec{};
-			for (const auto& c : enc)
+			for (; size--; ++data)
 			{
 				dec *= ALPHA_SIZE;
-				dec += (Bigint::chunk_t)decodetbl[c];
+				dec += (Bigint::chunk_t)decodetbl[*data];
 			}
 			return dec.toBinary();
 		}
