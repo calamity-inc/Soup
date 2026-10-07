@@ -53,6 +53,8 @@ NAMESPACE_SOUP
 		template <typename Str = std::u16string>
 		[[nodiscard]] static char32_t utf16_to_utf32(typename Str::const_iterator& it, const typename Str::const_iterator end) noexcept
 		{
+			static_assert(sizeof(typename Str::value_type) == 2);
+
 			char32_t w1 = static_cast<char32_t>(*it++);
 			if (!UTF16_IS_HIGH_SURROGATE(w1))
 			{
@@ -80,6 +82,8 @@ NAMESPACE_SOUP
 		template <typename Str>
 		[[nodiscard]] static std::u32string utf16_to_utf32(const Str& utf16) SOUP_EXCAL
 		{
+			static_assert(sizeof(typename Str::value_type) == 2);
+
 			std::u32string utf32{};
 			auto it = utf16.cbegin();
 			const auto end = utf16.cend();
@@ -95,12 +99,16 @@ NAMESPACE_SOUP
 		template <typename Str = UTF16_STRING_TYPE>
 		[[nodiscard]] static size_t utf16_to_utf8_len(const Str& utf16) noexcept
 		{
+			static_assert(sizeof(typename Str::value_type) == 2);
+
 			return utf16_to_utf8_len(utf16.data(), utf16.size());
 		}
 
 		template <typename Str = UTF16_STRING_TYPE>
 		[[nodiscard]] static std::string utf16_to_utf8(const Str& utf16) SOUP_EXCAL
 		{
+			static_assert(sizeof(typename Str::value_type) == 2);
+
 #if SOUP_WINDOWS
 			std::string res;
 			const int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.data(), (int)utf16.size(), NULL, 0, NULL, NULL);
