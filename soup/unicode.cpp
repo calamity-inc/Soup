@@ -148,6 +148,25 @@ NAMESPACE_SOUP
 		}
 	}
 
+	size_t unicode::utf8_codepoint_len(char32_t utf32) noexcept
+	{
+		if (utf32 < 0b10000000)
+		{
+			return 1;
+		}
+		utf32 >>= 6;
+		if (utf32 <= 0b11111)
+		{
+			return 2;
+		}
+		utf32 >>= 6;
+		if (utf32 <= 0b1111)
+		{
+			return 3;
+		}
+		return 4;
+	}
+
 	std::string unicode::utf32_to_utf8(char32_t utf32) SOUP_EXCAL
 	{
 		// 1
@@ -187,6 +206,30 @@ NAMESPACE_SOUP
 			utf8.append(utf32_to_utf8(c));
 		}
 		return utf8;
+	}
+
+	size_t unicode::utf16_to_utf8_len(const void* _data, size_t size) noexcept
+	{
+		const uint16_t* data = (const uint16_t*)_data;
+		size_t out = 0;
+		for (; size--; ++data)
+		{
+			char32_t codepoint = *data;
+			if (UTF16_IS_HIGH_SURROGATE(codepoint))
+			{
+				SOUP_IF_LIKELY (size && UTF16_IS_LOW_SURROGATE(data[1]))
+				{
+					codepoint = utf16_to_utf32(codepoint, *++data);
+					--size;
+				}
+				else
+				{
+					codepoint = REPLACEMENT_CHAR;
+				}
+			}
+			out += utf8_codepoint_len(codepoint);
+		}
+		return out;
 	}
 
 	size_t unicode::utf8_char_len(const std::string& str) noexcept

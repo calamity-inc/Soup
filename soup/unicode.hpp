@@ -17,9 +17,11 @@
 
 #define UTF16_CHAR_TYPE wchar_t
 #define UTF16_STRING_TYPE std::wstring
+#define UTF16_LITERAL(...) L"" __VA_ARGS__
 #else
 #define UTF16_CHAR_TYPE char16_t
 #define UTF16_STRING_TYPE std::u16string
+#define UTF16_LITERAL(...) u"" __VA_ARGS__
 #endif
 static_assert(sizeof(UTF16_CHAR_TYPE) == 2);
 
@@ -44,6 +46,7 @@ NAMESPACE_SOUP
 #endif
 		[[nodiscard]] static UTF16_STRING_TYPE utf32_to_utf16(const std::u32string& utf32) SOUP_EXCAL;
 		static void utf32_to_utf16_char(UTF16_STRING_TYPE& utf16, char32_t c) SOUP_EXCAL;
+		[[nodiscard]] static size_t utf8_codepoint_len(char32_t utf32) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(char32_t utf32) SOUP_EXCAL;
 		[[nodiscard]] static std::string utf32_to_utf8(const std::u32string& utf32) SOUP_EXCAL;
 
@@ -51,16 +54,20 @@ NAMESPACE_SOUP
 		[[nodiscard]] static char32_t utf16_to_utf32(typename Str::const_iterator& it, const typename Str::const_iterator end) noexcept
 		{
 			char32_t w1 = static_cast<char32_t>(*it++);
-			if (UTF16_IS_HIGH_SURROGATE(w1))
+			if (!UTF16_IS_HIGH_SURROGATE(w1))
 			{
-				SOUP_IF_UNLIKELY (it == end)
-				{
-					return 0;
-				}
-				char32_t w2 = static_cast<char32_t>(*it++);
-				return utf16_to_utf32(w1, w2);
+				return w1;
 			}
-			return w1;
+			SOUP_IF_LIKELY (it != end)
+			{
+				char32_t w2 = static_cast<char32_t>(*it);
+				SOUP_IF_LIKELY (UTF16_IS_LOW_SURROGATE(w2))
+				{
+					++it;
+					return utf16_to_utf32(w1, w2);
+				}
+			}
+			return REPLACEMENT_CHAR;
 		}
 
 		[[nodiscard]] static char32_t utf16_to_utf32(char32_t hi, char32_t lo) noexcept
@@ -78,17 +85,17 @@ NAMESPACE_SOUP
 			const auto end = utf16.cend();
 			while (it != end)
 			{
-				auto uni = utf16_to_utf32<Str>(it, end);
-				if (uni == 0)
-				{
-					utf32.push_back(REPLACEMENT_CHAR);
-				}
-				else
-				{
-					utf32.push_back(uni);
-				}
+				utf32.push_back(utf16_to_utf32<Str>(it, end));
 			}
 			return utf32;
+		}
+
+		[[nodiscard]] static size_t utf16_to_utf8_len(const void* data, size_t size) noexcept; // data must be an array of 2-byte elements, with size being given in number of elements, not bytes.
+
+		template <typename Str = UTF16_STRING_TYPE>
+		[[nodiscard]] static size_t utf16_to_utf8_len(const Str& utf16) noexcept
+		{
+			return utf16_to_utf8_len(utf16.data(), utf16.size());
 		}
 
 		template <typename Str = UTF16_STRING_TYPE>

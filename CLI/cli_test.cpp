@@ -576,32 +576,50 @@ static void unit_data()
 		assert(bitutil::getNumSetBits((uint64_t)0x1'0000'0001ull) == 2);
 	});
 
-	test("unicode", []
+	unit("unicode")
 	{
-		auto utf32 = unicode::utf8_to_utf32("\xF0\x41");
-		assert(utf32.size() == 2);
-		assert(utf32.at(0) == unicode::REPLACEMENT_CHAR);
-		assert(utf32.at(1) == 0x41);
+		test("UTF-8 validation & sanitisation", []
+		{
+			auto utf32 = unicode::utf8_to_utf32("\xF0\x41");
+			assert(utf32.size() == 2);
+			assert(utf32.at(0) == unicode::REPLACEMENT_CHAR);
+			assert(utf32.at(1) == 0x41);
 
-		assert(unicode::utf8_validate("ABC") == true);
+			assert(unicode::utf8_validate("ABC") == true);
 
-		std::string str = "\x19\x93\x0D";
-		assert(unicode::utf8_validate(str) == false);
-		unicode::utf8_sanitise(str);
-		assert(str == "\x19\xEF\xBF\xBD\x0D");
-		assert(unicode::utf8_validate(str) == true);
+			std::string str = "\x19\x93\x0D";
+			assert(unicode::utf8_validate(str) == false);
+			unicode::utf8_sanitise(str);
+			assert(str == "\x19\xEF\xBF\xBD\x0D");
+			assert(unicode::utf8_validate(str) == true);
 
-		str = "\x19\xED\xA0\x80\x0D"; // U+0019 .. U+D800 .. U+000D
-		assert(unicode::utf8_validate(str) == false);
-		unicode::utf8_sanitise(str);
-		assert(str == "\x19\xEF\xBF\xBD\x0D");
-		assert(unicode::utf8_validate(str) == true);
+			str = "\x19\xED\xA0\x80\x0D"; // U+0019 .. U+D800 .. U+000D
+			assert(unicode::utf8_validate(str) == false);
+			unicode::utf8_sanitise(str);
+			assert(str == "\x19\xEF\xBF\xBD\x0D");
+			assert(unicode::utf8_validate(str) == true);
 
-		assert(unicode::utf8_validate("\xC0\xA1") == false);
-		assert(unicode::utf8_validate("\xC1\xA1") == false);
-		assert(unicode::utf8_validate("\xE0\x90") == false);
-		assert(unicode::utf8_validate("\xF0\x80") == false);
-	});
+			assert(unicode::utf8_validate("\xC0\xA1") == false);
+			assert(unicode::utf8_validate("\xC1\xA1") == false);
+			assert(unicode::utf8_validate("\xE0\x90") == false);
+			assert(unicode::utf8_validate("\xF0\x80") == false);
+		});
+		test("UTF-16 to UTF-8", []
+		{
+			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("abc")) == 3);
+			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("abc")) == "abc");
+			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("aア💯")) == 8); // 1 + 3 + 4
+			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("aア💯")).size() == 8);
+			// high surrogate not followed by low surrogate
+			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xD83D")) == 4);
+			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xD83D")) == "a" "\xEF\xBF\xBD");
+			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xD83D" "c")) == 5);
+			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xD83D" "c")) == "a" "\xEF\xBF\xBD" "c");
+			// low surrogate not preceeded by high surrogate
+			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xAFDC" "c")) == 5);
+			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xAFDC" "c")) == "a" "\xEA\xBF\x9C" "c");
+		});
+	}
 
 	test("punycode", []
 	{
