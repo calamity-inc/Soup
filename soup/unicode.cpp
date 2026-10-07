@@ -79,34 +79,20 @@ NAMESPACE_SOUP
 		size_t res = 0;
 		while (it != end)
 		{
-			res += 1 + (utf8_to_utf32_char(it, end) > 0xFFFF);
+			res += utf32_to_utf16_len(utf8_to_utf32_char(it, end));
 		}
 		return res;
 	}
 #endif
 
-	UTF16_STRING_TYPE unicode::utf8_to_utf16(const char* data, size_t size) SOUP_EXCAL
+	void unicode::utf8_to_utf16(const char* data, size_t size, UTF16_CHAR_TYPE out[]) noexcept
 	{
-#if SOUP_WINDOWS
-		std::wstring utf16;
-		const int sizeRequired = MultiByteToWideChar(CP_UTF8, 0, data, (int)size, nullptr, 0);
-		SOUP_IF_LIKELY (sizeRequired != 0)
-		{
-			utf16 = std::wstring(sizeRequired, 0);
-			MultiByteToWideChar(CP_UTF8, 0, data, (int)size, utf16.data(), sizeRequired);
-		}
-		return utf16;
-#else
-		UTF16_STRING_TYPE utf16{};
-		utf16.reserve(size); // Note: we could end up with a slightly oversized buffer here if UTF8 input has many 3 or 4 byte symbols
 		auto it = data;
 		const auto end = data + size;
 		while (it != end)
 		{
-			utf32_to_utf16_char(utf16, utf8_to_utf32_char(it, end));
+			out += utf32_to_utf16(utf8_to_utf32_char(it, end), out);
 		}
-		return utf16;
-#endif
 	}
 
 #if SOUP_WINDOWS
@@ -123,29 +109,40 @@ NAMESPACE_SOUP
 	}
 #endif
 
+	size_t unicode::utf32_to_utf16(char32_t utf32, UTF16_CHAR_TYPE out[]) noexcept
+	{
+		if (utf32 <= 0xFFFF)
+		{
+			out[0] = (UTF16_CHAR_TYPE)utf32;
+			return 1;
+		}
+		else
+		{
+			utf32 -= 0x10000;
+			out[0] = (UTF16_CHAR_TYPE)((utf32 >> 10) + 0xD800);
+			out[1] = (UTF16_CHAR_TYPE)((utf32 & 0x3FF) + 0xDC00);
+			return 2;
+		}
+	}
+
 	UTF16_STRING_TYPE unicode::utf32_to_utf16(const std::u32string& utf32) SOUP_EXCAL
 	{
 		UTF16_STRING_TYPE utf16{};
 		utf16.reserve(utf32.size());
 		for (char32_t c : utf32)
 		{
-			utf32_to_utf16_char(utf16, c);
+			if (c <= 0xFFFF)
+			{
+				utf16.push_back((UTF16_CHAR_TYPE)c);
+			}
+			else
+			{
+				c -= 0x10000;
+				utf16.push_back((UTF16_CHAR_TYPE)((c >> 10) + 0xD800));
+				utf16.push_back((UTF16_CHAR_TYPE)((c & 0x3FF) + 0xDC00));
+			}
 		}
 		return utf16;
-	}
-
-	void unicode::utf32_to_utf16_char(UTF16_STRING_TYPE& utf16, char32_t c) SOUP_EXCAL
-	{
-		if (c <= 0xFFFF)
-		{
-			utf16.push_back((UTF16_CHAR_TYPE)c);
-		}
-		else
-		{
-			c -= 0x10000;
-			utf16.push_back((UTF16_CHAR_TYPE)((c >> 10) + 0xD800));
-			utf16.push_back((UTF16_CHAR_TYPE)((c & 0x3FF) + 0xDC00));
-		}
 	}
 
 	size_t unicode::utf32_to_utf8_len(char32_t utf32) noexcept

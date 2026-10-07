@@ -110,6 +110,12 @@ static void unicode_bench()
 			SOUP_ASSERT(unicode::utf8_to_utf16_len(str) == 45);
 		});
 	});
+	BENCHMARK("utf8_to_utf16", {
+		std::string str = "abcdefghijklmnopqrstuvwxyz アエイオウ あえいおう 💯💯💯";
+		BENCHMARK_LOOP({
+			SOUP_ASSERT(unicode::utf8_to_utf16(str) == UTF16_LITERAL("abcdefghijklmnopqrstuvwxyz アエイオウ あえいおう 💯💯💯"));
+		});
+	});
 }
 
 #define U64_DYN_BENCH(variant) \
