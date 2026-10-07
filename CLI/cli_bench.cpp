@@ -98,6 +98,12 @@ static void unicode_bench()
 			SOUP_ASSERT(unicode::utf16_to_utf8_len(str) == 71);
 		});
 	});
+	BENCHMARK("utf16_to_utf8", {
+		UTF16_STRING_TYPE str = UTF16_LITERAL("abcdefghijklmnopqrstuvwxyz アエイオウ あえいおう 💯💯💯");
+		BENCHMARK_LOOP({
+			SOUP_ASSERT(unicode::utf16_to_utf8(str) == "abcdefghijklmnopqrstuvwxyz アエイオウ あえいおう 💯💯💯");
+		});
+	});
 }
 
 #define U64_DYN_BENCH(variant) \

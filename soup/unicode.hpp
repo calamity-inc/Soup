@@ -30,6 +30,7 @@ NAMESPACE_SOUP
 	struct unicode
 	{
 		static constexpr uint32_t REPLACEMENT_CHAR = 0xFFFD;
+		static constexpr size_t UTF8_MAX_CODEPOINT_LEN = 4; // The maximum number of bytes needed to represent a codepoint in UTF-8.
 
 		[[nodiscard]] static char32_t utf8_to_utf32_char(const char*& it, const char* end) noexcept;
 		[[nodiscard]] static char32_t utf8_to_utf32_char(std::string::const_iterator& it, const std::string::const_iterator end) noexcept;
@@ -46,7 +47,8 @@ NAMESPACE_SOUP
 #endif
 		[[nodiscard]] static UTF16_STRING_TYPE utf32_to_utf16(const std::u32string& utf32) SOUP_EXCAL;
 		static void utf32_to_utf16_char(UTF16_STRING_TYPE& utf16, char32_t c) SOUP_EXCAL;
-		[[nodiscard]] static size_t utf8_codepoint_len(char32_t utf32) noexcept;
+		[[nodiscard]] static size_t utf32_to_utf8_len(char32_t utf32) noexcept;
+		static size_t utf32_to_utf8(char32_t utf32, char out[/*utf32_to_utf8_len(utf32)*/]) noexcept;
 		[[nodiscard]] static std::string utf32_to_utf8(char32_t utf32) SOUP_EXCAL;
 		[[nodiscard]] static std::string utf32_to_utf8(const std::u32string& utf32) SOUP_EXCAL;
 
@@ -104,23 +106,16 @@ NAMESPACE_SOUP
 			return utf16_to_utf8_len(utf16.data(), utf16.size());
 		}
 
+		static void utf16_to_utf8(const void* data, size_t size, char out[/*utf16_to_utf8_len(data, size)*/]) noexcept; // data must be an array of 2-byte elements, with size being given in number of elements, not bytes.
+
 		template <typename Str = UTF16_STRING_TYPE>
 		[[nodiscard]] static std::string utf16_to_utf8(const Str& utf16) SOUP_EXCAL
 		{
 			static_assert(sizeof(typename Str::value_type) == 2);
 
-#if SOUP_WINDOWS
-			std::string res;
-			const int sizeRequired = WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.data(), (int)utf16.size(), NULL, 0, NULL, NULL);
-			SOUP_IF_LIKELY (sizeRequired != 0)
-			{
-				res = std::string(sizeRequired, 0);
-				WideCharToMultiByte(CP_UTF8, 0, (const wchar_t*)utf16.data(), (int)utf16.size(), res.data(), sizeRequired, NULL, NULL);
-			}
+			std::string res(utf16_to_utf8_len(utf16.data(), utf16.size()), '\0');
+			utf16_to_utf8(utf16.data(), utf16.size(), res.data());
 			return res;
-#else
-			return utf32_to_utf8(utf16_to_utf32(utf16));
-#endif
 		}
 
 		[[nodiscard]] static size_t utf8_char_len(const std::string& str) noexcept;

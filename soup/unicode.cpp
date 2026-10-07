@@ -148,7 +148,7 @@ NAMESPACE_SOUP
 		}
 	}
 
-	size_t unicode::utf8_codepoint_len(char32_t utf32) noexcept
+	size_t unicode::utf32_to_utf8_len(char32_t utf32) noexcept
 	{
 		if (utf32 < 0b10000000)
 		{
@@ -164,37 +164,41 @@ NAMESPACE_SOUP
 		{
 			return 3;
 		}
+		return 4; // UTF8_MAX_CODEPOINT_LEN
+	}
+
+	size_t unicode::utf32_to_utf8(char32_t utf32, char out[]) noexcept
+	{
+		if (utf32 < 0b10000000)
+		{
+			out[0] = (char)utf32;
+			return 1;
+		}
+		if (utf32 < 0b100000000000) // < 0x800
+		{
+			out[0] = (char)((utf32 >> 6) | 0b11000000); // 110xxxxx
+			out[1] = (char)((utf32 & 0b111111) | UTF8_CONTINUATION_FLAG);
+			return 2;
+		}
+		if (utf32 < 0b10000000000000000) // < 0x10000
+		{
+			out[0] = (char)((utf32 >> 12) | 0b11100000); // 1110xxxx
+			out[1] = (char)(((utf32 >> 6) & 0b111111) | UTF8_CONTINUATION_FLAG);
+			out[2] = (char)((utf32 & 0b111111) | UTF8_CONTINUATION_FLAG);
+			return 3;
+		}
+		out[0] = (char)((utf32 >> 18) | 0b11110000); // 11110xxx
+		out[1] = (char)(((utf32 >> 12) & 0b111111) | UTF8_CONTINUATION_FLAG);
+		out[2] = (char)(((utf32 >> 6) & 0b111111) | UTF8_CONTINUATION_FLAG);
+		out[3] = (char)((utf32 & 0b111111) | UTF8_CONTINUATION_FLAG);
 		return 4;
 	}
 
 	std::string unicode::utf32_to_utf8(char32_t utf32) SOUP_EXCAL
 	{
-		// 1
-		if (utf32 < 0b10000000)
-		{
-			return std::string(1, (char)utf32);
-		}
-		// 2
-		std::string utf8(1, (char)((utf32 & 0b111111) | UTF8_CONTINUATION_FLAG));
-		utf32 >>= 6;
-		if (utf32 <= 0b11111)
-		{
-			utf8.insert(0, 1, (char)(utf32 | 0b11000000)); // 110xxxxx
-			return utf8;
-		}
-		// 3
-		utf8.insert(0, 1, (char)((utf32 & 0b111111) | UTF8_CONTINUATION_FLAG));
-		utf32 >>= 6;
-		if (utf32 <= 0b1111)
-		{
-			utf8.insert(0, 1, (char)(utf32 | 0b11100000)); // 1110xxxx
-			return utf8;
-		}
-		// 4
-		utf8.insert(0, 1, (char)((utf32 & 0b111111) | UTF8_CONTINUATION_FLAG));
-		utf32 >>= 6;
-		utf8.insert(0, 1, (char)(utf32 | 0b11110000)); // 11110xxx
-		return utf8;
+		char buf[UTF8_MAX_CODEPOINT_LEN];
+		size_t len = utf32_to_utf8(utf32, buf);
+		return std::string(buf, len);
 	}
 
 	std::string unicode::utf32_to_utf8(const std::u32string& utf32) SOUP_EXCAL
@@ -228,11 +232,33 @@ NAMESPACE_SOUP
 					codepoint = REPLACEMENT_CHAR;
 				}
 			}
-			out += utf8_codepoint_len(codepoint);
+			out += utf32_to_utf8_len(codepoint);
 		}
 		return out;
 	}
 #endif
+
+	void unicode::utf16_to_utf8(const void* _data, size_t size, char out[]) noexcept
+	{
+		const uint16_t* data = (const uint16_t*)_data;
+		for (; size--; ++data)
+		{
+			char32_t codepoint = *data;
+			if (UTF16_IS_HIGH_SURROGATE(codepoint))
+			{
+				SOUP_IF_LIKELY (size && UTF16_IS_LOW_SURROGATE(data[1]))
+				{
+					codepoint = utf16_to_utf32(codepoint, *++data);
+					--size;
+				}
+				else
+				{
+					codepoint = REPLACEMENT_CHAR;
+				}
+			}
+			out += utf32_to_utf8(codepoint, out);
+		}
+	}
 
 	size_t unicode::utf8_char_len(const std::string& str) noexcept
 	{
