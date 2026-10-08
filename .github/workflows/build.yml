@@ -78,7 +78,7 @@ jobs:
             libsoup.a
             libsoupbindings.so
 
-  macos-arm64:
+  macos-x64:
     runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v7
@@ -108,12 +108,12 @@ jobs:
             libsoup.a
             libsoupbindings.dylib
 
-  macos-x64:
-    runs-on: macos-15
+  macos-arm64:
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v7
 
-      - uses: shivammathur/setup-php@v2
+      - run: brew install php
 
       - name: Build Soup
         run: php build_lib.php
