@@ -7,7 +7,7 @@ NAMESPACE_SOUP
 	SOUP_PACKET(ZipFileCommon)
 	{
 		u16 min_extract_version;
-		u16 bitflag;
+		u16 bitflag; // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT section 4.4.4
 		u16 compression_method;
 		u16 last_mod_time;
 		u16 last_mod_date;
@@ -26,6 +26,11 @@ NAMESPACE_SOUP
 				&& s.u32_le(compressed_size)
 				&& s.u32_le(uncompressed_size)
 				;
+		}
+
+		[[nodiscard]] bool isEncrypted() const noexcept
+		{
+			return (bitflag & 1);
 		}
 	};
 }

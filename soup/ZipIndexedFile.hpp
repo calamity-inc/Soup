@@ -15,5 +15,6 @@ NAMESPACE_SOUP
 		uint32_t uncompressed_size;
 		std::string name;
 		uint32_t offset;
+		bool encrypted;
 	};
 }

@@ -69,6 +69,7 @@ NAMESPACE_SOUP
 					cdf.common.uncompressed_size,
 					std::move(cdf.name),
 					cdf.disk_offset,
+					cdf.common.isEncrypted()
 				});
 			} while (is.getPosition() < eocd_offset);
 		}
