@@ -285,6 +285,8 @@ NAMESPACE_SOUP
 		case HID_F20: return KEY_F20;
 		case HID_F21: return KEY_F21;
 		case HID_F22: return KEY_F22;
+		case HID_F23: return KEY_F23;
+		case HID_F24: return KEY_F24;
 		}
 		return KEY_NONE;
 	}
@@ -416,6 +418,8 @@ NAMESPACE_SOUP
 		case KEY_F20: return HID_F20;
 		case KEY_F21: return HID_F21;
 		case KEY_F22: return HID_F22;
+		case KEY_F23: return HID_F23;
+		case KEY_F24: return HID_F24;
 		}
 		return 0;
 	}

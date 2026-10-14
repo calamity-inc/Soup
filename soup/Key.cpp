@@ -140,6 +140,8 @@ NAMESPACE_SOUP
 		case KEY_F20: return VK_F20;
 		case KEY_F21: return VK_F21;
 		case KEY_F22: return VK_F22;
+		case KEY_F23: return VK_F23;
+		case KEY_F24: return VK_F24;
 		}
 		return 0;
 	}
