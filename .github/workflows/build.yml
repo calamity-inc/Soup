@@ -145,9 +145,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Ensure LLVM is up-to-date
-        run: choco upgrade llvm
-
       - name: Build Soup
         run: php build_lib.php
 
@@ -168,6 +165,36 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: "Windows (X64)"
+          path: |
+            CLI/soup.exe
+            soup.lib
+            soupbindings.dll
+
+  windows-arm64:
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build Soup
+        run: php build_lib.php
+
+      - name: Build CLI
+        run: php build_cli.php
+
+      - run: CLI/soup.exe test
+
+      - run: CLI/soup.exe bench
+
+      - name: Ensure files exist
+        uses: andstor/file-existence-action@v3
+        with:
+          files: "CLI/soup.exe, soup.lib, soupbindings.dll"
+          fail: true
+
+      - name: Upload soup
+        uses: actions/upload-artifact@v7
+        with:
+          name: "Windows (ARM64)"
           path: |
             CLI/soup.exe
             soup.lib
