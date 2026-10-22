@@ -32,6 +32,11 @@ NAMESPACE_SOUP
 		{
 		}
 
+		constexpr Rgba(Rgb val) noexcept
+			: r(val.r), g(val.g), b(val.b), a(0xFF)
+		{
+		}
+
 		[[nodiscard]] constexpr bool operator==(const Rgba& c) const noexcept
 		{
 			return r == c.r && g == c.g && b == c.b;
