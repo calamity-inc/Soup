@@ -976,6 +976,7 @@
     <ClInclude Include="lzf.hpp" />
     <ClInclude Include="md5.hpp" />
     <ClInclude Include="memAllocating.hpp" />
+    <ClInclude Include="memHistogram.hpp" />
     <ClInclude Include="MemoryMappedMap.hpp" />
     <ClInclude Include="MemoryMappedRangeMap.hpp" />
     <ClInclude Include="memStlAllocator.hpp" />
