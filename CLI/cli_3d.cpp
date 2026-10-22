@@ -3,9 +3,12 @@
 
 #include <fstream>
 
-#include <gmBox.hpp>
+#define RASTERISE false // rasterising renderer has some z-sorting bugs, plus raytracing is fine for lower resolutions
+#define NATIVE_WINDOW false // console windows are fast because they need less pixels filled
+
 #include <Canvas.hpp>
 #include <console.hpp>
+#include <gmBox.hpp>
 #include <Plane.hpp>
 #include <PointLight.hpp>
 #include <Poly.hpp>
@@ -13,8 +16,11 @@
 #include <Ray.hpp>
 #include <RenderTargetCanvas.hpp>
 #include <Scene.hpp>
-#include <SceneRaytracingRenderer.hpp>
+#if RASTERISE
 #include <SceneRasterisingRenderer.hpp>
+#else
+#include <SceneRaytracingRenderer.hpp>
+#endif
 #include <time.hpp>
 #include <unicode.hpp>
 #include <UvSphere.hpp>
@@ -24,7 +30,11 @@ using namespace soup;
 
 static Canvas c;
 static Scene s;
+#if RASTERISE
+static SceneRasterisingRenderer sr;
+#else
 static SceneRaytracingRenderer sr;
+#endif
 static float fov = 80.0f;
 
 static void amogus()
@@ -146,7 +156,7 @@ static void render()
 
 void cli_3d()
 {
-#if false
+#if NATIVE_WINDOW
 	updateScene();
 	auto w = Window::create("Soup 3D", 720, 480);
 	w.setDrawFunc([](Window, RenderTarget& rt)
@@ -291,9 +301,7 @@ void cli_3d()
 			}
 			console.setBackgroundColour(Rgb::BLACK);
 			console.setForegroundColour(Rgb::WHITE);
-#if !SOUP_WASM
 			system("ffmpeg -y -i hires.ppm hires.png");
-#endif
 			console.clearScreen();
 			render();
 		}
