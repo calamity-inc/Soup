@@ -17,7 +17,7 @@ NAMESPACE_SOUP
 		{
 		}
 
-		[[nodiscard]] size_t seekCentralDirectory() const; // returns 0 on failure
+		[[nodiscard]] std::streamoff seekCentralDirectory() const; // returns 0 on failure
 
 		[[nodiscard]] std::vector<ZipIndexedFile> getFileList() const;
 

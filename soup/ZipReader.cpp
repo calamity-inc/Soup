@@ -9,17 +9,17 @@
 
 NAMESPACE_SOUP
 {
-	size_t ZipReader::seekCentralDirectory() const
+	std::streamoff ZipReader::seekCentralDirectory() const
 	{
 		std::vector<ZipIndexedFile> ret{};
 
 		is.seekEnd();
-		const size_t length = is.getPosition();
+		const auto length = is.getPosition();
 		if (length <= 22 || length == -1)
 		{
 			return 0;
 		}
-		size_t eocd_offset = (length - 22);
+		auto eocd_offset = (length - 22);
 		for (; eocd_offset != 0; --eocd_offset)
 		{
 			is.seek(eocd_offset);
