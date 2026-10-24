@@ -84,8 +84,8 @@ NAMESPACE_SOUP
 		armv8_aes = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
 		armv8_sha1 = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
 		armv8_sha2 = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
-		armv8_sha3 = false; // No Windows PF_ constant for SHA-3/SHA-512 extensions.
-		armv8_sha512 = false;
+		armv8_sha3 = IsProcessorFeaturePresent(PF_ARM_SHA3_INSTRUCTIONS_AVAILABLE);
+		armv8_sha512 = IsProcessorFeaturePresent(PF_ARM_SHA512_INSTRUCTIONS_AVAILABLE);
 		armv8_crc32 = IsProcessorFeaturePresent(PF_ARM_V8_CRC32_INSTRUCTIONS_AVAILABLE);
 	#elif SOUP_BITS == 32
 		armv8_aes = false;
