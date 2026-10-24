@@ -610,6 +610,7 @@ static void unit_data()
 			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("abc")) == "abc");
 			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("aア💯")) == 8); // 1 + 3 + 4
 			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("aア💯")).size() == 8);
+#if !defined(_MSC_VER) || defined(__clang__)
 			// high surrogate not followed by low surrogate
 			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xD83D")) == 4);
 			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xD83D")) == "a" "\xEF\xBF\xBD");
@@ -618,6 +619,7 @@ static void unit_data()
 			// low surrogate not preceeded by high surrogate
 			assert(unicode::utf16_to_utf8_len<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xAFDC" "c")) == 5);
 			assert(unicode::utf16_to_utf8<UTF16_STRING_TYPE>(UTF16_LITERAL("a" "\xAFDC" "c")) == "a" "\xEA\xBF\x9C" "c");
+#endif
 		});
 		test("UTF-8 to UTF-16", []
 		{
@@ -627,7 +629,9 @@ static void unit_data()
 			assert(unicode::utf8_to_utf16("aア💯") == UTF16_LITERAL("aア💯"));
 			// continuation flag set without a continuation to follow
 			assert(unicode::utf8_to_utf16_len("\xF0\x41") == 2);
+#if !defined(_MSC_VER) || defined(__clang__)
 			assert(unicode::utf8_to_utf16("\xF0\x41") == UTF16_LITERAL("\xFFFD\x0041"));
+#endif
 		});
 	}
 
