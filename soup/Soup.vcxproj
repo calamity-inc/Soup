@@ -1074,6 +1074,7 @@
     <ClInclude Include="SelfDeletingThread.hpp" />
     <ClInclude Include="ServerServiceUdp.hpp" />
     <ClInclude Include="sha1_intrin.hpp" />
+    <ClInclude Include="sha512_intrin.hpp" />
     <ClInclude Include="sha256_intrin.hpp" />
     <ClInclude Include="sha384.hpp" />
     <ClInclude Include="sha512.hpp" />

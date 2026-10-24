@@ -4,6 +4,17 @@
 
 #include "Endian.hpp"
 
+#if SOUP_BITS == 64 && SOUP_ARM && (defined(__GNUC__) || defined(__clang__))
+	#define SHA512_USE_INTRIN true
+#else
+	#define SHA512_USE_INTRIN false
+#endif
+
+#if SHA512_USE_INTRIN
+	#include "CpuInfo.hpp"
+	#include "sha512_intrin.hpp"
+#endif
+
 /*
 Original source: https://github.com/pr0f3ss/SHA
 Original licence follows.
@@ -82,8 +93,23 @@ NAMESPACE_SOUP
 		n_bytes = 0;
 	}
 
+#if SHA512_USE_INTRIN
+	[[nodiscard]] static SOUP_FORCEINLINE bool sha512_can_use_intrin() noexcept
+	{
+		const CpuInfo& cpu_info = CpuInfo::get();
+		return cpu_info.armv8_sha3 && cpu_info.armv8_sha512;
+	}
+#endif
+
 	void sha512::State::transform() noexcept
 	{
+#if SHA512_USE_INTRIN
+		if (sha512_can_use_intrin())
+		{
+			return intrin::sha512_transform(this->state, this->buffer, k);
+		}
+#endif
+
 		// Initialise message schedule
 		uint64_t w[MESSAGE_SCHEDULE_LEN];
 		for (size_t i = 0; i != BLOCK_BYTES / 8; ++i)

@@ -149,6 +149,8 @@ NAMESPACE_SOUP
 		bool armv8_aes;
 		bool armv8_sha1;
 		bool armv8_sha2;
+		bool armv8_sha3;
+		bool armv8_sha512;
 		bool armv8_crc32;
 #endif
 	};

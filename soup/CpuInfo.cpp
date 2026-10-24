@@ -84,23 +84,31 @@ NAMESPACE_SOUP
 		armv8_aes = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
 		armv8_sha1 = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
 		armv8_sha2 = IsProcessorFeaturePresent(PF_ARM_V8_CRYPTO_INSTRUCTIONS_AVAILABLE);
+		armv8_sha3 = false; // No Windows PF_ constant for SHA-3/SHA-512 extensions.
+		armv8_sha512 = false;
 		armv8_crc32 = IsProcessorFeaturePresent(PF_ARM_V8_CRC32_INSTRUCTIONS_AVAILABLE);
 	#elif SOUP_BITS == 32
 		armv8_aes = false;
 		armv8_sha1 = false;
 		armv8_sha2 = false;
+		armv8_sha3 = false;
+		armv8_sha512 = false;
 		armv8_crc32 = false;
 	#elif SOUP_MACOS
 		// Assume we are running on an M series chip, because we don't have getauxval.
 		armv8_aes = true;
 		armv8_sha1 = true;
 		armv8_sha2 = true;
+		armv8_sha3 = true;
+		armv8_sha512 = true;
 		armv8_crc32 = true;
 	#else
 		// These HWCAP_* are only defined on aarch64.
 		armv8_aes = getauxval(AT_HWCAP) & HWCAP_AES;
 		armv8_sha1 = getauxval(AT_HWCAP) & HWCAP_SHA1;
 		armv8_sha2 = getauxval(AT_HWCAP) & HWCAP_SHA2;
+		armv8_sha3 = getauxval(AT_HWCAP) & HWCAP_SHA3;
+		armv8_sha512 = getauxval(AT_HWCAP) & HWCAP_SHA512;
 		armv8_crc32 = getauxval(AT_HWCAP) & HWCAP_CRC32;
 	#endif
 #endif
@@ -165,6 +173,8 @@ NAMESPACE_SOUP
 		str.append(armv8_aes ? "true" : "false");
 		str.append("\nARMv8 SHA1: ").append(armv8_sha1 ? "true" : "false");
 		str.append("\nARMv8 SHA2: ").append(armv8_sha2 ? "true" : "false");
+		str.append("\nARMv8 SHA3: ").append(armv8_sha3 ? "true" : "false");
+		str.append("\nARMv8 SHA512: ").append(armv8_sha512 ? "true" : "false");
 		str.append("\nARMv8 CRC32: ").append(armv8_crc32 ? "true" : "false");
 		return str;
 #endif
