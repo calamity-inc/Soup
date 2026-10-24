@@ -5,16 +5,8 @@
 #include <cstddef>
 #include <cstdint>
 
-// SHA-512 via the ARMv8.2-A SHA-512 Crypto Extension (FEAT_SHA512).
-// Only available with GCC/Clang targeting 64-bit ARM. MSVC does not expose these intrinsics.
-#if SOUP_BITS == 64 && SOUP_ARM && (defined(__GNUC__) || defined(__clang__))
-	#define SOUP_SHA512_INTRIN_AVAILABLE 1
-	#include <arm_neon.h>
-#else
-	#define SOUP_SHA512_INTRIN_AVAILABLE 0
-#endif
-
-#if SOUP_SHA512_INTRIN_AVAILABLE
+#if SOUP_BITS == 64 && SOUP_ARM
+#include <arm_neon.h>
 
 NAMESPACE_SOUP
 {
@@ -25,8 +17,10 @@ NAMESPACE_SOUP
 
 		// Two SHA-512 rounds. s[0..3] hold the working state as pairs: {a,b}, {c,d}, {e,f}, {g,h}.
 		// The register roles rotate every call, so the caller cycles through five role patterns.
-		SOUP_SHA512_INTRIN_TARGET
-		static inline __attribute__((always_inline)) void sha512_round_pair(uint64x2_t* s, uint64x2_t wk, int i0, int i1, int i2, int i3, int i4) noexcept
+	#if defined(__GNUC__) || defined(__clang__)
+		__attribute__((target("arch=armv8.2-a+sha3")))
+	#endif
+		static SOUP_FORCEINLINE void sha512_round_pair(uint64x2_t* s, uint64x2_t wk, int i0, int i1, int i2, int i3, int i4) noexcept
 		{
 			const uint64x2_t wk_swapped = vextq_u64(wk, wk, 1);
 			const uint64x2_t y = vextq_u64(s[i2], s[i3], 1);
@@ -38,14 +32,18 @@ NAMESPACE_SOUP
 			s[i3] = vsha512h2q_u64(x, s[i1], s[i0]);
 		}
 
-		SOUP_SHA512_INTRIN_TARGET
-		static inline __attribute__((always_inline)) uint64x2_t sha512_load_wk(const uint64x2_t* w, const uint64_t* k, size_t pair) noexcept
+	#if defined(__GNUC__) || defined(__clang__)
+		__attribute__((target("arch=armv8.2-a+sha3")))
+	#endif
+		static SOUP_FORCEINLINE uint64x2_t sha512_load_wk(const uint64x2_t* w, const uint64_t* k, size_t pair) noexcept
 		{
 			return vaddq_u64(w[pair], vld1q_u64(k + pair * 2));
 		}
 
 		// state: 8 words, data: one 128-byte block, k: 80 round constants.
-		SOUP_SHA512_INTRIN_TARGET
+	#if defined(__GNUC__) || defined(__clang__)
+		__attribute__((target("arch=armv8.2-a+sha3")))
+	#endif
 		void sha512_transform(uint64_t state[8], const uint8_t data[128], const uint64_t k[80]) noexcept
 		{
 			// Message schedule: 40 pairs of 64-bit words.
@@ -91,8 +89,6 @@ NAMESPACE_SOUP
 			vst1q_u64(&state[4], vaddq_u64(s[2], init2));
 			vst1q_u64(&state[6], vaddq_u64(s[3], init3));
 		}
-
-		#undef SOUP_SHA512_INTRIN_TARGET
 	}
 }
 

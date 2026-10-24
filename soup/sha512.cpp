@@ -4,7 +4,7 @@
 
 #include "Endian.hpp"
 
-#if SOUP_BITS == 64 && SOUP_ARM && (defined(__GNUC__) || defined(__clang__))
+#if SOUP_BITS == 64 && SOUP_ARM
 	#define SHA512_USE_INTRIN true
 #else
 	#define SHA512_USE_INTRIN false
