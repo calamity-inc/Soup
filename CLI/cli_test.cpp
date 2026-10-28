@@ -1,6 +1,8 @@
 ﻿#include "cli.hpp"
 #if SOUP_EXCEPTIONS
 
+#include <cstdarg>
+
 #include <x64.hpp>
 
 // crypto
@@ -2634,6 +2636,19 @@ static double ffi_mixed_args_func(uintptr_t a, native_float_t b, uintptr_t c, na
 	return static_cast<native_float_t>(y) * z;
 }
 
+static int ffi_variadic_func(int count, ...)
+{
+	int result = 0;
+	va_list args;
+	va_start(args, count);
+	for (int i = 0; i < count; ++i)
+	{
+		result += va_arg(args, int);
+	}
+	va_end(args);
+	return result;
+}
+
 #if SOUP_FFI_CALLBACK_AVAILABLE
 static uintptr_t cb_user_data;
 static uintptr_t cb_args[ffi::MAX_CALLBACK_ARGS];
@@ -2699,6 +2714,12 @@ static void unit_ffi()
 		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_mixed_args_func), types, args, 10);
 		const auto fret = ffi::reinterpret_int_to_float(ret);
 		assert(fret == (static_cast<native_float_t>(15.0) * (static_cast<native_float_t>(0.11) + static_cast<native_float_t>(0.22) + static_cast<native_float_t>(0.33) + static_cast<native_float_t>(0.44) + static_cast<native_float_t>(0.55))));
+	});
+	test("variadic", []
+	{
+		ffi::ValueType types[6] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
+		uintptr_t args[5] = { 4, 25, 25, 50, 50 };
+		assert(ffi::callVariadic(reinterpret_cast<void*>(&ffi_variadic_func), types, args, 1, 5) == 150);
 	});
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	test("callback", []

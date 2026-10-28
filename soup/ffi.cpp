@@ -29,7 +29,11 @@ NAMESPACE_SOUP
 	static constexpr size_t ABI_INT_REGS = (SOUP_X86) ? 6 : 8; // This is the only noteworthy difference.
 	static constexpr size_t ABI_FLOAT_REGS = 8;
 
+#if !(SOUP_MACOS && SOUP_ARM)
 	uintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)
+#else
+	uintptr_t ffi::callVariadic(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
+#endif
 	{
 	#if (SOUP_X86 && SOUP_BITS == 64) || (SOUP_ARM && SOUP_BITS == 64)
 		int fi = 0;
@@ -37,7 +41,10 @@ NAMESPACE_SOUP
 		int si = ABI_INT_REGS;
 		double fargs[ABI_FLOAT_REGS];
 		uintptr_t pargs[ffi::MAX_CALL_ARGS];
-		for (size_t i = 0; i != nargs; ++i)
+	#if !(SOUP_MACOS && SOUP_ARM)
+		size_t nfixedargs = nargs;
+	#endif
+		for (size_t i = 0; i != nfixedargs; ++i)
 		{
 			if (types[i] == ffi::VT_INTEGRAL)
 			{
@@ -57,6 +64,12 @@ NAMESPACE_SOUP
 			}
 			pargs[si++] = args[i];
 		}
+	#if SOUP_MACOS && SOUP_ARM
+		for (size_t i = nfixedargs; i != nargs; ++i)
+		{
+			pargs[si++] = args[i];
+		}
+	#endif
 		const int npargs = si != ABI_INT_REGS ? si : ii;
 		if (types[nargs] == ffi::VT_INTEGRAL)
 		{
