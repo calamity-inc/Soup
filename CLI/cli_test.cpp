@@ -2695,15 +2695,15 @@ static void unit_ffi()
 {
 	test("integral args", []
 	{
-		const ffi::ValueType types[11] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
-		const uintptr_t args[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		ffi::ValueType types[11] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
+		uintptr_t args[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		const auto ret = ffi::call(reinterpret_cast<void*>(&ffi_integral_args_func), types, args, 10);
 		assert(ret == (((0 + 1) << 24) | ((2 + 3) << 18) | ((4 + 5) << 12) | ((6 + 7) << 6) | (8 + 9)));
 	});
 	test("float args", []
 	{
-		const ffi::ValueType types[11] = { ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT };
-		const uintptr_t args[10] = {
+		ffi::ValueType types[11] = { ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT };
+		uintptr_t args[10] = {
 			ffi::reinterpret_float_to_int(0.1), ffi::reinterpret_float_to_int(0.2), ffi::reinterpret_float_to_int(0.3), ffi::reinterpret_float_to_int(0.4), ffi::reinterpret_float_to_int(0.5), // sum = 1.5
 			ffi::reinterpret_float_to_int(0.25), ffi::reinterpret_float_to_int(0.45), ffi::reinterpret_float_to_int(3.0), ffi::reinterpret_float_to_int(-1.5), ffi::reinterpret_float_to_int(0.75), // sum = 2.95
 		};
@@ -2713,11 +2713,11 @@ static void unit_ffi()
 	});
 	test("mixed args", []
 	{
-		const ffi::ValueType types[11] = {
+		ffi::ValueType types[11] = {
 			ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT,
 			ffi::VT_FLOAT
 		};
-		const uintptr_t args[10] = {
+		uintptr_t args[10] = {
 			1, ffi::reinterpret_float_to_int(0.11),
 			2, ffi::reinterpret_float_to_int(0.22),
 			3, ffi::reinterpret_float_to_int(0.33),

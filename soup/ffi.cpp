@@ -48,7 +48,7 @@ NAMESPACE_SOUP
 	static constexpr size_t ABI_FLOAT_REGS = 8;
 
 #if !SOUP_FFI_VARIADIC_ARM64
-	uintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)
+	uintptr_t ffi::call(void* func, ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)
 #else
 	uintptr_t ffi::callVariadic(void* func, ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
 #endif

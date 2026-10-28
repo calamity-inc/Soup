@@ -47,7 +47,7 @@ NAMESPACE_SOUP
 		}
 
 		// types[nargs] is used for the return type.
-		static uintptr_t call(void* func, const ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nargs);
+		static uintptr_t call(void* func, ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nargs);
 
 		// For variadic calls like `printf("%d:%d", 1, 2);`; in this example there's 1 fixed arg and 3 args total.
 		static uintptr_t callVariadic(void* func, ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs);
@@ -69,7 +69,7 @@ NAMESPACE_SOUP
 #define SOUP_FFI_VARIADIC_ARM64 (SOUP_ARM && SOUP_BITS == 64 && (SOUP_MACOS || SOUP_WINDOWS))
 
 #if SOUP_FFI_VARIADIC_ARM64
-	inline uintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nargs)
+	inline uintptr_t ffi::call(void* func, ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nargs)
 	{
 		return callVariadic(func, types, args, nargs, nargs);
 	}
