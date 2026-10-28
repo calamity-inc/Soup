@@ -24,7 +24,25 @@ NAMESPACE_SOUP
 		return ret;
 	}
 
-#if !(SOUP_WINDOWS && SOUP_X86 && SOUP_BITS == 64) // ffi_call_win_x64.cpp
+#if SOUP_WINDOWS && SOUP_X86 && SOUP_BITS == 64
+	// ffi::call implemented in ffi_call_win_x64.cpp
+
+	uintptr_t ffi::callVariadic(void* func, ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
+	{
+		//ValueType buf[MAX_CALL_ARGS + 1];
+		if (nfixedargs != nargs)
+		{
+			//memcpy(buf, types, nargs + 1);
+			const size_t n = nargs > 4 ? 4 : nargs;
+			for (size_t i = 0; i != n; ++i)
+			{
+				types[i] = VT_INTEGRAL; // floats in vararg functions are passed in int registers
+			}
+			//types = buf;
+		}
+		return call(func, types, args, nargs);
+	}
+#else
 	// aarch64 and the System V ABI for x64 (Linux, MacOS) use separate pools for integral and float arguments. The stack is only used when the pool is full.
 	static constexpr size_t ABI_INT_REGS = (SOUP_X86) ? 6 : 8; // This is the only noteworthy difference.
 	static constexpr size_t ABI_FLOAT_REGS = 8;
@@ -32,7 +50,7 @@ NAMESPACE_SOUP
 #if !(SOUP_MACOS && SOUP_ARM)
 	uintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)
 #else
-	uintptr_t ffi::callVariadic(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
+	uintptr_t ffi::callVariadic(void* func, ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
 #endif
 	{
 	#if (SOUP_X86 && SOUP_BITS == 64) || (SOUP_ARM && SOUP_BITS == 64)

@@ -2636,14 +2636,27 @@ static double ffi_mixed_args_func(uintptr_t a, native_float_t b, uintptr_t c, na
 	return static_cast<native_float_t>(y) * z;
 }
 
-static int ffi_variadic_func(int count, ...)
+static int ffi_variadic_func(uintptr_t count, ...)
 {
-	int result = 0;
+	uintptr_t result = 0;
 	va_list args;
 	va_start(args, count);
-	for (int i = 0; i < count; ++i)
+	for (uintptr_t i = 0; i != count; ++i)
 	{
-		result += va_arg(args, int);
+		result += va_arg(args, uintptr_t);
+	}
+	va_end(args);
+	return result;
+}
+
+static native_float_t ffi_variadic_float_func(uintptr_t count, ...)
+{
+	native_float_t result{};
+	va_list args;
+	va_start(args, count);
+	for (uintptr_t i = 0; i != count; ++i)
+	{
+		result += va_arg(args, native_float_t);
 	}
 	va_end(args);
 	return result;
@@ -2715,11 +2728,20 @@ static void unit_ffi()
 		const auto fret = ffi::reinterpret_int_to_float(ret);
 		assert(fret == (static_cast<native_float_t>(15.0) * (static_cast<native_float_t>(0.11) + static_cast<native_float_t>(0.22) + static_cast<native_float_t>(0.33) + static_cast<native_float_t>(0.44) + static_cast<native_float_t>(0.55))));
 	});
-	test("variadic", []
+	test("variadic ints", []
 	{
 		ffi::ValueType types[6] = { ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL, ffi::VT_INTEGRAL };
 		uintptr_t args[5] = { 4, 25, 25, 50, 50 };
 		assert(ffi::callVariadic(reinterpret_cast<void*>(&ffi_variadic_func), types, args, 1, 5) == 150);
+	});
+	test("variadic floats", []
+	{
+		ffi::ValueType types[6] = {
+			ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT,
+			ffi::VT_FLOAT
+		};
+		uintptr_t args[5] = { 4, ffi::reinterpret_float_to_int(0.25), ffi::reinterpret_float_to_int(2.5), ffi::reinterpret_float_to_int(5.0), ffi::reinterpret_float_to_int(42.69) };
+		assert(ffi::reinterpret_int_to_float(ffi::callVariadic(reinterpret_cast<void*>(&ffi_variadic_float_func), types, args, 1, 5)) == (static_cast<native_float_t>(0.25) + static_cast<native_float_t>(2.5) + static_cast<native_float_t>(5.0) + static_cast<native_float_t>(42.69)));
 	});
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	test("callback", []
