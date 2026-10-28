@@ -86,7 +86,7 @@ fwrite($fh, "#include \"ffi.hpp\"\n");
 fwrite($fh, "#if SOUP_WINDOWS && SOUP_X86 && SOUP_BITS == 64\n");
 fwrite($fh, "NAMESPACE_SOUP\n");
 fwrite($fh, "{\n");
-fwrite($fh, "\tuintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)\n");
+fwrite($fh, "\tuintptr_t ffi::call(void* func, ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)\n");
 fwrite($fh, "\t{\n");
 fwrite($fh, "\t\tswitch (nargs)\n");
 fwrite($fh, "\t\t{\n");
