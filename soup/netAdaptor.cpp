@@ -1,6 +1,6 @@
 #include "netAdaptor.hpp"
 
-#if SOUP_WINDOWS || SOUP_LINUX
+#if SOUP_WINDOWS || SOUP_LINUX || SOUP_MACOS
 
 #if SOUP_WINDOWS
 	#include <windows.h>
@@ -9,8 +9,15 @@
 
 	#include "AllocRaii.hpp"
 #else
+	#include <cstring> // strcmp
 	#include <ifaddrs.h> // getifaddrs
-	#include <linux/if_packet.h> // sockaddr_ll
+	#include <netinet/in.h> // sockaddr_in
+	#include <sys/socket.h> // AF_INET, AF_LINK/AF_PACKET
+	#if SOUP_MACOS
+		#include <net/if_dl.h> // sockaddr_dl, LLADDR
+	#else
+		#include <linux/if_packet.h> // sockaddr_ll
+	#endif
 #endif
 #include "IpAddr.hpp"
 #include "MacAddr.hpp"
@@ -61,23 +68,39 @@ NAMESPACE_SOUP
 				struct sockaddr_in* sa = (struct sockaddr_in*)ifa->ifa_addr;
 				na.ip_addr = Endianness::toNative((network_u32_t)sa->sin_addr.s_addr);
 
-				struct sockaddr_in* nm = (struct sockaddr_in*)ifa->ifa_netmask;
-				na.netmask = Endianness::toNative((network_u32_t)nm->sin_addr.s_addr);
-
-				struct ifaddrs* mac_ifa;
-				for (mac_ifa = ifaddr; mac_ifa; mac_ifa = mac_ifa->ifa_next)
+				if (ifa->ifa_netmask) // Can be null on some BSD/macOS interfaces
 				{
+					struct sockaddr_in* nm = (struct sockaddr_in*)ifa->ifa_netmask;
+					na.netmask = Endianness::toNative((network_u32_t)nm->sin_addr.s_addr);
+				}
+
+				for (struct ifaddrs* mac_ifa = ifaddr; mac_ifa; mac_ifa = mac_ifa->ifa_next)
+				{
+				#if SOUP_MACOS
+					// On macOS, the link-layer address is reported as AF_LINK (sockaddr_dl) per interface.
+					constexpr auto link_family = AF_LINK;
+				#else
+					constexpr auto link_family = AF_PACKET;
+				#endif
 					if (
 						mac_ifa->ifa_addr
 						&& strcmp(mac_ifa->ifa_name, na.name.c_str()) == 0
-						&& mac_ifa->ifa_addr->sa_family == AF_PACKET
+						&& mac_ifa->ifa_addr->sa_family == link_family
 						)
 					{
+					#if SOUP_MACOS
+						struct sockaddr_dl* s = (struct sockaddr_dl*)mac_ifa->ifa_addr;
+						if (s->sdl_alen == 6)
+						{
+							na.mac_addr = MacAddr((const uint8_t*)LLADDR(s));
+						}
+					#else
 						struct sockaddr_ll* s = (struct sockaddr_ll*)mac_ifa->ifa_addr;
 						if (s->sll_halen == 6)
 						{
 							na.mac_addr = MacAddr(s->sll_addr);
 						}
+					#endif
 						break;
 					}
 				}
@@ -92,6 +115,9 @@ NAMESPACE_SOUP
 	{
 #if SOUP_WINDOWS
 		return name.find("Virtual") != std::string::npos;
+#elif SOUP_MACOS
+		// lo0 is loopback; utun* are VPN/tunnel interfaces, not LAN adapters.
+		return name == "lo0" || name.rfind("utun", 0) == 0;
 #else
 		return name == "lo";
 #endif
