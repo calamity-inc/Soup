@@ -47,19 +47,25 @@ NAMESPACE_SOUP
 	static constexpr size_t ABI_INT_REGS = (SOUP_X86) ? 6 : 8; // This is the only noteworthy difference.
 	static constexpr size_t ABI_FLOAT_REGS = 8;
 
-#if !(SOUP_MACOS && SOUP_ARM)
+#if !SOUP_FFI_VARIADIC_ARM64
 	uintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nargs)
 #else
 	uintptr_t ffi::callVariadic(void* func, ValueType types[/*nargs + 1 (return type)*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
 #endif
 	{
 	#if (SOUP_X86 && SOUP_BITS == 64) || (SOUP_ARM && SOUP_BITS == 64)
+	#if SOUP_FFI_VARIADIC_ARM64
+		SOUP_IF_UNLIKELY (nfixedargs > nargs)
+		{
+			SOUP_THROW(BadCall());
+		}
+	#endif
 		int fi = 0;
 		int ii = 0;
 		int si = ABI_INT_REGS;
 		double fargs[ABI_FLOAT_REGS];
 		uintptr_t pargs[ffi::MAX_CALL_ARGS];
-	#if !(SOUP_MACOS && SOUP_ARM)
+	#if !SOUP_FFI_VARIADIC_ARM64
 		size_t nfixedargs = nargs;
 	#endif
 		for (size_t i = 0; i != nfixedargs; ++i)
@@ -82,15 +88,27 @@ NAMESPACE_SOUP
 			}
 			pargs[si++] = args[i];
 		}
-	#if SOUP_MACOS && SOUP_ARM
-		SOUP_IF_UNLIKELY (nfixedargs > nargs)
-		{
-			SOUP_THROW(BadCall());
-		}
+	#if SOUP_FFI_VARIADIC_ARM64
+	  #if SOUP_MACOS
+		// MacOS: All variadic arguments are passed on the stack, even if registers are still available.
 		for (size_t i = nfixedargs; i != nargs; ++i)
 		{
 			pargs[si++] = args[i];
 		}
+	  #else
+		// Windows: Variadic arguments are passed like integral arguments. Floats are passed as their bit pattern in integer registers, then on the stack.
+		for (size_t i = nfixedargs; i != nargs; ++i)
+		{
+			if (ii != ABI_INT_REGS)
+			{
+				pargs[ii++] = args[i];
+			}
+			else
+			{
+				pargs[si++] = args[i];
+			}
+		}
+	  #endif
 	#endif
 		const int npargs = si != ABI_INT_REGS ? si : ii;
 		if (types[nargs] == ffi::VT_INTEGRAL)

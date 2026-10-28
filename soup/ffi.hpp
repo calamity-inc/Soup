@@ -63,12 +63,17 @@ NAMESPACE_SOUP
 #endif
 	};
 
-#if SOUP_MACOS && SOUP_ARM
+// ARM64 platforms where variadic arguments are not passed like fixed arguments; callVariadic is then implemented in ffi.cpp.
+// - MacOS: all variadic arguments are passed on the stack.
+// - Windows: variadic arguments (including floats) are passed in integer registers, or on the stack once those are exhausted.
+#define SOUP_FFI_VARIADIC_ARM64 (SOUP_ARM && SOUP_BITS == 64 && (SOUP_MACOS || SOUP_WINDOWS))
+
+#if SOUP_FFI_VARIADIC_ARM64
 	inline uintptr_t ffi::call(void* func, const ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nargs)
 	{
 		return callVariadic(func, types, args, nargs, nargs);
 	}
-#elif !(SOUP_WINDOWS && SOUP_X86 && SOUP_BITS == 64)
+#elif !(SOUP_WINDOWS && SOUP_X86 && SOUP_BITS == 64) && !SOUP_FFI_VARIADIC_ARM64
 	inline uintptr_t ffi::callVariadic(void* func, ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
 	{
 		return call(func, types, args, nargs);
