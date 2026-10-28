@@ -65,6 +65,10 @@ NAMESPACE_SOUP
 			pargs[si++] = args[i];
 		}
 	#if SOUP_MACOS && SOUP_ARM
+		SOUP_IF_UNLIKELY (nfixedargs > nargs)
+		{
+			SOUP_THROW(BadCall());
+		}
 		for (size_t i = nfixedargs; i != nargs; ++i)
 		{
 			pargs[si++] = args[i];
