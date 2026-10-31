@@ -1086,7 +1086,9 @@ if (combined[i]) \
 				r.skip(1); // unknown, seems to be 0x10 in most cases
 				uint16_t scancode; r.u16_be(scancode);
 				uint16_t value; r.u16_be(value); // fvalue * 800
-				r.skip(2); // (u16_be) fvalue * x where x seems to depend on the maximum key travel set in NuphyIO
+				uint16_t travel; r.u16_be(travel); // fvalue * x where x seems to depend on the maximum key travel set in NuphyIO; on the Field75 HE V2 this is the travel in 0.01 mm
+				r.skip(6);
+				uint16_t max_travel = 0; r.u16_be(max_travel); // Field75 HE V2: maximum key travel in 0.01 mm (e.g. 0x0141 = 3.21 mm)
 
 				Key sk;
 				SOUP_IF_UNLIKELY ((scancode >> 8) != 0)
@@ -1112,7 +1114,11 @@ if (combined[i]) \
 
 				SOUP_IF_LIKELY (sk != KEY_NONE)
 				{
-					if (hid.product_id == 0x6120 || hid.product_id == 0xFEE0) // NuPhy Air75/60 HE
+					if (hid.product_id == 0x6132) // NuPhy Field75 HE V2: 'value' goes up to ~7900, so use travel / max travel instead
+					{
+						nuphy.buffer[sk] = (max_travel == 0) ? 0 : static_cast<uint8_t>(std::min<uint32_t>(255, static_cast<uint32_t>(travel) * 255 / max_travel));
+					}
+					else if (hid.product_id == 0x6120 || hid.product_id == 0xFEE0) // NuPhy Air75/60 HE
 					{
 						nuphy.buffer[sk] = static_cast<uint8_t>(static_cast<float>(value) / 1600.0f * 255.0);
 					}
