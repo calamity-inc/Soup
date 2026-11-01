@@ -2662,6 +2662,19 @@ static native_float_t ffi_variadic_float_func(uintptr_t count, ...)
 	return result;
 }
 
+static native_float_t ffi_variadic_float_2(native_float_t f, uintptr_t count, ...)
+{
+	native_float_t result = f;
+	va_list args;
+	va_start(args, count);
+	for (uintptr_t i = 0; i != count; ++i)
+	{
+		result += va_arg(args, native_float_t);
+	}
+	va_end(args);
+	return result;
+}
+
 #if SOUP_FFI_CALLBACK_AVAILABLE
 static uintptr_t cb_user_data;
 static uintptr_t cb_args[ffi::MAX_CALLBACK_ARGS];
@@ -2736,12 +2749,30 @@ static void unit_ffi()
 	});
 	test("variadic floats", []
 	{
-		ffi::ValueType types[6] = {
-			ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT,
-			ffi::VT_FLOAT
-		};
-		uintptr_t args[5] = { 4, ffi::reinterpret_float_to_int(0.25), ffi::reinterpret_float_to_int(2.5), ffi::reinterpret_float_to_int(5.0), ffi::reinterpret_float_to_int(42.69) };
-		assert(ffi::reinterpret_int_to_float(ffi::callVariadic(reinterpret_cast<void*>(&ffi_variadic_float_func), types, args, 1, 5)) == (static_cast<native_float_t>(0.25) + static_cast<native_float_t>(2.5) + static_cast<native_float_t>(5.0) + static_cast<native_float_t>(42.69)));
+		{
+			ffi::ValueType types[6] = {
+				ffi::VT_INTEGRAL, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT, ffi::VT_FLOAT,
+				ffi::VT_FLOAT
+			};
+			uintptr_t args[5] = { 4, ffi::reinterpret_float_to_int(0.25), ffi::reinterpret_float_to_int(2.5), ffi::reinterpret_float_to_int(5.0), ffi::reinterpret_float_to_int(42.69) };
+			assert(ffi::reinterpret_int_to_float(ffi::callVariadic(reinterpret_cast<void*>(&ffi_variadic_float_func), types, args, 1, 5)) == (static_cast<native_float_t>(0.25) + static_cast<native_float_t>(2.5) + static_cast<native_float_t>(5.0) + static_cast<native_float_t>(42.69)));
+		}
+		{
+			ffi::ValueType types[3] = {
+				ffi::VT_FLOAT, ffi::VT_INTEGRAL,
+				ffi::VT_FLOAT
+			};
+			uintptr_t args[2] = { ffi::reinterpret_float_to_int(6.9), 0 };
+			assert(ffi::reinterpret_int_to_float(ffi::callVariadic(reinterpret_cast<void*>(&ffi_variadic_float_2), types, args, 2, 2)) == static_cast<native_float_t>(6.9));
+		}
+		{
+			ffi::ValueType types[4] = {
+				ffi::VT_FLOAT, ffi::VT_INTEGRAL, ffi::VT_FLOAT,
+				ffi::VT_FLOAT
+			};
+			uintptr_t args[3] = { ffi::reinterpret_float_to_int(4.2), 1, ffi::reinterpret_float_to_int(6.9) };
+			assert(ffi::reinterpret_int_to_float(ffi::callVariadic(reinterpret_cast<void*>(&ffi_variadic_float_2), types, args, 2, 3)) == (static_cast<native_float_t>(6.9) + static_cast<native_float_t>(4.2)));
+		}
 	});
 #if SOUP_FFI_CALLBACK_AVAILABLE
 	test("callback", []

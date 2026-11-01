@@ -27,10 +27,16 @@ NAMESPACE_SOUP
 #if SOUP_WINDOWS
 	uintptr_t ffi::callVariadic(void* func, ValueType types[/*nargs + 1*/], const uintptr_t args[/*nargs*/], size_t nfixedargs, size_t nargs)
 	{
-		if (nfixedargs != nargs)
+		const ptrdiff_t nvarargs = nargs - nfixedargs;
+		SOUP_IF_UNLIKELY (nvarargs < 0)
 		{
-			memset(types, VT_INTEGRAL, nargs); // floats in vararg functions are passed in int registers
+			SOUP_THROW(BadCall());
 		}
+	#if SOUP_X86
+		memset(types + nfixedargs, VT_INTEGRAL, static_cast<size_t>(nvarargs)); // vararg floats are passed in int registers
+	#else
+		memset(types, VT_INTEGRAL, nargs); // floats in vararg functions are passed in int registers
+	#endif
 		return call(func, types, args, nargs);
 	}
 #endif
