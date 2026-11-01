@@ -39,7 +39,13 @@ NAMESPACE_SOUP
 				const Key* layout;
 				uint8_t buffer[NUM_KEYS];
 			} madlions;
+			struct
+			{
+				bool streaming;
+				uint16_t buffer[NUM_KEYS];
+			} epomaker;
 		};
+		hwHid epomaker_cmd; // Epomaker takes commands on a different interface than it reports on
 
 		AnalogueKeyboard() = default;
 		AnalogueKeyboard(std::string&& name, hwHid&& hid, bool has_ctx_key);
@@ -104,5 +110,6 @@ NAMESPACE_SOUP
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeysKeychron();
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeysNuphy();
 		[[nodiscard]] std::vector<ActiveKey> getActiveKeysMadlions();
+		[[nodiscard]] std::vector<ActiveKey> getActiveKeysEpomaker();
 	};
 }

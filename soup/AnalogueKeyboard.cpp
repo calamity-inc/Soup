@@ -200,6 +200,19 @@ NAMESPACE_SOUP
 				// If I wanted to be stupid, I could buy their FIRE68 Ultra & NANO68 Pro just to map in the layouts for the shitty polling interface.
 			}
 		}
+		// Epomaker
+		else if (hid.vendor_id == 0x3151)
+		{
+			// This VID:PID is shared by many Rongyuan-based keyboards and their key positions differ, so the product name has to match too.
+			// The depth stream is input report 5. Matched by report id because its usage is only visible on Windows, other platforms report the interface by its first collection.
+			if (hid.product_id == 0x5030 && hid.hasReportId(5))
+			{
+				if (hid.getProductName() == "EpomakerHE108")
+				{
+					return "Epomaker HE108";
+				}
+			}
+		}
 
 		return {};
 	}
@@ -302,6 +315,47 @@ NAMESPACE_SOUP
 		KEY_LCTRL,     KEY_LMETA, KEY_LALT, KEY_NONE, KEY_NONE, KEY_NONE, KEY_SPACE, KEY_NONE, KEY_NONE, KEY_RALT,  KEY_FN,        KEY_RCTRL,        KEY_ARROW_LEFT,    KEY_ARROW_DOWN, KEY_ARROW_RIGHT,
 	};
 
+	// Indexed by the id in each report. Up to 95, it matches the physical keyboard layout with stride 6. After that, the stride becomes 4.
+	static const Key layout_epomaker_he108[] = {
+		KEY_ESCAPE,          KEY_BACKQUOTE,       KEY_TAB,             KEY_CAPS_LOCK,  KEY_LSHIFT,  KEY_LCTRL,
+		KEY_F1,              KEY_1,               KEY_Q,               KEY_A,          KEY_NONE,    KEY_LMETA,
+		KEY_F2,              KEY_2,               KEY_W,               KEY_S,          KEY_Z,       KEY_LALT,
+		KEY_F3,              KEY_3,               KEY_E,               KEY_D,          KEY_X,       KEY_NONE,
+		KEY_F4,              KEY_4,               KEY_R,               KEY_F,          KEY_C,       KEY_NONE,
+		KEY_F5,              KEY_5,               KEY_T,               KEY_G,          KEY_V,       KEY_NONE,
+		KEY_F6,              KEY_6,               KEY_Y,               KEY_H,          KEY_B,       KEY_SPACE,
+		KEY_F7,              KEY_7,               KEY_U,               KEY_J,          KEY_N,       KEY_NONE,
+		KEY_F8,              KEY_8,               KEY_I,               KEY_K,          KEY_M,       KEY_NONE,
+		KEY_F9,              KEY_9,               KEY_O,               KEY_L,          KEY_COMMA,   KEY_RALT,
+		KEY_F10,             KEY_0,               KEY_P,               KEY_SEMICOLON,  KEY_PERIOD,  KEY_FN,
+		KEY_F11,             KEY_MINUS,           KEY_BRACKET_LEFT,    KEY_QUOTE,      KEY_SLASH,   KEY_CTX,
+		KEY_F12,             KEY_EQUALS,          KEY_BRACKET_RIGHT,   KEY_NONE,       KEY_NONE,    KEY_RCTRL,
+		KEY_PRINT_SCREEN,    KEY_BACKSPACE,       KEY_BACKSLASH,       KEY_ENTER,      KEY_RSHIFT,  KEY_ARROW_LEFT,
+		KEY_SCROLL_LOCK,     KEY_INSERT,          KEY_PAGE_UP,         KEY_END,        KEY_ARROW_UP, KEY_ARROW_DOWN,
+		KEY_PAUSE,           KEY_HOME,            KEY_DEL,             KEY_PAGE_DOWN,  KEY_NONE,    KEY_ARROW_RIGHT,
+		KEY_NONE /* calc */, KEY_NONE /* mute */, KEY_NONE /* vol- */, KEY_NONE /* vol+ */,
+		KEY_NUM_LOCK,        KEY_NUMPAD_DIVIDE,   KEY_NUMPAD_MULTIPLY, KEY_NUMPAD_SUBTRACT,
+		KEY_NUMPAD7,         KEY_NUMPAD8,         KEY_NUMPAD9,         KEY_NUMPAD_ADD,
+		KEY_NUMPAD4,         KEY_NUMPAD5,         KEY_NUMPAD6,
+		KEY_NUMPAD1,         KEY_NUMPAD2,         KEY_NUMPAD3,         KEY_NUMPAD_ENTER,
+		KEY_NUMPAD0,         KEY_NUMPAD_DECIMAL,
+	};
+	static_assert(sizeof(layout_epomaker_he108) == 117);
+
+	// Commands go to report id 0, with a checksum over the first 7 command bytes at offset 7.
+	// The full 64-byte report is sent because the keyboard ignores shorter ones, and only Windows pads them for us.
+	static bool sendEpomakerCommand(const hwHid& cmd, uint8_t id, uint8_t value) noexcept
+	{
+		uint8_t data[1 + 64];
+		memset(data, 0, sizeof(data));
+		data[1] = id;
+		data[2] = value;
+		data[8] = static_cast<uint8_t>(255 - ((id + value) & 255));
+		Buffer buf;
+		buf.append(data, sizeof(data));
+		return cmd.sendFeatureReport(std::move(buf));
+	}
+
 	AnalogueKeyboard::AnalogueKeyboard(std::string&& name, hwHid&& hid, bool has_ctx_key)
 		: name(std::move(name)), hid(std::move(hid)), has_ctx_key(has_ctx_key)
 	{
@@ -350,7 +404,7 @@ NAMESPACE_SOUP
 				// Check if this is a supported device and the right interface for it
 				if (auto name = checkDeviceName(hid); !name.empty())
 				{
-					const bool has_ctx_key = (hid.vendor_id == 0x1532 || hid.vendor_id == 0x373b);
+					const bool has_ctx_key = (hid.vendor_id == 0x1532 || hid.vendor_id == 0x373b || hid.vendor_id == 0x3151);
 					AnalogueKeyboard& kbd = res.emplace_back(std::move(name), std::move(hid), has_ctx_key);
 					if (kbd.hid.vendor_id == 0x3434 // Keychron
 						|| kbd.hid.vendor_id == 0x362D // Lemokey (a Keychron brand)
@@ -398,6 +452,28 @@ NAMESPACE_SOUP
 						{
 							kbd.madlions.layout_size = sizeof(layout_madlions_mad68he);
 							kbd.madlions.layout = layout_madlions_mad68he;
+						}
+					}
+					else if (kbd.hid.vendor_id == 0x3151) // Epomaker
+					{
+						kbd.epomaker = {};
+						// The depth stream arrives on current interface, but commands go through another interface on the same device (usage 0x02).
+						for (auto& cmd : devices)
+						{
+							if (cmd.isValid()
+								&& cmd.usage_page == 0xFFFF
+								&& cmd.usage == 0x02
+								&& cmd.isSamePhysicalDeviceAs(kbd.hid)
+								)
+							{
+								kbd.epomaker_cmd = std::move(cmd);
+								break;
+							}
+						}
+						// Without the command interface, the stream can't be started, so keep it unregistered.
+						SOUP_IF_UNLIKELY (!kbd.epomaker_cmd.isValid())
+						{
+							res.pop_back();
 						}
 					}
 				}
@@ -596,6 +672,10 @@ NAMESPACE_SOUP
 		else if (hid.vendor_id == 0x373b)
 		{
 			return getActiveKeysMadlions();
+		}
+		else if (hid.vendor_id == 0x3151)
+		{
+			return getActiveKeysEpomaker();
 		}
 		else
 		{
@@ -1279,6 +1359,56 @@ if (combined[i]) \
 #if SOUP_WINDOWS
 		mtx.unlock();
 #endif
+
+		return keys;
+	}
+
+	std::vector<ActiveKey> AnalogueKeyboard::getActiveKeysEpomaker()
+	{
+		std::vector<ActiveKey> keys{};
+
+		SOUP_IF_UNLIKELY (!epomaker.streaming)
+		{
+			// Start the depth report stream
+			SOUP_IF_UNLIKELY (!sendEpomakerCommand(epomaker_cmd, 0x1B, 0x01))
+			{
+				disconnected = true;
+				return keys;
+			}
+			epomaker.streaming = true;
+		}
+
+		const Buffer<>& report = hid.receiveReport();
+		SOUP_IF_UNLIKELY (report.empty())
+		{
+			disconnected = true;
+		}
+		else
+		{
+			// Each report describes one key that moved: 05 1B <depth lo> <depth hi> <position>. Keys that aren't moving send nothing.
+			if (report.size() >= 5 && report.at(0) == 0x05 && report.at(1) == 0x1B && report.at(4) < COUNT(layout_epomaker_he108))
+			{
+				const Key sk = layout_epomaker_he108[report.at(4)];
+				if (sk != KEY_NONE)
+				{
+					epomaker.buffer[sk] = report.at(2) | (report.at(3) << 8);
+				}
+			}
+
+			for (uint8_t i = 0; i != NUM_KEYS; ++i)
+			{
+				if (epomaker.buffer[i] != 0)
+				{
+					keys.emplace_back(ActiveKey{
+						static_cast<Key>(i),
+						false,
+						0xff,
+						0xff,
+						std::min(static_cast<float>(epomaker.buffer[i]) / 730.0f, 1.0f) // 200 units per mm, 3.65 mm at the bottom
+					});
+				}
+			}
+		}
 
 		return keys;
 	}
