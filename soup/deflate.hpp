@@ -1,15 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <cstddef>
 #include <string>
 
 #include "base.hpp"
-#include "tunables.hpp"
 
 NAMESPACE_SOUP
 {
-	inline SOUP_TUNABLE(uint32_t, SOUP_DEFLATE_MAX_COMPRESSED_RATIO) = 30;
-
 	struct deflate
 	{
 		enum ChecksumState : uint8_t
@@ -35,7 +33,9 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static size_t getMaxDecompressedSize(const void* compressed_data, size_t compressed_data_size) noexcept
 		{
-			return compressed_data_size * SOUP_DEFLATE_MAX_COMPRESSED_RATIO;
+			return compressed_data_size * 30;
+			// Technically even the `* 30` here is an underestimate as it can be all the way to 42 times bigger, e.g. https://github.com/Sainan/eve-online-sde/blob/c38c9175cb36b6b058a332c35a0e1f2b6c7b0e7e/controlTowerResources.jsonl.gz
+			// So, it is advisable to just know the decompressed size upfront if at all possible. :)
 		}
 
 		struct Context
