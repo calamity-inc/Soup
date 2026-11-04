@@ -46,9 +46,9 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static size_t getMaxDecompressedSize(const void* compressed_data, size_t compressed_data_size) noexcept
 		{
-			return compressed_data_size * 30;
-			// Technically even the `* 30` here is an underestimate as it can be all the way to 42 times bigger, e.g. https://github.com/Sainan/eve-online-sde/blob/c38c9175cb36b6b058a332c35a0e1f2b6c7b0e7e/controlTowerResources.jsonl.gz
-			// So, it is advisable to just know the decompressed size upfront if at all possible. :)
+			return compressed_data_size * 42;
+			// The input that is known to be 42 times bigger uncompressed: https://github.com/Sainan/eve-online-sde/blob/c38c9175cb36b6b058a332c35a0e1f2b6c7b0e7e/controlTowerResources.jsonl.gz
+			// However, such a good ratio is very unlikely, so it is advisable to just know the decompressed size upfront if at all possible.
 		}
 
 		// raw stream API
