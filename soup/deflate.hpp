@@ -24,7 +24,20 @@ NAMESPACE_SOUP
 			ChecksumState checksum_state = CHKSUM_NONE;
 		};
 
-		// accepts DEFLATE, gzip & zlib formats
+		// gzip API - assumes that the entire range data[0]..data[size] is the contents of a .gz file
+
+		struct gzFooter
+		{
+			uint32_t uncompressed_data_crc32;
+			uint32_t uncompressed_size;
+		};
+
+		static bool gzReadFooter(const void* data, size_t size, gzFooter& out) noexcept;
+		static DecompressResult gzDecompress(const std::string& data) SOUP_EXCAL { return gzDecompress(data.data(), data.size()); }
+		static DecompressResult gzDecompress(const void* data, size_t size) SOUP_EXCAL;
+
+		// versatile API - accepts DEFLATE, gzip & zlib formats
+
 		static DecompressResult decompress(const std::string& compressed_data) SOUP_EXCAL { return decompress(compressed_data.data(), compressed_data.size()); }
 		static DecompressResult decompress(const std::string& compressed_data, size_t max_decompressed_size) SOUP_EXCAL { return decompress(compressed_data.data(), compressed_data.size(), max_decompressed_size); }
 		static DecompressResult decompress(const void* compressed_data, size_t compressed_data_size) SOUP_EXCAL { return decompress(compressed_data, compressed_data_size, getMaxDecompressedSize(compressed_data, compressed_data_size)); }
@@ -37,6 +50,8 @@ NAMESPACE_SOUP
 			// Technically even the `* 30` here is an underestimate as it can be all the way to 42 times bigger, e.g. https://github.com/Sainan/eve-online-sde/blob/c38c9175cb36b6b058a332c35a0e1f2b6c7b0e7e/controlTowerResources.jsonl.gz
 			// So, it is advisable to just know the decompressed size upfront if at all possible. :)
 		}
+
+		// raw stream API
 
 		struct Context
 		{
