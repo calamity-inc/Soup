@@ -152,6 +152,9 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] bool isSamePhysicalDeviceAs(const hwHid& b) const;
 
+		// Identifies where the device is connected, which is shared by all of its interfaces. Empty if unknown.
+		[[nodiscard]] std::string getPhysicalLocation() const;
+
 		// Do we have permission to send to and receive from the device?
 		// On Windows, always.
 		// On Linux, only as root or with special configuration: https://help.wooting.io/en/article/wootility-configuring-device-access-for-wootility-under-linux-udev-rules-r6lb2o/

@@ -8,6 +8,8 @@
 #include <algorithm> // sort
 
 #include <cfgmgr32.h>
+#include <initguid.h> // so devpkey.h defines the keys
+#include <devpkey.h>
 #include <hidsdi.h>
 
 #pragma comment(lib, "cfgmgr32.lib")
@@ -517,10 +519,103 @@ NAMESPACE_SOUP
 
 	bool hwHid::isSamePhysicalDeviceAs(const hwHid& b) const
 	{
-		return vendor_id == b.vendor_id
-			&& product_id == b.product_id
-			&& getSerialNumber() == b.getSerialNumber()
-			;
+		if (vendor_id != b.vendor_id || product_id != b.product_id)
+		{
+			return false;
+		}
+		const std::string serial_number = getSerialNumber();
+		const std::string b_serial_number = b.getSerialNumber();
+		if (!serial_number.empty() || !b_serial_number.empty())
+		{
+			return serial_number == b_serial_number;
+		}
+		// Without serial numbers, identical devices can only be told apart by where they're connected.
+		const std::string location = getPhysicalLocation();
+		const std::string b_location = b.getPhysicalLocation();
+		if (!location.empty() && !b_location.empty())
+		{
+			return location == b_location;
+		}
+		return true;
+	}
+
+	std::string hwHid::getPhysicalLocation() const
+	{
+#if SOUP_WINDOWS
+		// Walk up from the HID collection to its USB device, e.g. "USB\VID_3151&PID_5030\6&24D8E55E&0&3".
+		// Without a serial number, Windows bases this ID on the port the device is plugged into.
+		const auto interface_path = unicode::utf8_to_utf16(path);
+		wchar_t instance_id[MAX_DEVICE_ID_LEN];
+		ULONG size = sizeof(instance_id);
+		DEVPROPTYPE type;
+		DEVINST inst;
+		if (CM_Get_Device_Interface_PropertyW(interface_path.c_str(), &DEVPKEY_Device_InstanceId, &type, (PBYTE)instance_id, &size, 0) != CR_SUCCESS
+			|| CM_Locate_DevNodeW(&inst, instance_id, CM_LOCATE_DEVNODE_NORMAL) != CR_SUCCESS
+			)
+		{
+			return {};
+		}
+		do
+		{
+			if (CM_Get_Device_IDW(inst, instance_id, MAX_DEVICE_ID_LEN, 0) != CR_SUCCESS)
+			{
+				break;
+			}
+			if (wcsncmp(instance_id, L"USB\\", 4) == 0 && wcsstr(instance_id, L"&MI_") == nullptr) // skip the per-interface nodes of composite devices
+			{
+				return unicode::utf16_to_utf8<std::wstring>(instance_id);
+			}
+		} while (CM_Get_Parent(&inst, inst, 0) == CR_SUCCESS);
+		return {};
+#elif SOUP_LINUX
+		// The sysfs path goes through the USB device and then its interface, which is named after the device:
+		// "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1/0003:3151:5030.0003/hidraw/hidraw2" -> "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2"
+		size_t prev = std::string::npos;
+		for (size_t start = 0, end; start < path.size(); start = end + 1)
+		{
+			end = path.find('/', start);
+			if (end == std::string::npos)
+			{
+				end = path.size();
+			}
+			if (prev != std::string::npos)
+			{
+				const size_t prev_len = start - 1 - prev;
+				if (prev_len != 0
+					&& end - start > prev_len
+					&& path.compare(start, prev_len, path, prev, prev_len) == 0
+					&& path[start + prev_len] == ':'
+					)
+				{
+					return path.substr(0, start - 1);
+				}
+			}
+			prev = start;
+		}
+		return {};
+#elif SOUP_MACOS
+		// All interfaces of a USB device share its location ID.
+		// Read from the registry by path because `device` is null when we lack permission to open it.
+		std::string res;
+		if (io_registry_entry_t entry = IORegistryEntryFromPath(MACH_PORT_NULL, path.c_str()))
+		{
+			if (CFTypeRef ref = IORegistryEntrySearchCFProperty(entry, kIOServicePlane, CFSTR(kIOHIDLocationIDKey), kCFAllocatorDefault, kIORegistryIterateRecursively | kIORegistryIterateParents))
+			{
+				int32_t location;
+				if (CFGetTypeID(ref) == CFNumberGetTypeID()
+					&& CFNumberGetValue((CFNumberRef)ref, kCFNumberSInt32Type, &location)
+					)
+				{
+					res = std::to_string(location);
+				}
+				CFRelease(ref);
+			}
+			IOObjectRelease(entry);
+		}
+		return res;
+#else
+		return {};
+#endif
 	}
 
 	bool hwHid::hasReportId(uint8_t report_id) const noexcept
