@@ -205,8 +205,8 @@ jobs:
     steps:
       - uses: emscripten-core/setup-emsdk@v16
         with:
-          version: 6.0.13
-          emsdk-version: 6.0.13
+          version: 7.0.0
+          emsdk-version: 7.0.0
 
       - uses: actions/checkout@v7
 
