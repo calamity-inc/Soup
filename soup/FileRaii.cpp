@@ -1,5 +1,7 @@
 #include "Tempfile.hpp"
 
+#include <ostream>
+
 NAMESPACE_SOUP
 {
 	FileRaii::FileRaii(std::filesystem::path path)
