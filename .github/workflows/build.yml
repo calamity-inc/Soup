@@ -204,6 +204,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: emscripten-core/setup-emsdk@v16
+        with:
+          version: 6.0.13
+          emsdk-version: 6.0.13
 
       - uses: actions/checkout@v7
 
