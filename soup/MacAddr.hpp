@@ -12,7 +12,7 @@ NAMESPACE_SOUP
 	{
 		uint8_t data[6];
 
-		// 8C-1F-64-B9-8X-XX belongs to Calamity, Inc.
+		// 8C-1F-64-B9-8X-XX has been assigned to Calamity, Inc.
 		// You can use the '5-XX' section for any tomfoolery you wanna do with Soup.
 		static MacAddr SOUP_FIRST; // 8C-1F-64-B9-85-00
 		static MacAddr SOUP_LAST; // 8C-1F-64-B9-85-FF
@@ -30,6 +30,7 @@ NAMESPACE_SOUP
 		}
 
 		[[nodiscard]] std::string toString(char sep = '-') const;
+		void toString(char out[17], char sep = '-') const; // Note: Grow `out` by one byte and zero it if you need null-termination.
 		
 		bool operator ==(const MacAddr& b)
 		{
