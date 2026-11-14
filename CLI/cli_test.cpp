@@ -2610,6 +2610,19 @@ static void test_SocketAddr_fromString()
 	}
 }
 
+static void test_IpAddr_ctors()
+{
+	// 2x u64
+	assert(IpAddr(0x42691337cafebabeull, 0xdeadbeef12345678ull).toString() == "4269:1337:cafe:babe:dead:beef:1234:5678");
+	// 4x u32
+	assert(IpAddr(0, 0, 0, 0x01020304).toString() == "::1.2.3.4");
+	assert(IpAddr(0x42691337, 0xcafebabe, 0xdeadbeef, 0x12345678).toString() == "4269:1337:cafe:babe:dead:beef:1234:5678");
+	// 8x u16
+	assert(IpAddr(0x4269, 0x1337, 0xcafe, 0xbabe, 0xdead, 0xbeef, 0x1234, 0x5678).toString() == "4269:1337:cafe:babe:dead:beef:1234:5678");
+	// 16x u8
+	assert(IpAddr(0x42, 0x69, 0x13, 0x37, 0xca, 0xfe, 0xba, 0xbe, 0xde, 0xad, 0xbe, 0xef, 0x12, 0x34, 0x56, 0x78).toString() == "4269:1337:cafe:babe:dead:beef:1234:5678");
+}
+
 static uintptr_t ffi_integral_args_func(uintptr_t a, uintptr_t b, uintptr_t c, uintptr_t d, uintptr_t e, uintptr_t f, uintptr_t g, uintptr_t h, uintptr_t i, uintptr_t j)
 {
 	uintptr_t v = a + b;
@@ -3039,6 +3052,7 @@ void cli_test()
 			test("socket raii semantics", &test_socket_raii_semantics);
 #endif
 			test("SocketAddr::fromString", &test_SocketAddr_fromString);
+			test("IpAddr ctors", &test_IpAddr_ctors);
 		}
 		unit("os")
 		{
