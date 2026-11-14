@@ -135,7 +135,7 @@ NAMESPACE_SOUP
 
 	void ServerWebService::sendResponse(Socket& s, const char* status, const std::string& headers_and_body)
 	{
-		std::string cont = "HTTP/1.0 ";
+		std::string cont = "HTTP/1.1 ";
 		cont.append(status);
 		cont.append("\r\nServer: Soup\r\nConnection: ");
 		cont.append(s.custom_data.getStructFromMap(WebServerClientData).keep_alive ? "keep-alive" : "close");
@@ -213,7 +213,7 @@ NAMESPACE_SOUP
 				if (method_end == std::string::npos)
 				{
 				_bad_request:
-					s.send("HTTP/1.0 400 Bad Request\r\n\r\n");
+					s.send("HTTP/1.1 400 Bad Request\r\n\r\n");
 					s.close();
 					return;
 				}
@@ -258,7 +258,6 @@ NAMESPACE_SOUP
 							: srv.on_websocket_message != nullptr
 							)
 						{
-							// Firefox throws a SkillIssueException if we say HTTP/1.0
 							std::string cont = "HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nServer: Soup\r\nSec-WebSocket-Accept: ";
 							cont.append(WebSocket::hashKey(*key_value));
 							if (auto extensions = req.findHeader("Sec-WebSocket-Extensions"))
