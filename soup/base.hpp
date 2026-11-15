@@ -164,6 +164,7 @@
 #endif
 
 #if SOUP_CPP23
+	#include <utility>
 	#define SOUP_ASSUME(...) [[assume(__VA_ARGS__)]]
 	#define SOUP_UNREACHABLE std::unreachable()
 #else

@@ -9,6 +9,10 @@
 
 #include "IntStruct.hpp"
 
+#if SOUP_CPP23
+#include <bit>
+#endif
+
 NAMESPACE_SOUP
 {
 	enum Endian : bool
