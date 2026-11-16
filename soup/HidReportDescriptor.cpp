@@ -4,6 +4,7 @@
 
 #include "BitReader.hpp"
 #include "MemoryRefReader.hpp"
+#include "utility.hpp" // SOUP_UNREACHABLE
 
 NAMESPACE_SOUP
 {

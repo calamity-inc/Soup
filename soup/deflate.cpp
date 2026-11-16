@@ -9,6 +9,7 @@
 #include "Endian.hpp"
 #include "memory.hpp" // construct_at
 #include "MemoryRefReader.hpp"
+#include "utility.hpp" // SOUP_UNREACHABLE
 
 /*
 Original source: https://github.com/Artexety/inflatecpp
