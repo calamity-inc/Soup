@@ -1396,21 +1396,32 @@ static void unit_io()
 		bw.u8(4, 0xF);
 		bw.u8(4, 0xF);
 		bw.u8(4, 0x0);
-		bw.finishByte();
+		assert(bw.isByteAligned());
 		assert(w.data == "\xF0\x0F");
 
 		w.data.clear();
 		bw.u8(5, 0b11111);
 		bw.u8(5, 0);
 		bw.u8(6, 0b111111);
-		bw.finishByte();
+		assert(bw.isByteAligned());
 		assert(w.data == "\x1F\xFC");
 
 		w.data.clear();
 		bw.u8(5, 0b11111);
 		bw.u8(4, 0b101);
 		bw.finishByte();
-		assert(w.data == "\x5F\x01");
+		assert(w.data == std::string("\xBF\x00", 2));
+
+		w.data.clear();
+		bw.u8(5, 0);
+		bw.u8(4, 0b1100);
+		assert(w.data == "\x80");
+		bw.finishByte();
+
+		w.data.clear();
+		bw.t(9, 500);
+		bw.finishByte();
+		assert(w.data == "\xf4\x01");
 	});
 	test("StringRefReader", []
 	{

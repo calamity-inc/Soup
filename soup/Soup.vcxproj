@@ -1466,7 +1466,6 @@
     <ClCompile Include="Bigint.cpp" />
     <ClCompile Include="BitReader.cpp" />
     <ClCompile Include="bitutil.cpp" />
-    <ClCompile Include="BitWriter.cpp" />
     <ClCompile Include="CallsiteHook.cpp" />
     <ClCompile Include="CompactDetourHook.cpp" />
     <ClCompile Include="crc32c.cpp" />

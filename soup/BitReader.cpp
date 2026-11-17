@@ -1,7 +1,5 @@
 #include "BitReader.hpp"
 
-#include "unicode.hpp"
-
 #define DEBUG_BR false
 
 #if DEBUG_BR
