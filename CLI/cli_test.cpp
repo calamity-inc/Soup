@@ -576,6 +576,10 @@ static void unit_data()
 
 		assert(bitutil::getNumSetBits((uint64_t)0x1'0000'0000ull) == 1);
 		assert(bitutil::getNumSetBits((uint64_t)0x1'0000'0001ull) == 2);
+
+		assert(bitutil::reverse((uint8_t)0b1010'0011) == (uint8_t)0b1100'0101);
+		assert(bitutil::reverse((uint16_t)0b1010'0011) == (uint16_t)0b1100'0101'0000'0000);
+		assert(bitutil::reverse((uint32_t)0b1010'0011) == (uint32_t)0b1100'0101'0000'0000'0000'0000'0000'0000);
 	});
 
 	unit("unicode")
