@@ -72,8 +72,11 @@ NAMESPACE_SOUP
 			WT_GZIP,
 		};
 
-		static std::string encodeUncompressed(const void* data, size_t size, WrapperType wt = WT_DEFLATE) SOUP_EXCAL;
-		static constexpr size_t encodeUncompressed_size(size_t size, WrapperType wt = WT_DEFLATE) noexcept;
+		[[nodiscard]] static std::string compressHuffman(const std::string& data, WrapperType wt = WT_DEFLATE) { return compressHuffman(reinterpret_cast<const uint8_t*>(data.data()), data.size(), wt); }
+		[[nodiscard]] static std::string compressHuffman(const uint8_t* data, size_t size, WrapperType wt = WT_DEFLATE);
+
+		[[nodiscard]] static std::string encodeUncompressed(const void* data, size_t size, WrapperType wt = WT_DEFLATE) SOUP_EXCAL;
+		[[nodiscard]] static constexpr size_t encodeUncompressed_size(size_t size, WrapperType wt = WT_DEFLATE) noexcept;
 		static void encodeUncompressed(const char* data, size_t size, char out[/* encodeUncompressed_size(size) */], WrapperType wt = WT_DEFLATE) noexcept;
 	};
 

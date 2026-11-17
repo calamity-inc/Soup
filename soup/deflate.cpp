@@ -5,10 +5,13 @@
 #include "base.hpp"
 
 #include "adler32.hpp"
+#include "BitWriter.hpp"
 #include "crc32.hpp"
 #include "Endian.hpp"
+#include "huffman.hpp"
 #include "memory.hpp" // construct_at
 #include "MemoryRefReader.hpp"
+#include "StringWriter.hpp"
 #include "utility.hpp" // SOUP_UNREACHABLE
 
 /*
@@ -222,6 +225,8 @@ NAMESPACE_SOUP
 	constexpr auto kCodeLenSyms = 19;
 	constexpr auto kFastSymbolBits = 10;
 
+	static const uint8_t code_len_syms[kCodeLenSyms] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
+
 	class HuffmanDecoder
 	{
 	private:
@@ -373,7 +378,6 @@ NAMESPACE_SOUP
 		 */
 		static bool readRawLengths(const int len_bits, const int read_symbols, const int symbols, unsigned char* code_length, DeflateBitReader& bit_reader) noexcept
 		{
-			const unsigned char code_len_syms[kCodeLenSyms] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 			int i;
 
 			if (read_symbols < 0 || read_symbols > kMaxSymbols || symbols < 0 || symbols > kMaxSymbols || read_symbols > symbols)
@@ -1059,6 +1063,172 @@ NAMESPACE_SOUP
 		} while (block_result != 0);
 		out.resize(current_out_offset);
 		return out;
+	}
+
+	std::string deflate::compressHuffman(const uint8_t* data, size_t size, WrapperType wt)
+	{
+		size_t frequencies[257];
+		memset(frequencies, 0, sizeof(frequencies));
+		for (size_t i = 0; i != size; ++i)
+		{
+			++frequencies[data[i]];
+		}
+		frequencies[256] = 1;
+
+		// literal+distance code (257 symbols, max 15 bits)
+		uint8_t lengths[258];
+		SOUP_ASSERT(huffman_lengths(lengths, frequencies, 257) <= 15);
+		uint16_t codes[257];
+		huffman_codes(codes, lengths, 257);
+		/*for (uint_fast16_t i = 0; i != 257; ++i)
+		{
+			std::cout << (int)i << ": " << string::binary(codes[i]) << ", " << (int)lengths[i] << "\n";
+		}*/
+
+		StringWriter sw;
+		if (wt == WT_ZLIB)
+		{
+			sw.data.push_back(0x78);
+			sw.data.push_back(0x01);
+		}
+		else if (wt == WT_GZIP)
+		{
+			sw.data.push_back(0x1f);
+			sw.data.push_back(0x8b);
+			sw.data.push_back(0x08);
+			sw.data.push_back(0x00);
+			sw.data.push_back(0x00);
+			sw.data.push_back(0x00);
+			sw.data.push_back(0x00);
+			sw.data.push_back(0x00);
+			sw.data.push_back(0x00);
+			sw.data.push_back(0x03);
+		}
+		BitWriter bw(&sw);
+
+		bw.b(wt != WT_DEFLATE_STREAM); // BFINAL
+		bw.u8(2, 2); // BTYPE = 10 (dynamic huffman)
+		bw.u8(5, 0); // HLIT  = 0 (= 257 literal/length codes)
+		bw.u8(5, 0); // HDIST = 0 (= 1 distance code)
+
+		// distance code
+		lengths[257] = 0;
+
+		// RLE the literal+distance code `lengths`
+		struct RleSym { uint8_t sym; uint8_t extra; };
+		std::vector<RleSym> rle;
+		for (size_t i = 0; i != 258; )
+		{
+			const uint8_t len = lengths[i];
+			size_t run = 1;
+			while (i + run != 258 && lengths[i + run] == len)
+			{
+				++run;
+			}
+			i += run;
+
+			if (len == 0)
+			{
+				while (run >= 11)
+				{
+					const size_t n = (run > 138) ? 138 : run;
+					rle.push_back({ 18, (uint8_t)(n - 11) });
+					run -= n;
+				}
+				if (run >= 3)
+				{
+					rle.push_back({ 17, (uint8_t)(run - 3) });
+					run = 0;
+				}
+				while (run--)
+				{
+					rle.push_back({ 0, 0 });
+				}
+			}
+			else
+			{
+				rle.push_back({ len, 0 });
+				--run;
+				while (run >= 3)
+				{
+					const size_t n = (run > 6) ? 6 : run;
+					rle.push_back({ 16, (uint8_t)(n - 3) });
+					run -= n;
+				}
+				while (run--)
+				{
+					rle.push_back({ len, 0 });
+				}
+			}
+		}
+
+		// Huffman code for the code-length alphabet (19 symbols, max 7 bits)
+		size_t rle_freq[19];
+		memset(rle_freq, 0, sizeof(rle_freq));
+		for (const auto& r : rle)
+		{
+			//std::cout << "rle " << (int)r.sym << ", " << (int)r.extra << "\n";
+			++rle_freq[r.sym];
+		}
+		uint8_t rle_lengths[19];
+		SOUP_ASSERT(huffman_lengths(rle_lengths, rle_freq, 19) <= 7);
+		uint16_t rle_codes[19];
+		huffman_codes(rle_codes, rle_lengths, 19);
+
+		uint8_t hclen = 19;
+		while (hclen > 4 && rle_lengths[code_len_syms[hclen - 1]] == 0)
+		{
+			--hclen;
+		}
+		//std::cout << "hclen = " << (int)hclen << "\n";
+
+		bw.u8(4, hclen - 4);
+		for (size_t i = 0; i != hclen; ++i)
+		{
+			//std::cout << "op " << (int)code_len_syms[i] << " length " << (int)rle_lengths[code_len_syms[i]] << " (code " << rle_codes[code_len_syms[i]] << ")\n";
+			bw.u8(3, rle_lengths[code_len_syms[i]]);
+		}
+
+		// The RLE'd code lengths, followed by extra bits where applicable
+		for (const auto& r : rle)
+		{
+			bw.t(rle_lengths[r.sym], rle_codes[r.sym]);
+			if (r.sym == 16)
+			{
+				bw.u8(2, r.extra);
+			}
+			else if (r.sym == 17)
+			{
+				bw.u8(3, r.extra);
+			}
+			else if (r.sym == 18)
+			{
+				bw.u8(7, r.extra);
+			}
+		}
+
+		for (size_t i = 0; i != size; ++i)
+		{
+			const uint8_t value = data[i];
+			bw.t(lengths[value], codes[value]);
+		}
+		bw.t(lengths[256], codes[256]);
+		bw.finishByte();
+
+		if (wt == WT_ZLIB)
+		{
+			uint32_t hash = adler32::hash(data, size);
+			sw.u32_be(hash);
+		}
+		else if (wt == WT_GZIP)
+		{
+			uint32_t dw = crc32::hash(reinterpret_cast<const uint8_t*>(data), size);
+			sw.u32_le(dw);
+			dw = static_cast<uint32_t>(size);
+			sw.u32_le(dw);
+		}
+
+		SOUP_MOVE_RETURN(sw.data);
 	}
 
 	std::string deflate::encodeUncompressed(const void* data, size_t size, WrapperType wt) SOUP_EXCAL

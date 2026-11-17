@@ -1701,6 +1701,9 @@
     <ClInclude Include="ACanvas.hpp">
       <Filter>vis</Filter>
     </ClInclude>
+    <ClInclude Include="huffman.hpp">
+      <Filter>data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">
@@ -2543,6 +2546,7 @@
     <ClCompile Include="ACanvas.cpp">
       <Filter>vis</Filter>
     </ClCompile>
+    <ClCompile Include="huffman.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
