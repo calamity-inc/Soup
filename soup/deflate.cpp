@@ -1060,4 +1060,66 @@ NAMESPACE_SOUP
 		out.resize(current_out_offset);
 		return out;
 	}
+
+	std::string deflate::encodeUncompressed(const void* data, size_t size, WrapperType wt) SOUP_EXCAL
+	{
+		std::string out(encodeUncompressed_size(size, wt), '\0');
+		encodeUncompressed(reinterpret_cast<const char*>(data), size, out.data(), wt);
+		return out;
+	}
+
+	void deflate::encodeUncompressed(const char* const data, const size_t size, char out[], WrapperType wt) noexcept
+	{
+		if (wt == WT_ZLIB)
+		{
+			*out++ = 0x78;
+			*out++ = 0x01;
+		}
+		else if (wt == WT_GZIP)
+		{
+			*out++ = 0x1f;
+			*out++ = 0x8b;
+			*out++ = 0x08;
+			*out++ = 0x00;
+			*out++ = 0x00;
+			*out++ = 0x00;
+			*out++ = 0x00;
+			*out++ = 0x00;
+			*out++ = 0x00;
+			*out++ = 0x03;
+		}
+		const char* block_data = data;
+		size_t block_size = size;
+		for (; block_size >= 0x10000; block_data += 0x10000, block_size -= 0x10000)
+		{
+			*out++ = 0; // BFINAL = 0, BTYPE = 0
+			*reinterpret_cast<uint16_t*>(out) = 0xffff; out += 2;
+			*reinterpret_cast<uint16_t*>(out) = 0x0000 /* ~0xffff */; out += 2;
+			memcpy(out, block_data, 0x10000); out += 0x10000;
+		}
+		*out++ = (wt != WT_DEFLATE_STREAM) ? 1 : 0; // BFINAL = 1*, BTYPE = 0
+		*out++ = block_size & 0xff;
+		*out++ = (block_size >> 8) & 0xff;
+		uint16_t isize = ~block_size;
+		*out++ = isize & 0xff;
+		*out++ = (isize >> 8) & 0xff;
+		memcpy(out, block_data, block_size); out += block_size;
+		if (wt == WT_ZLIB)
+		{
+			*reinterpret_cast<uint32_t*>(out) = Endianness::toNetwork(adler32::hash(data, size)); out += 4;
+		}
+		else if (wt == WT_GZIP)
+		{
+			if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
+			{
+				*reinterpret_cast<uint32_t*>(out) = crc32::hash(reinterpret_cast<const uint8_t*>(data), size); out += 4;
+				*reinterpret_cast<uint32_t*>(out) = static_cast<uint32_t>(size); out += 4;
+			}
+			else
+			{
+				*reinterpret_cast<uint32_t*>(out) = Endianness::invert(crc32::hash(reinterpret_cast<const uint8_t*>(data), size)); out += 4;
+				*reinterpret_cast<uint32_t*>(out) = Endianness::invert(static_cast<uint32_t>(size)); out += 4;
+			}
+		}
+	}
 }

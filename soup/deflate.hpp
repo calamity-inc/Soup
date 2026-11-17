@@ -61,5 +61,34 @@ NAMESPACE_SOUP
 		static unsigned int decompressBlock(Context& ctx, uint8_t out[/*max_decompressed_size*/], size_t current_out_offset, size_t max_decompressed_size, /*out*/ bool& final_block) noexcept; // Returns bytes written to 'out' or -1 on error. When processing multiple related blocks (same sliding window), adjust 'current_out_offset', NOT 'out' or 'max_decompressed_size'!
 
 		[[nodiscard]] static std::string decompressZeroTerminated(const std::string& data) SOUP_EXCAL; // For RFC7692-style data where instead of the "final block" bit, an empty block signals the end.
+
+		// encode API
+
+		enum WrapperType
+		{
+			WT_DEFLATE,
+			WT_DEFLATE_STREAM, // BFINAL is always 0 (RFC7692 style)
+			WT_ZLIB,
+			WT_GZIP,
+		};
+
+		static std::string encodeUncompressed(const void* data, size_t size, WrapperType wt = WT_DEFLATE) SOUP_EXCAL;
+		static constexpr size_t encodeUncompressed_size(size_t size, WrapperType wt = WT_DEFLATE) noexcept;
+		static void encodeUncompressed(const char* data, size_t size, char out[/* encodeUncompressed_size(size) */], WrapperType wt = WT_DEFLATE) noexcept;
 	};
+
+	inline constexpr size_t deflate::encodeUncompressed_size(size_t size, WrapperType wt) noexcept
+	{
+		const auto blocks = (size + 0xffff) / 0x10000;
+		size = blocks * 5 + size;
+		if (wt == WT_ZLIB)
+		{
+			size += 6;
+		}
+		else if (wt == WT_GZIP)
+		{
+			size += 18;
+		}
+		return size;
+	}
 }
