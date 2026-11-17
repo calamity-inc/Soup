@@ -1121,7 +1121,6 @@
     <ClInclude Include="GetFileContentsTask.hpp" />
     <ClInclude Include="HammingCode.hpp" />
     <ClInclude Include="HttpRequestTask.hpp" />
-    <ClInclude Include="huffman_tree.hpp" />
     <ClInclude Include="memory.hpp" />
     <ClInclude Include="NativeString.hpp" />
     <ClInclude Include="netConfig.hpp" />
@@ -1650,7 +1649,6 @@
     <ClCompile Include="ffi.cpp" />
     <ClCompile Include="Fiber.cpp" />
     <ClCompile Include="FormattedText.cpp" />
-    <ClCompile Include="huffman_tree.cpp" />
     <ClCompile Include="IpAddr.cpp" />
     <ClCompile Include="netAs.cpp" />
     <ClCompile Include="netIntel.cpp" />

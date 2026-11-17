@@ -697,9 +697,6 @@
     <ClInclude Include="BitWriter.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
-    <ClInclude Include="huffman_tree.hpp">
-      <Filter>data</Filter>
-    </ClInclude>
     <ClInclude Include="BitString.hpp">
       <Filter>io\bits</Filter>
     </ClInclude>
@@ -2059,9 +2056,6 @@
     </ClCompile>
     <ClCompile Include="BitReader.cpp">
       <Filter>io\bits</Filter>
-    </ClCompile>
-    <ClCompile Include="huffman_tree.cpp">
-      <Filter>data</Filter>
     </ClCompile>
     <ClCompile Include="lyoStyle.cpp">
       <Filter>vis\layout</Filter>
