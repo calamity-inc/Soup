@@ -1704,6 +1704,9 @@
     <ClInclude Include="huffman.hpp">
       <Filter>data</Filter>
     </ClInclude>
+    <ClInclude Include="Lz77Compressor.hpp">
+      <Filter>data\enc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bytepatch.cpp">

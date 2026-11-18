@@ -975,6 +975,7 @@
     <ClInclude Include="IrcServer.hpp" />
     <ClInclude Include="loc.hpp" />
     <ClInclude Include="lookup3.hpp" />
+    <ClInclude Include="Lz77Compressor.hpp" />
     <ClInclude Include="lzf.hpp" />
     <ClInclude Include="md5.hpp" />
     <ClInclude Include="memAllocating.hpp" />

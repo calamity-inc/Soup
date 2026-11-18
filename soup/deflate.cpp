@@ -9,6 +9,7 @@
 #include "crc32.hpp"
 #include "Endian.hpp"
 #include "huffman.hpp"
+#include "Lz77Compressor.hpp"
 #include "memory.hpp" // construct_at
 #include "MemoryRefReader.hpp"
 #include "StringWriter.hpp"
@@ -1065,6 +1066,60 @@ NAMESPACE_SOUP
 		return out;
 	}
 
+	std::string deflate::compress(const void* data, size_t size, uint_fast8_t level, WrapperType wt)
+	{
+		const std::string encoded = Lz77Compressor::compress(reinterpret_cast<const uint8_t*>(data), size, level);
+
+		StringWriter sw;
+		if (wt == WT_ZLIB)
+		{
+			writeZlibHeader(sw);
+		}
+		else if (wt == WT_GZIP)
+		{
+			writeGzipHeader(sw);
+		}
+		encodeDynamic(sw, encoded.data(), encoded.size(), wt != WT_DEFLATE_STREAM);
+		if (wt == WT_ZLIB)
+		{
+			writeZlibFooter(sw, data, size);
+		}
+		else if (wt == WT_GZIP)
+		{
+			writeGzipFooter(sw, data, size);
+		}
+
+		// For small inputs, static huffman coding might be worth it
+		if (encoded.size() < 100)
+		{
+			StringWriter static_sw;
+			if (wt == WT_ZLIB)
+			{
+				writeZlibHeader(static_sw);
+			}
+			else if (wt == WT_GZIP)
+			{
+				writeGzipHeader(static_sw);
+			}
+			encodeStatic(static_sw, encoded.data(), encoded.size(), wt != WT_DEFLATE_STREAM);
+			if (wt == WT_ZLIB)
+			{
+				writeZlibFooter(static_sw, data, size);
+			}
+			else if (wt == WT_GZIP)
+			{
+				writeGzipFooter(static_sw, data, size);
+			}
+
+			if (sw.data.size() > static_sw.data.size())
+			{
+				SOUP_MOVE_RETURN(static_sw.data);
+			}
+		}
+
+		SOUP_MOVE_RETURN(sw.data);
+	}
+
 	std::string deflate::compressHuffman(const uint8_t* data, size_t size, WrapperType wt)
 	{
 		size_t frequencies[257];
@@ -1091,26 +1146,15 @@ NAMESPACE_SOUP
 		StringWriter sw;
 		if (wt == WT_ZLIB)
 		{
-			sw.data.push_back(0x78);
-			sw.data.push_back(0x01);
+			writeZlibHeader(sw);
 		}
 		else if (wt == WT_GZIP)
 		{
-			sw.data.push_back(0x1f);
-			sw.data.push_back(0x8b);
-			sw.data.push_back(0x08);
-			sw.data.push_back(0x00);
-			sw.data.push_back(0x00);
-			sw.data.push_back(0x00);
-			sw.data.push_back(0x00);
-			sw.data.push_back(0x00);
-			sw.data.push_back(0x00);
-			sw.data.push_back(0x03);
+			writeGzipHeader(sw);
 		}
+
 		BitWriter bw(&sw);
-
 		writeDynamicHuffmanHeader(bw, lengths, 257, 1, wt != WT_DEFLATE_STREAM);
-
 		for (size_t i = 0; i != size; ++i)
 		{
 			const uint8_t value = data[i];
@@ -1121,21 +1165,51 @@ NAMESPACE_SOUP
 
 		if (wt == WT_ZLIB)
 		{
-			uint32_t hash = adler32::hash(data, size);
-			sw.u32_be(hash);
+			writeZlibFooter(sw, data, size);
 		}
 		else if (wt == WT_GZIP)
 		{
-			uint32_t dw = crc32::hash(reinterpret_cast<const uint8_t*>(data), size);
-			sw.u32_le(dw);
-			dw = static_cast<uint32_t>(size);
-			sw.u32_le(dw);
+			writeGzipFooter(sw, data, size);
 		}
 
 		SOUP_MOVE_RETURN(sw.data);
 	}
 
-	void deflate::encodeDynamic(Writer& w, const void* data, size_t size)
+	void deflate::writeZlibHeader(StringWriter& sw)
+	{
+		sw.data.push_back(0x78);
+		sw.data.push_back(0x01);
+	}
+
+	void deflate::writeGzipHeader(StringWriter& sw)
+	{
+		sw.data.push_back(0x1f);
+		sw.data.push_back(0x8b);
+		sw.data.push_back(0x08);
+		sw.data.push_back(0x00);
+		sw.data.push_back(0x00);
+		sw.data.push_back(0x00);
+		sw.data.push_back(0x00);
+		sw.data.push_back(0x00);
+		sw.data.push_back(0x00);
+		sw.data.push_back(0x03);
+	}
+
+	void deflate::writeZlibFooter(Writer& w, const void* uncompressed_data, size_t uncompressed_size)
+	{
+		uint32_t hash = adler32::hash(uncompressed_data, uncompressed_size);
+		w.u32_be(hash);
+	}
+
+	void deflate::writeGzipFooter(Writer& w, const void* uncompressed_data, size_t uncompressed_size)
+	{
+		uint32_t dw = crc32::hash(reinterpret_cast<const uint8_t*>(uncompressed_data), uncompressed_size);
+		w.u32_le(dw);
+		dw = static_cast<uint32_t>(uncompressed_size);
+		w.u32_le(dw);
+	}
+
+	void deflate::encodeDynamic(Writer& w, const void* data, size_t size, bool bfinal)
 	{
 		size_t litlen_weights[286];
 		memset(litlen_weights, 0, sizeof(litlen_weights));
@@ -1182,12 +1256,12 @@ NAMESPACE_SOUP
 		huffman_codes(dist_codes, dist_lengths, dist_size);
 
 		BitWriter bw(&w);
-		writeDynamicHuffmanHeader(bw, lengths, litlen_size, dist_size, true);
+		writeDynamicHuffmanHeader(bw, lengths, litlen_size, dist_size, bfinal);
 		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
 		bw.finishByte();
 	}
 
-	void deflate::encodeStatic(Writer& w, const void* data, size_t size)
+	void deflate::encodeStatic(Writer& w, const void* data, size_t size, bool bfinal)
 	{
 		uint8_t litlen_lengths[288];
 		uint16_t litlen_codes[288];
@@ -1228,7 +1302,7 @@ NAMESPACE_SOUP
 		}
 
 		BitWriter bw(&w);
-		bw.b(true); // BFINAL
+		bw.b(bfinal); // BFINAL
 		bw.t(2, 1); // BTYPE = 01 (static huffman)
 		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
 		bw.finishByte();

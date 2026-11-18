@@ -552,9 +552,22 @@ static void unit_data()
 			assert(deflate::decompressZeroTerminated(string::hex2bin("000500faff48656c6c6f00" "0000ffff")) == "Hello");
 		});
 
+		test("compress", []
+		{
+			std::string text = "ABCD";
+			assert(deflate::decompress(deflate::compress(text)).decompressed == text);
+
+			text = "Have you ever had a dream that you, um, you had, your, you- you could, you’ll do, you- you wants, you, you could do so, you- you’ll do, you could- you, you want, you want him to do you so much you could do anything?";
+			assert(deflate::decompress(deflate::compress(text)).decompressed == text);
+		});
+		
 		test("compressHuffman", []
 		{
-			assert(deflate::decompress(deflate::compressHuffman("ABCD")).decompressed == "ABCD");
+			std::string text = "ABCD";
+			assert(deflate::decompress(deflate::compressHuffman(text)).decompressed == text);
+
+			text = "Have you ever had a dream that you, um, you had, your, you- you could, you’ll do, you- you wants, you, you could do so, you- you’ll do, you could- you, you want, you want him to do you so much you could do anything?";
+			assert(deflate::decompress(deflate::compressHuffman(text)).decompressed == text);
 		});
 
 		test("encode", []

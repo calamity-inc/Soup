@@ -73,12 +73,22 @@ NAMESPACE_SOUP
 			WT_GZIP,
 		};
 
+		// Almost as good as 7z :^)
+		[[nodiscard]] static std::string compress(const std::string& data, uint_fast8_t level/*1..9*/ = 6, WrapperType wt = WT_DEFLATE) { return compress(data.data(), data.size(), level, wt); }
+		[[nodiscard]] static std::string compress(const void* data, size_t size, uint_fast8_t level/*1..9*/ = 6, WrapperType wt = WT_DEFLATE);
+
+		// Not very good compared to deflate::compress or even lzf::compress
 		[[nodiscard]] static std::string compressHuffman(const std::string& data, WrapperType wt = WT_DEFLATE) { return compressHuffman(reinterpret_cast<const uint8_t*>(data.data()), data.size(), wt); }
 		[[nodiscard]] static std::string compressHuffman(const uint8_t* data, size_t size, WrapperType wt = WT_DEFLATE);
 
+		static void writeZlibHeader(StringWriter& sw);
+		static void writeGzipHeader(StringWriter& sw);
+		static void writeZlibFooter(Writer& w, const void* uncompressed_data, size_t uncompressed_size);
+		static void writeGzipFooter(Writer& w, const void* uncompressed_data, size_t uncompressed_size);
+
 		// The input format is specific to Soup; an array of u64_dyn_bp of either a byte value (0..255) or an encoded length-distance pair (see encodeLengthDistancePair).
-		static void encodeDynamic(Writer& w, const void* data, size_t size);
-		static void encodeStatic(Writer& w, const void* data, size_t size);
+		static void encodeDynamic(Writer& w, const void* data, size_t size, bool bfinal = true);
+		static void encodeStatic(Writer& w, const void* data, size_t size, bool bfinal = true);
 		[[nodiscard]] static uint32_t encodeLengthDistancePair(uint_fast16_t length, uint_fast16_t distance) noexcept; // length must be 3..258 and distance must be 1..32768
 		static void writeDynamicHuffmanHeader(BitWriter& bw, uint8_t lengths[/*litlen_size+dist_size*/], uint_fast16_t litlen_size /*257..286*/, uint_fast16_t dist_size /*1..32*/, bool bfinal);
 		static void writeHuffmanBody(BitWriter& bw, const void* data, size_t size, const uint8_t litlen_lengths[], const uint16_t litlen_codes[], const uint8_t dist_lengths[], const uint16_t dist_codes[]);
@@ -86,20 +96,27 @@ NAMESPACE_SOUP
 		[[nodiscard]] static std::string encodeUncompressed(const void* data, size_t size, WrapperType wt = WT_DEFLATE) SOUP_EXCAL;
 		[[nodiscard]] static constexpr size_t encodeUncompressed_size(size_t size, WrapperType wt = WT_DEFLATE) noexcept;
 		static void encodeUncompressed(const char* data, size_t size, char out[/* encodeUncompressed_size(size) */], WrapperType wt = WT_DEFLATE) noexcept;
+		[[nodiscard]] static constexpr size_t getWrapperOverhead(WrapperType wt) noexcept;
 	};
 
 	inline constexpr size_t deflate::encodeUncompressed_size(size_t size, WrapperType wt) noexcept
 	{
 		const auto blocks = (size + 0xffff) / 0x10000;
 		size = blocks * 5 + size;
+		size += getWrapperOverhead(wt);
+		return size;
+	}
+
+	inline constexpr size_t deflate::getWrapperOverhead(WrapperType wt) noexcept
+	{
 		if (wt == WT_ZLIB)
 		{
-			size += 6;
+			return 6;
 		}
-		else if (wt == WT_GZIP)
+		if (wt == WT_GZIP)
 		{
-			size += 18;
+			return 18;
 		}
-		return size;
+		return 0;
 	}
 }
