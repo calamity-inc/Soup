@@ -3,6 +3,8 @@
 #include <cstring> // memset
 #include <queue>
 
+#include "bitutil.hpp"
+
 NAMESPACE_SOUP
 {
 	uint8_t huffman_lengths(uint8_t lengths[], const size_t frequencies[], uint_fast16_t num_symbols) SOUP_EXCAL
@@ -64,17 +66,6 @@ NAMESPACE_SOUP
 		return deepest;
 	}
 
-	[[nodiscard]] static uint16_t reverse_bits(uint16_t code, uint8_t length)
-	{
-		uint16_t result = 0;
-		for (uint_fast8_t i = 0; i != length; ++i)
-		{
-			result = (result << 1) | (code & 1);
-			code >>= 1;
-		}
-		return result;
-	}
-
 	void huffman_codes(uint16_t codes[], const uint8_t lengths[], uint_fast16_t num_symbols) noexcept
 	{
 		constexpr uint_fast16_t MAX_LENGTH = 15;
@@ -109,7 +100,7 @@ NAMESPACE_SOUP
 			const uint8_t len = lengths[i];
 			if (len != 0 && len <= MAX_LENGTH)
 			{
-				codes[i] = reverse_bits(next_code[len]++, len);
+				codes[i] = bitutil::reverse(next_code[len]++, len);
 			}
 			else
 			{

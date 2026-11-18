@@ -145,6 +145,17 @@ NAMESPACE_SOUP
 			v = (v >> 16) | (v << 16);
 			return v;
 		}
+		template <typename T>
+		[[nodiscard]] static T reverse(T v, uint_fast8_t bits)
+		{
+			T res = 0;
+			for (uint_fast8_t i = 0; i != bits; ++i)
+			{
+				res = (res << 1) | (v & 1);
+				v >>= 1;
+			}
+			return res;
+		}
 
 		[[nodiscard]] static uint32_t parallelDeposit(uint32_t src, uint32_t mask);
 		[[nodiscard]] static uint64_t parallelDeposit(uint64_t src, uint64_t mask);

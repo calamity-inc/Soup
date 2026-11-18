@@ -567,9 +567,14 @@ static void unit_data()
 			sw.u64_dyn_bp('o');
 			sw.u64_dyn_bp(deflate::encodeLengthDistancePair(3, 1));
 			sw.u64_dyn_bp(deflate::encodeLengthDistancePair(8, 8));
-			std::string encoded = std::move(sw.data);
-			assert(sw.data.empty());
-			deflate::encode(sw, encoded.data(), encoded.size());
+			const std::string encoded = std::move(sw.data);
+
+			sw.data.clear();
+			deflate::encodeDynamic(sw, encoded.data(), encoded.size());
+			assert(deflate::decompress(sw.data).decompressed == "HellooooHelloooo");
+
+			sw.data.clear();
+			deflate::encodeStatic(sw, encoded.data(), encoded.size());
 			assert(deflate::decompress(sw.data).decompressed == "HellooooHelloooo");
 		});
 	}

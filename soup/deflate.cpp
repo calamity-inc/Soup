@@ -1135,7 +1135,7 @@ NAMESPACE_SOUP
 		SOUP_MOVE_RETURN(sw.data);
 	}
 
-	void deflate::encode(Writer& w, const void* data, size_t size)
+	void deflate::encodeDynamic(Writer& w, const void* data, size_t size)
 	{
 		size_t litlen_weights[286];
 		memset(litlen_weights, 0, sizeof(litlen_weights));
@@ -1183,27 +1183,53 @@ NAMESPACE_SOUP
 
 		BitWriter bw(&w);
 		writeDynamicHuffmanHeader(bw, lengths, litlen_size, dist_size, true);
+		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
+	}
 
-		for (MemoryRefReader r(data, size); r.hasMore(); )
+	void deflate::encodeStatic(Writer& w, const void* data, size_t size)
+	{
+		uint8_t litlen_lengths[288];
+		uint16_t litlen_codes[288];
+		for (uint_fast16_t i = 0; i != 288; ++i)
 		{
-			uint64_t v = 0;
-			r.u64_dyn_bp(v);
-			const uint_fast16_t code = v & 0x1ff;
-			bw.t(lengths[code], codes[code]);
-			if (code >= kMatchLenSymStart)
+			uint16_t code;
+			uint8_t len;
+			if (i < 144)
 			{
-				const uint_fast16_t bits = (kMatchLenCode[code - kMatchLenSymStart] >> 16) & 15;
-				bw.u8(bits, (v >> 9) & 0b11111);
-
-				const uint8_t dist_code = (v >> 14) & 0b11111;
-				bw.t(dist_lengths[dist_code], dist_codes[dist_code]);
-
-				const uint_fast16_t dist_bits = (kOffsetCode[dist_code] >> 16) & 15;
-				bw.t<uint16_t>(dist_bits, v >> 19);
+				len = 8;
+				code = 0x30 + i;
 			}
+			else if (i < 256)
+			{
+				len = 9;
+				code = 0x190 + (i - 144);
+			}
+			else if (i < 280)
+			{
+				len = 7;
+				code = i - 256;
+			}
+			else
+			{
+				len = 8;
+				code = 0xC0 + (i - 280);
+			}
+			litlen_lengths[i] = len;
+			litlen_codes[i] = bitutil::reverse(code, len);
 		}
-		bw.t(lengths[256], codes[256]);
-		bw.finishByte();
+
+		uint8_t dist_lengths[32];
+		uint16_t dist_codes[32];
+		for (uint_fast16_t i = 0; i != 32; ++i)
+		{
+			dist_lengths[i] = 5;
+			dist_codes[i] = bitutil::reverse(i, 5);
+		}
+
+		BitWriter bw(&w);
+		bw.b(true); // BFINAL
+		bw.t(2, 1); // BTYPE = 01 (static huffman)
+		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
 	}
 
 	uint32_t deflate::encodeLengthDistancePair(uint_fast16_t length, uint_fast16_t distance) noexcept
@@ -1351,6 +1377,30 @@ NAMESPACE_SOUP
 				bw.u8(7, r.extra);
 			}
 		}
+	}
+
+	void deflate::writeHuffmanBody(BitWriter& bw, const void* data, size_t size, const uint8_t litlen_lengths[], const uint16_t litlen_codes[], const uint8_t dist_lengths[], const uint16_t dist_codes[])
+	{
+		for (MemoryRefReader r(data, size); r.hasMore(); )
+		{
+			uint64_t v = 0;
+			r.u64_dyn_bp(v);
+			const uint_fast16_t code = v & 0x1ff;
+			bw.t(litlen_lengths[code], litlen_codes[code]);
+			if (code >= kMatchLenSymStart)
+			{
+				const uint_fast16_t bits = (kMatchLenCode[code - kMatchLenSymStart] >> 16) & 15;
+				bw.u8(bits, (v >> 9) & 0b11111);
+
+				const uint8_t dist_code = (v >> 14) & 0b11111;
+				bw.t(dist_lengths[dist_code], dist_codes[dist_code]);
+
+				const uint_fast16_t dist_bits = (kOffsetCode[dist_code] >> 16) & 15;
+				bw.t<uint16_t>(dist_bits, v >> 19);
+			}
+		}
+		bw.t(litlen_lengths[256], litlen_codes[256]);
+		bw.finishByte();
 	}
 
 	std::string deflate::encodeUncompressed(const void* data, size_t size, WrapperType wt) SOUP_EXCAL
