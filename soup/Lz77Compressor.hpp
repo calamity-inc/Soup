@@ -49,7 +49,7 @@ NAMESPACE_SOUP
 			--level;
 			SOUP_IF_UNLIKELY (level >= COUNT(table))
 			{
-				level = COUNT(table);
+				level = COUNT(table) - 1;
 			}
 			const Config& c = table[level];
 			max_chain = c.max_chain;
