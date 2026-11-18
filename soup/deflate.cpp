@@ -1184,6 +1184,7 @@ NAMESPACE_SOUP
 		BitWriter bw(&w);
 		writeDynamicHuffmanHeader(bw, lengths, litlen_size, dist_size, true);
 		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
+		bw.finishByte();
 	}
 
 	void deflate::encodeStatic(Writer& w, const void* data, size_t size)
@@ -1230,6 +1231,7 @@ NAMESPACE_SOUP
 		bw.b(true); // BFINAL
 		bw.t(2, 1); // BTYPE = 01 (static huffman)
 		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
+		bw.finishByte();
 	}
 
 	uint32_t deflate::encodeLengthDistancePair(uint_fast16_t length, uint_fast16_t distance) noexcept
@@ -1400,7 +1402,6 @@ NAMESPACE_SOUP
 			}
 		}
 		bw.t(litlen_lengths[256], litlen_codes[256]);
-		bw.finishByte();
 	}
 
 	std::string deflate::encodeUncompressed(const void* data, size_t size, WrapperType wt) SOUP_EXCAL
