@@ -1075,8 +1075,11 @@ NAMESPACE_SOUP
 		}
 		frequencies[256] = 1;
 
-		// literal+distance code (257 symbols, max 15 bits)
-		uint8_t lengths[258];
+		// We don't use distance codes, but at least 1 is required
+		uint8_t lengths[257 + 1];
+		lengths[257] = 0;
+
+		// Build the literals/lengths tree
 		SOUP_ASSERT(huffman_lengths(lengths, frequencies, 257) <= 15);
 		uint16_t codes[257];
 		huffman_codes(codes, lengths, 257);
@@ -1106,22 +1109,164 @@ NAMESPACE_SOUP
 		}
 		BitWriter bw(&sw);
 
-		bw.b(wt != WT_DEFLATE_STREAM); // BFINAL
+		writeDynamicHuffmanHeader(bw, lengths, 257, 1, wt != WT_DEFLATE_STREAM);
+
+		for (size_t i = 0; i != size; ++i)
+		{
+			const uint8_t value = data[i];
+			bw.t(lengths[value], codes[value]);
+		}
+		bw.t(lengths[256], codes[256]);
+		bw.finishByte();
+
+		if (wt == WT_ZLIB)
+		{
+			uint32_t hash = adler32::hash(data, size);
+			sw.u32_be(hash);
+		}
+		else if (wt == WT_GZIP)
+		{
+			uint32_t dw = crc32::hash(reinterpret_cast<const uint8_t*>(data), size);
+			sw.u32_le(dw);
+			dw = static_cast<uint32_t>(size);
+			sw.u32_le(dw);
+		}
+
+		SOUP_MOVE_RETURN(sw.data);
+	}
+
+	void deflate::encode(Writer& w, const void* data, size_t size)
+	{
+		size_t litlen_weights[286];
+		memset(litlen_weights, 0, sizeof(litlen_weights));
+		size_t dist_weights[32];
+		memset(dist_weights, 0, sizeof(dist_weights));
+		uint_fast16_t litlen_highest_code = 256;
+		uint_fast16_t dist_highest_code = 0;
+		for (MemoryRefReader r(data, size); r.hasMore(); )
+		{
+			uint64_t v = 0;
+			r.u64_dyn_bp(v);
+			const uint_fast16_t code = v & 0x1ff;
+			SOUP_ASSERT(code < 286);
+			++litlen_weights[code];
+			if (code > litlen_highest_code)
+			{
+				litlen_highest_code = code;
+			}
+			if (code >= kMatchLenSymStart)
+			{
+				const uint8_t dist_code = (v >> 14) & 0b11111;
+				++dist_weights[dist_code];
+				if (dist_code > dist_highest_code)
+				{
+					dist_highest_code = dist_code;
+				}
+			}
+		}
+		litlen_weights[256] = 1;
+		const uint_fast16_t litlen_size = litlen_highest_code + 1;
+		const uint_fast16_t dist_size = dist_highest_code + 1;
+
+		uint8_t lengths[286 + 32];
+		uint16_t codes[286 + 32];
+
+		uint8_t* const litlen_lengths = &lengths[0];
+		SOUP_ASSERT(huffman_lengths(litlen_lengths, litlen_weights, litlen_size) <= 15);
+		uint16_t* const litlen_codes = &codes[0];
+		huffman_codes(litlen_codes, litlen_lengths, litlen_size);
+
+		uint8_t* const dist_lengths = &lengths[litlen_size];
+		SOUP_ASSERT(huffman_lengths(dist_lengths, dist_weights, dist_size) <= 15);
+		uint16_t* const dist_codes = &codes[litlen_size];
+		huffman_codes(dist_codes, dist_lengths, dist_size);
+
+		BitWriter bw(&w);
+		writeDynamicHuffmanHeader(bw, lengths, litlen_size, dist_size, true);
+
+		for (MemoryRefReader r(data, size); r.hasMore(); )
+		{
+			uint64_t v = 0;
+			r.u64_dyn_bp(v);
+			const uint_fast16_t code = v & 0x1ff;
+			bw.t(lengths[code], codes[code]);
+			if (code >= kMatchLenSymStart)
+			{
+				const uint_fast16_t bits = (kMatchLenCode[code - kMatchLenSymStart] >> 16) & 15;
+				bw.u8(bits, (v >> 9) & 0b11111);
+
+				const uint8_t dist_code = (v >> 14) & 0b11111;
+				bw.t(dist_lengths[dist_code], dist_codes[dist_code]);
+
+				const uint_fast16_t dist_bits = (kOffsetCode[dist_code] >> 16) & 15;
+				bw.t<uint16_t>(dist_bits, v >> 19);
+			}
+		}
+		bw.t(lengths[256], codes[256]);
+		bw.finishByte();
+	}
+
+	uint32_t deflate::encodeLengthDistancePair(uint_fast16_t length, uint_fast16_t distance) noexcept
+	{
+		uint32_t out = 0;
+		// 9 bits: length symbol
+		// 5 bits: length extra
+		// 5 bits: distance symbol
+		// 13 bits: distance extras
+
+		// Find appropriate length symbol
+		for (uint_fast16_t i = 0; i != kMatchLenSyms; ++i)
+		{
+			const uint_fast16_t base = kMatchLenCode[i] & 0x7fff;
+			const uint_fast16_t bits = (kMatchLenCode[i] >> 16) & 15;
+			if (base <= length
+				&& (length - base) >> bits == 0
+				&& (length != 258 || i == kMatchLenSyms - 1)
+				)
+			{
+				out = (kMatchLenSymStart + i);
+				out |= ((length - base) & 0b11111) << 9;
+				break;
+			}
+		}
+
+		SOUP_IF_LIKELY (out) // Found a length symbol?
+		{
+			// Find appropriate distance symbol
+			for (uint_fast16_t i = 0; i != kOffsetSyms; ++i)
+			{
+				const uint_fast16_t base = kOffsetCode[i] & 0x7fff;
+				const uint_fast16_t bits = (kOffsetCode[i] >> 16) & 15;
+				if (base <= distance
+					&& (distance - base) >> bits == 0
+					)
+				{
+					out |= static_cast<uint32_t>(i) << 14;
+					out |= static_cast<uint32_t>(distance - base) << 19;
+					break;
+				}
+			}
+		}
+		return out;
+	}
+
+	void deflate::writeDynamicHuffmanHeader(BitWriter& bw, uint8_t lengths[], uint_fast16_t litlen_size, uint_fast16_t dist_size, bool bfinal)
+	{
+		bw.b(bfinal); // BFINAL
 		bw.u8(2, 2); // BTYPE = 10 (dynamic huffman)
-		bw.u8(5, 0); // HLIT  = 0 (= 257 literal/length codes)
-		bw.u8(5, 0); // HDIST = 0 (= 1 distance code)
+		bw.u8(5, static_cast<uint8_t>(litlen_size - 257)); // HLIT (257..286)
+		bw.u8(5, static_cast<uint8_t>(dist_size - 1)); // HDIST (1..32)
 
-		// distance code
-		lengths[257] = 0;
+		const uint_fast16_t size = litlen_size + dist_size;
 
-		// RLE the literal+distance code `lengths`
+		// RLE the combined `lengths`
 		struct RleSym { uint8_t sym; uint8_t extra; };
 		std::vector<RleSym> rle;
-		for (size_t i = 0; i != 258; )
+		for (uint_fast16_t i = 0; i != size; )
 		{
 			const uint8_t len = lengths[i];
-			size_t run = 1;
-			while (i + run != 258 && lengths[i + run] == len)
+			uint_fast16_t run = 1;
+			while (i + run != size && lengths[i + run] == len)
 			{
 				++run;
 			}
@@ -1206,29 +1351,6 @@ NAMESPACE_SOUP
 				bw.u8(7, r.extra);
 			}
 		}
-
-		for (size_t i = 0; i != size; ++i)
-		{
-			const uint8_t value = data[i];
-			bw.t(lengths[value], codes[value]);
-		}
-		bw.t(lengths[256], codes[256]);
-		bw.finishByte();
-
-		if (wt == WT_ZLIB)
-		{
-			uint32_t hash = adler32::hash(data, size);
-			sw.u32_be(hash);
-		}
-		else if (wt == WT_GZIP)
-		{
-			uint32_t dw = crc32::hash(reinterpret_cast<const uint8_t*>(data), size);
-			sw.u32_le(dw);
-			dw = static_cast<uint32_t>(size);
-			sw.u32_le(dw);
-		}
-
-		SOUP_MOVE_RETURN(sw.data);
 	}
 
 	std::string deflate::encodeUncompressed(const void* data, size_t size, WrapperType wt) SOUP_EXCAL

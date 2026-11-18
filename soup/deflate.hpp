@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base.hpp"
+#include "fwd.hpp"
 
 NAMESPACE_SOUP
 {
@@ -74,6 +75,11 @@ NAMESPACE_SOUP
 
 		[[nodiscard]] static std::string compressHuffman(const std::string& data, WrapperType wt = WT_DEFLATE) { return compressHuffman(reinterpret_cast<const uint8_t*>(data.data()), data.size(), wt); }
 		[[nodiscard]] static std::string compressHuffman(const uint8_t* data, size_t size, WrapperType wt = WT_DEFLATE);
+
+		// The input format is specific to Soup; an array of u64_dyn_bp of either a byte value (0..255) or an encoded length-distance pair (see encodeLengthDistancePair).
+		static void encode(Writer& w, const void* data, size_t size);
+		[[nodiscard]] static uint32_t encodeLengthDistancePair(uint_fast16_t length, uint_fast16_t distance) noexcept; // length must be 3..258 and distance must be 1..32768
+		static void writeDynamicHuffmanHeader(BitWriter& bw, uint8_t lengths[/*litlen_size+dist_size*/], uint_fast16_t litlen_size /*257..286*/, uint_fast16_t dist_size /*1..32*/, bool bfinal);
 
 		[[nodiscard]] static std::string encodeUncompressed(const void* data, size_t size, WrapperType wt = WT_DEFLATE) SOUP_EXCAL;
 		[[nodiscard]] static constexpr size_t encodeUncompressed_size(size_t size, WrapperType wt = WT_DEFLATE) noexcept;

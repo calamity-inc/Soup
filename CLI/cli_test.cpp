@@ -551,6 +551,27 @@ static void unit_data()
 			assert(deflate::decompressZeroTerminated(string::hex2bin("f248cdc9c90700" "0000ffff")) == "Hello");
 			assert(deflate::decompressZeroTerminated(string::hex2bin("000500faff48656c6c6f00" "0000ffff")) == "Hello");
 		});
+
+		test("compressHuffman", []
+		{
+			assert(deflate::decompress(deflate::compressHuffman("ABCD")).decompressed == "ABCD");
+		});
+
+		test("encode", []
+		{
+			StringWriter sw;
+			sw.u64_dyn_bp('H');
+			sw.u64_dyn_bp('e');
+			sw.u64_dyn_bp('l');
+			sw.u64_dyn_bp('l');
+			sw.u64_dyn_bp('o');
+			sw.u64_dyn_bp(deflate::encodeLengthDistancePair(3, 1));
+			sw.u64_dyn_bp(deflate::encodeLengthDistancePair(8, 8));
+			std::string encoded = std::move(sw.data);
+			assert(sw.data.empty());
+			deflate::encode(sw, encoded.data(), encoded.size());
+			assert(deflate::decompress(sw.data).decompressed == "HellooooHelloooo");
+		});
 	}
 
 	test("bitutil", []
