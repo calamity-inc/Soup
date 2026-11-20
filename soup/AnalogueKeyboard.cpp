@@ -189,7 +189,10 @@ NAMESPACE_SOUP
 				{
 					return "Madlions MAD60HE";
 				}
-				else if (hid.product_id == 0x1058 || hid.product_id == 0x1059 || hid.product_id == 0x105A || hid.product_id == 0x105C)
+				else if (
+					hid.product_id == 0x1058 || hid.product_id == 0x1059 || hid.product_id == 0x105A || hid.product_id == 0x105C
+					|| hid.product_id == 0x1125 // MAD68HE V2
+					)
 				{
 					return "Madlions MAD68HE"; // Thanks to CaelTheColher for providing the layout
 				}
