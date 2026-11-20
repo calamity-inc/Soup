@@ -145,6 +145,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Ensure LLVM is up-to-date
+        run: choco upgrade llvm
+
       - name: Build Soup
         run: php build_lib.php
 
