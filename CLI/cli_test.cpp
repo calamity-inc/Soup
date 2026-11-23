@@ -554,11 +554,26 @@ static void unit_data()
 
 		test("compress", []
 		{
-			std::string text = "ABCD";
+			std::string text = "Have you ever had a dream that you, um, you had, your, you- you could, you’ll do, you- you wants, you, you could do so, you- you’ll do, you could- you, you want, you want him to do you so much you could do anything?";
 			assert(deflate::decompress(deflate::compress(text)).decompressed == text);
 
-			text = "Have you ever had a dream that you, um, you had, your, you- you could, you’ll do, you- you wants, you, you could do so, you- you’ll do, you could- you, you want, you want him to do you so much you could do anything?";
-			assert(deflate::decompress(deflate::compress(text)).decompressed == text);
+			// Sometimes static huffman coding is better than dynamic.
+			text = "ABCD";
+			std::string compressed = deflate::compress(text);
+			assert(compressed.size() <= 6);
+			assert(deflate::decompress(compressed).decompressed == text);
+
+			// And sometimes huffman coding is just bad even with lz77.
+			char buf[256];
+			for (int i = 0; i != 256; ++i)
+			{
+				buf[i] = i;
+			}
+			compressed = deflate::compress(buf, 256, 9);
+			assert(compressed.size() <= 261);
+			text = deflate::decompress(compressed).decompressed;
+			assert(text.size() == 256);
+			assert(memcmp(text.data(), buf, 256) == 0);
 		});
 		
 		test("compressHuffman", []

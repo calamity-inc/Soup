@@ -1090,7 +1090,7 @@ NAMESPACE_SOUP
 		}
 
 		// For small inputs, static huffman coding might be worth it
-		if (encoded.size() < 100)
+		if (size < 100)
 		{
 			StringWriter static_sw;
 			if (wt == WT_ZLIB)
@@ -1113,8 +1113,14 @@ NAMESPACE_SOUP
 
 			if (sw.data.size() > static_sw.data.size())
 			{
-				SOUP_MOVE_RETURN(static_sw.data);
+				sw = std::move(static_sw);
 			}
+		}
+
+		if (sw.data.size() > encodeUncompressed_size(size, wt))
+		{
+			// Well, that was a waste.
+			return encodeUncompressed(data, size, wt);
 		}
 
 		SOUP_MOVE_RETURN(sw.data);
