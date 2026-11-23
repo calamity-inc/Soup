@@ -37,26 +37,6 @@ NAMESPACE_SOUP
 		return addFile(std::move(name), contents, 0, contents);
 	}
 
-	ZipIndexedFile ZipWriter::addFileAnticompressed(std::string name, const std::string& contents_uncompressed) const
-	{
-		std::string anti_compressed{};
-
-		for (auto i = contents_uncompressed.cbegin(); i != contents_uncompressed.cend(); ++i)
-		{
-			anti_compressed.push_back(i == contents_uncompressed.cend() - 1);
-
-			anti_compressed.push_back('\x1');
-			anti_compressed.push_back('\x0');
-
-			anti_compressed.push_back('\xFE');
-			anti_compressed.push_back('\xFF');
-
-			anti_compressed.push_back(*i);
-		}
-
-		return addFile(std::move(name), contents_uncompressed, 8, anti_compressed);
-	}
-
 	void ZipWriter::finalise(const std::vector<ZipIndexedFile>& files) const
 	{
 		ZipEndOfCentralDirectory eocd{};
