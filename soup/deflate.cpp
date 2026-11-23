@@ -1195,7 +1195,7 @@ NAMESPACE_SOUP
 	void deflate::writeGzipHeader(StringWriter& sw)
 	{
 		sw.data.push_back(0x1f);
-		sw.data.push_back(0x8b);
+		sw.data.push_back(0x8bu);
 		sw.data.push_back(0x08);
 		sw.data.push_back(0x00);
 		sw.data.push_back(0x00);
@@ -1389,7 +1389,7 @@ NAMESPACE_SOUP
 			{
 				while (run >= 11)
 				{
-					const size_t n = (run > 138) ? 138 : run;
+					const uint_fast16_t n = (run > 138) ? 138 : run;
 					rle.push_back({ 18, (uint8_t)(n - 11) });
 					run -= n;
 				}
@@ -1409,7 +1409,7 @@ NAMESPACE_SOUP
 				--run;
 				while (run >= 3)
 				{
-					const size_t n = (run > 6) ? 6 : run;
+					const uint_fast16_t n = (run > 6) ? 6 : run;
 					rle.push_back({ 16, (uint8_t)(n - 3) });
 					run -= n;
 				}
@@ -1483,7 +1483,7 @@ NAMESPACE_SOUP
 				bw.t(dist_lengths[dist_code], dist_codes[dist_code]);
 
 				const uint_fast16_t dist_bits = (kOffsetCode[dist_code] >> 16) & 15;
-				bw.t<uint16_t>(dist_bits, v >> 19);
+				bw.t<uint16_t>(dist_bits, static_cast<uint16_t>(v >> 19));
 			}
 		}
 		bw.t(litlen_lengths[256], litlen_codes[256]);
@@ -1506,7 +1506,7 @@ NAMESPACE_SOUP
 		else if (wt == WT_GZIP)
 		{
 			*out++ = 0x1f;
-			*out++ = 0x8b;
+			*out++ = 0x8bu;
 			*out++ = 0x08;
 			*out++ = 0x00;
 			*out++ = 0x00;
@@ -1528,7 +1528,7 @@ NAMESPACE_SOUP
 		*out++ = (wt != WT_DEFLATE_STREAM) ? 1 : 0; // BFINAL = 1*, BTYPE = 0
 		*out++ = block_size & 0xff;
 		*out++ = (block_size >> 8) & 0xff;
-		uint16_t isize = ~block_size;
+		uint16_t isize = static_cast<uint16_t>(~block_size);
 		*out++ = isize & 0xff;
 		*out++ = (isize >> 8) & 0xff;
 		memcpy(out, block_data, block_size); out += block_size;

@@ -43,7 +43,7 @@ NAMESPACE_SOUP
 			{   4096,  258,   4096 }, // 9
 		};
 
-		Lz77Compressor(size_t size, uint_fast8_t level) SOUP_EXCAL
+		Lz77Compressor(uint32_t size, uint_fast8_t level) SOUP_EXCAL
 			: head(size_t(1) << HASH_BITS, NIL), prev(size < WINDOW ? size : WINDOW, NIL)
 		{
 			--level;
@@ -75,7 +75,7 @@ NAMESPACE_SOUP
 
 		// Finds the longest match for position i among previously inserted positions.
 		// Matches may overlap position i (dist < len), which deflate allows.
-		struct Match { size_t len = 0, dist = 0; };
+		struct Match { uint32_t len = 0, dist = 0; };
 		[[nodiscard]] Match findMatch(const uint8_t* data, uint32_t size, uint32_t i) const noexcept
 		{
 			Match best;
@@ -131,18 +131,18 @@ NAMESPACE_SOUP
 		[[nodiscard]] static std::string compress(const uint8_t* data, size_t size, uint_fast8_t level = 6)
 		{
 			SOUP_ASSERT(size < NIL);
-			Lz77Compressor c(size, level);
-			Match cur = c.findMatch(data, size, 0);
+			Lz77Compressor c(static_cast<uint32_t>(size), level);
+			Match cur = c.findMatch(data, static_cast<uint32_t>(size), 0);
 			StringWriter sw;
-			for (uint32_t i = 0; i != size; )
+			for (uint32_t i = 0; i != static_cast<uint32_t>(size); )
 			{
-				c.insert(data, size, i);
+				c.insert(data, static_cast<uint32_t>(size), i);
 
 				// "Lazy matching" (if starting one byte later gives a longer match, emit a literal now)
 				Match next;
-				if (cur.len < c.nice_len && i + 1 < size)
+				if (cur.len < c.nice_len && i + 1 < static_cast<uint32_t>(size))
 				{
-					next = c.findMatch(data, size, i + 1);
+					next = c.findMatch(data, static_cast<uint32_t>(size), i + 1);
 				}
 				if (cur.len == 0 || next.len > cur.len)
 				{
@@ -160,7 +160,7 @@ NAMESPACE_SOUP
 					c.insert(data, static_cast<uint32_t>(size), i + k);
 				}
 				i += cur.len;
-				cur = (i < size) ? c.findMatch(data, size, i) : Match{};
+				cur = (i < static_cast<uint32_t>(size)) ? c.findMatch(data, static_cast<uint32_t>(size), i) : Match{};
 			}
 			SOUP_MOVE_RETURN(sw.data);
 		}
