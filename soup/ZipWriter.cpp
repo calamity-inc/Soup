@@ -1,6 +1,7 @@
 #include "ZipWriter.hpp"
 
 #include "crc32.hpp"
+#include "deflate.hpp"
 #include "Writer.hpp"
 #include "ZipCentralDirectoryFile.hpp"
 #include "ZipEndOfCentralDirectory.hpp"
@@ -30,6 +31,16 @@ NAMESPACE_SOUP
 		os.raw(const_cast<char*>(contents_compressed.data()), contents_compressed.size());
 
 		return zif;
+	}
+
+	ZipIndexedFile ZipWriter::addFile(std::string name, const std::string& contents) const
+	{
+		auto compressed = deflate::compressRaw(contents);
+		if (compressed.size() < contents.size())
+		{
+			return addFile(std::move(name), contents, 8, compressed);
+		}
+		return addFile(std::move(name), contents, 0, contents);
 	}
 
 	ZipIndexedFile ZipWriter::addFileUncompressed(std::string name, const std::string& contents) const
