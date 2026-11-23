@@ -105,7 +105,7 @@ NAMESPACE_SOUP
 
 	inline constexpr size_t deflate::encodeUncompressed_size(size_t size, WrapperType wt) noexcept
 	{
-		const auto blocks = (size + 0xffff) / 0x10000;
+		const auto blocks = size != 0 ? ((size + 0xfffe) / 0xffff) : 1;
 		size = blocks * 5 + size;
 		size += getWrapperOverhead(wt);
 		return size;

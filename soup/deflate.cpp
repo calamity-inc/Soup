@@ -1518,12 +1518,12 @@ NAMESPACE_SOUP
 		}
 		const char* block_data = data;
 		size_t block_size = size;
-		for (; block_size >= 0x10000; block_data += 0x10000, block_size -= 0x10000)
+		for (; block_size > 0xffff; block_data += 0xffff, block_size -= 0xffff)
 		{
 			*out++ = 0; // BFINAL = 0, BTYPE = 0
 			*reinterpret_cast<uint16_t*>(out) = 0xffff; out += 2;
 			*reinterpret_cast<uint16_t*>(out) = 0x0000 /* ~0xffff */; out += 2;
-			memcpy(out, block_data, 0x10000); out += 0x10000;
+			memcpy(out, block_data, 0xffff); out += 0xffff;
 		}
 		*out++ = (wt != WT_DEFLATE_STREAM) ? 1 : 0; // BFINAL = 1*, BTYPE = 0
 		*out++ = block_size & 0xff;

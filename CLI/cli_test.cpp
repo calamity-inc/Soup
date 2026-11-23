@@ -605,6 +605,29 @@ static void unit_data()
 			deflate::encodeStatic(sw, encoded.data(), encoded.size());
 			assert(deflate::decompress(sw.data).decompressed == "HellooooHelloooo");
 		});
+		
+		test("encodeUncompressed", []
+		{
+			std::string str;
+			assert(deflate::encodeUncompressed_size(str.size()) == 5);
+			assert(deflate::decompress(deflate::encodeUncompressed(str.data(), str.size())).decompressed == str);
+
+			str = "a";
+			assert(deflate::encodeUncompressed_size(str.size()) == 6);
+			assert(deflate::decompress(deflate::encodeUncompressed(str.data(), str.size())).decompressed == str);
+
+			str = std::string(0xffff, 'a');
+			assert(deflate::encodeUncompressed_size(str.size()) == 5 + 0xffff);
+			assert(deflate::decompress(deflate::encodeUncompressed(str.data(), str.size())).decompressed == str);
+
+			str = std::string(0x10000, 'a');
+			assert(deflate::encodeUncompressed_size(str.size()) == 5 * 2 + 0x10000);
+			assert(deflate::decompress(deflate::encodeUncompressed(str.data(), str.size())).decompressed == str);
+
+			str = std::string(0x20000, 'a');
+			assert(deflate::encodeUncompressed_size(str.size()) == 5 * 3 + 0x20000);
+			assert(deflate::decompress(deflate::encodeUncompressed(str.data(), str.size())).decompressed == str);
+		});
 	}
 
 	test("bitutil", []
