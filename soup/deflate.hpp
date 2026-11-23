@@ -77,6 +77,10 @@ NAMESPACE_SOUP
 		[[nodiscard]] static std::string compress(const std::string& data, uint_fast8_t level/*1..9*/ = 6, WrapperType wt = WT_DEFLATE) { return compress(data.data(), data.size(), level, wt); }
 		[[nodiscard]] static std::string compress(const void* data, size_t size, uint_fast8_t level/*1..9*/ = 6, WrapperType wt = WT_DEFLATE);
 
+		// Only attempts lz77 + huffman coding without considering cases where uncompressed is better.
+		[[nodiscard]] static std::string compressRaw(const std::string& data, uint_fast8_t level/*1..9*/ = 6, WrapperType wt = WT_DEFLATE) { return compressRaw(data.data(), data.size(), level, wt); }
+		[[nodiscard]] static std::string compressRaw(const void* data, size_t size, uint_fast8_t level/*1..9*/ = 6, WrapperType wt = WT_DEFLATE);
+
 		// Not very good compared to deflate::compress or even lzf::compress
 		[[nodiscard]] static std::string compressHuffman(const std::string& data, WrapperType wt = WT_DEFLATE) { return compressHuffman(reinterpret_cast<const uint8_t*>(data.data()), data.size(), wt); }
 		[[nodiscard]] static std::string compressHuffman(const uint8_t* data, size_t size, WrapperType wt = WT_DEFLATE);

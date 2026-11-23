@@ -1068,6 +1068,17 @@ NAMESPACE_SOUP
 
 	std::string deflate::compress(const void* data, size_t size, uint_fast8_t level, WrapperType wt)
 	{
+		auto compressed = compressRaw(data, size, level, wt);
+		if (compressed.size() > encodeUncompressed_size(size, wt))
+		{
+			// Well, that was a waste.
+			compressed = encodeUncompressed(data, size, wt);
+		}
+		return compressed;
+	}
+
+	std::string deflate::compressRaw(const void* data, size_t size, uint_fast8_t level, WrapperType wt)
+	{
 		const std::string encoded = Lz77Compressor::compress(reinterpret_cast<const uint8_t*>(data), size, level);
 
 		StringWriter sw;
@@ -1090,7 +1101,7 @@ NAMESPACE_SOUP
 		}
 
 		// For small inputs, static huffman coding might be worth it
-		if (size < 100)
+		if (encoded.size() < 100)
 		{
 			StringWriter static_sw;
 			if (wt == WT_ZLIB)
@@ -1113,14 +1124,8 @@ NAMESPACE_SOUP
 
 			if (sw.data.size() > static_sw.data.size())
 			{
-				sw = std::move(static_sw);
+				SOUP_MOVE_RETURN(static_sw.data);
 			}
-		}
-
-		if (sw.data.size() > encodeUncompressed_size(size, wt))
-		{
-			// Well, that was a waste.
-			return encodeUncompressed(data, size, wt);
 		}
 
 		SOUP_MOVE_RETURN(sw.data);
