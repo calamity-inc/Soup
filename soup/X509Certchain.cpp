@@ -89,7 +89,7 @@ NAMESPACE_SOUP
 		if (!certs.empty())
 		{
 			uint8_t max_children = 0;
-			uint8_t root_index = certs.size() - 1;
+			uint8_t root_index = static_cast<uint8_t>(certs.size() - 1);
 
 			do
 			{
