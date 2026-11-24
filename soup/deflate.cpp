@@ -9,7 +9,6 @@
 #include "crc32.hpp"
 #include "Endian.hpp"
 #include "huffman.hpp"
-#include "Lz77Compressor.hpp"
 #include "memory.hpp" // construct_at
 #include "MemoryRefReader.hpp"
 #include "StringWriter.hpp"
@@ -1079,7 +1078,8 @@ NAMESPACE_SOUP
 
 	std::string deflate::compressRaw(const void* data, size_t size, uint_fast8_t level, WrapperType wt)
 	{
-		const std::string encoded = Lz77Compressor::compress(reinterpret_cast<const uint8_t*>(data), size, level);
+		Lz77Compressor c(level);
+		const std::string encoded = c.compress(static_cast<const uint8_t*>(data), size);
 
 		StringWriter sw;
 		if (wt == WT_ZLIB)
@@ -1214,7 +1214,7 @@ NAMESPACE_SOUP
 
 	void deflate::writeGzipFooter(Writer& w, const void* uncompressed_data, size_t uncompressed_size)
 	{
-		uint32_t dw = crc32::hash(reinterpret_cast<const uint8_t*>(uncompressed_data), uncompressed_size);
+		uint32_t dw = crc32::hash(static_cast<const uint8_t*>(uncompressed_data), uncompressed_size);
 		w.u32_le(dw);
 		dw = static_cast<uint32_t>(uncompressed_size);
 		w.u32_le(dw);
@@ -1269,7 +1269,17 @@ NAMESPACE_SOUP
 		BitWriter bw(&w);
 		writeDynamicHuffmanHeader(bw, lengths, litlen_size, dist_size, bfinal);
 		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
-		bw.finishByte();
+		if (bfinal)
+		{
+			bw.finishByte();
+		}
+		else
+		{
+			bw.b(false); // BFINAL
+			bw.u8(2, 0); // BTYPE = 00 (store)
+			bw.finishByte();
+			uint32_t v = 0xffff'0000; w.u32_le(v);
+		}
 	}
 
 	void deflate::encodeStatic(Writer& w, const void* data, size_t size, bool bfinal)
@@ -1314,9 +1324,19 @@ NAMESPACE_SOUP
 
 		BitWriter bw(&w);
 		bw.b(bfinal); // BFINAL
-		bw.t(2, 1); // BTYPE = 01 (static huffman)
+		bw.u8(2, 1); // BTYPE = 01 (static huffman)
 		writeHuffmanBody(bw, data, size, litlen_lengths, litlen_codes, dist_lengths, dist_codes);
-		bw.finishByte();
+		if (bfinal)
+		{
+			bw.finishByte();
+		}
+		else
+		{
+			bw.b(false); // BFINAL
+			bw.u8(2, 0); // BTYPE = 00 (store)
+			bw.finishByte();
+			uint32_t v = 0xffff'0000; w.u32_le(v);
+		}
 	}
 
 	uint32_t deflate::encodeLengthDistancePair(uint_fast16_t length, uint_fast16_t distance) noexcept
@@ -1549,5 +1569,24 @@ NAMESPACE_SOUP
 				*reinterpret_cast<uint32_t*>(out) = Endianness::invert(static_cast<uint32_t>(size)); out += 4;
 			}
 		}
+	}
+
+	std::string deflate::CompressionContext::compressBlock(const void* data, size_t size, bool bfinal)
+	{
+		const size_t i = buf.size();
+		buf.append(static_cast<const char*>(data), size);
+		const std::string encoded = compressor.compress(reinterpret_cast<const uint8_t*>(buf.data()), buf.size(), i);
+
+		//std::cout << "deflate::CompressionContext::compressBlock: encoded=" << string::bin2hex(encoded) << "\n";
+
+		StringWriter dynamic_sw, static_sw;
+		deflate::encodeDynamic(dynamic_sw, encoded.data(), encoded.size(), bfinal);
+		deflate::encodeStatic(static_sw, encoded.data(), encoded.size(), bfinal);
+
+		if (dynamic_sw.data.size() > static_sw.data.size())
+		{
+			SOUP_MOVE_RETURN(static_sw.data);
+		}
+		SOUP_MOVE_RETURN(dynamic_sw.data);
 	}
 }

@@ -1520,6 +1520,7 @@
     <ClCompile Include="loc.cpp" />
     <ClCompile Include="lookup3.cpp" />
     <ClCompile Include="lzf.cpp" />
+    <ClCompile Include="Lz77Compressor.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="Rc4State.cpp" />
     <ClCompile Include="RegexConstraint.cpp" />

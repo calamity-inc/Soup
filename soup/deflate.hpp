@@ -5,7 +5,8 @@
 #include <string>
 
 #include "base.hpp"
-#include "fwd.hpp"
+#include "fwd.hpp" // BitWriter, Writer
+#include "Lz77Compressor.hpp"
 
 NAMESPACE_SOUP
 {
@@ -101,6 +102,22 @@ NAMESPACE_SOUP
 		[[nodiscard]] static constexpr size_t encodeUncompressed_size(size_t size, WrapperType wt = WT_DEFLATE) noexcept;
 		static void encodeUncompressed(const char* data, size_t size, char out[/* encodeUncompressed_size(size) */], WrapperType wt = WT_DEFLATE) noexcept;
 		[[nodiscard]] static constexpr size_t getWrapperOverhead(WrapperType wt) noexcept;
+
+		// stream compression API
+
+		struct CompressionContext
+		{
+			std::string buf;
+			Lz77Compressor compressor;
+
+			CompressionContext(uint_fast8_t level/*1..9*/ = 6) SOUP_EXCAL
+				: compressor(level)
+			{
+			}
+
+			[[nodiscard]] std::string compressBlock(const std::string& str, bool bfinal = false) { return compressBlock(str.data(), str.size(), bfinal); }
+			[[nodiscard]] std::string compressBlock(const void* data, size_t size, bool bfinal = false);
+		};
 	};
 
 	inline constexpr size_t deflate::encodeUncompressed_size(size_t size, WrapperType wt) noexcept

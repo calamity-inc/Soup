@@ -523,7 +523,7 @@ static void unit_data()
 			assert(deflate::decompress(string::hex2bin("010500faff48656c6c6f00")).decompressed == "Hello");
 		});
 
-		test("decompression context", []
+		test("stream decompress", []
 		{
 			deflate::DecompressionContext ctx;
 			uint8_t out[16];
@@ -627,6 +627,34 @@ static void unit_data()
 			str = std::string(0x20000, 'a');
 			assert(deflate::encodeUncompressed_size(str.size()) == 5 * 3 + 0x20000);
 			assert(deflate::decompress(deflate::encodeUncompressed(str.data(), str.size())).decompressed == str);
+		});
+
+		test("stream compress", []
+		{
+			std::string out;
+			{
+				deflate::CompressionContext ctx;
+				std::string dict = ctx.compressBlock("bananapple,");
+				std::string data = ctx.compressBlock("apple,banana");
+				assert(data.size() <= 10);
+				out = dict + data;
+			}
+			{
+				deflate::DecompressionContext ctx;
+				deflate::initDecompressionContext(ctx, reinterpret_cast<const uint8_t*>(out.data()), out.size());
+				uint8_t buf[50];
+				bool final_block;
+				unsigned int len = deflate::decompressBlock(ctx, buf, 0, sizeof(buf), final_block);
+				assert(len == 11);
+				assert(memcmp(buf, "bananapple,", 11) == 0);
+				len = deflate::decompressBlock(ctx, buf, 11, sizeof(buf), final_block);
+				assert(len == 0);
+				len = deflate::decompressBlock(ctx, buf, 11, sizeof(buf), final_block);
+				assert(len == 12);
+				assert(memcmp(buf + 11, "apple,banana", 12) == 0);
+				len = deflate::decompressBlock(ctx, buf, 23, sizeof(buf), final_block);
+				assert(len == 0);
+			}
 		});
 	}
 

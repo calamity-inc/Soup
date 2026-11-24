@@ -2550,6 +2550,9 @@
       <Filter>vis</Filter>
     </ClCompile>
     <ClCompile Include="huffman.cpp" />
+    <ClCompile Include="Lz77Compressor.cpp">
+      <Filter>data\enc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="os">
