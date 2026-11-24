@@ -25,7 +25,7 @@ NAMESPACE_SOUP
 			ChecksumState checksum_state = CHKSUM_NONE;
 		};
 
-		// gzip API - assumes that the entire range data[0]..data[size] is the contents of a .gz file
+		// gzip decompression API - assumes that the entire range data[0]..data[size] is gzip data
 
 		struct gzFooter
 		{
@@ -37,7 +37,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] static DecompressResult gzDecompress(const std::string& data) SOUP_EXCAL { return gzDecompress(data.data(), data.size()); }
 		[[nodiscard]] static DecompressResult gzDecompress(const void* data, size_t size) SOUP_EXCAL;
 
-		// versatile API - accepts DEFLATE, gzip & zlib formats
+		// versatile decompression API - accepts DEFLATE, gzip & zlib formats
 
 		[[nodiscard]] static DecompressResult decompress(const std::string& compressed_data) SOUP_EXCAL { return decompress(compressed_data.data(), compressed_data.size()); }
 		[[nodiscard]] static DecompressResult decompress(const std::string& compressed_data, size_t max_decompressed_size) SOUP_EXCAL { return decompress(compressed_data.data(), compressed_data.size(), max_decompressed_size); }
@@ -52,18 +52,18 @@ NAMESPACE_SOUP
 			// However, such a good ratio is very unlikely, so it is advisable to just know the decompressed size upfront if at all possible.
 		}
 
-		// raw stream API
+		// stream decompression API
 
-		struct Context
+		struct DecompressionContext
 		{
 			void* _[5];
 		};
-		static void initContext(Context& ctx, const uint8_t* compressed_data, size_t compressed_data_size) noexcept;
-		static unsigned int decompressBlock(Context& ctx, uint8_t out[/*max_decompressed_size*/], size_t current_out_offset, size_t max_decompressed_size, /*out*/ bool& final_block) noexcept; // Returns bytes written to 'out' or -1 on error. When processing multiple related blocks (same sliding window), adjust 'current_out_offset', NOT 'out' or 'max_decompressed_size'!
+		static void initDecompressionContext(DecompressionContext& ctx, const uint8_t* compressed_data, size_t compressed_data_size) noexcept;
+		static unsigned int decompressBlock(DecompressionContext& ctx, uint8_t out[/*max_decompressed_size*/], size_t current_out_offset, size_t max_decompressed_size, /*out*/ bool& final_block) noexcept; // Returns bytes written to 'out' or -1 on error. When processing multiple related blocks (same sliding window), adjust 'current_out_offset', NOT 'out' or 'max_decompressed_size'!
 
 		[[nodiscard]] static std::string decompressZeroTerminated(const std::string& data) SOUP_EXCAL; // For RFC7692-style data where instead of the "final block" bit, an empty block signals the end.
 
-		// encode API
+		// compression and encoding API
 
 		enum WrapperType
 		{

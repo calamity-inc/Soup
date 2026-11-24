@@ -219,7 +219,7 @@ NAMESPACE_SOUP
 		[[nodiscard]] const uint8_t* getInBlockEnd() noexcept { return this->in_block_end_; };
 		[[nodiscard]] const uint8_t* getInBlockStart() noexcept { return this->in_block_start_; };
 	};
-	static_assert(sizeof(deflate::Context) >= sizeof(DeflateBitReader));
+	static_assert(sizeof(deflate::DecompressionContext) >= sizeof(DeflateBitReader));
 	static_assert(std::is_trivially_destructible_v<DeflateBitReader>);
 
 	constexpr auto kMaxSymbols = 288;
@@ -941,7 +941,7 @@ NAMESPACE_SOUP
 		bool final_block;
 		do
 		{
-			unsigned int block_result = decompressBlock(reinterpret_cast<Context&>(br), out, current_out_offset, max_decompressed_size, final_block);
+			unsigned int block_result = decompressBlock(reinterpret_cast<DecompressionContext&>(br), out, current_out_offset, max_decompressed_size, final_block);
 			SOUP_IF_UNLIKELY (block_result == -1)
 			{
 				return -1;
@@ -1018,12 +1018,12 @@ NAMESPACE_SOUP
 		return (current_compressed_data - (unsigned char*)compressed_data);
 	}
 
-	void deflate::initContext(Context& ctx, const uint8_t* compressed_data, size_t compressed_data_size) noexcept
+	void deflate::initDecompressionContext(DecompressionContext& ctx, const uint8_t* compressed_data, size_t compressed_data_size) noexcept
 	{
 		soup::construct_at<DeflateBitReader>(reinterpret_cast<DeflateBitReader*>(&ctx), compressed_data, compressed_data + compressed_data_size);
 	}
 
-	unsigned int deflate::decompressBlock(Context& ctx, uint8_t* out, size_t current_out_offset, size_t max_decompressed_size, bool& final_block) noexcept
+	unsigned int deflate::decompressBlock(DecompressionContext& ctx, uint8_t* out, size_t current_out_offset, size_t max_decompressed_size, bool& final_block) noexcept
 	{
 		auto& br = reinterpret_cast<DeflateBitReader&>(ctx);
 		final_block = br.getBits(1);
@@ -1047,8 +1047,8 @@ NAMESPACE_SOUP
 
 	std::string deflate::decompressZeroTerminated(const std::string& data) SOUP_EXCAL
 	{
-		Context ctx;
-		initContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
+		DecompressionContext ctx;
+		initDecompressionContext(ctx, reinterpret_cast<const uint8_t*>(data.data()), data.size());
 		const size_t max_decompressed_size = getMaxDecompressedSize(data.data(), data.size());
 		std::string out(max_decompressed_size, '\0'); // excal
 		size_t current_out_offset = 0;
