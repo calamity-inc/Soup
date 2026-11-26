@@ -69,7 +69,7 @@ NAMESPACE_SOUP
 		enum WrapperType
 		{
 			WT_DEFLATE,
-			WT_DEFLATE_STREAM, // BFINAL is always 0 (RFC7692 style)
+			WT_DEFLATE_STREAM, // BFINAL is always 0 and the last 4 bytes are always 00 00 ff ff (to make a valid byte-aligned stream). Those bytes may be removed by the encoder if the decoder knows to readd them (RFC7692 style).
 			WT_ZLIB,
 			WT_GZIP,
 		};
@@ -115,6 +115,7 @@ NAMESPACE_SOUP
 			{
 			}
 
+			// If bfinal is false, the last 4 bytes are always 00 00 ff ff (to make a valid byte-aligned stream). Those bytes may be removed by the encoder if the decoder knows to readd them (RFC7692 style).
 			[[nodiscard]] std::string compressBlock(const std::string& str, bool bfinal = false) { return compressBlock(str.data(), str.size(), bfinal); }
 			[[nodiscard]] std::string compressBlock(const void* data, size_t size, bool bfinal = false);
 		};
