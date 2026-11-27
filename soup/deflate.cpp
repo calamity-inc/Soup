@@ -1558,16 +1558,8 @@ NAMESPACE_SOUP
 		}
 		else if (wt == WT_GZIP)
 		{
-			if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
-			{
-				*reinterpret_cast<uint32_t*>(out) = crc32::hash(reinterpret_cast<const uint8_t*>(data), size); out += 4;
-				*reinterpret_cast<uint32_t*>(out) = static_cast<uint32_t>(size); out += 4;
-			}
-			else
-			{
-				*reinterpret_cast<uint32_t*>(out) = Endianness::invert(crc32::hash(reinterpret_cast<const uint8_t*>(data), size)); out += 4;
-				*reinterpret_cast<uint32_t*>(out) = Endianness::invert(static_cast<uint32_t>(size)); out += 4;
-			}
+			*reinterpret_cast<uint32_t*>(out) = Endianness::toLittle(crc32::hash(reinterpret_cast<const uint8_t*>(data), size)); out += 4;
+			*reinterpret_cast<uint32_t*>(out) = Endianness::toLittle(static_cast<uint32_t>(size)); out += 4;
 		}
 	}
 

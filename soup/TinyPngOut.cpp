@@ -182,14 +182,7 @@ NAMESPACE_SOUP
 
 	void TinyPngOut::putBigUint32(uint32_t val, uint8_t arr[4])
 	{
-		if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
-		{
-			*reinterpret_cast<uint32_t*>(&arr[0]) = Endianness::invert(val);
-		}
-		else
-		{
-			*reinterpret_cast<uint32_t*>(&arr[0]) = val;
-		}
+		*reinterpret_cast<uint32_t*>(&arr[0]) = Endianness::toBig(val);
 
 		/*for (int i = 0; i != 4; ++i)
 		{

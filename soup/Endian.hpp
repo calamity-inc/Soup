@@ -101,6 +101,7 @@ NAMESPACE_SOUP
 				;
 		}
 
+
 		[[nodiscard]] static constexpr network_u16_t toNetwork(uint16_t val) noexcept
 		{
 			if constexpr (ENDIAN_NATIVE != ENDIAN_NETWORK)
@@ -153,6 +154,61 @@ NAMESPACE_SOUP
 				return invert(val.data);
 			}
 			return native_u64_t(val.data);
+		}
+
+
+		[[nodiscard]] static constexpr uint16_t toLittle(uint16_t val) noexcept
+		{
+			if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+			{
+				val = invert(val);
+			}
+			return val;
+		}
+
+		[[nodiscard]] static constexpr uint32_t toLittle(uint32_t val) noexcept
+		{
+			if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+			{
+				val = invert(val);
+			}
+			return val;
+		}
+
+		[[nodiscard]] static constexpr uint64_t toLittle(uint64_t val) noexcept
+		{
+			if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
+			{
+				val = invert(val);
+			}
+			return val;
+		}
+
+		[[nodiscard]] static constexpr uint16_t toBig(uint16_t val) noexcept
+		{
+			if constexpr (ENDIAN_NATIVE != ENDIAN_BIG)
+			{
+				val = invert(val);
+			}
+			return val;
+		}
+
+		[[nodiscard]] static constexpr uint32_t toBig(uint32_t val) noexcept
+		{
+			if constexpr (ENDIAN_NATIVE != ENDIAN_BIG)
+			{
+				val = invert(val);
+			}
+			return val;
+		}
+
+		[[nodiscard]] static constexpr uint64_t toBig(uint64_t val) noexcept
+		{
+			if constexpr (ENDIAN_NATIVE != ENDIAN_BIG)
+			{
+				val = invert(val);
+			}
+			return val;
 		}
 	};
 }

@@ -79,14 +79,7 @@ NAMESPACE_SOUP
 		for (; size >= 4; ++data32, size -= 4)
 		{
 			uint32_t v = checksum;
-			if constexpr (ENDIAN_NATIVE == ENDIAN_LITTLE)
-			{
-				v ^= *data32;
-			}
-			else
-			{
-				v ^= Endianness::invert(*data32);
-			}
+			v ^= Endianness::toLittle(*data32);
 			checksum = crc32_lookup4[0][v >> 24] ^ crc32_lookup4[1][(v >> 16) & 0xFF] ^ crc32_lookup4[2][(v >> 8) & 0xFF] ^ crc32_lookup4[3][v & 0xFF];
 		}
 

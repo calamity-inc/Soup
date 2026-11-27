@@ -125,10 +125,7 @@ NAMESPACE_SOUP
 		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
 		v = 0;
 		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
-		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
-		{
-			v = Endianness::invert(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
-		}
+		v = Endianness::toLittle(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
 		v <<= first_byte_value_bits;
 		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
 		return true;
@@ -142,10 +139,7 @@ NAMESPACE_SOUP
 		const auto first_byte_value_bits = (byte_length < 8) * (8 - byte_length);
 		v = 0;
 		SOUP_RETHROW_FALSE(raw(&v, byte_length - 1));
-		if constexpr (ENDIAN_NATIVE != ENDIAN_LITTLE)
-		{
-			v = Endianness::invert(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
-		}
+		v = Endianness::toLittle(v); static_assert(ENDIAN_NATIVE == ENDIAN_LITTLE || ENDIAN_NATIVE == ENDIAN_BIG);
 		v <<= first_byte_value_bits;
 		v |= (first_byte & ((1 << first_byte_value_bits) - 1));
 

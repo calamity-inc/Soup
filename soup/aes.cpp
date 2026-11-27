@@ -971,15 +971,9 @@ NAMESPACE_SOUP
 	void aes::inc32(uint8_t block[16]) noexcept
 	{
 		uint32_t counter = reinterpret_cast<uint32_t*>(block)[3];
-		if constexpr (ENDIAN_NATIVE != ENDIAN_BIG)
-		{
-			counter = Endianness::invert(counter);
-		}
+		counter = Endianness::toBig(counter); // convert big-endian u32 to native endian
 		++counter;
-		if constexpr (ENDIAN_NATIVE != ENDIAN_BIG)
-		{
-			counter = Endianness::invert(counter);
-		}
+		counter = Endianness::toBig(counter); // convert native endian back to big-endian u32
 		reinterpret_cast<uint32_t*>(block)[3] = counter;
 	}
 
