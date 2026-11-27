@@ -48,7 +48,7 @@ NAMESPACE_SOUP
 			out.reserve(((out_len / T::DIGEST_BYTES) + 1) * T::DIGEST_BYTES);
 			for (uint32_t counter = 0; out.size() < out_len; ++counter)
 			{
-				const auto counter_be = Endianness::toNetwork(counter);
+				const uint32_t counter_be = Endianness::toBig(counter);
 
 				typename T::State st;
 				st.append(seed_data, seed_size);

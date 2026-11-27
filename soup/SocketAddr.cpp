@@ -4,7 +4,7 @@
 
 NAMESPACE_SOUP
 {
-	bool SocketAddr::fromString(const std::string & str) SOUP_EXCAL
+	bool SocketAddr::fromString(const std::string& str) SOUP_EXCAL
 	{
 		const size_t sep = str.find_last_of(':');
 		SOUP_RETHROW_FALSE(sep != std::string::npos);
@@ -12,9 +12,9 @@ NAMESPACE_SOUP
 		{
 			ip.reset();
 		}
-		const auto opt = string::toIntOpt<uint16_t>(str.substr(sep + 1), string::TI_FULL);
+		const Optional<uint16_t> opt = string::toIntOpt<uint16_t>(str.substr(sep + 1), string::TI_FULL);
 		SOUP_RETHROW_FALSE(opt.has_value());
-		port = Endianness::toNetwork(*opt);
+		this->port = Endianness::toNetwork(*opt);
 		return true;
 	}
 }

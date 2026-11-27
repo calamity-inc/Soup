@@ -100,8 +100,8 @@ NAMESPACE_SOUP
 
 		// DHCP server
 		req.server_addr = server;
-		auto addr_ne = Endianness::toNetwork(server);
-		req.addOption(54, std::string((const char*)&addr_ne, 4));
+		network_u32_t addr_ne = Endianness::toNetwork(server);
+		req.addOption(54, std::string((const char*)&addr_ne, 4)); static_assert(sizeof(network_u32_t) == 4);
 
 		// Requested IP address
 		addr_ne = Endianness::toNetwork(addr);

@@ -240,7 +240,7 @@ NAMESPACE_SOUP
 			return false;
 		}
 
-		const auto port_ne = Endianness::toNetwork(port);
+		const uint16_t port_ne = Endianness::toBig(port);
 
 		peer.ip.reset();
 		peer.port = port_ne;
@@ -268,7 +268,7 @@ NAMESPACE_SOUP
 			return false;
 		}
 
-		const auto port_ne = Endianness::toNetwork(port);
+		const uint16_t port_ne = Endianness::toBig(port);
 
 		peer.ip.reset();
 		peer.port = port_ne;

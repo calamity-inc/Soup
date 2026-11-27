@@ -82,14 +82,14 @@ NAMESPACE_SOUP
 
 		explicit constexpr IpAddr(native_u16_t a, native_u16_t b, native_u16_t c, native_u16_t d, native_u16_t e, native_u16_t f, native_u16_t g, native_u16_t h)
 			: shorts{
-				Endianness::toNetwork(a).data,
-				Endianness::toNetwork(b).data,
-				Endianness::toNetwork(c).data,
-				Endianness::toNetwork(d).data,
-				Endianness::toNetwork(e).data,
-				Endianness::toNetwork(f).data,
-				Endianness::toNetwork(g).data,
-				Endianness::toNetwork(h).data
+				Endianness::toBig(a.data),
+				Endianness::toBig(b.data),
+				Endianness::toBig(c.data),
+				Endianness::toBig(d.data),
+				Endianness::toBig(e.data),
+				Endianness::toBig(f.data),
+				Endianness::toBig(g.data),
+				Endianness::toBig(h.data)
 			}
 		{
 		}

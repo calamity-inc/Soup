@@ -13,7 +13,7 @@ NAMESPACE_SOUP
 		str.reserve(str.size() + (width * height * 4));
 		for (const auto& p : pixels)
 		{
-			const uint32_t val = Endianness::toNetwork(p.toInt());
+			const uint32_t val = Endianness::toBig(p.toInt());
 			str.append((const char*)&val, 4);
 		}
 		return str;

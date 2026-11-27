@@ -1554,7 +1554,7 @@ NAMESPACE_SOUP
 		memcpy(out, block_data, block_size); out += block_size;
 		if (wt == WT_ZLIB)
 		{
-			*reinterpret_cast<uint32_t*>(out) = Endianness::toNetwork(adler32::hash(data, size)); out += 4;
+			*reinterpret_cast<uint32_t*>(out) = Endianness::toBig(adler32::hash(data, size)); out += 4;
 		}
 		else if (wt == WT_GZIP)
 		{
