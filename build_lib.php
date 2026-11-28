@@ -60,14 +60,17 @@ if (file_exists("bin/int/soup.o"))
 	}
 }
 
-// We don't reuse these objects if run again, so might as well clean up.
-foreach ($objects as $object)
+if (@$argv[2] != "--keep-objects")
 {
-	unlink($object);
-}
-if (file_exists("bin/int/soup.o"))
-{
-	unlink("bin/int/soup.o");
+	// We don't reuse these objects if run again, so might as well clean up.
+	foreach ($objects as $object)
+	{
+		unlink($object);
+	}
+	if (file_exists("bin/int/soup.o"))
+	{
+		unlink("bin/int/soup.o");
+	}
 }
 
 chdir($cd);
